@@ -361,14 +361,14 @@ end
     ```lua
     -- Medium: Format player's money for display
     local playerMoney = player:getMoney()
-    local formattedMoney = lia.darkrp.formatMoney(playerMoney)
+        local formattedMoney = lia.darkrp.formatMoney(playerMoney)
     player:notifyInfoLocalized("your_money")
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Format multiple amounts for transaction display
+        -- High: Format multiple amounts for transaction display
     local amounts = {500, 1250, 9999, 150000}
     local formattedAmounts = {}
 
@@ -377,7 +377,7 @@ end
         table.insert(formattedAmounts, formatted)
     end
 
-    local displayText = "Transaction amounts: " .. table.concat(formattedAmounts, ", ")
+        local displayText = "Transaction amounts: " .. table.concat(formattedAmounts, ", ")
     chat.AddText(Color(255, 255, 255), displayText)
     ```
 ]]
@@ -437,7 +437,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Create multiple entities from configuration table
+        -- High: Create multiple entities from configuration table
     local entities = {
         {
             name = "Office Desk",

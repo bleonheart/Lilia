@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The languages library provides comprehensive internationalization (i18n) functionality for the Lilia framework. It handles loading, storing, and retrieving localized strings from language files, supporting multiple languages with fallback mechanisms. The library automatically loads language files from directories, processes them into a unified storage system, and provides string formatting with parameter substitution. It includes functions for adding custom language tables, retrieving available languages, and getting localized strings with proper error handling. The library operates on both server and client sides, ensuring consistent localization across the entire gamemode. It supports dynamic language switching and provides the global L() function for easy access to localized strings throughout the codebase.
+        The languages library provides comprehensive internationalization (i18n) functionality for the Lilia framework. It handles loading, storing, and retrieving localized strings from language files, supporting multiple languages with fallback mechanisms. The library automatically loads language files from directories, processes them into a unified storage system, and provides string formatting with parameter substitution. It includes functions for adding custom language tables, retrieving available languages, and getting localized strings with proper error handling. The library operates on both server and client sides, ensuring consistent localization across the entire gamemode. It supports dynamic language switching and provides the global L() function for easy access to localized strings throughout the codebase.
 ]]
 lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
@@ -33,8 +33,8 @@ lia.lang.stored = lia.lang.stored or {}
     Medium Complexity:
 
     ```lua
-    -- Medium: Load languages from custom module directory
-    local moduleDir = "lilia/gamemode/modules/mymodule/languages"
+        -- Medium: Load languages from custom module directory
+        local moduleDir = "lilia/gamemode/modules/mymodule/languages"
     if file.Exists(moduleDir, "LUA") then
         lia.lang.loadFromDir(moduleDir)
     end
@@ -43,7 +43,7 @@ lia.lang.stored = lia.lang.stored or {}
     High Complexity:
 
     ```lua
-    -- High: Load languages from multiple directories with validation
+        -- High: Load languages from multiple directories with validation
     local languageDirs = {
         "lilia/gamemode/languages",
         "lilia/gamemode/modules/custom/languages",
@@ -122,7 +122,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Add multiple language tables with validation
+        -- High: Add multiple language tables with validation
     local languages = {
         english = { title = "Title", desc = "Description" },
         spanish = { title = "Título", desc = "Descripción" },
@@ -162,7 +162,7 @@ end
     ```lua
     -- Simple: Get list of available languages
     local languages = lia.lang.getLanguages()
-    print("Available languages:", table.concat(languages, ", "))
+        print("Available languages:", table.concat(languages, ", "))
     ```
 
     Medium Complexity:
@@ -230,8 +230,8 @@ end
 
     ```lua
     -- Simple: Get basic localized string
-    local message = lia.lang.getLocalizedString("hello")
-    print(message) -- Outputs: "Hello" (in current language)
+        local message = lia.lang.getLocalizedString("hello")
+        print(message) -- Outputs: "Hello" (in current language)
     ```
 
     Medium Complexity:
@@ -239,15 +239,15 @@ end
     ```lua
     -- Medium: Get localized string with parameters
     local playerName = "John"
-    local welcomeMsg = lia.lang.getLocalizedString("welcomePlayer", playerName)
-    print(welcomeMsg) -- Outputs: "Welcome, John!" (if template is "Welcome, %s!")
+        local welcomeMsg = lia.lang.getLocalizedString("welcomePlayer", playerName)
+        print(welcomeMsg) -- Outputs: "Welcome, John!" (if template is "Welcome, %s!")
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Complex localized string with multiple parameters and error handling
-    local function displayItemInfo(itemName, quantity, price)
+        -- High: Complex localized string with multiple parameters and error handling
+        local function displayItemInfo(itemName, quantity, price)
         local lang = lia.config and lia.config.get("Language", "english") or "english"
         local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
         local template = langTable and langTable["itemInfo"] or "itemInfo"
@@ -306,7 +306,7 @@ end
 
     ```lua
     -- Simple: Use global L function for basic strings
-    print(L("hello")) -- Outputs: "Hello" (in current language)
+        print(L("hello")) -- Outputs: "Hello" (in current language)
     ```
 
     Medium Complexity:
@@ -322,7 +322,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Use L function in complex UI with multiple languages
+        -- High: Use L function in complex UI with multiple languages
     local function updateUI()
         local currentLang = lia.config.get("Language", "english")
         local title = L("menuTitle")

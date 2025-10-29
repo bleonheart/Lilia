@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The item library provides comprehensive functionality for managing items in the Lilia framework. It handles item registration, instantiation, inventory management, and item operations such as dropping, taking, rotating, and transferring items between players. The library operates on both server and client sides, with server-side functions handling database operations, item spawning, and data persistence, while client-side functions manage item interactions and UI operations. It includes automatic weapon and ammunition generation from Garry's Mod weapon lists, inventory type registration, and item entity management. The library ensures proper item lifecycle management from creation to deletion, with support for custom item functions, hooks, and data persistence.
+        The item library provides comprehensive functionality for managing items in the Lilia framework. It handles item registration, instantiation, inventory management, and item operations such as dropping, taking, rotating, and transferring items between players. The library operates on both server and client sides, with server-side functions handling database operations, item spawning, and data persistence, while client-side functions manage item interactions and UI operations. It includes automatic weapon and ammunition generation from Garry's Mod weapon lists, inventory type registration, and item entity management. The library ensures proper item lifecycle management from creation to deletion, with support for custom item functions, hooks, and data persistence.
 ]]
 lia.item = lia.item or {}
 lia.item.base = lia.item.base or {}
@@ -233,7 +233,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Get item and perform location-specific actions
+        -- High: Get item and perform location-specific actions
     local result = lia.item.getItemByID(789)
     if result then
         local item = result.item
@@ -352,7 +352,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Get item data and access specific fields
+        -- Medium: Get item data and access specific fields
     local data = lia.item.getItemDataByID(456)
     if data then
         if data.x and data.y then
@@ -367,7 +367,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Get item data and perform complex operations
+        -- High: Get item data and perform complex operations
     local data = lia.item.getItemDataByID(789)
     if data then
         local customData = data.customData or {}
@@ -410,22 +410,22 @@ end
 
     ```lua
     -- Simple: Load a basic item file
-    lia.item.load("lilia/gamemode/items/weapon_pistol.lua")
+        lia.item.load("lilia/gamemode/items/weapon_pistol.lua")
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Load item with base inheritance
-    lia.item.load("lilia/gamemode/items/custom_rifle.lua", "base_weapons")
+        lia.item.load("lilia/gamemode/items/custom_rifle.lua", "base_weapons")
     ```
 
     High Complexity:
 
     ```lua
     -- High: Load base item and derived items
-    lia.item.load("lilia/gamemode/items/base/weapons.lua", nil, true)
-    lia.item.load("lilia/gamemode/items/weapons/assault_rifle.lua", "base_weapons")
+        lia.item.load("lilia/gamemode/items/base/weapons.lua", nil, true)
+        lia.item.load("lilia/gamemode/items/weapons/assault_rifle.lua", "base_weapons")
     ```
 ]]
 function lia.item.load(path, baseID, isBaseItem)
@@ -567,7 +567,7 @@ end
 
     ```lua
     -- Medium: Register item with custom properties
-    local ITEM = lia.item.register("custom_weapon", "base_weapons")
+        local ITEM = lia.item.register("custom_weapon", "base_weapons")
     ITEM.name = "Custom Weapon"
     ITEM.desc = "A custom weapon"
     ITEM.model = "models/weapons/w_pistol.mdl"
@@ -577,7 +577,7 @@ end
 
     ```lua
     -- High: Register complex item with inheritance
-    local ITEM = lia.item.register("advanced_rifle", "base_weapons", false, nil, true)
+        local ITEM = lia.item.register("advanced_rifle", "base_weapons", false, nil, true)
     ITEM.name = "Advanced Rifle"
     ITEM.desc = "A high-tech assault rifle"
     ITEM.model = "models/weapons/w_rif_ak47.mdl"
@@ -814,7 +814,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Register inventory with custom properties
+        -- Medium: Register inventory with custom properties
     lia.item.registerInv("storage_box", 8, 6)
     ```
 
@@ -866,7 +866,7 @@ end
 
     ```lua
     -- Simple: Create inventory for player
-    lia.item.newInv(player:getChar():getID(), "player")
+        lia.item.newInv(player:getChar():getID(), "player")
     ```
 
     Medium Complexity:
@@ -1066,7 +1066,7 @@ lia.item.holdTypeSizeMapping = {
     High Complexity:
 
     ```lua
-    -- High: Override multiple weapons with custom properties
+        -- High: Override multiple weapons with custom properties
     local weaponOverrides = {
         ["weapon_pistol"] = {
             name = "Combat Pistol",
@@ -1136,7 +1136,7 @@ end
         "weapon_camera"
     }
 
-    for _, weaponClass in ipairs(weaponsToBlacklist) do
+        for _, weaponClass in ipairs(weaponsToBlacklist) do
         lia.item.addWeaponToBlacklist(weaponClass)
     end
     ```
@@ -1179,7 +1179,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Generate weapons with blacklist and overrides
+        -- High: Generate weapons with blacklist and overrides
     local blacklistedWeapons = {
         "weapon_crowbar",
         "weapon_physcannon",
@@ -1250,7 +1250,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Generate ammunition with custom overrides
+        -- Medium: Generate ammunition with custom overrides
     lia.item.addWeaponOverride("arc9_ammo_9mm", {
         name = "9mm Ammunition",
         desc = "Standard pistol ammunition"
@@ -1261,7 +1261,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Generate ammunition with filtering and overrides
+        -- High: Generate ammunition with filtering and overrides
     local ammoOverrides = {
         ["arc9_ammo_9mm"] = {
             name = "9mm Rounds",

@@ -26,47 +26,47 @@
 ]]
 --[[
     Overview:
-    The faction system provides comprehensive functionality for defining character factions within the Lilia framework.
-    Factions represent the main organizational units that characters belong to, serving as parent containers for classes.
-    Each character belongs to exactly ONE faction and can have multiple classes within that faction.
+        The faction system provides comprehensive functionality for defining character factions within the Lilia framework.
+        Factions represent the main organizational units that characters belong to, serving as parent containers for classes.
+        Each character belongs to exactly ONE faction and can have multiple classes within that faction.
 
     **Faction-Class Relationship:**
-    - **Factions** are the main organizational units (Citizens, Police, Medical, Staff)
-    - **Classes** are sub-divisions within factions (Officer, Detective, Captain within Police)
-    - Each character belongs to exactly ONE faction but can switch between classes within that faction
-    - **CLASS settings overpower FACTION settings** - any property defined in a class takes precedence
+        - **Factions** are the main organizational units (Citizens, Police, Medical, Staff)
+        - **Classes** are sub-divisions within factions (Officer, Detective, Captain within Police)
+        - Each character belongs to exactly ONE faction but can switch between classes within that faction
+        - **CLASS settings overpower FACTION settings** - any property defined in a class takes precedence
       over the same property in the parent faction.
 
     **Example Hierarchy:**
     ```
     Faction: Police Department
-    ├── Class: Police Officer (inherits police models, weapons, color)
-    ├── Class: Police Detective (inherits police properties, overrides with detective-specific items)
-    ├── Class: Police Captain (inherits police properties, overrides with command-specific permissions)
-    └── Class: SWAT Officer (inherits police properties, overrides with tactical gear)
+        ├── Class: Police Officer (inherits police models, weapons, color)
+        ├── Class: Police Detective (inherits police properties, overrides with detective-specific items)
+        ├── Class: Police Captain (inherits police properties, overrides with command-specific permissions)
+        └── Class: SWAT Officer (inherits police properties, overrides with tactical gear)
     ```
 
-    Factions are defined using the FACTION table structure, which includes properties for identification,
-    visual representation, gameplay mechanics, and access control. The system includes callback methods
-    that are automatically invoked during key character lifecycle events, enabling dynamic behavior and
+        Factions are defined using the FACTION table structure, which includes properties for identification,
+        visual representation, gameplay mechanics, and access control. The system includes callback methods
+        that are automatically invoked during key character lifecycle events, enabling dynamic behavior and
     customization.
 
-    Factions can have player limits, whitelist requirements, specialized loadouts, and attribute
-    modifications that affect gameplay. The system supports modifying player health, armor, movement
-    speeds, model scale, weapons, and NPC relationships, providing a flexible foundation for role-based
+        Factions can have player limits, whitelist requirements, specialized loadouts, and attribute
+        modifications that affect gameplay. The system supports modifying player health, armor, movement
+        speeds, model scale, weapons, and NPC relationships, providing a flexible foundation for role-based
     gameplay systems.
 
     **Player Management:**
-    Factions support player limits (absolute or percentage-based), character restrictions (one character
-    per player), custom name generation templates, and custom limit checking logic for advanced access
+        Factions support player limits (absolute or percentage-based), character restrictions (one character
+        per player), custom name generation templates, and custom limit checking logic for advanced access
     control scenarios.
 
     **Access Control:**
-    Factions use the `isDefault` property to determine if they are accessible to all players, and can
-    implement custom permission logic through whitelist systems and the framework's permission system.
+        Factions use the `isDefault` property to determine if they are accessible to all players, and can
+        implement custom permission logic through whitelist systems and the framework's permission system.
 
-    In addition to the FACTION table properties, factions can also modify character variables such as
-    classwhitelists to control which classes a character has access to within the faction.
+        In addition to the FACTION table properties, factions can also modify character variables such as
+        classwhitelists to control which classes a character has access to within the faction.
 ]]
 --[[
     FACTION.name
@@ -161,8 +161,8 @@ FACTION.isDefault = true
         Unique identifier for the faction (INTERNAL - set automatically when registered)
     When Called:
         Set automatically during faction registration
-    Note: This property is internal and should not be modified directly
-    Auto-Assignment: If not explicitly defined, the uniqueID is automatically set to the faction file name (without .lua extension)
+        Note: This property is internal and should not be modified directly
+        Auto-Assignment: If not explicitly defined, the uniqueID is automatically set to the faction file name (without .lua extension)
     Example Usage:
         ```lua
         -- This is set automatically when you register the faction
@@ -499,21 +499,21 @@ end
 --[[
     Example Faction:
 
-    Below is a comprehensive example showing how to define a complete faction with all
-    available properties and methods. This example creates a "Police Department" faction
-    that demonstrates typical usage of the faction system.
+        Below is a comprehensive example showing how to define a complete faction with all
+        available properties and methods. This example creates a "Police Department" faction
+        that demonstrates typical usage of the faction system.
 
         ```lua
     FACTION.name = "Police Department"
-    FACTION.desc = "Law enforcement officers responsible for maintaining order and protecting citizens"
-    FACTION.color = Color(0, 100, 255)  -- Blue color for police
+        FACTION.desc = "Law enforcement officers responsible for maintaining order and protecting citizens"
+        FACTION.color = Color(0, 100, 255)  -- Blue color for police
 
     -- Access Control
-    FACTION.isDefault = false  -- Requires whitelist or special permission
-    FACTION.oneCharOnly = true  -- Players can only have one police character
+        FACTION.isDefault = false  -- Requires whitelist or special permission
+        FACTION.oneCharOnly = true  -- Players can only have one police character
     FACTION.limit = 12  -- Maximum 12 police officers
-    FACTION.index = FACTION_POLICE  -- Team index for this faction
-    -- FACTION.uniqueID is automatically set to the filename (e.g., "police" for police.lua)
+        FACTION.index = FACTION_POLICE  -- Team index for this faction
+        -- FACTION.uniqueID is automatically set to the filename (e.g., "police" for police.lua)
 
     -- Name Generation
     function FACTION:NameTemplate(info, client)
@@ -529,7 +529,7 @@ end
         return "A law enforcement officer of the City Police Department"
     end
 
-    function FACTION:OnCheckLimitReached(character, client)
+        function FACTION:OnCheckLimitReached(character, client)
         -- Allow admins to bypass police limits
         if client:hasFlags("L") then
             return false
@@ -564,7 +564,7 @@ end
     FACTION.bloodcolor = BLOOD_COLOR_RED
 
     -- Gameplay Properties
-    FACTION.health = 120  -- Higher health than default citizens
+        FACTION.health = 120  -- Higher health than default citizens
     FACTION.armor = 50    -- Standard police armor
 
     -- Weapons (given when spawning)
@@ -574,7 +574,7 @@ end
         "weapon_police_baton"
     }
 
-    -- Starting Items (given when character is created)
+        -- Starting Items (given when character is created)
     FACTION.items = {
         "item_police_badge",
         "item_handcuffs",
@@ -582,12 +582,12 @@ end
     }
 
     -- Movement Properties
-    FACTION.runSpeed = 280  -- Slightly slower than default for tactical movement
+        FACTION.runSpeed = 280  -- Slightly slower than default for tactical movement
     FACTION.walkSpeed = 150  -- Standard walking speed
     FACTION.jumpPower = 200  -- Standard jump power
-    FACTION.runSpeedMultiplier = false  -- Use absolute speed values
-    FACTION.walkSpeedMultiplier = false  -- Use absolute speed values
-    FACTION.jumpPowerMultiplier = false  -- Use absolute jump power values
+        FACTION.runSpeedMultiplier = false  -- Use absolute speed values
+        FACTION.walkSpeedMultiplier = false  -- Use absolute speed values
+        FACTION.jumpPowerMultiplier = false  -- Use absolute jump power values
 
     -- NPC Relationships
     FACTION.NPCRelations = {

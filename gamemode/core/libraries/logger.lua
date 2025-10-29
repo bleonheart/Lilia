@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The logger library provides comprehensive logging functionality for the Lilia framework, enabling detailed tracking and recording of player actions, administrative activities, and system events. It operates on the server side and automatically categorizes log entries into predefined categories such as character management, combat, world interactions, chat communications, item transactions, administrative actions, and security events. The library stores all log entries in a database table with timestamps, player information, and categorized messages. It supports dynamic log type registration and provides hooks for external systems to process log events. The logger ensures accountability and provides administrators with detailed audit trails for server management and moderation.
+        The logger library provides comprehensive logging functionality for the Lilia framework, enabling detailed tracking and recording of player actions, administrative activities, and system events. It operates on the server side and automatically categorizes log entries into predefined categories such as character management, combat, world interactions, chat communications, item transactions, administrative actions, and security events. The library stores all log entries in a database table with timestamps, player information, and categorized messages. It supports dynamic log type registration and provides hooks for external systems to process log events. The logger ensures accountability and provides administrators with detailed audit trails for server management and moderation.
 ]]
 lia.log = lia.log or {}
 lia.log.types = lia.log.types or {}
@@ -269,7 +269,7 @@ end
 
     ```lua
     -- Simple: Add a basic custom log type
-    lia.log.addType("customAction", function(client, action)
+        lia.log.addType("customAction", function(client, action)
         return client:Name() .. " performed " .. action
     end, "Custom")
     ```
@@ -277,8 +277,8 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Add log type with validation and localization
-    lia.log.addType("moduleEvent", function(client, moduleName, event, data)
+        -- Medium: Add log type with validation and localization
+        lia.log.addType("moduleEvent", function(client, moduleName, event, data)
         if not IsValid(client) then return "System: " .. moduleName .. " - " .. event end
         return L("logModuleEvent", client:Name(), moduleName, event, data or "")
     end, "Modules")
@@ -287,8 +287,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Add complex log type with multiple parameters and error handling
-    lia.log.addType("advancedAction", function(client, target, action, amount, reason)
+        -- High: Add complex log type with multiple parameters and error handling
+        lia.log.addType("advancedAction", function(client, target, action, amount, reason)
         local clientName = IsValid(client) and client:Name() or "Console"
         local targetName = IsValid(target) and target:Name() or tostring(target)
         local timestamp = os.date("%H:%M:%S")
@@ -324,7 +324,7 @@ end
 
     ```lua
     -- Simple: Get a basic log string
-    local message, category = lia.log.getString(client, "charCreate", character)
+        local message, category = lia.log.getString(client, "charCreate", character)
     if message then
         print("Log: " .. message)
     end
@@ -334,7 +334,7 @@ end
 
     ```lua
     -- Medium: Get log string with multiple parameters
-    local message, category = lia.log.getString(client, "itemTransfer", itemName, fromID, toID)
+        local message, category = lia.log.getString(client, "itemTransfer", itemName, fromID, toID)
     if message then
         hook.Run("CustomLogHandler", message, category)
     end
@@ -343,8 +343,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Get log string with error handling and validation
-    local function safeGetLogString(client, logType, ...)
+        -- High: Get log string with error handling and validation
+        local function safeGetLogString(client, logType, ...)
         local success, message, category = pcall(lia.log.getString, client, logType, ...)
         if success and message then
             return message, category
@@ -353,7 +353,7 @@ end
         end
     end
 
-    local message, category = safeGetLogString(client, "adminAction", target, action, reason)
+        local message, category = safeGetLogString(client, "adminAction", target, action, reason)
     ```
 ]]
 function lia.log.getString(client, logType, ...)
@@ -390,7 +390,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Log with multiple parameters and validation
+        -- Medium: Log with multiple parameters and validation
     if IsValid(target) then
         lia.log.add(client, "itemTransfer", itemName, fromID, toID)
     end
@@ -399,8 +399,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Log with conditional parameters and error handling
-    local function logAdminAction(client, target, action, reason, amount)
+        -- High: Log with conditional parameters and error handling
+        local function logAdminAction(client, target, action, reason, amount)
         local logType = "adminAction"
         local params = {target, action}
 
@@ -410,7 +410,7 @@ end
         lia.log.add(client, logType, unpack(params))
     end
 
-    logAdminAction(client, target, "kick", "Rule violation", nil)
+        logAdminAction(client, target, "kick", "Rule violation", nil)
     ```
 ]]
 function lia.log.add(client, logType, ...)

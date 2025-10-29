@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The player interaction library provides comprehensive functionality for managing player interactions and actions within the Lilia framework. It handles the creation, registration, and execution of various interaction types including player-to-player interactions, entity interactions, and personal actions. The library operates on both server and client sides, with the server managing interaction registration and validation, while the client handles UI display and user input. It includes range checking, timed actions, and network synchronization to ensure consistent interaction behavior across all clients. The library supports both immediate and delayed actions with progress indicators, making it suitable for complex interaction systems like money transfers, voice changes, and other gameplay mechanics.
+        The player interaction library provides comprehensive functionality for managing player interactions and actions within the Lilia framework. It handles the creation, registration, and execution of various interaction types including player-to-player interactions, entity interactions, and personal actions. The library operates on both server and client sides, with the server managing interaction registration and validation, while the client handles UI display and user input. It includes range checking, timed actions, and network synchronization to ensure consistent interaction behavior across all clients. The library supports both immediate and delayed actions with progress indicators, making it suitable for complex interaction systems like money transfers, voice changes, and other gameplay mechanics.
 ]]
 lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
@@ -28,8 +28,8 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     Low Complexity:
 
     ```lua
-    -- Simple: Check if player is within default range of an entity
-    if lia.playerinteract.isWithinRange(client, targetEntity) then
+        -- Simple: Check if player is within default range of an entity
+        if lia.playerinteract.isWithinRange(client, targetEntity) then
         -- Player is within 250 units
     end
     ```
@@ -37,9 +37,9 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     Medium Complexity:
 
     ```lua
-    -- Medium: Check with custom range for specific interaction
+        -- Medium: Check with custom range for specific interaction
     local customRange = 100
-    if lia.playerinteract.isWithinRange(client, targetEntity, customRange) then
+        if lia.playerinteract.isWithinRange(client, targetEntity, customRange) then
         -- Player is within 100 units for close-range interaction
     end
     ```
@@ -48,9 +48,9 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
 
     ```lua
     -- High: Dynamic range checking with validation
-    local interactionRange = interactionData.range or 250
+        local interactionRange = interactionData.range or 250
     if IsValid(client) and IsValid(targetEntity) and
-       lia.playerinteract.isWithinRange(client, targetEntity, interactionRange) then
+        lia.playerinteract.isWithinRange(client, targetEntity, interactionRange) then
         -- Player is within specified range for this interaction type
         return true
     end
@@ -78,8 +78,8 @@ end
     Low Complexity:
 
     ```lua
-    -- Simple: Get all available interactions for local player
-    local interactions = lia.playerinteract.getInteractions()
+        -- Simple: Get all available interactions for local player
+        local interactions = lia.playerinteract.getInteractions()
     for name, interaction in pairs(interactions) do
         print("Available interaction:", name)
     end
@@ -88,7 +88,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Get interactions for specific player with validation
+        -- Medium: Get interactions for specific player with validation
     local client = LocalPlayer()
     if IsValid(client) then
         local interactions = lia.playerinteract.getInteractions(client)
@@ -102,8 +102,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Filter interactions by category and validate conditions
-    local interactions = lia.playerinteract.getInteractions()
+        -- High: Filter interactions by category and validate conditions
+        local interactions = lia.playerinteract.getInteractions()
     local filteredInteractions = {}
     for name, interaction in pairs(interactions) do
         if interaction.category == "Voice" and
@@ -169,7 +169,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Filter actions by category and execute specific ones
+        -- High: Filter actions by category and execute specific ones
     local actions = lia.playerinteract.getActions()
     local voiceActions = {}
     for name, action in pairs(actions) do
@@ -207,8 +207,8 @@ end
 
     ```lua
     -- Simple: Get options for display
-    local interactions = lia.playerinteract.getInteractions()
-    local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
+        local interactions = lia.playerinteract.getInteractions()
+        local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
     for _, option in pairs(optionsList) do
         print("Option:", option.name)
     end
@@ -219,7 +219,7 @@ end
     ```lua
     -- Medium: Process options for custom display
     local actions = lia.playerinteract.getActions()
-    local optionsList = lia.playerinteract.getCategorizedOptions(actions)
+        local optionsList = lia.playerinteract.getCategorizedOptions(actions)
     local count = #optionsList
     if count > 0 then
         -- Options are ready for display
@@ -230,8 +230,8 @@ end
 
     ```lua
     -- High: Filter and process options
-    local interactions = lia.playerinteract.getInteractions()
-    local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
+        local interactions = lia.playerinteract.getInteractions()
+        local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
     local filteredOptions = {}
     for _, option in pairs(optionsList) do
         if option.opt.category == "Voice" then

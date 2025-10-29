@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The bars library provides a comprehensive system for creating and managing dynamic progress bars in the Lilia framework. It handles the creation, rendering, and lifecycle management of various types of bars including health, armor, and custom progress indicators. The library operates primarily on the client side, providing smooth animated transitions between bar values and intelligent visibility management based on value changes and user preferences. It includes built-in health and armor bars, custom action progress displays, and a flexible system for adding custom bars with priority-based ordering. The library ensures consistent visual presentation across all bar types while providing hooks for customization and integration with other framework components.
+        The bars library provides a comprehensive system for creating and managing dynamic progress bars in the Lilia framework. It handles the creation, rendering, and lifecycle management of various types of bars including health, armor, and custom progress indicators. The library operates primarily on the client side, providing smooth animated transitions between bar values and intelligent visibility management based on value changes and user preferences. It includes built-in health and armor bars, custom action progress displays, and a flexible system for adding custom bars with priority-based ordering. The library ensures consistent visual presentation across all bar types while providing hooks for customization and integration with other framework components.
 ]]
 local surfaceSetDrawColor, surfaceDrawRect, surfaceDrawOutlinedRect = surface.SetDrawColor, surface.DrawRect, surface.DrawOutlinedRect
 lia.bar = lia.bar or {}
@@ -57,7 +57,7 @@ end
 
     ```lua
     -- High: Dynamic bar management with validation
-    local barIdentifiers = {"health", "armor", "stamina", "hunger"}
+        local barIdentifiers = {"health", "armor", "stamina", "hunger"}
     for _, id in ipairs(barIdentifiers) do
         local bar = lia.bar.get(id)
         if bar then
@@ -103,7 +103,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Add a custom stamina bar with validation
+        -- Medium: Add a custom stamina bar with validation
     lia.bar.add(function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return 0 end
@@ -114,8 +114,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Dynamic bar creation with multiple conditions
-    local function createConditionalBar(condition, getValue, color, priority, id)
+        -- High: Dynamic bar creation with multiple conditions
+        local function createConditionalBar(condition, getValue, color, priority, id)
         if condition then
             return lia.bar.add(function()
                 local ply = LocalPlayer()
@@ -187,7 +187,7 @@ end
 
     ```lua
     -- High: Remove multiple bars with validation
-    local barsToRemove = {"stamina", "hunger", "thirst"}
+        local barsToRemove = {"stamina", "hunger", "thirst"}
     for _, barId in ipairs(barsToRemove) do
         local bar = lia.bar.get(barId)
         if bar then
@@ -232,7 +232,7 @@ end
 
     ```lua
     -- Simple: Draw a basic progress bar
-    lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
+        lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
     ```
 
     Medium Complexity:
@@ -241,21 +241,21 @@ end
     -- Medium: Draw a bar with calculated values
     local health = LocalPlayer():Health()
     local maxHealth = LocalPlayer():GetMaxHealth()
-    lia.bar.drawBar(10, 10, 200, 20, health, maxHealth, Color(255, 0, 0))
+        lia.bar.drawBar(10, 10, 200, 20, health, maxHealth, Color(255, 0, 0))
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Dynamic bar drawing with multiple conditions
-    local function drawCustomBar(x, y, w, h, value, maxValue, color, condition)
+        -- High: Dynamic bar drawing with multiple conditions
+        local function drawCustomBar(x, y, w, h, value, maxValue, color, condition)
         if condition and value > 0 then
             local normalizedValue = math.min(value, maxValue)
             lia.bar.drawBar(x, y, w, h, normalizedValue, maxValue, color)
         end
     end
 
-    drawCustomBar(10, 10, 200, 20, player:Health(), player:GetMaxHealth(),
+        drawCustomBar(10, 10, 200, 20, player:Health(), player:GetMaxHealth(),
                   Color(255, 0, 0), player:Alive())
     ```
 ]]
@@ -294,14 +294,14 @@ end
     ```lua
     -- Medium: Show healing progress with dynamic text
     local healAmount = 50
-    lia.bar.drawAction("Healing for " .. healAmount .. " HP", 3.0)
+        lia.bar.drawAction("Healing for " .. healAmount .. " HP", 3.0)
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Conditional action display with multiple states
-    local function showActionProgress(actionType, duration, data)
+        -- High: Conditional action display with multiple states
+        local function showActionProgress(actionType, duration, data)
         local text = ""
         if actionType == "heal" then
             text = "Healing for " .. (data.amount or 25) .. " HP"
@@ -378,7 +378,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Advanced rendering with custom positioning and filtering
+        -- High: Advanced rendering with custom positioning and filtering
     local function customDrawAll()
         if hook.Run("ShouldHideBars") then return end
 

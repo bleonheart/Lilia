@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The notice library provides comprehensive functionality for displaying notifications and messages to players in the Lilia framework. It handles both server-side and client-side notification systems, supporting both direct text messages and localized messages with parameter substitution. The library operates across server and client realms, with the server sending notification data to clients via network messages, while the client handles the visual display of notifications using VGUI panels. It includes automatic organization of multiple notifications, sound effects, and console output for debugging purposes. The library also provides compatibility with Garry's Mod's legacy notification system.
+        The notice library provides comprehensive functionality for displaying notifications and messages to players in the Lilia framework. It handles both server-side and client-side notification systems, supporting both direct text messages and localized messages with parameter substitution. The library operates across server and client realms, with the server sending notification data to clients via network messages, while the client handles the visual display of notifications using VGUI panels. It includes automatic organization of multiple notifications, sound effects, and console output for debugging purposes. The library also provides compatibility with Garry's Mod's legacy notification system.
 ]]
 lia.notices = lia.notices or {}
 if SERVER then
@@ -492,14 +492,14 @@ end
     Low Complexity:
 
     ```lua
-    -- Simple: Function is called automatically when notifications are created
+        -- Simple: Function is called automatically when notifications are created
     -- No direct usage needed - handled internally
     ```
 
     Medium Complexity:
 
     ```lua
-    -- Medium: Manually organize notices after bulk creation
+        -- Medium: Manually organize notices after bulk creation
     for i = 1, 5 do
         lia.notices.notify(nil, "Notification " .. i, "info")
     end
@@ -509,7 +509,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Custom notice organization with different positioning
+        -- High: Custom notice organization with different positioning
     local originalOrganizeNotices = OrganizeNotices
     OrganizeNotices = function()
         local scale = ScrH() / 1080

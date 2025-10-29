@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The vendor library provides comprehensive functionality for managing NPC vendors in the Lilia framework. It handles vendor configuration, editing, presets, and rarity systems for items sold by vendors. The library operates on both server and client sides, with the server handling vendor data processing and the client managing the editing interface. It includes support for vendor presets, item rarities, stock management, pricing, faction/class restrictions, and visual customization. The library ensures that vendors can be easily configured and managed through both code and in-game editing tools.
+        The vendor library provides comprehensive functionality for managing NPC vendors in the Lilia framework. It handles vendor configuration, editing, presets, and rarity systems for items sold by vendors. The library operates on both server and client sides, with the server handling vendor data processing and the client managing the editing interface. It includes support for vendor presets, item rarities, stock management, pricing, faction/class restrictions, and visual customization. The library ensures that vendors can be easily configured and managed through both code and in-game editing tools.
 ]]
 lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
@@ -150,13 +150,13 @@ end
 
     ```lua
     -- Simple: Add a basic rarity
-    lia.vendor.addRarities("common", Color(255, 255, 255))
+        lia.vendor.addRarities("common", Color(255, 255, 255))
     ```
 
     Medium Complexity:
 
     ```lua
-    -- Medium: Add multiple rarities with custom colors
+        -- Medium: Add multiple rarities with custom colors
     lia.vendor.addRarities("rare", Color(0, 255, 0))
     lia.vendor.addRarities("epic", Color(128, 0, 255))
     ```
@@ -164,7 +164,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Add rarities with validation and error handling
+        -- High: Add rarities with validation and error handling
     local rarities = {
         {name = "common", color = Color(200, 200, 200)},
         {name = "uncommon", color = Color(0, 255, 0)},
@@ -210,7 +210,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Add a medical vendor preset with various items
+        -- Medium: Add a medical vendor preset with various items
     lia.vendor.addPreset("medical_vendor", {
         ["bandage"] = {price = 25, stock = 10, mode = 1},
         ["medkit"] = {price = 100, stock = 3, mode = 1},
@@ -221,7 +221,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Add a comprehensive vendor preset with validation
+        -- High: Add a comprehensive vendor preset with validation
     local weaponPreset = {
         ["weapon_pistol"] = {price = 100, stock = 5, mode = 1},
         ["weapon_shotgun"] = {price = 250, stock = 2, mode = 1},
@@ -261,7 +261,7 @@ end
 
     ```lua
     -- Simple: Get a preset and apply it to a vendor
-    local preset = lia.vendor.getPreset("weapon_vendor")
+        local preset = lia.vendor.getPreset("weapon_vendor")
     if preset then
         vendor:applyPreset("weapon_vendor")
     end
@@ -270,7 +270,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Check if preset exists and validate items
+        -- Medium: Check if preset exists and validate items
     local presetName = "medical_vendor"
     local preset = lia.vendor.getPreset(presetName)
     if preset then
@@ -283,7 +283,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Get preset and dynamically configure vendor based on preset data
+        -- High: Get preset and dynamically configure vendor based on preset data
     local presetName = "gun_dealer"
     local preset = lia.vendor.getPreset(presetName)
 

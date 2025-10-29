@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The time library provides comprehensive functionality for time manipulation, formatting, and calculation within the Lilia framework. It handles time parsing, formatting, relative time calculations, and date/time display with support for both 24-hour and 12-hour (American) time formats. The library operates on both server and client sides, providing consistent time handling across the gamemode. It includes functions for calculating time differences, formatting durations, parsing date strings, and generating localized time displays. The library ensures proper time zone handling and supports configurable time format preferences.
+        The time library provides comprehensive functionality for time manipulation, formatting, and calculation within the Lilia framework. It handles time parsing, formatting, relative time calculations, and date/time display with support for both 24-hour and 12-hour (American) time formats. The library operates on both server and client sides, providing consistent time handling across the gamemode. It includes functions for calculating time differences, formatting durations, parsing date strings, and generating localized time displays. The library ensures proper time zone handling and supports configurable time format preferences.
 ]]
 lia.time = lia.time or {}
 --[[
@@ -25,13 +25,13 @@ lia.time = lia.time or {}
 
     ```lua
     -- Simple: Get time since a timestamp
-    local lastSeen = lia.time.timeSince(1640995200) -- Returns "2 hours ago"
+        local lastSeen = lia.time.timeSince(1640995200) -- Returns "2 hours ago"
     ```
 
     Medium Complexity:
 
     ```lua
-    -- Medium: Get time since a date string with validation
+        -- Medium: Get time since a date string with validation
     local playerData = {lastLogin = "2024-01-01"}
     if playerData.lastLogin then
         local timeAgo = lia.time.timeSince(playerData.lastLogin)
@@ -42,8 +42,8 @@ lia.time = lia.time or {}
     High Complexity:
 
     ```lua
-    -- High: Batch process multiple timestamps with error handling
-    local timestamps = {1640995200, "2024-01-01", 1641081600}
+        -- High: Batch process multiple timestamps with error handling
+        local timestamps = {1640995200, "2024-01-01", 1641081600}
     for i, timestamp in ipairs(timestamps) do
         local result = lia.time.timeSince(timestamp)
         if result ~= L("invalidDate") and result ~= L("invalidInput") then
@@ -100,7 +100,7 @@ end
 
     ```lua
     -- Simple: Parse current time
-    local timeData = lia.time.toNumber() -- Returns current time components
+        local timeData = lia.time.toNumber() -- Returns current time components
     print(timeData.year) -- Prints current year
     ```
 
@@ -118,8 +118,8 @@ end
     High Complexity:
 
     ```lua
-    -- High: Batch parse multiple dates and validate ranges
-    local dates = {"2024-01-01 00:00:00", "2024-12-31 23:59:59", "2023-06-15 12:30:00"}
+        -- High: Batch parse multiple dates and validate ranges
+        local dates = {"2024-01-01 00:00:00", "2024-12-31 23:59:59", "2023-06-15 12:30:00"}
     for i, dateStr in ipairs(dates) do
         local timeData = lia.time.toNumber(dateStr)
         if timeData.year >= 2024 and timeData.month <= 12 then
@@ -166,14 +166,14 @@ end
     ```lua
     -- Medium: Use in UI with conditional formatting
     local dateStr = lia.time.getDate()
-    local isAmerican = lia.config.get("AmericanTimeStamps", false)
-    local displayText = isAmerican and "US Time: " .. dateStr or "Time: " .. dateStr
+        local isAmerican = lia.config.get("AmericanTimeStamps", false)
+        local displayText = isAmerican and "US Time: " .. dateStr or "Time: " .. dateStr
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Log system with date formatting and multiple outputs
+        -- High: Log system with date formatting and multiple outputs
     local function logWithTimestamp(message)
         local timestamp = lia.time.getDate()
         local logEntry = "[" .. timestamp .. "] " .. message
@@ -226,7 +226,7 @@ end
 
     ```lua
     -- Simple: Format a duration
-    local duration = lia.time.formatDHM(90000) -- Returns "1 day, 1 hour, 0 minutes"
+        local duration = lia.time.formatDHM(90000) -- Returns "1 day, 1 hour, 0 minutes"
     print("Time remaining: " .. duration)
     ```
 
@@ -234,7 +234,7 @@ end
 
     ```lua
     -- Medium: Format cooldown with validation
-    local cooldownTime = player:GetNWInt("cooldown", 0)
+        local cooldownTime = player:GetNWInt("cooldown", 0)
     if cooldownTime > 0 then
         local formatted = lia.time.formatDHM(cooldownTime)
         player:ChatPrint("Cooldown remaining: " .. formatted)
@@ -244,7 +244,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Multiple duration formatting with conditional display
+        -- High: Multiple duration formatting with conditional display
     local function formatMultipleDurations(durations)
         local results = {}
         for name, seconds in pairs(durations) do
@@ -302,7 +302,7 @@ end
     local hour = lia.time.getHour()
     local greeting = ""
 
-    if lia.config.get("AmericanTimeStamps", false) then
+        if lia.config.get("AmericanTimeStamps", false) then
         -- American format returns string like "2pm"
         local hourNum = tonumber(hour:match("%d+"))
         if hourNum >= 6 and hourNum < 12 then
@@ -327,7 +327,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Dynamic server events based on time with multiple time zones
+        -- High: Dynamic server events based on time with multiple time zones
     local function getServerEvents()
         local hour = lia.time.getHour()
         local events = {}

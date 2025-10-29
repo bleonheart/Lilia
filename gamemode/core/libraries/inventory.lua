@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The inventory library provides comprehensive functionality for managing inventory systems in the Lilia framework. It handles inventory type registration, instance creation, storage management, and database persistence. The library operates on both server and client sides, with the server managing inventory data persistence, loading, and storage registration, while the client handles inventory panel display and user interaction. It supports multiple inventory types, storage containers, vehicle trunks, and character-based inventory management. The library ensures proper data validation, caching, and cleanup for optimal performance.
+        The inventory library provides comprehensive functionality for managing inventory systems in the Lilia framework. It handles inventory type registration, instance creation, storage management, and database persistence. The library operates on both server and client sides, with the server managing inventory data persistence, loading, and storage registration, while the client handles inventory panel display and user interaction. It supports multiple inventory types, storage containers, vehicle trunks, and character-based inventory management. The library ensures proper data validation, caching, and cleanup for optimal performance.
 ]]
 lia.inventory = lia.inventory or {}
 lia.inventory.types = lia.inventory.types or {}
@@ -63,7 +63,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Register inventory type with custom methods
+        -- Medium: Register inventory type with custom methods
     local playerInvType = {
         className = "PlayerInventory",
         typeID = "player",
@@ -78,7 +78,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Register complex inventory type with validation
+        -- High: Register complex inventory type with validation
     local complexInvType = {
         className = "ComplexInventory",
         typeID = "complex",
@@ -140,7 +140,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Create inventory with custom configuration
+        -- High: Create inventory with custom configuration
     local customInv = lia.inventory.new("player")
     customInv.config.w = 12
     customInv.config.h = 6
@@ -202,7 +202,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Load inventory with cache bypass and validation
+        -- High: Load inventory with cache bypass and validation
     local function loadInventorySafely(id)
         return lia.inventory.loadByID(id, true):next(function(inv)
             if not inv then
@@ -255,7 +255,7 @@ if SERVER then
 
     ```lua
     -- Simple: Load inventory from default storage
-    lia.inventory.loadFromDefaultStorage(123):next(function(inv)
+        lia.inventory.loadFromDefaultStorage(123):next(function(inv)
         print("Loaded from database:", inv.id)
     end)
     ```
@@ -264,7 +264,7 @@ if SERVER then
 
     ```lua
     -- Medium: Load with cache bypass
-    lia.inventory.loadFromDefaultStorage(123, true):next(function(inv)
+        lia.inventory.loadFromDefaultStorage(123, true):next(function(inv)
         if inv then
             print("Fresh load from database:", inv.id)
         end
@@ -274,7 +274,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Load with comprehensive error handling and validation
+        -- High: Load with comprehensive error handling and validation
     local function loadFromDatabase(id)
         return lia.inventory.loadFromDefaultStorage(id, true):next(function(inv)
             if not inv then
@@ -346,7 +346,7 @@ if SERVER then
 
     ```lua
     -- Simple: Create a new inventory instance
-    lia.inventory.instance("player"):next(function(inv)
+        lia.inventory.instance("player"):next(function(inv)
         print("Created inventory:", inv.id)
     end)
     ```
@@ -355,8 +355,8 @@ if SERVER then
 
     ```lua
     -- Medium: Create inventory with initial data
-    local initialData = {owner = "player123", maxWeight = 50}
-    lia.inventory.instance("storage", initialData):next(function(inv)
+        local initialData = {owner = "player123", maxWeight = 50}
+        lia.inventory.instance("storage", initialData):next(function(inv)
         print("Created storage inventory:", inv.id)
         print("Owner:", inv.data.owner)
     end)
@@ -365,7 +365,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Create inventory with validation and error handling
+        -- High: Create inventory with validation and error handling
     local function createInventorySafely(typeID, data)
         if not lia.inventory.types[typeID] then
             return deferred.reject("Invalid inventory type: " .. typeID)
@@ -422,7 +422,7 @@ if SERVER then
 
     ```lua
     -- Simple: Load all inventories for a character
-    lia.inventory.loadAllFromCharID(123):next(function(inventories)
+        lia.inventory.loadAllFromCharID(123):next(function(inventories)
         print("Loaded", #inventories, "inventories")
     end)
     ```
@@ -431,7 +431,7 @@ if SERVER then
 
     ```lua
     -- Medium: Load inventories with error handling
-    lia.inventory.loadAllFromCharID(123):next(function(inventories)
+        lia.inventory.loadAllFromCharID(123):next(function(inventories)
         if inventories and #inventories > 0 then
             print("Successfully loaded", #inventories, "inventories")
             for _, inv in ipairs(inventories) do
@@ -446,7 +446,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Load inventories with validation and processing
+        -- High: Load inventories with validation and processing
     local function loadCharacterInventories(charID)
         return lia.inventory.loadAllFromCharID(charID):next(function(inventories)
             if not inventories then
@@ -523,7 +523,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Delete inventory with comprehensive cleanup
+        -- High: Delete inventory with comprehensive cleanup
     local function deleteInventorySafely(id)
         if not isnumber(id) or id <= 0 then
             return deferred.reject("Invalid inventory ID: " .. tostring(id))
@@ -588,7 +588,7 @@ if SERVER then
 
     ```lua
     -- Medium: Clean up with validation
-    local function cleanupCharacterInventories(character)
+        local function cleanupCharacterInventories(character)
         if not character or not character.getInv then
             lia.error("Invalid character object for cleanup")
             return false
@@ -603,8 +603,8 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Clean up with comprehensive logging and validation
-    local function cleanupCharacterInventoriesSafely(character)
+        -- High: Clean up with comprehensive logging and validation
+        local function cleanupCharacterInventoriesSafely(character)
         if not character or not character.getInv then
             lia.error("Invalid character object for inventory cleanup")
             return false
@@ -654,8 +654,8 @@ if SERVER then
     Low Complexity:
 
     ```lua
-    -- Simple: Check for overflow after inventory resize
-    local hadOverflow = lia.inventory.checkOverflow(inventory, character, 10, 8)
+        -- Simple: Check for overflow after inventory resize
+        local hadOverflow = lia.inventory.checkOverflow(inventory, character, 10, 8)
     if hadOverflow then
         lia.notify.add("Some items were moved to overflow storage", NOTIFY_GENERIC)
     end
@@ -664,8 +664,8 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Comprehensive overflow handling with validation
-    local function handleInventoryResize(inventory, character, oldWidth, oldHeight)
+        -- High: Comprehensive overflow handling with validation
+        local function handleInventoryResize(inventory, character, oldWidth, oldHeight)
         if not inventory or not character then
             lia.error("Invalid parameters for inventory overflow check")
             return false
@@ -736,7 +736,7 @@ if SERVER then
 
     ```lua
     -- Simple: Register a basic storage container
-    lia.inventory.registerStorage("models/props_c17/lockers001a.mdl", {
+        lia.inventory.registerStorage("models/props_c17/lockers001a.mdl", {
         name = "Locker",
         invType = "storage",
         invData = {w = 5, h = 3}
@@ -746,7 +746,7 @@ if SERVER then
     Medium Complexity:
 
     ```lua
-    -- Medium: Register storage with custom configuration
+        -- Medium: Register storage with custom configuration
     local storageData = {
         name = "Medical Cabinet",
         invType = "medical",
@@ -757,13 +757,13 @@ if SERVER then
             restrictions = {"medical", "drugs"}
         }
     }
-    lia.inventory.registerStorage("models/props_c17/furnituremedicinecabinet001a.mdl", storageData)
+        lia.inventory.registerStorage("models/props_c17/furnituremedicinecabinet001a.mdl", storageData)
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Register multiple storage types with validation
+        -- High: Register multiple storage types with validation
     local function registerStorageContainers()
         local storages = {
             {
@@ -820,7 +820,7 @@ if SERVER then
 
     ```lua
     -- Simple: Get storage data for a model
-    local storageData = lia.inventory.getStorage("models/props_c17/lockers001a.mdl")
+        local storageData = lia.inventory.getStorage("models/props_c17/lockers001a.mdl")
     if storageData then
         print("Storage name:", storageData.name)
     end
@@ -850,7 +850,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Get storage with comprehensive validation and processing
+        -- High: Get storage with comprehensive validation and processing
     local function getStorageConfiguration(model)
         if not model or not isstring(model) then
             lia.warning("Invalid model provided to getStorageConfiguration: " .. tostring(model))
@@ -915,7 +915,7 @@ if SERVER then
     Medium Complexity:
 
     ```lua
-    -- Medium: Register trunk with custom configuration
+        -- Medium: Register trunk with custom configuration
     local trunkData = {
         name = "Police Car Trunk",
         invType = "police_trunk",
@@ -927,13 +927,13 @@ if SERVER then
             allowedItems = {"weapons", "evidence"}
         }
     }
-    lia.inventory.registerTrunk("prop_vehicle_police", trunkData)
+        lia.inventory.registerTrunk("prop_vehicle_police", trunkData)
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Register multiple vehicle trunks with validation
+        -- High: Register multiple vehicle trunks with validation
     local function registerVehicleTrunks()
         local vehicles = {
             {
@@ -1002,7 +1002,7 @@ if SERVER then
 
     ```lua
     -- Simple: Get trunk data for a vehicle
-    local trunkData = lia.inventory.getTrunk("prop_vehicle_jeep")
+        local trunkData = lia.inventory.getTrunk("prop_vehicle_jeep")
     if trunkData then
         print("Trunk name:", trunkData.name)
     end
@@ -1033,8 +1033,8 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Get trunk with comprehensive validation and processing
-    local function getVehicleTrunkConfiguration(vehicleClass)
+        -- High: Get trunk with comprehensive validation and processing
+        local function getVehicleTrunkConfiguration(vehicleClass)
         if not vehicleClass or not isstring(vehicleClass) then
             lia.warning("Invalid vehicle class provided: " .. tostring(vehicleClass))
             return nil
@@ -1118,7 +1118,7 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Get trunks with comprehensive validation and categorization
+        -- High: Get trunks with comprehensive validation and categorization
     local function getCategorizedTrunks()
         local trunks = lia.inventory.getAllTrunks()
         local categorized = {
@@ -1217,8 +1217,8 @@ if SERVER then
     High Complexity:
 
     ```lua
-    -- High: Get storage with comprehensive categorization and validation
-    local function getCategorizedStorage(includeTrunks)
+        -- High: Get storage with comprehensive categorization and validation
+        local function getCategorizedStorage(includeTrunks)
         local allStorage = lia.inventory.getAllStorage(includeTrunks)
         local categorized = {
             containers = {},
@@ -1311,8 +1311,8 @@ else
     High Complexity:
 
     ```lua
-    -- High: Show inventory with comprehensive validation and error handling
-    local function showInventorySafely(inventory, parent)
+        -- High: Show inventory with comprehensive validation and error handling
+        local function showInventorySafely(inventory, parent)
         if not inventory or not inventory.id then
             lia.notify("Invalid inventory provided", "error")
             return nil

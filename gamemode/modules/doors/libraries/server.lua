@@ -5,14 +5,14 @@
 ]]
 --[[
     Overview:
-    The doors library server component provides comprehensive door management functionality including
-    preset configuration, database schema verification, and data cleanup operations. It handles
-    door data persistence, loading door configurations from presets, and maintaining database
-    integrity. The library manages door ownership, access permissions, faction and class restrictions,
-    and provides utilities for door data validation and corruption cleanup. It operates primarily
-    on the server side and integrates with the database system to persist door configurations
-    across server restarts. The library also handles door locking/unlocking mechanics and
-    provides hooks for custom door behavior integration.
+        The doors library server component provides comprehensive door management functionality including
+        preset configuration, database schema verification, and data cleanup operations. It handles
+        door data persistence, loading door configurations from presets, and maintaining database
+        integrity. The library manages door ownership, access permissions, faction and class restrictions,
+        and provides utilities for door data validation and corruption cleanup. It operates primarily
+        on the server side and integrates with the database system to persist door configurations
+        across server restarts. The library also handles door locking/unlocking mechanics and
+        provides hooks for custom door behavior integration.
 ]]
 function MODULE:PostLoadData()
     if lia.config.get("DoorsAlwaysDisabled", false) then
@@ -432,7 +432,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Complex preset with multiple doors and restrictions
+        -- High: Complex preset with multiple doors and restrictions
     local policeDoors = {
         [123] = {
             name = "Police Station Main",
@@ -455,7 +455,7 @@ end
             classes = {"detective", "chief", "officer"}
         }
     }
-    lia.doors.addPreset("rp_downtown_v4c_v2", policeDoors)
+        lia.doors.addPreset("rp_downtown_v4c_v2", policeDoors)
     ```
 ]]
 function lia.doors.addPreset(mapName, presetData)
@@ -558,7 +558,7 @@ end
 
     ```lua
     -- Medium: Verify schema with custom handling
-    hook.Add("InitPostEntity", "VerifyDoorSchema", function()
+        hook.Add("InitPostEntity", "VerifyDoorSchema", function()
         timer.Simple(5, function()
             lia.doors.verifyDatabaseSchema()
         end)
@@ -682,7 +682,7 @@ end
 
     ```lua
     -- Medium: Schedule cleanup with delay
-    hook.Add("InitPostEntity", "CleanupDoorData", function()
+        hook.Add("InitPostEntity", "CleanupDoorData", function()
         timer.Simple(2, function()
             lia.doors.cleanupCorruptedData()
         end)
@@ -692,7 +692,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Custom cleanup with logging and validation
+        -- High: Custom cleanup with logging and validation
     function advancedDoorCleanup()
         lia.information("Starting door data cleanup...")
 

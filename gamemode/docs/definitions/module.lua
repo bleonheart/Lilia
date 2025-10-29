@@ -27,7 +27,7 @@
 ]]
 --[[
     Overview:
-    The module system provides comprehensive functionality for defining modules within the Lilia framework. Modules represent self-contained systems that add specific functionality to the gamemode, each with unique properties, behaviors, and configuration options. The system supports both server-side logic for gameplay mechanics and client-side properties for user interface and experience. Modules are defined using the MODULE table structure, which includes properties for identification, metadata, dependencies, privileges, and configuration. The system includes callback methods that are automatically invoked during key module lifecycle events, enabling dynamic behavior and customization. Modules can have dependencies, privileges, network strings, and various configuration options, providing a flexible foundation for modular systems.
+        The module system provides comprehensive functionality for defining modules within the Lilia framework. Modules represent self-contained systems that add specific functionality to the gamemode, each with unique properties, behaviors, and configuration options. The system supports both server-side logic for gameplay mechanics and client-side properties for user interface and experience. Modules are defined using the MODULE table structure, which includes properties for identification, metadata, dependencies, privileges, and configuration. The system includes callback methods that are automatically invoked during key module lifecycle events, enabling dynamic behavior and customization. Modules can have dependencies, privileges, network strings, and various configuration options, providing a flexible foundation for modular systems.
 ]]
 --[[
     MODULE.name
@@ -101,7 +101,7 @@ MODULE.versionID = ""
         Unique identifier for the module (INTERNAL - set automatically when loaded)
     When Called:
         Set automatically during module loading
-    Note: This property is internal and should not be modified directly
+        Note: This property is internal and should not be modified directly
     Example Usage:
         ```lua
         -- This is set automatically when the module is loaded from its folder name
@@ -205,28 +205,28 @@ MODULE.enabled = true
     MODULE.folder
     Purpose:
         Sets the folder path for the module
-    Internal Variable: This is set automatically by the module system
+        Internal Variable: This is set automatically by the module system
 ]]
 MODULE.folder = ""
 --[[
     MODULE.path
     Purpose:
         Sets the file path for the module
-    Internal Variable: This is set automatically by the module system
+        Internal Variable: This is set automatically by the module system
 ]]
 MODULE.path = ""
 --[[
     MODULE.variable
     Purpose:
         Sets the variable name for the module
-    Internal Variable: This is set automatically by the module system
+        Internal Variable: This is set automatically by the module system
 ]]
 MODULE.variable = ""
 --[[
     MODULE.loading
     Purpose:
         Sets whether the module is currently loading
-    Internal Variable: This is set automatically by the module system
+        Internal Variable: This is set automatically by the module system
 ]]
 MODULE.loading = false
 --[[

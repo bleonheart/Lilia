@@ -5,7 +5,7 @@
 ]]
 --[[
     Overview:
-    The data library provides comprehensive functionality for data persistence, serialization, and management within the Lilia framework. It handles encoding and decoding of complex data types including vectors, angles, colors, and nested tables for database storage. The library manages both general data storage with gamemode and map-specific scoping, as well as entity persistence for maintaining spawned entities across server restarts. It includes automatic serialization/deserialization, database integration, and caching mechanisms to ensure efficient data access and storage operations.
+        The data library provides comprehensive functionality for data persistence, serialization, and management within the Lilia framework. It handles encoding and decoding of complex data types including vectors, angles, colors, and nested tables for database storage. The library manages both general data storage with gamemode and map-specific scoping, as well as entity persistence for maintaining spawned entities across server restarts. It includes automatic serialization/deserialization, database integration, and caching mechanisms to ensure efficient data access and storage operations.
 ]]
 lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
@@ -26,7 +26,7 @@ lia.data.stored = lia.data.stored or {}
 
     ```lua
     -- Simple: Encode a vector
-    local encoded = lia.data.encodetable(Vector(100, 200, 300))
+        local encoded = lia.data.encodetable(Vector(100, 200, 300))
     -- Returns: {100, 200, 300}
     ```
 
@@ -50,7 +50,7 @@ lia.data.stored = lia.data.stored or {}
         settings = {enabled = true, count = 5}
     }
     local encoded = lia.data.encodetable(complexData)
-    -- Returns: {position = {0, 0, 0}, rotation = {0, 90, 0}, color = {255, 0, 0, 255}, settings = {enabled = true, count = 5}}
+        -- Returns: {position = {0, 0, 0}, rotation = {0, 90, 0}, color = {255, 0, 0, 255}, settings = {enabled = true, count = 5}}
     ```
 ]]
 function lia.data.encodetable(value)
@@ -248,7 +248,7 @@ end
         settings = {enabled = true, count = 5}
     }
     local decoded = lia.data.decode(encodedData)
-    -- Returns: {position = Vector(100, 200, 300), rotation = Angle(0, 90, 0), color = Color(255, 0, 0, 255), settings = {enabled = true, count = 5}}
+        -- Returns: {position = Vector(100, 200, 300), rotation = Angle(0, 90, 0), color = Color(255, 0, 0, 255), settings = {enabled = true, count = 5}}
     ```
 ]]
 function lia.data.decode(value)
@@ -272,7 +272,7 @@ end
 
     ```lua
     -- Simple: Serialize a basic table
-    local serialized = lia.data.serialize({name = "test", value = 42})
+        local serialized = lia.data.serialize({name = "test", value = 42})
     -- Returns: '{"name":"test","value":42}'
     ```
 
@@ -280,14 +280,14 @@ end
 
     ```lua
     -- Medium: Serialize a vector
-    local serialized = lia.data.serialize(Vector(100, 200, 300))
+        local serialized = lia.data.serialize(Vector(100, 200, 300))
     -- Returns: '{"value":[100,200,300]}'
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Serialize complex nested data with mixed types
+        -- High: Serialize complex nested data with mixed types
     local complexData = {
         position = Vector(0, 0, 0),
         rotation = Angle(0, 90, 0),
@@ -295,7 +295,7 @@ end
         settings = {enabled = true, count = 5}
     }
     local serialized = lia.data.serialize(complexData)
-    -- Returns: JSON string with all data properly encoded
+        -- Returns: JSON string with all data properly encoded
     ```
 ]]
 function lia.data.serialize(value)
@@ -325,7 +325,7 @@ end
 
     ```lua
     -- Simple: Deserialize a JSON string
-    local deserialized = lia.data.deserialize('{"name":"test","value":42}')
+        local deserialized = lia.data.deserialize('{"name":"test","value":42}')
     -- Returns: {name = "test", value = 42}
     ```
 
@@ -334,17 +334,17 @@ end
     ```lua
     -- Medium: Deserialize encoded vector data
     local jsonData = '{"value":[100,200,300]}'
-    local deserialized = lia.data.deserialize(jsonData)
+        local deserialized = lia.data.deserialize(jsonData)
     -- Returns: Vector(100, 200, 300)
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Deserialize complex data with fallback handling
-    local complexJson = '{"position":[0,0,0],"rotation":[0,90,0],"color":[255,0,0,255],"settings":{"enabled":true,"count":5}}'
-    local deserialized = lia.data.deserialize(complexJson)
-    -- Returns: {position = Vector(0, 0, 0), rotation = Angle(0, 90, 0), color = Color(255, 0, 0, 255), settings = {enabled = true, count = 5}}
+        -- High: Deserialize complex data with fallback handling
+        local complexJson = '{"position":[0,0,0],"rotation":[0,90,0],"color":[255,0,0,255],"settings":{"enabled":true,"count":5}}'
+        local deserialized = lia.data.deserialize(complexJson)
+        -- Returns: {position = Vector(0, 0, 0), rotation = Angle(0, 90, 0), color = Color(255, 0, 0, 255), settings = {enabled = true, count = 5}}
     ```
 ]]
 function lia.data.deserialize(raw)
@@ -384,7 +384,7 @@ end
 
     ```lua
     -- Simple: Decode vector from array format
-    local vector = lia.data.decodeVector({100, 200, 300})
+        local vector = lia.data.decodeVector({100, 200, 300})
     -- Returns: Vector(100, 200, 300)
     ```
 
@@ -400,10 +400,10 @@ end
     High Complexity:
 
     ```lua
-    -- High: Decode vector with multiple format fallbacks
+        -- High: Decode vector with multiple format fallbacks
     local vectorData = "Vector(100, 200, 300)"
     local vector = lia.data.decodeVector(vectorData)
-    -- Returns: Vector(100, 200, 300) - handles string parsing
+        -- Returns: Vector(100, 200, 300) - handles string parsing
     ```
 ]]
 function lia.data.decodeVector(raw)
@@ -458,10 +458,10 @@ end
     High Complexity:
 
     ```lua
-    -- High: Decode angle with multiple format fallbacks
+        -- High: Decode angle with multiple format fallbacks
     local angleData = "Angle(0, 90, 0)"
     local angle = lia.data.decodeAngle(angleData)
-    -- Returns: Angle(0, 90, 0) - handles string parsing
+        -- Returns: Angle(0, 90, 0) - handles string parsing
     ```
 ]]
 function lia.data.decodeAngle(raw)
@@ -505,7 +505,7 @@ end
     Low Complexity:
 
     ```lua
-    -- Simple: Store basic data for current gamemode and map
+        -- Simple: Store basic data for current gamemode and map
     lia.data.set("playerCount", 25)
     -- Stores data scoped to current gamemode and map
     ```
@@ -513,9 +513,9 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Store data globally across all gamemodes and maps
+        -- Medium: Store data globally across all gamemodes and maps
     lia.data.set("serverVersion", "1.0.0", true)
-    -- Stores data globally, accessible from any gamemode/map
+        -- Stores data globally, accessible from any gamemode/map
     ```
 
     High Complexity:
@@ -527,8 +527,8 @@ end
         inventory = {weapon = "pistol", ammo = 50},
         settings = {volume = 0.8, graphics = "high"}
     }
-    lia.data.set("player_" .. player:SteamID64(), playerData, false, true)
-    -- Stores player data for current gamemode but all maps
+        lia.data.set("player_" .. player:SteamID64(), playerData, false, true)
+        -- Stores player data for current gamemode but all maps
     ```
 ]]
 function lia.data.set(key, value, global, ignoreMap)
@@ -574,7 +574,7 @@ end
     Low Complexity:
 
     ```lua
-    -- Simple: Delete data for current gamemode and map
+        -- Simple: Delete data for current gamemode and map
     lia.data.delete("playerCount")
     -- Removes data scoped to current gamemode and map
     ```
@@ -582,7 +582,7 @@ end
     Medium Complexity:
 
     ```lua
-    -- Medium: Delete data globally across all gamemodes and maps
+        -- Medium: Delete data globally across all gamemodes and maps
     lia.data.delete("serverVersion", true)
     -- Removes data from global scope
     ```
@@ -593,7 +593,7 @@ end
     -- High: Delete player data with custom scoping
     local playerID = "player_" .. player:SteamID64()
     lia.data.delete(playerID, false, true)
-    -- Removes player data for current gamemode but all maps
+        -- Removes player data for current gamemode but all maps
     ```
 ]]
 function lia.data.delete(key, global, ignoreMap)
@@ -654,10 +654,10 @@ end
     High Complexity:
 
     ```lua
-    -- High: Load data with validation and error handling
+        -- High: Load data with validation and error handling
     lia.data.loadTables()
-    -- Data is loaded hierarchically: global -> gamemode -> map-specific
-    -- Later data overrides earlier data (map overrides gamemode overrides global)
+        -- Data is loaded hierarchically: global -> gamemode -> map-specific
+        -- Later data overrides earlier data (map overrides gamemode overrides global)
     ```
 ]]
 function lia.data.loadTables()
@@ -729,7 +729,7 @@ end
     ```lua
     -- Simple: Load persistence schema
     lia.data.loadPersistence()
-    -- Ensures all required columns exist in persistence table
+        -- Ensures all required columns exist in persistence table
     ```
 
     Medium Complexity:
@@ -746,7 +746,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Load persistence as part of initialization sequence
+        -- High: Load persistence as part of initialization sequence
     lia.data.loadPersistence():next(function()
         return lia.data.loadPersistenceData(function(entities)
             -- Process loaded entities
@@ -804,7 +804,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Save complex entities with dynamic properties
+        -- High: Save complex entities with dynamic properties
     local entities = {}
     for _, ent in ipairs(ents.GetAll()) do
         if ent:GetClass() == "lia_item" then
@@ -906,7 +906,7 @@ end
     High Complexity:
 
     ```lua
-    -- High: Load persistence data with entity spawning
+        -- High: Load persistence data with entity spawning
     lia.data.loadPersistenceData(function(entities)
         for _, entData in ipairs(entities) do
             local ent = ents.Create(entData.class)
@@ -977,18 +977,18 @@ end
 
     ```lua
     -- Medium: Get data with default fallback
-    local serverSettings = lia.data.get("serverSettings", {
+        local serverSettings = lia.data.get("serverSettings", {
         maxPlayers = 32,
         mapRotation = {"gm_flatgrass", "gm_construct"}
     })
-    -- Returns stored settings or default configuration
+        -- Returns stored settings or default configuration
     ```
 
     High Complexity:
 
     ```lua
     -- High: Get complex data with validation
-    local playerData = lia.data.get("player_" .. player:SteamID64(), {})
+        local playerData = lia.data.get("player_" .. player:SteamID64(), {})
     if playerData.position then
         player:SetPos(playerData.position)
     end

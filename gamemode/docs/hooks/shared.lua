@@ -6,7 +6,7 @@
 ]]
 --[[
     Overview:
-    Shared hooks in the Lilia framework handle functionality available on both client and server, typically for data synchronization, shared utilities, and cross-realm features. They follow the Garry's Mod hook system and can be overridden or extended by addons and modules.
+        Shared hooks in the Lilia framework handle functionality available on both client and server, typically for data synchronization, shared utilities, and cross-realm features. They follow the Garry's Mod hook system and can be overridden or extended by addons and modules.
 ]]
 --[[
     Purpose:
@@ -26,7 +26,7 @@
 
     ```lua
     -- Simple: Increase stamina regeneration
-    hook.Add("AdjustStaminaOffset", "MyAddon", function(client, offset)
+        hook.Add("AdjustStaminaOffset", "MyAddon", function(client, offset)
         if offset > 0 then -- Only modify regeneration, not drain
             return offset * 1.5 -- 50% faster regeneration
         end
@@ -36,8 +36,8 @@
     Medium Complexity:
 
     ```lua
-    -- Medium: Modify stamina based on character attributes
-    hook.Add("AdjustStaminaOffset", "AttributeStamina", function(client, offset)
+        -- Medium: Modify stamina based on character attributes
+        hook.Add("AdjustStaminaOffset", "AttributeStamina", function(client, offset)
         local char = client:getChar()
         if not char then return end
 
@@ -53,8 +53,8 @@
     High Complexity:
 
     ```lua
-    -- High: Complex stamina system with multiple factors
-    hook.Add("AdjustStaminaOffset", "AdvancedStamina", function(client, offset)
+        -- High: Complex stamina system with multiple factors
+        hook.Add("AdjustStaminaOffset", "AdvancedStamina", function(client, offset)
         local char = client:getChar()
         if not char then return end
 
@@ -117,7 +117,7 @@ end
 
     ```lua
     -- Simple: Always allow
-    hook.Add("CanOutfitChangeModel", "MyAddon", function(self)
+        hook.Add("CanOutfitChangeModel", "MyAddon", function(self)
         return true
     end)
     ```
@@ -126,7 +126,7 @@ end
 
     ```lua
     -- Medium: Check faction restrictions
-    hook.Add("CanOutfitChangeModel", "OutfitModelCheck", function(self)
+        hook.Add("CanOutfitChangeModel", "OutfitModelCheck", function(self)
         local client = self.player
         if not client then return false end
 
@@ -146,7 +146,7 @@ end
 
     ```lua
     -- High: Complex outfit model system
-    hook.Add("CanOutfitChangeModel", "AdvancedOutfitModel", function(self)
+        hook.Add("CanOutfitChangeModel", "AdvancedOutfitModel", function(self)
         local client = self.player
         if not client then return false end
 
@@ -197,7 +197,7 @@ end
 
     ```lua
     -- Simple: Log command additions
-    hook.Add("CommandAdded", "MyAddon", function(command, data)
+        hook.Add("CommandAdded", "MyAddon", function(command, data)
         print("Command added: " .. command)
     end)
     ```
@@ -206,7 +206,7 @@ end
 
     ```lua
     -- Medium: Track registered commands
-    hook.Add("CommandAdded", "CommandTracking", function(command, data)
+        hook.Add("CommandAdded", "CommandTracking", function(command, data)
         lia.commandList = lia.commandList or {}
         table.insert(lia.commandList, command)
         print("Command " .. command .. " registered")
@@ -217,7 +217,7 @@ end
 
     ```lua
     -- High: Complex command registration tracking
-    hook.Add("CommandAdded", "AdvancedCommandTracking", function(command, data)
+        hook.Add("CommandAdded", "AdvancedCommandTracking", function(command, data)
         -- Track command registration
         lia.commandList = lia.commandList or {}
         table.insert(lia.commandList, {
@@ -255,7 +255,7 @@ end
 
     ```lua
     -- Simple: Log module includes
-    hook.Add("DoModuleIncludes", "MyAddon", function(path, MODULE)
+        hook.Add("DoModuleIncludes", "MyAddon", function(path, MODULE)
         print("Including: " .. path)
     end)
     ```
@@ -264,7 +264,7 @@ end
 
     ```lua
     -- Medium: Track module load times
-    hook.Add("DoModuleIncludes", "ModuleLoadTime", function(path, MODULE)
+        hook.Add("DoModuleIncludes", "ModuleLoadTime", function(path, MODULE)
         local startTime = SysTime()
 
         timer.Simple(0, function()
@@ -278,7 +278,7 @@ end
 
     ```lua
     -- High: Complex module loading system
-    hook.Add("DoModuleIncludes", "AdvancedModuleLoading", function(path, MODULE)
+        hook.Add("DoModuleIncludes", "AdvancedModuleLoading", function(path, MODULE)
         local startTime = SysTime()
 
         -- Log module loading
@@ -323,7 +323,7 @@ end
 
     ```lua
     -- Simple: Return unchanged
-    hook.Add("GetDisplayedDescription", "MyAddon", function(ply, description)
+        hook.Add("GetDisplayedDescription", "MyAddon", function(ply, description)
         return description
     end)
     ```
@@ -332,7 +332,7 @@ end
 
     ```lua
     -- Medium: Add faction prefix
-    hook.Add("GetDisplayedDescription", "FactionDescPrefix", function(ply, description)
+        hook.Add("GetDisplayedDescription", "FactionDescPrefix", function(ply, description)
         local char = ply:getChar()
         if char then
             local faction = char:getFaction()
@@ -347,7 +347,7 @@ end
 
     ```lua
     -- High: Complex description formatting
-    hook.Add("GetDisplayedDescription", "AdvancedDescDisplay", function(ply, description)
+        hook.Add("GetDisplayedDescription", "AdvancedDescDisplay", function(ply, description)
         local char = ply:getChar()
         if not char then return description end
 
@@ -392,7 +392,7 @@ end
 
     ```lua
     -- Simple: Return character name
-    hook.Add("GetDisplayedName", "MyAddon", function(speaker, chatType)
+        hook.Add("GetDisplayedName", "MyAddon", function(speaker, chatType)
         local char = speaker:getChar()
         return char and char:getName() or speaker:Name()
     end)
@@ -402,7 +402,7 @@ end
 
     ```lua
     -- Medium: Chat type-specific names
-    hook.Add("GetDisplayedName", "ChatTypeNames", function(speaker, chatType)
+        hook.Add("GetDisplayedName", "ChatTypeNames", function(speaker, chatType)
         local char = speaker:getChar()
         if not char then return speaker:Name() end
 
@@ -418,7 +418,7 @@ end
 
     ```lua
     -- High: Complex name display system
-    hook.Add("GetDisplayedName", "AdvancedNameDisplay", function(speaker, chatType)
+        hook.Add("GetDisplayedName", "AdvancedNameDisplay", function(speaker, chatType)
         local char = speaker:getChar()
         if not char then return speaker:Name() end
 
@@ -470,7 +470,7 @@ end
 
     ```lua
     -- Simple: Return unchanged
-    hook.Add("GetDoorInfo", "MyAddon", function(entity, doorData, doorInfo)
+        hook.Add("GetDoorInfo", "MyAddon", function(entity, doorData, doorInfo)
         return doorInfo
     end)
     ```
@@ -479,7 +479,7 @@ end
 
     ```lua
     -- Medium: Add custom door info
-    hook.Add("GetDoorInfo", "CustomDoorInfo", function(entity, doorData, doorInfo)
+        hook.Add("GetDoorInfo", "CustomDoorInfo", function(entity, doorData, doorInfo)
         doorInfo.customField = "Custom Value"
         doorInfo.price = entity:getNetVar("price", 0)
 
@@ -491,7 +491,7 @@ end
 
     ```lua
     -- High: Complex door info system
-    hook.Add("GetDoorInfo", "AdvancedDoorInfo", function(entity, doorData, doorInfo)
+        hook.Add("GetDoorInfo", "AdvancedDoorInfo", function(entity, doorData, doorInfo)
         -- Add basic info
         doorInfo.price = entity:getNetVar("price", 0)
         doorInfo.title = entity:getNetVar("title", "Door")
@@ -537,7 +537,7 @@ end
 
     ```lua
     -- Simple: Return default gender
-    hook.Add("GetModelGender", "MyAddon", function(model)
+        hook.Add("GetModelGender", "MyAddon", function(model)
         return "male"
     end)
     ```
@@ -546,7 +546,7 @@ end
 
     ```lua
     -- Medium: Check model path
-    hook.Add("GetModelGender", "ModelGenderCheck", function(model)
+        hook.Add("GetModelGender", "ModelGenderCheck", function(model)
         if string.find(model, "female") then
             return "female"
         end
@@ -559,7 +559,7 @@ end
 
     ```lua
     -- High: Complex gender detection
-    hook.Add("GetModelGender", "AdvancedGenderDetection", function(model)
+        hook.Add("GetModelGender", "AdvancedGenderDetection", function(model)
         -- Check for female keywords
         local femaleKeywords = {"female", "woman", "girl", "alyx"}
         for _, keyword in ipairs(femaleKeywords) do
@@ -602,7 +602,7 @@ end
 
     ```lua
     -- Simple: Log config initialization
-    hook.Add("InitializedConfig", "MyAddon", function()
+        hook.Add("InitializedConfig", "MyAddon", function()
         print("Configuration initialized")
     end)
     ```
@@ -611,7 +611,7 @@ end
 
     ```lua
     -- Medium: Set up custom config values
-    hook.Add("InitializedConfig", "CustomConfig", function()
+        hook.Add("InitializedConfig", "CustomConfig", function()
         lia.config.add("myAddonEnabled", true, "Enable My Addon")
         lia.config.add("myAddonValue", 100, "My Addon Value")
     end)
@@ -621,7 +621,7 @@ end
 
     ```lua
     -- High: Complex configuration initialization
-    hook.Add("InitializedConfig", "AdvancedConfigInit", function()
+        hook.Add("InitializedConfig", "AdvancedConfigInit", function()
         -- Add custom configuration options
         local configOptions = {
             {key = "myAddonEnabled", default = true, description = "Enable My Addon", type = "boolean"},
@@ -678,7 +678,7 @@ end
 
     ```lua
     -- Medium: Register custom items
-    hook.Add("InitializedItems", "CustomItems", function()
+        hook.Add("InitializedItems", "CustomItems", function()
         lia.item.register("my_custom_item", {
             name = "My Custom Item",
             model = "models/props_junk/cardboard_box004a.mdl",
@@ -691,7 +691,7 @@ end
 
     ```lua
     -- High: Complex item initialization system
-    hook.Add("InitializedItems", "AdvancedItemInit", function()
+        hook.Add("InitializedItems", "AdvancedItemInit", function()
         -- Register custom item categories
         local categories = {
             "weapons",
@@ -760,7 +760,7 @@ end
 
     ```lua
     -- Simple: Log module initialization
-    hook.Add("InitializedModules", "MyAddon", function()
+        hook.Add("InitializedModules", "MyAddon", function()
         print("Modules initialized")
     end)
     ```
@@ -769,7 +769,7 @@ end
 
     ```lua
     -- Medium: Register custom modules
-    hook.Add("InitializedModules", "CustomModules", function()
+        hook.Add("InitializedModules", "CustomModules", function()
         lia.module.register("my_module", {
             name = "My Module",
             description = "A custom module",
@@ -783,7 +783,7 @@ end
 
     ```lua
     -- High: Complex module initialization system
-    hook.Add("InitializedModules", "AdvancedModuleInit", function()
+        hook.Add("InitializedModules", "AdvancedModuleInit", function()
         -- Register custom modules
         local modules = {
             {
@@ -847,7 +847,7 @@ end
 
     ```lua
     -- Simple: Log schema initialization
-    hook.Add("InitializedSchema", "MyAddon", function()
+        hook.Add("InitializedSchema", "MyAddon", function()
         print("Schema initialized")
     end)
     ```
@@ -856,7 +856,7 @@ end
 
     ```lua
     -- Medium: Set up custom schema data
-    hook.Add("InitializedSchema", "CustomSchema", function()
+        hook.Add("InitializedSchema", "CustomSchema", function()
         lia.schema.set("myAddonVersion", "1.0.0")
         lia.schema.set("myAddonEnabled", true)
     end)
@@ -866,7 +866,7 @@ end
 
     ```lua
     -- High: Complex schema initialization system
-    hook.Add("InitializedSchema", "AdvancedSchemaInit", function()
+        hook.Add("InitializedSchema", "AdvancedSchemaInit", function()
         -- Set up custom schema data
         local schemaData = {
             version = "1.0.0",
@@ -927,7 +927,7 @@ end
 
     ```lua
     -- Simple: Log data changes
-    hook.Add("InventoryDataChanged", "MyAddon", function(instance, key, oldValue, value)
+        hook.Add("InventoryDataChanged", "MyAddon", function(instance, key, oldValue, value)
         print("Inventory data changed: " .. key .. " = " .. tostring(value))
     end)
     ```
@@ -936,7 +936,7 @@ end
 
     ```lua
     -- Medium: Track specific data changes
-    hook.Add("InventoryDataChanged", "TrackInventoryChanges", function(instance, key, oldValue, value)
+        hook.Add("InventoryDataChanged", "TrackInventoryChanges", function(instance, key, oldValue, value)
         if key == "weight" then
             print("Inventory weight changed from " .. oldValue .. " to " .. value)
         elseif key == "maxWeight" then
@@ -949,7 +949,7 @@ end
 
     ```lua
     -- High: Complex inventory data tracking
-    hook.Add("InventoryDataChanged", "AdvancedInventoryTracking", function(instance, key, oldValue, value)
+        hook.Add("InventoryDataChanged", "AdvancedInventoryTracking", function(instance, key, oldValue, value)
         if SERVER then
             -- Log to database
             lia.db.query("INSERT INTO inventory_logs (timestamp, invid, key, oldvalue, newvalue) VALUES (?, ?, ?, ?, ?)",
@@ -998,7 +998,7 @@ end
 
     ```lua
     -- Simple: Log inventory initialization
-    hook.Add("InventoryInitialized", "MyAddon", function(instance)
+        hook.Add("InventoryInitialized", "MyAddon", function(instance)
         print("Inventory initialized: " .. instance:getID())
     end)
     ```
@@ -1007,7 +1007,7 @@ end
 
     ```lua
     -- Medium: Set default inventory data
-    hook.Add("InventoryInitialized", "SetDefaultInventoryData", function(instance)
+        hook.Add("InventoryInitialized", "SetDefaultInventoryData", function(instance)
         instance:setData("weight", 0)
         instance:setData("maxWeight", 100)
         instance:setData("created", os.time())
@@ -1018,7 +1018,7 @@ end
 
     ```lua
     -- High: Complex inventory initialization
-    hook.Add("InventoryInitialized", "AdvancedInventoryInit", function(instance)
+        hook.Add("InventoryInitialized", "AdvancedInventoryInit", function(instance)
         -- Set default data
         instance:setData("weight", 0)
         instance:setData("maxWeight", 100)
@@ -1084,7 +1084,7 @@ end
 
     ```lua
     -- Simple: Log item data changes
-    hook.Add("InventoryItemDataChanged", "MyAddon", function(item, key, oldValue, newValue, inventory)
+        hook.Add("InventoryItemDataChanged", "MyAddon", function(item, key, oldValue, newValue, inventory)
         print("Item data changed: " .. key .. " = " .. tostring(newValue))
     end)
     ```
@@ -1093,7 +1093,7 @@ end
 
     ```lua
     -- Medium: Track durability changes
-    hook.Add("InventoryItemDataChanged", "TrackDurability", function(item, key, oldValue, newValue, inventory)
+        hook.Add("InventoryItemDataChanged", "TrackDurability", function(item, key, oldValue, newValue, inventory)
         if key == "durability" then
             if newValue <= 0 then
                 print("Item " .. item.name .. " is broken!")
@@ -1108,7 +1108,7 @@ end
 
     ```lua
     -- High: Complex item data tracking
-    hook.Add("InventoryItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue, inventory)
+        hook.Add("InventoryItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue, inventory)
         if SERVER then
             -- Log to database
             lia.db.query("INSERT INTO item_data_logs (timestamp, itemid, key, oldvalue, newvalue) VALUES (?, ?, ?, ?, ?)",
@@ -1170,7 +1170,7 @@ end
 
     ```lua
     -- Simple: Always return false
-    hook.Add("IsCharFakeRecognized", "MyAddon", function(self, id)
+        hook.Add("IsCharFakeRecognized", "MyAddon", function(self, id)
         return false
     end)
     ```
@@ -1179,7 +1179,7 @@ end
 
     ```lua
     -- Medium: Check fake recognition list
-    hook.Add("IsCharFakeRecognized", "FakeRecognitionCheck", function(self, id)
+        hook.Add("IsCharFakeRecognized", "FakeRecognitionCheck", function(self, id)
         local fakeRecognized = self:getData("fakeRecognized", {})
         return table.HasValue(fakeRecognized, id)
     end)
@@ -1189,7 +1189,7 @@ end
 
     ```lua
     -- High: Complex fake recognition system
-    hook.Add("IsCharFakeRecognized", "AdvancedFakeRecognition", function(self, id)
+        hook.Add("IsCharFakeRecognized", "AdvancedFakeRecognition", function(self, id)
         local fakeRecognized = self:getData("fakeRecognized", {})
 
         -- Check if in fake recognition list
@@ -1230,7 +1230,7 @@ end
 
     ```lua
     -- Simple: Check recognition list
-    hook.Add("IsCharRecognized", "MyAddon", function(self, id)
+        hook.Add("IsCharRecognized", "MyAddon", function(self, id)
         local recognized = self:getData("recognized", {})
         return table.HasValue(recognized, id)
     end)
@@ -1240,7 +1240,7 @@ end
 
     ```lua
     -- Medium: Check recognition with faction bonus
-    hook.Add("IsCharRecognized", "FactionRecognition", function(self, id)
+        hook.Add("IsCharRecognized", "FactionRecognition", function(self, id)
         local recognized = self:getData("recognized", {})
         if table.HasValue(recognized, id) then
             return true
@@ -1260,7 +1260,7 @@ end
 
     ```lua
     -- High: Complex recognition system
-    hook.Add("IsCharRecognized", "AdvancedRecognition", function(self, id)
+        hook.Add("IsCharRecognized", "AdvancedRecognition", function(self, id)
         local recognized = self:getData("recognized", {})
         if table.HasValue(recognized, id) then
             return true
@@ -1315,7 +1315,7 @@ end
 
     ```lua
     -- Simple: Only IC chat requires recognition
-    hook.Add("IsRecognizedChatType", "MyAddon", function(chatType)
+        hook.Add("IsRecognizedChatType", "MyAddon", function(chatType)
         return chatType == "ic"
     end)
     ```
@@ -1324,7 +1324,7 @@ end
 
     ```lua
     -- Medium: Multiple chat types require recognition
-    hook.Add("IsRecognizedChatType", "RecognizedChatTypes", function(chatType)
+        hook.Add("IsRecognizedChatType", "RecognizedChatTypes", function(chatType)
         local recognizedTypes = {"ic", "w", "y"}
         return table.HasValue(recognizedTypes, chatType)
     end)
@@ -1334,7 +1334,7 @@ end
 
     ```lua
     -- High: Complex recognition requirements
-    hook.Add("IsRecognizedChatType", "AdvancedChatRecognition", function(chatType)
+        hook.Add("IsRecognizedChatType", "AdvancedChatRecognition", function(chatType)
         -- OOC and admin chats never require recognition
         local noRecognitionTypes = {"ooc", "looc", "admin"}
         if table.HasValue(noRecognitionTypes, chatType) then
@@ -1397,7 +1397,7 @@ end
 
     ```lua
     -- High: Complex validation
-    hook.Add("IsValid", "AdvancedValidation", function()
+        hook.Add("IsValid", "AdvancedValidation", function()
         -- This hook is typically not used directly
         -- IsValid() is a built-in GMod function
         -- Custom validation logic would go here
@@ -1428,7 +1428,7 @@ end
 
     ```lua
     -- Simple: Log item data changes
-    hook.Add("ItemDataChanged", "MyAddon", function(item, key, oldValue, newValue)
+        hook.Add("ItemDataChanged", "MyAddon", function(item, key, oldValue, newValue)
         print("Item data changed: " .. key .. " = " .. tostring(newValue))
     end)
     ```
@@ -1437,7 +1437,7 @@ end
 
     ```lua
     -- Medium: Track durability changes
-    hook.Add("ItemDataChanged", "TrackItemDurability", function(item, key, oldValue, newValue)
+        hook.Add("ItemDataChanged", "TrackItemDurability", function(item, key, oldValue, newValue)
         if key == "durability" then
             if newValue <= 0 then
                 print("Item " .. item.name .. " is broken!")
@@ -1452,7 +1452,7 @@ end
 
     ```lua
     -- High: Complex item data tracking
-    hook.Add("ItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue)
+        hook.Add("ItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue)
         if SERVER then
             -- Log to database
             lia.db.query("INSERT INTO item_data_logs (timestamp, itemid, key, oldvalue, newvalue) VALUES (?, ?, ?, ?, ?)",
@@ -1520,7 +1520,7 @@ end
 
     ```lua
     -- Simple: Return basic functions
-    hook.Add("ItemDefaultFunctions", "MyAddon", function(item)
+        hook.Add("ItemDefaultFunctions", "MyAddon", function(item)
         return {
             use = {name = "Use", icon = "icon16/accept.png"},
             drop = {name = "Drop", icon = "icon16/bin.png"}
@@ -1532,7 +1532,7 @@ end
 
     ```lua
     -- Medium: Conditional functions
-    hook.Add("ItemDefaultFunctions", "ConditionalItemFunctions", function(item)
+        hook.Add("ItemDefaultFunctions", "ConditionalItemFunctions", function(item)
         local functions = {
             use = {name = "Use", icon = "icon16/accept.png"},
             drop = {name = "Drop", icon = "icon16/bin.png"}
@@ -1552,7 +1552,7 @@ end
 
     ```lua
     -- High: Complex function system
-    hook.Add("ItemDefaultFunctions", "AdvancedItemFunctions", function(item)
+        hook.Add("ItemDefaultFunctions", "AdvancedItemFunctions", function(item)
         local functions = {}
 
         -- Always add use function
@@ -1605,7 +1605,7 @@ end
 
     ```lua
     -- Simple: Log item initialization
-    hook.Add("ItemInitialized", "MyAddon", function(item)
+        hook.Add("ItemInitialized", "MyAddon", function(item)
         print("Item initialized: " .. item.name)
     end)
     ```
@@ -1614,7 +1614,7 @@ end
 
     ```lua
     -- Medium: Set default item data
-    hook.Add("ItemInitialized", "SetDefaultItemData", function(item)
+        hook.Add("ItemInitialized", "SetDefaultItemData", function(item)
         if not item:getData("durability") then
             item:setData("durability", 100)
         end
@@ -1628,7 +1628,7 @@ end
 
     ```lua
     -- High: Complex item initialization
-    hook.Add("ItemInitialized", "AdvancedItemInit", function(item)
+        hook.Add("ItemInitialized", "AdvancedItemInit", function(item)
         -- Set default data
         if not item:getData("durability") then
             item:setData("durability", 100)
@@ -1681,7 +1681,7 @@ end
 
     ```lua
     -- Simple: Log quantity changes
-    hook.Add("ItemQuantityChanged", "MyAddon", function(item, oldValue, quantity)
+        hook.Add("ItemQuantityChanged", "MyAddon", function(item, oldValue, quantity)
         print(item.name .. " quantity changed from " .. oldValue .. " to " .. quantity)
     end)
     ```
@@ -1690,7 +1690,7 @@ end
 
     ```lua
     -- Medium: Remove item if quantity is zero
-    hook.Add("ItemQuantityChanged", "RemoveEmptyItems", function(item, oldValue, quantity)
+        hook.Add("ItemQuantityChanged", "RemoveEmptyItems", function(item, oldValue, quantity)
         if quantity <= 0 then
             item:remove()
         end
@@ -1701,7 +1701,7 @@ end
 
     ```lua
     -- High: Complex quantity management
-    hook.Add("ItemQuantityChanged", "AdvancedQuantityManagement", function(item, oldValue, quantity)
+        hook.Add("ItemQuantityChanged", "AdvancedQuantityManagement", function(item, oldValue, quantity)
         if SERVER then
             -- Log to database
             lia.db.query("INSERT INTO item_quantity_logs (timestamp, itemid, oldquantity, newquantity) VALUES (?, ?, ?, ?)",
@@ -1772,7 +1772,7 @@ end
 
     ```lua
     -- Medium: Initialize addon systems
-    hook.Add("LiliaLoaded", "InitializeAddon", function()
+        hook.Add("LiliaLoaded", "InitializeAddon", function()
         MyAddon.Initialize()
         print("MyAddon initialized")
     end)
@@ -1782,7 +1782,7 @@ end
 
     ```lua
     -- High: Complex framework initialization
-    hook.Add("LiliaLoaded", "AdvancedFrameworkInit", function()
+        hook.Add("LiliaLoaded", "AdvancedFrameworkInit", function()
         -- Initialize custom systems
         MyAddon.Initialize()
 
@@ -1828,7 +1828,7 @@ end
 
     ```lua
     -- Simple: Log netvar changes
-    hook.Add("NetVarChanged", "MyAddon", function(entity, key, oldValue, value)
+        hook.Add("NetVarChanged", "MyAddon", function(entity, key, oldValue, value)
         print("NetVar changed: " .. key .. " = " .. tostring(value))
     end)
     ```
@@ -1837,7 +1837,7 @@ end
 
     ```lua
     -- Medium: Track specific netvars
-    hook.Add("NetVarChanged", "TrackNetvars", function(entity, key, oldValue, value)
+        hook.Add("NetVarChanged", "TrackNetvars", function(entity, key, oldValue, value)
         if key == "health" then
             print("Health changed from " .. oldValue .. " to " .. value)
         elseif key == "armor" then
@@ -1850,7 +1850,7 @@ end
 
     ```lua
     -- High: Complex netvar tracking system
-    hook.Add("NetVarChanged", "AdvancedNetvarTracking", function(entity, key, oldValue, value)
+        hook.Add("NetVarChanged", "AdvancedNetvarTracking", function(entity, key, oldValue, value)
         if not IsValid(entity) then return end
 
         -- Log to console
@@ -1895,7 +1895,7 @@ end
 
     ```lua
     -- Simple: Log item registration
-    hook.Add("OnItemRegistered", "MyAddon", function(ITEM)
+        hook.Add("OnItemRegistered", "MyAddon", function(ITEM)
         print("Item registered: " .. ITEM.name)
     end)
     ```
@@ -1904,7 +1904,7 @@ end
 
     ```lua
     -- Medium: Track registered items
-    hook.Add("OnItemRegistered", "TrackItems", function(ITEM)
+        hook.Add("OnItemRegistered", "TrackItems", function(ITEM)
         MyAddon.registeredItems = MyAddon.registeredItems or {}
         MyAddon.registeredItems[ITEM.uniqueID] = {
             name = ITEM.name,
@@ -1918,7 +1918,7 @@ end
 
     ```lua
     -- High: Complex item registration handling
-    hook.Add("OnItemRegistered", "AdvancedItemRegistration", function(ITEM)
+        hook.Add("OnItemRegistered", "AdvancedItemRegistration", function(ITEM)
         -- Log item registration
         lia.log.write("item_registered", {
             uniqueID = ITEM.uniqueID,
@@ -2031,7 +2031,7 @@ end
 
     ```lua
     -- Simple: Log module creation
-    hook.Add("OnModuleTableCreated", "MyAddon", function(moduleName, moduleTable)
+        hook.Add("OnModuleTableCreated", "MyAddon", function(moduleName, moduleTable)
         print("Module created: " .. moduleName)
     end)
     ```
@@ -2040,7 +2040,7 @@ end
 
     ```lua
     -- Medium: Track module creation
-    hook.Add("OnModuleTableCreated", "TrackModules", function(moduleName, moduleTable)
+        hook.Add("OnModuleTableCreated", "TrackModules", function(moduleName, moduleTable)
         MyAddon.modules = MyAddon.modules or {}
         MyAddon.modules[moduleName] = {
             name = moduleName,
@@ -2054,7 +2054,7 @@ end
 
     ```lua
     -- High: Complex module management
-    hook.Add("OnModuleTableCreated", "AdvancedModuleManagement", function(moduleName, moduleTable)
+        hook.Add("OnModuleTableCreated", "AdvancedModuleManagement", function(moduleName, moduleTable)
         -- Register module dependencies
         if moduleTable.dependencies then
             for _, dep in ipairs(moduleTable.dependencies) do
@@ -2093,7 +2093,7 @@ end
 
     ```lua
     -- Simple: Log module removal
-    hook.Add("OnModuleTableRemoved", "MyAddon", function(moduleName)
+        hook.Add("OnModuleTableRemoved", "MyAddon", function(moduleName)
         print("Module removed: " .. moduleName)
     end)
     ```
@@ -2102,7 +2102,7 @@ end
 
     ```lua
     -- Medium: Clean up module data
-    hook.Add("OnModuleTableRemoved", "CleanupModule", function(moduleName)
+        hook.Add("OnModuleTableRemoved", "CleanupModule", function(moduleName)
         if MyAddon.modules and MyAddon.modules[moduleName] then
             MyAddon.modules[moduleName] = nil
             print("Cleaned up data for module: " .. moduleName)
@@ -2114,7 +2114,7 @@ end
 
     ```lua
     -- High: Complex module cleanup
-    hook.Add("OnModuleTableRemoved", "AdvancedModuleCleanup", function(moduleName)
+        hook.Add("OnModuleTableRemoved", "AdvancedModuleCleanup", function(moduleName)
         -- Remove module hooks
         for hookName, hookTable in pairs(hook.GetTable()) do
             if hookTable[moduleName] then
@@ -2159,7 +2159,7 @@ end
 
     ```lua
     -- Simple: Log privilege registration
-    hook.Add("OnPrivilegeRegistered", "MyAddon", function(privilege, name, access, category)
+        hook.Add("OnPrivilegeRegistered", "MyAddon", function(privilege, name, access, category)
         print("Privilege registered: " .. name)
     end)
     ```
@@ -2168,7 +2168,7 @@ end
 
     ```lua
     -- Medium: Track privileges
-    hook.Add("OnPrivilegeRegistered", "TrackPrivileges", function(privilege, name, access, category)
+        hook.Add("OnPrivilegeRegistered", "TrackPrivileges", function(privilege, name, access, category)
         MyAddon.privileges = MyAddon.privileges or {}
         MyAddon.privileges[privilege] = {
             name = name,
@@ -2182,7 +2182,7 @@ end
 
     ```lua
     -- High: Complex privilege management
-    hook.Add("OnPrivilegeRegistered", "AdvancedPrivilegeManagement", function(privilege, name, access, category)
+        hook.Add("OnPrivilegeRegistered", "AdvancedPrivilegeManagement", function(privilege, name, access, category)
         -- Store privilege data
         if SERVER then
             lia.data.get("privileges", {}, function(data)
@@ -2226,7 +2226,7 @@ end
 
     ```lua
     -- Simple: Log privilege removal
-    hook.Add("OnPrivilegeUnregistered", "MyAddon", function(privilege, name)
+        hook.Add("OnPrivilegeUnregistered", "MyAddon", function(privilege, name)
         print("Privilege unregistered: " .. name)
     end)
     ```
@@ -2235,7 +2235,7 @@ end
 
     ```lua
     -- Medium: Clean up privilege data
-    hook.Add("OnPrivilegeUnregistered", "CleanupPrivilege", function(privilege, name)
+        hook.Add("OnPrivilegeUnregistered", "CleanupPrivilege", function(privilege, name)
         if MyAddon.privileges and MyAddon.privileges[privilege] then
             MyAddon.privileges[privilege] = nil
         end
@@ -2246,7 +2246,7 @@ end
 
     ```lua
     -- High: Complex privilege cleanup
-    hook.Add("OnPrivilegeUnregistered", "AdvancedPrivilegeCleanup", function(privilege, name)
+        hook.Add("OnPrivilegeUnregistered", "AdvancedPrivilegeCleanup", function(privilege, name)
         -- Remove privilege data
         if SERVER then
             lia.data.get("privileges", {}, function(data)
@@ -2285,7 +2285,7 @@ end
 
     ```lua
     -- Simple: Log quest item loading
-    hook.Add("OnQuestItemLoaded", "MyAddon", function(item)
+        hook.Add("OnQuestItemLoaded", "MyAddon", function(item)
         print("Quest item loaded: " .. item.name)
     end)
     ```
@@ -2294,7 +2294,7 @@ end
 
     ```lua
     -- Medium: Track quest items
-    hook.Add("OnQuestItemLoaded", "TrackQuestItems", function(item)
+        hook.Add("OnQuestItemLoaded", "TrackQuestItems", function(item)
         MyAddon.questItems = MyAddon.questItems or {}
         table.insert(MyAddon.questItems, {
             uniqueID = item.uniqueID,
@@ -2308,7 +2308,7 @@ end
 
     ```lua
     -- High: Complex quest item management
-    hook.Add("OnQuestItemLoaded", "AdvancedQuestItemManagement", function(item)
+        hook.Add("OnQuestItemLoaded", "AdvancedQuestItemManagement", function(item)
         -- Register quest item in quest system
         if item.questID then
             MyAddon.quests = MyAddon.quests or {}
@@ -2352,7 +2352,7 @@ end
 
     ```lua
     -- Simple: Log option changes
-    hook.Add("OptionChanged", "MyAddon", function(key, old, value)
+        hook.Add("OptionChanged", "MyAddon", function(key, old, value)
         print("Option " .. key .. " changed from " .. tostring(old) .. " to " .. tostring(value))
     end)
     ```
@@ -2361,7 +2361,7 @@ end
 
     ```lua
     -- Medium: Track option changes
-    hook.Add("OptionChanged", "TrackOptions", function(key, old, value)
+        hook.Add("OptionChanged", "TrackOptions", function(key, old, value)
         MyAddon.optionHistory = MyAddon.optionHistory or {}
         table.insert(MyAddon.optionHistory, {
             key = key,
@@ -2376,7 +2376,7 @@ end
 
     ```lua
     -- High: Complex option change handling
-    hook.Add("OptionChanged", "AdvancedOptionChange", function(key, old, value)
+        hook.Add("OptionChanged", "AdvancedOptionChange", function(key, old, value)
         -- Log option change
         lia.log.write("option_changed", {
             key = key,
@@ -2423,7 +2423,7 @@ end
 
     ```lua
     -- Simple: Add prefix to description
-    hook.Add("OverrideFactionDesc", "MyAddon", function(uniqueID, description)
+        hook.Add("OverrideFactionDesc", "MyAddon", function(uniqueID, description)
         return "[FACTION] " .. description
     end)
     ```
@@ -2432,7 +2432,7 @@ end
 
     ```lua
     -- Medium: Customize specific faction descriptions
-    hook.Add("OverrideFactionDesc", "CustomFactionDesc", function(uniqueID, description)
+        hook.Add("OverrideFactionDesc", "CustomFactionDesc", function(uniqueID, description)
         if uniqueID == "citizen" then
             return "Citizens are the backbone of society."
         end
@@ -2443,7 +2443,7 @@ end
 
     ```lua
     -- High: Dynamic faction description
-    hook.Add("OverrideFactionDesc", "DynamicFactionDesc", function(uniqueID, description)
+        hook.Add("OverrideFactionDesc", "DynamicFactionDesc", function(uniqueID, description)
         local faction = lia.faction.indices[uniqueID]
         if not faction then return end
 
@@ -2481,7 +2481,7 @@ end
 
     ```lua
     -- Simple: Add a model to faction
-    hook.Add("OverrideFactionModels", "MyAddon", function(uniqueID, models)
+        hook.Add("OverrideFactionModels", "MyAddon", function(uniqueID, models)
         if uniqueID == "citizen" then
             table.insert(models, "models/player/group01/male_01.mdl")
             return models
@@ -2493,7 +2493,7 @@ end
 
     ```lua
     -- Medium: Replace faction models
-    hook.Add("OverrideFactionModels", "ReplaceFactionModels", function(uniqueID, models)
+        hook.Add("OverrideFactionModels", "ReplaceFactionModels", function(uniqueID, models)
         if uniqueID == "police" then
             return {
                 "models/player/police.mdl",
@@ -2507,7 +2507,7 @@ end
 
     ```lua
     -- High: Dynamic faction models based on rank
-    hook.Add("OverrideFactionModels", "DynamicFactionModels", function(uniqueID, models)
+        hook.Add("OverrideFactionModels", "DynamicFactionModels", function(uniqueID, models)
         local faction = lia.faction.indices[uniqueID]
         if not faction then return end
 
@@ -2551,7 +2551,7 @@ end
 
     ```lua
     -- Simple: Add prefix to name
-    hook.Add("OverrideFactionName", "MyAddon", function(uniqueID, name)
+        hook.Add("OverrideFactionName", "MyAddon", function(uniqueID, name)
         return "[" .. uniqueID:upper() .. "] " .. name
     end)
     ```
@@ -2560,7 +2560,7 @@ end
 
     ```lua
     -- Medium: Localize faction names
-    hook.Add("OverrideFactionName", "LocalizeFactionNames", function(uniqueID, name)
+        hook.Add("OverrideFactionName", "LocalizeFactionNames", function(uniqueID, name)
         local localizedNames = {
             citizen = "Citoyen",
             police = "Police",
@@ -2575,7 +2575,7 @@ end
 
     ```lua
     -- High: Dynamic faction naming
-    hook.Add("OverrideFactionName", "DynamicFactionName", function(uniqueID, name)
+        hook.Add("OverrideFactionName", "DynamicFactionName", function(uniqueID, name)
         local faction = lia.faction.indices[uniqueID]
         if not faction then return end
 
@@ -2618,7 +2618,7 @@ end
 
     ```lua
     -- Simple: Log stamina depletion
-    hook.Add("PlayerStaminaDepleted", "MyAddon", function(player)
+        hook.Add("PlayerStaminaDepleted", "MyAddon", function(player)
         print(player:Name() .. " ran out of stamina")
     end)
     ```
@@ -2627,7 +2627,7 @@ end
 
     ```lua
     -- Medium: Apply exhaustion effect
-    hook.Add("PlayerStaminaDepleted", "ExhaustionEffect", function(player)
+        hook.Add("PlayerStaminaDepleted", "ExhaustionEffect", function(player)
         if SERVER then
             player:SetRunSpeed(150)
             player:SetWalkSpeed(75)
@@ -2639,7 +2639,7 @@ end
 
     ```lua
     -- High: Complex stamina depletion system
-    hook.Add("PlayerStaminaDepleted", "AdvancedStaminaDepletion", function(player)
+        hook.Add("PlayerStaminaDepleted", "AdvancedStaminaDepletion", function(player)
         if SERVER then
             local char = player:getChar()
             if not char then return end
@@ -2689,7 +2689,7 @@ end
 
     ```lua
     -- Simple: Log stamina gain
-    hook.Add("PlayerStaminaGained", "MyAddon", function(self)
+        hook.Add("PlayerStaminaGained", "MyAddon", function(self)
         print(self:Name() .. " gained stamina")
     end)
     ```
@@ -2698,7 +2698,7 @@ end
 
     ```lua
     -- Medium: Track stamina gains
-    hook.Add("PlayerStaminaGained", "TrackStaminaGains", function(self)
+        hook.Add("PlayerStaminaGained", "TrackStaminaGains", function(self)
         if SERVER then
             local char = self:getChar()
             if char then
@@ -2713,7 +2713,7 @@ end
 
     ```lua
     -- High: Complex stamina gain tracking
-    hook.Add("PlayerStaminaGained", "AdvancedStaminaGain", function(self)
+        hook.Add("PlayerStaminaGained", "AdvancedStaminaGain", function(self)
         if SERVER then
             local char = self:getChar()
             if not char then return end
@@ -2753,7 +2753,7 @@ end
 
     ```lua
     -- Simple: Log stamina loss
-    hook.Add("PlayerStaminaLost", "MyAddon", function(self)
+        hook.Add("PlayerStaminaLost", "MyAddon", function(self)
         print(self:Name() .. " lost stamina")
     end)
     ```
@@ -2762,7 +2762,7 @@ end
 
     ```lua
     -- Medium: Track stamina loss
-    hook.Add("PlayerStaminaLost", "TrackStaminaLoss", function(self)
+        hook.Add("PlayerStaminaLost", "TrackStaminaLoss", function(self)
         if SERVER then
             local char = self:getChar()
             if char then
@@ -2777,7 +2777,7 @@ end
 
     ```lua
     -- High: Complex stamina loss tracking
-    hook.Add("PlayerStaminaLost", "AdvancedStaminaLoss", function(self)
+        hook.Add("PlayerStaminaLost", "AdvancedStaminaLoss", function(self)
         if SERVER then
             local char = self:getChar()
             if not char then return end
@@ -2824,7 +2824,7 @@ end
 
     ```lua
     -- Medium: Initialize addon systems
-    hook.Add("PreLiliaLoaded", "InitializeAddon", function()
+        hook.Add("PreLiliaLoaded", "InitializeAddon", function()
         MyAddon.PreInitialize()
         print("Addon pre-initialized")
     end)
@@ -2834,7 +2834,7 @@ end
 
     ```lua
     -- High: Complex pre-load initialization
-    hook.Add("PreLiliaLoaded", "AdvancedPreLoadInit", function()
+        hook.Add("PreLiliaLoaded", "AdvancedPreLoadInit", function()
         -- Initialize custom systems
         MyAddon.PreInitialize()
 
@@ -2870,7 +2870,7 @@ end
 
     ```lua
     -- Simple: Return default stamina change
-    hook.Add("calcStaminaChange", "MyAddon", function(client)
+        hook.Add("calcStaminaChange", "MyAddon", function(client)
         return 1
     end)
     ```
@@ -2879,7 +2879,7 @@ end
 
     ```lua
     -- Medium: Calculate based on character attributes
-    hook.Add("calcStaminaChange", "AttributeStamina", function(client)
+        hook.Add("calcStaminaChange", "AttributeStamina", function(client)
         local char = client:getChar()
         if not char then return 1 end
 
@@ -2892,7 +2892,7 @@ end
 
     ```lua
     -- High: Complex stamina calculation system
-    hook.Add("calcStaminaChange", "AdvancedStaminaCalc", function(client)
+        hook.Add("calcStaminaChange", "AdvancedStaminaCalc", function(client)
         local char = client:getChar()
         if not char then return 1 end
 
@@ -2968,7 +2968,7 @@ end
 
     ```lua
     -- Medium: Get data with validation
-    hook.Add("getData", "ValidateData", function(default)
+        hook.Add("getData", "ValidateData", function(default)
         local data = lia.data.get("someKey", default)
         if type(data) ~= type(default) then
             return default
@@ -2981,7 +2981,7 @@ end
 
     ```lua
     -- High: Complex data retrieval system
-    hook.Add("getData", "AdvancedDataGet", function(default)
+        hook.Add("getData", "AdvancedDataGet", function(default)
         -- Try to get from cache first
         local cache = lia.data.cache or {}
         local key = "someKey"
