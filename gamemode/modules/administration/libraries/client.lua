@@ -926,7 +926,6 @@ local function GenerateDynamicCategories()
         end
     end
 
-
     local mergedCategories = {}
     local mergedCategoryNames = {}
     for _, categoryKey in ipairs(categoryNames) do
@@ -1077,30 +1076,23 @@ local function GenerateDynamicCategories()
     }
 
     for key, data in pairs(hardcodedCategories) do
-
         if not mergedCategories[key] then
             mergedCategories[key] = data
         else
             -- merge subcategories from hardcoded into existing category
             if not mergedCategories[key].subcategories then mergedCategories[key].subcategories = {} end
             for subKey, subData in pairs(data.subcategories or {}) do
-                if not mergedCategories[key].subcategories[subKey] then
-                    mergedCategories[key].subcategories[subKey] = subData
-                end
+                if not mergedCategories[key].subcategories[subKey] then mergedCategories[key].subcategories[subKey] = subData end
             end
         end
 
-        if not table.HasValue(orderedCategories, key) then
-            table.insert(orderedCategories, key)
-        end
+        if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
     end
 
     hook.Run("RegisterAdminStickSubcategories", mergedCategories)
     for key, _ in pairs(mergedCategories) do
         if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
     end
-
-
     return mergedCategories, orderedCategories
 end
 
@@ -1747,6 +1739,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
                 timer.Simple(0.1, function() AdminStickIsOpen = false end)
             end):SetIcon(f.icon)
         end
+
         if cf.UpdateSize then cf:UpdateSize() end
     end
 
@@ -2157,10 +2150,10 @@ function MODULE:OpenAdminStickUI(tgt)
     end)
 
     hook.Add("GetAdminStickLists", "liaDefaultAdminStickLists", function(target, lists)
-        local cl = LocalPlayer()
-        local canFaction = cl:hasPrivilege("manageTransfers")
-        local canClass = cl:hasPrivilege("manageClasses")
-        local canWhitelist = cl:hasPrivilege("manageWhitelists")
+        local client = LocalPlayer()
+        local canFaction = client:hasPrivilege("manageTransfers")
+        local canClass = client:hasPrivilege("manageClasses")
+        local canWhitelist = client:hasPrivilege("manageWhitelists")
         -- Only proceed if target is valid and is a player
         if not target or not IsValid(target) or not target:IsPlayer() then return end
         local char = target:getChar()
@@ -2176,9 +2169,9 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(facOptions, {
                                     name = v.name,
                                     icon = "icon16/group.png",
-                                    callback = function(tgt)
-                                        local cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                                        cl:ConCommand(cmd)
+                                    callback = function(callbackTarget)
+                                        local cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(callbackTarget), v.uniqueID)
+                                        client:ConCommand(cmd)
                                     end
                                 })
                             end
@@ -2204,9 +2197,9 @@ function MODULE:OpenAdminStickUI(tgt)
                         table.insert(cls, {
                             name = c.name,
                             icon = "icon16/user.png",
-                            callback = function(tgt)
-                                local cmd = 'say /setclass ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                                cl:ConCommand(cmd)
+                            callback = function(callbackTarget)
+                                local cmd = 'say /setclass ' .. QuoteArgs(GetIdentifier(callbackTarget), c.uniqueID)
+                                client:ConCommand(cmd)
                             end
                         })
                     end
@@ -2229,18 +2222,18 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(facAdd, {
                                     name = v.name,
                                     icon = "icon16/group_add.png",
-                                    callback = function(tgt)
-                                        local cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                                        cl:ConCommand(cmd)
+                                    callback = function(callbackTarget)
+                                        local cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(callbackTarget), v.uniqueID)
+                                        client:ConCommand(cmd)
                                     end
                                 })
                             else
                                 table.insert(facRemove, {
                                     name = v.name,
                                     icon = "icon16/group_delete.png",
-                                    callback = function(tgt)
-                                        local cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
-                                        cl:ConCommand(cmd)
+                                    callback = function(callbackTarget)
+                                        local cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(callbackTarget), v.uniqueID)
+                                        client:ConCommand(cmd)
                                     end
                                 })
                             end
@@ -2272,18 +2265,18 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(cw, {
                                     name = c.name,
                                     icon = "icon16/user_add.png",
-                                    callback = function(tgt)
-                                        local cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                                        cl:ConCommand(cmd)
+                                    callback = function(callbackTarget)
+                                        local cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(callbackTarget), c.uniqueID)
+                                        client:ConCommand(cmd)
                                     end
                                 })
                             else
                                 table.insert(cu, {
                                     name = c.name,
                                     icon = "icon16/user_delete.png",
-                                    callback = function(tgt)
-                                        local cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
-                                        cl:ConCommand(cmd)
+                                    callback = function(callbackTarget)
+                                        local cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(callbackTarget), c.uniqueID)
+                                        client:ConCommand(cmd)
                                     end
                                 })
                             end
