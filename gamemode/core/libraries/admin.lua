@@ -1348,8 +1348,8 @@ if SERVER then
             )
             if success then
                 print("Command executed: " .. command.cmd)
-            end
         end
+    end
         ```
 ]]
     function lia.administrator.serverExecCommand(cmd, victim, dur, reason, admin)

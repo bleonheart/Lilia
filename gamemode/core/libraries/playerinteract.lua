@@ -636,7 +636,7 @@ if SERVER then
     })
 else
     --[[
-        Purpose: Opens the interaction/action menu UI with options in a flat list
+        Purpose: Opens the interaction/action menu UI by delegating to lia.derma.optionsMenu
         When Called: Called when player presses interaction keybind or requests menu
         Parameters:
             - options (table): Dictionary of available options to display
@@ -645,8 +645,9 @@ else
             - closeKey (number): Key code that closes the menu when released
             - netMsg (string): Network message name for server-only interactions
             - preFiltered (boolean, optional): Whether options are already filtered (defaults to false)
-        Returns: void
+        Returns: Panel - The created menu frame (returns from lia.derma.optionsMenu)
         Realm: Client
+        Note: This function is now a thin wrapper around lia.derma.optionsMenu for backwards compatibility.
         Example Usage:
 
         Low Complexity:
@@ -695,129 +696,17 @@ else
         ```
     ]]
     function lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)
-        local client, ent = LocalPlayer(), LocalPlayer():getTracedEntity()
-        local visible = {}
-        if preFiltered then
-            for name, opt in pairs(options) do
-                visible[#visible + 1] = {
-                    name = name,
-                    opt = opt
-                }
-            end
-        else
-            for name, opt in pairs(options) do
-                if isInteraction then
-                    if opt.type == "interaction" and IsValid(ent) and lia.playerinteract.isWithinRange(client, ent, opt.range) then
-                        local targetType = opt.target or "player"
-                        local isPlayerTarget = ent:IsPlayer()
-                        local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
-                        if targetMatches then
-                            local shouldShow = true
-                            if opt.shouldShow then shouldShow = opt.shouldShow(client, ent) end
-                            if shouldShow then
-                                visible[#visible + 1] = {
-                                    name = name,
-                                    opt = opt
-                                }
-                            end
-                        end
-                    end
-                else
-                    if opt.type == "action" and (not opt.shouldShow or opt.shouldShow(client)) then
-                        visible[#visible + 1] = {
-                            name = name,
-                            opt = opt
-                        }
-                    end
-                end
-            end
-        end
-
-        if #visible == 0 then return end
-        local optionsList = lia.playerinteract.getCategorizedOptions(visible)
-        local fadeSpeed = 0.05
-        local frameW = 450
-        local entryH = 30
-        local baseH = entryH * #visible + 80
-        local frameH = isInteraction and baseH or math.min(baseH, ScrH() * 0.6)
-        local titleH = isInteraction and 36 or 16
-        local titleY = 2
-        local gap = 24
-        local padding = ScrW() * 0.15
-        local xPos = ScrW() - frameW - padding
-        local yPos = (ScrH() - frameH) / 2
-        local frame = vgui.Create("liaFrame")
-        frame:SetSize(frameW, frameH)
-        frame:SetPos(xPos, yPos)
-        frame:MakePopup()
-        frame:SetTitle("")
-        frame:ShowCloseButton(false)
-        hook.Run("InteractionMenuOpened", frame)
-        local oldOnRemove = frame.OnRemove
-        function frame:OnRemove()
-            if oldOnRemove then oldOnRemove(self) end
-            lia.gui.InteractionMenu = nil
-            hook.Run("InteractionMenuClosed")
-        end
-
-        frame:SetAlpha(0)
-        frame:AlphaTo(255, fadeSpeed)
-        function frame:Think()
-            if not input.IsKeyDown(closeKey) then self:Close() end
-        end
-
-        timer.Remove("InteractionMenu_Frame_Timer")
-        timer.Create("InteractionMenu_Frame_Timer", 30, 1, function() if IsValid(frame) then frame:Close() end end)
-        local title = frame:Add("DLabel")
-        title:SetPos(0, titleY)
-        title:SetSize(frameW, titleH)
-        title:SetText(titleText)
-        title:SetFont("liaSmallFont")
-        title:SetColor(color_white)
-        title:SetContentAlignment(5)
-        local scroll = frame:Add("liaScrollPanel")
-        scroll:SetPos(0, titleH + titleY + gap)
-        scroll:SetSize(frameW, frameH - titleH - titleY - gap)
-        local layout = vgui.Create("DListLayout", scroll)
-        layout:Dock(FILL)
-        for _, entry in pairs(optionsList) do
-            local btn = vgui.Create("liaButton", layout)
-            btn:SetTall(entryH)
-            btn:Dock(TOP)
-            btn:DockMargin(15, 8, 15, 0)
-            btn:SetText(L(entry.name))
-            btn:SetFont("liaSmallFont")
-            btn:SetTextColor(color_white)
-            btn:SetContentAlignment(5)
-            btn.DoClick = function()
-                frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Close() end end)
-                if not entry.opt.serverOnly and entry.opt.onRun then
-                    if isInteraction then
-                        if ent:IsPlayer() then
-                            local target = ent
-                            if ent:IsBot() then if client:Team() == FACTION_STAFF then target = client end end
-                            entry.opt.onRun(client, target)
-                        else
-                            entry.opt.onRun(client, ent)
-                        end
-                    else
-                        entry.opt.onRun(client, ent)
-                    end
-                end
-
-                if entry.opt.serverOnly then
-                    net.Start(netMsg)
-                    net.WriteString(entry.name)
-                    net.WriteBool(isInteraction)
-                    net.WriteEntity(ent)
-                    net.SendToServer()
-                end
-            end
-
-            layout:Add(btn)
-        end
-
-        lia.gui.InteractionMenu = frame
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        local ent = isfunction(client.getTracedEntity) and client:getTracedEntity() or NULL
+        return lia.derma.optionsMenu(options, {
+            mode = isInteraction and "interaction" or "action",
+            title = titleText,
+            closeKey = closeKey,
+            netMsg = netMsg,
+            preFiltered = preFiltered,
+            entity = ent
+        })
     end
 
     lia.net.readBigTable("liaPlayerInteractSync", function(data)

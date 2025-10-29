@@ -62,6 +62,385 @@ function lia.derma.dermaMenu()
     return m
 end
 
+local function liaDermaIsSequential(tbl)
+    if not istable(tbl) then return false end
+    local i = 0
+    for _ in pairs(tbl) do
+        i = i + 1
+        if tbl[i] == nil then return false end
+    end
+    return true
+end
+
+--[[
+    Purpose: Creates a generic options menu that can display interaction/action menus or arbitrary option lists
+    When Called: When displaying a menu with selectable options (interactions, actions, or custom options)
+    Parameters:
+        - rawOptions (table): Options to display. Can be:
+            * Dictionary table (keyed by option ID) for interaction/action menus
+            * Sequential array of option tables for custom menus
+        - config (table, optional): Configuration options including:
+            - mode (string, optional): "interaction", "action", or "custom" (defaults to "custom")
+            - title (string, optional): Menu title text
+            - closeKey (number, optional): Key code that closes menu when released
+            - netMsg (string, optional): Network message name for server-only options
+            - preFiltered (boolean, optional): Whether options are already filtered (defaults to false)
+            - entity (Entity, optional): Target entity for interaction mode
+            - resolveEntity (boolean, optional): Whether to resolve traced entity (defaults to true for non-custom modes)
+            - emitHooks (boolean, optional): Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes)
+            - registryKey (string, optional): Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu")
+            - fadeSpeed (number, optional): Animation fade speed in seconds (defaults to 0.05)
+            - frameW (number, optional): Frame width in pixels (defaults to 450)
+            - frameH (number, optional): Frame height in pixels (auto-calculated if not provided)
+            - entryH (number, optional): Height of each option button (defaults to 30)
+            - maxHeight (number, optional): Maximum frame height (defaults to 60% of screen height)
+            - titleHeight (number, optional): Title label height (defaults to 36 or 16 based on mode)
+            - titleOffsetY (number, optional): Y offset for title (defaults to 2)
+            - verticalGap (number, optional): Vertical spacing between title and scroll area (defaults to 24)
+            - screenPadding (number, optional): Screen padding for frame positioning (defaults to 15% of screen width)
+            - x (number, optional): Custom X position (auto-calculated if not provided)
+            - y (number, optional): Custom Y position (auto-calculated if not provided)
+            - titleFont (string, optional): Font for title text (defaults to "liaSmallFont")
+            - titleColor (Color, optional): Color for title text (defaults to color_white)
+            - buttonFont (string, optional): Font for option buttons (defaults to "liaSmallFont")
+            - buttonTextColor (Color, optional): Color for button text (defaults to color_white)
+            - closeOnSelect (boolean, optional): Whether to close menu when option is selected (defaults to true)
+            - timerName (string, optional): Name for auto-close timer
+            - autoCloseDelay (number, optional): Seconds until auto-close (defaults to 30, 0 to disable)
+    Returns: Panel - The created menu frame, or nil if no valid options or invalid client
+    Realm: Client
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Display a basic custom options menu
+    lia.derma.optionsMenu({
+        {name = "Option 1", callback = function() print("Selected 1") end},
+        {name = "Option 2", callback = function() print("Selected 2") end}
+    })
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Custom menu with descriptions and custom positioning
+    lia.derma.optionsMenu({
+        {
+            name = "Save Game",
+            description = "Save your current progress",
+            callback = function() saveGame() end
+        },
+        {
+            name = "Load Game",
+            description = "Load a previously saved game",
+            callback = function() loadGame() end
+        },
+        {
+            name = "Settings",
+            description = "Open game settings",
+            callback = function() openSettings() end
+        }
+    }, {
+        title = "Main Menu",
+        x = ScrW() / 2 - 225,
+        y = ScrH() / 2 - 150,
+        frameW = 450,
+        closeOnSelect = false
+    })
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Advanced menu with custom callbacks and network messaging
+    lia.derma.optionsMenu({
+        {
+            name = "Radio Preset 1",
+            description = "Switch to preset frequency 1",
+            callback = function(client, entity, entry, frame)
+                -- Custom callback with context
+                lia.radio.setFrequency(100.0)
+                client:notify("Switched to radio preset 1")
+            end,
+            passContext = true -- Pass client, entity, entry, frame to callback
+        },
+        {
+            name = "Radio Preset 2",
+            description = "Switch to preset frequency 2",
+            serverOnly = true,
+            netMessage = "liaRadioSetPreset",
+            networkID = "preset2"
+        },
+        {
+            name = "Custom Frequency",
+            description = "Enter a custom frequency",
+            callback = function()
+                -- Open frequency input dialog
+                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                    local numFreq = tonumber(freq)
+                    if numFreq and numFreq >= 80 and numFreq <= 200 then
+                        lia.radio.setFrequency(numFreq)
+                        client:notify("Frequency set to " .. freq .. " MHz")
+                    else
+                        client:notify("Invalid frequency range (80-200 MHz)")
+                    end
+                end)
+            end
+        }
+    }, {
+        title = "Radio Presets",
+        mode = "custom",
+        closeKey = KEY_R,
+        fadeSpeed = 0.1,
+        autoCloseDelay = 60
+    })
+    ```
+]]
+function lia.derma.optionsMenu(rawOptions, config)
+    config = config or {}
+    local mode = config.mode
+    if mode ~= "interaction" and mode ~= "action" then mode = "custom" end
+    local client = LocalPlayer()
+    if not IsValid(client) then return end
+
+    local ent = config.entity
+    if ent == nil and (mode ~= "custom" or config.resolveEntity ~= false) then
+        if isfunction(client.getTracedEntity) then
+            ent = client:getTracedEntity()
+        else
+            ent = NULL
+        end
+    end
+
+    local netMsg = config.netMsg
+    local preFiltered = config.preFiltered == true
+    local emitHooks = config.emitHooks
+    if emitHooks == nil then emitHooks = mode ~= "custom" end
+    local registryKey = config.registryKey
+    if registryKey == nil then registryKey = mode ~= "custom" and "InteractionMenu" or "OptionsMenu" end
+    lia.gui = lia.gui or {}
+    if registryKey and IsValid(lia.gui[registryKey]) then lia.gui[registryKey]:Remove() end
+
+    local visible = {}
+    local function addOption(id, option, overrideLabel)
+        if not option then return end
+        local label = overrideLabel or option.displayName or option.label or option.title or option.name or id
+        visible[#visible + 1] = {
+            id = id or label,
+            label = label,
+            opt = option
+        }
+    end
+
+    if preFiltered then
+        if liaDermaIsSequential(rawOptions) then
+            for _, entry in ipairs(rawOptions) do
+                if istable(entry) then addOption(entry.id or entry.name or tostring(_), entry.opt or entry, entry.label) end
+            end
+        else
+            for id, option in pairs(rawOptions) do addOption(id, option) end
+        end
+    elseif mode == "interaction" then
+        if not IsValid(ent) then return end
+        for id, option in pairs(rawOptions or {}) do
+            if option.type == "interaction" and lia.playerinteract and lia.playerinteract.isWithinRange(client, ent, option.range) then
+                local targetType = option.target or "player"
+                local isPlayerTarget = ent:IsPlayer()
+                local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
+                if targetMatches then
+                    local shouldShow = true
+                    if option.shouldShow then shouldShow = option.shouldShow(client, ent) end
+                    if shouldShow then addOption(id, option) end
+                end
+            end
+        end
+    elseif mode == "action" then
+        for id, option in pairs(rawOptions or {}) do
+            if option.type == "action" and (not option.shouldShow or option.shouldShow(client)) then addOption(id, option) end
+        end
+    else
+        if liaDermaIsSequential(rawOptions) then
+            for index, option in ipairs(rawOptions) do
+                if istable(option) then
+                    local id = option.identifier or option.id or option.name or tostring(index)
+                    addOption(id, option)
+                end
+            end
+        else
+            for id, option in pairs(rawOptions or {}) do
+                if istable(option) then addOption(option.identifier or option.id or id, option) end
+            end
+        end
+    end
+
+    if #visible == 0 then return end
+
+    local optionsList
+    if mode ~= "custom" and lia.playerinteract and lia.playerinteract.getCategorizedOptions then
+        optionsList = lia.playerinteract.getCategorizedOptions(visible)
+    else
+        optionsList = visible
+    end
+
+    local fadeSpeed = config.fadeSpeed or 0.05
+    local frameW = config.frameW or 450
+    local entryH = config.entryH or 30
+    local baseH = entryH * #optionsList + 80
+    local frameH = config.frameH
+    if not frameH then
+        if mode == "interaction" then
+            frameH = baseH
+        else
+            local maxHeight = config.maxHeight or ScrH() * 0.6
+            frameH = math.min(baseH, maxHeight)
+        end
+    end
+    local titleH = config.titleHeight or (mode == "interaction" and 36 or 16)
+    local titleY = config.titleOffsetY or 2
+    local gap = config.verticalGap or 24
+    local padding = config.screenPadding or ScrW() * 0.15
+    local xPos = config.x
+    if xPos == nil then xPos = ScrW() - frameW - padding end
+    local yPos = config.y
+    if yPos == nil then yPos = (ScrH() - frameH) / 2 end
+    local titleText = config.title
+    if not titleText then
+        if mode == "interaction" then
+            titleText = L and L("Interactions") or "Interactions"
+        elseif mode == "action" then
+            titleText = L and L("Personal Actions") or "Personal Actions"
+        else
+            titleText = L and L("options") or "Options"
+        end
+    end
+
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(frameW, frameH)
+    frame:SetPos(xPos, yPos)
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:ShowCloseButton(false)
+
+    if emitHooks then hook.Run("InteractionMenuOpened", frame) end
+
+    local oldOnRemove = frame.OnRemove
+    function frame:OnRemove()
+        if oldOnRemove then oldOnRemove(self) end
+        if emitHooks then hook.Run("InteractionMenuClosed") end
+        if registryKey and lia.gui[registryKey] == self then lia.gui[registryKey] = nil end
+    end
+
+    frame:SetAlpha(0)
+    frame:AlphaTo(255, fadeSpeed)
+    local closeKey = config.closeKey
+    if closeKey then
+        function frame:Think()
+            if not input.IsKeyDown(closeKey) then self:Close() end
+        end
+    end
+
+    local timerName = config.timerName or (mode ~= "custom" and "InteractionMenu_Frame_Timer" or "OptionsMenu_Frame_Timer")
+    local autoCloseDelay = config.autoCloseDelay
+    if autoCloseDelay == nil then autoCloseDelay = 30 end
+    if timerName and autoCloseDelay and autoCloseDelay > 0 then
+        timer.Remove(timerName)
+        timer.Create(timerName, autoCloseDelay, 1, function() if IsValid(frame) then frame:Close() end end)
+    end
+
+    local title = frame:Add("DLabel")
+    title:SetPos(0, titleY)
+    title:SetSize(frameW, titleH)
+    title:SetText(titleText)
+    title:SetFont(config.titleFont or "liaSmallFont")
+    title:SetColor(config.titleColor or color_white)
+    title:SetContentAlignment(5)
+
+    local scroll = frame:Add("liaScrollPanel")
+    scroll:SetPos(0, titleH + titleY + gap)
+    scroll:SetSize(frameW, frameH - titleH - titleY - gap)
+    local layout = vgui.Create("DListLayout", scroll)
+    layout:Dock(FILL)
+
+    local buttonFont = config.buttonFont or "liaSmallFont"
+    local buttonTextColor = config.buttonTextColor or color_white
+    local shouldCloseOnSelect = config.closeOnSelect
+    if shouldCloseOnSelect == nil then shouldCloseOnSelect = true end
+
+    for _, entry in ipairs(optionsList) do
+        local btn = vgui.Create("liaButton", layout)
+        btn:SetTall(entryH)
+        btn:Dock(TOP)
+        btn:DockMargin(15, 8, 15, 0)
+        local displayText = entry.label or entry.id or ""
+        if entry.opt and entry.opt.localized ~= false and L then
+            local localized = L(displayText)
+            if localized and localized ~= "" then displayText = localized end
+        end
+        btn:SetText(displayText)
+        btn:SetFont(buttonFont)
+        btn:SetTextColor(entry.opt and entry.opt.textColor or buttonTextColor)
+        btn:SetContentAlignment(5)
+        local description = entry.opt and (entry.opt.description or entry.opt.desc)
+        if isstring(description) and description ~= "" then
+            if entry.opt.localizedDescription ~= false and L then
+                description = L(description)
+            end
+            btn:SetTooltip(description)
+        end
+
+        btn.DoClick = function()
+            if shouldCloseOnSelect then frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Close() end end) end
+            local optionData = entry.opt or {}
+            local callback = optionData.callback or optionData.onRun
+            local function runOptionCallback()
+                if not callback or optionData.serverOnly then return end
+                if mode == "interaction" then
+                    if not IsValid(ent) then return end
+                    local target = ent
+                    if ent:IsPlayer() and ent:IsBot() and client:Team() == FACTION_STAFF then target = client end
+                    callback(client, target)
+                    return
+                end
+
+                if mode == "action" then
+                    callback(client, ent)
+                    return
+                end
+
+                local passContext = optionData.passContext
+                if passContext == true then
+                    callback(client, ent, entry, frame)
+                    return
+                end
+
+                if istable(passContext) then
+                    callback(unpack(passContext))
+                    return
+                end
+
+                callback()
+            end
+
+            runOptionCallback()
+
+            local messageName = optionData.serverOnly and (optionData.netMessage or netMsg) or nil
+            if messageName then
+                net.Start(messageName)
+                net.WriteString(optionData.networkID or entry.id)
+                net.WriteBool(mode == "interaction")
+                net.WriteEntity(IsValid(ent) and ent or Entity(0))
+                if isfunction(optionData.writePayload) then optionData.writePayload() end
+                net.SendToServer()
+            end
+
+            if isfunction(optionData.onSelect) then optionData.onSelect(client, ent, entry, frame) end
+        end
+
+        layout:Add(btn)
+    end
+
+    if registryKey then lia.gui[registryKey] = frame end
+    return frame
+end
+
 --[[
     Purpose: Opens a color picker dialog for selecting colors
     When Called: When user needs to select a color from a visual picker interface
