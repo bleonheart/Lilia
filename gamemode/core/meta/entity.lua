@@ -330,13 +330,13 @@ end
         if door:checkDoorAccess(ply, DOOR_GUEST) then
             if door:isDoorLocked() then
                 ply:notify("The door is locked")
-            else
-                door:Fire("Open")
-                ply:notify("Door opened")
-            end
-        else
-            ply:notify("You don't have access to this door")
-        end
+                else
+                    door:Fire("Open")
+                    ply:notify("Door opened")
+                end
+                else
+                    ply:notify("You don't have access to this door")
+                end
         ```
 ]]
 function entityMeta:checkDoorAccess(client, access)
@@ -385,9 +385,9 @@ end
             ply:getChar():takeMoney(vehiclePrice)
             vehicle:keysOwn(ply)
             ply:notify("Vehicle purchased for $" .. vehiclePrice)
-        else
-            ply:notify("Insufficient funds")
-        end
+            else
+                ply:notify("Insufficient funds")
+            end
         ```
 ]]
 function entityMeta:keysOwn(client)
@@ -436,11 +436,11 @@ end
         if vehicle:keysOwn(ply) and not vehicle:isLocked() then
             vehicle:keysLock()
             ply:notify("Vehicle locked")
-        elseif not vehicle:keysOwn(ply) then
-            ply:notify("You don't own this vehicle")
-        else
-            ply:notify("Vehicle is already locked")
-        end
+            elseif not vehicle:keysOwn(ply) then
+                ply:notify("You don't own this vehicle")
+                else
+                    ply:notify("Vehicle is already locked")
+                end
         ```
 ]]
 function entityMeta:keysLock()
@@ -484,11 +484,11 @@ end
         if vehicle:keysOwn(ply) and vehicle:isLocked() then
             vehicle:keysUnLock()
             ply:notify("Vehicle unlocked")
-        elseif not vehicle:keysOwn(ply) then
-            ply:notify("You don't own this vehicle")
-        else
-            ply:notify("Vehicle is already unlocked")
-        end
+            elseif not vehicle:keysOwn(ply) then
+                ply:notify("You don't own this vehicle")
+                else
+                    ply:notify("Vehicle is already unlocked")
+                end
         ```
 ]]
 function entityMeta:keysUnLock()
@@ -574,9 +574,9 @@ end
         -- Medium: Use in interaction logic
         if entity:isLocked() then
             ply:notify("This is locked")
-        else
-            entity:Use(ply)
-        end
+            else
+                entity:Use(ply)
+            end
         ```
 
         High Complexity:
@@ -585,10 +585,10 @@ end
         -- High: Use in security system
         if entity:isLocked() and not ply:hasFlags("A") then
             ply:notify("Access denied - locked")
-        elseif entity:isLocked() and ply:hasFlags("A") then
-            entity:setLocked(false)
-            ply:notify("Unlocked with admin access")
-        end
+            elseif entity:isLocked() and ply:hasFlags("A") then
+                entity:setLocked(false)
+                ply:notify("Unlocked with admin access")
+            end
         ```
 ]]
 function entityMeta:isLocked()
@@ -623,9 +623,9 @@ end
         -- Medium: Use in door interaction
         if door:isDoorLocked() then
             ply:notify("The door is locked")
-        else
-            door:Fire("Open")
-        end
+            else
+                door:Fire("Open")
+            end
         ```
 
         High Complexity:
@@ -634,10 +634,10 @@ end
         -- High: Use in door access system
         if door:isDoorLocked() and not door:checkDoorAccess(ply, DOOR_OWNER) then
             ply:notify("Door is locked and you don't have access")
-        elseif door:isDoorLocked() and door:checkDoorAccess(ply, DOOR_OWNER) then
-            door:setLocked(false)
-            ply:notify("Door unlocked with your key")
-        end
+            elseif door:isDoorLocked() and door:checkDoorAccess(ply, DOOR_OWNER) then
+                door:setLocked(false)
+                ply:notify("Door unlocked with your key")
+            end
         ```
 ]]
 function entityMeta:isDoorLocked()
@@ -680,9 +680,9 @@ end
         -- High: Use in item dropping system
         local pos, ang = entity:getEntItemDropPos(offset)
         local tr = util.TraceLine({
-            start = pos,
-            endpos = pos + Vector(0, 0, -50),
-            mask = MASK_SOLID_BRUSHONLY
+        start = pos,
+        endpos = pos + Vector(0, 0, -50),
+        mask = MASK_SOLID_BRUSHONLY
         })
         if tr.Hit then
             pos = tr.HitPos + tr.HitNormal * 5
@@ -732,9 +732,9 @@ end
         -- Medium: Use in character customization
         if entity:isFemale() then
             entity:SetBodygroup(1, 1) -- Set female bodygroup
-        else
-            entity:SetBodygroup(1, 0) -- Set male bodygroup
-        end
+            else
+                entity:SetBodygroup(1, 0) -- Set male bodygroup
+            end
         ```
 
         High Complexity:
@@ -746,8 +746,8 @@ end
             if char then
                 char:setData("gender", "female")
                 char:setData("pronouns", {"she", "her", "hers"})
+                end
             end
-        end
         ```
 ]]
 function entityMeta:isFemale()
@@ -793,10 +793,10 @@ end
         if entity:isNearEntity(100, ply) then
             if entity:isItem() then
                 ply:notify("Press E to pick up " .. entity:GetItemData().name)
-            elseif entity:isMoney() then
-                ply:notify("Press E to collect $" .. entity:GetAmount())
+                elseif entity:isMoney() then
+                    ply:notify("Press E to collect $" .. entity:GetAmount())
+                end
             end
-        end
         ```
 ]]
 function entityMeta:isNearEntity(radius, otherEntity)
@@ -851,11 +851,11 @@ end
         if IsValid(partner) then
             if door:isDoorLocked() then
                 partner:setLocked(true)
-            else
-                partner:setLocked(false)
+                else
+                    partner:setLocked(false)
+                end
+                door:setNetVar("partnerID", partner:EntIndex())
             end
-            door:setNetVar("partnerID", partner:EntIndex())
-        end
         ```
 ]]
 function entityMeta:getDoorPartner()
@@ -1244,7 +1244,7 @@ if SERVER then
         local data = entity:getNetVar("data", {})
         if data.lastUpdate and CurTime() - data.lastUpdate > 300 then
             entity:setNetVar("data", {lastUpdate = CurTime()})
-        end
+            end
         ```
 ]]
     function entityMeta:getNetVar(key, default)

@@ -49,10 +49,10 @@ if SERVER then
         for _, ply in ipairs(players) do
             if ply:IsAdmin() then
                 lia.notices.notify(ply, "Admin panel updated", "info")
-            else
-                lia.notices.notify(ply, "Welcome to the server!", "success")
+                else
+                    lia.notices.notify(ply, "Welcome to the server!", "success")
+                end
             end
-        end
         ```
     ]]
     function lia.notices.notify(client, message, notifType)
@@ -105,7 +105,7 @@ if SERVER then
         for _, ply in ipairs(players) do
             local timeLeft = math.max(0, 300 - CurTime())
             lia.notices.notifyWarningLocalized(ply, "server.restart.time",
-                ply:Name(), math.floor(timeLeft / 60), timeLeft % 60)
+            ply:Name(), math.floor(timeLeft / 60), timeLeft % 60)
         end
         ```
     ]]
@@ -156,9 +156,9 @@ else
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotificationData", function()
-            lia.notices.receiveNotify()
-            -- Additional custom processing here
-            print("Notification received from server")
+        lia.notices.receiveNotify()
+        -- Additional custom processing here
+        print("Notification received from server")
         end)
         ```
 
@@ -168,17 +168,17 @@ else
         -- High: Override default behavior with custom notification handling
         local originalReceiveNotify = lia.notices.receiveNotify
         lia.notices.receiveNotify = function()
-            local msg = net.ReadString() or ""
-            local ntype = net.ReadString() or "default"
+        local msg = net.ReadString() or ""
+        local ntype = net.ReadString() or "default"
 
-            -- Custom processing before creating notice
-            if ntype == "error" then
-                -- Log errors to file
-                file.Append("notifications.log", os.date() .. ": " .. msg .. "\n")
-            end
+        -- Custom processing before creating notice
+        if ntype == "error" then
+            -- Log errors to file
+            file.Append("notifications.log", os.date() .. ": " .. msg .. "\n")
+        end
 
-            -- Call original function
-            originalReceiveNotify()
+        -- Call original function
+        originalReceiveNotify()
         end
         ```
     ]]
@@ -223,9 +223,9 @@ else
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotifyLocal", function()
-            lia.notices.receiveNotifyL()
-            -- Additional custom processing here
-            print("Localized notification received from server")
+        lia.notices.receiveNotifyL()
+        -- Additional custom processing here
+        print("Localized notification received from server")
         end)
         ```
 
@@ -235,22 +235,22 @@ else
         -- High: Override default behavior with custom localized notification handling
         local originalReceiveNotifyL = lia.notices.receiveNotifyL
         lia.notices.receiveNotifyL = function()
-            local key = net.ReadString() or ""
-            local argc = net.ReadUInt(8) or 0
-            local args = {}
-            for i = 1, argc do
-                args[i] = net.ReadString()
-            end
+        local key = net.ReadString() or ""
+        local argc = net.ReadUInt(8) or 0
+        local args = {}
+        for i = 1, argc do
+            args[i] = net.ReadString()
+        end
 
-            -- Custom processing before creating notice
-            local msg = L(key, unpack(args))
-            if string.find(msg, "error") then
-                -- Log errors to file
-                file.Append("notifications.log", os.date() .. ": " .. msg .. "\n")
-            end
+        -- Custom processing before creating notice
+        local msg = L(key, unpack(args))
+        if string.find(msg, "error") then
+            -- Log errors to file
+            file.Append("notifications.log", os.date() .. ": " .. msg .. "\n")
+        end
 
-            -- Call original function
-            originalReceiveNotifyL()
+        -- Call original function
+        originalReceiveNotifyL()
         end
         ```
     ]]
@@ -314,11 +314,11 @@ else
         local player = LocalPlayer()
         if player:GetNWInt("health") < 25 then
             lia.notices.notify(nil, "Health critical! Find medical attention!", "error")
-        elseif player:GetNWInt("health") < 50 then
-            lia.notices.notify(nil, "Health low - be careful!", "warning")
-        else
-            lia.notices.notify(nil, "Health status: Good", "success")
-        end
+            elseif player:GetNWInt("health") < 50 then
+                lia.notices.notify(nil, "Health low - be careful!", "warning")
+                else
+                    lia.notices.notify(nil, "Health status: Good", "success")
+                end
         ```
     ]]
     function lia.notices.notify(_, message, notifType)
@@ -376,14 +376,14 @@ else
 
         if health < 25 then
             lia.notices.notifyErrorLocalized(nil, "ui.health.critical",
+            health, maxHealth, healthPercent)
+            elseif health < 50 then
+                lia.notices.notifyWarningLocalized(nil, "ui.health.low",
                 health, maxHealth, healthPercent)
-        elseif health < 50 then
-            lia.notices.notifyWarningLocalized(nil, "ui.health.low",
-                health, maxHealth, healthPercent)
-        else
-            lia.notices.notifySuccessLocalized(nil, "ui.health.good",
-                health, maxHealth, healthPercent)
-        end
+                else
+                    lia.notices.notifySuccessLocalized(nil, "ui.health.good",
+                    health, maxHealth, healthPercent)
+                end
         ```
     ]]
     function lia.notices.notifyLocalized(client, key, notifType, ...)
@@ -451,17 +451,17 @@ else
         -- High: Override legacy notification with custom handling
         local originalAddLegacy = notification.AddLegacy
         notification.AddLegacy = function(text, typeId)
-            local map = {[0] = "info", [1] = "error", [2] = "success"}
-            local notifType = map[tonumber(typeId) or -1] or "default"
+        local map = {[0] = "info", [1] = "error", [2] = "success"}
+        local notifType = map[tonumber(typeId) or -1] or "default"
 
-            -- Custom processing
-            if notifType == "error" then
-                -- Log errors to file
-                file.Append("legacy_notifications.log", os.date() .. ": " .. text .. "\n")
-            end
+        -- Custom processing
+        if notifType == "error" then
+            -- Log errors to file
+            file.Append("legacy_notifications.log", os.date() .. ": " .. text .. "\n")
+        end
 
-            -- Call original function
-            originalAddLegacy(text, typeId)
+        -- Call original function
+        originalAddLegacy(text, typeId)
         end
         ```
     ]]
@@ -492,14 +492,14 @@ end
     Low Complexity:
 
     ```lua
-        -- Simple: Function is called automatically when notifications are created
+    -- Simple: Function is called automatically when notifications are created
     -- No direct usage needed - handled internally
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Manually organize notices after bulk creation
+    -- Medium: Manually organize notices after bulk creation
     for i = 1, 5 do
         lia.notices.notify(nil, "Notification " .. i, "info")
     end
@@ -509,22 +509,22 @@ end
     High Complexity:
 
     ```lua
-        -- High: Custom notice organization with different positioning
+    -- High: Custom notice organization with different positioning
     local originalOrganizeNotices = OrganizeNotices
     OrganizeNotices = function()
-        local scale = ScrH() / 1080
-        local baseY = ScrH() - 300 * scale -- Different base position
-        local spacing = 8 * scale -- Different spacing
-        local y = baseY
+    local scale = ScrH() / 1080
+    local baseY = ScrH() - 300 * scale -- Different base position
+    local spacing = 8 * scale -- Different spacing
+    local y = baseY
 
-        for _, v in ipairs(lia.notices) do
-            if IsValid(v) then
-                v.targetY = y
-                -- Add custom animation
-                v:MoveTo(v:GetX(), y, 0.3, 0, 0.5)
-                y = y - (v:GetTall() + spacing)
-            end
+    for _, v in ipairs(lia.notices) do
+        if IsValid(v) then
+            v.targetY = y
+            -- Add custom animation
+            v:MoveTo(v:GetX(), y, 0.3, 0, 0.5)
+            y = y - (v:GetTall() + spacing)
         end
+    end
     end
     ```
 ]]

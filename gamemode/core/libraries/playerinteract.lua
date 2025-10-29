@@ -28,8 +28,8 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     Low Complexity:
 
     ```lua
-        -- Simple: Check if player is within default range of an entity
-        if lia.playerinteract.isWithinRange(client, targetEntity) then
+    -- Simple: Check if player is within default range of an entity
+    if lia.playerinteract.isWithinRange(client, targetEntity) then
         -- Player is within 250 units
     end
     ```
@@ -37,9 +37,9 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     Medium Complexity:
 
     ```lua
-        -- Medium: Check with custom range for specific interaction
+    -- Medium: Check with custom range for specific interaction
     local customRange = 100
-        if lia.playerinteract.isWithinRange(client, targetEntity, customRange) then
+    if lia.playerinteract.isWithinRange(client, targetEntity, customRange) then
         -- Player is within 100 units for close-range interaction
     end
     ```
@@ -48,11 +48,11 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
 
     ```lua
     -- High: Dynamic range checking with validation
-        local interactionRange = interactionData.range or 250
+    local interactionRange = interactionData.range or 250
     if IsValid(client) and IsValid(targetEntity) and
-        lia.playerinteract.isWithinRange(client, targetEntity, interactionRange) then
-        -- Player is within specified range for this interaction type
-        return true
+    lia.playerinteract.isWithinRange(client, targetEntity, interactionRange) then
+    -- Player is within specified range for this interaction type
+    return true
     end
     ```
 ]]
@@ -78,8 +78,8 @@ end
     Low Complexity:
 
     ```lua
-        -- Simple: Get all available interactions for local player
-        local interactions = lia.playerinteract.getInteractions()
+    -- Simple: Get all available interactions for local player
+    local interactions = lia.playerinteract.getInteractions()
     for name, interaction in pairs(interactions) do
         print("Available interaction:", name)
     end
@@ -88,7 +88,7 @@ end
     Medium Complexity:
 
     ```lua
-        -- Medium: Get interactions for specific player with validation
+    -- Medium: Get interactions for specific player with validation
     local client = LocalPlayer()
     if IsValid(client) then
         local interactions = lia.playerinteract.getInteractions(client)
@@ -102,14 +102,14 @@ end
     High Complexity:
 
     ```lua
-        -- High: Filter interactions by category and validate conditions
-        local interactions = lia.playerinteract.getInteractions()
+    -- High: Filter interactions by category and validate conditions
+    local interactions = lia.playerinteract.getInteractions()
     local filteredInteractions = {}
     for name, interaction in pairs(interactions) do
         if interaction.category == "Voice" and
-           (not interaction.shouldShow or interaction.shouldShow(LocalPlayer())) then
-            filteredInteractions[name] = interaction
-        end
+        (not interaction.shouldShow or interaction.shouldShow(LocalPlayer())) then
+        filteredInteractions[name] = interaction
+    end
     end
     ```
 ]]
@@ -169,14 +169,14 @@ end
     High Complexity:
 
     ```lua
-        -- High: Filter actions by category and execute specific ones
+    -- High: Filter actions by category and execute specific ones
     local actions = lia.playerinteract.getActions()
     local voiceActions = {}
     for name, action in pairs(actions) do
         if action.category == L("categoryVoice") and
-           (not action.shouldShow or action.shouldShow(LocalPlayer())) then
-            voiceActions[name] = action
-        end
+        (not action.shouldShow or action.shouldShow(LocalPlayer())) then
+        voiceActions[name] = action
+    end
     end
     ```
 ]]
@@ -207,8 +207,8 @@ end
 
     ```lua
     -- Simple: Get options for display
-        local interactions = lia.playerinteract.getInteractions()
-        local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
+    local interactions = lia.playerinteract.getInteractions()
+    local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
     for _, option in pairs(optionsList) do
         print("Option:", option.name)
     end
@@ -219,7 +219,7 @@ end
     ```lua
     -- Medium: Process options for custom display
     local actions = lia.playerinteract.getActions()
-        local optionsList = lia.playerinteract.getCategorizedOptions(actions)
+    local optionsList = lia.playerinteract.getCategorizedOptions(actions)
     local count = #optionsList
     if count > 0 then
         -- Options are ready for display
@@ -230,8 +230,8 @@ end
 
     ```lua
     -- High: Filter and process options
-        local interactions = lia.playerinteract.getInteractions()
-        local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
+    local interactions = lia.playerinteract.getInteractions()
+    local optionsList = lia.playerinteract.getCategorizedOptions(interactions)
     local filteredOptions = {}
     for _, option in pairs(optionsList) do
         if option.opt.category == "Voice" then
@@ -279,11 +279,11 @@ if SERVER then
         -- Simple: Add basic player interaction
         lia.playerinteract.addInteraction("giveMoney", {
             shouldShow = function(client, target)
-                return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0
+            return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0
             end,
             onRun = function(client, target)
-                -- Give money logic here
-            end
+            -- Give money logic here
+        end
         })
         ```
 
@@ -298,12 +298,12 @@ if SERVER then
             actionText = "Healing player...",
             targetActionText = "Being healed...",
             shouldShow = function(client, target)
-                return IsValid(target) and target:IsPlayer() and target:Health() < target:GetMaxHealth()
+            return IsValid(target) and target:IsPlayer() and target:Health() < target:GetMaxHealth()
             end,
             onRun = function(client, target)
-                target:SetHealth(target:GetMaxHealth())
-                client:notify("Player healed successfully!")
-            end
+            target:SetHealth(target:GetMaxHealth())
+            client:notify("Player healed successfully!")
+        end
         })
         ```
 
@@ -319,25 +319,25 @@ if SERVER then
             actionText = "Arresting suspect...",
             targetActionText = "Being arrested...",
             shouldShow = function(client, target)
-                if not IsValid(target) or not target:IsPlayer() then return false end
+            if not IsValid(target) or not target:IsPlayer() then return false end
                 if not client:getChar() or not target:getChar() then return false end
-                return client:getChar():getFaction() == FACTION_POLICE and
-                       target:getChar():getFaction() ~= FACTION_POLICE
-            end,
-            onRun = function(client, target)
-                -- Complex arrest logic with validation
-                if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
-                    lia.log.add(client, "cheaterAction", "Attempted arrest while flagged as cheater")
-                    client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
-                    return
-                end
+                    return client:getChar():getFaction() == FACTION_POLICE and
+                    target:getChar():getFaction() ~= FACTION_POLICE
+                    end,
+                    onRun = function(client, target)
+                    -- Complex arrest logic with validation
+                    if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+                        lia.log.add(client, "cheaterAction", "Attempted arrest while flagged as cheater")
+                        client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
+                        return
+                    end
 
-                target:getChar():setData("arrested", true)
-                target:StripWeapons()
-                client:notify("Suspect arrested!")
-                target:notify("You have been arrested!")
-            end
-        })
+                    target:getChar():setData("arrested", true)
+                    target:StripWeapons()
+                    client:notify("Suspect arrested!")
+                    target:notify("You have been arrested!")
+                end
+                })
         ```
     ]]
     function lia.playerinteract.addInteraction(name, data)
@@ -397,13 +397,13 @@ if SERVER then
         lia.playerinteract.addAction("changeToWhisper", {
             category = L("categoryVoice"),
             shouldShow = function(client)
-                return client:getChar() and client:Alive() and
-                       client:getNetVar("VoiceType") ~= L("whispering")
+            return client:getChar() and client:Alive() and
+            client:getNetVar("VoiceType") ~= L("whispering")
             end,
             onRun = function(client)
-                client:setNetVar("VoiceType", L("whispering"))
-                client:notifyInfoLocalized("voiceModeSet", L("whispering"))
-            end
+            client:setNetVar("VoiceType", L("whispering"))
+            client:notifyInfoLocalized("voiceModeSet", L("whispering"))
+        end
         })
         ```
 
@@ -416,19 +416,19 @@ if SERVER then
             timeToComplete = 10,
             actionText = "Meditating...",
             shouldShow = function(client)
-                return client:getChar() and client:Alive() and
-                       not client:getNetVar("meditating", false)
+            return client:getChar() and client:Alive() and
+            not client:getNetVar("meditating", false)
             end,
             onRun = function(client)
-                client:setNetVar("meditating", true)
-                client:SetHealth(math.min(client:Health() + 25, client:GetMaxHealth()))
-                client:notify("Meditation complete! Health restored.")
-                timer.Simple(1, function()
-                    if IsValid(client) then
-                        client:setNetVar("meditating", false)
-                    end
-                end)
+            client:setNetVar("meditating", true)
+            client:SetHealth(math.min(client:Health() + 25, client:GetMaxHealth()))
+            client:notify("Meditation complete! Health restored.")
+            timer.Simple(1, function()
+            if IsValid(client) then
+                client:setNetVar("meditating", false)
             end
+        end)
+        end
         })
         ```
 
@@ -442,37 +442,37 @@ if SERVER then
             timeToComplete = 5,
             actionText = "Calling emergency services...",
             shouldShow = function(client)
-                if not client:getChar() or not client:Alive() then return false end
+            if not client:getChar() or not client:Alive() then return false end
                 local char = client:getChar()
                 if char:getFaction() == FACTION_POLICE or char:getFaction() == FACTION_MEDIC then
                     return false -- Emergency services don't need to call themselves
                 end
                 return not client:getNetVar("emergencyCooldown", false)
-            end,
-            onRun = function(client)
+                end,
+                onRun = function(client)
                 -- Set cooldown to prevent spam
                 client:setNetVar("emergencyCooldown", true)
                 timer.Simple(300, function() -- 5 minute cooldown
-                    if IsValid(client) then
-                        client:setNetVar("emergencyCooldown", false)
-                    end
-                end)
-
-                -- Notify emergency services
-                local emergencyMsg = string.format(
-                    "Emergency call from %s at %s",
-                    client:getChar():getDisplayedName(),
-                    client:GetPos()
-                )
-
-                for _, ply in ipairs(player.GetAll()) do
-                    if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
-                        ply:notify(emergencyMsg)
-                    end
+                if IsValid(client) then
+                    client:setNetVar("emergencyCooldown", false)
                 end
+            end)
 
-                client:notify("Emergency services have been notified!")
+            -- Notify emergency services
+            local emergencyMsg = string.format(
+            "Emergency call from %s at %s",
+            client:getChar():getDisplayedName(),
+            client:GetPos()
+            )
+
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
+                    ply:notify(emergencyMsg)
+                end
             end
+
+            client:notify("Emergency services have been notified!")
+        end
         })
         ```
     ]]
@@ -528,10 +528,10 @@ if SERVER then
         -- Medium: Sync to specific client after they connect
         hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
             timer.Simple(2, function() -- Wait for client to fully load
-                if IsValid(client) then
-                    lia.playerinteract.syncToClients(client)
-                end
-            end)
+            if IsValid(client) then
+                lia.playerinteract.syncToClients(client)
+            end
+        end)
         end)
         ```
 
@@ -542,9 +542,9 @@ if SERVER then
         function syncInteractionsToClient(client)
             if not IsValid(client) then return end
 
-            -- Check if client is ready
-            if not client:IsConnected() or not client:getChar() then
-                timer.Simple(1, function()
+                -- Check if client is ready
+                if not client:IsConnected() or not client:getChar() then
+                    timer.Simple(1, function()
                     syncInteractionsToClient(client)
                 end)
                 return
@@ -726,29 +726,29 @@ else
         local client = LocalPlayer()
         if not IsValid(client) then return end
 
-        local interactions = lia.playerinteract.getInteractions(client)
-        local filteredInteractions = {}
+            local interactions = lia.playerinteract.getInteractions(client)
+            local filteredInteractions = {}
 
-        -- Filter interactions based on custom criteria
-        for name, interaction in pairs(interactions) do
-            if interaction.category == "Voice" and
-               (not interaction.shouldShow or interaction.shouldShow(client)) then
+            -- Filter interactions based on custom criteria
+            for name, interaction in pairs(interactions) do
+                if interaction.category == "Voice" and
+                (not interaction.shouldShow or interaction.shouldShow(client)) then
                 filteredInteractions[name] = interaction
             end
         end
 
         if table.Count(filteredInteractions) > 0 then
             lia.playerinteract.openMenu(
-                filteredInteractions,
-                true,
-                "Voice Interactions",
-                KEY_TAB,
-                "liaRequestInteractOptions",
-                true -- preFiltered
+            filteredInteractions,
+            true,
+            "Voice Interactions",
+            KEY_TAB,
+            "liaRequestInteractOptions",
+            true -- preFiltered
             )
-        else
-            client:notify("No voice interactions available!")
-        end
+            else
+                client:notify("No voice interactions available!")
+            end
         ```
     ]]
     function lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)

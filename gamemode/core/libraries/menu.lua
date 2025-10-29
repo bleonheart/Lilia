@@ -70,7 +70,7 @@ end
         lia.menu.add({
             ["Use"] = function() print("Used item") end,
             ["Drop"] = function() print("Dropped item") end
-        })
+            })
         ```
 
         Medium Complexity:
@@ -82,7 +82,7 @@ end
             ["Open"] = function() ent:Use() end,
             ["Examine"] = function() print("Examining entity") end,
             ["Destroy"] = function() ent:Remove() end
-        }, ent)
+            }, ent)
         ```
 
         High Complexity:
@@ -90,19 +90,19 @@ end
         ```lua
         -- High: Create menu with custom position and cleanup
         local menuData = {
-            ["Option 1"] = function()
-                RunConsoleCommand("say", "Selected option 1")
-            end,
-            ["Option 2"] = function()
-                RunConsoleCommand("say", "Selected option 2")
-            end,
-            ["Cancel"] = function()
-                print("Menu cancelled")
-            end
+        ["Option 1"] = function()
+        RunConsoleCommand("say", "Selected option 1")
+        end,
+        ["Option 2"] = function()
+        RunConsoleCommand("say", "Selected option 2")
+        end,
+        ["Cancel"] = function()
+        print("Menu cancelled")
+        end
         }
 
         local cleanupFunc = function()
-            print("Menu was removed")
+        print("Menu was removed")
         end
 
         local menuIndex = lia.menu.add(menuData, Vector(100, 200, 50), cleanupFunc)
@@ -173,8 +173,8 @@ end
         -- Medium: Custom rendering with additional checks
         hook.Add("HUDPaint", "CustomMenuDraw", function()
             if not LocalPlayer():Alive() then return end
-            lia.menu.drawAll()
-        end)
+                lia.menu.drawAll()
+            end)
         ```
 
         High Complexity:
@@ -186,11 +186,11 @@ end
             local currentTime = RealTime()
             if currentTime - lastDrawTime < 0.016 then return end -- Limit to ~60fps
 
-            if #lia.menu.list > 0 then
-                lia.menu.drawAll()
-                lastDrawTime = currentTime
-            end
-        end)
+                if #lia.menu.list > 0 then
+                    lia.menu.drawAll()
+                    lastDrawTime = currentTime
+                end
+            end)
         ```
 ]]
 function lia.menu.drawAll()
@@ -288,16 +288,16 @@ end
                 local currentTime = RealTime()
                 if currentTime - lastMenuTime < 0.1 then return end -- Prevent spam
 
-                local menuIndex, callback = lia.menu.getActiveMenu()
-                if callback then
-                    lastMenuTime = currentTime
-                    callback()
+                    local menuIndex, callback = lia.menu.getActiveMenu()
+                    if callback then
+                        lastMenuTime = currentTime
+                        callback()
 
-                    -- Log the interaction
-                    print(string.format("Menu interaction at time %f, menu index %d", currentTime, menuIndex))
+                        -- Log the interaction
+                        print(string.format("Menu interaction at time %f, menu index %d", currentTime, menuIndex))
+                    end
                 end
-            end
-        end)
+            end)
         ```
 ]]
 function lia.menu.getActiveMenu()
@@ -343,7 +343,7 @@ end
         -- Simple: Remove menu and execute callback
         local menuIndex = 1
         local success = lia.menu.onButtonPressed(menuIndex, function()
-            print("Menu button pressed!")
+        print("Menu button pressed!")
         end)
         ```
 
@@ -380,13 +380,13 @@ end
             end
 
             local success = lia.menu.onButtonPressed(menuIndex, function()
-                local success, err = pcall(callback)
-                if not success then
-                    print("Menu callback error: " .. tostring(err))
-                end
-            end)
+            local success, err = pcall(callback)
+            if not success then
+                print("Menu callback error: " .. tostring(err))
+            end
+        end)
 
-            return success
+        return success
         end
 
         -- Usage

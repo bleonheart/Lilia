@@ -177,8 +177,8 @@ ITEM.isOutfit = true
         ```lua
         function ITEM:OnCanBeTransfered(_, newInventory)
             if newInventory and self:getData("equip") then return false end
-            return true
-        end
+                return true
+            end
         ```
 ]]
 --[[
@@ -191,7 +191,7 @@ ITEM.isOutfit = true
         ```lua
         function ITEM:onLoadout()
             if self:getData("equip") then self:wearOutfit(self.player, true) end
-        end
+            end
         ```
 ]]
 --[[
@@ -204,7 +204,7 @@ ITEM.isOutfit = true
         ```lua
         function ITEM:onRemoved()
             if IsValid(receiver) and receiver:IsPlayer() and self:getData("equip") then self:removeOutfit(receiver) end
-        end
+            end
         ```
 ]]
 --[[
@@ -223,12 +223,12 @@ Example Item:
 
 ```lua
 -- Basic item identification
-        ITEM.name = "Police Uniform"                        -- Display name shown to players
-        ITEM.desc = "A standard police uniform"             -- Description text
-        ITEM.category = "outfit"                            -- Category for inventory sorting
-        ITEM.model = "models/props_c17/BriefCase001a.mdl"   -- 3D model for the item
-        ITEM.width = 1                                      -- Inventory width (1 slot)
-        ITEM.height = 1                                     -- Inventory height (1 slot)
-        ITEM.outfitCategory = "model"                       -- Outfit category for conflict checking
+ITEM.name = "Police Uniform"                        -- Display name shown to players
+ITEM.desc = "A standard police uniform"             -- Description text
+ITEM.category = "outfit"                            -- Category for inventory sorting
+ITEM.model = "models/props_c17/BriefCase001a.mdl"   -- 3D model for the item
+ITEM.width = 1                                      -- Inventory width (1 slot)
+ITEM.height = 1                                     -- Inventory height (1 slot)
+ITEM.outfitCategory = "model"                       -- Outfit category for conflict checking
 ```
 ]]

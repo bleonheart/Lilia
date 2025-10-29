@@ -30,7 +30,7 @@ lia.class.list = lia.class.list or {}
             desc = "A regular citizen",
             faction = FACTION_CITIZEN,
             limit = 0
-        })
+            })
         ```
 
         Medium Complexity:
@@ -42,8 +42,8 @@ lia.class.list = lia.class.list or {}
             faction = FACTION_POLICE,
             limit = 5,
             OnCanBe = function(self, client)
-                return client:getChar():getAttrib("strength", 0) >= 10
-            end
+            return client:getChar():getAttrib("strength", 0) >= 10
+        end
         })
         ```
 
@@ -51,21 +51,21 @@ lia.class.list = lia.class.list or {}
 
         ```lua
         local classData = {
-            name = "Elite Soldier",
-            desc = "A highly trained military operative",
-            faction = FACTION_MILITARY,
-            limit = 2,
-            isWhitelisted = true,
-            OnCanBe = function(self, client)
-                local char = client:getChar()
-                return char:getAttrib("strength", 0) >= 15 and
-                       char:getAttrib("endurance", 0) >= 12 and
-                       client:IsAdmin()
-            end,
-            OnSpawn = function(self, client)
-                client:Give("weapon_ar2")
-                client:SetHealth(150)
-            end
+        name = "Elite Soldier",
+        desc = "A highly trained military operative",
+        faction = FACTION_MILITARY,
+        limit = 2,
+        isWhitelisted = true,
+        OnCanBe = function(self, client)
+        local char = client:getChar()
+        return char:getAttrib("strength", 0) >= 15 and
+        char:getAttrib("endurance", 0) >= 12 and
+        client:IsAdmin()
+        end,
+        OnSpawn = function(self, client)
+        client:Give("weapon_ar2")
+        client:SetHealth(150)
+        end
         }
         lia.class.register("elite_soldier", classData)
         ```
@@ -136,9 +136,9 @@ end
 
         ```lua
         local classDirectories = {
-            "gamemodes/lilia/classes",
-            "gamemodes/lilia/modules/factions/classes",
-            "gamemodes/lilia/modules/custom_classes/classes"
+        "gamemodes/lilia/classes",
+        "gamemodes/lilia/modules/factions/classes",
+        "gamemodes/lilia/modules/custom_classes/classes"
         }
 
         for _, dir in ipairs(classDirectories) do
@@ -207,9 +207,9 @@ end
         local canJoin, reason = lia.class.canBe(client, 1)
         if canJoin then
             print("Player can join class")
-        else
-            print("Cannot join: " .. reason)
-        end
+            else
+                print("Cannot join: " .. reason)
+            end
         ```
 
         Medium Complexity:
@@ -298,11 +298,11 @@ end
             end
 
             return {
-                name = class.name,
-                description = class.desc,
-                limit = class.limit,
-                faction = class.faction
-            }
+            name = class.name,
+            description = class.desc,
+            limit = class.limit,
+            faction = class.faction
+        }
         end
         ```
 
@@ -319,15 +319,15 @@ end
             local playerCount = #players
 
             return {
-                info = class,
-                currentPlayers = players,
-                playerCount = playerCount,
-                isAvailable = class.limit == 0 or playerCount < class.limit,
-                isWhitelisted = class.isWhitelisted or false,
-                canJoin = function(client)
-                    return lia.class.canBe(client, identifier)
-                end
-            }
+            info = class,
+            currentPlayers = players,
+            playerCount = playerCount,
+            isAvailable = class.limit == 0 or playerCount < class.limit,
+            isWhitelisted = class.isWhitelisted or false,
+            canJoin = function(client)
+            return lia.class.canBe(client, identifier)
+        end
+        }
         end
         ```
 ]]
@@ -381,8 +381,8 @@ end
         local function getClassStatistics(classIndex)
             local players = lia.class.getPlayers(classIndex)
             local stats = {
-                count = #players,
-                players = {},
+            count = #players,
+            players = {},
                 onlineTime = 0,
                 averageLevel = 0
             }
@@ -394,17 +394,17 @@ end
                         name = player:Name(),
                         level = char:getLevel(),
                         playtime = char:getPlayTime()
-                    })
-                    stats.onlineTime = stats.onlineTime + char:getPlayTime()
+                        })
+                        stats.onlineTime = stats.onlineTime + char:getPlayTime()
+                    end
                 end
-            end
 
-            if stats.count > 0 then
-                stats.averageLevel = stats.onlineTime / stats.count
-            end
+                if stats.count > 0 then
+                    stats.averageLevel = stats.onlineTime / stats.count
+                end
 
-            return stats
-        end
+                return stats
+            end
         ```
 ]]
 function lia.class.getPlayers(class)
@@ -473,11 +473,11 @@ end
                     percentage = percentage,
                     isFull = class.limit > 0 and count >= class.limit,
                     faction = class.faction
-                })
-            end
+                    })
+                end
 
-            return report
-        end
+                return report
+            end
         ```
 ]]
 function lia.class.getPlayerCount(class)
@@ -541,12 +541,12 @@ end
                         index = i,
                         class = class,
                         matchType = string.find(uniqueID, term) and "uniqueID" or "name"
-                    })
+                        })
+                    end
                 end
-            end
 
-            return results
-        end
+                return results
+            end
         ```
 ]]
 function lia.class.retrieveClass(class)
@@ -610,22 +610,22 @@ end
                         index = i,
                         class = class,
                         requiredPermissions = class.requiredPermissions or {}
-                    })
-                else
-                    table.insert(regularClasses, {
-                        index = i,
-                        class = class
-                    })
-                end
-            end
+                            })
+                            else
+                                table.insert(regularClasses, {
+                                    index = i,
+                                    class = class
+                                    })
+                                end
+                            end
 
-            return {
-                whitelist = whitelistClasses,
-                regular = regularClasses,
-                totalWhitelist = #whitelistClasses,
-                totalRegular = #regularClasses
-            }
-        end
+                            return {
+                            whitelist = whitelistClasses,
+                            regular = regularClasses,
+                            totalWhitelist = #whitelistClasses,
+                            totalRegular = #regularClasses
+                        }
+                    end
         ```
 ]]
 function lia.class.hasWhitelist(class)
@@ -688,11 +688,11 @@ end
                     isFull = isFull,
                     availability = isFull and "Full" or "Available",
                     requiresWhitelist = lia.class.hasWhitelist(class.index)
-                })
-            end
+                    })
+                end
 
-            -- Sort by availability and name
-            table.sort(detailedClasses, function(a, b)
+                -- Sort by availability and name
+                table.sort(detailedClasses, function(a, b)
                 if a.isFull ~= b.isFull then
                     return not a.isFull -- Available classes first
                 end

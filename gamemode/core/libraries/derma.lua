@@ -32,24 +32,24 @@ local color_target = Color(255, 255, 255, 200)
     ```lua
     -- Simple: Create a basic context menu
     local menu = lia.derma.dermaMenu()
-        menu:AddOption("Option 1", function() print("Option 1 clicked") end)
+    menu:AddOption("Option 1", function() print("Option 1 clicked") end)
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Create context menu with multiple options
+    -- Medium: Create context menu with multiple options
     local menu = lia.derma.dermaMenu()
     menu:AddOption("Edit", function() editItem() end)
-        menu:AddOption("Delete", function() deleteItem() end)
+    menu:AddOption("Delete", function() deleteItem() end)
     menu:AddSpacer()
-        menu:AddOption("Properties", function() showProperties() end)
+    menu:AddOption("Properties", function() showProperties() end)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Create dynamic context menu based on conditions
+    -- High: Create dynamic context menu based on conditions
     local menu = lia.derma.dermaMenu()
     if player:IsAdmin() then
         menu:AddOption("Admin Action", function() adminAction() end)
@@ -57,7 +57,7 @@ local color_target = Color(255, 255, 255, 200)
     if item:CanUse() then
         menu:AddOption("Use Item", function() item:Use() end)
     end
-        menu:AddOption("Inspect", function() inspectItem(item) end)
+    menu:AddOption("Inspect", function() inspectItem(item) end)
     ```
 ]]
 function lia.derma.dermaMenu()
@@ -129,84 +129,84 @@ end
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
         {name = "Option 1", callback = function() print("Selected 1") end},
-        {name = "Option 2", callback = function() print("Selected 2") end}
-    })
+            {name = "Option 2", callback = function() print("Selected 2") end}
+                })
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Custom menu with descriptions and custom positioning
+    -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
         {
             name = "Save Game",
             description = "Save your current progress",
             callback = function() saveGame() end
-        },
-        {
-            name = "Load Game",
-            description = "Load a previously saved game",
-            callback = function() loadGame() end
-        },
-        {
-            name = "Settings",
-            description = "Open game settings",
-            callback = function() openSettings() end
-        }
-    }, {
-        title = "Main Menu",
-        x = ScrW() / 2 - 225,
-        y = ScrH() / 2 - 150,
-        frameW = 450,
-        closeOnSelect = false
-    })
+            },
+            {
+                name = "Load Game",
+                description = "Load a previously saved game",
+                callback = function() loadGame() end
+                },
+                {
+                    name = "Settings",
+                    description = "Open game settings",
+                    callback = function() openSettings() end
+                }
+                }, {
+                    title = "Main Menu",
+                    x = ScrW() / 2 - 225,
+                    y = ScrH() / 2 - 150,
+                    frameW = 450,
+                    closeOnSelect = false
+                    })
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Advanced menu with custom callbacks and network messaging
+    -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
         {
             name = "Radio Preset 1",
             description = "Switch to preset frequency 1",
             callback = function(client, entity, entry, frame)
-                -- Custom callback with context
-                lia.radio.setFrequency(100.0)
-                client:notify("Switched to radio preset 1")
+            -- Custom callback with context
+            lia.radio.setFrequency(100.0)
+            client:notify("Switched to radio preset 1")
             end,
             passContext = true -- Pass client, entity, entry, frame to callback
-        },
-        {
-            name = "Radio Preset 2",
-            description = "Switch to preset frequency 2",
-            serverOnly = true,
-            netMessage = "liaRadioSetPreset",
-            networkID = "preset2"
-        },
-        {
-            name = "Custom Frequency",
-            description = "Enter a custom frequency",
-            callback = function()
-                -- Open frequency input dialog
-                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+            },
+            {
+                name = "Radio Preset 2",
+                description = "Switch to preset frequency 2",
+                serverOnly = true,
+                netMessage = "liaRadioSetPreset",
+                networkID = "preset2"
+                },
+                {
+                    name = "Custom Frequency",
+                    description = "Enter a custom frequency",
+                    callback = function()
+                    -- Open frequency input dialog
+                    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
                     local numFreq = tonumber(freq)
                     if numFreq and numFreq >= 80 and numFreq <= 200 then
                         lia.radio.setFrequency(numFreq)
                         client:notify("Frequency set to " .. freq .. " MHz")
-                    else
-                        client:notify("Invalid frequency range (80-200 MHz)")
-                    end
-                end)
-            end
-        }
-    }, {
-        title = "Radio Presets",
-        mode = "custom",
-        closeKey = KEY_R,
-        fadeSpeed = 0.1,
-        autoCloseDelay = 60
-    })
+                        else
+                            client:notify("Invalid frequency range (80-200 MHz)")
+                        end
+                    end)
+                end
+            }
+            }, {
+                title = "Radio Presets",
+                mode = "custom",
+                closeKey = KEY_R,
+                fadeSpeed = 0.1,
+                autoCloseDelay = 60
+                })
     ```
 ]]
 function lia.derma.optionsMenu(rawOptions, config)
@@ -296,8 +296,11 @@ function lia.derma.optionsMenu(rawOptions, config)
 
     local fadeSpeed = config.fadeSpeed or 0.05
     local frameW = config.frameW or 450
-    local entryH = config.entryH or 30
-    local baseH = entryH * #optionsList + 80
+    local entryH = config.entryH or 26
+    local titleH = config.titleHeight or 16
+    local titleY = config.titleOffsetY or 4
+    local gap = config.verticalGap or 12
+    local baseH = entryH * #optionsList + titleH + titleY + gap + 14
     local frameH = config.frameH
     if not frameH then
         if mode == "interaction" then
@@ -308,9 +311,6 @@ function lia.derma.optionsMenu(rawOptions, config)
         end
     end
 
-    local titleH = config.titleHeight or (mode == "interaction" and 36 or 16)
-    local titleY = config.titleOffsetY or 2
-    local gap = config.verticalGap or 24
     local padding = config.screenPadding or ScrW() * 0.15
     local xPos = config.x
     if xPos == nil then xPos = ScrW() - frameW - padding end
@@ -327,12 +327,22 @@ function lia.derma.optionsMenu(rawOptions, config)
         end
     end
 
-    local frame = vgui.Create("liaFrame")
+    local frame = vgui.Create("DPanel")
     frame:SetSize(frameW, frameH)
     frame:SetPos(xPos, yPos)
     frame:MakePopup()
-    frame:SetTitle("")
-    frame:ShowCloseButton(false)
+    frame:SetDrawOnTop(true)
+    frame:SetZPos(10000)
+    frame:DockPadding(6, 7, 6, 7)
+    frame:SetAlpha(0)
+    frame:AlphaTo(255, fadeSpeed)
+    function frame:Paint(w, h)
+        local windowShadow = lia.color.theme and lia.color.theme.window_shadow or Color(18, 32, 32, 90)
+        local backgroundPanel = lia.color.theme and lia.color.theme.background_panelpopup or Color(20, 28, 28)
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(windowShadow):Shape(lia.derma.SHAPE_IOS):Shadow(10, 16):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(16):Color(backgroundPanel):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
     if emitHooks then hook.Run("InteractionMenuOpened", frame) end
     local oldOnRemove = frame.OnRemove
     function frame:OnRemove()
@@ -341,12 +351,10 @@ function lia.derma.optionsMenu(rawOptions, config)
         if registryKey and lia.gui[registryKey] == self then lia.gui[registryKey] = nil end
     end
 
-    frame:SetAlpha(0)
-    frame:AlphaTo(255, fadeSpeed)
     local closeKey = config.closeKey
     if closeKey then
         function frame:Think()
-            if not input.IsKeyDown(closeKey) then self:Close() end
+            if not input.IsKeyDown(closeKey) then self:Remove() end
         end
     end
 
@@ -355,7 +363,7 @@ function lia.derma.optionsMenu(rawOptions, config)
     if autoCloseDelay == nil then autoCloseDelay = 30 end
     if timerName and autoCloseDelay and autoCloseDelay > 0 then
         timer.Remove(timerName)
-        timer.Create(timerName, autoCloseDelay, 1, function() if IsValid(frame) then frame:Close() end end)
+        timer.Create(timerName, autoCloseDelay, 1, function() if IsValid(frame) then frame:Remove() end end)
     end
 
     local title = frame:Add("DLabel")
@@ -378,7 +386,7 @@ function lia.derma.optionsMenu(rawOptions, config)
         local btn = vgui.Create("liaButton", layout)
         btn:SetTall(entryH)
         btn:Dock(TOP)
-        btn:DockMargin(15, 8, 15, 0)
+        btn:DockMargin(2, 2, 2, 0)
         local displayText = entry.label or entry.id or ""
         if entry.opt and entry.opt.localized ~= false and L then
             local localized = L(displayText)
@@ -396,7 +404,7 @@ function lia.derma.optionsMenu(rawOptions, config)
         end
 
         btn.DoClick = function()
-            if shouldCloseOnSelect then frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Close() end end) end
+            if shouldCloseOnSelect then frame:AlphaTo(0, fadeSpeed, 0, function() if IsValid(frame) then frame:Remove() end end) end
             local optionData = entry.opt or {}
             local callback = optionData.callback or optionData.onRun
             local function runOptionCallback()
@@ -468,7 +476,7 @@ end
     ```lua
     -- Simple: Open color picker with callback
     lia.derma.colorPicker(function(color)
-        print("Selected color:", color.r, color.g, color.b)
+    print("Selected color:", color.r, color.g, color.b)
     end)
     ```
 
@@ -478,21 +486,21 @@ end
     -- Medium: Open color picker with default color
     local defaultColor = Color(255, 0, 0)
     lia.derma.colorPicker(function(color)
-        myPanel:SetColor(color)
+    myPanel:SetColor(color)
     end, defaultColor)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Color picker with validation and multiple callbacks
-        local currentColor = settings:GetColor("theme_color")
+    -- High: Color picker with validation and multiple callbacks
+    local currentColor = settings:GetColor("theme_color")
     lia.derma.colorPicker(function(color)
-        if color:Distance(currentColor) > 50 then
-            settings:SetColor("theme_color", color)
-            updateTheme(color)
-            notify("Theme color updated!")
-        end
+    if color:Distance(currentColor) > 50 then
+        settings:SetColor("theme_color", color)
+        updateTheme(color)
+        notify("Theme color updated!")
+    end
     end, currentColor)
     ```
 ]]
@@ -682,42 +690,42 @@ end
     ```lua
     -- Simple: Create a basic radial menu
     local menu = lia.derma.radialMenu()
-        menu:AddOption("Option 1", function() print("Option 1 selected") end)
-        menu:AddOption("Option 2", function() print("Option 2 selected") end)
+    menu:AddOption("Option 1", function() print("Option 1 selected") end)
+    menu:AddOption("Option 2", function() print("Option 2 selected") end)
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Create radial menu with icons and descriptions
+    -- Medium: Create radial menu with icons and descriptions
     local menu = lia.derma.radialMenu()
-        menu:AddOption("Edit", function() editItem() end, "icon16/pencil.png", "Edit this item")
-        menu:AddOption("Delete", function() deleteItem() end, "icon16/delete.png", "Delete this item")
-        menu:AddOption("Copy", function() copyItem() end, "icon16/copy.png", "Copy this item")
+    menu:AddOption("Edit", function() editItem() end, "icon16/pencil.png", "Edit this item")
+    menu:AddOption("Delete", function() deleteItem() end, "icon16/delete.png", "Delete this item")
+    menu:AddOption("Copy", function() copyItem() end, "icon16/copy.png", "Copy this item")
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Create radial menu with custom options and submenus
+    -- High: Create radial menu with custom options and submenus
     local options = {
-        radius = 320,
-        inner_radius = 120,
-        hover_sound = "ui/buttonclick.wav",
-        scale_animation = true
+    radius = 320,
+    inner_radius = 120,
+    hover_sound = "ui/buttonclick.wav",
+    scale_animation = true
     }
     local menu = lia.derma.radialMenu(options)
 
     -- Add main options
-        menu:AddOption("Actions", nil, "icon16/gear.png", "Perform actions", nil)
+    menu:AddOption("Actions", nil, "icon16/gear.png", "Perform actions", nil)
 
     -- Create submenu
-        local submenu = menu:CreateSubMenu("Actions", "Choose an action")
-        submenu:AddOption("Attack", function() attackTarget() end, "icon16/sword.png", "Attack target")
-        submenu:AddOption("Defend", function() defendPosition() end, "icon16/shield.png", "Defend position")
+    local submenu = menu:CreateSubMenu("Actions", "Choose an action")
+    submenu:AddOption("Attack", function() attackTarget() end, "icon16/sword.png", "Attack target")
+    submenu:AddOption("Defend", function() defendPosition() end, "icon16/shield.png", "Defend position")
 
     -- Add submenu option
-        menu:AddSubMenuOption("Actions", submenu, "icon16/gear.png", "Access action menu")
+    menu:AddSubMenuOption("Actions", submenu, "icon16/gear.png", "Access action menu")
     ```
 
     Panel Methods:
@@ -753,7 +761,7 @@ end
     ```lua
     -- Simple: Open player selector with callback
     lia.derma.playerSelector(function(player)
-        print("Selected player:", player:Name())
+    print("Selected player:", player:Name())
     end)
     ```
 
@@ -762,18 +770,18 @@ end
     ```lua
     -- Medium: Player selector with validation
     lia.derma.playerSelector(function(player)
-        if IsValid(player) and player:IsPlayer() then
-            sendMessage(player, "Hello!")
-        end
+    if IsValid(player) and player:IsPlayer() then
+        sendMessage(player, "Hello!")
+    end
     end)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Player selector with admin checks and multiple actions
+    -- High: Player selector with admin checks and multiple actions
     lia.derma.playerSelector(function(player)
-        if not IsValid(player) then return end
+    if not IsValid(player) then return end
 
         local menu = lia.derma.dermaMenu()
         menu:AddOption("Teleport", function() teleportToPlayer(player) end)
@@ -894,8 +902,8 @@ end
 
     ```lua
     -- Simple: Open text input dialog
-        lia.derma.textBox("Enter Name", "Type your name here", function(text)
-        print("Entered:", text)
+    lia.derma.textBox("Enter Name", "Type your name here", function(text)
+    print("Entered:", text)
     end)
     ```
 
@@ -903,9 +911,9 @@ end
 
     ```lua
     -- Medium: Text input with validation
-        lia.derma.textBox("Set Password", "Enter new password", function(text)
-        if string.len(text) >= 6 then
-            setPassword(text)
+    lia.derma.textBox("Set Password", "Enter new password", function(text)
+    if string.len(text) >= 6 then
+        setPassword(text)
         else
             notify("Password too short!")
         end
@@ -915,9 +923,9 @@ end
     High Complexity:
 
     ```lua
-        -- High: Text input with multiple validations and processing
-        lia.derma.textBox("Create Item", "Enter item name", function(text)
-        if not text or text == "" then return end
+    -- High: Text input with multiple validations and processing
+    lia.derma.textBox("Create Item", "Enter item name", function(text)
+    if not text or text == "" then return end
 
         local cleanText = string.Trim(text)
         if string.len(cleanText) < 3 then
@@ -936,6 +944,7 @@ end
     ```
 ]]
 function lia.derma.textBox(title, desc, func)
+    if IsValid(lia.derma.menuTextBox) then lia.derma.menuTextBox:Remove() end
     lia.derma.menuTextBox = vgui.Create("liaFrame")
     lia.derma.menuTextBox:SetSize(300, 132)
     lia.derma.menuTextBox:Center()
@@ -1191,7 +1200,7 @@ end
 
     ```lua
     -- Simple: Draw a basic rounded rectangle
-        lia.derma.draw(8, 100, 100, 200, 100, Color(255, 0, 0))
+    lia.derma.draw(8, 100, 100, 200, 100, Color(255, 0, 0))
     ```
 
     Medium Complexity:
@@ -1199,7 +1208,7 @@ end
     ```lua
     -- Medium: Draw with custom flags and color
     local flags = lia.derma.SHAPE_IOS
-        lia.derma.draw(12, 50, 50, 300, 150, Color(0, 255, 0, 200), flags)
+    lia.derma.draw(12, 50, 50, 300, 150, Color(0, 255, 0, 200), flags)
     ```
 
     High Complexity:
@@ -1207,8 +1216,8 @@ end
     ```lua
     -- High: Dynamic drawing with conditions
     local radius = isHovered and 16 or 8
-        local color = isSelected and Color(255, 255, 0) or Color(100, 100, 100)
-        local flags = bit.bor(lia.derma.SHAPE_FIGMA, lia.derma.BLUR)
+    local color = isSelected and Color(255, 255, 0) or Color(100, 100, 100)
+    local flags = bit.bor(lia.derma.SHAPE_FIGMA, lia.derma.BLUR)
     lia.derma.draw(radius, x, y, w, h, color, flags)
     ```
 ]]
@@ -1240,7 +1249,7 @@ end
 
     ```lua
     -- Simple: Draw outlined rounded rectangle
-        lia.derma.drawOutlined(8, 100, 100, 200, 100, Color(255, 0, 0), 2)
+    lia.derma.drawOutlined(8, 100, 100, 200, 100, Color(255, 0, 0), 2)
     ```
 
     Medium Complexity:
@@ -1248,16 +1257,16 @@ end
     ```lua
     -- Medium: Draw with custom thickness and flags
     local flags = lia.derma.SHAPE_IOS
-        lia.derma.drawOutlined(12, 50, 50, 300, 150, Color(0, 255, 0), 3, flags)
+    lia.derma.drawOutlined(12, 50, 50, 300, 150, Color(0, 255, 0), 3, flags)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic outlined drawing with hover effects
+    -- High: Dynamic outlined drawing with hover effects
     local thickness = isHovered and 3 or 1
-        local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
-        lia.derma.drawOutlined(radius, x, y, w, h, color, thickness, flags)
+    local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
+    lia.derma.drawOutlined(radius, x, y, w, h, color, thickness, flags)
     ```
 ]]
 function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
@@ -1288,26 +1297,26 @@ end
 
     ```lua
     -- Simple: Draw textured rounded rectangle
-        local texture = Material("icon16/user.png"):GetTexture("$basetexture")
-        lia.derma.drawTexture(8, 100, 100, 200, 100, Color(255, 255, 255), texture)
+    local texture = Material("icon16/user.png"):GetTexture("$basetexture")
+    lia.derma.drawTexture(8, 100, 100, 200, 100, Color(255, 255, 255), texture)
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with color tint and custom flags
-        local texture = Material("gui/button.png"):GetTexture("$basetexture")
+    local texture = Material("gui/button.png"):GetTexture("$basetexture")
     local flags = lia.derma.SHAPE_IOS
-        lia.derma.drawTexture(12, 50, 50, 300, 150, Color(200, 200, 200), texture, flags)
+    lia.derma.drawTexture(12, 50, 50, 300, 150, Color(200, 200, 200), texture, flags)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic textured drawing with multiple textures
-        local texture = isHovered and hoverTexture or normalTexture
-        local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
-        lia.derma.drawTexture(radius, x, y, w, h, color, texture, flags)
+    -- High: Dynamic textured drawing with multiple textures
+    local texture = isHovered and hoverTexture or normalTexture
+    local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
+    lia.derma.drawTexture(radius, x, y, w, h, color, texture, flags)
     ```
 ]]
 function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
@@ -1339,7 +1348,7 @@ end
     ```lua
     -- Simple: Draw material-based rounded rectangle
     local mat = Material("gui/button.png")
-        lia.derma.drawMaterial(8, 100, 100, 200, 100, Color(255, 255, 255), mat)
+    lia.derma.drawMaterial(8, 100, 100, 200, 100, Color(255, 255, 255), mat)
     ```
 
     Medium Complexity:
@@ -1360,10 +1369,10 @@ end
     if mat and mat:IsValid() then
         local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
         lia.derma.drawMaterial(radius, x, y, w, h, color, mat, flags)
-    else
-        -- Fallback to solid color
-        lia.derma.draw(radius, x, y, w, h, fallbackColor, flags)
-    end
+        else
+            -- Fallback to solid color
+            lia.derma.draw(radius, x, y, w, h, fallbackColor, flags)
+        end
     ```
 ]]
 function lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)
@@ -1392,7 +1401,7 @@ end
 
     ```lua
     -- Simple: Draw a basic circle
-        lia.derma.drawCircle(100, 100, 50, Color(255, 0, 0))
+    lia.derma.drawCircle(100, 100, 50, Color(255, 0, 0))
     ```
 
     Medium Complexity:
@@ -1400,7 +1409,7 @@ end
     ```lua
     -- Medium: Draw circle with custom flags
     local flags = lia.derma.SHAPE_CIRCLE
-        lia.derma.drawCircle(200, 200, 75, Color(0, 255, 0, 200), flags)
+    lia.derma.drawCircle(200, 200, 75, Color(0, 255, 0, 200), flags)
     ```
 
     High Complexity:
@@ -1408,7 +1417,7 @@ end
     ```lua
     -- High: Dynamic circle drawing with hover effects
     local radius = isHovered and 60 or 50
-        local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
+    local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
     lia.derma.drawCircle(x, y, radius, color, flags)
     ```
 ]]
@@ -1438,7 +1447,7 @@ end
 
     ```lua
     -- Simple: Draw outlined circle
-        lia.derma.drawCircleOutlined(100, 100, 50, Color(255, 0, 0), 2)
+    lia.derma.drawCircleOutlined(100, 100, 50, Color(255, 0, 0), 2)
     ```
 
     Medium Complexity:
@@ -1446,16 +1455,16 @@ end
     ```lua
     -- Medium: Draw with custom thickness and flags
     local flags = lia.derma.SHAPE_CIRCLE
-        lia.derma.drawCircleOutlined(200, 200, 75, Color(0, 255, 0), 3, flags)
+    lia.derma.drawCircleOutlined(200, 200, 75, Color(0, 255, 0), 3, flags)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic outlined circle with hover effects
+    -- High: Dynamic outlined circle with hover effects
     local thickness = isHovered and 3 or 1
-        local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
-        lia.derma.drawCircleOutlined(x, y, radius, color, thickness, flags)
+    local color = isActive and Color(255, 255, 0) or Color(100, 100, 100)
+    lia.derma.drawCircleOutlined(x, y, radius, color, thickness, flags)
     ```
 ]]
 function lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)
@@ -1484,26 +1493,26 @@ end
 
     ```lua
     -- Simple: Draw textured circle
-        local texture = Material("icon16/user.png"):GetTexture("$basetexture")
-        lia.derma.drawCircleTexture(100, 100, 50, Color(255, 255, 255), texture)
+    local texture = Material("icon16/user.png"):GetTexture("$basetexture")
+    lia.derma.drawCircleTexture(100, 100, 50, Color(255, 255, 255), texture)
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with color tint and custom flags
-        local texture = Material("gui/button.png"):GetTexture("$basetexture")
+    local texture = Material("gui/button.png"):GetTexture("$basetexture")
     local flags = lia.derma.SHAPE_CIRCLE
-        lia.derma.drawCircleTexture(200, 200, 75, Color(200, 200, 200), texture, flags)
+    lia.derma.drawCircleTexture(200, 200, 75, Color(200, 200, 200), texture, flags)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic textured circle with multiple textures
-        local texture = isHovered and hoverTexture or normalTexture
-        local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
-        lia.derma.drawCircleTexture(x, y, radius, color, texture, flags)
+    -- High: Dynamic textured circle with multiple textures
+    local texture = isHovered and hoverTexture or normalTexture
+    local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
+    lia.derma.drawCircleTexture(x, y, radius, color, texture, flags)
     ```
 ]]
 function lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)
@@ -1533,7 +1542,7 @@ end
     ```lua
     -- Simple: Draw material-based circle
     local mat = Material("gui/button.png")
-        lia.derma.drawCircleMaterial(100, 100, 50, Color(255, 255, 255), mat)
+    lia.derma.drawCircleMaterial(100, 100, 50, Color(255, 255, 255), mat)
     ```
 
     Medium Complexity:
@@ -1554,10 +1563,10 @@ end
     if mat and mat:IsValid() then
         local color = isActive and Color(255, 255, 255) or Color(150, 150, 150)
         lia.derma.drawCircleMaterial(x, y, radius, color, mat, flags)
-    else
-        -- Fallback to solid color circle
-        lia.derma.drawCircle(x, y, radius, fallbackColor, flags)
-    end
+        else
+            -- Fallback to solid color circle
+            lia.derma.drawCircle(x, y, radius, fallbackColor, flags)
+        end
     ```
 ]]
 function lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)
@@ -1616,7 +1625,7 @@ end
     ```lua
     -- Medium: Draw with custom corner radii and flags
     local flags = lia.derma.SHAPE_IOS
-        lia.derma.drawBlur(50, 50, 300, 150, flags, 12, 12, 12, 12)
+    lia.derma.drawBlur(50, 50, 300, 150, flags, 12, 12, 12, 12)
     ```
 
     High Complexity:
@@ -1627,7 +1636,7 @@ end
     local tr = isTopRight and 16 or 8
     local bl = isBottomLeft and 16 or 8
     local br = isBottomRight and 16 or 8
-        lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
+    lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
     ```
 ]]
 function lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
@@ -1699,23 +1708,23 @@ end
 
     ```lua
     -- Simple: Draw basic shadow
-        lia.derma.drawShadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100))
+    lia.derma.drawShadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom spread and intensity
-        lia.derma.drawShadowsEx(50, 50, 300, 150, Color(0, 0, 0, 150), flags, 12, 12, 12, 12, 20, 25)
+    lia.derma.drawShadowsEx(50, 50, 300, 150, Color(0, 0, 0, 150), flags, 12, 12, 12, 12, 20, 25)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic shadow with different corner radii
+    -- High: Dynamic shadow with different corner radii
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-        lia.derma.drawShadowsEx(x, y, w, h, shadowColor, flags, tl, tr, bl, br, spread, intensity, thickness)
+    lia.derma.drawShadowsEx(x, y, w, h, shadowColor, flags, tl, tr, bl, br, spread, intensity, thickness)
     ```
 ]]
 function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
@@ -1761,14 +1770,14 @@ end
 
     ```lua
     -- Simple: Draw basic shadow with uniform radius
-        lia.derma.drawShadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
+    lia.derma.drawShadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom spread and intensity
-        lia.derma.drawShadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
+    lia.derma.drawShadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
     ```
 
     High Complexity:
@@ -1778,7 +1787,7 @@ end
     local radius = isHovered and 16 or 8
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-        lia.derma.drawShadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
+    lia.derma.drawShadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
     ```
 ]]
 function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)
@@ -1811,24 +1820,24 @@ end
 
     ```lua
     -- Simple: Draw outlined shadow
-        lia.derma.drawShadowsOutlined(8, 100, 100, 200, 100, Color(0, 0, 0, 100), 2)
+    lia.derma.drawShadowsOutlined(8, 100, 100, 200, 100, Color(0, 0, 0, 100), 2)
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom thickness and spread
-        lia.derma.drawShadowsOutlined(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 3, 20, 25)
+    lia.derma.drawShadowsOutlined(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 3, 20, 25)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Dynamic outlined shadow with hover effects
+    -- High: Dynamic outlined shadow with hover effects
     local thickness = isHovered and 3 or 1
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-        lia.derma.drawShadowsOutlined(radius, x, y, w, h, shadowColor, thickness, spread, intensity, flags)
+    lia.derma.drawShadowsOutlined(radius, x, y, w, h, shadowColor, thickness, spread, intensity, flags)
     ```
 ]]
 function lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)
@@ -2020,30 +2029,30 @@ lia.derma.Types = {
 
     ```lua
     -- Simple: Create and draw a rectangle
-        lia.derma.rect(100, 100, 200, 100):Color(Color(255, 0, 0)):Draw()
+    lia.derma.rect(100, 100, 200, 100):Color(Color(255, 0, 0)):Draw()
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Create rectangle with multiple properties
+    -- Medium: Create rectangle with multiple properties
     lia.derma.rect(50, 50, 300, 150)
-        :Color(Color(0, 255, 0, 200))
-        :Rad(12)
-        :Shape(lia.derma.SHAPE_IOS)
-        :Draw()
+    :Color(Color(0, 255, 0, 200))
+    :Rad(12)
+    :Shape(lia.derma.SHAPE_IOS)
+    :Draw()
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Complex rectangle with shadows and clipping
+    -- High: Complex rectangle with shadows and clipping
     lia.derma.rect(x, y, w, h)
-        :Color(backgroundColor)
-        :Radii(16, 8, 16, 8)
-        :Shadow(20, 25)
-        :Clip(parentPanel)
-        :Draw()
+    :Color(backgroundColor)
+    :Radii(16, 8, 16, 8)
+    :Shadow(20, 25)
+    :Clip(parentPanel)
+    :Draw()
     ```
 ]]
 function lia.derma.rect(x, y, w, h)
@@ -2069,7 +2078,7 @@ end
 
     ```lua
     -- Simple: Create and draw a circle
-        lia.derma.circle(100, 100, 50):Color(Color(255, 0, 0)):Draw()
+    lia.derma.circle(100, 100, 50):Color(Color(255, 0, 0)):Draw()
     ```
 
     Medium Complexity:
@@ -2077,9 +2086,9 @@ end
     ```lua
     -- Medium: Create circle with multiple properties
     lia.derma.circle(200, 200, 75)
-        :Color(Color(0, 255, 0, 200))
-        :Outline(2)
-        :Draw()
+    :Color(Color(0, 255, 0, 200))
+    :Outline(2)
+    :Draw()
     ```
 
     High Complexity:
@@ -2087,11 +2096,11 @@ end
     ```lua
     -- High: Complex circle with shadows and textures
     lia.derma.circle(x, y, radius)
-        :Color(circleColor)
-        :Texture(circleTexture)
-        :Shadow(15, 20)
-        :Blur(1.5)
-        :Draw()
+    :Color(circleColor)
+    :Texture(circleTexture)
+    :Shadow(15, 20)
+    :Blur(1.5)
+    :Draw()
     ```
 ]]
 function lia.derma.circle(x, y, r)
@@ -2146,14 +2155,14 @@ end
 
     ```lua
     -- Simple: Draw text with shadow
-        lia.derma.shadowText("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
+    lia.derma.shadowText("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom alignment
-        lia.derma.shadowText("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), Color(0, 0, 0, 150), 3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    lia.derma.shadowText("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), Color(0, 0, 0, 150), 3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     ```
 
     High Complexity:
@@ -2161,8 +2170,8 @@ end
     ```lua
     -- High: Dynamic shadow text with hover effects
     local shadowDist = isHovered and 4 or 2
-        local shadowColor = Color(0, 0, 0, isHovered and 200 or 100)
-        lia.derma.shadowText(text, font, x, y, textColor, shadowColor, shadowDist, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    local shadowColor = Color(0, 0, 0, isHovered and 200 or 100)
+    lia.derma.shadowText(text, font, x, y, textColor, shadowColor, shadowDist, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     ```
 ]]
 function lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
@@ -2202,14 +2211,14 @@ end
 
     ```lua
     -- Simple: Draw outlined text
-        lia.derma.drawTextOutlined("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
+    lia.derma.drawTextOutlined("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom alignment and outline
-        lia.derma.drawTextOutlined("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0, 200))
+    lia.derma.drawTextOutlined("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0, 200))
     ```
 
     High Complexity:
@@ -2217,8 +2226,8 @@ end
     ```lua
     -- High: Dynamic outlined text with hover effects
     local outlineWidth = isHovered and 4 or 2
-        local outlineColor = Color(0, 0, 0, isHovered and 255 or 150)
-        lia.derma.drawTextOutlined(text, font, x, y, textColor, TEXT_ALIGN_CENTER, outlineWidth, outlineColor)
+    local outlineColor = Color(0, 0, 0, isHovered and 255 or 150)
+    lia.derma.drawTextOutlined(text, font, x, y, textColor, TEXT_ALIGN_CENTER, outlineWidth, outlineColor)
     ```
 ]]
 function lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
@@ -2256,25 +2265,25 @@ end
 
     ```lua
     -- Simple: Draw basic tooltip
-        lia.derma.drawTip(100, 100, 200, 80, "Help text", "DermaDefault", Color(255, 255, 255), Color(0, 0, 0))
+    lia.derma.drawTip(100, 100, 200, 80, "Help text", "DermaDefault", Color(255, 255, 255), Color(0, 0, 0))
     ```
 
     Medium Complexity:
 
     ```lua
     -- Medium: Draw with custom styling
-        lia.derma.drawTip(50, 50, 300, 100, "This is a tooltip", "LiliaFont.16", Color(255, 255, 255), Color(100, 100, 100))
+    lia.derma.drawTip(50, 50, 300, 100, "This is a tooltip", "LiliaFont.16", Color(255, 255, 255), Color(100, 100, 100))
     ```
 
     High Complexity:
 
     ```lua
     -- High: Dynamic tooltip with hover effects
-        local w = math.max(200, surface.GetTextSize(text) + 40)
+    local w = math.max(200, surface.GetTextSize(text) + 40)
     local h = 60
     local textColor = Color(255, 255, 255)
-        local outlineColor = Color(0, 0, 0, isHovered and 200 or 100)
-        lia.derma.drawTip(x, y, w, h, text, font, textColor, outlineColor)
+    local outlineColor = Color(0, 0, 0, isHovered and 200 or 100)
+    lia.derma.drawTip(x, y, w, h, text, font, textColor, outlineColor)
     ```
 ]]
 function lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)
@@ -2348,7 +2357,7 @@ end
 
     ```lua
     -- Medium: Draw with custom color and alignment
-        lia.derma.drawText("Centered Text", 200, 200, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    lia.derma.drawText("Centered Text", 200, 200, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     ```
 
     High Complexity:
@@ -2357,7 +2366,7 @@ end
     -- High: Dynamic text with hover effects
     local textColor = Color(255, 255, 255)
     local alpha = isHovered and 1.0 or 0.7
-        lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, font, alpha)
+    lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, font, alpha)
     ```
 ]]
 function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
@@ -2497,7 +2506,7 @@ end
 
     ```lua
     -- Simple: Smooth value transition
-        local currentValue = lia.derma.approachExp(currentValue, targetValue, 5, FrameTime())
+    local currentValue = lia.derma.approachExp(currentValue, targetValue, 5, FrameTime())
     ```
 
     Medium Complexity:
@@ -2505,25 +2514,25 @@ end
     ```lua
     -- Medium: Animate panel alpha
     local targetAlpha = isVisible and 255 or 0
-        panel:SetAlpha(lia.derma.approachExp(panel:GetAlpha(), targetAlpha, 8, FrameTime()))
+    panel:SetAlpha(lia.derma.approachExp(panel:GetAlpha(), targetAlpha, 8, FrameTime()))
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Complex animation with multiple properties
+    -- High: Complex animation with multiple properties
     local dt = FrameTime()
     local targetX = isHovered and hoverX or normalX
     local targetY = isHovered and hoverY or normalY
     local targetScale = isHovered and 1.1 or 1.0
 
     panel:SetPos(
-        lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
-        lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
+    lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
+    lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
     )
     panel:SetSize(
-        lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
-        lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
+    lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
+    lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
     )
     ```
 ]]
@@ -2549,7 +2558,7 @@ end
 
     ```lua
     -- Simple: Apply ease-out to animation progress
-        local eased = lia.derma.easeOutCubic(animationProgress)
+    local eased = lia.derma.easeOutCubic(animationProgress)
     panel:SetAlpha(eased * 255)
     ```
 
@@ -2557,27 +2566,27 @@ end
 
     ```lua
     -- Medium: Smooth panel movement with ease-out
-        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
     local eased = lia.derma.easeOutCubic(progress)
-        panel:SetPos(startX + (endX - startX) * eased, startY + (endY - startY) * eased)
+    panel:SetPos(startX + (endX - startX) * eased, startY + (endY - startY) * eased)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Complex animation with multiple eased properties
-        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+    -- High: Complex animation with multiple eased properties
+    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
     local eased = lia.derma.easeOutCubic(progress)
 
     panel:SetPos(
-        startX + (endX - startX) * eased,
-        startY + (endY - startY) * eased
+    startX + (endX - startX) * eased,
+    startY + (endY - startY) * eased
     )
     panel:SetSize(
-        startW + (endW - startW) * eased,
-        startH + (endH - startH) * eased
+    startW + (endW - startW) * eased,
+    startH + (endH - startH) * eased
     )
-        panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
+    panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
     ```
 ]]
 function lia.derma.easeOutCubic(t)
@@ -2601,7 +2610,7 @@ end
 
     ```lua
     -- Simple: Apply ease-in-out to animation progress
-        local eased = lia.derma.easeInOutCubic(animationProgress)
+    local eased = lia.derma.easeInOutCubic(animationProgress)
     panel:SetAlpha(eased * 255)
     ```
 
@@ -2609,9 +2618,9 @@ end
 
     ```lua
     -- Medium: Smooth panel scaling with ease-in-out
-        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
     local eased = lia.derma.easeInOutCubic(progress)
-        local scale = startScale + (endScale - startScale) * eased
+    local scale = startScale + (endScale - startScale) * eased
     panel:SetSize(baseW * scale, baseH * scale)
     ```
 
@@ -2619,19 +2628,19 @@ end
 
     ```lua
     -- High: Complex UI animation with ease-in-out
-        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
     local eased = lia.derma.easeInOutCubic(progress)
 
     -- Animate position, size, and rotation
     panel:SetPos(
-        startX + (endX - startX) * eased,
-        startY + (endY - startY) * eased
+    startX + (endX - startX) * eased,
+    startY + (endY - startY) * eased
     )
     panel:SetSize(
-        startW + (endW - startW) * eased,
-        startH + (endH - startH) * eased
+    startW + (endW - startW) * eased,
+    startH + (endH - startH) * eased
     )
-        panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
+    panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
     ```
 ]]
 function lia.derma.easeInOutCubic(t)
@@ -2671,16 +2680,16 @@ end
     Medium Complexity:
 
     ```lua
-        -- Medium: Animate with custom duration and callback
-        lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-        print("Animation completed!")
+    -- Medium: Animate with custom duration and callback
+    lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
+    print("Animation completed!")
     end)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Complex animation with validation and effects
+    -- High: Complex animation with validation and effects
     if IsValid(panel) then
         local targetW = isExpanded and 500 or 300
         local targetH = isExpanded and 400 or 200
@@ -2688,9 +2697,9 @@ end
         local scaleFactor = isExpanded and 0.9 or 0.7
 
         lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-            if IsValid(animPanel) then
-                onAnimationComplete(animPanel)
-            end
+        if IsValid(animPanel) then
+            onAnimationComplete(animPanel)
+        end
         end, scaleFactor)
     end
     ```
@@ -2903,7 +2912,7 @@ end
 
     ```lua
     -- Medium: Draw with custom blur settings
-        lia.derma.drawBlurAt(50, 50, 300, 150, 8, 0.3, 200)
+    lia.derma.drawBlurAt(50, 50, 300, 150, 8, 0.3, 200)
     ```
 
     High Complexity:
@@ -2912,7 +2921,7 @@ end
     -- High: Dynamic blur with screen bounds checking
     local x, y = getScreenPosition()
     local w, h = getBlurSize()
-        if x >= 0 and y >= 0 and x + w <= ScrW() and y + h <= ScrH() then
+    if x >= 0 and y >= 0 and x + w <= ScrW() and y + h <= ScrH() then
         local amount = isHovered and 10 or 5
         lia.derma.drawBlurAt(x, y, w, h, amount, 0.2, 255)
     end
@@ -2954,14 +2963,14 @@ end
     ```lua
     -- Simple: Request basic arguments
     local argTypes = {
-        name = "string",
-        age = "number",
-        isActive = "boolean"
+    name = "string",
+    age = "number",
+    isActive = "boolean"
     }
-        lia.derma.requestArguments("User Info", argTypes, function(success, results)
-        if success then
-            print("Name:", results.name, "Age:", results.age)
-        end
+    lia.derma.requestArguments("User Info", argTypes, function(success, results)
+    if success then
+        print("Name:", results.name, "Age:", results.age)
+    end
     end)
     ```
 
@@ -2970,29 +2979,29 @@ end
     ```lua
     -- Medium: Request with dropdown and defaults
     local argTypes = {
-        {name = "player", type = "player"},
+    {name = "player", type = "player"},
         {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-        {name = "reason", type = "string"}
-    }
-    local defaults = {reason = "No reason provided"}
-        lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
+            {name = "reason", type = "string"}
+            }
+            local defaults = {reason = "No reason provided"}
+            lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Complex argument validation with ordered fields
+    -- High: Complex argument validation with ordered fields
     local argTypes = {
-        {name = "itemName", type = "string"},
+    {name = "itemName", type = "string"},
         {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-        {name = "quantity", type = "number"},
-        {name = "isStackable", type = "boolean"}
-    }
-        lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-        if success and validateItemData(results) then
-            createItem(results)
-        end
-    end)
+            {name = "quantity", type = "number"},
+                {name = "isStackable", type = "boolean"}
+                }
+                lia.derma.requestArguments("Create Item", argTypes, function(success, results)
+                if success and validateItemData(results) then
+                    createItem(results)
+                end
+            end)
     ```
 ]]
 function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
@@ -3443,24 +3452,13 @@ function lia.derma.openOptionsMenu(title, options)
     layout:Dock(FILL)
     layout:DockMargin(10, 32, 10, 10)
     for _, opt in ipairs(entries) do
-        local btn = layout:Add("DButton")
+        local btn = layout:Add("liaCustomFontButton")
         btn:SetTall(entryH)
         btn:Dock(TOP)
         btn:DockMargin(0, 0, 0, 5)
         btn:SetText(L(opt.name))
-        btn:SetFont("liaSmallFont")
-        btn:SetTextColor(Color(255, 255, 255))
-        btn:SetContentAlignment(5)
-        btn.Paint = function(self, w, h)
-            if self:IsHovered() then
-                draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 160))
-            else
-                draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 30, 100))
-            end
-        end
-
         btn.DoClick = function()
-            frame:Close()
+            frame:Remove()
             opt.callback()
         end
     end
@@ -3534,7 +3532,7 @@ lia.derma.entsScales = lia.derma.entsScales or {}
 
     ```lua
     -- Medium: Draw with custom offset and alpha
-        lia.derma.drawEntText(entity, "Custom Text", 20, 200)
+    lia.derma.drawEntText(entity, "Custom Text", 20, 200)
     ```
 
     High Complexity:
@@ -3627,9 +3625,9 @@ end
 
     ```lua
     -- Simple: Request dropdown selection
-        local options = {"Option 1", "Option 2", "Option 3"}
-        lia.derma.requestDropdown("Choose Option", options, function(selected)
-        print("Selected:", selected)
+    local options = {"Option 1", "Option 2", "Option 3"}
+    lia.derma.requestDropdown("Choose Option", options, function(selected)
+    print("Selected:", selected)
     end)
     ```
 
@@ -3638,13 +3636,13 @@ end
     ```lua
     -- Medium: Request with data values and default
     local options = {
-        {"Kick Player", "kick"},
+    {"Kick Player", "kick"},
         {"Ban Player", "ban"},
-        {"Mute Player", "mute"}
-    }
-        lia.derma.requestDropdown("Admin Action", options, function(text, data)
-        performAction(data)
-    end, "kick")
+            {"Mute Player", "mute"}
+            }
+            lia.derma.requestDropdown("Admin Action", options, function(text, data)
+            performAction(data)
+            end, "kick")
     ```
 
     High Complexity:
@@ -3655,8 +3653,8 @@ end
     for _, player in pairs(player.GetAll()) do
         if IsValid(player) then
             table.insert(options, {player:Name(), player:SteamID()})
+            end
         end
-    end
         lia.derma.requestDropdown("Select Player", options, function(name, steamid)
         if steamid and steamid ~= "" then
             processPlayerSelection(steamid)
@@ -3788,21 +3786,21 @@ end
 
     ```lua
     -- Simple: Request text input
-        lia.derma.requestString("Enter Name", "Type your name:", function(text)
-        if text and text ~= "" then
-            print("Name:", text)
-        end
+    lia.derma.requestString("Enter Name", "Type your name:", function(text)
+    if text and text ~= "" then
+        print("Name:", text)
+    end
     end)
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Request with default value and max length
-        lia.derma.requestString("Set Password", "Enter new password:", function(password)
-        if string.len(password) >= 6 then
-            setPassword(password)
-        end
+    -- Medium: Request with default value and max length
+    lia.derma.requestString("Set Password", "Enter new password:", function(password)
+    if string.len(password) >= 6 then
+        setPassword(password)
+    end
     end, "", 20)
     ```
 
@@ -3810,8 +3808,8 @@ end
 
     ```lua
     -- High: Request with validation and processing
-        lia.derma.requestString("Create Item", "Enter item name:", function(name)
-        if not name or name == "" then return end
+    lia.derma.requestString("Create Item", "Enter item name:", function(name)
+    if not name or name == "" then return end
 
         local cleanName = string.Trim(name)
         if string.len(cleanName) < 3 then
@@ -3825,7 +3823,7 @@ end
         end
 
         createItem(cleanName)
-    end, "", 50)
+        end, "", 50)
     ```
 ]]
 function lia.derma.requestString(title, description, callback, defaultValue, maxLength)
@@ -3908,9 +3906,9 @@ end
 
     ```lua
     -- Simple: Request multiple selections
-        local options = {"Option 1", "Option 2", "Option 3"}
-        lia.derma.requestOptions("Choose Options", options, function(selected)
-        print("Selected:", table.concat(selected, ", "))
+    local options = {"Option 1", "Option 2", "Option 3"}
+    lia.derma.requestOptions("Choose Options", options, function(selected)
+    print("Selected:", table.concat(selected, ", "))
     end)
     ```
 
@@ -3919,14 +3917,14 @@ end
     ```lua
     -- Medium: Request with data values and defaults
     local options = {
-        {"Admin", "admin"},
+    {"Admin", "admin"},
         {"Moderator", "moderator"},
-        {"VIP", "vip"}
-    }
-    local defaults = {"admin"}
-        lia.derma.requestOptions("Select Roles", options, function(selected)
-        assignRoles(selected)
-    end, defaults)
+            {"VIP", "vip"}
+            }
+            local defaults = {"admin"}
+            lia.derma.requestOptions("Select Roles", options, function(selected)
+            assignRoles(selected)
+            end, defaults)
     ```
 
     High Complexity:
@@ -3934,16 +3932,16 @@ end
     ```lua
     -- High: Dynamic options with validation
     local options = {}
-        for _, permission in pairs(availablePermissions) do
+    for _, permission in pairs(availablePermissions) do
         table.insert(options, {permission.displayName, permission.id})
-    end
+        end
         lia.derma.requestOptions("Select Permissions", options, function(selected)
         if #selected > 0 then
             validateAndAssignPermissions(selected)
-        else
-            notify("Please select at least one permission!")
-        end
-    end, userPermissions)
+            else
+                notify("Please select at least one permission!")
+            end
+            end, userPermissions)
     ```
 ]]
 function lia.derma.requestOptions(title, options, callback, defaults)
@@ -4043,9 +4041,9 @@ end
 
     ```lua
     -- Simple: Request confirmation
-        lia.derma.requestBinaryQuestion("Confirm", "Are you sure?", function(result)
-        if result then
-            print("User confirmed")
+    lia.derma.requestBinaryQuestion("Confirm", "Are you sure?", function(result)
+    if result then
+        print("User confirmed")
         else
             print("User cancelled")
         end
@@ -4056,10 +4054,10 @@ end
 
     ```lua
     -- Medium: Request with custom button text
-        lia.derma.requestBinaryQuestion("Delete Item", "Delete this item permanently?", function(result)
-        if result then
-            deleteItem(item)
-        end
+    lia.derma.requestBinaryQuestion("Delete Item", "Delete this item permanently?", function(result)
+    if result then
+        deleteItem(item)
+    end
     end, "Delete", "Cancel")
     ```
 
@@ -4067,16 +4065,16 @@ end
 
     ```lua
     -- High: Request with validation and logging
-        lia.derma.requestBinaryQuestion("Admin Action", "Execute admin command: " .. command .. "?", function(result)
-        if result then
-            if validateAdminCommand(command) then
-                executeAdminCommand(command)
-                logAdminAction(command)
+    lia.derma.requestBinaryQuestion("Admin Action", "Execute admin command: " .. command .. "?", function(result)
+    if result then
+        if validateAdminCommand(command) then
+            executeAdminCommand(command)
+            logAdminAction(command)
             else
                 notify("Invalid command!")
             end
         end
-    end, "Execute", "Cancel")
+        end, "Execute", "Cancel")
     ```
 ]]
 function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)
@@ -4145,9 +4143,9 @@ end
 
     ```lua
     -- Simple: Request button selection
-        local buttons = {"Option 1", "Option 2", "Option 3"}
-        lia.derma.requestButtons("Choose Action", buttons, function(index, text)
-        print("Selected:", text)
+    local buttons = {"Option 1", "Option 2", "Option 3"}
+    lia.derma.requestButtons("Choose Action", buttons, function(index, text)
+    print("Selected:", text)
     end)
     ```
 
@@ -4156,11 +4154,11 @@ end
     ```lua
     -- Medium: Request with custom callbacks and icons
     local buttons = {
-        {text = "Edit", callback = function() editItem() end, icon = "icon16/pencil.png"},
+    {text = "Edit", callback = function() editItem() end, icon = "icon16/pencil.png"},
         {text = "Delete", callback = function() deleteItem() end, icon = "icon16/delete.png"},
-        {text = "Copy", callback = function() copyItem() end, icon = "icon16/copy.png"}
-    }
-        lia.derma.requestButtons("Item Actions", buttons, nil, "Choose an action for this item")
+            {text = "Copy", callback = function() copyItem() end, icon = "icon16/copy.png"}
+            }
+            lia.derma.requestButtons("Item Actions", buttons, nil, "Choose an action for this item")
     ```
 
     High Complexity:
@@ -4170,15 +4168,15 @@ end
     local buttons = {}
     if player:IsAdmin() then
         table.insert(buttons, {text = "Admin Panel", callback = function() openAdminPanel() end})
-    end
-    if item:CanEdit() then
-        table.insert(buttons, {text = "Edit", callback = function() editItem(item) end})
-    end
-        table.insert(buttons, {text = "View", callback = function() viewItem(item) end})
+        end
+        if item:CanEdit() then
+            table.insert(buttons, {text = "Edit", callback = function() editItem(item) end})
+            end
+            table.insert(buttons, {text = "View", callback = function() viewItem(item) end})
 
-        lia.derma.requestButtons("Item Options", buttons, function(index, text)
-        logAction("Button clicked: " .. text)
-    end, "Available actions for " .. item:GetName())
+                lia.derma.requestButtons("Item Options", buttons, function(index, text)
+                logAction("Button clicked: " .. text)
+                end, "Available actions for " .. item:GetName())
     ```
 ]]
 function lia.derma.requestButtons(title, buttons, callback, description)
@@ -4256,3 +4254,21 @@ function lia.derma.requestButtons(title, buttons, callback, description)
     lia.derma.menuRequestButtons = frame
     return frame, buttonPanels
 end
+
+-- Clean up any orphaned panels on library reload
+if SERVER then return end
+timer.Simple(0, function()
+    -- Clean up derma menu panels
+    if IsValid(lia.derma.menuTextBox) then lia.derma.menuTextBox:Remove() end
+    if IsValid(lia.derma.menuColorPicker) then lia.derma.menuColorPicker:Remove() end
+    if IsValid(lia.derma.menu_radial) then lia.derma.menu_radial:Remove() end
+    if IsValid(lia.derma.menuPlayerSelector) then lia.derma.menuPlayerSelector:Remove() end
+    if IsValid(lia.derma.menuRequestDropdown) then lia.derma.menuRequestDropdown:Remove() end
+    if IsValid(lia.derma.menuRequestString) then lia.derma.menuRequestString:Remove() end
+    if IsValid(lia.derma.menuRequestOptions) then lia.derma.menuRequestOptions:Remove() end
+    if IsValid(lia.derma.menuRequestBinary) then lia.derma.menuRequestBinary:Remove() end
+    if IsValid(lia.derma.menuRequestButtons) then lia.derma.menuRequestButtons:Remove() end
+
+    -- Clean up other GUI panels that might be orphaned
+    if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
+end)

@@ -182,8 +182,8 @@ if SERVER then
 
                 hook.Add("PlayerInitialSpawn", "CustomWorkshopSend", function(ply)
                     timer.Simple(5, function()
-                        sendToPlayer(ply)
-                    end)
+                    sendToPlayer(ply)
+                end)
                 end)
                 ```
     ]]
@@ -284,10 +284,10 @@ else
                         btn:SetText("Download Now")
                         btn:Dock(BOTTOM)
                         btn.DoClick = function()
-                            lia.workshop.mountContent()
-                            frame:Close()
-                        end
+                        lia.workshop.mountContent()
+                        frame:Close()
                     end
+                end
                 end
 
                 hook.Add("OnEntityCreated", "CheckWorkshopDownloads", function(ent)

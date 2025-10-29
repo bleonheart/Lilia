@@ -30,7 +30,7 @@ lia.net.registry = lia.net.registry or {}
         ```lua
         -- Simple: Register a basic message handler
         lia.net.register("playerMessage", function(data)
-            print("Received message:", data)
+        print("Received message:", data)
         end)
         ```
 
@@ -38,9 +38,9 @@ lia.net.registry = lia.net.registry or {}
         ```lua
         -- Medium: Register handler with validation
         lia.net.register("updateHealth", function(data)
-            if data and data.health then
-                LocalPlayer():SetHealth(data.health)
-            end
+        if data and data.health then
+            LocalPlayer():SetHealth(data.health)
+        end
         end)
         ```
 
@@ -48,17 +48,17 @@ lia.net.registry = lia.net.registry or {}
         ```lua
         -- High: Register handler with multiple data types and error handling
         lia.net.register("syncInventory", function(data)
-            if not data or not data.items then return end
+        if not data or not data.items then return end
 
             local inventory = LocalPlayer():GetCharacter():GetInventory()
             if not inventory then return end
 
-            for _, itemData in ipairs(data.items) do
-                if itemData.id and itemData.uniqueID then
-                    inventory:Add(itemData.uniqueID, itemData.id)
+                for _, itemData in ipairs(data.items) do
+                    if itemData.id and itemData.uniqueID then
+                        inventory:Add(itemData.uniqueID, itemData.id)
+                    end
                 end
-            end
-        end)
+            end)
         ```
 ]]
 function lia.net.register(name, callback)
@@ -98,7 +98,7 @@ end
         local targetPlayer = player.GetByID(1)
         if targetPlayer then
             lia.net.send("updateHealth", targetPlayer, {health = 100})
-        end
+            end
         ```
 
         High Complexity Example:
@@ -115,7 +115,7 @@ end
             type = "warning",
             message = "Server restart in 5 minutes",
             timestamp = os.time()
-        })
+            })
         ```
 ]]
 function lia.net.send(name, target, ...)
@@ -168,7 +168,7 @@ end
         ```lua
         -- Simple: Set up receiver for large data
         lia.net.readBigTable("largeData", function(data)
-            print("Received large table with", #data, "entries")
+        print("Received large table with", #data, "entries")
         end)
         ```
 
@@ -176,13 +176,13 @@ end
         ```lua
         -- Medium: Set up receiver with validation
         lia.net.readBigTable("playerData", function(data)
-            if data and data.players then
-                for _, playerData in ipairs(data.players) do
-                    if playerData.name and playerData.id then
-                        -- Process player data
-                    end
+        if data and data.players then
+            for _, playerData in ipairs(data.players) do
+                if playerData.name and playerData.id then
+                    -- Process player data
                 end
             end
+        end
         end)
         ```
 
@@ -190,29 +190,29 @@ end
         ```lua
         -- High: Set up receiver with error handling and processing
         lia.net.readBigTable("inventorySync", function(data)
-            if not data or not data.items then return end
+        if not data or not data.items then return end
 
             local inventory = LocalPlayer():GetCharacter():GetInventory()
             if not inventory then return end
 
-            -- Clear existing items
-            inventory:Clear()
+                -- Clear existing items
+                inventory:Clear()
 
-            -- Add new items with validation
-            for _, itemData in ipairs(data.items) do
-                if itemData.uniqueID and itemData.id then
-                    local success = inventory:Add(itemData.uniqueID, itemData.id)
-                    if not success then
-                        lia.log.add("Failed to add item: " .. tostring(itemData.uniqueID))
+                -- Add new items with validation
+                for _, itemData in ipairs(data.items) do
+                    if itemData.uniqueID and itemData.id then
+                        local success = inventory:Add(itemData.uniqueID, itemData.id)
+                        if not success then
+                            lia.log.add("Failed to add item: " .. tostring(itemData.uniqueID))
+                        end
                     end
                 end
-            end
 
-            -- Update UI
-            if IsValid(inventory.panel) then
-                inventory.panel:Rebuild()
-            end
-        end)
+                -- Update UI
+                if IsValid(inventory.panel) then
+                    inventory.panel:Rebuild()
+                end
+            end)
         ```
 ]]
 function lia.net.readBigTable(netStr, callback)
@@ -353,8 +353,8 @@ if SERVER then
             local largeData = {}
             for i = 1, 1000 do
                 largeData[i] = {id = i, name = "Item " .. i}
-            end
-            lia.net.writeBigTable(nil, "largeData", largeData)
+                end
+                lia.net.writeBigTable(nil, "largeData", largeData)
             ```
 
             Medium Complexity Example:
@@ -392,29 +392,29 @@ if SERVER then
                         if inv then
                             inventoryData[ply:SteamID()] = {
                                 items = {},
-                                slots = inv:GetSlots(),
-                                weight = inv:GetWeight()
-                            }
+                                    slots = inv:GetSlots(),
+                                    weight = inv:GetWeight()
+                                }
 
-                            for _, item in ipairs(inv:GetItems()) do
-                                table.insert(inventoryData[ply:SteamID()].items, {
-                                    uniqueID = item.uniqueID,
-                                    id = item.id,
-                                    data = item.data
-                                })
+                                for _, item in ipairs(inv:GetItems()) do
+                                    table.insert(inventoryData[ply:SteamID()].items, {
+                                        uniqueID = item.uniqueID,
+                                        id = item.id,
+                                        data = item.data
+                                        })
+                                    end
+                                end
                             end
                         end
+
+                        if next(inventoryData) then
+                            lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
+                        end
                     end
-                end
 
-                if next(inventoryData) then
-                    lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
-                end
-            end
-
-            -- Send to specific players or all
-            local targetPlayers = player.GetByID(1) -- Specific player
-            sendInventoryData(targetPlayers)
+                    -- Send to specific players or all
+                    local targetPlayers = player.GetByID(1) -- Specific player
+                    sendInventoryData(targetPlayers)
             ```
     ]]
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
@@ -518,58 +518,58 @@ if SERVER then
             local function updateServerConfig(config)
                 if not config or not istable(config) then return end
 
-                -- Validate and set individual config values
-                if config.name and isstring(config.name) then
-                    setNetVar("serverName", config.name)
-                end
-
-                if config.maxPlayers and isnumber(config.maxPlayers) then
-                    if config.maxPlayers > 0 and config.maxPlayers <= 128 then
-                        setNetVar("maxPlayers", config.maxPlayers)
-                        game.SetMaxPlayers(config.maxPlayers)
+                    -- Validate and set individual config values
+                    if config.name and isstring(config.name) then
+                        setNetVar("serverName", config.name)
                     end
-                end
 
-                if config.description and isstring(config.description) then
-                    setNetVar("serverDescription", config.description)
-                end
-
-                -- Set complex configuration object
-                setNetVar("serverConfig", {
-                    name = config.name or "Lilia Server",
-                    description = config.description or "A Lilia-based server",
-                    maxPlayers = config.maxPlayers or 32,
-                    gamemode = config.gamemode or "lilia",
-                    map = config.map or game.GetMap(),
-                    password = config.password or "",
-                    tags = config.tags or {"roleplay", "serious"},
-                    lastUpdated = os.time()
-                })
-
-                -- Notify specific admin players
-                local admins = {}
-                for _, ply in ipairs(player.GetAll()) do
-                    if ply:IsAdmin() then
-                        table.insert(admins, ply)
+                    if config.maxPlayers and isnumber(config.maxPlayers) then
+                        if config.maxPlayers > 0 and config.maxPlayers <= 128 then
+                            setNetVar("maxPlayers", config.maxPlayers)
+                            game.SetMaxPlayers(config.maxPlayers)
+                        end
                     end
-                end
 
-                if #admins > 0 then
-                    setNetVar("adminNotification", {
-                        type = "configUpdate",
-                        message = "Server configuration has been updated",
-                        timestamp = os.time()
-                    }, admins)
-                end
-            end
+                    if config.description and isstring(config.description) then
+                        setNetVar("serverDescription", config.description)
+                    end
 
-            -- Usage
-            updateServerConfig({
-                name = "My Roleplay Server",
-                maxPlayers = 50,
-                description = "A serious roleplay server",
-                tags = {"roleplay", "serious", "whitelist"}
-            })
+                    -- Set complex configuration object
+                    setNetVar("serverConfig", {
+                        name = config.name or "Lilia Server",
+                        description = config.description or "A Lilia-based server",
+                        maxPlayers = config.maxPlayers or 32,
+                        gamemode = config.gamemode or "lilia",
+                        map = config.map or game.GetMap(),
+                        password = config.password or "",
+                        tags = config.tags or {"roleplay", "serious"},
+                            lastUpdated = os.time()
+                            })
+
+                            -- Notify specific admin players
+                            local admins = {}
+                            for _, ply in ipairs(player.GetAll()) do
+                                if ply:IsAdmin() then
+                                    table.insert(admins, ply)
+                                end
+                            end
+
+                            if #admins > 0 then
+                                setNetVar("adminNotification", {
+                                    type = "configUpdate",
+                                    message = "Server configuration has been updated",
+                                    timestamp = os.time()
+                                    }, admins)
+                                end
+                            end
+
+                            -- Usage
+                            updateServerConfig({
+                                name = "My Roleplay Server",
+                                maxPlayers = 50,
+                                description = "A serious roleplay server",
+                                tags = {"roleplay", "serious", "whitelist"}
+                                    })
             ```
     ]]
     function setNetVar(key, value, receiver)
@@ -629,13 +629,13 @@ if SERVER then
                 local config = getNetVar("serverConfig", {})
 
                 return {
-                    name = config.name or getNetVar("serverName", "Lilia Server"),
-                    description = config.description or "A Lilia-based server",
-                    maxPlayers = config.maxPlayers or getNetVar("maxPlayers", 32),
-                    gamemode = config.gamemode or "lilia",
-                    map = config.map or game.GetMap(),
-                    password = config.password or "",
-                    tags = config.tags or {"roleplay", "serious"}
+                name = config.name or getNetVar("serverName", "Lilia Server"),
+                description = config.description or "A Lilia-based server",
+                maxPlayers = config.maxPlayers or getNetVar("maxPlayers", 32),
+                gamemode = config.gamemode or "lilia",
+                map = config.map or game.GetMap(),
+                password = config.password or "",
+                tags = config.tags or {"roleplay", "serious"}
                 }
             end
 

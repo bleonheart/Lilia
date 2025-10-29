@@ -116,11 +116,11 @@ end
         ```lua
         -- Medium: Download with callback handling
         lia.websound.download("alert.mp3", "https://example.com/alert.mp3", function(path, fromCache, error)
-            if path then
-                -- Sound downloaded successfully
-                if fromCache then
-                    -- Loaded from cache
-                end
+        if path then
+            -- Sound downloaded successfully
+            if fromCache then
+                -- Loaded from cache
+            end
             else
                 -- Download failed
             end
@@ -132,28 +132,28 @@ end
         ```lua
         -- High: Batch download with validation and error handling
         local sounds = {
-            {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
+        {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
             {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
-            {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
-        }
+                {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
+                }
 
-        local downloadCount = 0
-        local totalSounds = #sounds
+                local downloadCount = 0
+                local totalSounds = #sounds
 
-        for _, soundData in ipairs(sounds) do
-            lia.websound.download(soundData.name, soundData.url, function(path, fromCache, error)
-                downloadCount = downloadCount + 1
-                if path then
-                    -- Downloaded sound
-                else
-                    -- Failed to download sound
+                for _, soundData in ipairs(sounds) do
+                    lia.websound.download(soundData.name, soundData.url, function(path, fromCache, error)
+                    downloadCount = downloadCount + 1
+                    if path then
+                        -- Downloaded sound
+                        else
+                            -- Failed to download sound
+                        end
+
+                        if downloadCount == totalSounds then
+                            -- All sounds processed
+                        end
+                    end)
                 end
-
-                if downloadCount == totalSounds then
-                    -- All sounds processed
-                end
-            end)
-        end
         ```
 ]]
 function lia.websound.download(name, url, cb)
@@ -262,9 +262,9 @@ end
         ```lua
         -- Medium: Register with callback and error handling
         lia.websound.register("notification.mp3", "https://cdn.example.com/notify.mp3", function(path, fromCache, error)
-            if path then
-                -- Sound registered and downloaded
-                -- Sound is now available for playback
+        if path then
+            -- Sound registered and downloaded
+            -- Sound is now available for playback
             else
                 -- Failed to register sound
             end
@@ -276,39 +276,39 @@ end
         ```lua
         -- High: Register multiple sounds with validation and progress tracking
         local soundRegistry = {
-            ui = {
-                {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
+        ui = {
+            {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
                 {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
-                {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
-            },
-            ambient = {
-                {name = "ambient/rain.mp3", url = "https://cdn.example.com/ambient/rain.mp3"},
-                {name = "ambient/wind.mp3", url = "https://cdn.example.com/ambient/wind.mp3"}
-            }
-        }
+                    {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
+                        },
+                        ambient = {
+                            {name = "ambient/rain.mp3", url = "https://cdn.example.com/ambient/rain.mp3"},
+                                {name = "ambient/wind.mp3", url = "https://cdn.example.com/ambient/wind.mp3"}
+                                }
+                            }
 
-        local registeredCount = 0
-        local totalSounds = 0
-        for category, sounds in pairs(soundRegistry) do
-            totalSounds = totalSounds + #sounds
-        end
+                            local registeredCount = 0
+                            local totalSounds = 0
+                            for category, sounds in pairs(soundRegistry) do
+                                totalSounds = totalSounds + #sounds
+                            end
 
-        for category, sounds in pairs(soundRegistry) do
-            for _, soundData in ipairs(sounds) do
-                lia.websound.register(soundData.name, soundData.url, function(path, fromCache, error)
-                    registeredCount = registeredCount + 1
-                    if path then
-                        -- Registered sound
-                    else
-                        -- Failed to register sound
-                    end
+                            for category, sounds in pairs(soundRegistry) do
+                                for _, soundData in ipairs(sounds) do
+                                    lia.websound.register(soundData.name, soundData.url, function(path, fromCache, error)
+                                    registeredCount = registeredCount + 1
+                                    if path then
+                                        -- Registered sound
+                                        else
+                                            -- Failed to register sound
+                                        end
 
-                    if registeredCount == totalSounds then
-                        -- All sounds registered successfully
-                    end
-                end)
-            end
-        end
+                                        if registeredCount == totalSounds then
+                                            -- All sounds registered successfully
+                                        end
+                                    end)
+                                end
+                            end
         ```
 ]]
 function lia.websound.register(name, url, cb)
@@ -336,9 +336,9 @@ end
         local soundPath = lia.websound.get("button_click.wav")
         if soundPath then
             -- Sound is available
-        else
-            -- Sound not cached yet
-        end
+            else
+                -- Sound not cached yet
+            end
         ```
 
         Medium Complexity:
@@ -350,17 +350,17 @@ end
             if soundPath then
                 sound.PlayFile(soundPath)
                 return true
-            else
-                -- Sound not available locally
-                return false
+                else
+                    -- Sound not available locally
+                    return false
+                end
             end
-        end
 
-        -- Usage
-        if not playSoundIfAvailable("notification.wav") then
-            -- Fallback to default sound or download
-            lia.websound.register("notification.wav", "https://example.com/notify.wav")
-        end
+            -- Usage
+            if not playSoundIfAvailable("notification.wav") then
+                -- Fallback to default sound or download
+                lia.websound.register("notification.wav", "https://example.com/notify.wav")
+            end
         ```
 
         High Complexity:
@@ -368,11 +368,11 @@ end
         ```lua
         -- High: Batch check multiple sounds with availability tracking
         local requiredSounds = {
-            "ui/click.wav",
-            "ui/hover.wav",
-            "ui/error.wav",
-            "ambient/rain.mp3",
-            "ambient/wind.mp3"
+        "ui/click.wav",
+        "ui/hover.wav",
+        "ui/error.wav",
+        "ambient/rain.mp3",
+        "ambient/wind.mp3"
         }
 
         local availableSounds = {}
@@ -383,20 +383,20 @@ end
             if soundPath then
                 availableSounds[soundName] = soundPath
                 -- Sound available
-            else
-                table.insert(missingSounds, soundName)
-                -- Sound not cached
+                else
+                    table.insert(missingSounds, soundName)
+                    -- Sound not cached
+                end
             end
-        end
 
-        if #missingSounds > 0 then
-            -- Missing sounds, downloading...
-            for _, soundName in ipairs(missingSounds) do
-                lia.websound.register(soundName, "https://cdn.example.com/" .. soundName)
-            end
-        else
-            -- All required sounds are available!
-        end
+            if #missingSounds > 0 then
+                -- Missing sounds, downloading...
+                for _, soundName in ipairs(missingSounds) do
+                    lia.websound.register(soundName, "https://cdn.example.com/" .. soundName)
+                end
+                else
+                    -- All required sounds are available!
+                end
         ```
 ]]
 function lia.websound.get(name)
@@ -671,31 +671,31 @@ end
 
             -- Log statistics to file
             local logData = {
-                timestamp = os.date("%Y-%m-%d %H:%M:%S", currentTime),
-                downloaded = stats.downloaded,
-                stored = stats.stored,
-                timeSinceReset = timeSinceReset,
-                downloadRate = timeSinceReset > 0 and (stats.downloaded / timeSinceReset) or 0
-            }
+            timestamp = os.date("%Y-%m-%d %H:%M:%S", currentTime),
+            downloaded = stats.downloaded,
+            stored = stats.stored,
+            timeSinceReset = timeSinceReset,
+            downloadRate = timeSinceReset > 0 and (stats.downloaded / timeSinceReset) or 0
+        }
 
-            -- Save to file
-            file.Write("websound_stats.json", util.TableToJSON(logData, true))
+        -- Save to file
+        file.Write("websound_stats.json", util.TableToJSON(logData, true))
 
-            -- Display performance metrics
-            -- WebSound Performance Report
-            -- Downloads: stats.downloaded sounds
-            -- Storage: stats.stored registered sounds
-            -- Uptime: timeSinceReset seconds
-            -- Download rate: logData.downloadRate sounds/second
+        -- Display performance metrics
+        -- WebSound Performance Report
+        -- Downloads: stats.downloaded sounds
+        -- Storage: stats.stored registered sounds
+        -- Uptime: timeSinceReset seconds
+        -- Download rate: logData.downloadRate sounds/second
 
-            -- Performance warnings
-            if stats.downloaded > 100 then
-                -- WARNING: High download count detected!
-            end
+        -- Performance warnings
+        if stats.downloaded > 100 then
+            -- WARNING: High download count detected!
+        end
 
-            if timeSinceReset > 3600 and stats.downloaded == 0 then
-                -- INFO: No downloads in the last hour
-            end
+        if timeSinceReset > 3600 and stats.downloaded == 0 then
+            -- INFO: No downloads in the last hour
+        end
         end
 
         -- Run monitoring every 5 minutes
@@ -739,8 +739,8 @@ end
         ```lua
         -- Medium: Play custom sound with fallback
         lia.websound.playButtonSound("custom_click.wav", function(success)
-            if success then
-                -- Button sound played successfully
+        if success then
+            -- Button sound played successfully
             else
                 -- Failed to play button sound
             end
@@ -755,8 +755,8 @@ end
             local soundToPlay = customSound or "button_click.wav"
 
             lia.websound.playButtonSound(soundToPlay, function(success)
-                if success then
-                    -- Played sound for button
+            if success then
+                -- Played sound for button
                 else
                     -- Failed to play sound, using default
                     -- Fallback to default

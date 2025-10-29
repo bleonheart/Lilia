@@ -47,10 +47,10 @@ lia.attribs.list = lia.attribs.list or {}
         for _, dir in ipairs(attributeDirs) do
             if file.Exists(dir, "LUA") then
                 lia.attribs.loadFromDir(dir)
-            else
-                print("Warning: Attribute directory not found: " .. dir)
+                else
+                    print("Warning: Attribute directory not found: " .. dir)
+                end
             end
-        end
         ```
 ]]
 function lia.attribs.loadFromDir(directory)
@@ -102,7 +102,7 @@ if SERVER then
             hook.Add("PlayerSpawn", "SetupAttributes", function(client)
                 if not client:getChar() then return end
 
-                timer.Simple(0.1, function()
+                    timer.Simple(0.1, function()
                     if IsValid(client) then
                         lia.attribs.setup(client)
                         print("Attributes set up for " .. client:Name())

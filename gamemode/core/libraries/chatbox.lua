@@ -27,7 +27,7 @@ lia.chat.classes = lia.chat.classes or {}
     ```lua
     -- Simple: Get timestamp for IC message
     local timestamp = lia.chat.timestamp(false)
-        -- Returns: " (14:30) " or "" if timestamps disabled
+    -- Returns: " (14:30) " or "" if timestamps disabled
     ```
 
     Medium Complexity:
@@ -44,7 +44,7 @@ lia.chat.classes = lia.chat.classes or {}
 
     ```lua
     -- High: Dynamic timestamp with custom formatting
-        local function getFormattedTimestamp(isOOC, customFormat)
+    local function getFormattedTimestamp(isOOC, customFormat)
         local baseTime = lia.chat.timestamp(isOOC)
         if customFormat and baseTime ~= "" then
             return baseTime:gsub("%((%d+:%d+)%)", "[" .. customFormat .. "]")
@@ -79,41 +79,41 @@ end
         prefix = "/",
         color = Color(255, 255, 255),
         radius = 200
-    })
+        })
     ```
 
     Medium Complexity:
 
     ```lua
-        -- Medium: Register whisper chat with custom properties
+    -- Medium: Register whisper chat with custom properties
     lia.chat.register("whisper", {
         prefix = {"/w", "/whisper"},
-        color = Color(150, 150, 255),
-        radius = 50,
-        format = "whisperFormat",
-        desc = "Whisper to nearby players"
-    })
+            color = Color(150, 150, 255),
+            radius = 50,
+            format = "whisperFormat",
+            desc = "Whisper to nearby players"
+            })
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Register admin chat with complex validation
+    -- High: Register admin chat with complex validation
     lia.chat.register("admin", {
         prefix = "/a",
         color = Color(255, 100, 100),
         onCanSay = function(speaker)
-            return speaker:IsAdmin()
+        return speaker:IsAdmin()
         end,
         onCanHear = function(speaker, listener)
-            return listener:IsAdmin()
+        return listener:IsAdmin()
         end,
         format = "adminFormat",
         arguments = {
             {type = "string", name = "message"}
-        },
-        desc = "Admin-only communication channel"
-    })
+                },
+                desc = "Admin-only communication channel"
+                })
     ```
 ]]
 function lia.chat.register(chatType, data)
@@ -211,7 +211,7 @@ end
 
     ```lua
     -- Simple: Parse a basic IC message
-        local chatType, message, anonymous = lia.chat.parse(LocalPlayer(), "Hello everyone!")
+    local chatType, message, anonymous = lia.chat.parse(LocalPlayer(), "Hello everyone!")
     -- Returns: "ic", "Hello everyone!", false
     ```
 
@@ -219,7 +219,7 @@ end
 
     ```lua
     -- Medium: Parse message with prefix detection
-        local function processPlayerMessage(player, rawMessage)
+    local function processPlayerMessage(player, rawMessage)
         local chatType, cleanMessage, anonymous = lia.chat.parse(player, rawMessage)
         if chatType == "ooc" then
             print(player:Name() .. " said OOC: " .. cleanMessage)
@@ -231,8 +231,8 @@ end
     High Complexity:
 
     ```lua
-        -- High: Advanced message processing with validation
-        local function advancedMessageParser(player, message, options)
+    -- High: Advanced message processing with validation
+    local function advancedMessageParser(player, message, options)
         local chatType, cleanMessage, anonymous = lia.chat.parse(player, message, options.noSend)
 
         -- Custom validation based on chat type
@@ -317,8 +317,8 @@ end
     Medium Complexity:
 
     ```lua
-        -- Medium: Send anonymous whisper to specific players
-        local function sendAnonymousWhisper(speaker, message, targets)
+    -- Medium: Send anonymous whisper to specific players
+    local function sendAnonymousWhisper(speaker, message, targets)
         lia.chat.send(speaker, "whisper", message, true, targets)
     end
     ```
@@ -326,8 +326,8 @@ end
     High Complexity:
 
     ```lua
-        -- High: Advanced message broadcasting with custom logic
-        local function broadcastAdminMessage(speaker, message, options)
+    -- High: Advanced message broadcasting with custom logic
+    local function broadcastAdminMessage(speaker, message, options)
         local receivers = {}
 
         -- Collect admin players

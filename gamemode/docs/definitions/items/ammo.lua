@@ -95,11 +95,11 @@ Example Item:
 
 ```lua
 -- Basic item identification
-        ITEM.name = "Pistol Ammo"                    -- Display name shown to players
-        ITEM.model = "models/items/boxsrounds.mdl"   -- 3D model for the ammo box
-        ITEM.width = 1                               -- Inventory width (1 slot)
-        ITEM.height = 1                              -- Inventory height (1 slot)
-        ITEM.ammo = "pistol"                         -- Ammo type (matches weapon ammo type)
-        ITEM.category = "itemCatAmmunition"          -- Category for inventory sorting
+ITEM.name = "Pistol Ammo"                    -- Display name shown to players
+ITEM.model = "models/items/boxsrounds.mdl"   -- 3D model for the ammo box
+ITEM.width = 1                               -- Inventory width (1 slot)
+ITEM.height = 1                              -- Inventory height (1 slot)
+ITEM.ammo = "pistol"                         -- Ammo type (matches weapon ammo type)
+ITEM.category = "itemCatAmmunition"          -- Category for inventory sorting
 ```
 ]]

@@ -34,7 +34,7 @@ lia.config.stored = lia.config.stored or {}
             desc = "Enable or disable this feature",
             category = "general",
             type = "Boolean"
-        })
+            })
         ```
 
         Medium Complexity:
@@ -42,16 +42,16 @@ lia.config.stored = lia.config.stored or {}
         ```lua
         -- Medium: Add configuration with callback and constraints
         lia.config.add("WalkSpeed", "Walk Speed", 130, function(_, newValue)
-            for _, client in player.Iterator() do
-                client:SetWalkSpeed(newValue)
-            end
+        for _, client in player.Iterator() do
+            client:SetWalkSpeed(newValue)
+        end
         end, {
             desc = "Player walking speed",
             category = "character",
             type = "Int",
             min = 50,
             max = 300
-        })
+            })
         ```
 
         High Complexity:
@@ -63,12 +63,12 @@ lia.config.stored = lia.config.stored or {}
             category = "general",
             type = "Table",
             options = function()
-                local languages = {}
-                for code, data in pairs(lia.lang.getLanguages()) do
-                    languages[data.name] = code
-                end
-                return languages
+            local languages = {}
+            for code, data in pairs(lia.lang.getLanguages()) do
+                languages[data.name] = code
             end
+            return languages
+        end
         })
         ```
 ]]
@@ -214,13 +214,13 @@ end
         -- High: Update multiple defaults based on module availability
         local function updateModuleDefaults()
             local defaults = {
-                MaxCharacters = lia.module.get("characters") and 5 or 1,
-                AllowPMs = lia.module.get("chatbox") and true or false,
-                WalkSpeed = lia.module.get("attributes") and 130 or 100
-            }
-            for key, value in pairs(defaults) do
-                lia.config.setDefault(key, value)
-            end
+            MaxCharacters = lia.module.get("characters") and 5 or 1,
+            AllowPMs = lia.module.get("chatbox") and true or false,
+            WalkSpeed = lia.module.get("attributes") and 130 or 100
+        }
+        for key, value in pairs(defaults) do
+            lia.config.setDefault(key, value)
+        end
         end
         ```
 ]]
@@ -311,10 +311,10 @@ end
         local function setConfigWithValidation(key, value, min, max)
             if type(value) == "number" and value >= min and value <= max then
                 lia.config.set(key, value)
-            else
-                print("Invalid value for " .. key)
+                else
+                    print("Invalid value for " .. key)
+                end
             end
-        end
         ```
 
         High Complexity:
@@ -329,10 +329,10 @@ end
             end
 
             return function()
-                for key, value in pairs(originalValues) do
-                    lia.config.set(key, value)
-                end
+            for key, value in pairs(originalValues) do
+                lia.config.set(key, value)
             end
+        end
         end
         ```
 ]]
@@ -385,10 +385,10 @@ end
             local value = lia.config.get(key, fallback)
             if type(value) == expectedType then
                 return value
-            else
-                return fallback
+                else
+                    return fallback
+                end
             end
-        end
         ```
 
         High Complexity:
@@ -398,19 +398,19 @@ end
         local function getPlayerSettings()
             local settings = {}
             local configs = {
-                walkSpeed = {"WalkSpeed", "number", 130},
+            walkSpeed = {"WalkSpeed", "number", 130},
                 runSpeed = {"RunSpeed", "number", 275},
-                maxChars = {"MaxCharacters", "number", 5}
-            }
+                    maxChars = {"MaxCharacters", "number", 5}
+                    }
 
-            for setting, data in pairs(configs) do
-                local key, expectedType, fallback = data[1], data[2], data[3]
-                local value = lia.config.get(key, fallback)
-                settings[setting] = type(value) == expectedType and value or fallback
-            end
+                    for setting, data in pairs(configs) do
+                        local key, expectedType, fallback = data[1], data[2], data[3]
+                        local value = lia.config.get(key, fallback)
+                        settings[setting] = type(value) == expectedType and value or fallback
+                    end
 
-            return settings
-        end
+                    return settings
+                end
         ```
 ]]
 function lia.config.get(key, default)
@@ -616,10 +616,10 @@ if SERVER then
             -- Medium: Send configurations to specific client on connect
             hook.Add("PlayerInitialSpawn", "SendConfigs", function(client)
                 timer.Simple(1, function()
-                    if IsValid(client) then
-                        lia.config.send(client)
-                    end
-                end)
+                if IsValid(client) then
+                    lia.config.send(client)
+                end
+            end)
             end)
             ```
 
@@ -744,17 +744,17 @@ if SERVER then
                 local changed = lia.config.getChangedValues()
                 if table.Count(changed) == 0 then return end
 
-                -- Create backup
-                local backup = util.TableToJSON(changed)
-                file.Write("config_backup_" .. os.time() .. ".json", backup)
+                    -- Create backup
+                    local backup = util.TableToJSON(changed)
+                    file.Write("config_backup_" .. os.time() .. ".json", backup)
 
-                -- Save with validation
-                local success, err = pcall(lia.config.save)
-                if not success then
-                    print("Save failed, restoring from backup")
-                    -- Restore from backup logic
+                    -- Save with validation
+                    local success, err = pcall(lia.config.save)
+                    if not success then
+                        print("Save failed, restoring from backup")
+                        -- Restore from backup logic
+                    end
                 end
-            end
             ```
     ]]
     function lia.config.save()

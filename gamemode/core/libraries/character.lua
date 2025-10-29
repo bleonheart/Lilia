@@ -41,10 +41,10 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
         ```lua
         -- Medium: Get character with callback for async loading
         lia.char.getCharacter(123, client, function(character)
-            if character then
-                character:setMoney(1000)
-                print("Character loaded:", character:getName())
-            end
+        if character then
+            character:setMoney(1000)
+            print("Character loaded:", character:getName())
+        end
         end)
         ```
 
@@ -57,11 +57,11 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
 
         for _, charID in ipairs(charIDs) do
             lia.char.getCharacter(charID, client, function(character)
-                if character then
-                    loadedChars[charID] = character
-                    if table.Count(loadedChars) == #charIDs then
-                        print("All characters loaded successfully")
-                    end
+            if character then
+                loadedChars[charID] = character
+                if table.Count(loadedChars) == #charIDs then
+                    print("All characters loaded successfully")
+                end
                 else
                     print("Failed to load character:", charID)
                 end
@@ -133,9 +133,9 @@ end
         -- High: Process all characters with validation and statistics
         local allChars = lia.char.getAll()
         local stats = {
-            totalChars = 0,
-            totalMoney = 0,
-            factions = {}
+        totalChars = 0,
+        totalMoney = 0,
+        factions = {}
         }
 
         for player, character in pairs(allChars) do
@@ -186,12 +186,12 @@ end
         if lia.char.isLoaded(charID) then
             local character = lia.char.getCharacter(charID)
             character:setMoney(5000)
-        else
-            print("Character not loaded, loading...")
-            lia.char.getCharacter(charID, client, function(char)
+            else
+                print("Character not loaded, loading...")
+                lia.char.getCharacter(charID, client, function(char)
                 if char then char:setMoney(5000) end
-            end)
-        end
+                end)
+            end
         ```
 
         High Complexity:
@@ -205,12 +205,12 @@ end
         for _, charID in ipairs(charIDs) do
             if lia.char.isLoaded(charID) then
                 loadedChars[charID] = lia.char.getCharacter(charID)
-            else
-                table.insert(unloadedChars, charID)
+                else
+                    table.insert(unloadedChars, charID)
+                end
             end
-        end
 
-        print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
+            print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
         ```
 ]]
 function lia.char.isLoaded(charID)
@@ -362,10 +362,10 @@ end
         ```lua
         -- Simple: Create a basic character
         local charData = {
-            name = "John Doe",
-            desc = "A citizen of the city",
-            faction = "Citizen",
-            model = "models/player/Group01/male_01.mdl"
+        name = "John Doe",
+        desc = "A citizen of the city",
+        faction = "Citizen",
+        model = "models/player/Group01/male_01.mdl"
         }
         local character = lia.char.new(charData, 123, client)
         ```
@@ -375,19 +375,19 @@ end
         ```lua
         -- Medium: Create character with full data and validation
         local charData = {
-            name = "Jane Smith",
-            desc = "A skilled engineer",
-            faction = "Engineer",
-            model = "models/player/Group01/female_01.mdl",
-            money = 1000,
-            attribs = {strength = 5, intelligence = 8}
+        name = "Jane Smith",
+        desc = "A skilled engineer",
+        faction = "Engineer",
+        model = "models/player/Group01/female_01.mdl",
+        money = 1000,
+        attribs = {strength = 5, intelligence = 8}
         }
 
         local character = lia.char.new(charData, 456, client)
         if character then
             character:setSkin(1)
             character:setBodygroups({[0] = 1, [1] = 2})
-        end
+            end
         ```
 
         High Complexity:
@@ -411,10 +411,10 @@ end
             if character then
                 -- Initialize additional data
                 character.vars.inv = {}
-                character.vars.loginTime = os.time()
-                lia.char.addCharacter(charID, character)
+                    character.vars.loginTime = os.time()
+                    lia.char.addCharacter(charID, character)
+                end
             end
-        end
         ```
 ]]
 function lia.char.new(data, id, client, steamID)
@@ -463,7 +463,7 @@ end
         ```lua
         -- Simple: Hook a variable change
         lia.char.hookVar("money", "onMoneyChange", function(character, oldValue, newValue)
-            print("Money changed from", oldValue, "to", newValue)
+        print("Money changed from", oldValue, "to", newValue)
         end)
         ```
 
@@ -472,17 +472,17 @@ end
         ```lua
         -- Medium: Hook with validation and side effects
         lia.char.hookVar("faction", "onFactionChange", function(character, oldValue, newValue)
-            local client = character:getPlayer()
-            if IsValid(client) then
-                -- Update player team
-                client:SetTeam(lia.faction.indices[newValue].index)
+        local client = character:getPlayer()
+        if IsValid(client) then
+            -- Update player team
+            client:SetTeam(lia.faction.indices[newValue].index)
 
-                -- Notify player
-                client:notify("Faction changed to: " .. newValue)
+            -- Notify player
+            client:notify("Faction changed to: " .. newValue)
 
-                -- Log the change
-                lia.log.add("Faction change: " .. client:Name() .. " changed faction from " .. oldValue .. " to " .. newValue)
-            end
+            -- Log the change
+            lia.log.add("Faction change: " .. client:Name() .. " changed faction from " .. oldValue .. " to " .. newValue)
+        end
         end)
         ```
 
@@ -491,26 +491,26 @@ end
         ```lua
         -- High: Multiple hooks with complex logic
         local hooks = {
-            money = function(character, oldValue, newValue)
-                local client = character:getPlayer()
-                if IsValid(client) then
-                    local difference = newValue - oldValue
-                    if difference > 0 then
-                        client:notify("Gained $" .. difference)
-                    elseif difference < 0 then
-                        client:notify("Lost $" .. math.abs(difference))
-                    end
-
-                    -- Update HUD if it exists
-                    if client.liaHUD then
-                        client.liaHUD:updateMoney(newValue)
-                    end
+        money = function(character, oldValue, newValue)
+        local client = character:getPlayer()
+        if IsValid(client) then
+            local difference = newValue - oldValue
+            if difference > 0 then
+                client:notify("Gained $" .. difference)
+                elseif difference < 0 then
+                    client:notify("Lost $" .. math.abs(difference))
                 end
+
+                -- Update HUD if it exists
+                if client.liaHUD then
+                    client.liaHUD:updateMoney(newValue)
+                end
+            end
             end,
 
             health = function(character, oldValue, newValue)
-                if newValue <= 0 and oldValue > 0 then
-                    hook.Run("OnCharacterDeath", character)
+            if newValue <= 0 and oldValue > 0 then
+                hook.Run("OnCharacterDeath", character)
                 elseif newValue > 0 and oldValue <= 0 then
                     hook.Run("OnCharacterRevive", character)
                 end
@@ -549,7 +549,7 @@ end
             fieldType = "integer",
             default = 1,
             index = 5
-        })
+            })
         ```
 
         Medium Complexity:
@@ -562,23 +562,23 @@ end
             default = 0,
             index = 6,
             onValidate = function(value, data, client)
-                if not isnumber(value) or value < -100 or value > 100 then
-                    return false, "invalid", "reputation"
-                end
-                return true
+            if not isnumber(value) or value < -100 or value > 100 then
+                return false, "invalid", "reputation"
+            end
+            return true
             end,
             onSet = function(character, value)
-                local oldValue = character:getReputation()
-                character.vars.reputation = value
+            local oldValue = character:getReputation()
+            character.vars.reputation = value
 
-                -- Notify player of reputation change
-                local client = character:getPlayer()
-                if IsValid(client) then
-                    client:notify("Reputation changed to: " .. value)
-                end
-
-                hook.Run("OnCharVarChanged", character, "reputation", oldValue, value)
+            -- Notify player of reputation change
+            local client = character:getPlayer()
+            if IsValid(client) then
+                client:notify("Reputation changed to: " .. value)
             end
+
+            hook.Run("OnCharVarChanged", character, "reputation", oldValue, value)
+        end
         })
         ```
 
@@ -590,43 +590,43 @@ end
             field = "skills",
             fieldType = "text",
             default = {},
-            index = 7,
-            isLocal = true,
-            onValidate = function(value, data, client)
+                index = 7,
+                isLocal = true,
+                onValidate = function(value, data, client)
                 if not istable(value) then return false, "invalid", "skills" end
 
-                local totalPoints = 0
-                for skillName, level in pairs(value) do
-                    if not isnumber(level) or level < 0 or level > 100 then
-                        return false, "invalid", "skillLevel"
+                    local totalPoints = 0
+                    for skillName, level in pairs(value) do
+                        if not isnumber(level) or level < 0 or level > 100 then
+                            return false, "invalid", "skillLevel"
+                        end
+                        totalPoints = totalPoints + level
                     end
-                    totalPoints = totalPoints + level
-                end
 
-                local maxPoints = hook.Run("GetMaxSkillPoints", client) or 500
-                if totalPoints > maxPoints then
-                    return false, "tooManySkillPoints"
-                end
+                    local maxPoints = hook.Run("GetMaxSkillPoints", client) or 500
+                    if totalPoints > maxPoints then
+                        return false, "tooManySkillPoints"
+                    end
 
-                return true
-            end,
-            onSet = function(character, value)
-                local oldValue = character:getSkills()
-                character.vars.skills = value
+                    return true
+                    end,
+                    onSet = function(character, value)
+                    local oldValue = character:getSkills()
+                    character.vars.skills = value
 
-                -- Recalculate derived stats
-                local client = character:getPlayer()
-                if IsValid(client) then
-                    hook.Run("OnSkillsChanged", character, oldValue, value)
+                    -- Recalculate derived stats
+                    local client = character:getPlayer()
+                    if IsValid(client) then
+                        hook.Run("OnSkillsChanged", character, oldValue, value)
+                    end
+                    end,
+                    onGet = function(character, default)
+                    return character.vars.skills or default or {}
+                    end,
+                    shouldDisplay = function()
+                    return lia.config.get("EnableSkills", true)
                 end
-            end,
-            onGet = function(character, default)
-                return character.vars.skills or default or {}
-            end,
-            shouldDisplay = function()
-                return lia.config.get("EnableSkills", true)
-            end
-        })
+                })
         ```
 ]]
 function lia.char.registerVar(key, data)
@@ -1161,9 +1161,9 @@ end
 
         if rawValue ~= false then
             print("Custom data found:", rawValue)
-        else
-            print("No custom data found for character", charID)
-        end
+            else
+                print("No custom data found for character", charID)
+            end
         ```
 
         High Complexity:
@@ -1179,15 +1179,15 @@ end
                 -- Custom processing based on key type
                 if key:find("^skill_") then
                     processedData[key] = tonumber(value) or 0
-                elseif key:find("^item_") then
-                    processedData[key] = istable(value) and value or {}
-                else
-                    processedData[key] = value
-                end
-            end
-        end
+                    elseif key:find("^item_") then
+                        processedData[key] = istable(value) and value or {}
+                            else
+                                processedData[key] = value
+                            end
+                        end
+                    end
 
-        return processedData
+                    return processedData
         ```
 ]]
 function lia.char.getCharDataRaw(charID, key)
@@ -1431,15 +1431,15 @@ if SERVER then
         ```lua
         -- Simple: Create a basic character
         local charData = {
-            name = "John Doe",
-            desc = "A citizen of the city",
-            faction = "Citizen",
-            model = "models/player/Group01/male_01.mdl",
-            steamID = client:SteamID()
+        name = "John Doe",
+        desc = "A citizen of the city",
+        faction = "Citizen",
+        model = "models/player/Group01/male_01.mdl",
+        steamID = client:SteamID()
         }
 
         lia.char.create(charData, function(charID)
-            print("Character created with ID:", charID)
+        print("Character created with ID:", charID)
         end)
         ```
 
@@ -1448,25 +1448,25 @@ if SERVER then
         ```lua
         -- Medium: Create character with validation and inventory
         local charData = {
-            name = "Jane Smith",
-            desc = "A skilled engineer",
-            faction = "Engineer",
-            model = "models/player/Group01/female_01.mdl",
-            steamID = client:SteamID(),
-            money = 1000,
-            attribs = {strength = 5, intelligence = 8}
+        name = "Jane Smith",
+        desc = "A skilled engineer",
+        faction = "Engineer",
+        model = "models/player/Group01/female_01.mdl",
+        steamID = client:SteamID(),
+        money = 1000,
+        attribs = {strength = 5, intelligence = 8}
         }
 
         lia.char.create(charData, function(charID)
-            if charID then
-                local character = lia.char.getCharacter(charID)
-                if character then
-                    -- Add starting items
-                    character:getInv(1):add("crowbar")
-                    character:getInv(1):add("flashlight")
-                    client:notify("Character created successfully!")
-                end
+        if charID then
+            local character = lia.char.getCharacter(charID)
+            if character then
+                -- Add starting items
+                character:getInv(1):add("crowbar")
+                character:getInv(1):add("flashlight")
+                client:notify("Character created successfully!")
             end
+        end
         end)
         ```
 
@@ -1493,26 +1493,26 @@ if SERVER then
             charData.createTime = os.date("%Y-%m-%d %H:%M:%S", os.time())
 
             lia.char.create(charData, function(charID)
-                if charID then
-                    local character = lia.char.getCharacter(charID)
-                    if character then
-                        -- Initialize character-specific data
-                        character:setData("lastLogin", os.time())
-                        character:setData("creationIP", client:IPAddress())
+            if charID then
+                local character = lia.char.getCharacter(charID)
+                if character then
+                    -- Initialize character-specific data
+                    character:setData("lastLogin", os.time())
+                    character:setData("creationIP", client:IPAddress())
 
-                        -- Add to player's character list
-                        client.liaCharList = client.liaCharList or {}
+                    -- Add to player's character list
+                    client.liaCharList = client.liaCharList or {}
                         table.insert(client.liaCharList, charID)
 
                         -- Notify success
                         client:notify("Character '" .. charData.name .. "' created successfully!")
                         hook.Run("OnCharacterCreated", character, client)
                     end
-                else
-                    client:notifyError("Failed to create character")
-                end
-            end)
-        end
+                    else
+                        client:notifyError("Failed to create character")
+                    end
+                end)
+            end
         ```
 ]]
     function lia.char.create(data, callback)
@@ -1575,7 +1575,7 @@ if SERVER then
         ```lua
         -- Simple: Restore all characters for player
         lia.char.restore(client, function(characters)
-            print("Restored", #characters, "characters for", client:Name())
+        print("Restored", #characters, "characters for", client:Name())
         end)
         ```
 
@@ -1584,21 +1584,21 @@ if SERVER then
         ```lua
         -- Medium: Restore with character validation
         lia.char.restore(client, function(characters)
-            if #characters > 0 then
-                client.liaCharList = characters
+        if #characters > 0 then
+            client.liaCharList = characters
 
-                -- Validate each character
-                for _, charID in ipairs(characters) do
-                    local character = lia.char.getCharacter(charID)
-                    if character then
-                        -- Check if character is banned
-                        if character:getBanned() > 0 then
-                            print("Character", charID, "is banned")
-                        end
+            -- Validate each character
+            for _, charID in ipairs(characters) do
+                local character = lia.char.getCharacter(charID)
+                if character then
+                    -- Check if character is banned
+                    if character:getBanned() > 0 then
+                        print("Character", charID, "is banned")
                     end
                 end
+            end
 
-                client:notify("Characters loaded successfully!")
+            client:notify("Characters loaded successfully!")
             else
                 client:notify("No characters found")
             end
@@ -1610,42 +1610,42 @@ if SERVER then
         ```lua
         -- High: Restore with full error handling and statistics
         lia.char.restore(client, function(characters)
-            local stats = {
-                total = #characters,
-                loaded = 0,
-                banned = 0,
-                invalid = 0
-            }
+        local stats = {
+        total = #characters,
+        loaded = 0,
+        banned = 0,
+        invalid = 0
+        }
 
-            client.liaCharList = characters
+        client.liaCharList = characters
 
-            for _, charID in ipairs(characters) do
-                local character = lia.char.getCharacter(charID)
-                if character then
-                    stats.loaded = stats.loaded + 1
+        for _, charID in ipairs(characters) do
+            local character = lia.char.getCharacter(charID)
+            if character then
+                stats.loaded = stats.loaded + 1
 
-                    -- Check character status
-                    if character:getBanned() > 0 then
-                        stats.banned = stats.banned + 1
-                    end
+                -- Check character status
+                if character:getBanned() > 0 then
+                    stats.banned = stats.banned + 1
+                end
 
-                    -- Validate character data
-                    if not character:getName() or character:getName() == "" then
-                        stats.invalid = stats.invalid + 1
-                        print("Invalid character data for ID:", charID)
-                    end
+                -- Validate character data
+                if not character:getName() or character:getName() == "" then
+                    stats.invalid = stats.invalid + 1
+                    print("Invalid character data for ID:", charID)
                 end
             end
+        end
 
-            -- Log statistics
-            lia.log.add("Character restoration: " ..
-                client:Name() .. " - Total: " .. stats.total ..
-                ", Loaded: " .. stats.loaded ..
-                ", Banned: " .. stats.banned ..
-                ", Invalid: " .. stats.invalid
-            )
+        -- Log statistics
+        lia.log.add("Character restoration: " ..
+        client:Name() .. " - Total: " .. stats.total ..
+        ", Loaded: " .. stats.loaded ..
+        ", Banned: " .. stats.banned ..
+        ", Invalid: " .. stats.invalid
+        )
 
-            hook.Run("OnCharactersRestored", client, characters, stats)
+        hook.Run("OnCharactersRestored", client, characters, stats)
         end)
         ```
 ]]
@@ -1777,7 +1777,7 @@ if SERVER then
         local charCount = table.Count(client.liaCharList or {})
         if charCount > 0 then
             lia.log.add("Player disconnect: " ..
-                client:Name() .. " disconnected with " .. charCount .. " characters loaded"
+            client:Name() .. " disconnected with " .. charCount .. " characters loaded"
             )
         end
         ```
@@ -1789,18 +1789,18 @@ if SERVER then
         local function cleanupPlayerCharacters(client)
             local charList = client.liaCharList or {}
             local stats = {
-                total = #charList,
-                saved = 0,
-                errors = 0
-            }
+            total = #charList,
+            saved = 0,
+            errors = 0
+        }
 
-            for _, charID in ipairs(charList) do
-                local character = lia.char.getCharacter(charID)
-                if character then
-                    -- Save character data
-                    local success = character:save()
-                    if success then
-                        stats.saved = stats.saved + 1
+        for _, charID in ipairs(charList) do
+            local character = lia.char.getCharacter(charID)
+            if character then
+                -- Save character data
+                local success = character:save()
+                if success then
+                    stats.saved = stats.saved + 1
                     else
                         stats.errors = stats.errors + 1
                         print("Failed to save character", charID, "for", client:Name())
@@ -1813,9 +1813,9 @@ if SERVER then
 
             -- Log statistics
             lia.log.add("Player cleanup: " ..
-                client:Name() .. " - Characters: " .. stats.total ..
-                ", Saved: " .. stats.saved ..
-                ", Errors: " .. stats.errors
+            client:Name() .. " - Characters: " .. stats.total ..
+            ", Saved: " .. stats.saved ..
+            ", Errors: " .. stats.errors
             )
         end
         ```
@@ -1893,8 +1893,8 @@ if SERVER then
 
             -- Log deletion
             lia.log.add("Character deletion: " ..
-                "Character '" .. charName .. "' (ID: " .. charID .. ") deleted by " ..
-                (IsValid(admin) and admin:Name() or "System")
+            "Character '" .. charName .. "' (ID: " .. charID .. ") deleted by " ..
+            (IsValid(admin) and admin:Name() or "System")
             )
 
             -- Notify owner if online
@@ -2105,14 +2105,14 @@ if SERVER then
                     if character["set" .. field:sub(1, 1):upper() .. field:sub(2)] then
                         character["set" .. field:sub(1, 1):upper() .. field:sub(2)](character, value)
                     end
-                else
-                    print("Failed to update field:", field)
+                    else
+                        print("Failed to update field:", field)
+                    end
                 end
-            end
 
-            print("Updated", successCount, "out of", table.Count(dataUpdates), "fields")
-            return successCount == table.Count(dataUpdates)
-        end
+                print("Updated", successCount, "out of", table.Count(dataUpdates), "fields")
+                return successCount == table.Count(dataUpdates)
+            end
         ```
 ]]
     function lia.char.setCharDatabase(charID, field, value)
@@ -2263,27 +2263,27 @@ if SERVER then
         -- High: Batch character unloading with statistics
         local function unloadCharacters(charIDs)
             local stats = {
-                total = #charIDs,
-                unloaded = 0,
-                errors = 0,
-                skipped = 0
-            }
+            total = #charIDs,
+            unloaded = 0,
+            errors = 0,
+            skipped = 0
+        }
 
-            for _, charID in ipairs(charIDs) do
-                if lia.char.isLoaded(charID) then
-                    local character = lia.char.getCharacter(charID)
-                    if character then
-                        -- Check if character is in use
-                        local owner = character:getPlayer()
-                        if IsValid(owner) and owner:getChar() == character then
-                            stats.skipped = stats.skipped + 1
-                            print("Skipping active character:", charID)
-                            continue
-                        end
+        for _, charID in ipairs(charIDs) do
+            if lia.char.isLoaded(charID) then
+                local character = lia.char.getCharacter(charID)
+                if character then
+                    -- Check if character is in use
+                    local owner = character:getPlayer()
+                    if IsValid(owner) and owner:getChar() == character then
+                        stats.skipped = stats.skipped + 1
+                        print("Skipping active character:", charID)
+                        continue
+                    end
 
-                        local success = lia.char.unloadCharacter(charID)
-                        if success then
-                            stats.unloaded = stats.unloaded + 1
+                    local success = lia.char.unloadCharacter(charID)
+                    if success then
+                        stats.unloaded = stats.unloaded + 1
                         else
                             stats.errors = stats.errors + 1
                         end
@@ -2374,23 +2374,23 @@ if SERVER then
 
             local charList = client.liaCharList or {}
             local stats = {
-                total = #charList,
-                active = activeCharID,
-                unloaded = 0,
-                errors = 0
-            }
+            total = #charList,
+            active = activeCharID,
+            unloaded = 0,
+            errors = 0
+        }
 
-            -- Unload unused characters
-            stats.unloaded = lia.char.unloadUnusedCharacters(client, activeCharID)
+        -- Unload unused characters
+        stats.unloaded = lia.char.unloadUnusedCharacters(client, activeCharID)
 
-            -- Log statistics
-            lia.log.add("Character unloading: " ..
-                client:Name() .. " - Total: " .. stats.total ..
-                ", Active: " .. stats.active ..
-                ", Unloaded: " .. stats.unloaded
-            )
+        -- Log statistics
+        lia.log.add("Character unloading: " ..
+        client:Name() .. " - Total: " .. stats.total ..
+        ", Active: " .. stats.active ..
+        ", Unloaded: " .. stats.unloaded
+        )
 
-            return stats.unloaded
+        return stats.unloaded
         end
         ```
 ]]
@@ -2421,9 +2421,9 @@ if SERVER then
         ```lua
         -- Simple: Load a single character
         lia.char.loadSingleCharacter(123, client, function(character)
-            if character then
-                print("Character loaded:", character:getName())
-            end
+        if character then
+            print("Character loaded:", character:getName())
+        end
         end)
         ```
 
@@ -2433,20 +2433,20 @@ if SERVER then
         -- Medium: Load character with validation
         local charID = 123
         lia.char.loadSingleCharacter(charID, client, function(character)
-            if character then
-                -- Validate character access
-                if not client.liaCharList or not table.HasValue(client.liaCharList, charID) then
-                    print("Player doesn't have access to character", charID)
-                    return
-                end
+        if character then
+            -- Validate character access
+            if not client.liaCharList or not table.HasValue(client.liaCharList, charID) then
+                print("Player doesn't have access to character", charID)
+                return
+            end
 
-                -- Check if character is banned
-                if character:getBanned() > 0 then
-                    client:notify("This character is banned")
-                    return
-                end
+            -- Check if character is banned
+            if character:getBanned() > 0 then
+                client:notify("This character is banned")
+                return
+            end
 
-                client:notify("Character loaded successfully")
+            client:notify("Character loaded successfully")
             else
                 client:notify("Failed to load character")
             end
@@ -2481,33 +2481,33 @@ if SERVER then
             end
 
             lia.char.loadSingleCharacter(charID, client, function(character)
-                if character then
-                    -- Validate character data
-                    if not character:getName() or character:getName() == "" then
-                        print("Invalid character data for ID:", charID)
-                        return
-                    end
+            if character then
+                -- Validate character data
+                if not character:getName() or character:getName() == "" then
+                    print("Invalid character data for ID:", charID)
+                    return
+                end
 
-                    -- Check ban status
-                    if character:getBanned() > 0 then
-                        if client then
-                            client:notify("This character is banned")
-                        end
-                        return
-                    end
-
-                    -- Log successful load
-                    lia.log.add("Character loaded: " ..
-                        "Character '" .. character:getName() .. "' (ID: " .. charID .. ") loaded for " ..
-                        (client and client:Name() or "System")
-                    )
-
-                    -- Run load hook
-                    hook.Run("OnCharacterLoaded", character, client)
-
+                -- Check ban status
+                if character:getBanned() > 0 then
                     if client then
-                        client:notify("Character '" .. character:getName() .. "' loaded successfully")
+                        client:notify("This character is banned")
                     end
+                    return
+                end
+
+                -- Log successful load
+                lia.log.add("Character loaded: " ..
+                "Character '" .. character:getName() .. "' (ID: " .. charID .. ") loaded for " ..
+                (client and client:Name() or "System")
+                )
+
+                -- Run load hook
+                hook.Run("OnCharacterLoaded", character, client)
+
+                if client then
+                    client:notify("Character '" .. character:getName() .. "' loaded successfully")
+                end
                 else
                     if client then
                         client:notifyError("Failed to load character")

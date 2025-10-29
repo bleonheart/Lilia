@@ -138,15 +138,17 @@ ITEM.canSplit = true
         ```lua
         function ITEM:onCombine(other)
             if other.uniqueID ~= self.uniqueID then return end
-            local combined = self:getQuantity() + other:getQuantity()
-            if combined <= self.maxQuantity then
-                self:setQuantity(combined)
-                other:remove()
-            else
-                self:setQuantity(self.maxQuantity)
-                other:setQuantity(combined - self.maxQuantity)
+                local combined = self:getQuantity() + other:getQuantity()
+                if combined <= self.maxQuantity then
+                    self:setQuantity(combined)
+                    other:remove()
+                    else
+                        self:setQuantity(self.maxQuantity)
+                        other:setQuantity(combined - self.maxQuantity)
+                    end
+                    return true
+                end
             end
-            return true
         end
         ```
 ]]
@@ -155,11 +157,11 @@ Example Item:
 
 ```lua
 -- Basic item identification
-        ITEM.name = "Ammo Box"                                    -- Display name shown to players
-        ITEM.model = "models/props_junk/cardboard_box001a.mdl"   -- 3D model for the item
-        ITEM.width = 1                                            -- Inventory width (1 slot)
-        ITEM.height = 1                                           -- Inventory height (1 slot)
-        ITEM.isStackable = true                                   -- Enables stacking functionality
-        ITEM.maxQuantity = 10                                     -- Maximum items per stack
+ITEM.name = "Ammo Box"                                    -- Display name shown to players
+ITEM.model = "models/props_junk/cardboard_box001a.mdl"   -- 3D model for the item
+ITEM.width = 1                                            -- Inventory width (1 slot)
+ITEM.height = 1                                           -- Inventory height (1 slot)
+ITEM.isStackable = true                                   -- Enables stacking functionality
+ITEM.maxQuantity = 10                                     -- Maximum items per stack
 ```
 ]]

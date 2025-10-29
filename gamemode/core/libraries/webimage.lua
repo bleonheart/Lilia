@@ -92,12 +92,12 @@ end
         ```lua
         -- Medium: Download with callback and custom flags
         lia.webimage.download("avatar", "https://example.com/avatar.jpg", function(material, fromCache)
-            if material then
-                print("Image downloaded successfully")
+        if material then
+            print("Image downloaded successfully")
             else
                 print("Failed to download image")
             end
-        end, "noclamp smooth")
+            end, "noclamp smooth")
         ```
 
         High Complexity:
@@ -105,26 +105,26 @@ end
         ```lua
         -- High: Batch download with error handling and progress tracking
         local images = {
-            {name = "banner", url = "https://example.com/banner.png"},
+        {name = "banner", url = "https://example.com/banner.png"},
             {name = "icon", url = "https://example.com/icon.jpg"},
-            {name = "background", url = "https://example.com/bg.png"}
-        }
+                {name = "background", url = "https://example.com/bg.png"}
+                }
 
-        local completed = 0
-        for _, img in ipairs(images) do
-            lia.webimage.download(img.name, img.url, function(material, fromCache, error)
-                completed = completed + 1
-                if material then
-                    print("Downloaded: " .. img.name)
-                else
-                    print("Failed to download " .. img.name .. ": " .. (error or "unknown error"))
-                end
+                local completed = 0
+                for _, img in ipairs(images) do
+                    lia.webimage.download(img.name, img.url, function(material, fromCache, error)
+                    completed = completed + 1
+                    if material then
+                        print("Downloaded: " .. img.name)
+                        else
+                            print("Failed to download " .. img.name .. ": " .. (error or "unknown error"))
+                        end
 
-                if completed == #images then
-                    print("All downloads completed")
+                        if completed == #images then
+                            print("All downloads completed")
+                        end
+                    end)
                 end
-            end)
-        end
         ```
 ]]
 function lia.webimage.download(n, u, cb, flags)
@@ -238,10 +238,10 @@ end
         ```lua
         -- Medium: Register with callback for UI updates
         lia.webimage.register("avatar", "https://example.com/avatar.jpg", function(material)
-            if material and not material:IsError() then
-                -- Update UI with the new avatar
-                avatarPanel:SetImage("data/lilia/webimages/avatar")
-            end
+        if material and not material:IsError() then
+            -- Update UI with the new avatar
+            avatarPanel:SetImage("data/lilia/webimages/avatar")
+        end
         end)
         ```
 
@@ -250,24 +250,24 @@ end
         ```lua
         -- High: Register multiple images with progress tracking
         local imageConfigs = {
-            {name = "banner", url = "https://example.com/banner.png", flags = "noclamp"},
+        {name = "banner", url = "https://example.com/banner.png", flags = "noclamp"},
             {name = "icon", url = "https://example.com/icon.jpg", flags = "smooth"},
-            {name = "background", url = "https://example.com/bg.png"}
-        }
+                {name = "background", url = "https://example.com/bg.png"}
+                }
 
-        local registered = 0
-        for _, config in ipairs(imageConfigs) do
-            lia.webimage.register(config.name, config.url, function(material)
-                registered = registered + 1
-                if material then
-                    print("Registered: " .. config.name)
-                end
+                local registered = 0
+                for _, config in ipairs(imageConfigs) do
+                    lia.webimage.register(config.name, config.url, function(material)
+                    registered = registered + 1
+                    if material then
+                        print("Registered: " .. config.name)
+                    end
 
-                if registered == #imageConfigs then
-                    print("All images registered successfully")
+                    if registered == #imageConfigs then
+                        print("All images registered successfully")
+                    end
+                    end, config.flags)
                 end
-            end, config.flags)
-        end
         ```
 ]]
 function lia.webimage.register(n, u, cb, flags)
@@ -310,9 +310,9 @@ end
         local avatar = lia.webimage.get("avatar", "noclamp smooth")
         if avatar and not avatar:IsError() then
             avatarPanel:SetMaterial(avatar)
-        else
-            avatarPanel:SetImage("icon16/user.png") -- fallback
-        end
+            else
+                avatarPanel:SetImage("icon16/user.png") -- fallback
+            end
         ```
 
         High Complexity:
@@ -327,18 +327,18 @@ end
             if material and not material:IsError() then
                 materials[name] = material
                 print("Retrieved material: " .. name)
-            else
-                print("Failed to get material: " .. name)
-                -- Trigger re-download if needed
-                lia.webimage.download(name)
+                else
+                    print("Failed to get material: " .. name)
+                    -- Trigger re-download if needed
+                    lia.webimage.download(name)
+                end
             end
-        end
 
-        -- Use materials for rendering
-        for name, material in pairs(materials) do
-            surface.SetMaterial(material)
-            surface.DrawTexturedRect(0, 0, 200, 200)
-        end
+            -- Use materials for rendering
+            for name, material in pairs(materials) do
+                surface.SetMaterial(material)
+                surface.DrawTexturedRect(0, 0, 200, 200)
+            end
         ```
 ]]
 function lia.webimage.get(n, flags)
@@ -525,9 +525,9 @@ end
             refreshBtn:SetSize(100, 30)
             refreshBtn:SetPos(150, 250)
             refreshBtn.DoClick = function()
-                dashboard:Close()
-                createStatsDashboard() -- Refresh
-            end
+            dashboard:Close()
+            createStatsDashboard() -- Refresh
+        end
         end
 
         createStatsDashboard()

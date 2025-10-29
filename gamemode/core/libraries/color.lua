@@ -44,13 +44,13 @@ if CLIENT then
         ```lua
         -- High: Register multiple colors from configuration
         local colorConfig = {
-            primary = {100, 150, 200},
+        primary = {100, 150, 200},
             secondary = {200, 100, 150},
-            accent = {150, 200, 100}
-        }
-        for name, color in pairs(colorConfig) do
-            lia.color.register(name, color)
-        end
+                accent = {150, 200, 100}
+                }
+                for name, color in pairs(colorConfig) do
+                    lia.color.register(name, color)
+                end
         ```
     ]]
     function lia.color.register(name, color)
@@ -97,10 +97,10 @@ if CLIENT then
         local function adjustColorForTime(color, timeOfDay)
             local multiplier = math.sin(timeOfDay * math.pi / 12) * 0.3
             return lia.color.adjust(color,
-                multiplier * 50,
-                multiplier * 30,
-                multiplier * 20,
-                multiplier * 100
+            multiplier * 50,
+            multiplier * 30,
+            multiplier * 20,
+            multiplier * 100
             )
         end
         ```
@@ -191,11 +191,11 @@ if CLIENT then
         local function getThemeSpecificColor(colorName)
             local theme = lia.color.getCurrentTheme()
             local themeColors = {
-                dark = {primary = Color(100, 100, 100)},
+            dark = {primary = Color(100, 100, 100)},
                 light = {primary = Color(200, 200, 200)}
-            }
-            return themeColors[theme] and themeColors[theme][colorName] or Color(255, 255, 255)
-        end
+                }
+                return themeColors[theme] and themeColors[theme][colorName] or Color(255, 255, 255)
+            end
         ```
     ]]
     function lia.color.getCurrentTheme()
@@ -293,11 +293,11 @@ if CLIENT then
         local function generateColorScheme()
             local mainColor = lia.color.getMainColor()
             return {
-                primary = mainColor,
-                secondary = lia.color.adjust(mainColor, -50, -50, -50),
-                accent = lia.color.adjust(mainColor, 50, 50, 50),
-                background = lia.color.darken(mainColor, 0.8)
-            }
+            primary = mainColor,
+            secondary = lia.color.adjust(mainColor, -50, -50, -50),
+            accent = lia.color.adjust(mainColor, 50, 50, 50),
+            background = lia.color.darken(mainColor, 0.8)
+        }
         end
         ```
     ]]
@@ -429,17 +429,17 @@ if CLIENT then
         local function queueThemeChange(themeName)
             if lia.color.isTransitionActive() then
                 table.insert(themeQueue, themeName)
-            else
-                lia.color.applyTheme(themeName, true)
+                else
+                    lia.color.applyTheme(themeName, true)
+                end
             end
-        end
 
-        hook.Add("OnThemeChanged", "ProcessThemeQueue", function()
-            if #themeQueue > 0 and not lia.color.isTransitionActive() then
-                local nextTheme = table.remove(themeQueue, 1)
-                lia.color.applyTheme(nextTheme, true)
-            end
-        end)
+            hook.Add("OnThemeChanged", "ProcessThemeQueue", function()
+                if #themeQueue > 0 and not lia.color.isTransitionActive() then
+                    local nextTheme = table.remove(themeQueue, 1)
+                    lia.color.applyTheme(nextTheme, true)
+                end
+            end)
         ```
     ]]
     function lia.color.isTransitionActive()
@@ -473,8 +473,8 @@ if CLIENT then
         local function previewTheme(themeName)
             lia.color.testThemeTransition(themeName)
             timer.Simple(2, function()
-                lia.color.applyTheme(lia.color.getCurrentTheme(), true)
-            end)
+            lia.color.applyTheme(lia.color.getCurrentTheme(), true)
+        end)
         end
         ```
 
@@ -488,12 +488,12 @@ if CLIENT then
         local function cycleThemePreview()
             if lia.color.isTransitionActive() then return end
 
-            local theme = previewThemes[currentPreview]
-            lia.color.testThemeTransition(theme)
+                local theme = previewThemes[currentPreview]
+                lia.color.testThemeTransition(theme)
 
-            currentPreview = (currentPreview % #previewThemes) + 1
-            timer.Simple(3, cycleThemePreview)
-        end
+                currentPreview = (currentPreview % #previewThemes) + 1
+                timer.Simple(3, cycleThemePreview)
+            end
         ```
     ]]
     function lia.color.testThemeTransition(themeName)
@@ -555,12 +555,12 @@ if CLIENT then
             local function checkProgress()
                 if not lia.color.isTransitionActive() then
                     if callback then callback() end
-                    return
+                        return
+                    end
+                    timer.Simple(0.1, checkProgress)
                 end
-                timer.Simple(0.1, checkProgress)
+                checkProgress()
             end
-            checkProgress()
-        end
         ```
     ]]
     function lia.color.startThemeTransition(name)
@@ -656,10 +656,10 @@ if CLIENT then
         local function processColorData(data)
             if lia.color.isColor(data) then
                 return data
-            else
-                return Color(255, 255, 255)
+                else
+                    return Color(255, 255, 255)
+                end
             end
-        end
         ```
 
         High Complexity:
@@ -674,13 +674,13 @@ if CLIENT then
                             error("Invalid color at " .. key .. "[" .. i .. "]")
                         end
                     end
-                elseif lia.color.isColor(value) then
-                    -- Valid color
-                else
-                    error("Invalid color at " .. key)
+                    elseif lia.color.isColor(value) then
+                        -- Valid color
+                        else
+                            error("Invalid color at " .. key)
+                        end
+                    end
                 end
-            end
-        end
         ```
     ]]
     function lia.color.isColor(v)
@@ -717,10 +717,10 @@ if CLIENT then
             local panel = vgui.Create("DPanel")
             panel:SetBackgroundColor(colors.background)
             panel.Paint = function(self, w, h)
-                draw.RoundedBox(4, 0, 0, w, h, colors.background)
-                draw.RoundedBox(4, 0, 0, w, 2, colors.accent)
-            end
-            return panel
+            draw.RoundedBox(4, 0, 0, w, h, colors.background)
+            draw.RoundedBox(4, 0, 0, w, 2, colors.accent)
+        end
+        return panel
         end
         ```
 
@@ -732,22 +732,22 @@ if CLIENT then
             local colors = lia.color.returnMainAdjustedColors()
 
             local ui = {
-                background = colors.background,
-                primary = colors.accent,
-                secondary = colors.sidebar,
-                text = colors.text,
-                hover = colors.hover,
-                border = colors.border,
-                highlight = colors.highlight
-            }
+            background = colors.background,
+            primary = colors.accent,
+            secondary = colors.sidebar,
+            text = colors.text,
+            hover = colors.hover,
+            border = colors.border,
+            highlight = colors.highlight
+        }
 
-            -- Apply colors to multiple UI elements
-            for _, element in ipairs(uiElements) do
-                element:SetColor(ui.primary)
-                element:SetTextColor(ui.text)
-            end
+        -- Apply colors to multiple UI elements
+        for _, element in ipairs(uiElements) do
+            element:SetColor(ui.primary)
+            element:SetTextColor(ui.text)
+        end
 
-            return ui
+        return ui
         end
         ```
     ]]
@@ -900,7 +900,7 @@ end
         maincolor = Color(100, 150, 200),
         background = Color(20, 20, 20),
         text = Color(255, 255, 255)
-    })
+        })
     ```
 
     Medium Complexity:
@@ -914,7 +914,7 @@ end
         maincolor = Color(106, 108, 197),
         text = Color(255, 255, 255),
         accent = Color(106, 108, 197)
-    })
+        })
     ```
 
     High Complexity:
@@ -923,18 +923,18 @@ end
     -- High: Dynamic theme generation
     local function generateThemeFromConfig(config)
         local themeData = {
-            maincolor = Color(config.primary.r, config.primary.g, config.primary.b),
-            background = Color(config.background.r, config.background.g, config.background.b),
-            text = Color(config.text.r, config.text.g, config.text.b),
-            accent = Color(config.accent.r, config.accent.g, config.accent.b),
-            panel = {
-                Color(config.panel1.r, config.panel1.g, config.panel1.b),
-                Color(config.panel2.r, config.panel2.g, config.panel2.b),
-                Color(config.panel3.r, config.panel3.g, config.panel3.b)
-            }
+        maincolor = Color(config.primary.r, config.primary.g, config.primary.b),
+        background = Color(config.background.r, config.background.g, config.background.b),
+        text = Color(config.text.r, config.text.g, config.text.b),
+        accent = Color(config.accent.r, config.accent.g, config.accent.b),
+        panel = {
+            Color(config.panel1.r, config.panel1.g, config.panel1.b),
+            Color(config.panel2.r, config.panel2.g, config.panel2.b),
+            Color(config.panel3.r, config.panel3.g, config.panel3.b)
         }
+    }
 
-        lia.color.registerTheme(config.name, themeData)
+    lia.color.registerTheme(config.name, themeData)
     end
     ```
 ]]
@@ -961,7 +961,7 @@ end
     ```lua
     -- Simple: Get all themes
     local themes = lia.color.getAllThemes()
-        print("Available themes:", table.concat(themes, ", "))
+    print("Available themes:", table.concat(themes, ", "))
     ```
 
     Medium Complexity:
@@ -976,9 +976,9 @@ end
             local button = vgui.Create("DButton", menu)
             button:SetText(themeName)
             button.DoClick = function()
-                lia.color.applyTheme(themeName, true)
-            end
+            lia.color.applyTheme(themeName, true)
         end
+    end
     end
     ```
 
@@ -996,15 +996,15 @@ end
                 table.insert(validThemes, {
                     name = themeName,
                     displayName = themeName:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest)
-                        return first:upper() .. rest:lower()
+                    return first:upper() .. rest:lower()
                     end),
                     mainColor = themeData.maincolor
-                })
+                    })
+                end
             end
-        end
 
-        return validThemes
-    end
+            return validThemes
+        end
     ```
 ]]
 function lia.color.getAllThemes()

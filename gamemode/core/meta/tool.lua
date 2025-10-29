@@ -47,7 +47,7 @@ local toolGunMeta = lia.meta.tool or {}
             ["build_material"] = "wood"
         }
         tool.Objects = {}
-        tool.Stage = 0
+            tool.Stage = 0
         ```
 ]]
 function toolGunMeta:create()
@@ -93,7 +93,7 @@ end
         -- Medium: Set up tool with client-side options
         local tool = toolGunMeta:create()
         tool.ClientConVar = {["size"] = "1", ["material"] = "wood"}
-        tool:createConVars()
+            tool:createConVars()
         ```
 
         High Complexity:
@@ -159,12 +159,12 @@ end
             if SERVER then
                 -- Server-side data update
                 self:SyncDataToClients()
-            else
-                -- Client-side data refresh
-                self:RequestServerUpdate()
+                else
+                    -- Client-side data refresh
+                    self:RequestServerUpdate()
+                end
+                self.LastUpdate = CurTime()
             end
-            self.LastUpdate = CurTime()
-        end
         ```
 ]]
 function toolGunMeta:updateData()
@@ -387,13 +387,13 @@ end
             local value = GetConVar(name):GetString()
             if self:ValidateConVar(name, value) then
                 validatedConfig[name] = value
-            else
-                validatedConfig[name] = default
-                -- Invalid ConVar value for " .. name .. ", using default
+                else
+                    validatedConfig[name] = default
+                    -- Invalid ConVar value for " .. name .. ", using default
+                end
             end
-        end
 
-        self:ApplyConfiguration(validatedConfig)
+            self:ApplyConfiguration(validatedConfig)
         ```
 ]]
 function toolGunMeta:buildConVarList()
@@ -445,12 +445,12 @@ end
             local value = tool:getClientInfo(prop)
             if value and value ~= "0" then
                 config[prop] = value
-            else
-                config[prop] = self.ClientConVar[prop] or "1"
+                else
+                    config[prop] = self.ClientConVar[prop] or "1"
+                end
             end
-        end
 
-        self:ApplyClientConfiguration(config)
+            self:ApplyClientConfiguration(config)
         ```
 ]]
 function toolGunMeta:getClientInfo(property)
@@ -495,19 +495,19 @@ end
         ```lua
         -- High: Advanced numeric configuration with validation
         local numericConfig = {
-            ["build_size"] = {default = 1, min = 0.1, max = 10},
+        ["build_size"] = {default = 1, min = 0.1, max = 10},
             ["build_speed"] = {default = 1, min = 0.1, max = 5},
-            ["max_objects"] = {default = 50, min = 1, max = 1000}
-        }
+                ["max_objects"] = {default = 50, min = 1, max = 1000}
+                }
 
-        local validatedNumbers = {}
-        for prop, config in pairs(numericConfig) do
-            local value = tool:getClientNumber(prop, config.default)
-            value = math.Clamp(value, config.min, config.max)
-            validatedNumbers[prop] = value
-        end
+                local validatedNumbers = {}
+                for prop, config in pairs(numericConfig) do
+                    local value = tool:getClientNumber(prop, config.default)
+                    value = math.Clamp(value, config.min, config.max)
+                    validatedNumbers[prop] = value
+                end
 
-        self:ApplyNumericConfiguration(validatedNumbers)
+                self:ApplyNumericConfiguration(validatedNumbers)
         ```
 ]]
 function toolGunMeta:getClientNumber(property, default)
@@ -539,9 +539,9 @@ end
         -- Medium: Permission-based tool behavior
         if tool:allowed() then
             tool:PerformAction()
-        else
-            tool.Message = "Tool usage not allowed"
-        end
+            else
+                tool.Message = "Tool usage not allowed"
+            end
         ```
 
         High Complexity:
@@ -595,7 +595,7 @@ end
             self.Stage = 0
             self.LastUpdate = CurTime()
             self.Objects = {}
-        end
+            end
         ```
 
         High Complexity:
@@ -607,21 +607,21 @@ end
             self.Stage = 0
             self.Objects = {}
 
-            -- Set up networking if server
-            if SERVER then
-                self:InitializeNetworkChannels()
+                -- Set up networking if server
+                if SERVER then
+                    self:InitializeNetworkChannels()
+                end
+
+                -- Load saved data if available
+                if file.Exists(self.SavePath, "DATA") then
+                    self:LoadToolData()
+                end
+
+                -- Initialize ghost entity
+                self:CreateGhostEntity()
+
+                -- Tool " .. self:getMode() .. " initialized for " .. self:GetOwner():Name()
             end
-
-            -- Load saved data if available
-            if file.Exists(self.SavePath, "DATA") then
-                self:LoadToolData()
-            end
-
-            -- Initialize ghost entity
-            self:CreateGhostEntity()
-
-            -- Tool " .. self:getMode() .. " initialized for " .. self:GetOwner():Name()
-        end
         ```
 ]]
 function toolGunMeta:init()
@@ -653,9 +653,9 @@ end
         local mode = tool:getMode()
         if mode == "builder" then
             tool:EnableBuildMode()
-        elseif mode == "remover" then
-            tool:EnableRemoveMode()
-        end
+            elseif mode == "remover" then
+                tool:EnableRemoveMode()
+            end
         ```
 
         High Complexity:
@@ -733,12 +733,12 @@ end
         -- Perform weapon-specific operations
         if weaponClass == "weapon_physgun" then
             self:HandlePhysgunSpecificLogic(swep)
-        elseif weaponClass == "weapon_physcannon" then
-            self:HandleGravityGunSpecificLogic(swep)
-        end
+            elseif weaponClass == "weapon_physcannon" then
+                self:HandleGravityGunSpecificLogic(swep)
+            end
 
-        -- Update tool state based on weapon
-        self.LastWeaponCheck = CurTime()
+            -- Update tool state based on weapon
+            self.LastWeaponCheck = CurTime()
         ```
 ]]
 function toolGunMeta:getSWEP()
@@ -799,7 +799,7 @@ end
 
         -- Log tool usage
         print(string.format("Player %s (Team %d) used tool %s",
-              owner:Name(), team, tool:getMode()))
+        owner:Name(), team, tool:getMode()))
 
         -- Apply team-based restrictions
         if self:HasTeamRestrictions(team) then
@@ -868,16 +868,16 @@ end
             if IsValid(heldEntity) then
                 self:HandleHeldEntity(heldEntity)
             end
-        elseif weaponClass == "weapon_toolgun" then
-            -- Handle tool gun specific logic
-            local toolMode = self:getMode()
-            if toolMode == "builder" then
-                self:UpdateGhostEntity()
+            elseif weaponClass == "weapon_toolgun" then
+                -- Handle tool gun specific logic
+                local toolMode = self:getMode()
+                if toolMode == "builder" then
+                    self:UpdateGhostEntity()
+                end
             end
-        end
 
-        -- Update tool state based on weapon
-        self.LastWeaponUpdate = CurTime()
+            -- Update tool state based on weapon
+            self.LastWeaponUpdate = CurTime()
         ```
 ]]
 function toolGunMeta:getWeapon()
@@ -913,16 +913,16 @@ end
         function tool:leftClick()
             if not tool:allowed() then return false end
 
-            local trace = self:GetOwner():GetEyeTrace()
-            if not trace.Hit then return false end
+                local trace = self:GetOwner():GetEyeTrace()
+                if not trace.Hit then return false end
 
-            local entity = ents.Create("prop_physics")
-            entity:SetPos(trace.HitPos)
-            entity:Spawn()
+                    local entity = ents.Create("prop_physics")
+                    entity:SetPos(trace.HitPos)
+                    entity:Spawn()
 
-            table.insert(self.Objects, {Ent = entity, Time = CurTime()})
-            return true
-        end
+                    table.insert(self.Objects, {Ent = entity, Time = CurTime()})
+                        return true
+                    end
         ```
 
         High Complexity:
@@ -934,42 +934,42 @@ end
 
             -- Validate permissions and conditions
             if not self:allowed() then return false end
-            if not owner:KeyDown(IN_USE) then return false end
+                if not owner:KeyDown(IN_USE) then return false end
 
-            -- Get target position and validate
-            local trace = owner:GetEyeTrace()
-            if not trace.Hit or trace.HitWorld then
-                self.Message = "Invalid target"
-                return false
-            end
+                    -- Get target position and validate
+                    local trace = owner:GetEyeTrace()
+                    if not trace.Hit or trace.HitWorld then
+                        self.Message = "Invalid target"
+                        return false
+                    end
 
-            -- Check distance and line of sight
-            local distance = owner:GetPos():Distance(trace.HitPos)
-            if distance > self:getClientNumber("max_distance", 100) then
-                self.Message = "Too far away"
-                return false
-            end
+                    -- Check distance and line of sight
+                    local distance = owner:GetPos():Distance(trace.HitPos)
+                    if distance > self:getClientNumber("max_distance", 100) then
+                        self.Message = "Too far away"
+                        return false
+                    end
 
-            -- Create object with server validation
-            if SERVER then
-                local success = self:CreateServerObject(trace.HitPos, trace.HitNormal)
-                if success then
-                    -- Network to clients
-                    net.Start("tool_object_created")
-                    net.WriteVector(trace.HitPos)
-                    net.Broadcast()
-                    return true
-                end
-            else
-                -- Send request to server
-                net.Start("tool_create_request")
-                net.WriteVector(trace.HitPos)
-                net.SendToServer()
-                return true
-            end
+                    -- Create object with server validation
+                    if SERVER then
+                        local success = self:CreateServerObject(trace.HitPos, trace.HitNormal)
+                        if success then
+                            -- Network to clients
+                            net.Start("tool_object_created")
+                            net.WriteVector(trace.HitPos)
+                            net.Broadcast()
+                            return true
+                        end
+                        else
+                            -- Send request to server
+                            net.Start("tool_create_request")
+                            net.WriteVector(trace.HitPos)
+                            net.SendToServer()
+                            return true
+                        end
 
-            return false
-        end
+                        return false
+                    end
         ```
 ]]
 function toolGunMeta:leftClick()
@@ -1006,15 +1006,15 @@ end
             local trace = self:GetOwner():GetEyeTrace()
             if not trace.Hit then return false end
 
-            local hitEntity = trace.Entity
-            if IsValid(hitEntity) and hitEntity:GetClass() == "prop_physics" then
-                self.SelectedEntity = hitEntity
-                self.Message = "Selected: " .. hitEntity:GetModel()
-                return true
-            end
+                local hitEntity = trace.Entity
+                if IsValid(hitEntity) and hitEntity:GetClass() == "prop_physics" then
+                    self.SelectedEntity = hitEntity
+                    self.Message = "Selected: " .. hitEntity:GetModel()
+                    return true
+                end
 
-            return false
-        end
+                return false
+            end
         ```
 
         High Complexity:
@@ -1028,41 +1028,41 @@ end
             local trace = owner:GetEyeTrace()
             if not trace.Hit then return false end
 
-            local hitEntity = trace.Entity
+                local hitEntity = trace.Entity
 
-            -- Handle different target types
-            if trace.HitWorld then
-                -- World click - show position info
-                self.Message = string.format("World: %.2f, %.2f, %.2f",
+                -- Handle different target types
+                if trace.HitWorld then
+                    -- World click - show position info
+                    self.Message = string.format("World: %.2f, %.2f, %.2f",
                     trace.HitPos.x, trace.HitPos.y, trace.HitPos.z)
-                return true
-
-            elseif IsValid(hitEntity) then
-                -- Entity click - show context menu or manipulate
-                if hitEntity:IsPlayer() then
-                    -- Player interaction
-                    if owner:KeyDown(IN_SPEED) then
-                        self:OpenPlayerMenu(hitEntity)
-                    else
-                        self.Message = "Hold SHIFT for player menu"
-                    end
                     return true
 
-                elseif hitEntity:GetClass() == "prop_physics" then
-                    -- Prop manipulation
-                    if self:CanManipulateEntity(hitEntity) then
-                        if owner:KeyDown(IN_DUCK) then
-                            self:RemoveEntity(hitEntity)
-                        else
-                            self:SelectEntity(hitEntity)
-                        end
-                        return true
-                    end
-                end
-            end
+                    elseif IsValid(hitEntity) then
+                        -- Entity click - show context menu or manipulate
+                        if hitEntity:IsPlayer() then
+                            -- Player interaction
+                            if owner:KeyDown(IN_SPEED) then
+                                self:OpenPlayerMenu(hitEntity)
+                                else
+                                    self.Message = "Hold SHIFT for player menu"
+                                end
+                                return true
 
-            return false
-        end
+                                elseif hitEntity:GetClass() == "prop_physics" then
+                                    -- Prop manipulation
+                                    if self:CanManipulateEntity(hitEntity) then
+                                        if owner:KeyDown(IN_DUCK) then
+                                            self:RemoveEntity(hitEntity)
+                                            else
+                                                self:SelectEntity(hitEntity)
+                                            end
+                                            return true
+                                        end
+                                    end
+                                end
+
+                                return false
+                            end
         ```
 ]]
 function toolGunMeta:rightClick()
@@ -1236,19 +1236,19 @@ end
                 net.Start("tool_deployed")
                 net.WriteString(mode)
                 net.Send(owner)
-            else
-                -- Client-side initialization
-                self:InitializeClientSystems()
-                self:CreateGhostEntity()
+                else
+                    -- Client-side initialization
+                    self:InitializeClientSystems()
+                    self:CreateGhostEntity()
+                end
+
+                -- Set initial state
+                self.Stage = 0
+                self.LastDeploy = CurTime()
+                self.Message = string.format("%s tool ready", mode)
+
+                -- Player " .. owner:Name() .. " deployed " .. mode .. " tool
             end
-
-            -- Set initial state
-            self.Stage = 0
-            self.LastDeploy = CurTime()
-            self.Message = string.format("%s tool ready", mode)
-
-            -- Player " .. owner:Name() .. " deployed " .. mode .. " tool
-        end
         ```
 ]]
 function toolGunMeta:deploy()
@@ -1322,15 +1322,15 @@ end
                 net.Start("tool_holstered")
                 net.WriteBool(true) -- Successfully holstered
                 net.Send(owner)
-            else
-                -- Client-side cleanup
-                self:CleanupClientEffects()
-                self:ResetClientState()
-            end
+                else
+                    -- Client-side cleanup
+                    self:CleanupClientEffects()
+                    self:ResetClientState()
+                end
 
-            -- Log holster action
-            -- Player " .. owner:Name() .. " holstered " .. self:getMode() .. " tool
-        end
+                -- Log holster action
+                -- Player " .. owner:Name() .. " holstered " .. self:getMode() .. " tool
+            end
         ```
 ]]
 function toolGunMeta:holster()
@@ -1369,17 +1369,17 @@ end
             -- Update ghost entity position if it exists
             if not IsValid(self.GhostEntity) then
                 self:CreateGhostEntity()
-            else
-                local trace = owner:GetEyeTrace()
-                if trace.Hit then
-                    self.GhostEntity:SetPos(trace.HitPos)
-                    self.GhostEntity:SetAngles(trace.HitNormal:Angle())
+                else
+                    local trace = owner:GetEyeTrace()
+                    if trace.Hit then
+                        self.GhostEntity:SetPos(trace.HitPos)
+                        self.GhostEntity:SetAngles(trace.HitNormal:Angle())
+                    end
                 end
-            end
 
-            -- Update tool state
-            self:updateData()
-        end
+                -- Update tool state
+                self:updateData()
+            end
         ```
 
         High Complexity:
@@ -1407,25 +1407,25 @@ end
                 if owner:KeyDown(IN_ATTACK) and not self.LastLeftClick then
                     self:leftClick()
                     self.LastLeftClick = true
-                elseif not owner:KeyDown(IN_ATTACK) then
-                    self.LastLeftClick = false
-                end
+                    elseif not owner:KeyDown(IN_ATTACK) then
+                        self.LastLeftClick = false
+                    end
 
-                -- Network updates to clients (server only)
-                if SERVER and curTime - (self.LastNetworkUpdate or 0) > 1.0 then
-                    self:NetworkToolState()
-                    self.LastNetworkUpdate = curTime
-                end
+                    -- Network updates to clients (server only)
+                    if SERVER and curTime - (self.LastNetworkUpdate or 0) > 1.0 then
+                        self:NetworkToolState()
+                        self.LastNetworkUpdate = curTime
+                    end
 
-                -- Update effects and visual feedback
-                self:UpdateVisualEffects()
+                    -- Update effects and visual feedback
+                    self:UpdateVisualEffects()
 
-                -- Check for tool mode changes
-                if self:ShouldChangeMode() then
-                    self:ChangeToolMode()
+                    -- Check for tool mode changes
+                    if self:ShouldChangeMode() then
+                        self:ChangeToolMode()
+                    end
                 end
             end
-        end
         ```
 ]]
 function toolGunMeta:think()
@@ -1496,51 +1496,51 @@ end
                 -- Multiple validation checks
                 if not IsValid(obj.Ent) then
                     isValid = false
-                elseif obj.Ent:IsWorld() then
-                    isValid = false
-                elseif SERVER and obj.Ent:GetPos():Distance(owner:GetPos()) > 5000 then
-                    -- Server-side distance check
-                    isValid = false
-                elseif CLIENT and not obj.Ent:GetNoDraw() == false then
-                    -- Client-side visibility check
-                    isValid = false
-                end
+                    elseif obj.Ent:IsWorld() then
+                        isValid = false
+                        elseif SERVER and obj.Ent:GetPos():Distance(owner:GetPos()) > 5000 then
+                            -- Server-side distance check
+                            isValid = false
+                            elseif CLIENT and not obj.Ent:GetNoDraw() == false then
+                                -- Client-side visibility check
+                                isValid = false
+                            end
 
-                if not isValid then
-                    table.insert(invalidObjects, i)
+                            if not isValid then
+                                table.insert(invalidObjects, i)
 
-                    -- Handle object cleanup
-                    if SERVER and IsValid(obj.Ent) then
-                        obj.Ent:Remove()
+                                -- Handle object cleanup
+                                if SERVER and IsValid(obj.Ent) then
+                                    obj.Ent:Remove()
+                                end
+
+                                removedCount = removedCount + 1
+                            end
+                        end
+
+                        -- Remove invalid object references
+                        for i = #invalidObjects, 1, -1 do
+                            table.remove(self.Objects, invalidObjects[i])
+                        end
+
+                        -- Handle results
+                        if removedCount > 0 then
+                            self.Message = string.format("Cleaned up %d invalid objects", removedCount)
+
+                            if SERVER then
+                                -- Network cleanup to clients
+                                net.Start("tool_objects_cleaned")
+                                net.WriteUInt(removedCount, 8)
+                                net.Broadcast()
+
+                                -- Log cleanup action
+                                -- Player " .. owner:Name() .. " had " .. removedCount .. " invalid tool objects cleaned up
+                            end
+                        end
+
+                        -- Update cleanup timestamp
+                        self.LastObjectCheck = CurTime()
                     end
-
-                    removedCount = removedCount + 1
-                end
-            end
-
-            -- Remove invalid object references
-            for i = #invalidObjects, 1, -1 do
-                table.remove(self.Objects, invalidObjects[i])
-            end
-
-            -- Handle results
-            if removedCount > 0 then
-                self.Message = string.format("Cleaned up %d invalid objects", removedCount)
-
-                if SERVER then
-                    -- Network cleanup to clients
-                    net.Start("tool_objects_cleaned")
-                    net.WriteUInt(removedCount, 8)
-                    net.Broadcast()
-
-                    -- Log cleanup action
-                    -- Player " .. owner:Name() .. " had " .. removedCount .. " invalid tool objects cleaned up
-                end
-            end
-
-            -- Update cleanup timestamp
-            self.LastObjectCheck = CurTime()
-        end
         ```
 ]]
 function toolGunMeta:checkObjects()
@@ -1575,8 +1575,8 @@ end
         function tool:clearObjects()
             local count = #self.Objects
             self.Objects = {}
-            self.Message = string.format("Cleared %d objects", count)
-        end
+                self.Message = string.format("Cleared %d objects", count)
+            end
         ```
 
         High Complexity:
@@ -1589,47 +1589,47 @@ end
 
             if clearedCount == 0 then return end
 
-            -- Clean up each object individually
-            for _, obj in pairs(self.Objects) do
-                if SERVER and IsValid(obj.Ent) then
-                    -- Server-side entity cleanup
-                    obj.Ent:Remove()
+                -- Clean up each object individually
+                for _, obj in pairs(self.Objects) do
+                    if SERVER and IsValid(obj.Ent) then
+                        -- Server-side entity cleanup
+                        obj.Ent:Remove()
 
-                    -- Remove associated data
-                    if obj.Data then
-                        self:CleanupObjectData(obj.Data)
+                        -- Remove associated data
+                        if obj.Data then
+                            self:CleanupObjectData(obj.Data)
+                        end
                     end
                 end
-            end
 
-            -- Clear the objects table
-            self.Objects = {}
+                -- Clear the objects table
+                self.Objects = {}
 
-            -- Reset related state
-            self.Stage = 0
-            self.SelectedEntity = nil
+                    -- Reset related state
+                    self.Stage = 0
+                    self.SelectedEntity = nil
 
-            -- Update UI and notify
-            self.Message = string.format("Cleared %d objects", clearedCount)
+                    -- Update UI and notify
+                    self.Message = string.format("Cleared %d objects", clearedCount)
 
-            if SERVER then
-                -- Network clear confirmation to client
-                net.Start("tool_objects_cleared")
-                net.WriteUInt(clearedCount, 16)
-                net.Send(owner)
+                    if SERVER then
+                        -- Network clear confirmation to client
+                        net.Start("tool_objects_cleared")
+                        net.WriteUInt(clearedCount, 16)
+                        net.Send(owner)
 
-                -- Log the clearing action
-                -- Player " .. owner:Name() .. " cleared all " .. clearedCount .. " tool objects
+                        -- Log the clearing action
+                        -- Player " .. owner:Name() .. " cleared all " .. clearedCount .. " tool objects
 
-                -- Save state after clearing
-                self:SaveToolState()
-            end
+                        -- Save state after clearing
+                        self:SaveToolState()
+                    end
 
-            -- Reset ghost entity if needed
-            if IsValid(self.GhostEntity) then
-                self:releaseGhostEntity()
-            end
-        end
+                    -- Reset ghost entity if needed
+                    if IsValid(self.GhostEntity) then
+                        self:releaseGhostEntity()
+                    end
+                end
         ```
 ]]
 function toolGunMeta:clearObjects()
@@ -1716,13 +1716,13 @@ end
 
                     -- Log ghost entity removal
                     print(string.format("Player %s removed ghost entity for %s tool",
-                        owner:Name(), self:getMode()))
-                else
-                    -- Client-side cleanup confirmation
-                    self:ResetGhostMaterials()
+                    owner:Name(), self:getMode()))
+                    else
+                        -- Client-side cleanup confirmation
+                        self:ResetGhostMaterials()
+                    end
                 end
             end
-        end
         ```
 ]]
 function toolGunMeta:releaseGhostEntity()

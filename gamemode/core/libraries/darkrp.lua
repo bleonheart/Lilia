@@ -283,9 +283,9 @@ else
         ```lua
         -- High: Dynamic text wrapping with multiple paragraphs
         local paragraphs = {
-            "First paragraph with lots of text that needs wrapping",
-            "Second paragraph with different content",
-            "Third paragraph with even more content"
+        "First paragraph with lots of text that needs wrapping",
+        "Second paragraph with different content",
+        "Third paragraph with even more content"
         }
 
         local font = "liaFont"
@@ -361,14 +361,14 @@ end
     ```lua
     -- Medium: Format player's money for display
     local playerMoney = player:getMoney()
-        local formattedMoney = lia.darkrp.formatMoney(playerMoney)
+    local formattedMoney = lia.darkrp.formatMoney(playerMoney)
     player:notifyInfoLocalized("your_money")
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Format multiple amounts for transaction display
+    -- High: Format multiple amounts for transaction display
     local amounts = {500, 1250, 9999, 150000}
     local formattedAmounts = {}
 
@@ -377,7 +377,7 @@ end
         table.insert(formattedAmounts, formatted)
     end
 
-        local displayText = "Transaction amounts: " .. table.concat(formattedAmounts, ", ")
+    local displayText = "Transaction amounts: " .. table.concat(formattedAmounts, ", ")
     chat.AddText(Color(255, 255, 255), displayText)
     ```
 ]]
@@ -417,7 +417,7 @@ end
     lia.darkrp.createEntity("Chair", {
         model = "models/props_c17/FurnitureChair001a.mdl",
         price = 50
-    })
+        })
     ```
 
     Medium Complexity:
@@ -431,23 +431,23 @@ end
         category = "Electronics",
         ent = "prop_physics",
         price = 200
-    })
+        })
     ```
 
     High Complexity:
 
     ```lua
-        -- High: Create multiple entities from configuration table
+    -- High: Create multiple entities from configuration table
     local entities = {
-        {
-            name = "Office Desk",
-            data = {
-                cmd = "desk",
-                model = "models/props_c17/FurnitureTable002a.mdl",
-                desc = "A sturdy office desk",
-                category = "Furniture",
-                price = 100
-            }
+    {
+        name = "Office Desk",
+        data = {
+            cmd = "desk",
+            model = "models/props_c17/FurnitureTable002a.mdl",
+            desc = "A sturdy office desk",
+            category = "Furniture",
+            price = 100
+        }
         },
         {
             name = "Filing Cabinet",

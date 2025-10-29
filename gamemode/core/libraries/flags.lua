@@ -35,8 +35,8 @@ lia.flag.list = lia.flag.list or {}
         ```lua
         -- Medium: Add flag with callback for weapon management
         lia.flag.add("w", "flagWeapon", function(client, isGiven)
-            if isGiven then
-                client:Give("weapon_pistol")
+        if isGiven then
+            client:Give("weapon_pistol")
             else
                 client:StripWeapon("weapon_pistol")
             end
@@ -48,10 +48,10 @@ lia.flag.list = lia.flag.list or {}
         ```lua
         -- High: Add flag with complex callback and validation
         lia.flag.add("M", "flagModerator", function(client, isGiven)
-            if isGiven then
-                client:SetNWBool("isModerator", true)
-                client:ChatPrint("Moderator privileges granted!")
-                -- Additional setup logic here
+        if isGiven then
+            client:SetNWBool("isModerator", true)
+            client:ChatPrint("Moderator privileges granted!")
+            -- Additional setup logic here
             else
                 client:SetNWBool("isModerator", false)
                 client:ChatPrint("Moderator privileges revoked!")

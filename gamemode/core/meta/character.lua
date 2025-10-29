@@ -304,9 +304,9 @@ end
         local totalCost = calculateTotalCost(items)
         if char:hasMoney(totalCost) then
             processTransaction(char, items, totalCost)
-        else
-            showInsufficientFundsError(char, totalCost)
-        end
+            else
+                showInsufficientFundsError(char, totalCost)
+            end
         ```
 ]]
 function characterMeta:hasMoney(amount)
@@ -356,9 +356,9 @@ end
         local requiredFlags = "adm"
         if char:hasFlags(requiredFlags) then
             showAdminPanel(player)
-        else
-            showAccessDenied(player)
-        end
+            else
+                showAccessDenied(player)
+            end
         ```
 ]]
 function characterMeta:hasFlags(flagStr)
@@ -411,9 +411,9 @@ end
         local hasWeapon = char:getItemWeapon(requireEquip)
         if hasWeapon then
             processWeaponAction(char, action)
-        else
-            showWeaponRequiredError(char)
-        end
+            else
+                showWeaponRequiredError(char)
+            end
         ```
 ]]
 function characterMeta:getItemWeapon(requireEquip)
@@ -566,9 +566,9 @@ end
         local targetID = target:getChar():getID()
         if char:doesRecognize(targetID) then
             showRealName(char, target)
-        else
-            showUnknownName(char, target)
-        end
+            else
+                showUnknownName(char, target)
+            end
         ```
 
         High Complexity:
@@ -619,9 +619,9 @@ end
         local targetID = target:getChar():getID()
         if char:doesFakeRecognize(targetID) then
             showFakeName(char, target)
-        else
-            showUnknownName(char, target)
-        end
+            else
+                showUnknownName(char, target)
+            end
         ```
 
         High Complexity:
@@ -683,9 +683,9 @@ end
         -- High: Use in data management system
         local char = player:getChar()
         local dataToSet = {
-            ["inventory"] = serializeInventory(inventory),
-            ["position"] = player:GetPos(),
-            ["health"] = player:Health()
+        ["inventory"] = serializeInventory(inventory),
+        ["position"] = player:GetPos(),
+        ["health"] = player:Health()
         }
         char:setData(dataToSet, nil, false, specificPlayer)
         ```
@@ -955,9 +955,9 @@ if SERVER then
         if char:joinClass(newClass) then
             updateCharacterUI(player)
             notifyClassChange(player, newClass)
-        else
-            showClassChangeError(player, newClass)
-        end
+            else
+                showClassChangeError(player, newClass)
+            end
         ```
 ]]
     function characterMeta:joinClass(class, isForced)
@@ -1489,7 +1489,7 @@ if SERVER then
         -- Medium: Save with callback
         local char = player:getChar()
         char:save(function()
-            print("Character saved successfully")
+        print("Character saved successfully")
         end)
         ```
 
@@ -1499,9 +1499,9 @@ if SERVER then
         -- High: Use in save system
         local char = player:getChar()
         char:save(function()
-            updateCharacterCache(char)
-            notifySaveComplete(player)
-            logCharacterSave(char)
+        updateCharacterCache(char)
+        notifySaveComplete(player)
+        logCharacterSave(char)
         end)
         ```
 ]]

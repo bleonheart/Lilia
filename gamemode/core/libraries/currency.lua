@@ -113,17 +113,17 @@ if SERVER then
                 ```lua
                 -- High: Spawn multiple money entities with advanced positioning
                 local spawnPositions = {
-                    {pos = Vector(100, 200, 50), amount = 500, angle = Angle(0, 45, 0)},
+                {pos = Vector(100, 200, 50), amount = 500, angle = Angle(0, 45, 0)},
                     {pos = Vector(-100, 200, 50), amount = 250, angle = Angle(0, 90, 0)},
-                    {pos = Vector(0, 0, 100), amount = 1000, angle = Angle(0, 180, 0)}
-                }
+                        {pos = Vector(0, 0, 100), amount = 1000, angle = Angle(0, 180, 0)}
+                        }
 
-                for _, data in ipairs(spawnPositions) do
-                    local money = lia.currency.spawn(data.pos, data.amount, data.angle)
-                    if money then
-                        money:SetVelocity(Vector(math.random(-50, 50), math.random(-50, 50), 100))
-                    end
-                end
+                        for _, data in ipairs(spawnPositions) do
+                            local money = lia.currency.spawn(data.pos, data.amount, data.angle)
+                            if money then
+                                money:SetVelocity(Vector(math.random(-50, 50), math.random(-50, 50), 100))
+                            end
+                        end
                 ```
     ]]
     function lia.currency.spawn(pos, amount, angle)
