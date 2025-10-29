@@ -2176,7 +2176,7 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(facOptions, {
                                     name = v.name,
                                     icon = "icon16/group.png",
-                                    callback = function(tgt, item)
+                                    callback = function(tgt)
                                         local cmd = 'say /plytransfer ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
                                         cl:ConCommand(cmd)
                                     end
@@ -2229,7 +2229,7 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(facAdd, {
                                     name = v.name,
                                     icon = "icon16/group_add.png",
-                                    callback = function(tgt, item)
+                                    callback = function(tgt)
                                         local cmd = 'say /plywhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
                                         cl:ConCommand(cmd)
                                     end
@@ -2238,7 +2238,7 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(facRemove, {
                                     name = v.name,
                                     icon = "icon16/group_delete.png",
-                                    callback = function(tgt, item)
+                                    callback = function(tgt)
                                         local cmd = 'say /plyunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), v.uniqueID)
                                         cl:ConCommand(cmd)
                                     end
@@ -2272,7 +2272,7 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(cw, {
                                     name = c.name,
                                     icon = "icon16/user_add.png",
-                                    callback = function(tgt, item)
+                                    callback = function(tgt)
                                         local cmd = 'say /classwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
                                         cl:ConCommand(cmd)
                                     end
@@ -2281,7 +2281,7 @@ function MODULE:OpenAdminStickUI(tgt)
                                 table.insert(cu, {
                                     name = c.name,
                                     icon = "icon16/user_delete.png",
-                                    callback = function(tgt, item)
+                                    callback = function(tgt)
                                         local cmd = 'say /classunwhitelist ' .. QuoteArgs(GetIdentifier(tgt), c.uniqueID)
                                         cl:ConCommand(cmd)
                                     end
@@ -3671,7 +3671,7 @@ lia.command.add("testsounds", {
         -- Get registered websounds
         local websounds = lia.websound.stored or {}
         local soundList = {}
-        for name, url in pairs(websounds) do
+        for name, _ in pairs(websounds) do
             table.insert(soundList, name)
         end
 
@@ -3743,7 +3743,7 @@ lia.command.add("testsounds", {
         divider:Dock(TOP)
         divider:SetTall(2)
         divider:DockMargin(0, 10, 0, 10)
-        divider.Paint = function(self, w, h)
+        divider.Paint = function(_, w, h)
             surface.SetDrawColor(100, 100, 100, 255)
             surface.DrawRect(0, 0, w, h)
         end
