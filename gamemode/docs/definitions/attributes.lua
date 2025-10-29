@@ -31,8 +31,10 @@
 ]]
 --[[
     ATTRIBUTE.name
-    Purpose: Sets the display name of the attribute
-    When Called: During attribute definition
+    Purpose:
+        Sets the display name of the attribute
+    When Called:
+        During attribute definition
 
     Example Usage:
         ```lua
@@ -42,8 +44,10 @@
 ATTRIBUTE.name = ""
 --[[
     ATTRIBUTE.desc
-    Purpose: Sets the description of the attribute that appears in tooltips and UI
-    When Called: During attribute definition
+    Purpose:
+        Sets the description of the attribute that appears in tooltips and UI
+    When Called:
+        During attribute definition
     Example Usage:
         ```lua
         ATTRIBUTE.desc = "Physical power and muscle strength. Affects melee damage and carrying capacity."
@@ -52,8 +56,10 @@ ATTRIBUTE.name = ""
 ATTRIBUTE.desc = ""
 --[[
     ATTRIBUTE.maxValue
-    Purpose: Sets the maximum value this attribute can reach
-    When Called: During attribute definition (used by GetAttributeMax hook)
+    Purpose:
+        Sets the maximum value this attribute can reach
+    When Called:
+        During attribute definition (used by GetAttributeMax hook)
     Example Usage:
         ```lua
         ATTRIBUTE.maxValue = 50
@@ -62,8 +68,10 @@ ATTRIBUTE.desc = ""
 ATTRIBUTE.maxValue = nil
 --[[
     ATTRIBUTE.startingMax
-    Purpose: Sets the maximum value this attribute can have during character creation
-    When Called: During attribute definition (used by GetAttributeStartingMax hook)
+    Purpose:
+        Sets the maximum value this attribute can have during character creation
+    When Called:
+        During attribute definition (used by GetAttributeStartingMax hook)
     Example Usage:
         ```lua
         ATTRIBUTE.startingMax = 20
@@ -72,8 +80,10 @@ ATTRIBUTE.maxValue = nil
 ATTRIBUTE.startingMax = nil
 --[[
     ATTRIBUTE.noStartBonus
-    Purpose: Prevents this attribute from appearing in character creation attribute allocation
-    When Called: During attribute definition (checked in character creation UI)
+    Purpose:
+        Prevents this attribute from appearing in character creation attribute allocation
+    When Called:
+        During attribute definition (checked in character creation UI)
     Example Usage:
         ```lua
         ATTRIBUTE.noStartBonus = true
@@ -82,13 +92,17 @@ ATTRIBUTE.startingMax = nil
 ATTRIBUTE.noStartBonus = false
 --[[
     ATTRIBUTE.OnSetup
-    Purpose: Hook function called when setting up attributes for a character
-    When Called: When a character spawns or when their attributes are initialized
+    Purpose:
+        Hook function called when setting up attributes for a character
+    When Called:
+        When a character spawns or when their attributes are initialized
     Parameters:
         - client (Player): The client whose character is being set up
         - value (number): The current attribute value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
         ```lua
         function ATTRIBUTE:OnSetup(client, value)

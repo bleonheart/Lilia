@@ -260,8 +260,10 @@ local function camiBootstrapFromExisting()
 end
 
 --[[
-    Purpose: Applies punishment actions (kick/ban) to a player based on infraction details
-    When Called: When an administrative action needs to be taken against a player for rule violations
+    Purpose:
+        Applies punishment actions (kick/ban) to a player based on infraction details
+    When Called:
+        When an administrative action needs to be taken against a player for rule violations
     Parameters:
         - client (Player): The player to punish
         - infraction (string): Description of the infraction committed
@@ -270,22 +272,27 @@ end
         - time (number): Ban duration in minutes (0 = permanent)
         - kickKey (string): Language key for kick message (optional)
         - banKey (string): Language key for ban message (optional)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Kick a player for cheating
         lia.administrator.applyPunishment(player, "Cheating detected", true, false)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Ban a player for 60 minutes with custom message
         lia.administrator.applyPunishment(player, "RDM", false, true, 60, "kickedForRDM", "bannedForRDM")
         ```
 
         High Complexity:
+
         ```lua
         -- High: Apply punishment based on infraction severity
         local punishments = {
@@ -308,15 +315,20 @@ function lia.administrator.applyPunishment(client, infraction, kick, ban, time, 
 end
 
 --[[
-    Purpose: Checks if a player or user group has access to a specific privilege
-    When Called: When permission validation is needed before allowing access to features or commands
+    Purpose:
+        Checks if a player or user group has access to a specific privilege
+    When Called:
+        When permission validation is needed before allowing access to features or commands
     Parameters:
         - ply (Player|string): Player entity or user group name to check
         - privilege (string): The privilege identifier to check access for
-    Returns: boolean - true if access is granted, false otherwise
-    Realm: Shared
+    Returns:
+        boolean - true if access is granted, false otherwise
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Check if player can use admin tools
         if lia.administrator.hasAccess(player, "tool_adminstick") then
@@ -325,6 +337,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Check access for different user groups
         local groups = {"admin", "moderator", "user"}
@@ -336,6 +349,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Complex permission checking with fallback
         local function checkMultiplePrivileges(player, privileges)
@@ -412,20 +426,26 @@ function lia.administrator.hasAccess(ply, privilege)
 end
 
 --[[
-    Purpose: Saves all administrator groups and privileges to the database and synchronizes with clients
-    When Called: When administrator data needs to be persisted to the database after changes
+    Purpose:
+        Saves all administrator groups and privileges to the database and synchronizes with clients
+    When Called:
+        When administrator data needs to be persisted to the database after changes
     Parameters:
         - noNetwork (boolean): If true, skips network synchronization (optional)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Save administrator data
         lia.administrator.save()
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Save without network sync during bulk operations
         for i = 1, 10 do
@@ -436,6 +456,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch save with error handling
         local function safeSave(noNetwork)
@@ -489,18 +510,23 @@ function lia.administrator.save(noNetwork)
 end
 
 --[[
-    Purpose: Registers a new privilege in the administrator system with specified access requirements
-    When Called: When a new privilege needs to be added to the system for permission checking
+    Purpose:
+        Registers a new privilege in the administrator system with specified access requirements
+    When Called:
+        When a new privilege needs to be added to the system for permission checking
     Parameters:
         - priv (table): Privilege definition table containing:
             - ID (string): Unique identifier for the privilege
             - Name (string): Display name for the privilege (optional)
             - MinAccess (string): Minimum access level required (default: "user")
             - Category (string): Category for organizing privileges (optional)
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Register a basic privilege
         lia.administrator.registerPrivilege({
@@ -511,6 +537,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Register privilege with category
         lia.administrator.registerPrivilege({
@@ -522,6 +549,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Register multiple privileges from module
         local modulePrivileges = {
@@ -569,20 +597,26 @@ function lia.administrator.registerPrivilege(priv)
 end
 
 --[[
-    Purpose: Removes a privilege from the administrator system and all user groups
-    When Called: When a privilege is no longer needed and should be completely removed
+    Purpose:
+        Removes a privilege from the administrator system and all user groups
+    When Called:
+        When a privilege is no longer needed and should be completely removed
     Parameters:
         - id (string): The privilege identifier to remove
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Remove a privilege
         lia.administrator.unregisterPrivilege("oldPrivilege")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Remove privilege with validation
         local privilegeToRemove = "deprecatedFeature"
@@ -593,6 +627,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Remove multiple privileges with cleanup
         local privilegesToRemove = {"old_feature1", "old_feature2", "deprecated_tool"}
@@ -625,20 +660,26 @@ function lia.administrator.unregisterPrivilege(id)
 end
 
 --[[
-    Purpose: Applies privilege inheritance from parent groups to a specific user group
-    When Called: When a user group's inheritance needs to be recalculated after changes
+    Purpose:
+        Applies privilege inheritance from parent groups to a specific user group
+    When Called:
+        When a user group's inheritance needs to be recalculated after changes
     Parameters:
         - groupName (string): The name of the user group to apply inheritance to
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Apply inheritance to a group
         lia.administrator.applyInheritance("moderator")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Apply inheritance after group modification
         lia.administrator.groups["moderator"]._info.inheritance = "admin"
@@ -646,6 +687,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Apply inheritance to multiple groups with validation
         local groupsToUpdate = {"moderator", "helper", "vip"}
@@ -685,19 +727,26 @@ function lia.administrator.applyInheritance(groupName)
 end
 
 --[[
-    Purpose: Loads administrator groups and privileges from the database and initializes the system
-    When Called: During server startup or when administrator data needs to be reloaded
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Loads administrator groups and privileges from the database and initializes the system
+    When Called:
+        During server startup or when administrator data needs to be reloaded
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Load administrator data
         lia.administrator.load()
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Load with callback handling
         lia.administrator.load()
@@ -707,6 +756,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Load with error handling and validation
         local function safeLoad()
@@ -784,22 +834,28 @@ function lia.administrator.load()
 end
 
 --[[
-    Purpose: Creates a new user group with specified inheritance and type information
-    When Called: When a new user group needs to be added to the administrator system
+    Purpose:
+        Creates a new user group with specified inheritance and type information
+    When Called:
+        When a new user group needs to be added to the administrator system
     Parameters:
         - groupName (string): The name of the new user group
         - info (table): Group configuration table containing:
             - _info (table): Group metadata with inheritance and types (optional)
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Create a basic group
         lia.administrator.createGroup("moderator")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Create group with inheritance
         lia.administrator.createGroup("helper", {
@@ -811,6 +867,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Create multiple groups with different configurations
         local groupConfigs = {
@@ -850,20 +907,26 @@ function lia.administrator.createGroup(groupName, info)
 end
 
 --[[
-    Purpose: Removes a user group from the administrator system (cannot remove base groups)
-    When Called: When a user group is no longer needed and should be deleted
+    Purpose:
+        Removes a user group from the administrator system (cannot remove base groups)
+    When Called:
+        When a user group is no longer needed and should be deleted
     Parameters:
         - groupName (string): The name of the user group to remove
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Remove a group
         lia.administrator.removeGroup("oldGroup")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Remove group with validation
         local groupToRemove = "deprecatedGroup"
@@ -874,6 +937,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Remove multiple groups with safety checks
         local groupsToRemove = {"tempGroup1", "tempGroup2", "oldModerator"}
@@ -905,21 +969,27 @@ function lia.administrator.removeGroup(groupName)
 end
 
 --[[
-    Purpose: Renames an existing user group to a new name (cannot rename base groups)
-    When Called: When a user group needs to be renamed for organizational purposes
+    Purpose:
+        Renames an existing user group to a new name (cannot rename base groups)
+    When Called:
+        When a user group needs to be renamed for organizational purposes
     Parameters:
         - oldName (string): The current name of the user group
         - newName (string): The new name for the user group
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Rename a group
         lia.administrator.renameGroup("oldModerator", "moderator")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Rename with validation
         local oldGroupName = "tempGroup"
@@ -930,6 +1000,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch rename with error handling
         local renameOperations = {
@@ -978,14 +1049,20 @@ end
 
 if SERVER then
     --[[
-        Purpose: Sends administrative notifications to all players with the appropriate privilege
-        When Called: When administrative notifications need to be broadcast to qualified players
+        Purpose:
+            Sends administrative notifications to all players with the appropriate privilege
+        When Called:
+            When administrative notifications need to be broadcast to qualified players
         Parameters:
             - notification (table): Notification data to send to players
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Notify admins about an event
             lia.administrator.notifyAdmin({
@@ -995,6 +1072,7 @@ if SERVER then
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Notify with specific privilege requirement
             lia.administrator.notifyAdmin({
@@ -1005,6 +1083,7 @@ if SERVER then
             ```
 
             High Complexity:
+
             ```lua
             -- High: Batch notifications with different privilege levels
             local notifications = {
@@ -1024,28 +1103,36 @@ if SERVER then
         end
     end
     --[[
-        Purpose: Adds a permission to a specific user group
-        When Called: When a user group needs to be granted a new permission
+        Purpose:
+            Adds a permission to a specific user group
+        When Called:
+            When a user group needs to be granted a new permission
         Parameters:
             - groupName (string): The name of the user group
             - permission (string): The permission identifier to add
             - silent (boolean): If true, skips network synchronization (optional)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Add permission to group
             lia.administrator.addPermission("moderator", "kickPlayers")
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Add permission silently during bulk operations
             lia.administrator.addPermission("helper", "mutePlayers", true)
             ```
 
             High Complexity:
+
             ```lua
             -- High: Add multiple permissions with validation
             local permissions = {"kickPlayers", "mutePlayers", "banPlayers"}
@@ -1073,28 +1160,36 @@ if SERVER then
     end
 
     --[[
-        Purpose: Removes a permission from a specific user group
-        When Called: When a user group should no longer have a specific permission
+        Purpose:
+            Removes a permission from a specific user group
+        When Called:
+            When a user group should no longer have a specific permission
         Parameters:
             - groupName (string): The name of the user group
             - permission (string): The permission identifier to remove
             - silent (boolean): If true, skips network synchronization (optional)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Remove permission from group
             lia.administrator.removePermission("moderator", "banPlayers")
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Remove permission silently during bulk operations
             lia.administrator.removePermission("helper", "kickPlayers", true)
             ```
 
             High Complexity:
+
             ```lua
             -- High: Remove multiple permissions with validation
             local permissionsToRemove = {"banPlayers", "kickPlayers", "mutePlayers"}
@@ -1122,26 +1217,34 @@ if SERVER then
     end
 
     --[[
-        Purpose: Synchronizes administrator data with connected clients
-        When Called: When administrator data needs to be sent to clients after changes
+        Purpose:
+            Synchronizes administrator data with connected clients
+        When Called:
+            When administrator data needs to be sent to clients after changes
         Parameters:
             - c (Player): Specific client to sync with (optional, syncs all if nil)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Sync with all clients
             lia.administrator.sync()
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Sync with specific client
             lia.administrator.sync(player)
             ```
 
             High Complexity:
+
             ```lua
             -- High: Sync with validation and error handling
             local function safeSync(client)
@@ -1208,28 +1311,36 @@ if SERVER then
     end
 
     --[[
-        Purpose: Changes a player's user group and triggers CAMI events
-        When Called: When a player's user group needs to be changed
+        Purpose:
+            Changes a player's user group and triggers CAMI events
+        When Called:
+            When a player's user group needs to be changed
         Parameters:
             - ply (Player): The player whose group should be changed
             - newGroup (string): The new user group name
             - source (string): Source identifier for CAMI events (optional)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Change player's group
             lia.administrator.setPlayerUsergroup(player, "moderator")
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Change group with source tracking
             lia.administrator.setPlayerUsergroup(player, "admin", "MyModule")
             ```
 
             High Complexity:
+
             ```lua
             -- High: Batch group changes with validation
             local groupChanges = {
@@ -1256,28 +1367,36 @@ if SERVER then
     end
 
     --[[
-        Purpose: Changes a Steam ID's user group and triggers CAMI events
-        When Called: When a Steam ID's user group needs to be changed (for offline players)
+        Purpose:
+            Changes a Steam ID's user group and triggers CAMI events
+        When Called:
+            When a Steam ID's user group needs to be changed (for offline players)
         Parameters:
             - steamId (string): The Steam ID whose group should be changed
             - newGroup (string): The new user group name
             - source (string): Source identifier for CAMI events (optional)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Change Steam ID's group
             lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456789", "moderator")
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Change group with source tracking
             lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456789", "admin", "WebPanel")
             ```
 
             High Complexity:
+
             ```lua
             -- High: Batch Steam ID group changes with validation
             local steamGroupChanges = {
@@ -1305,30 +1424,38 @@ if SERVER then
     end
 
     --[[
-        Purpose: Executes administrative commands on the server with permission checking
-        When Called: When administrative commands need to be executed with proper validation
+        Purpose:
+            Executes administrative commands on the server with permission checking
+        When Called:
+            When administrative commands need to be executed with proper validation
         Parameters:
             - cmd (string): The command to execute
             - victim (Player|string): Target player or Steam ID
             - dur (number): Duration parameter for timed commands (optional)
             - reason (string): Reason for the command (optional)
             - admin (Player): The admin executing the command
-        Returns: boolean - true if command was executed successfully, false otherwise
-        Realm: Server
+        Returns:
+            boolean - true if command was executed successfully, false otherwise
+        Realm:
+            Server
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Kick a player
             lia.administrator.serverExecCommand("kick", player, nil, "Cheating", admin)
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Ban player with duration
             lia.administrator.serverExecCommand("ban", player, 60, "RDM", admin)
             ```
 
             High Complexity:
+
             ```lua
             -- High: Execute multiple commands with validation
             local commands = {
@@ -1595,29 +1722,37 @@ if SERVER then
     end
 else
     --[[
-        Purpose: Executes administrative commands on the client with hook system integration and callback support
-        When Called: When administrative commands need to be executed from the client side
+        Purpose:
+            Executes administrative commands on the client with hook system integration and callback support
+        When Called:
+            When administrative commands need to be executed from the client side
         Parameters:
             - cmd (string): The command to execute
             - victim (Player|string): Target player or Steam ID
             - dur (number): Duration parameter for timed commands (optional)
             - reason (string): Reason for the command (optional)
-        Returns: boolean - true if command was executed successfully, false otherwise
-        Realm: Client
+        Returns:
+            boolean - true if command was executed successfully, false otherwise
+        Realm:
+            Client
         Example Usage:
+
             Low Complexity:
+
             ```lua
             -- Simple: Kick a player
             lia.administrator.execCommand("kick", player, nil, "Cheating")
             ```
 
             Medium Complexity:
+
             ```lua
             -- Medium: Ban player with duration
             lia.administrator.execCommand("ban", player, 60, "RDM")
             ```
 
             High Complexity:
+
             ```lua
             -- High: Execute multiple commands with validation
             local commands = {

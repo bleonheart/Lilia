@@ -10,23 +10,29 @@
 lia.notices = lia.notices or {}
 if SERVER then
     --[[
-        Purpose: Sends a notification message to a specific client or all clients
-        When Called: When server needs to display a notification to player(s)
+        Purpose:
+            Sends a notification message to a specific client or all clients
+        When Called:
+            When server needs to display a notification to player(s)
         Parameters:
             - client (Player|nil): Target player to send notification to, or nil for all players
             - message (string): The notification message text to display
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Send basic notification to all players
         lia.notices.notify(nil, "Server restarting in 5 minutes!")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Send error notification to specific player
         local player = Player(1)
@@ -36,6 +42,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Send notifications to multiple players with different types
         local players = player.GetAll()
@@ -60,24 +67,30 @@ if SERVER then
     end
 
     --[[
-        Purpose: Sends a localized notification message to a specific client or all clients
-        When Called: When server needs to display a localized notification with parameter substitution
+        Purpose:
+            Sends a localized notification message to a specific client or all clients
+        When Called:
+            When server needs to display a localized notification with parameter substitution
         Parameters:
             - client (Player|nil): Target player to send notification to, or nil for all players
             - key (string): Localization key for the message
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
             - ... (any): Variable arguments to substitute into the localized message
-        Returns: None
-        Realm: Server
+        Returns:
+            None
+        Realm:
+            Server
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Send localized notification to all players
         lia.notices.notifyInfoLocalized(nil, "server.restart")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Send localized notification with one parameter
         local player = Player(1)
@@ -85,6 +98,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Send localized notifications with multiple parameters
         local players = player.GetAll()
@@ -118,20 +132,27 @@ if SERVER then
     end
 else
     --[[
-        Purpose: Receives and displays notification messages from the server
-        When Called: Automatically called when server sends notification data via network
-        Parameters: None (reads from network stream)
-        Returns: None
-        Realm: Client
+        Purpose:
+            Receives and displays notification messages from the server
+        When Called:
+            Automatically called when server sends notification data via network
+        Parameters:
+            None (reads from network stream)
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Function is called automatically when server sends notification
         -- No direct usage needed - handled by network receiver
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotificationData", function()
@@ -142,6 +163,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Override default behavior with custom notification handling
         local originalReceiveNotify = lia.notices.receiveNotify
@@ -177,20 +199,27 @@ else
 
     net.Receive("liaNotificationData", lia.notices.receiveNotify)
     --[[
-        Purpose: Receives and displays localized notification messages from the server
-        When Called: Automatically called when server sends localized notification data via network
-        Parameters: None (reads from network stream)
-        Returns: None
-        Realm: Client
+        Purpose:
+            Receives and displays localized notification messages from the server
+        When Called:
+            Automatically called when server sends localized notification data via network
+        Parameters:
+            None (reads from network stream)
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Function is called automatically when server sends localized notification
         -- No direct usage needed - handled by network receiver
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotifyLocal", function()
@@ -201,6 +230,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Override default behavior with custom localized notification handling
         local originalReceiveNotifyL = lia.notices.receiveNotifyL
@@ -248,23 +278,29 @@ else
 
     net.Receive("liaNotifyLocal", lia.notices.receiveNotifyL)
     --[[
-        Purpose: Creates and displays a notification message directly on the client
-        When Called: When client needs to display a notification without server communication
+        Purpose:
+            Creates and displays a notification message directly on the client
+        When Called:
+            When client needs to display a notification without server communication
         Parameters:
             - _ (any): Ignored parameter (for compatibility with server version)
             - message (string): The notification message text to display
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Display basic notification
         lia.notices.notify(nil, "Settings saved!", "success")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Display notification with dynamic content
         local playerName = LocalPlayer():Name()
@@ -272,6 +308,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Display notifications based on conditions
         local player = LocalPlayer()
@@ -298,24 +335,30 @@ else
     end
 
     --[[
-        Purpose: Creates and displays a localized notification message directly on the client
-        When Called: When client needs to display a localized notification without server communication
+        Purpose:
+            Creates and displays a localized notification message directly on the client
+        When Called:
+            When client needs to display a localized notification without server communication
         Parameters:
             - client (any): Ignored parameter (for compatibility with server version)
             - key (string): Localization key for the message
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
             - ... (any): Variable arguments to substitute into the localized message
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Display localized notification
         lia.notices.notifySuccessLocalized(nil, "ui.settings.saved")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Display localized notification with one parameter
         local playerName = LocalPlayer():Name()
@@ -323,6 +366,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Display localized notifications with multiple parameters
         local player = LocalPlayer()
@@ -371,22 +415,28 @@ else
     end
 
     --[[
-        Purpose: Provides compatibility with Garry's Mod's legacy notification system
-        When Called: When legacy notification functions are used (e.g., notification.AddLegacy)
+        Purpose:
+            Provides compatibility with Garry's Mod's legacy notification system
+        When Called:
+            When legacy notification functions are used (e.g., notification.AddLegacy)
         Parameters:
             - text (string): The notification message text to display
             - typeId (number): Legacy notification type ID (0=info, 1=error, 2=success)
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Use legacy notification system
         notification.AddLegacy("Server restarting!", 0)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Convert legacy notifications to new system
         local legacyTypes = {[0] = "info", [1] = "error", [2] = "success"}
@@ -396,6 +446,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Override legacy notification with custom handling
         local originalAddLegacy = notification.AddLegacy
@@ -426,20 +477,27 @@ else
 end
 
 --[[
-    Purpose: Organizes and positions notification panels on the screen
-    When Called: Automatically called when new notifications are created
-    Parameters: None
-    Returns: None
-    Realm: Client
+    Purpose:
+        Organizes and positions notification panels on the screen
+    When Called:
+        Automatically called when new notifications are created
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Client
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Function is called automatically when notifications are created
     -- No direct usage needed - handled internally
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Manually organize notices after bulk creation
     for i = 1, 5 do
@@ -449,6 +507,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Custom notice organization with different positioning
     local originalOrganizeNotices = OrganizeNotices

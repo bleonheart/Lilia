@@ -30,6 +30,7 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
     Example Usage:
 
         Low Complexity:
+
             ```lua
             -- Simple: Format a basic currency amount
             local formatted = lia.currency.get(100)
@@ -37,6 +38,7 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
             ```
 
         Medium Complexity:
+
             ```lua
             -- Medium: Format currency with conditional display
             local playerMoney = 1500
@@ -47,6 +49,7 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
             ```
 
         High Complexity:
+
             ```lua
             -- High: Format multiple currency amounts with validation
             local transactions = {100, 1, 0, -50, 2500}
@@ -84,6 +87,7 @@ if SERVER then
         Example Usage:
 
             Low Complexity:
+
                 ```lua
                 -- Simple: Spawn money at player's position
                 local pos = player:GetPos()
@@ -91,6 +95,7 @@ if SERVER then
                 ```
 
             Medium Complexity:
+
                 ```lua
                 -- Medium: Spawn money with specific angle and validation
                 local dropPos = trace.HitPos
@@ -104,6 +109,7 @@ if SERVER then
                 ```
 
             High Complexity:
+
                 ```lua
                 -- High: Spawn multiple money entities with advanced positioning
                 local spawnPositions = {

@@ -66,23 +66,29 @@ local function validateURL(url)
 end
 
 --[[
-    Purpose: Downloads an image from a URL and caches it locally for future use
-    When Called: When you need to fetch an image from the internet and store it locally
+    Purpose:
+        Downloads an image from a URL and caches it locally for future use
+    When Called:
+        When you need to fetch an image from the internet and store it locally
     Parameters:
         - n (string): Name/identifier for the image
         - u (string, optional): URL to download from (uses stored URL if not provided)
         - cb (function, optional): Callback function called when download completes
         - flags (string, optional): Material flags for the downloaded image
-    Returns: None (uses callback for results)
-    Realm: Client
+    Returns:
+        None (uses callback for results)
+    Realm:
+        Client
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Download a single image
         lia.webimage.download("logo", "https://example.com/logo.png")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Download with callback and custom flags
         lia.webimage.download("avatar", "https://example.com/avatar.jpg", function(material, fromCache)
@@ -95,6 +101,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch download with error handling and progress tracking
         local images = {
@@ -205,23 +212,29 @@ function lia.webimage.download(n, u, cb, flags)
 end
 
 --[[
-    Purpose: Registers an image URL for future use and immediately downloads it
-    When Called: When you want to store an image URL and download it for later use
+    Purpose:
+        Registers an image URL for future use and immediately downloads it
+    When Called:
+        When you want to store an image URL and download it for later use
     Parameters:
         - n (string): Name/identifier for the image
         - u (string): URL to download from
         - cb (function, optional): Callback function called when download completes
         - flags (string, optional): Material flags for the downloaded image
-    Returns: None
-    Realm: Client
+    Returns:
+        None
+    Realm:
+        Client
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Register and download a single image
         lia.webimage.register("logo", "https://example.com/logo.png")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Register with callback for UI updates
         lia.webimage.register("avatar", "https://example.com/avatar.jpg", function(material)
@@ -233,6 +246,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Register multiple images with progress tracking
         local imageConfigs = {
@@ -266,15 +280,20 @@ function lia.webimage.register(n, u, cb, flags)
 end
 
 --[[
-    Purpose: Retrieves a cached material from a previously downloaded image
-    When Called: When you need to get a material that has already been downloaded and cached
+    Purpose:
+        Retrieves a cached material from a previously downloaded image
+    When Called:
+        When you need to get a material that has already been downloaded and cached
     Parameters:
         - n (string): Name/identifier of the image or URL
         - flags (string, optional): Material flags to apply to the material
-    Returns: Material object if found, nil otherwise
-    Realm: Client
+    Returns:
+        Material object if found, nil otherwise
+    Realm:
+        Client
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get a cached material
         local logo = lia.webimage.get("logo")
@@ -285,6 +304,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Get material with custom flags and fallback
         local avatar = lia.webimage.get("avatar", "noclamp smooth")
@@ -296,6 +316,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch retrieval with validation and error handling
         local imageNames = {"banner", "icon", "background", "logo"}
@@ -409,13 +430,19 @@ function dimage:SetImage(src, backup)
 end
 
 --[[
-    Purpose: Retrieves statistics about downloaded and stored web images
-    When Called: When you need to monitor the library's performance or get usage statistics
-    Parameters: None
-    Returns: Table containing statistics (downloaded count, stored count, last reset time)
-    Realm: Client
+    Purpose:
+        Retrieves statistics about downloaded and stored web images
+    When Called:
+        When you need to monitor the library's performance or get usage statistics
+    Parameters:
+        None
+    Returns:
+        Table containing statistics (downloaded count, stored count, last reset time)
+    Realm:
+        Client
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get basic statistics
         local stats = lia.webimage.getStats()
@@ -424,6 +451,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Display statistics in a panel
         local stats = lia.webimage.getStats()
@@ -444,6 +472,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Create a comprehensive statistics dashboard
         local function createStatsDashboard()

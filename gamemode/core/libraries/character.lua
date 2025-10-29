@@ -13,16 +13,21 @@ lia.char.loaded = lia.char.loaded or {}
 lia.char.varHooks = lia.char.varHooks or {}
 lia.char.pendingRequests = lia.char.pendingRequests or {}
 --[[
-    Purpose: Retrieves a character by its ID, loading it if necessary
-    When Called: When a character needs to be accessed by ID, either from server or client
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary
+    When Called:
+        When a character needs to be accessed by ID, either from server or client
     Parameters:
         - charID (number): The unique identifier of the character
         - client (Player): The player requesting the character (optional)
         - callback (function): Function to call when character is loaded (optional)
-    Returns: Character object if found/loaded, nil otherwise
-    Realm: Shared (works on both server and client)
+    Returns:
+        Character object if found/loaded, nil otherwise
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get a character by ID
         local character = lia.char.getCharacter(123)
@@ -32,6 +37,7 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Get character with callback for async loading
         lia.char.getCharacter(123, client, function(character)
@@ -43,6 +49,7 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
         ```
 
         High Complexity:
+
         ```lua
         -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
@@ -87,13 +94,19 @@ function lia.char.getCharacter(charID, client, callback)
 end
 
 --[[
-    Purpose: Retrieves all currently loaded characters from all players
-    When Called: When you need to iterate through all active characters on the server
-    Parameters: None
-    Returns: Table with Player objects as keys and their Character objects as values
-    Realm: Shared (works on both server and client)
+    Purpose:
+        Retrieves all currently loaded characters from all players
+    When Called:
+        When you need to iterate through all active characters on the server
+    Parameters:
+        None
+    Returns:
+        Table with Player objects as keys and their Character objects as values
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get all characters and count them
         local allChars = lia.char.getAll()
@@ -101,6 +114,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Find characters by faction
         local allChars = lia.char.getAll()
@@ -114,6 +128,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Process all characters with validation and statistics
         local allChars = lia.char.getAll()
@@ -143,14 +158,19 @@ function lia.char.getAll()
 end
 
 --[[
-    Purpose: Checks if a character with the given ID is currently loaded in memory
-    When Called: Before attempting to access a character to avoid unnecessary loading
+    Purpose:
+        Checks if a character with the given ID is currently loaded in memory
+    When Called:
+        Before attempting to access a character to avoid unnecessary loading
     Parameters:
         - charID (number): The unique identifier of the character to check
-    Returns: Boolean - true if character is loaded, false otherwise
-    Realm: Shared (works on both server and client)
+    Returns:
+        Boolean - true if character is loaded, false otherwise
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Check if character is loaded
         if lia.char.isLoaded(123) then
@@ -159,6 +179,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Conditional character access
         local charID = 123
@@ -174,6 +195,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character loading with status checking
         local charIDs = {123, 456, 789}
@@ -196,15 +218,20 @@ function lia.char.isLoaded(charID)
 end
 
 --[[
-    Purpose: Adds a character to the loaded characters cache and triggers pending callbacks
-    When Called: When a character is loaded from database or created, to make it available in memory
+    Purpose:
+        Adds a character to the loaded characters cache and triggers pending callbacks
+    When Called:
+        When a character is loaded from database or created, to make it available in memory
     Parameters:
         - id (number): The unique identifier of the character
         - character (Character): The character object to add to cache
-    Returns: None
-    Realm: Shared (works on both server and client)
+    Returns:
+        None
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Add a character to cache
         local character = lia.char.new(charData, 123, client)
@@ -212,6 +239,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Add character and handle pending requests
         local charID = 123
@@ -227,6 +255,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character loading with callback management
         local characters = {}
@@ -253,20 +282,26 @@ function lia.char.addCharacter(id, character)
 end
 
 --[[
-    Purpose: Removes a character from the loaded characters cache
-    When Called: When a character needs to be unloaded from memory (cleanup, deletion, etc.)
+    Purpose:
+        Removes a character from the loaded characters cache
+    When Called:
+        When a character needs to be unloaded from memory (cleanup, deletion, etc.)
     Parameters:
         - id (number): The unique identifier of the character to remove
-    Returns: None
-    Realm: Shared (works on both server and client)
+    Returns:
+        None
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Remove character from cache
         lia.char.removeCharacter(123)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Remove character with validation
         local charID = 123
@@ -281,6 +316,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character cleanup with error handling
         local charIDs = {123, 456, 789}
@@ -307,17 +343,22 @@ function lia.char.removeCharacter(id)
 end
 
 --[[
-    Purpose: Creates a new character object from data with proper metatable and variable initialization
-    When Called: When creating a new character instance from database data or character creation
+    Purpose:
+        Creates a new character object from data with proper metatable and variable initialization
+    When Called:
+        When creating a new character instance from database data or character creation
     Parameters:
         - data (table): Character data containing all character variables
         - id (number): The unique identifier for the character (optional)
         - client (Player): The player who owns this character (optional)
         - steamID (string): Steam ID of the character owner (optional, used when client is invalid)
-    Returns: Character object with proper metatable and initialized variables
-    Realm: Shared (works on both server and client)
+    Returns:
+        Character object with proper metatable and initialized variables
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Create a basic character
         local charData = {
@@ -330,6 +371,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Create character with full data and validation
         local charData = {
@@ -349,6 +391,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Create character from database with error handling
         local charID = 789
@@ -402,16 +445,21 @@ function lia.char.new(data, id, client, steamID)
 end
 
 --[[
-    Purpose: Registers a hook function for a specific character variable
-    When Called: When you need to add custom behavior when a character variable changes
+    Purpose:
+        Registers a hook function for a specific character variable
+    When Called:
+        When you need to add custom behavior when a character variable changes
     Parameters:
         - varName (string): The name of the character variable to hook
         - hookName (string): The name/identifier for this hook
         - func (function): The function to call when the variable changes
-    Returns: None
-    Realm: Shared (works on both server and client)
+    Returns:
+        None
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Hook a variable change
         lia.char.hookVar("money", "onMoneyChange", function(character, oldValue, newValue)
@@ -420,6 +468,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Hook with validation and side effects
         lia.char.hookVar("faction", "onFactionChange", function(character, oldValue, newValue)
@@ -438,6 +487,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Multiple hooks with complex logic
         local hooks = {
@@ -478,15 +528,20 @@ function lia.char.hookVar(varName, hookName, func)
 end
 
 --[[
-    Purpose: Registers a new character variable with validation, networking, and database persistence
-    When Called: During gamemode initialization to define character variables and their behavior
+    Purpose:
+        Registers a new character variable with validation, networking, and database persistence
+    When Called:
+        During gamemode initialization to define character variables and their behavior
     Parameters:
         - key (string): The unique identifier for the character variable
         - data (table): Configuration table containing variable properties and callbacks
-    Returns: None
-    Realm: Shared (works on both server and client)
+    Returns:
+        None
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Register a basic character variable
         lia.char.registerVar("level", {
@@ -498,6 +553,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Register variable with validation and custom behavior
         lia.char.registerVar("reputation", {
@@ -527,6 +583,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Register complex variable with full feature set
         lia.char.registerVar("skills", {
@@ -1003,15 +1060,20 @@ lia.char.registerVar("banned", {
 })
 
 --[[
-    Purpose: Retrieves character data from the database with automatic decoding
-    When Called: When you need to access character data directly from the database
+    Purpose:
+        Retrieves character data from the database with automatic decoding
+    When Called:
+        When you need to access character data directly from the database
     Parameters:
         - charID (number): The unique identifier of the character
         - key (string): Specific data key to retrieve (optional)
-    Returns: Table of character data or specific value if key provided
-    Realm: Server only
+    Returns:
+        Table of character data or specific value if key provided
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get all character data
         local charData = lia.char.getCharData(123)
@@ -1019,6 +1081,7 @@ lia.char.registerVar("banned", {
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Get specific character data
         local charID = 123
@@ -1031,6 +1094,7 @@ lia.char.registerVar("banned", {
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character data retrieval with validation
         local charIDs = {123, 456, 789}
@@ -1068,15 +1132,20 @@ function lia.char.getCharData(charID, key)
 end
 
 --[[
-    Purpose: Retrieves raw character data from database without automatic processing
-    When Called: When you need unprocessed character data or want to handle decoding manually
+    Purpose:
+        Retrieves raw character data from database without automatic processing
+    When Called:
+        When you need unprocessed character data or want to handle decoding manually
     Parameters:
         - charID (number): The unique identifier of the character
         - key (string): Specific data key to retrieve (optional)
-    Returns: Raw decoded data or specific value if key provided
-    Realm: Server only
+    Returns:
+        Raw decoded data or specific value if key provided
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get raw character data
         local rawData = lia.char.getCharDataRaw(123)
@@ -1084,6 +1153,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Get specific raw data with error handling
         local charID = 123
@@ -1097,6 +1167,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Process multiple raw data entries
         local charID = 123
@@ -1141,14 +1212,19 @@ function lia.char.getCharDataRaw(charID, key)
 end
 
 --[[
-    Purpose: Finds the player who owns a character with the given ID
-    When Called: When you need to find which player is using a specific character
+    Purpose:
+        Finds the player who owns a character with the given ID
+    When Called:
+        When you need to find which player is using a specific character
     Parameters:
         - ID (number): The unique identifier of the character
-    Returns: Player object if found, nil otherwise
-    Realm: Shared (works on both server and client)
+    Returns:
+        Player object if found, nil otherwise
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Find character owner
         local owner = lia.char.getOwnerByID(123)
@@ -1158,6 +1234,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Find owner and perform action
         local charID = 123
@@ -1172,6 +1249,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch owner lookup with validation
         local charIDs = {123, 456, 789}
@@ -1200,14 +1278,19 @@ function lia.char.getOwnerByID(ID)
 end
 
 --[[
-    Purpose: Finds a character by the Steam ID of its owner
-    When Called: When you need to find a character using the player's Steam ID
+    Purpose:
+        Finds a character by the Steam ID of its owner
+    When Called:
+        When you need to find a character using the player's Steam ID
     Parameters:
         - steamID (string): Steam ID of the character owner (supports both formats)
-    Returns: Character object if found, nil otherwise
-    Realm: Shared (works on both server and client)
+    Returns:
+        Character object if found, nil otherwise
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Find character by Steam ID
         local character = lia.char.getBySteamID("STEAM_0:1:123456")
@@ -1217,6 +1300,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Find character with Steam ID conversion
         local steamID64 = "76561198000000000"
@@ -1231,6 +1315,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character lookup by Steam IDs
         local steamIDs = {"STEAM_0:1:123456", "76561198000000000", "STEAM_0:0:789012"}
@@ -1262,14 +1347,19 @@ function lia.char.getBySteamID(steamID)
 end
 
 --[[
-    Purpose: Gets the team color for a player based on their character's class
-    When Called: When you need to determine the appropriate color for a player's team/class
+    Purpose:
+        Gets the team color for a player based on their character's class
+    When Called:
+        When you need to determine the appropriate color for a player's team/class
     Parameters:
         - client (Player): The player to get the team color for
-    Returns: Color object representing the team/class color
-    Realm: Shared (works on both server and client)
+    Returns:
+        Color object representing the team/class color
+    Realm:
+        Shared (works on both server and client)
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get player team color
         local color = lia.char.getTeamColor(client)
@@ -1277,6 +1367,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Use team color for UI elements
         local color = lia.char.getTeamColor(client)
@@ -1287,6 +1378,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch team color processing for UI
         local players = player.GetAll()
@@ -1322,15 +1414,20 @@ end
 
 if SERVER then
     --[[
-    Purpose: Creates a new character in the database and initializes it with default inventory
-    When Called: When a player creates a new character through character creation
+    Purpose:
+        Creates a new character in the database and initializes it with default inventory
+    When Called:
+        When a player creates a new character through character creation
     Parameters:
         - data (table): Character data containing name, description, faction, model, etc.
         - callback (function): Function to call when character creation is complete
-    Returns: None (uses callback for result)
-    Realm: Server only
+    Returns:
+        None (uses callback for result)
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Create a basic character
         local charData = {
@@ -1347,6 +1444,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Create character with validation and inventory
         local charData = {
@@ -1373,6 +1471,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Create character with full validation and error handling
         local function createCharacterWithValidation(client, charData)
@@ -1458,16 +1557,21 @@ if SERVER then
     end
 
     --[[
-    Purpose: Restores/loads all characters for a player from the database
-    When Called: When a player connects and needs their characters loaded
+    Purpose:
+        Restores/loads all characters for a player from the database
+    When Called:
+        When a player connects and needs their characters loaded
     Parameters:
         - client (Player): The player to restore characters for
         - callback (function): Function to call when restoration is complete
         - id (number): Specific character ID to restore (optional)
-    Returns: None (uses callback for result)
-    Realm: Server only
+    Returns:
+        None (uses callback for result)
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Restore all characters for player
         lia.char.restore(client, function(characters)
@@ -1476,6 +1580,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Restore with character validation
         lia.char.restore(client, function(characters)
@@ -1501,6 +1606,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Restore with full error handling and statistics
         lia.char.restore(client, function(characters)
@@ -1644,20 +1750,26 @@ if SERVER then
     end
 
     --[[
-    Purpose: Cleans up all loaded characters for a player when they disconnect
-    When Called: When a player disconnects to free up memory and save data
+    Purpose:
+        Cleans up all loaded characters for a player when they disconnect
+    When Called:
+        When a player disconnects to free up memory and save data
     Parameters:
         - client (Player): The player to clean up characters for
-    Returns: None
-    Realm: Server only
+    Returns:
+        None
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Clean up player characters
         lia.char.cleanUpForPlayer(client)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Clean up with logging
         lia.char.cleanUpForPlayer(client)
@@ -1671,6 +1783,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Clean up with statistics and validation
         local function cleanupPlayerCharacters(client)
@@ -1726,21 +1839,27 @@ if SERVER then
     end
 
     --[[
-    Purpose: Permanently deletes a character from the database and all associated data
-    When Called: When a character needs to be permanently removed (admin action, etc.)
+    Purpose:
+        Permanently deletes a character from the database and all associated data
+    When Called:
+        When a character needs to be permanently removed (admin action, etc.)
     Parameters:
         - id (number): The unique identifier of the character to delete
         - client (Player): The player who owns the character (optional)
-    Returns: None
-    Realm: Server only
+    Returns:
+        None
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Delete a character
         lia.char.delete(123)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Delete character with validation
         local charID = 123
@@ -1757,6 +1876,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Delete character with full cleanup and logging
         local function deleteCharacterWithCleanup(charID, admin)
@@ -1847,14 +1967,19 @@ if SERVER then
     end
 
     --[[
-    Purpose: Checks if a character is banned and returns the ban timestamp
-    When Called: When you need to check if a character is banned
+    Purpose:
+        Checks if a character is banned and returns the ban timestamp
+    When Called:
+        When you need to check if a character is banned
     Parameters:
         - charID (number): The unique identifier of the character
-    Returns: Number representing ban timestamp (0 if not banned)
-    Realm: Server only
+    Returns:
+        Number representing ban timestamp (0 if not banned)
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Check if character is banned
         local banTime = lia.char.getCharBanned(123)
@@ -1864,6 +1989,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Check ban status with validation
         local charID = 123
@@ -1881,6 +2007,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch ban checking with detailed information
         local function checkCharacterBans(charIDs)
@@ -1912,16 +2039,21 @@ if SERVER then
     end
 
     --[[
-    Purpose: Sets character data in the database with proper type handling and networking
-    When Called: When character data needs to be saved to the database
+    Purpose:
+        Sets character data in the database with proper type handling and networking
+    When Called:
+        When character data needs to be saved to the database
     Parameters:
         - charID (number): The unique identifier of the character
         - field (string): The field name to set
         - value (any): The value to set for the field
-    Returns: Boolean indicating success
-    Realm: Server only
+    Returns:
+        Boolean indicating success
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Set character data
         local success = lia.char.setCharDatabase(123, "money", 1000)
@@ -1931,6 +2063,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Set character data with validation
         local charID = 123
@@ -1949,6 +2082,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character data updates with error handling
         local function updateCharacterData(charID, dataUpdates)
@@ -2082,14 +2216,19 @@ if SERVER then
     end
 
     --[[
-    Purpose: Unloads a character from memory, saving data and cleaning up resources
-    When Called: When a character needs to be removed from memory to free up resources
+    Purpose:
+        Unloads a character from memory, saving data and cleaning up resources
+    When Called:
+        When a character needs to be removed from memory to free up resources
     Parameters:
         - charID (number): The unique identifier of the character to unload
-    Returns: Boolean indicating success
-    Realm: Server only
+    Returns:
+        Boolean indicating success
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Unload a character
         local success = lia.char.unloadCharacter(123)
@@ -2099,6 +2238,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Unload character with validation
         local charID = 123
@@ -2118,6 +2258,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch character unloading with statistics
         local function unloadCharacters(charIDs)
@@ -2184,15 +2325,20 @@ if SERVER then
     end
 
     --[[
-    Purpose: Unloads unused characters for a player, keeping only the active one
-    When Called: When a player switches characters or to free up memory
+    Purpose:
+        Unloads unused characters for a player, keeping only the active one
+    When Called:
+        When a player switches characters or to free up memory
     Parameters:
         - client (Player): The player to unload unused characters for
         - activeCharID (number): The ID of the character to keep loaded
-    Returns: Number of characters unloaded
-    Realm: Server only
+    Returns:
+        Number of characters unloaded
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Unload unused characters
         local unloadedCount = lia.char.unloadUnusedCharacters(client, 123)
@@ -2200,6 +2346,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Unload with validation
         local activeCharID = client:getChar() and client:getChar():getID()
@@ -2213,6 +2360,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Unload with detailed logging and statistics
         local function unloadUnusedCharactersWithStats(client)
@@ -2255,16 +2403,21 @@ if SERVER then
     end
 
     --[[
-    Purpose: Loads a single character from the database with inventory initialization
-    When Called: When a specific character needs to be loaded on demand
+    Purpose:
+        Loads a single character from the database with inventory initialization
+    When Called:
+        When a specific character needs to be loaded on demand
     Parameters:
         - charID (number): The unique identifier of the character to load
         - client (Player): The player requesting the character (optional)
         - callback (function): Function to call when loading is complete
-    Returns: None (uses callback for result)
-    Realm: Server only
+    Returns:
+        None (uses callback for result)
+    Realm:
+        Server only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Load a single character
         lia.char.loadSingleCharacter(123, client, function(character)
@@ -2275,6 +2428,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Load character with validation
         local charID = 123
@@ -2300,6 +2454,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Load character with full error handling and statistics
         local function loadCharacterWithValidation(charID, client)

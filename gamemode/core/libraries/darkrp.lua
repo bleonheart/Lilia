@@ -16,21 +16,26 @@ RPExtraTeams = RPExtraTeams or {}
 DarkRP.disabledDefaults = DarkRP.disabledDefaults or {}
 if SERVER then
     --[[
-        Purpose: Checks if a given position is empty and suitable for spawning entities or players
+        Purpose:
+            Checks if a given position is empty and suitable for spawning entities or players
 
-        When Called: Called when checking spawn positions, entity placement, or any position validation
+        When Called:
+            Called when checking spawn positions, entity placement, or any position validation
 
         Parameters:
             position (Vector): The world position to check
             entitiesToIgnore (table, optional): Table of entities to ignore during the check
 
-        Returns: boolean - true if the position is empty, false otherwise
+        Returns:
+            boolean - true if the position is empty, false otherwise
 
-        Realm: Server
+        Realm:
+            Server
 
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Check if a position is empty
         local pos = Vector(100, 200, 50)
@@ -40,6 +45,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Check position while ignoring specific entities
         local pos = player:GetPos()
@@ -50,6 +56,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Validate spawn position with multiple checks
         local spawnPos = Vector(0, 0, 0)
@@ -83,9 +90,11 @@ if SERVER then
     end
 
     --[[
-        Purpose: Finds the nearest empty position to a starting position within specified parameters
+        Purpose:
+            Finds the nearest empty position to a starting position within specified parameters
 
-        When Called: Called when spawning entities or players and the initial position is occupied
+        When Called:
+            Called when spawning entities or players and the initial position is occupied
 
         Parameters:
             startPos (Vector): The starting position to search from
@@ -94,13 +103,16 @@ if SERVER then
             searchStep (number): Step size for the search radius
             checkArea (Vector): Additional area to check around each position
 
-        Returns: Vector - The nearest empty position found, or the original position if none found
+        Returns:
+            Vector - The nearest empty position found, or the original position if none found
 
-        Realm: Server
+        Realm:
+            Server
 
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Find empty position near spawn point
         local spawnPos = Vector(0, 0, 0)
@@ -109,6 +121,7 @@ if SERVER then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Find spawn position ignoring specific entities
         local startPos = Vector(100, 200, 50)
@@ -120,6 +133,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Advanced spawn system with multiple checks
         local spawnPoints = {Vector(0, 0, 0), Vector(100, 0, 0), Vector(0, 100, 0)}
@@ -156,9 +170,11 @@ if SERVER then
     end
 
     --[[
-        Purpose: Sends a localized notification to a client (DarkRP compatibility function)
+        Purpose:
+            Sends a localized notification to a client (DarkRP compatibility function)
 
-        When Called: Called when sending notifications to players in DarkRP-compatible systems
+        When Called:
+            Called when sending notifications to players in DarkRP-compatible systems
 
         Parameters:
             client (Player): The player to send the notification to
@@ -166,19 +182,23 @@ if SERVER then
             _ (any): Unused parameter (DarkRP compatibility)
             message (string): The localized message key to send
 
-        Returns: nil
+        Returns:
+            nil
 
-        Realm: Server
+        Realm:
+            Server
 
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Send basic notification
         lia.darkrp.notify(player, nil, nil, "welcome_message")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Send notification with context
         local message = "player_joined"
@@ -186,6 +206,7 @@ if SERVER then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Send notifications to multiple players
         local message = "server_restart_warning"
@@ -215,22 +236,27 @@ else
     end
 
     --[[
-        Purpose: Wraps text to fit within a specified maximum line width using font metrics
+        Purpose:
+            Wraps text to fit within a specified maximum line width using font metrics
 
-        When Called: Called when displaying text in UI elements that need to fit within width constraints
+        When Called:
+            Called when displaying text in UI elements that need to fit within width constraints
 
         Parameters:
             text (string): The text to wrap
             fontName (string): The font name to use for width calculations
             maxLineWidth (number): The maximum width in pixels for each line
 
-        Returns: string - The wrapped text with line breaks inserted
+        Returns:
+            string - The wrapped text with line breaks inserted
 
-        Realm: Client
+        Realm:
+            Client
 
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Wrap basic text
         local wrappedText = lia.darkrp.textWrap("Hello world this is a long text", "DermaDefault", 200)
@@ -238,6 +264,7 @@ else
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Wrap text with different fonts
         local text = "This is a sample text that needs to be wrapped properly"
@@ -252,6 +279,7 @@ else
         ```
 
         High Complexity:
+
         ```lua
         -- High: Dynamic text wrapping with multiple paragraphs
         local paragraphs = {
@@ -303,20 +331,25 @@ else
 end
 
 --[[
-    Purpose: Formats a numeric amount as currency using the Lilia currency system
+    Purpose:
+        Formats a numeric amount as currency using the Lilia currency system
 
-    When Called: Called when displaying money amounts in UI or chat messages
+    When Called:
+        Called when displaying money amounts in UI or chat messages
 
     Parameters:
         amount (number): The numeric amount to format
 
-    Returns: string - The formatted currency string
+    Returns:
+        string - The formatted currency string
 
-    Realm: Shared
+    Realm:
+        Shared
 
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Format a basic amount
     local formatted = lia.darkrp.formatMoney(1000)
@@ -324,6 +357,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Format player's money for display
     local playerMoney = player:getMoney()
@@ -332,6 +366,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Format multiple amounts for transaction display
     local amounts = {500, 1250, 9999, 150000}
@@ -351,9 +386,11 @@ function lia.darkrp.formatMoney(amount)
 end
 
 --[[
-    Purpose: Creates a DarkRP-compatible entity item in the Lilia item system
+    Purpose:
+        Creates a DarkRP-compatible entity item in the Lilia item system
 
-    When Called: Called when registering DarkRP entities for compatibility with existing addons
+    When Called:
+        Called when registering DarkRP entities for compatibility with existing addons
 
     Parameters:
         name (string): The display name of the entity
@@ -365,13 +402,16 @@ end
             - ent (string, optional): Entity class name
             - price (number, optional): Price of the entity
 
-    Returns: nil
+    Returns:
+        nil
 
-    Realm: Shared
+    Realm:
+        Shared
 
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Create a basic entity
     lia.darkrp.createEntity("Chair", {
@@ -381,6 +421,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Create entity with full configuration
     lia.darkrp.createEntity("Advanced Computer", {
@@ -394,6 +435,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Create multiple entities from configuration table
     local entities = {
@@ -437,25 +479,32 @@ function lia.darkrp.createEntity(name, data)
 end
 
 --[[
-    Purpose: Creates a DarkRP-compatible category (placeholder function for compatibility)
+    Purpose:
+        Creates a DarkRP-compatible category (placeholder function for compatibility)
 
-    When Called: Called by DarkRP addons that expect a createCategory function to exist
+    When Called:
+        Called by DarkRP addons that expect a createCategory function to exist
 
-    Parameters: None
+    Parameters:
+        None
 
-    Returns: nil
+    Returns:
+        nil
 
-    Realm: Shared
+    Realm:
+        Shared
 
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Call the function (no effect)
     lia.darkrp.createCategory()
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Use in DarkRP compatibility code
     if DarkRP and DarkRP.createCategory then
@@ -464,6 +513,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Use in addon initialization
     local function initializeDarkRPCompatibility()

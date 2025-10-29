@@ -9,8 +9,10 @@
     Server-side hooks in the Lilia framework handle game logic, data persistence, player management, and other server-specific functionality. All server hooks follow the standard Garry's Mod hook system and can be overridden or extended by addons and modules.
 ]]
 --[[
-    Purpose: Adds a warning to a character's record in the administration system
-    When Called: When an admin issues a warning to a player
+    Purpose:
+        Adds a warning to a character's record in the administration system
+    When Called:
+        When an admin issues a warning to a player
     Parameters:
         charID (number) - The character ID of the warned player
         warned (string) - The name of the warned player
@@ -19,17 +21,21 @@
         message (string) - The warning message/reason
         warner (string) - The name of the admin who issued the warning
         warnerSteamID (string) - The Steam ID of the admin who issued the warning
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Add a basic warning
     hook.Run("AddWarning", charID, playerName, steamID, os.time(), "Rule violation", adminName, adminSteamID)
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add warning with custom message
     local reason = "Excessive RDM - 3 kills in 5 minutes"
@@ -39,6 +45,7 @@
     ```
 
     High Complexity:
+
     ```lua
     -- High: Add warning with validation and logging
     hook.Add("AddWarning", "MyAddon", function(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)
@@ -68,18 +75,23 @@ function AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, w
 end
 
 --[[
-    Purpose: Allows modification of character creation data before the character is created
-    When Called: During character creation process, before the character is saved to database
+    Purpose:
+        Allows modification of character creation data before the character is created
+    When Called:
+        During character creation process, before the character is saved to database
     Parameters:
         client (Player) - The player creating the character
         data (table) - The current character data being created
         newData (table) - Additional data to be merged with the character data
         originalData (table) - The original character data before any modifications
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Add default money to new characters
     hook.Add("AdjustCreationData", "MyAddon", function(client, data, newData, originalData)
@@ -88,6 +100,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Modify character based on faction
     hook.Add("AdjustCreationData", "FactionBonuses", function(client, data, newData, originalData)
@@ -101,6 +114,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation system with validation
     hook.Add("AdjustCreationData", "AdvancedCreation", function(client, data, newData, originalData)
@@ -135,16 +149,21 @@ function AdjustCreationData(client, data, newData, originalData)
 end
 
 --[[
-    Purpose: Called when a bag item's inventory is ready and accessible
-    When Called: When a bag item's inventory is created or restored from database
+    Purpose:
+        Called when a bag item's inventory is ready and accessible
+    When Called:
+        When a bag item's inventory is created or restored from database
     Parameters:
         self (Item) - The bag item instance
         inventory (Inventory) - The inventory instance that was created/loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log when bag inventory is ready
     hook.Add("BagInventoryReady", "MyAddon", function(self, inventory)
@@ -153,6 +172,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add special items to bag inventory
     hook.Add("BagInventoryReady", "SpecialBags", function(self, inventory)
@@ -167,6 +187,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex bag inventory system with validation
     hook.Add("BagInventoryReady", "AdvancedBags", function(self, inventory)
@@ -220,16 +241,21 @@ function BagInventoryReady(self, inventory)
 end
 
 --[[
-    Purpose: Called when a bag item's inventory is removed or destroyed
-    When Called: When a bag item is deleted or its inventory is cleaned up
+    Purpose:
+        Called when a bag item's inventory is removed or destroyed
+    When Called:
+        When a bag item is deleted or its inventory is cleaned up
     Parameters:
         self (Item) - The bag item instance
         inv (Inventory) - The inventory instance that was removed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log when bag inventory is removed
     hook.Add("BagInventoryRemoved", "MyAddon", function(self, inv)
@@ -238,6 +264,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up custom data when bag is removed
     hook.Add("BagInventoryRemoved", "CleanupBags", function(self, inv)
@@ -249,6 +276,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex cleanup with item recovery
     hook.Add("BagInventoryRemoved", "AdvancedCleanup", function(self, inv)
@@ -278,17 +306,22 @@ function BagInventoryRemoved(self, inv)
 end
 
 --[[
-    Purpose: Determines if a character can be transferred to a different faction
-    When Called: When attempting to transfer a character to another faction
+    Purpose:
+        Determines if a character can be transferred to a different faction
+    When Called:
+        When attempting to transfer a character to another faction
     Parameters:
         targetChar (Character) - The character being transferred
         faction (string) - The target faction name
         client (Player) - The player requesting the transfer
-    Returns: boolean - True if transfer is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if transfer is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all transfers
     hook.Add("CanBeTransfered", "MyAddon", function(targetChar, faction, client)
@@ -297,6 +330,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction restrictions
     hook.Add("CanBeTransfered", "FactionRestrictions", function(targetChar, faction, client)
@@ -309,6 +343,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer validation system
     hook.Add("CanBeTransfered", "AdvancedTransfers", function(targetChar, faction, client)
@@ -350,17 +385,22 @@ function CanBeTransfered(targetChar, faction, client)
 end
 
 --[[
-    Purpose: Determines if a character can be transferred (alias for CanBeTransfered)
-    When Called: When attempting to transfer a character to another faction
+    Purpose:
+        Determines if a character can be transferred (alias for CanBeTransfered)
+    When Called:
+        When attempting to transfer a character to another faction
     Parameters:
         targetChar (Character) - The character being transferred
         faction (string) - The target faction name
         client (Player) - The player requesting the transfer
-    Returns: boolean - True if transfer is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if transfer is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Use same logic as CanBeTransfered
     hook.Add("CanCharBeTransfered", "MyAddon", function(targetChar, faction, client)
@@ -369,6 +409,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add additional character-specific checks
     hook.Add("CanCharBeTransfered", "CharChecks", function(targetChar, faction, client)
@@ -388,6 +429,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Advanced character transfer system
     hook.Add("CanCharBeTransfered", "AdvancedCharTransfers", function(targetChar, faction, client)
@@ -434,16 +476,21 @@ function CanCharBeTransfered(targetChar, faction, client)
 end
 
 --[[
-    Purpose: Determines if a character can be deleted
-    When Called: When a player attempts to delete a character
+    Purpose:
+        Determines if a character can be deleted
+    When Called:
+        When a player attempts to delete a character
     Parameters:
         client (Player) - The player requesting the deletion
         character (Character) - The character to be deleted
-    Returns: boolean - True if deletion is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if deletion is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all character deletions
     hook.Add("CanDeleteChar", "MyAddon", function(client, character)
@@ -452,6 +499,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Prevent deletion of high-level characters
     hook.Add("CanDeleteChar", "LevelRestrictions", function(client, character)
@@ -465,6 +513,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex deletion validation system
     hook.Add("CanDeleteChar", "AdvancedDeletion", function(client, character)
@@ -508,16 +557,21 @@ function CanDeleteChar(client, character)
 end
 
 --[[
-    Purpose: Determines if a player can invite another player to a class
-    When Called: When attempting to invite a player to join a class
+    Purpose:
+        Determines if a player can invite another player to a class
+    When Called:
+        When attempting to invite a player to join a class
     Parameters:
         client (Player) - The player sending the invitation
         target (Player) - The player being invited
-    Returns: boolean - True if invitation is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if invitation is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all class invitations
     hook.Add("CanInviteToClass", "MyAddon", function(client, target)
@@ -526,6 +580,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check if players are in same faction
     hook.Add("CanInviteToClass", "FactionRestrictions", function(client, target)
@@ -544,6 +599,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class invitation system
     hook.Add("CanInviteToClass", "AdvancedInvitations", function(client, target)
@@ -584,16 +640,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to check if a player can invite another to a class
-    When Called: When attempting to invite a player to a class
+    Purpose:
+        Called to check if a player can invite another to a class
+    When Called:
+        When attempting to invite a player to a class
     Parameters:
         client (Player) - The player attempting the invite
         target (Player) - The player being invited
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow admins only
     hook.Add("CanInviteToClass", "MyAddon", function(client, target)
@@ -602,6 +663,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction and rank
     hook.Add("CanInviteToClass", "ClassInviteCheck", function(client, target)
@@ -614,6 +676,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class invitation system
     hook.Add("CanInviteToClass", "AdvancedClassInvite", function(client, target)
@@ -650,16 +713,21 @@ function CanInviteToClass(client, target)
 end
 
 --[[
-    Purpose: Called to check if a player can invite another to a faction
-    When Called: When attempting to invite a player to a faction
+    Purpose:
+        Called to check if a player can invite another to a faction
+    When Called:
+        When attempting to invite a player to a faction
     Parameters:
         client (Player) - The player attempting the invite
         target (Player) - The player being invited
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow admins only
     hook.Add("CanInviteToFaction", "MyAddon", function(client, target)
@@ -668,6 +736,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction leader status
     hook.Add("CanInviteToFaction", "FactionInviteCheck", function(client, target)
@@ -679,6 +748,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex faction invitation system
     hook.Add("CanInviteToFaction", "AdvancedFactionInvite", function(client, target)
@@ -724,18 +794,23 @@ function CanInviteToFaction(client, target)
 end
 
 --[[
-    Purpose: Determines if an item can be transferred between inventories
-    When Called: When attempting to move an item from one inventory to another
+    Purpose:
+        Determines if an item can be transferred between inventories
+    When Called:
+        When attempting to move an item from one inventory to another
     Parameters:
         item (Item) - The item being transferred
         fromInventory (Inventory) - The source inventory
         toInventory (Inventory) - The destination inventory
         client (Player) - The player performing the transfer
-    Returns: boolean - True if transfer is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if transfer is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item transfers
     hook.Add("CanItemBeTransfered", "MyAddon", function(item, fromInventory, toInventory, client)
@@ -744,6 +819,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Prevent transfer of certain items
     hook.Add("CanItemBeTransfered", "ItemRestrictions", function(item, fromInventory, toInventory, client)
@@ -757,6 +833,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer validation system
     hook.Add("CanItemBeTransfered", "AdvancedTransfers", function(item, fromInventory, toInventory, client)
@@ -799,18 +876,23 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to check if an item can be transferred between inventories
-    When Called: When attempting to move an item from one inventory to another
+    Purpose:
+        Called to check if an item can be transferred between inventories
+    When Called:
+        When attempting to move an item from one inventory to another
     Parameters:
         item (Item) - The item being transferred
         fromInventory (Inventory) - The source inventory
         toInventory (Inventory) - The destination inventory
         client (Player) - The player performing the transfer
-    Returns: boolean - True if transfer is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if transfer is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all transfers
     hook.Add("CanItemBeTransfered", "MyAddon", function(item, fromInventory, toInventory, client)
@@ -819,6 +901,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check inventory types
     hook.Add("CanItemBeTransfered", "InventoryTypeCheck", function(item, fromInventory, toInventory, client)
@@ -837,6 +920,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer validation system
     hook.Add("CanItemBeTransfered", "AdvancedTransferValidation", function(item, fromInventory, toInventory, client)
@@ -906,16 +990,21 @@ function CanItemBeTransfered(item, fromInventory, toInventory, client)
 end
 
 --[[
-    Purpose: Called to check if a player can edit a vendor
-    When Called: When attempting to modify vendor settings
+    Purpose:
+        Called to check if a player can edit a vendor
+    When Called:
+        When attempting to modify vendor settings
     Parameters:
         self (Entity) - The vendor entity
         vendor (table) - The vendor data table
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow admins only
     hook.Add("CanPerformVendorEdit", "MyAddon", function(self, vendor)
@@ -925,6 +1014,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check vendor ownership
     hook.Add("CanPerformVendorEdit", "VendorEditCheck", function(self, vendor)
@@ -940,6 +1030,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor editing system
     hook.Add("CanPerformVendorEdit", "AdvancedVendorEdit", function(self, vendor)
@@ -975,15 +1066,20 @@ function CanPerformVendorEdit(self, vendor)
 end
 
 --[[
-    Purpose: Called to check if an entity can be persisted
-    When Called: When determining if an entity should be saved across map changes
+    Purpose:
+        Called to check if an entity can be persisted
+    When Called:
+        When determining if an entity should be saved across map changes
     Parameters:
         entity (Entity) - The entity to check
-    Returns: boolean - True to persist, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True to persist, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Persist all props
     hook.Add("CanPersistEntity", "MyAddon", function(entity)
@@ -992,6 +1088,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Persist specific entities
     hook.Add("CanPersistEntity", "EntityPersistCheck", function(entity)
@@ -1006,6 +1103,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity persistence system
     hook.Add("CanPersistEntity", "AdvancedEntityPersist", function(entity)
@@ -1051,16 +1149,21 @@ function CanPersistEntity(entity)
 end
 
 --[[
-    Purpose: Called to check if money can be picked up
-    When Called: When a player attempts to pick up money
+    Purpose:
+        Called to check if money can be picked up
+    When Called:
+        When a player attempts to pick up money
     Parameters:
         activator (Player) - The player trying to pick up money
         self (Entity) - The money entity
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all money pickup
     hook.Add("CanPickupMoney", "MyAddon", function(activator, self)
@@ -1069,6 +1172,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check distance and amount
     hook.Add("CanPickupMoney", "CheckMoneyPickup", function(activator, self)
@@ -1087,6 +1191,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex money pickup system
     hook.Add("CanPickupMoney", "AdvancedMoneyPickup", function(activator, self)
@@ -1138,17 +1243,22 @@ function CanPickupMoney(activator, self)
 end
 
 --[[
-    Purpose: Determines if a player can access a door with specific access level
-    When Called: When a player attempts to use a door
+    Purpose:
+        Determines if a player can access a door with specific access level
+    When Called:
+        When a player attempts to use a door
     Parameters:
         client (Player) - The player attempting to access the door
         self (Entity) - The door entity
         access (string) - The access level being checked
-    Returns: boolean - True if access is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if access is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all door access
     hook.Add("CanPlayerAccessDoor", "MyAddon", function(client, self, access)
@@ -1157,6 +1267,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check if player has door key
     hook.Add("CanPlayerAccessDoor", "KeySystem", function(client, self, access)
@@ -1180,6 +1291,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door access system
     hook.Add("CanPlayerAccessDoor", "AdvancedDoors", function(client, self, access)
@@ -1238,17 +1350,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to check if a player can access a door
-    When Called: When a player attempts to interact with a door
+    Purpose:
+        Called to check if a player can access a door
+    When Called:
+        When a player attempts to interact with a door
     Parameters:
         client (Player) - The player attempting access
         self (Entity) - The door entity
         access (number) - The access level being checked
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all players
     hook.Add("CanPlayerAccessDoor", "MyAddon", function(client, self, access)
@@ -1257,6 +1374,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check door ownership
     hook.Add("CanPlayerAccessDoor", "DoorAccessCheck", function(client, self, access)
@@ -1269,6 +1387,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door access system
     hook.Add("CanPlayerAccessDoor", "AdvancedDoorAccess", function(client, self, access)
@@ -1302,16 +1421,21 @@ function CanPlayerAccessDoor(client, self, access)
 end
 
 --[[
-    Purpose: Called to check if a player can access a vendor
-    When Called: When a player attempts to interact with a vendor
+    Purpose:
+        Called to check if a player can access a vendor
+    When Called:
+        When a player attempts to interact with a vendor
     Parameters:
         activator (Player) - The player attempting access
         self (Entity) - The vendor entity
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all players
     hook.Add("CanPlayerAccessVendor", "MyAddon", function(activator, self)
@@ -1320,6 +1444,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction restrictions
     hook.Add("CanPlayerAccessVendor", "VendorAccessCheck", function(activator, self)
@@ -1336,6 +1461,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor access system
     hook.Add("CanPlayerAccessVendor", "AdvancedVendorAccess", function(activator, self)
@@ -1373,15 +1499,20 @@ function CanPlayerAccessVendor(activator, self)
 end
 
 --[[
-    Purpose: Called to check if a player can choose a weapon
-    When Called: When a player attempts to select a weapon
+    Purpose:
+        Called to check if a player can choose a weapon
+    When Called:
+        When a player attempts to select a weapon
     Parameters:
         weapon (Weapon) - The weapon being chosen
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all weapons
     hook.Add("CanPlayerChooseWeapon", "MyAddon", function(weapon)
@@ -1390,6 +1521,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Restrict specific weapons
     hook.Add("CanPlayerChooseWeapon", "RestrictWeapons", function(weapon)
@@ -1399,6 +1531,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex weapon selection system
     hook.Add("CanPlayerChooseWeapon", "AdvancedWeaponSelection", function(weapon)
@@ -1441,16 +1574,21 @@ function CanPlayerChooseWeapon(weapon)
 end
 
 --[[
-    Purpose: Determines if a player can create a new character
-    When Called: When a player attempts to create a new character
+    Purpose:
+        Determines if a player can create a new character
+    When Called:
+        When a player attempts to create a new character
     Parameters:
         client (Player) - The player creating the character
         data (table) - The character creation data
-    Returns: boolean - True if creation is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if creation is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all character creation
     hook.Add("CanPlayerCreateChar", "MyAddon", function(client, data)
@@ -1459,6 +1597,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check character limit
     hook.Add("CanPlayerCreateChar", "CharLimit", function(client, data)
@@ -1475,6 +1614,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation validation
     hook.Add("CanPlayerCreateChar", "AdvancedCreation", function(client, data)
@@ -1536,16 +1676,21 @@ function CanPlayerCreateChar(client, data)
 end
 
 --[[
-    Purpose: Determines if a player can drop an item
-    When Called: When a player attempts to drop an item from their inventory
+    Purpose:
+        Determines if a player can drop an item
+    When Called:
+        When a player attempts to drop an item from their inventory
     Parameters:
         client (Player) - The player dropping the item
         item (Item) - The item being dropped
-    Returns: boolean - True if dropping is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if dropping is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item drops
     hook.Add("CanPlayerDropItem", "MyAddon", function(client, item)
@@ -1554,6 +1699,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Prevent dropping of certain items
     hook.Add("CanPlayerDropItem", "ItemRestrictions", function(client, item)
@@ -1567,6 +1713,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item drop validation
     hook.Add("CanPlayerDropItem", "AdvancedDrops", function(client, item)
@@ -1615,16 +1762,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to check if a player can drop an item
-    When Called: When a player attempts to drop an item
+    Purpose:
+        Called to check if a player can drop an item
+    When Called:
+        When a player attempts to drop an item
     Parameters:
         client (Player) - The player attempting to drop the item
         item (Item) - The item being dropped
-    Returns: boolean - True if dropping is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if dropping is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item drops
     hook.Add("CanPlayerDropItem", "MyAddon", function(client, item)
@@ -1633,6 +1785,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check item restrictions
     hook.Add("CanPlayerDropItem", "ItemDropCheck", function(client, item)
@@ -1653,6 +1806,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item drop validation system
     hook.Add("CanPlayerDropItem", "AdvancedDropValidation", function(client, item)
@@ -1732,15 +1886,20 @@ function CanPlayerDropItem(client, item)
 end
 
 --[[
-    Purpose: Called to check if a player can earn salary
-    When Called: When salary payment is being processed
+    Purpose:
+        Called to check if a player can earn salary
+    When Called:
+        When salary payment is being processed
     Parameters:
         client (Player) - The player being checked
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all players
     hook.Add("CanPlayerEarnSalary", "MyAddon", function(client)
@@ -1749,6 +1908,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check if player is AFK
     hook.Add("CanPlayerEarnSalary", "SalaryAFKCheck", function(client)
@@ -1761,6 +1921,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary eligibility system
     hook.Add("CanPlayerEarnSalary", "AdvancedSalaryCheck", function(client)
@@ -1796,16 +1957,21 @@ function CanPlayerEarnSalary(client)
 end
 
 --[[
-    Purpose: Determines if a player can equip an item
-    When Called: When a player attempts to equip an item
+    Purpose:
+        Determines if a player can equip an item
+    When Called:
+        When a player attempts to equip an item
     Parameters:
         client (Player) - The player equipping the item
         item (Item) - The item being equipped
-    Returns: boolean - True if equipping is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if equipping is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item equipping
     hook.Add("CanPlayerEquipItem", "MyAddon", function(client, item)
@@ -1814,6 +1980,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check level requirements
     hook.Add("CanPlayerEquipItem", "LevelRequirements", function(client, item)
@@ -1833,6 +2000,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex equipment validation system
     hook.Add("CanPlayerEquipItem", "AdvancedEquipment", function(client, item)
@@ -1891,16 +2059,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to check if a player can equip an item
-    When Called: When a player attempts to equip an item
+    Purpose:
+        Called to check if a player can equip an item
+    When Called:
+        When a player attempts to equip an item
     Parameters:
         client (Player) - The player attempting to equip the item
         item (Item) - The item being equipped
-    Returns: boolean - True if equipping is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if equipping is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item equips
     hook.Add("CanPlayerEquipItem", "MyAddon", function(client, item)
@@ -1909,6 +2082,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check item type restrictions
     hook.Add("CanPlayerEquipItem", "ItemEquipCheck", function(client, item)
@@ -1929,6 +2103,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item equip validation system
     hook.Add("CanPlayerEquipItem", "AdvancedEquipValidation", function(client, item)
@@ -2017,16 +2192,21 @@ function CanPlayerEquipItem(client, item)
 end
 
 --[[
-    Purpose: Called to check if a player can hold an object
-    When Called: When a player attempts to pick up or hold an entity
+    Purpose:
+        Called to check if a player can hold an object
+    When Called:
+        When a player attempts to pick up or hold an entity
     Parameters:
         client (Player) - The player attempting to hold the object
         entity (Entity) - The entity being held
-    Returns: boolean - True if holding is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if holding is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all object holding
     hook.Add("CanPlayerHoldObject", "MyAddon", function(client, entity)
@@ -2035,6 +2215,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check entity type restrictions
     hook.Add("CanPlayerHoldObject", "ObjectHoldCheck", function(client, entity)
@@ -2047,6 +2228,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex object holding validation
     hook.Add("CanPlayerHoldObject", "AdvancedHoldValidation", function(client, entity)
@@ -2084,18 +2266,23 @@ function CanPlayerHoldObject(client, entity)
 end
 
 --[[
-    Purpose: Called to check if a player can interact with an item
-    When Called: When a player attempts to perform an action on an item
+    Purpose:
+        Called to check if a player can interact with an item
+    When Called:
+        When a player attempts to perform an action on an item
     Parameters:
         client (Player) - The player attempting the interaction
         action (string) - The action being performed
         self (Item) - The item being interacted with
         data (table) - Additional data for the interaction
-    Returns: boolean - True if interaction is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if interaction is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item interactions
     hook.Add("CanPlayerInteractItem", "MyAddon", function(client, action, self, data)
@@ -2104,6 +2291,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check action restrictions
     hook.Add("CanPlayerInteractItem", "ItemInteractionCheck", function(client, action, self, data)
@@ -2121,6 +2309,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item interaction validation
     hook.Add("CanPlayerInteractItem", "AdvancedInteractionValidation", function(client, action, self, data)
@@ -2166,17 +2355,22 @@ function CanPlayerInteractItem(client, action, self, data)
 end
 
 --[[
-    Purpose: Called to check if a player can join a class
-    When Called: When a player attempts to join a specific class
+    Purpose:
+        Called to check if a player can join a class
+    When Called:
+        When a player attempts to join a specific class
     Parameters:
         client (Player) - The player attempting to join the class
         class (number) - The class ID being joined
         info (table) - Additional class information
-    Returns: boolean - True if joining is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if joining is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all class joins
     hook.Add("CanPlayerJoinClass", "MyAddon", function(client, class, info)
@@ -2185,6 +2379,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction requirements
     hook.Add("CanPlayerJoinClass", "ClassJoinCheck", function(client, class, info)
@@ -2200,6 +2395,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class join validation
     hook.Add("CanPlayerJoinClass", "AdvancedClassJoin", function(client, class, info)
@@ -2232,15 +2428,20 @@ function CanPlayerJoinClass(client, class, info)
 end
 
 --[[
-    Purpose: Called to check if a player can knock on doors
-    When Called: When a player attempts to knock on a door
+    Purpose:
+        Called to check if a player can knock on doors
+    When Called:
+        When a player attempts to knock on a door
     Parameters:
         client (Player) - The player attempting to knock
-    Returns: boolean - True if knocking is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if knocking is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all knocking
     hook.Add("CanPlayerKnock", "MyAddon", function(client)
@@ -2249,6 +2450,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check character status
     hook.Add("CanPlayerKnock", "KnockCheck", function(client)
@@ -2263,6 +2465,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex knock validation
     hook.Add("CanPlayerKnock", "AdvancedKnockValidation", function(client)
@@ -2297,16 +2500,21 @@ function CanPlayerKnock(client)
 end
 
 --[[
-    Purpose: Called to check if a player can lock a door
-    When Called: When a player attempts to lock a door
+    Purpose:
+        Called to check if a player can lock a door
+    When Called:
+        When a player attempts to lock a door
     Parameters:
         client (Player) - The player attempting to lock the door
         door (Entity) - The door entity being locked
-    Returns: boolean - True if locking is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if locking is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all door locking
     hook.Add("CanPlayerLock", "MyAddon", function(client, door)
@@ -2315,6 +2523,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check door ownership
     hook.Add("CanPlayerLock", "DoorLockCheck", function(client, door)
@@ -2327,6 +2536,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door lock validation
     hook.Add("CanPlayerLock", "AdvancedDoorLock", function(client, door)
@@ -2361,16 +2571,21 @@ function CanPlayerLock(client, door)
 end
 
 --[[
-    Purpose: Called to check if a player can modify configuration
-    When Called: When a player attempts to change a config value
+    Purpose:
+        Called to check if a player can modify configuration
+    When Called:
+        When a player attempts to change a config value
     Parameters:
         client (Player) - The player attempting to modify config
         key (string) - The configuration key being modified
-    Returns: boolean - True if modification is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if modification is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Only allow admins
     hook.Add("CanPlayerModifyConfig", "MyAddon", function(client, key)
@@ -2379,6 +2594,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check specific config permissions
     hook.Add("CanPlayerModifyConfig", "ConfigModCheck", function(client, key)
@@ -2392,6 +2608,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex config modification validation
     hook.Add("CanPlayerModifyConfig", "AdvancedConfigMod", function(client, key)
@@ -2425,15 +2642,20 @@ function CanPlayerModifyConfig(client, key)
 end
 
 --[[
-    Purpose: Called to check if a player can open the scoreboard
-    When Called: When a player attempts to open the scoreboard
+    Purpose:
+        Called to check if a player can open the scoreboard
+    When Called:
+        When a player attempts to open the scoreboard
     Parameters:
         client (Player) - The player attempting to open the scoreboard
-    Returns: boolean - True if opening is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if opening is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all scoreboard access
     hook.Add("CanPlayerOpenScoreboard", "MyAddon", function(client)
@@ -2442,6 +2664,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check character status
     hook.Add("CanPlayerOpenScoreboard", "ScoreboardCheck", function(client)
@@ -2456,6 +2679,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex scoreboard access validation
     hook.Add("CanPlayerOpenScoreboard", "AdvancedScoreboardAccess", function(client)
@@ -2486,16 +2710,21 @@ function CanPlayerOpenScoreboard(client)
 end
 
 --[[
-    Purpose: Called to check if a player can rotate an item in inventory
-    When Called: When a player attempts to rotate an item
+    Purpose:
+        Called to check if a player can rotate an item in inventory
+    When Called:
+        When a player attempts to rotate an item
     Parameters:
         client (Player) - The player attempting to rotate the item
         item (Item) - The item being rotated
-    Returns: boolean - True if rotation is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if rotation is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item rotation
     hook.Add("CanPlayerRotateItem", "MyAddon", function(client, item)
@@ -2504,6 +2733,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check item properties
     hook.Add("CanPlayerRotateItem", "RotateCheck", function(client, item)
@@ -2516,6 +2746,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item rotation validation
     hook.Add("CanPlayerRotateItem", "AdvancedRotation", function(client, item)
@@ -2542,16 +2773,21 @@ function CanPlayerRotateItem(client, item)
 end
 
 --[[
-    Purpose: Called to check if a player can see a log category
-    When Called: When determining which log categories a player can view
+    Purpose:
+        Called to check if a player can see a log category
+    When Called:
+        When determining which log categories a player can view
     Parameters:
         client (Player) - The player checking log access
         k (string) - The log category key
-    Returns: boolean - True if viewing is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if viewing is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow admins to see all logs
     hook.Add("CanPlayerSeeLogCategory", "MyAddon", function(client, k)
@@ -2560,6 +2796,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different permissions for different categories
     hook.Add("CanPlayerSeeLogCategory", "LogCategoryCheck", function(client, k)
@@ -2573,6 +2810,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex log category access control
     hook.Add("CanPlayerSeeLogCategory", "AdvancedLogAccess", function(client, k)
@@ -2604,17 +2842,22 @@ function CanPlayerSeeLogCategory(client, k)
 end
 
 --[[
-    Purpose: Called to check if a player can spawn storage entities
-    When Called: When a player attempts to spawn a storage container
+    Purpose:
+        Called to check if a player can spawn storage entities
+    When Called:
+        When a player attempts to spawn a storage container
     Parameters:
         client (Player) - The player attempting to spawn storage
         entity (Entity) - The storage entity being spawned
         info (table) - Information about the storage entity
-    Returns: boolean - True if spawning is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if spawning is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all storage spawning
     hook.Add("CanPlayerSpawnStorage", "MyAddon", function(client, entity, info)
@@ -2623,6 +2866,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction permissions
     hook.Add("CanPlayerSpawnStorage", "StorageSpawnCheck", function(client, entity, info)
@@ -2637,6 +2881,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage spawn validation
     hook.Add("CanPlayerSpawnStorage", "AdvancedStorageSpawn", function(client, entity, info)
@@ -2676,17 +2921,22 @@ function CanPlayerSpawnStorage(client, entity, info)
 end
 
 --[[
-    Purpose: Called to check if a player can switch characters
-    When Called: When a player attempts to switch from one character to another
+    Purpose:
+        Called to check if a player can switch characters
+    When Called:
+        When a player attempts to switch from one character to another
     Parameters:
         client (Player) - The player attempting to switch
         currentChar (Character) - The current character
         character (Character) - The character being switched to
-    Returns: boolean - True if switching is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if switching is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all character switching
     hook.Add("CanPlayerSwitchChar", "MyAddon", function(client, currentChar, character)
@@ -2695,6 +2945,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check switch cooldown
     hook.Add("CanPlayerSwitchChar", "SwitchCooldown", function(client, currentChar, character)
@@ -2708,6 +2959,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character switch validation
     hook.Add("CanPlayerSwitchChar", "AdvancedCharSwitch", function(client, currentChar, character)
@@ -2750,16 +3002,21 @@ function CanPlayerSwitchChar(client, currentChar, character)
 end
 
 --[[
-    Purpose: Called to check if a player can take an item
-    When Called: When a player attempts to take an item from the ground or another source
+    Purpose:
+        Called to check if a player can take an item
+    When Called:
+        When a player attempts to take an item from the ground or another source
     Parameters:
         client (Player) - The player attempting to take the item
         item (Item) - The item being taken
-    Returns: boolean - True if taking is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if taking is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item takes
     hook.Add("CanPlayerTakeItem", "MyAddon", function(client, item)
@@ -2768,6 +3025,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check item restrictions
     hook.Add("CanPlayerTakeItem", "ItemTakeCheck", function(client, item)
@@ -2789,6 +3047,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item take validation system
     hook.Add("CanPlayerTakeItem", "AdvancedTakeValidation", function(client, item)
@@ -2875,15 +3134,20 @@ function CanPlayerTakeItem(client, item)
 end
 
 --[[
-    Purpose: Called to check if a player can throw a punch
-    When Called: When a player attempts to punch
+    Purpose:
+        Called to check if a player can throw a punch
+    When Called:
+        When a player attempts to punch
     Parameters:
         client (Player) - The player attempting to punch
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all players
     hook.Add("CanPlayerThrowPunch", "MyAddon", function(client)
@@ -2892,6 +3156,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check stamina
     hook.Add("CanPlayerThrowPunch", "PunchStaminaCheck", function(client)
@@ -2905,6 +3170,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex punch system
     hook.Add("CanPlayerThrowPunch", "AdvancedPunchSystem", function(client)
@@ -2938,18 +3204,23 @@ function CanPlayerThrowPunch(client)
 end
 
 --[[
-    Purpose: Called to check if a player can trade with a vendor
-    When Called: When a player attempts to buy/sell from a vendor
+    Purpose:
+        Called to check if a player can trade with a vendor
+    When Called:
+        When a player attempts to buy/sell from a vendor
     Parameters:
         client (Player) - The player attempting to trade
         vendor (table) - The vendor data
         itemType (string) - The item type being traded
         isSellingToVendor (boolean) - True if selling, false if buying
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all trades
     hook.Add("CanPlayerTradeWithVendor", "MyAddon", function(client, vendor, itemType, isSellingToVendor)
@@ -2958,6 +3229,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction restrictions
     hook.Add("CanPlayerTradeWithVendor", "VendorTradeCheck", function(client, vendor, itemType, isSellingToVendor)
@@ -2975,6 +3247,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor trading system
     hook.Add("CanPlayerTradeWithVendor", "AdvancedVendorTrade", function(client, vendor, itemType, isSellingToVendor)
@@ -3020,16 +3293,21 @@ function CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
 end
 
 --[[
-    Purpose: Called to check if a player can unequip an item
-    When Called: When a player attempts to unequip an item
+    Purpose:
+        Called to check if a player can unequip an item
+    When Called:
+        When a player attempts to unequip an item
     Parameters:
         client (Player) - The player attempting to unequip the item
         item (Item) - The item being unequipped
-    Returns: boolean - True if unequipping is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if unequipping is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item unequips
     hook.Add("CanPlayerUnequipItem", "MyAddon", function(client, item)
@@ -3038,6 +3316,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check if item is equipped
     hook.Add("CanPlayerUnequipItem", "ItemUnequipCheck", function(client, item)
@@ -3058,6 +3337,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item unequip validation system
     hook.Add("CanPlayerUnequipItem", "AdvancedUnequipValidation", function(client, item)
@@ -3131,16 +3411,21 @@ function CanPlayerUnequipItem(client, item)
 end
 
 --[[
-    Purpose: Called to check if a player can unlock a door
-    When Called: When a player attempts to unlock a door
+    Purpose:
+        Called to check if a player can unlock a door
+    When Called:
+        When a player attempts to unlock a door
     Parameters:
         client (Player) - The player attempting to unlock the door
         door (Entity) - The door entity being unlocked
-    Returns: boolean - True if unlocking is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if unlocking is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all door unlocking
     hook.Add("CanPlayerUnlock", "MyAddon", function(client, door)
@@ -3149,6 +3434,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check door ownership
     hook.Add("CanPlayerUnlock", "DoorUnlockCheck", function(client, door)
@@ -3161,6 +3447,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door unlock validation
     hook.Add("CanPlayerUnlock", "AdvancedDoorUnlock", function(client, door)
@@ -3189,16 +3476,21 @@ function CanPlayerUnlock(client, door)
 end
 
 --[[
-    Purpose: Called to check if a player can use a character
-    When Called: When a player attempts to load a character
+    Purpose:
+        Called to check if a player can use a character
+    When Called:
+        When a player attempts to load a character
     Parameters:
         client (Player) - The player attempting to use the character
         character (Character) - The character being used
-    Returns: boolean - True if using is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if using is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all character usage
     hook.Add("CanPlayerUseChar", "MyAddon", function(client, character)
@@ -3207,6 +3499,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check character ownership
     hook.Add("CanPlayerUseChar", "CharUseCheck", function(client, character)
@@ -3218,6 +3511,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character use validation
     hook.Add("CanPlayerUseChar", "AdvancedCharUse", function(client, character)
@@ -3247,16 +3541,21 @@ function CanPlayerUseChar(client, character)
 end
 
 --[[
-    Purpose: Called to check if a player can use a command
-    When Called: When a player attempts to execute a command
+    Purpose:
+        Called to check if a player can use a command
+    When Called:
+        When a player attempts to execute a command
     Parameters:
         client (Player) - The player attempting to use the command
         command (string) - The command being executed
-    Returns: boolean - True if command use is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if command use is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all commands
     hook.Add("CanPlayerUseCommand", "MyAddon", function(client, command)
@@ -3265,6 +3564,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check admin commands
     hook.Add("CanPlayerUseCommand", "CommandCheck", function(client, command)
@@ -3277,6 +3577,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex command permission system
     hook.Add("CanPlayerUseCommand", "AdvancedCommandPerms", function(client, command)
@@ -3324,16 +3625,21 @@ function CanPlayerUseCommand(client, command)
 end
 
 --[[
-    Purpose: Called to check if a player can use a door
-    When Called: When a player attempts to interact with a door
+    Purpose:
+        Called to check if a player can use a door
+    When Called:
+        When a player attempts to interact with a door
     Parameters:
         client (Player) - The player attempting to use the door
         door (Entity) - The door entity being used
-    Returns: boolean - True if door use is allowed, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if door use is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all door usage
     hook.Add("CanPlayerUseDoor", "MyAddon", function(client, door)
@@ -3342,6 +3648,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check door ownership
     hook.Add("CanPlayerUseDoor", "DoorUseCheck", function(client, door)
@@ -3354,6 +3661,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door use validation
     hook.Add("CanPlayerUseDoor", "AdvancedDoorUse", function(client, door)
@@ -3392,14 +3700,20 @@ function CanPlayerUseDoor(client, door)
 end
 
 --[[
-    Purpose: Called to check if a player can view inventories
-    When Called: When a player attempts to open any inventory
-    Parameters: None
-    Returns: boolean - True if viewing inventories is allowed, false otherwise
-    Realm: Server
+    Purpose:
+        Called to check if a player can view inventories
+    When Called:
+        When a player attempts to open any inventory
+    Parameters:
+        None
+    Returns:
+        boolean - True if viewing inventories is allowed, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all inventory viewing
     hook.Add("CanPlayerViewInventory", "MyAddon", function()
@@ -3408,6 +3722,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check player status
     hook.Add("CanPlayerViewInventory", "InventoryViewCheck", function()
@@ -3428,6 +3743,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory view validation system
     hook.Add("CanPlayerViewInventory", "AdvancedInventoryView", function()
@@ -3502,16 +3818,21 @@ function CanPlayerViewInventory()
 end
 
 --[[
-    Purpose: Called to check if an item action can be run
-    When Called: When attempting to execute an item action
+    Purpose:
+        Called to check if an item action can be run
+    When Called:
+        When attempting to execute an item action
     Parameters:
         itemTable (table) - The item table containing the action
         k (string) - The action key being executed
-    Returns: boolean - True if action can be run, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if action can be run, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all item actions
     hook.Add("CanRunItemAction", "MyAddon", function(itemTable, k)
@@ -3520,6 +3841,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check action restrictions
     hook.Add("CanRunItemAction", "ActionCheck", function(itemTable, k)
@@ -3538,6 +3860,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item action validation
     hook.Add("CanRunItemAction", "AdvancedActionValidation", function(itemTable, k)
@@ -3578,16 +3901,21 @@ function CanRunItemAction(itemTable, k)
 end
 
 --[[
-    Purpose: Called to check if entity data can be saved
-    When Called: When attempting to save entity data to the database
+    Purpose:
+        Called to check if entity data can be saved
+    When Called:
+        When attempting to save entity data to the database
     Parameters:
         ent (Entity) - The entity being saved
         inventory (Inventory) - The inventory associated with the entity
-    Returns: boolean - True if data can be saved, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if data can be saved, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all data saving
     hook.Add("CanSaveData", "MyAddon", function(ent, inventory)
@@ -3596,6 +3924,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check entity validity
     hook.Add("CanSaveData", "DataSaveCheck", function(ent, inventory)
@@ -3614,6 +3943,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data save validation
     hook.Add("CanSaveData", "AdvancedDataSave", function(ent, inventory)
@@ -3653,15 +3983,20 @@ function CanSaveData(ent, inventory)
 end
 
 --[[
-    Purpose: Called when a character is cleaned up
-    When Called: When a character is being removed from memory
+    Purpose:
+        Called when a character is cleaned up
+    When Called:
+        When a character is being removed from memory
     Parameters:
         character (Character) - The character being cleaned up
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character cleanup
     hook.Add("CharCleanUp", "MyAddon", function(character)
@@ -3670,6 +4005,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up character data
     hook.Add("CharCleanUp", "CharDataCleanup", function(character)
@@ -3685,6 +4021,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character cleanup system
     hook.Add("CharCleanUp", "AdvancedCharCleanup", function(character)
@@ -3724,16 +4061,21 @@ function CharCleanUp(character)
 end
 
 --[[
-    Purpose: Called when a character is deleted
-    When Called: When a character is successfully deleted
+    Purpose:
+        Called when a character is deleted
+    When Called:
+        When a character is successfully deleted
     Parameters:
         client (Player) - The player whose character was deleted
         character (Character) - The character that was deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character deletion
     hook.Add("CharDeleted", "MyAddon", function(client, character)
@@ -3742,6 +4084,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle character deletion effects
     hook.Add("CharDeleted", "CharDeletionEffects", function(client, character)
@@ -3759,6 +4102,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character deletion system
     hook.Add("CharDeleted", "AdvancedCharDeletion", function(client, character)
@@ -3827,16 +4171,21 @@ function CharDeleted(client, character)
 end
 
 --[[
-    Purpose: Called to force character recognition
-    When Called: When a character is forced to be recognized
+    Purpose:
+        Called to force character recognition
+    When Called:
+        When a character is forced to be recognized
     Parameters:
         ply (Player) - The player being recognized
         range (number) - The recognition range
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log forced recognition
     hook.Add("CharForceRecognized", "MyAddon", function(ply, range)
@@ -3845,6 +4194,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle forced recognition effects
     hook.Add("CharForceRecognized", "ForceRecognitionEffects", function(ply, range)
@@ -3861,6 +4211,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex force recognition system
     hook.Add("CharForceRecognized", "AdvancedForceRecognition", function(ply, range)
@@ -3909,16 +4260,21 @@ function CharForceRecognized(ply, range)
 end
 
 --[[
-    Purpose: Called to check if a character has specific flags
-    When Called: When checking if a character has certain permissions
+    Purpose:
+        Called to check if a character has specific flags
+    When Called:
+        When checking if a character has certain permissions
     Parameters:
         self (Character) - The character being checked
         flags (string) - The flags to check for
-    Returns: boolean - True if character has flags, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if character has flags, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Check basic flags
     hook.Add("CharHasFlags", "MyAddon", function(self, flags)
@@ -3927,6 +4283,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check faction-based flags
     hook.Add("CharHasFlags", "FactionFlags", function(self, flags)
@@ -3943,6 +4300,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex flag checking system
     hook.Add("CharHasFlags", "AdvancedFlagCheck", function(self, flags)
@@ -3985,15 +4343,20 @@ function CharHasFlags(self, flags)
 end
 
 --[[
-    Purpose: Called when a character is loaded for a player
-    When Called: When a character is successfully loaded and set up for a player
+    Purpose:
+        Called when a character is loaded for a player
+    When Called:
+        When a character is successfully loaded and set up for a player
     Parameters:
         id (number) - The character ID that was loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character loading
     hook.Add("CharLoaded", "MyAddon", function(id)
@@ -4002,6 +4365,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up character-specific data
     hook.Add("CharLoaded", "CharSetup", function(id)
@@ -4014,6 +4378,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character loading system
     hook.Add("CharLoaded", "AdvancedCharLoading", function(id)
@@ -4054,15 +4419,20 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a character is loaded
-    When Called: When a character is successfully loaded from the database
+    Purpose:
+        Called when a character is loaded
+    When Called:
+        When a character is successfully loaded from the database
     Parameters:
         id (number) - The ID of the character that was loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character loading
     hook.Add("CharLoaded", "MyAddon", function(id)
@@ -4071,6 +4441,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle character loading effects
     hook.Add("CharLoaded", "CharLoadingEffects", function(id)
@@ -4086,6 +4457,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character loading system
     hook.Add("CharLoaded", "AdvancedCharLoading", function(id)
@@ -4135,15 +4507,20 @@ function CharLoaded(id)
 end
 
 --[[
-    Purpose: Called after a character is saved
-    When Called: After character data has been saved to the database
+    Purpose:
+        Called after a character is saved
+    When Called:
+        After character data has been saved to the database
     Parameters:
         self (Character) - The character that was saved
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character save
     hook.Add("CharPostSave", "MyAddon", function(self)
@@ -4152,6 +4529,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update save timestamp
     hook.Add("CharPostSave", "SaveTimestamp", function(self)
@@ -4161,6 +4539,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex post-save handling
     hook.Add("CharPostSave", "AdvancedPostSave", function(self)
@@ -4185,15 +4564,20 @@ function CharPostSave(self)
 end
 
 --[[
-    Purpose: Called before a character is saved
-    When Called: Before character data is saved to the database
+    Purpose:
+        Called before a character is saved
+    When Called:
+        Before character data is saved to the database
     Parameters:
         character (Character) - The character being saved
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character save
     hook.Add("CharPreSave", "MyAddon", function(character)
@@ -4202,6 +4586,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate character data
     hook.Add("CharPreSave", "SaveValidation", function(character)
@@ -4215,6 +4600,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex pre-save validation
     hook.Add("CharPreSave", "AdvancedPreSave", function(character)
@@ -4247,15 +4633,20 @@ function CharPreSave(character)
 end
 
 --[[
-    Purpose: Called when a character is restored
-    When Called: When a character is restored from backup or death
+    Purpose:
+        Called when a character is restored
+    When Called:
+        When a character is restored from backup or death
     Parameters:
         character (Character) - The character being restored
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character restoration
     hook.Add("CharRestored", "MyAddon", function(character)
@@ -4264,6 +4655,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle restoration effects
     hook.Add("CharRestored", "RestorationEffects", function(character)
@@ -4274,6 +4666,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character restoration
     hook.Add("CharRestored", "AdvancedRestoration", function(character)
@@ -4300,18 +4693,23 @@ function CharRestored(character)
 end
 
 --[[
-    Purpose: Called when chat is parsed
-    When Called: When a chat message is processed and parsed
+    Purpose:
+        Called when chat is parsed
+    When Called:
+        When a chat message is processed and parsed
     Parameters:
         client (Player) - The player who sent the message
         chatType (string) - The type of chat (ic, ooc, etc)
         message (string) - The message content
         anonymous (boolean) - Whether the message is anonymous
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log parsed chat
     hook.Add("ChatParsed", "MyAddon", function(client, chatType, message, anonymous)
@@ -4320,6 +4718,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter chat messages
     hook.Add("ChatParsed", "ChatFilter", function(client, chatType, message, anonymous)
@@ -4332,6 +4731,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex chat parsing
     hook.Add("ChatParsed", "AdvancedChatParse", function(client, chatType, message, anonymous)
@@ -4361,17 +4761,22 @@ function ChatParsed(client, chatType, message, anonymous)
 end
 
 --[[
-    Purpose: Called to check if a faction limit has been reached
-    When Called: When checking if more players can join a faction
+    Purpose:
+        Called to check if a faction limit has been reached
+    When Called:
+        When checking if more players can join a faction
     Parameters:
         faction (number) - The faction ID being checked
         character (Character) - The character attempting to join
         client (Player) - The player attempting to join
-    Returns: boolean - True if limit is reached, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if limit is reached, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: No faction limits
     hook.Add("CheckFactionLimitReached", "MyAddon", function(faction, character, client)
@@ -4380,6 +4785,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Basic faction limits
     hook.Add("CheckFactionLimitReached", "FactionLimits", function(faction, character, client)
@@ -4399,6 +4805,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex faction limit system
     hook.Add("CheckFactionLimitReached", "AdvancedFactionLimits", function(faction, character, client)
@@ -4439,18 +4846,23 @@ function CheckFactionLimitReached(faction, character, client)
 end
 
 --[[
-    Purpose: Called when a command is executed
-    When Called: After a command has been run by a player
+    Purpose:
+        Called when a command is executed
+    When Called:
+        After a command has been run by a player
     Parameters:
         client (Player) - The player who ran the command
         command (string) - The command that was executed
         arguments (table) - The arguments passed to the command
         results (any) - The results returned by the command
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log command execution
     hook.Add("CommandRan", "MyAddon", function(client, command, arguments, results)
@@ -4459,6 +4871,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track command usage
     hook.Add("CommandRan", "CommandUsageTracking", function(client, command, arguments, results)
@@ -4471,6 +4884,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex command execution tracking
     hook.Add("CommandRan", "AdvancedCommandTracking", function(client, command, arguments, results)
@@ -4509,18 +4923,23 @@ function CommandRan(client, command, arguments, results)
 end
 
 --[[
-    Purpose: Called when a configuration value changes
-    When Called: When a config option is modified
+    Purpose:
+        Called when a configuration value changes
+    When Called:
+        When a config option is modified
     Parameters:
         key (string) - The configuration key that changed
         value (any) - The new value
         oldValue (any) - The previous value
         client (Player) - The player who changed the config (if applicable)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log config changes
     hook.Add("ConfigChanged", "MyAddon", function(key, value, oldValue, client)
@@ -4529,6 +4948,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle specific config changes
     hook.Add("ConfigChanged", "ConfigHandling", function(key, value, oldValue, client)
@@ -4541,6 +4961,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex config change handling
     hook.Add("ConfigChanged", "AdvancedConfigChange", function(key, value, oldValue, client)
@@ -4579,15 +5000,20 @@ function ConfigChanged(key, value, oldValue, client)
 end
 
 --[[
-    Purpose: Called when creating a character
-    When Called: When a new character is being created
+    Purpose:
+        Called when creating a character
+    When Called:
+        When a new character is being created
     Parameters:
         data (table) - The character creation data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character creation
     hook.Add("CreateCharacter", "MyAddon", function(data)
@@ -4596,6 +5022,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add default items
     hook.Add("CreateCharacter", "DefaultItems", function(data)
@@ -4606,6 +5033,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation
     hook.Add("CreateCharacter", "AdvancedCreation", function(data)
@@ -4638,15 +5066,20 @@ function CreateCharacter(data)
 end
 
 --[[
-    Purpose: Called to create a character's default inventory
-    When Called: When a new character needs an inventory created
+    Purpose:
+        Called to create a character's default inventory
+    When Called:
+        When a new character needs an inventory created
     Parameters:
         character (Character) - The character receiving the inventory
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log inventory creation
     hook.Add("CreateDefaultInventory", "MyAddon", function(character)
@@ -4655,6 +5088,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set inventory size based on faction
     hook.Add("CreateDefaultInventory", "FactionInventory", function(character)
@@ -4671,6 +5105,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory setup
     hook.Add("CreateDefaultInventory", "AdvancedInventorySetup", function(character)
@@ -4719,14 +5154,20 @@ function CreateDefaultInventory(character)
 end
 
 --[[
-    Purpose: Called to create salary timers
-    When Called: When salary payment timers need to be initialized
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to create salary timers
+    When Called:
+        When salary payment timers need to be initialized
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log salary timer creation
     hook.Add("CreateSalaryTimers", "MyAddon", function()
@@ -4735,6 +5176,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up basic salary system
     hook.Add("CreateSalaryTimers", "SalarySetup", function()
@@ -4750,6 +5192,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary system
     hook.Add("CreateSalaryTimers", "AdvancedSalary", function()
@@ -4781,14 +5224,20 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to create salary timers
-    When Called: When salary system is being initialized
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to create salary timers
+    When Called:
+        When salary system is being initialized
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Create basic salary timer
     hook.Add("CreateSalaryTimers", "MyAddon", function()
@@ -4804,6 +5253,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-based salary timers
     hook.Add("CreateSalaryTimers", "FactionSalaryTimers", function()
@@ -4829,6 +5279,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary timer system
     hook.Add("CreateSalaryTimers", "AdvancedSalaryTimers", function()
@@ -4873,16 +5324,21 @@ function CreateSalaryTimers()
 end
 
 --[[
-    Purpose: Called for custom class validation
-    When Called: When validating a player's class change
+    Purpose:
+        Called for custom class validation
+    When Called:
+        When validating a player's class change
     Parameters:
         client (Player) - The player changing class
         newClass (string) - The new class being validated
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all class changes
     hook.Add("CustomClassValidation", "MyAddon", function(client, newClass)
@@ -4891,6 +5347,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check level requirements
     hook.Add("CustomClassValidation", "ClassLevelCheck", function(client, newClass)
@@ -4916,6 +5373,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class validation system
     hook.Add("CustomClassValidation", "AdvancedClassValidation", function(client, newClass)
@@ -4976,16 +5434,21 @@ function CustomClassValidation(client, newClass)
 end
 
 --[[
-    Purpose: Called for custom log handling
-    When Called: When a log message is being processed
+    Purpose:
+        Called for custom log handling
+    When Called:
+        When a log message is being processed
     Parameters:
         message (string) - The log message
         category (string) - The log category
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Print all logs
     hook.Add("CustomLogHandler", "MyAddon", function(message, category)
@@ -4994,6 +5457,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter logs by category
     hook.Add("CustomLogHandler", "LogFilter", function(message, category)
@@ -5006,6 +5470,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex log handling system
     hook.Add("CustomLogHandler", "AdvancedLogHandler", function(message, category)
@@ -5042,14 +5507,20 @@ function CustomLogHandler(message, category)
 end
 
 --[[
-    Purpose: Called when database is connected
-    When Called: When the database connection is established
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when database is connected
+    When Called:
+        When the database connection is established
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log connection
     hook.Add("DatabaseConnected", "MyAddon", function()
@@ -5058,6 +5529,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize tables
     hook.Add("DatabaseConnected", "DatabaseInit", function()
@@ -5067,6 +5539,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database initialization
     hook.Add("DatabaseConnected", "AdvancedDatabaseInit", function()
@@ -5092,15 +5565,20 @@ function DatabaseConnected()
 end
 
 --[[
-    Purpose: Called when a character is deleted
-    When Called: When a character deletion is processed
+    Purpose:
+        Called when a character is deleted
+    When Called:
+        When a character deletion is processed
     Parameters:
         id (number) - The character ID being deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log deletion
     hook.Add("DeleteCharacter", "MyAddon", function(id)
@@ -5109,6 +5587,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up character data
     hook.Add("DeleteCharacter", "CharacterCleanup", function(id)
@@ -5119,6 +5598,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character deletion system
     hook.Add("DeleteCharacter", "AdvancedCharacterDeletion", function(id)
@@ -5145,15 +5625,20 @@ function DeleteCharacter(id)
 end
 
 --[[
-    Purpose: Called to send a Discord relay message
-    When Called: When sending a message to Discord
+    Purpose:
+        Called to send a Discord relay message
+    When Called:
+        When sending a message to Discord
     Parameters:
         embed (table) - The Discord embed data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log Discord send
     hook.Add("DiscordRelaySend", "MyAddon", function(embed)
@@ -5162,6 +5647,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add server info to embed
     hook.Add("DiscordRelaySend", "DiscordServerInfo", function(embed)
@@ -5173,6 +5659,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex Discord relay system
     hook.Add("DiscordRelaySend", "AdvancedDiscordRelay", function(embed)
@@ -5205,14 +5692,20 @@ function DiscordRelaySend(embed)
 end
 
 --[[
-    Purpose: Called when Discord relay is unavailable
-    When Called: When Discord relay connection fails
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when Discord relay is unavailable
+    When Called:
+        When Discord relay connection fails
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log unavailability
     hook.Add("DiscordRelayUnavailable", "MyAddon", function()
@@ -5221,6 +5714,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins
     hook.Add("DiscordRelayUnavailable", "DiscordNotify", function()
@@ -5233,6 +5727,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex Discord failover system
     hook.Add("DiscordRelayUnavailable", "AdvancedDiscordFailover", function()
@@ -5258,15 +5753,20 @@ function DiscordRelayUnavailable()
 end
 
 --[[
-    Purpose: Called when a message is relayed to Discord
-    When Called: After a message is successfully sent to Discord
+    Purpose:
+        Called when a message is relayed to Discord
+    When Called:
+        After a message is successfully sent to Discord
     Parameters:
         embed (table) - The Discord embed that was sent
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log successful relay
     hook.Add("DiscordRelayed", "MyAddon", function(embed)
@@ -5275,6 +5775,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track relay statistics
     hook.Add("DiscordRelayed", "DiscordStats", function(embed)
@@ -5285,6 +5786,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex Discord relay tracking
     hook.Add("DiscordRelayed", "AdvancedDiscordTracking", function(embed)
@@ -5310,17 +5812,22 @@ function DiscordRelayed(embed)
 end
 
 --[[
-    Purpose: Called when a door's enabled state is toggled
-    When Called: When a door is enabled or disabled
+    Purpose:
+        Called when a door's enabled state is toggled
+    When Called:
+        When a door is enabled or disabled
     Parameters:
         client (Player) - The player toggling the state
         door (Entity) - The door entity
         newState (boolean) - The new enabled state
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door state change
     hook.Add("DoorEnabledToggled", "MyAddon", function(client, door, newState)
@@ -5329,6 +5836,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify nearby players
     hook.Add("DoorEnabledToggled", "DoorStateNotify", function(client, door, newState)
@@ -5342,6 +5850,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door state management
     hook.Add("DoorEnabledToggled", "AdvancedDoorState", function(client, door, newState)
@@ -5371,17 +5880,22 @@ function DoorEnabledToggled(client, door, newState)
 end
 
 --[[
-    Purpose: Called when a door's hidden state is toggled
-    When Called: When a door is made hidden or visible
+    Purpose:
+        Called when a door's hidden state is toggled
+    When Called:
+        When a door is made hidden or visible
     Parameters:
         client (Player) - The player toggling the door visibility
         entity (Entity) - The door entity
         newState (boolean) - The new hidden state
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door visibility change
     hook.Add("DoorHiddenToggled", "MyAddon", function(client, entity, newState)
@@ -5390,6 +5904,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify nearby players
     hook.Add("DoorHiddenToggled", "NotifyDoorVisibility", function(client, entity, newState)
@@ -5403,6 +5918,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door visibility system
     hook.Add("DoorHiddenToggled", "AdvancedDoorVisibility", function(client, entity, newState)
@@ -5438,17 +5954,22 @@ function DoorHiddenToggled(client, entity, newState)
 end
 
 --[[
-    Purpose: Called when a door's lock state is toggled
-    When Called: When a door is locked or unlocked
+    Purpose:
+        Called when a door's lock state is toggled
+    When Called:
+        When a door is locked or unlocked
     Parameters:
         client (Player) - The player toggling the door lock
         door (Entity) - The door entity
         state (boolean) - True if locked, false if unlocked
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door lock changes
     hook.Add("DoorLockToggled", "MyAddon", function(client, door, state)
@@ -5458,6 +5979,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track door lock statistics
     hook.Add("DoorLockToggled", "DoorTracking", function(client, door, state)
@@ -5474,6 +5996,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door locking system
     hook.Add("DoorLockToggled", "AdvancedDoorLocking", function(client, door, state)
@@ -5537,17 +6060,22 @@ function DoorLockToggled(client, door, state)
 end
 
 --[[
-    Purpose: Called when a door's ownable status is toggled
-    When Called: When a door is set to be ownable or not ownable
+    Purpose:
+        Called when a door's ownable status is toggled
+    When Called:
+        When a door is set to be ownable or not ownable
     Parameters:
         client (Player) - The player toggling the ownable status
         door (Entity) - The door entity
         newState (boolean) - The new ownable state (true = ownable, false = not ownable)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ownable toggle
     hook.Add("DoorOwnableToggled", "MyAddon", function(client, door, newState)
@@ -5556,6 +6084,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle ownable state changes
     hook.Add("DoorOwnableToggled", "OwnableHandling", function(client, door, newState)
@@ -5571,6 +6100,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ownable toggle system
     hook.Add("DoorOwnableToggled", "AdvancedOwnableToggle", function(client, door, newState)
@@ -5618,17 +6148,22 @@ function DoorOwnableToggled(client, door, newState)
 end
 
 --[[
-    Purpose: Called when a door's price is set
-    When Called: When a door's purchase price is modified
+    Purpose:
+        Called when a door's price is set
+    When Called:
+        When a door's purchase price is modified
     Parameters:
         client (Player) - The player setting the price
         door (Entity) - The door entity
         price (number) - The new price for the door
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door price changes
     hook.Add("DoorPriceSet", "MyAddon", function(client, door, price)
@@ -5637,6 +6172,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate door prices
     hook.Add("DoorPriceSet", "DoorPriceValidation", function(client, door, price)
@@ -5653,6 +6189,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door pricing system
     hook.Add("DoorPriceSet", "AdvancedDoorPricing", function(client, door, price)
@@ -5735,17 +6272,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a door's price is set
-    When Called: When a door's purchase/rent price is changed
+    Purpose:
+        Called when a door's price is set
+    When Called:
+        When a door's purchase/rent price is changed
     Parameters:
         client (Player) - The player setting the price
         door (Entity) - The door entity
         price (number) - The new price
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log price change
     hook.Add("DoorPriceSet", "MyAddon", function(client, door, price)
@@ -5754,6 +6296,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate price range
     hook.Add("DoorPriceSet", "DoorPriceValidation", function(client, door, price)
@@ -5768,6 +6311,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door pricing system
     hook.Add("DoorPriceSet", "AdvancedDoorPricing", function(client, door, price)
@@ -5815,17 +6359,22 @@ function DoorPriceSet(client, door, price)
 end
 
 --[[
-    Purpose: Called when a door's title is set
-    When Called: When a door's display name is changed
+    Purpose:
+        Called when a door's title is set
+    When Called:
+        When a door's display name is changed
     Parameters:
         client (Player) - The player setting the title
         door (Entity) - The door entity
         name (string) - The new door title
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log title change
     hook.Add("DoorTitleSet", "MyAddon", function(client, door, name)
@@ -5834,6 +6383,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate title length
     hook.Add("DoorTitleSet", "DoorTitleValidation", function(client, door, name)
@@ -5848,6 +6398,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door title system
     hook.Add("DoorTitleSet", "AdvancedDoorTitle", function(client, door, name)
@@ -5904,14 +6455,20 @@ function DoorTitleSet(client, door, name)
 end
 
 --[[
-    Purpose: Called to fetch spawn points
-    When Called: When spawn points need to be loaded or refreshed
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to fetch spawn points
+    When Called:
+        When spawn points need to be loaded or refreshed
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log spawn fetching
     hook.Add("FetchSpawns", "MyAddon", function()
@@ -5920,6 +6477,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load spawn points from database
     hook.Add("FetchSpawns", "SpawnLoading", function()
@@ -5930,6 +6488,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex spawn point system
     hook.Add("FetchSpawns", "AdvancedSpawnSystem", function()
@@ -5966,17 +6525,22 @@ function FetchSpawns()
 end
 
 --[[
-    Purpose: Called to force recognition range
-    When Called: When setting the recognition range for a player
+    Purpose:
+        Called to force recognition range
+    When Called:
+        When setting the recognition range for a player
     Parameters:
         ply (Player) - The player to set recognition range for
         range (number) - The recognition range
         fakeName (string) - The fake name to use (optional)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log recognition range setting
     hook.Add("ForceRecognizeRange", "MyAddon", function(ply, range, fakeName)
@@ -5985,6 +6549,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set recognition data
     hook.Add("ForceRecognizeRange", "RecognitionRange", function(ply, range, fakeName)
@@ -5999,6 +6564,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex recognition range system
     hook.Add("ForceRecognizeRange", "AdvancedRecognitionRange", function(ply, range, fakeName)
@@ -6034,14 +6600,20 @@ function ForceRecognizeRange(ply, range, fakeName)
 end
 
 --[[
-    Purpose: Called to get all case claims
-    When Called: When retrieving all active case claims
-    Parameters: None
-    Returns: table - Table of all case claims
-    Realm: Server
+    Purpose:
+        Called to get all case claims
+    When Called:
+        When retrieving all active case claims
+    Parameters:
+        None
+    Returns:
+        table - Table of all case claims
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return empty claims table
     hook.Add("GetAllCaseClaims", "MyAddon", function()
@@ -6050,6 +6622,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load claims from database
     hook.Add("GetAllCaseClaims", "ClaimsLoading", function()
@@ -6059,6 +6632,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex case claims system
     hook.Add("GetAllCaseClaims", "AdvancedCaseClaims", function()
@@ -6101,16 +6675,21 @@ function GetAllCaseClaims()
 end
 
 --[[
-    Purpose: Gets the maximum value for a character attribute
-    When Called: When checking the maximum value for a character attribute
+    Purpose:
+        Gets the maximum value for a character attribute
+    When Called:
+        When checking the maximum value for a character attribute
     Parameters:
         target (Player) - The player whose attribute is being checked
         attrKey (string) - The attribute key to get the max for
-    Returns: number - The maximum value for the attribute
-    Realm: Server
+    Returns:
+        number - The maximum value for the attribute
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default max
     hook.Add("GetAttributeMax", "MyAddon", function(target, attrKey)
@@ -6119,6 +6698,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different maxes for different attributes
     hook.Add("GetAttributeMax", "AttributeMaxes", function(target, attrKey)
@@ -6135,6 +6715,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex attribute max system
     hook.Add("GetAttributeMax", "AdvancedAttributeMax", function(target, attrKey)
@@ -6183,16 +6764,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to get the maximum value for an attribute
-    When Called: When calculating attribute limits
+    Purpose:
+        Called to get the maximum value for an attribute
+    When Called:
+        When calculating attribute limits
     Parameters:
         target (Player) - The player whose attribute max is being checked
         attrKey (string) - The attribute key
-    Returns: number - The maximum attribute value
-    Realm: Shared
+    Returns:
+        number - The maximum attribute value
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default max
     hook.Add("GetAttributeMax", "MyAddon", function(target, attrKey)
@@ -6201,6 +6787,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Attribute-specific maxes
     hook.Add("GetAttributeMax", "AttributeMaxes", function(target, attrKey)
@@ -6215,6 +6802,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex attribute max system
     hook.Add("GetAttributeMax", "AdvancedAttributeMax", function(target, attrKey)
@@ -6257,16 +6845,21 @@ function GetAttributeMax(target, attrKey)
 end
 
 --[[
-    Purpose: Called to get the starting maximum for an attribute
-    When Called: When a character is created
+    Purpose:
+        Called to get the starting maximum for an attribute
+    When Called:
+        When a character is created
     Parameters:
         client (Player) - The player creating the character
         k (string) - The attribute key
-    Returns: number - The starting maximum attribute value
-    Realm: Server
+    Returns:
+        number - The starting maximum attribute value
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default starting max
     hook.Add("GetAttributeStartingMax", "MyAddon", function(client, k)
@@ -6275,6 +6868,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Attribute-specific starting maxes
     hook.Add("GetAttributeStartingMax", "AttributeStartingMaxes", function(client, k)
@@ -6289,6 +6883,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex starting attribute system
     hook.Add("GetAttributeStartingMax", "AdvancedStartingAttributes", function(client, k)
@@ -6323,15 +6918,20 @@ function GetAttributeStartingMax(client, k)
 end
 
 --[[
-    Purpose: Gets the maximum stamina for a character
-    When Called: When calculating character stamina limits
+    Purpose:
+        Gets the maximum stamina for a character
+    When Called:
+        When calculating character stamina limits
     Parameters:
         char (Character) - The character to get max stamina for
-    Returns: number - The maximum stamina value
-    Realm: Server
+    Returns:
+        number - The maximum stamina value
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default max stamina
     hook.Add("GetCharMaxStamina", "MyAddon", function(char)
@@ -6340,6 +6940,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Base stamina on constitution
     hook.Add("GetCharMaxStamina", "ConstitutionStamina", function(char)
@@ -6349,6 +6950,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex stamina system
     hook.Add("GetCharMaxStamina", "AdvancedStamina", function(char)
@@ -6410,17 +7012,22 @@ function GetCharMaxStamina(char)
 end
 
 --[[
-    Purpose: Modifies damage scaling for different hitgroups
-    When Called: When calculating damage to apply to a player
+    Purpose:
+        Modifies damage scaling for different hitgroups
+    When Called:
+        When calculating damage to apply to a player
     Parameters:
         hitgroup (number) - The hitgroup that was hit
         dmgInfo (CTakeDamageInfo) - The damage information
         damageScale (number) - The current damage scale
-    Returns: number - The modified damage scale
-    Realm: Server
+    Returns:
+        number - The modified damage scale
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return original scale
     hook.Add("GetDamageScale", "MyAddon", function(hitgroup, dmgInfo, damageScale)
@@ -6429,6 +7036,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different scales for different hitgroups
     hook.Add("GetDamageScale", "HitgroupScales", function(hitgroup, dmgInfo, damageScale)
@@ -6446,6 +7054,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex damage scaling system
     hook.Add("GetDamageScale", "AdvancedDamage", function(hitgroup, dmgInfo, damageScale)
@@ -6517,17 +7126,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to get damage scale for a hitgroup
-    When Called: When calculating damage to a player
+    Purpose:
+        Called to get damage scale for a hitgroup
+    When Called:
+        When calculating damage to a player
     Parameters:
         hitgroup (number) - The hitgroup that was hit
         dmgInfo (CTakeDamageInfo) - The damage info
         damageScale (number) - The current damage scale
-    Returns: number - The modified damage scale
-    Realm: Server
+    Returns:
+        number - The modified damage scale
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default scale
     hook.Add("GetDamageScale", "MyAddon", function(hitgroup, dmgInfo, damageScale)
@@ -6536,6 +7150,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Hitgroup-specific scaling
     hook.Add("GetDamageScale", "HitgroupScaling", function(hitgroup, dmgInfo, damageScale)
@@ -6550,6 +7165,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex damage scaling system
     hook.Add("GetDamageScale", "AdvancedDamageScale", function(hitgroup, dmgInfo, damageScale)
@@ -6584,17 +7200,22 @@ function GetDamageScale(hitgroup, dmgInfo, damageScale)
 end
 
 --[[
-    Purpose: Called to get default character description
-    When Called: When creating a new character
+    Purpose:
+        Called to get default character description
+    When Called:
+        When creating a new character
     Parameters:
         client (Player) - The player creating the character
         factionIndex (number) - The faction index
         context (table) - Additional context data
-    Returns: string - The default description
-    Realm: Server
+    Returns:
+        string - The default description
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return generic description
     hook.Add("GetDefaultCharDesc", "MyAddon", function(client, factionIndex, context)
@@ -6603,6 +7224,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-specific descriptions
     hook.Add("GetDefaultCharDesc", "FactionDescriptions", function(client, factionIndex, context)
@@ -6617,6 +7239,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex description generation
     hook.Add("GetDefaultCharDesc", "AdvancedCharDesc", function(client, factionIndex, context)
@@ -6639,17 +7262,22 @@ function GetDefaultCharDesc(client, factionIndex, context)
 end
 
 --[[
-    Purpose: Called to get default character name
-    When Called: When creating a new character
+    Purpose:
+        Called to get default character name
+    When Called:
+        When creating a new character
     Parameters:
         client (Player) - The player creating the character
         factionIndex (number) - The faction index
         context (table) - Additional context data
-    Returns: string - The default name
-    Realm: Server
+    Returns:
+        string - The default name
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return generic name
     hook.Add("GetDefaultCharName", "MyAddon", function(client, factionIndex, context)
@@ -6658,6 +7286,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-specific names
     hook.Add("GetDefaultCharName", "FactionNames", function(client, factionIndex, context)
@@ -6672,6 +7301,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex name generation
     hook.Add("GetDefaultCharName", "AdvancedCharName", function(client, factionIndex, context)
@@ -6698,16 +7328,21 @@ function GetDefaultCharName(client, factionIndex, context)
 end
 
 --[[
-    Purpose: Called to get default inventory size
-    When Called: When creating a character's inventory
+    Purpose:
+        Called to get default inventory size
+    When Called:
+        When creating a character's inventory
     Parameters:
         client (Player) - The player
         char (Character) - The character
-    Returns: table - {width, height} inventory size
-    Realm: Server
+    Returns:
+        table - {width, height} inventory size
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default size
     hook.Add("GetDefaultInventorySize", "MyAddon", function(client, char)
@@ -6716,6 +7351,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-based sizes
     hook.Add("GetDefaultInventorySize", "FactionInventorySize", function(client, char)
@@ -6732,6 +7368,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory sizing
     hook.Add("GetDefaultInventorySize", "AdvancedInventorySize", function(client, char)
@@ -6768,15 +7405,20 @@ function GetDefaultInventorySize(client, char)
 end
 
 --[[
-    Purpose: Called to get default inventory type
-    When Called: When creating a character's inventory
+    Purpose:
+        Called to get default inventory type
+    When Called:
+        When creating a character's inventory
     Parameters:
         character (Character) - The character
-    Returns: string - The inventory type
-    Realm: Server
+    Returns:
+        string - The inventory type
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default type
     hook.Add("GetDefaultInventoryType", "MyAddon", function(character)
@@ -6785,6 +7427,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-based types
     hook.Add("GetDefaultInventoryType", "FactionInventoryType", function(character)
@@ -6801,6 +7444,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory type system
     hook.Add("GetDefaultInventoryType", "AdvancedInventoryType", function(character)
@@ -6833,15 +7477,20 @@ function GetDefaultInventoryType(character)
 end
 
 --[[
-    Purpose: Called to get entity save data
-    When Called: When saving entity data to the database
+    Purpose:
+        Called to get entity save data
+    When Called:
+        When saving entity data to the database
     Parameters:
         ent (Entity) - The entity to get save data for
-    Returns: table - The save data for the entity
-    Realm: Server
+    Returns:
+        table - The save data for the entity
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return basic save data
     hook.Add("GetEntitySaveData", "MyAddon", function(ent)
@@ -6854,6 +7503,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add custom entity data
     hook.Add("GetEntitySaveData", "EntityData", function(ent)
@@ -6874,6 +7524,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity save data system
     hook.Add("GetEntitySaveData", "AdvancedEntitySave", function(ent)
@@ -6914,15 +7565,20 @@ function GetEntitySaveData(ent)
 end
 
 --[[
-    Purpose: Called to get hands attack speed
-    When Called: When calculating unarmed attack speed for a player
+    Purpose:
+        Called to get hands attack speed
+    When Called:
+        When calculating unarmed attack speed for a player
     Parameters:
         client (Player) - The player whose attack speed is being calculated
-    Returns: number - The attack speed multiplier
-    Realm: Server
+    Returns:
+        number - The attack speed multiplier
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default attack speed
     hook.Add("GetHandsAttackSpeed", "MyAddon", function(client)
@@ -6931,6 +7587,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Base speed on dexterity
     hook.Add("GetHandsAttackSpeed", "DexteritySpeed", function(client)
@@ -6943,6 +7600,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex attack speed system
     hook.Add("GetHandsAttackSpeed", "AdvancedAttackSpeed", function(client)
@@ -6988,16 +7646,21 @@ function GetHandsAttackSpeed(client)
 end
 
 --[[
-    Purpose: Called to get item drop model
-    When Called: When determining the model for a dropped item
+    Purpose:
+        Called to get item drop model
+    When Called:
+        When determining the model for a dropped item
     Parameters:
         itemTable (table) - The item table
         self (Item) - The item instance
-    Returns: string - The model path for the dropped item
-    Realm: Server
+    Returns:
+        string - The model path for the dropped item
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default model
     hook.Add("GetItemDropModel", "MyAddon", function(itemTable, self)
@@ -7006,6 +7669,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Use item-specific models
     hook.Add("GetItemDropModel", "ItemModels", function(itemTable, self)
@@ -7020,6 +7684,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item model system
     hook.Add("GetItemDropModel", "AdvancedItemModels", function(itemTable, self)
@@ -7070,15 +7735,20 @@ function GetItemDropModel(itemTable, self)
 end
 
 --[[
-    Purpose: Called to get item stack key
-    When Called: When determining how items should be stacked together
+    Purpose:
+        Called to get item stack key
+    When Called:
+        When determining how items should be stacked together
     Parameters:
         item (Item) - The item to get stack key for
-    Returns: string - The stack key for grouping items
-    Realm: Server
+    Returns:
+        string - The stack key for grouping items
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Use item ID as stack key
     hook.Add("GetItemStackKey", "MyAddon", function(item)
@@ -7087,6 +7757,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Include item data in stack key
     hook.Add("GetItemStackKey", "ItemDataStacking", function(item)
@@ -7103,6 +7774,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item stacking system
     hook.Add("GetItemStackKey", "AdvancedItemStacking", function(item)
@@ -7142,15 +7814,20 @@ function GetItemStackKey(item)
 end
 
 --[[
-    Purpose: Called to get item stacks in an inventory
-    When Called: When retrieving stacked items from an inventory
+    Purpose:
+        Called to get item stacks in an inventory
+    When Called:
+        When retrieving stacked items from an inventory
     Parameters:
         inventory (Inventory) - The inventory to get stacks from
-    Returns: table - Table of item stacks
-    Realm: Server
+    Returns:
+        table - Table of item stacks
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return empty stacks
     hook.Add("GetItemStacks", "MyAddon", function(inventory)
@@ -7159,6 +7836,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Group items by ID
     hook.Add("GetItemStacks", "BasicStacking", function(inventory)
@@ -7178,6 +7856,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item stacking system
     hook.Add("GetItemStacks", "AdvancedStacking", function(inventory)
@@ -7224,15 +7903,20 @@ function GetItemStacks(inventory)
 end
 
 --[[
-    Purpose: Called to get maximum character count for a player
-    When Called: When checking how many characters a player can have
+    Purpose:
+        Called to get maximum character count for a player
+    When Called:
+        When checking how many characters a player can have
     Parameters:
         client (Player) - The player to check character limit for
-    Returns: number - The maximum number of characters allowed
-    Realm: Server
+    Returns:
+        number - The maximum number of characters allowed
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default limit
     hook.Add("GetMaxPlayerChar", "MyAddon", function(client)
@@ -7241,6 +7925,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different limits for different players
     hook.Add("GetMaxPlayerChar", "PlayerLimits", function(client)
@@ -7253,6 +7938,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character limit system
     hook.Add("GetMaxPlayerChar", "AdvancedCharLimits", function(client)
@@ -7302,15 +7988,20 @@ function GetMaxPlayerChar(client)
 end
 
 --[[
-    Purpose: Called to get maximum skill points for a player
-    When Called: When checking the maximum skill points a player can have
+    Purpose:
+        Called to get maximum skill points for a player
+    When Called:
+        When checking the maximum skill points a player can have
     Parameters:
         client (Player) - The player to check skill point limit for
-    Returns: number - The maximum number of skill points allowed
-    Realm: Server
+    Returns:
+        number - The maximum number of skill points allowed
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default skill points
     hook.Add("GetMaxSkillPoints", "MyAddon", function(client)
@@ -7319,6 +8010,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Base skill points on level
     hook.Add("GetMaxSkillPoints", "LevelBasedPoints", function(client)
@@ -7331,6 +8023,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex skill point system
     hook.Add("GetMaxSkillPoints", "AdvancedSkillPoints", function(client)
@@ -7372,15 +8065,20 @@ end
     ```
 ]]
 --[[
-    Purpose: Called to get maximum skill points for a player
-    When Called: When calculating skill point limits
+    Purpose:
+        Called to get maximum skill points for a player
+    When Called:
+        When calculating skill point limits
     Parameters:
         client (Player) - The player
-    Returns: number - The maximum skill points
-    Realm: Shared
+    Returns:
+        number - The maximum skill points
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default max
     hook.Add("GetMaxSkillPoints", "MyAddon", function(client)
@@ -7389,6 +8087,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Level-based skill points
     hook.Add("GetMaxSkillPoints", "LevelSkillPoints", function(client)
@@ -7401,6 +8100,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex skill point system
     hook.Add("GetMaxSkillPoints", "AdvancedSkillPoints", function(client)
@@ -7435,16 +8135,21 @@ function GetMaxSkillPoints(client)
 end
 
 --[[
-    Purpose: Called to get maximum starting attribute points
-    When Called: During character creation
+    Purpose:
+        Called to get maximum starting attribute points
+    When Called:
+        During character creation
     Parameters:
         client (Player) - The player creating the character
         count (number) - The current count
-    Returns: number - The maximum starting attribute points
-    Realm: Server
+    Returns:
+        number - The maximum starting attribute points
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default count
     hook.Add("GetMaxStartingAttributePoints", "MyAddon", function(client, count)
@@ -7453,6 +8158,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Playtime-based points
     hook.Add("GetMaxStartingAttributePoints", "PlaytimePoints", function(client, count)
@@ -7467,6 +8173,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex starting points system
     hook.Add("GetMaxStartingAttributePoints", "AdvancedStartingPoints", function(client, count)
@@ -7497,15 +8204,20 @@ function GetMaxStartingAttributePoints(client, count)
 end
 
 --[[
-    Purpose: Called to get money model
-    When Called: When spawning money entity
+    Purpose:
+        Called to get money model
+    When Called:
+        When spawning money entity
     Parameters:
         amount (number) - The money amount
-    Returns: string - The model path
-    Realm: Server
+    Returns:
+        string - The model path
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default model
     hook.Add("GetMoneyModel", "MyAddon", function(amount)
@@ -7514,6 +8226,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Amount-based models
     hook.Add("GetMoneyModel", "AmountBasedModels", function(amount)
@@ -7528,6 +8241,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex money model system
     hook.Add("GetMoneyModel", "AdvancedMoneyModels", function(amount)
@@ -7550,15 +8264,20 @@ function GetMoneyModel(amount)
 end
 
 --[[
-    Purpose: Called to get OOC chat delay
-    When Called: When checking OOC chat cooldown
+    Purpose:
+        Called to get OOC chat delay
+    When Called:
+        When checking OOC chat cooldown
     Parameters:
         speaker (Player) - The player speaking
-    Returns: number - The delay in seconds
-    Realm: Server
+    Returns:
+        number - The delay in seconds
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default delay
     hook.Add("GetOOCDelay", "MyAddon", function(speaker)
@@ -7567,6 +8286,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Admin bypass
     hook.Add("GetOOCDelay", "AdminOOCBypass", function(speaker)
@@ -7579,6 +8299,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex OOC delay system
     hook.Add("GetOOCDelay", "AdvancedOOCDelay", function(speaker)
@@ -7606,15 +8327,20 @@ function GetOOCDelay(speaker)
 end
 
 --[[
-    Purpose: Called to get player playtime
-    When Called: When retrieving player playtime
+    Purpose:
+        Called to get player playtime
+    When Called:
+        When retrieving player playtime
     Parameters:
         client (Player) - The player
-    Returns: number - The playtime in seconds
-    Realm: Server
+    Returns:
+        number - The playtime in seconds
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return UTime playtime
     hook.Add("GetPlayTime", "MyAddon", function(client)
@@ -7623,6 +8349,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add session time
     hook.Add("GetPlayTime", "PlayTimeWithSession", function(client)
@@ -7634,6 +8361,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex playtime tracking
     hook.Add("GetPlayTime", "AdvancedPlayTime", function(client)
@@ -7657,16 +8385,21 @@ function GetPlayTime(client)
 end
 
 --[[
-    Purpose: Called to get player death sound
-    When Called: When a player dies
+    Purpose:
+        Called to get player death sound
+    When Called:
+        When a player dies
     Parameters:
         client (Player) - The dying player
         isFemale (boolean) - Whether the player is female
-    Returns: string - The death sound path
-    Realm: Server
+    Returns:
+        string - The death sound path
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default sound
     hook.Add("GetPlayerDeathSound", "MyAddon", function(client, isFemale)
@@ -7675,6 +8408,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Gender-based sounds
     hook.Add("GetPlayerDeathSound", "GenderDeathSounds", function(client, isFemale)
@@ -7687,6 +8421,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex death sound system
     hook.Add("GetPlayerDeathSound", "AdvancedDeathSounds", function(client, isFemale)
@@ -7716,17 +8451,22 @@ function GetPlayerDeathSound(client, isFemale)
 end
 
 --[[
-    Purpose: Called to get player pain sound
-    When Called: When a player takes damage
+    Purpose:
+        Called to get player pain sound
+    When Called:
+        When a player takes damage
     Parameters:
         client (Player) - The player taking damage
         paintype (number) - The type of pain
         isFemale (boolean) - Whether the player is female
-    Returns: string - The pain sound path
-    Realm: Server
+    Returns:
+        string - The pain sound path
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default sound
     hook.Add("GetPlayerPainSound", "MyAddon", function(client, paintype, isFemale)
@@ -7735,6 +8475,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Gender-based pain sounds
     hook.Add("GetPlayerPainSound", "GenderPainSounds", function(client, paintype, isFemale)
@@ -7747,6 +8488,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex pain sound system
     hook.Add("GetPlayerPainSound", "AdvancedPainSounds", function(client, paintype, isFemale)
@@ -7786,15 +8528,20 @@ function GetPlayerPainSound(client, paintype, isFemale)
 end
 
 --[[
-    Purpose: Called to get player punch damage
-    When Called: When calculating unarmed punch damage for a player
+    Purpose:
+        Called to get player punch damage
+    When Called:
+        When calculating unarmed punch damage for a player
     Parameters:
         client (Player) - The player whose punch damage is being calculated
-    Returns: number - The punch damage amount
-    Realm: Server
+    Returns:
+        number - The punch damage amount
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default punch damage
     hook.Add("GetPlayerPunchDamage", "MyAddon", function(client)
@@ -7803,6 +8550,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Base damage on strength
     hook.Add("GetPlayerPunchDamage", "StrengthDamage", function(client)
@@ -7815,6 +8563,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex punch damage system
     hook.Add("GetPlayerPunchDamage", "AdvancedPunchDamage", function(client)
@@ -7864,15 +8613,20 @@ function GetPlayerPunchDamage(client)
 end
 
 --[[
-    Purpose: Called to get player punch ragdoll time
-    When Called: When calculating how long a player stays ragdolled from a punch
+    Purpose:
+        Called to get player punch ragdoll time
+    When Called:
+        When calculating how long a player stays ragdolled from a punch
     Parameters:
         client (Player) - The player being punched
-    Returns: number - The ragdoll time in seconds
-    Realm: Server
+    Returns:
+        number - The ragdoll time in seconds
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default ragdoll time
     hook.Add("GetPlayerPunchRagdollTime", "MyAddon", function(client)
@@ -7881,6 +8635,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Base time on constitution
     hook.Add("GetPlayerPunchRagdollTime", "ConstitutionRagdoll", function(client)
@@ -7893,6 +8648,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ragdoll time system
     hook.Add("GetPlayerPunchRagdollTime", "AdvancedRagdollTime", function(client)
@@ -7943,18 +8699,23 @@ function GetPlayerPunchRagdollTime(client)
 end
 
 --[[
-    Purpose: Called to get price override for items
-    When Called: When calculating item prices in vendors or trading
+    Purpose:
+        Called to get price override for items
+    When Called:
+        When calculating item prices in vendors or trading
     Parameters:
         self (Entity) - The vendor or trading entity
         uniqueID (string) - The item unique ID
         price (number) - The base price
         isSellingToVendor (boolean) - Whether the player is selling to vendor
-    Returns: number - The overridden price
-    Realm: Server
+    Returns:
+        number - The overridden price
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return original price
     hook.Add("GetPriceOverride", "MyAddon", function(self, uniqueID, price, isSellingToVendor)
@@ -7963,6 +8724,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply faction discounts
     hook.Add("GetPriceOverride", "FactionDiscounts", function(self, uniqueID, price, isSellingToVendor)
@@ -7982,6 +8744,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex price override system
     hook.Add("GetPriceOverride", "AdvancedPriceOverride", function(self, uniqueID, price, isSellingToVendor)
@@ -8038,16 +8801,21 @@ function GetPriceOverride(self, uniqueID, price, isSellingToVendor)
 end
 
 --[[
-    Purpose: Called to get ragdoll time
-    When Called: When calculating how long an entity stays ragdolled
+    Purpose:
+        Called to get ragdoll time
+    When Called:
+        When calculating how long an entity stays ragdolled
     Parameters:
         self (Entity) - The ragdoll entity
         time (number) - The base ragdoll time
-    Returns: number - The modified ragdoll time
-    Realm: Server
+    Returns:
+        number - The modified ragdoll time
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return original time
     hook.Add("GetRagdollTime", "MyAddon", function(self, time)
@@ -8056,6 +8824,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Extend ragdoll time for certain entities
     hook.Add("GetRagdollTime", "ExtendedRagdoll", function(self, time)
@@ -8067,6 +8836,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ragdoll time system
     hook.Add("GetRagdollTime", "AdvancedRagdollTime", function(self, time)
@@ -8115,17 +8885,22 @@ function GetRagdollTime(self, time)
 end
 
 --[[
-    Purpose: Called to get salary amount for a player
-    When Called: When calculating salary payment for a player
+    Purpose:
+        Called to get salary amount for a player
+    When Called:
+        When calculating salary payment for a player
     Parameters:
         client (Player) - The player receiving salary
         faction (string) - The player's faction
         class (string) - The player's class
-    Returns: number - The salary amount
-    Realm: Server
+    Returns:
+        number - The salary amount
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return base salary
     hook.Add("GetSalaryAmount", "MyAddon", function(client, faction, class)
@@ -8134,6 +8909,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different salaries by faction
     hook.Add("GetSalaryAmount", "FactionSalaries", function(client, faction, class)
@@ -8147,6 +8923,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary system
     hook.Add("GetSalaryAmount", "AdvancedSalary", function(client, faction, class)
@@ -8196,15 +8973,20 @@ function GetSalaryAmount(client, faction, class)
 end
 
 --[[
-    Purpose: Called to get tickets by requester
-    When Called: When retrieving tickets created by a specific player
+    Purpose:
+        Called to get tickets by requester
+    When Called:
+        When retrieving tickets created by a specific player
     Parameters:
         steamID (string) - The Steam ID of the requester
-    Returns: table - Table of tickets created by the requester
-    Realm: Server
+    Returns:
+        table - Table of tickets created by the requester
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return empty tickets
     hook.Add("GetTicketsByRequester", "MyAddon", function(steamID)
@@ -8213,6 +8995,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load tickets from database
     hook.Add("GetTicketsByRequester", "TicketLoading", function(steamID)
@@ -8222,6 +9005,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket retrieval system
     hook.Add("GetTicketsByRequester", "AdvancedTicketRetrieval", function(steamID)
@@ -8270,15 +9054,20 @@ function GetTicketsByRequester(steamID)
 end
 
 --[[
-    Purpose: Called to get vendor sale scale
-    When Called: When calculating the sale price multiplier for a vendor
+    Purpose:
+        Called to get vendor sale scale
+    When Called:
+        When calculating the sale price multiplier for a vendor
     Parameters:
         self (Entity) - The vendor entity
-    Returns: number - The sale scale multiplier
-    Realm: Server
+    Returns:
+        number - The sale scale multiplier
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default scale
     hook.Add("GetVendorSaleScale", "MyAddon", function(self)
@@ -8287,6 +9076,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Different scales for different vendors
     hook.Add("GetVendorSaleScale", "VendorScales", function(self)
@@ -8301,6 +9091,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor sale scale system
     hook.Add("GetVendorSaleScale", "AdvancedVendorScale", function(self)
@@ -8346,15 +9137,20 @@ function GetVendorSaleScale(self)
 end
 
 --[[
-    Purpose: Called to get warnings for a character
-    When Called: When retrieving warnings for a specific character
+    Purpose:
+        Called to get warnings for a character
+    When Called:
+        When retrieving warnings for a specific character
     Parameters:
         charID (number) - The character ID to get warnings for
-    Returns: table - Table of warnings for the character
-    Realm: Server
+    Returns:
+        table - Table of warnings for the character
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return empty warnings
     hook.Add("GetWarnings", "MyAddon", function(charID)
@@ -8363,6 +9159,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load warnings from database
     hook.Add("GetWarnings", "WarningLoading", function(charID)
@@ -8372,6 +9169,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex warning retrieval system
     hook.Add("GetWarnings", "AdvancedWarningRetrieval", function(charID)
@@ -8417,15 +9215,20 @@ function GetWarnings(charID)
 end
 
 --[[
-    Purpose: Called to get warnings by issuer
-    When Called: When retrieving warnings issued by a specific player
+    Purpose:
+        Called to get warnings by issuer
+    When Called:
+        When retrieving warnings issued by a specific player
     Parameters:
         steamID (string) - The Steam ID of the issuer
-    Returns: table - Table of warnings issued by the player
-    Realm: Server
+    Returns:
+        table - Table of warnings issued by the player
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return empty warnings
     hook.Add("GetWarningsByIssuer", "MyAddon", function(steamID)
@@ -8434,6 +9237,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load warnings from database
     hook.Add("GetWarningsByIssuer", "IssuerWarnings", function(steamID)
@@ -8443,6 +9247,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex warning retrieval by issuer
     hook.Add("GetWarningsByIssuer", "AdvancedIssuerWarnings", function(steamID)
@@ -8507,19 +9312,24 @@ function GetWarningsByIssuer(steamID)
 end
 
 --[[
-    Purpose: Called to handle item transfer requests
-    When Called: When a player requests to transfer an item
+    Purpose:
+        Called to handle item transfer requests
+    When Called:
+        When a player requests to transfer an item
     Parameters:
         client (Player) - The player making the request
         itemID (string) - The ID of the item to transfer
         x (number) - The X position in the inventory
         y (number) - The Y position in the inventory
         invID (string) - The destination inventory ID
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log transfer request
     hook.Add("HandleItemTransferRequest", "MyAddon", function(client, itemID, x, y, invID)
@@ -8528,6 +9338,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate transfer request
     hook.Add("HandleItemTransferRequest", "TransferValidation", function(client, itemID, x, y, invID)
@@ -8550,6 +9361,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item transfer system
     hook.Add("HandleItemTransferRequest", "AdvancedItemTransfer", function(client, itemID, x, y, invID)
@@ -8606,15 +9418,20 @@ function HandleItemTransferRequest(client, itemID, x, y, invID)
 end
 
 --[[
-    Purpose: Called to initialize storage
-    When Called: When a storage entity is being initialized
+    Purpose:
+        Called to initialize storage
+    When Called:
+        When a storage entity is being initialized
     Parameters:
         entity (Entity) - The storage entity
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log storage initialization
     hook.Add("InitializeStorage", "MyAddon", function(entity)
@@ -8623,6 +9440,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up basic storage data
     hook.Add("InitializeStorage", "StorageSetup", function(entity)
@@ -8633,6 +9451,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage initialization system
     hook.Add("InitializeStorage", "AdvancedStorageInit", function(entity)
@@ -8680,15 +9499,20 @@ function InitializeStorage(entity)
 end
 
 --[[
-    Purpose: Called when an inventory is deleted
-    When Called: When an inventory is removed from the system
+    Purpose:
+        Called when an inventory is deleted
+    When Called:
+        When an inventory is removed from the system
     Parameters:
         instance (Inventory) - The inventory being deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log inventory deletion
     hook.Add("InventoryDeleted", "MyAddon", function(instance)
@@ -8697,6 +9521,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up inventory data
     hook.Add("InventoryDeleted", "CleanupInventory", function(instance)
@@ -8708,6 +9533,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory deletion handling
     hook.Add("InventoryDeleted", "AdvancedInventoryDeletion", function(instance)
@@ -8739,16 +9565,21 @@ function InventoryDeleted(instance)
 end
 
 --[[
-    Purpose: Called when an item is added to an inventory
-    When Called: When an item is successfully added to any inventory
+    Purpose:
+        Called when an item is added to an inventory
+    When Called:
+        When an item is successfully added to any inventory
     Parameters:
         inventory (Inventory) - The inventory the item was added to
         item (Item) - The item that was added
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item additions
     hook.Add("InventoryItemAdded", "MyAddon", function(inventory, item)
@@ -8757,6 +9588,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track inventory statistics
     hook.Add("InventoryItemAdded", "InventoryTracking", function(inventory, item)
@@ -8768,6 +9600,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory management system
     hook.Add("InventoryItemAdded", "AdvancedInventory", function(inventory, item)
@@ -8836,16 +9669,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when an item is added to an inventory
-    When Called: When an item is placed into an inventory
+    Purpose:
+        Called when an item is added to an inventory
+    When Called:
+        When an item is placed into an inventory
     Parameters:
         inventory (Inventory) - The inventory receiving the item
         item (Item) - The item being added
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item addition
     hook.Add("InventoryItemAdded", "MyAddon", function(inventory, item)
@@ -8854,6 +9692,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update inventory weight
     hook.Add("InventoryItemAdded", "UpdateInventoryWeight", function(inventory, item)
@@ -8864,6 +9703,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item addition handling
     hook.Add("InventoryItemAdded", "AdvancedItemAddition", function(inventory, item)
@@ -8907,17 +9747,22 @@ function InventoryItemAdded(inventory, item)
 end
 
 --[[
-    Purpose: Called when an item is removed from an inventory
-    When Called: When an item is successfully removed from any inventory
+    Purpose:
+        Called when an item is removed from an inventory
+    When Called:
+        When an item is successfully removed from any inventory
     Parameters:
         self (Inventory) - The inventory the item was removed from
         instance (Item) - The item that was removed
         preserveItem (boolean) - Whether the item should be preserved
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item removals
     hook.Add("InventoryItemRemoved", "MyAddon", function(self, instance, preserveItem)
@@ -8926,6 +9771,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track inventory statistics
     hook.Add("InventoryItemRemoved", "InventoryTracking", function(self, instance, preserveItem)
@@ -8937,6 +9783,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex inventory management system
     hook.Add("InventoryItemRemoved", "AdvancedInventory", function(self, instance, preserveItem)
@@ -9002,17 +9849,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when an item is removed from an inventory
-    When Called: When an item is taken out of an inventory
+    Purpose:
+        Called when an item is removed from an inventory
+    When Called:
+        When an item is taken out of an inventory
     Parameters:
         self (Item) - The item being removed
         instance (Inventory) - The inventory the item is being removed from
         preserveItem (boolean) - Whether to preserve the item after removal
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item removal
     hook.Add("InventoryItemRemoved", "MyAddon", function(self, instance, preserveItem)
@@ -9021,6 +9873,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update inventory weight
     hook.Add("InventoryItemRemoved", "UpdateWeightOnRemove", function(self, instance, preserveItem)
@@ -9031,6 +9884,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item removal handling
     hook.Add("InventoryItemRemoved", "AdvancedItemRemoval", function(self, instance, preserveItem)
@@ -9076,15 +9930,20 @@ function InventoryItemRemoved(self, instance, preserveItem)
 end
 
 --[[
-    Purpose: Called to check if an entity is suitable for trunk storage
-    When Called: When determining if an entity can be used as a trunk/storage
+    Purpose:
+        Called to check if an entity is suitable for trunk storage
+    When Called:
+        When determining if an entity can be used as a trunk/storage
     Parameters:
         entity (Entity) - The entity being checked
-    Returns: boolean - True if suitable, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True if suitable, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Only vehicles are suitable
     hook.Add("IsSuitableForTrunk", "MyAddon", function(entity)
@@ -9093,6 +9952,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Specific entity classes
     hook.Add("IsSuitableForTrunk", "TrunkEntityCheck", function(entity)
@@ -9107,6 +9967,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex trunk suitability system
     hook.Add("IsSuitableForTrunk", "AdvancedTrunkCheck", function(entity)
@@ -9151,17 +10012,22 @@ function IsSuitableForTrunk(entity)
 end
 
 --[[
-    Purpose: Called when items are combined
-    When Called: When a player attempts to combine two items
+    Purpose:
+        Called when items are combined
+    When Called:
+        When a player attempts to combine two items
     Parameters:
         client (Player) - The player combining items
         item (Item) - The first item
         target (Item) - The second item being combined with
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all combinations
     hook.Add("ItemCombine", "MyAddon", function(client, item, target)
@@ -9170,6 +10036,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Specific item combinations
     hook.Add("ItemCombine", "ItemCombinations", function(client, item, target)
@@ -9194,6 +10061,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item combination system
     hook.Add("ItemCombine", "AdvancedItemCombine", function(client, item, target)
@@ -9245,15 +10113,20 @@ function ItemCombine(client, item, target)
 end
 
 --[[
-    Purpose: Called when an item is deleted
-    When Called: When an item is removed from the system
+    Purpose:
+        Called when an item is deleted
+    When Called:
+        When an item is removed from the system
     Parameters:
         instance (Item) - The item being deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item deletion
     hook.Add("ItemDeleted", "MyAddon", function(instance)
@@ -9262,6 +10135,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up item data
     hook.Add("ItemDeleted", "CleanupItemData", function(instance)
@@ -9273,6 +10147,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item deletion handling
     hook.Add("ItemDeleted", "AdvancedItemDeletion", function(instance)
@@ -9304,16 +10179,21 @@ function ItemDeleted(instance)
 end
 
 --[[
-    Purpose: Called when an item is dragged out of inventory
-    When Called: When a player drags an item outside the inventory panel
+    Purpose:
+        Called when an item is dragged out of inventory
+    When Called:
+        When a player drags an item outside the inventory panel
     Parameters:
         client (Player) - The player dragging the item
         item (Item) - The item being dragged
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all drags
     hook.Add("ItemDraggedOutOfInventory", "MyAddon", function(client, item)
@@ -9322,6 +10202,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Prevent dragging equipped items
     hook.Add("ItemDraggedOutOfInventory", "PreventEquippedDrag", function(client, item)
@@ -9334,6 +10215,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex drag validation
     hook.Add("ItemDraggedOutOfInventory", "AdvancedDragValidation", function(client, item)
@@ -9376,19 +10258,24 @@ function ItemDraggedOutOfInventory(client, item)
 end
 
 --[[
-    Purpose: Called when an item function is called
-    When Called: When a player uses an item function
+    Purpose:
+        Called when an item function is called
+    When Called:
+        When a player uses an item function
     Parameters:
         self (Item) - The item whose function was called
         method (string) - The function name that was called
         client (Player) - The player calling the function
         entity (Entity) - The entity involved (if any)
         results (table) - The results from the function
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log function calls
     hook.Add("ItemFunctionCalled", "MyAddon", function(self, method, client, entity, results)
@@ -9397,6 +10284,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track function usage
     hook.Add("ItemFunctionCalled", "TrackItemUsage", function(self, method, client, entity, results)
@@ -9409,6 +10297,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex function tracking system
     hook.Add("ItemFunctionCalled", "AdvancedFunctionTracking", function(self, method, client, entity, results)
@@ -9453,15 +10342,20 @@ function ItemFunctionCalled(self, method, client, entity, results)
 end
 
 --[[
-    Purpose: Called when an item is transferred between inventories
-    When Called: When an item is successfully moved from one inventory to another
+    Purpose:
+        Called when an item is transferred between inventories
+    When Called:
+        When an item is successfully moved from one inventory to another
     Parameters:
         context (table) - The transfer context containing source, destination, item, etc.
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item transfers
     hook.Add("ItemTransfered", "MyAddon", function(context)
@@ -9470,6 +10364,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track transfer statistics
     hook.Add("ItemTransfered", "TransferTracking", function(context)
@@ -9487,6 +10382,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item transfer system
     hook.Add("ItemTransfered", "AdvancedTransfers", function(context)
@@ -9568,17 +10464,22 @@ function ItemTransfered(context)
 end
 
 --[[
-    Purpose: Called when a key locks an entity
-    When Called: When a key is used to lock a door or entity
+    Purpose:
+        Called when a key locks an entity
+    When Called:
+        When a key is used to lock a door or entity
     Parameters:
         owner (Player) - The player using the key
         entity (Entity) - The entity being locked
         time (number) - The time taken to lock
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log key lock
     hook.Add("KeyLock", "MyAddon", function(owner, entity, time)
@@ -9587,6 +10488,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track lock usage
     hook.Add("KeyLock", "TrackLocks", function(owner, entity, time)
@@ -9599,6 +10501,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex key lock system
     hook.Add("KeyLock", "AdvancedKeyLock", function(owner, entity, time)
@@ -9633,17 +10536,22 @@ function KeyLock(owner, entity, time)
 end
 
 --[[
-    Purpose: Called when a key unlocks an entity
-    When Called: When a key is used to unlock a door or entity
+    Purpose:
+        Called when a key unlocks an entity
+    When Called:
+        When a key is used to unlock a door or entity
     Parameters:
         owner (Player) - The player using the key
         entity (Entity) - The entity being unlocked
         time (number) - The time taken to unlock
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log key unlock
     hook.Add("KeyUnlock", "MyAddon", function(owner, entity, time)
@@ -9652,6 +10560,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track unlock usage
     hook.Add("KeyUnlock", "TrackUnlocks", function(owner, entity, time)
@@ -9664,6 +10573,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex key unlock system
     hook.Add("KeyUnlock", "AdvancedKeyUnlock", function(owner, entity, time)
@@ -9698,14 +10608,20 @@ function KeyUnlock(owner, entity, time)
 end
 
 --[[
-    Purpose: Called when Lilia database tables are loaded
-    When Called: After database tables are created/loaded
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when Lilia database tables are loaded
+    When Called:
+        After database tables are created/loaded
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log tables loaded
     hook.Add("LiliaTablesLoaded", "MyAddon", function()
@@ -9714,6 +10630,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Create custom tables
     hook.Add("LiliaTablesLoaded", "CreateCustomTables", function()
@@ -9723,6 +10640,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database initialization
     hook.Add("LiliaTablesLoaded", "AdvancedDatabaseInit", function()
@@ -9748,14 +10666,20 @@ function LiliaTablesLoaded()
 end
 
 --[[
-    Purpose: Called to load persistent data
-    When Called: When data needs to be loaded from storage
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to load persistent data
+    When Called:
+        When data needs to be loaded from storage
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data load
     hook.Add("LoadData", "MyAddon", function()
@@ -9764,6 +10688,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Load custom data
     hook.Add("LoadData", "LoadCustomData", function()
@@ -9774,6 +10699,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data loading system
     hook.Add("LoadData", "AdvancedDataLoad", function()
@@ -9802,16 +10728,21 @@ function LoadData()
 end
 
 --[[
-    Purpose: Called to modify a character's model
-    When Called: When a character's model is being set
+    Purpose:
+        Called to modify a character's model
+    When Called:
+        When a character's model is being set
     Parameters:
         client (Player) - The player
         character (Character) - The character whose model is being modified
-    Returns: string - The modified model path
-    Realm: Server
+    Returns:
+        string - The modified model path
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Return default model
     hook.Add("ModifyCharacterModel", "MyAddon", function(client, character)
@@ -9820,6 +10751,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-based models
     hook.Add("ModifyCharacterModel", "FactionModels", function(client, character)
@@ -9836,6 +10768,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex model modification system
     hook.Add("ModifyCharacterModel", "AdvancedModelModification", function(client, character)
@@ -9875,16 +10808,21 @@ function ModifyCharacterModel(client, character)
 end
 
 --[[
-    Purpose: Called when admin system is loaded
-    When Called: After admin groups and privileges are initialized
+    Purpose:
+        Called when admin system is loaded
+    When Called:
+        After admin groups and privileges are initialized
     Parameters:
         groups (table) - The admin groups table
         privileges (table) - The privileges table
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log admin system load
     hook.Add("OnAdminSystemLoaded", "MyAddon", function(groups, privileges)
@@ -9893,6 +10831,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add custom admin groups
     hook.Add("OnAdminSystemLoaded", "AddCustomAdminGroups", function(groups, privileges)
@@ -9905,6 +10844,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex admin system customization
     hook.Add("OnAdminSystemLoaded", "AdvancedAdminCustomization", function(groups, privileges)
@@ -9940,15 +10880,20 @@ function OnAdminSystemLoaded(groups, privileges)
 end
 
 --[[
-    Purpose: Called when a backup is created
-    When Called: After a data backup is successfully created
+    Purpose:
+        Called when a backup is created
+    When Called:
+        After a data backup is successfully created
     Parameters:
         metadata (table) - The backup metadata
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log backup creation
     hook.Add("OnBackupCreated", "MyAddon", function(metadata)
@@ -9957,6 +10902,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Log backup details
     hook.Add("OnBackupCreated", "LogBackupDetails", function(metadata)
@@ -9966,6 +10912,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex backup management
     hook.Add("OnBackupCreated", "AdvancedBackupManagement", function(metadata)
@@ -10000,15 +10947,20 @@ function OnBackupCreated(metadata)
 end
 
 --[[
-    Purpose: Called when a character attribute is boosted
-    When Called: When a character's attribute is increased
+    Purpose:
+        Called when a character attribute is boosted
+    When Called:
+        When a character's attribute is increased
     Parameters:
         character (Character) - The character whose attribute was boosted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log attribute boost
     hook.Add("OnCharAttribBoosted", "MyAddon", function(character)
@@ -10017,6 +10969,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track attribute boosts
     hook.Add("OnCharAttribBoosted", "TrackAttributeBoosts", function(character)
@@ -10026,6 +10979,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex attribute boost system
     hook.Add("OnCharAttribBoosted", "AdvancedAttributeBoost", function(character)
@@ -10058,18 +11012,23 @@ function OnCharAttribBoosted(character)
 end
 
 --[[
-    Purpose: Called when a character attribute is updated
-    When Called: When a character's attribute value changes
+    Purpose:
+        Called when a character attribute is updated
+    When Called:
+        When a character's attribute value changes
     Parameters:
         client (Player) - The player
         character (Character) - The character
         key (string) - The attribute key
         newValue (number) - The new attribute value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log attribute updates
     hook.Add("OnCharAttribUpdated", "MyAddon", function(client, character, key, newValue)
@@ -10078,6 +11037,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track attribute changes
     hook.Add("OnCharAttribUpdated", "TrackAttributeChanges", function(client, character, key, newValue)
@@ -10088,6 +11048,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex attribute tracking system
     hook.Add("OnCharAttribUpdated", "AdvancedAttributeTracking", function(client, character, key, newValue)
@@ -10125,17 +11086,22 @@ function OnCharAttribUpdated(client, character, key, newValue)
 end
 
 --[[
-    Purpose: Called when a character is created
-    When Called: When a new character is successfully created
+    Purpose:
+        Called when a character is created
+    When Called:
+        When a new character is successfully created
     Parameters:
         client (Player) - The player who created the character
         character (Character) - The character that was created
         originalData (table) - The original character data before any modifications
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character creation
     hook.Add("OnCharCreated", "MyAddon", function(client, character, originalData)
@@ -10144,6 +11110,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up new character bonuses
     hook.Add("OnCharCreated", "NewCharBonuses", function(client, character, originalData)
@@ -10165,6 +11132,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation system
     hook.Add("OnCharCreated", "AdvancedCreation", function(client, character, originalData)
@@ -10227,16 +11195,21 @@ function OnCharCreated(client, character, originalData)
 end
 
 --[[
-    Purpose: Called when a character is deleted
-    When Called: When a character is successfully deleted
+    Purpose:
+        Called when a character is deleted
+    When Called:
+        When a character is successfully deleted
     Parameters:
         client (Player) - The player who deleted the character
         id (number) - The ID of the character that was deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character deletion
     hook.Add("OnCharDelete", "MyAddon", function(client, id)
@@ -10245,6 +11218,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track deletion statistics
     hook.Add("OnCharDelete", "DeletionTracking", function(client, id)
@@ -10257,6 +11231,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character deletion system
     hook.Add("OnCharDelete", "AdvancedDeletion", function(client, id)
@@ -10320,16 +11295,21 @@ function OnCharDelete(client, id)
 end
 
 --[[
-    Purpose: Called when a character disconnects
-    When Called: When a player disconnects while having a character loaded
+    Purpose:
+        Called when a character disconnects
+    When Called:
+        When a player disconnects while having a character loaded
     Parameters:
         client (Player) - The player who disconnected
         character (Character) - The character that was loaded when disconnecting
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character disconnect
     hook.Add("OnCharDisconnect", "MyAddon", function(client, character)
@@ -10338,6 +11318,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Save character data on disconnect
     hook.Add("OnCharDisconnect", "CharDisconnectSave", function(client, character)
@@ -10355,6 +11336,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character disconnect system
     hook.Add("OnCharDisconnect", "AdvancedCharDisconnect", function(client, character)
@@ -10421,17 +11403,22 @@ function OnCharDisconnect(client, character)
 end
 
 --[[
-    Purpose: Called when a character falls over
-    When Called: When a character's health reaches zero or they are knocked down
+    Purpose:
+        Called when a character falls over
+    When Called:
+        When a character's health reaches zero or they are knocked down
     Parameters:
         character (Character) - The character that fell over
         client (Player) - The player whose character fell over
         ragdoll (Entity) - The ragdoll entity created
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character fallover
     hook.Add("OnCharFallover", "MyAddon", function(character, client, ragdoll)
@@ -10440,6 +11427,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle fallover effects
     hook.Add("OnCharFallover", "FalloverEffects", function(character, client, ragdoll)
@@ -10457,6 +11445,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex fallover system
     hook.Add("OnCharFallover", "AdvancedFallover", function(character, client, ragdoll)
@@ -10537,17 +11526,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a character falls over
-    When Called: When a character is knocked down/ragdolled
+    Purpose:
+        Called when a character falls over
+    When Called:
+        When a character is knocked down/ragdolled
     Parameters:
         character (Character) - The character falling over
         client (Player) - The player
         ragdoll (Entity) - The ragdoll entity created
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log fallover
     hook.Add("OnCharFallover", "MyAddon", function(character, client, ragdoll)
@@ -10556,6 +11550,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set ragdoll data
     hook.Add("OnCharFallover", "SetRagdollData", function(character, client, ragdoll)
@@ -10565,6 +11560,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex fallover system
     hook.Add("OnCharFallover", "AdvancedFallover", function(character, client, ragdoll)
@@ -10601,17 +11597,22 @@ function OnCharFallover(character, client, ragdoll)
 end
 
 --[[
-    Purpose: Called when flags are given to a character
-    When Called: When a character receives new flags
+    Purpose:
+        Called when flags are given to a character
+    When Called:
+        When a character receives new flags
     Parameters:
         ply (Player) - The player receiving flags
         self (Character) - The character receiving flags
         addedFlags (string) - The flags that were added
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log flags given
     hook.Add("OnCharFlagsGiven", "MyAddon", function(ply, self, addedFlags)
@@ -10620,6 +11621,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track flag changes
     hook.Add("OnCharFlagsGiven", "TrackFlagChanges", function(ply, self, addedFlags)
@@ -10630,6 +11632,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex flag management system
     hook.Add("OnCharFlagsGiven", "AdvancedFlagManagement", function(ply, self, addedFlags)
@@ -10671,17 +11674,22 @@ function OnCharFlagsGiven(ply, self, addedFlags)
 end
 
 --[[
-    Purpose: Called when flags are taken from a character
-    When Called: When a character loses flags
+    Purpose:
+        Called when flags are taken from a character
+    When Called:
+        When a character loses flags
     Parameters:
         ply (Player) - The player losing flags
         self (Character) - The character losing flags
         removedFlags (string) - The flags that were removed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log flags taken
     hook.Add("OnCharFlagsTaken", "MyAddon", function(ply, self, removedFlags)
@@ -10690,6 +11698,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track flag removals
     hook.Add("OnCharFlagsTaken", "TrackFlagRemovals", function(ply, self, removedFlags)
@@ -10700,6 +11709,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex flag removal system
     hook.Add("OnCharFlagsTaken", "AdvancedFlagRemoval", function(ply, self, removedFlags)
@@ -10741,16 +11751,21 @@ function OnCharFlagsTaken(ply, self, removedFlags)
 end
 
 --[[
-    Purpose: Called when a character gets up from being unconscious
-    When Called: When a character regains consciousness or is revived
+    Purpose:
+        Called when a character gets up from being unconscious
+    When Called:
+        When a character regains consciousness or is revived
     Parameters:
         target (Player) - The player whose character got up
         entity (Entity) - The ragdoll entity that was removed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character getup
     hook.Add("OnCharGetup", "MyAddon", function(target, entity)
@@ -10759,6 +11774,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle getup effects
     hook.Add("OnCharGetup", "GetupEffects", function(target, entity)
@@ -10779,6 +11795,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex getup system
     hook.Add("OnCharGetup", "AdvancedGetup", function(target, entity)
@@ -10853,16 +11870,21 @@ function OnCharGetup(target, entity)
 end
 
 --[[
-    Purpose: Called when a character is kicked
-    When Called: When a character is kicked from the server
+    Purpose:
+        Called when a character is kicked
+    When Called:
+        When a character is kicked from the server
     Parameters:
         self (Character) - The character being kicked
         client (Player) - The player being kicked
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character kick
     hook.Add("OnCharKick", "MyAddon", function(self, client)
@@ -10871,6 +11893,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle kick effects
     hook.Add("OnCharKick", "KickEffects", function(self, client)
@@ -10888,6 +11911,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex kick system
     hook.Add("OnCharKick", "AdvancedKick", function(self, client)
@@ -10964,18 +11988,23 @@ function OnCharKick(self, client)
 end
 
 --[[
-    Purpose: Called when a character's network variable changes
-    When Called: When a character's networked data is modified
+    Purpose:
+        Called when a character's network variable changes
+    When Called:
+        When a character's networked data is modified
     Parameters:
         character (Character) - The character whose variable changed
         key (string) - The name of the variable that changed
         oldVar (any) - The previous value of the variable
         value (any) - The new value of the variable
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log network variable changes
     hook.Add("OnCharNetVarChanged", "MyAddon", function(character, key, oldVar, value)
@@ -10984,6 +12013,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track specific variable changes
     hook.Add("OnCharNetVarChanged", "NetVarTracking", function(character, key, oldVar, value)
@@ -11002,6 +12032,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex network variable system
     hook.Add("OnCharNetVarChanged", "AdvancedNetVar", function(character, key, oldVar, value)
@@ -11089,16 +12120,21 @@ function OnCharNetVarChanged(character, key, oldVar, value)
 end
 
 --[[
-    Purpose: Called when a character is permanently killed
-    When Called: When a character is permanently removed from the game
+    Purpose:
+        Called when a character is permanently killed
+    When Called:
+        When a character is permanently removed from the game
     Parameters:
         character (Character) - The character being permanently killed
         client (Player) - The player whose character was killed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log permanent character death
     hook.Add("OnCharPermakilled", "MyAddon", function(character, client)
@@ -11107,6 +12143,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle permanent death effects
     hook.Add("OnCharPermakilled", "PermaDeathEffects", function(character, client)
@@ -11124,6 +12161,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex permanent death system
     hook.Add("OnCharPermakilled", "AdvancedPermaDeath", function(character, client)
@@ -11208,16 +12246,21 @@ function OnCharPermakilled(character, client)
 end
 
 --[[
-    Purpose: Called when a character recognizes another character
-    When Called: When a character successfully identifies another character
+    Purpose:
+        Called when a character recognizes another character
+    When Called:
+        When a character successfully identifies another character
     Parameters:
         client (Player) - The player doing the recognizing
         target (Player) - The player being recognized
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character recognition
     hook.Add("OnCharRecognized", "MyAddon", function(client, target)
@@ -11226,6 +12269,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle recognition effects
     hook.Add("OnCharRecognized", "RecognitionEffects", function(client, target)
@@ -11244,6 +12288,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex recognition system
     hook.Add("OnCharRecognized", "AdvancedRecognition", function(client, target)
@@ -11321,8 +12366,10 @@ function OnCharRecognized(client, target)
 end
 
 --[[
-    Purpose: Called when a character trades with a vendor
-    When Called: When a character buys or sells items to/from a vendor
+    Purpose:
+        Called when a character trades with a vendor
+    When Called:
+        When a character buys or sells items to/from a vendor
     Parameters:
         client (Player) - The player trading with the vendor
         vendor (Entity) - The vendor entity
@@ -11331,11 +12378,14 @@ end
         character (Character) - The character doing the trading
         itemType (string) - The type of item being traded
         isFailed (boolean) - Whether the trade failed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor trades
     hook.Add("OnCharTradeVendor", "MyAddon", function(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
@@ -11345,6 +12395,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track trade statistics
     hook.Add("OnCharTradeVendor", "TradeTracking", function(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
@@ -11359,6 +12410,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor trading system
     hook.Add("OnCharTradeVendor", "AdvancedVendorTrading", function(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
@@ -11444,18 +12496,23 @@ function OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, i
 end
 
 --[[
-    Purpose: Called when a character's variable changes
-    When Called: When a character's data variable is modified
+    Purpose:
+        Called when a character's variable changes
+    When Called:
+        When a character's data variable is modified
     Parameters:
         character (Character) - The character whose variable changed
         varName (string) - The name of the variable that changed
         oldVar (any) - The previous value of the variable
         newVar (any) - The new value of the variable
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log variable changes
     hook.Add("OnCharVarChanged", "MyAddon", function(character, varName, oldVar, newVar)
@@ -11464,6 +12521,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track specific variable changes
     hook.Add("OnCharVarChanged", "VarTracking", function(character, varName, oldVar, newVar)
@@ -11487,6 +12545,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex variable change system
     hook.Add("OnCharVarChanged", "AdvancedVarChange", function(character, varName, oldVar, newVar)
@@ -11577,16 +12636,21 @@ function OnCharVarChanged(character, varName, oldVar, newVar)
 end
 
 --[[
-    Purpose: Called when a new character is successfully created
-    When Called: After a character is created and saved to the database
+    Purpose:
+        Called when a new character is successfully created
+    When Called:
+        After a character is created and saved to the database
     Parameters:
         character (Character) - The newly created character
         client (Player) - The player who created the character
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character creation
     hook.Add("OnCharacterCreated", "MyAddon", function(character, client)
@@ -11595,6 +12659,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up new character bonuses
     hook.Add("OnCharacterCreated", "NewCharBonuses", function(character, client)
@@ -11616,6 +12681,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation system
     hook.Add("OnCharacterCreated", "AdvancedCreation", function(character, client)
@@ -11675,16 +12741,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a character is created
-    When Called: When a new character is successfully created
+    Purpose:
+        Called when a character is created
+    When Called:
+        When a new character is successfully created
     Parameters:
         character (Character) - The character that was created
         client (Player) - The player who created the character
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character creation
     hook.Add("OnCharacterCreated", "MyAddon", function(character, client)
@@ -11693,6 +12764,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up new character bonuses
     hook.Add("OnCharacterCreated", "NewCharBonuses", function(character, client)
@@ -11714,6 +12786,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character creation system
     hook.Add("OnCharacterCreated", "AdvancedCreation", function(character, client)
@@ -11776,15 +12849,20 @@ function OnCharacterCreated(character, client)
 end
 
 --[[
-    Purpose: Called when a character dies
-    When Called: When a character's health reaches zero or they are killed
+    Purpose:
+        Called when a character dies
+    When Called:
+        When a character's health reaches zero or they are killed
     Parameters:
         character (Character) - The character that died
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character death
     hook.Add("OnCharacterDeath", "MyAddon", function(character)
@@ -11793,6 +12871,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle death penalties
     hook.Add("OnCharacterDeath", "DeathPenalties", function(character)
@@ -11812,6 +12891,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex death system
     hook.Add("OnCharacterDeath", "AdvancedDeath", function(character)
@@ -11873,18 +12953,23 @@ function OnCharacterDeath(character)
 end
 
 --[[
-    Purpose: Called when a character is deleted
-    When Called: When a character is successfully deleted from the database
+    Purpose:
+        Called when a character is deleted
+    When Called:
+        When a character is successfully deleted from the database
     Parameters:
         charID (number) - The ID of the character that was deleted
         charName (string) - The name of the character that was deleted
         owner (Player) - The player who owned the character
         admin (Player) - The admin who deleted the character (if any)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character deletion
     hook.Add("OnCharacterDeleted", "MyAddon", function(charID, charName, owner, admin)
@@ -11893,6 +12978,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track deletion statistics
     hook.Add("OnCharacterDeleted", "DeletionTracking", function(charID, charName, owner, admin)
@@ -11914,6 +13000,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character deletion system
     hook.Add("OnCharacterDeleted", "AdvancedDeletion", function(charID, charName, owner, admin)
@@ -11993,14 +13080,20 @@ function OnCharacterDeleted(charID, charName, owner, admin)
 end
 
 --[[
-    Purpose: Called when character fields are updated
-    When Called: When character field definitions are modified or updated
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when character fields are updated
+    When Called:
+        When character field definitions are modified or updated
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log field updates
     hook.Add("OnCharacterFieldsUpdated", "MyAddon", function()
@@ -12009,6 +13102,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Refresh character data
     hook.Add("OnCharacterFieldsUpdated", "FieldRefresh", function()
@@ -12025,6 +13119,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex field update system
     hook.Add("OnCharacterFieldsUpdated", "AdvancedFieldUpdate", function()
@@ -12065,16 +13160,21 @@ function OnCharacterFieldsUpdated()
 end
 
 --[[
-    Purpose: Called when a character is loaded
-    When Called: When a character is successfully loaded for a player
+    Purpose:
+        Called when a character is loaded
+    When Called:
+        When a character is successfully loaded for a player
     Parameters:
         character (Character) - The character that was loaded
         client (Player) - The player whose character was loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character loading
     hook.Add("OnCharacterLoaded", "MyAddon", function(character, client)
@@ -12083,6 +13183,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up character data
     hook.Add("OnCharacterLoaded", "CharSetup", function(character, client)
@@ -12101,6 +13202,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character loading system
     hook.Add("OnCharacterLoaded", "AdvancedCharLoading", function(character, client)
@@ -12184,15 +13286,20 @@ function OnCharacterLoaded(character, client)
 end
 
 --[[
-    Purpose: Called when a character is revived
-    When Called: When a character is brought back to life from unconsciousness
+    Purpose:
+        Called when a character is revived
+    When Called:
+        When a character is brought back to life from unconsciousness
     Parameters:
         character (Character) - The character that was revived
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character revival
     hook.Add("OnCharacterRevive", "MyAddon", function(character)
@@ -12201,6 +13308,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle revival effects
     hook.Add("OnCharacterRevive", "RevivalEffects", function(character)
@@ -12221,6 +13329,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex revival system
     hook.Add("OnCharacterRevive", "AdvancedRevival", function(character)
@@ -12313,15 +13422,20 @@ function OnCharacterRevive(character)
 end
 
 --[[
-    Purpose: Called when character schema validation is completed
-    When Called: When character schema validation finishes
+    Purpose:
+        Called when character schema validation is completed
+    When Called:
+        When character schema validation finishes
     Parameters:
         validationResults (table) - The results of the schema validation
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log schema validation
     hook.Add("OnCharacterSchemaValidated", "MyAddon", function(validationResults)
@@ -12330,6 +13444,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle validation results
     hook.Add("OnCharacterSchemaValidated", "SchemaValidation", function(validationResults)
@@ -12342,6 +13457,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex schema validation system
     hook.Add("OnCharacterSchemaValidated", "AdvancedSchemaValidation", function(validationResults)
@@ -12388,16 +13504,21 @@ function OnCharacterSchemaValidated(validationResults)
 end
 
 --[[
-    Purpose: Called when a character is updated
-    When Called: When a character's data is modified and saved
+    Purpose:
+        Called when a character is updated
+    When Called:
+        When a character's data is modified and saved
     Parameters:
         charID (number) - The ID of the character that was updated
         updateData (table) - The data that was updated
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character updates
     hook.Add("OnCharacterUpdated", "MyAddon", function(charID, updateData)
@@ -12406,6 +13527,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track update statistics
     hook.Add("OnCharacterUpdated", "UpdateTracking", function(charID, updateData)
@@ -12419,6 +13541,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character update system
     hook.Add("OnCharacterUpdated", "AdvancedCharacterUpdate", function(charID, updateData)
@@ -12495,17 +13618,22 @@ function OnCharacterUpdated(charID, updateData)
 end
 
 --[[
-    Purpose: Called when characters are restored from backup
-    When Called: When character data is restored from a backup
+    Purpose:
+        Called when characters are restored from backup
+    When Called:
+        When character data is restored from a backup
     Parameters:
         client (Player) - The player whose characters were restored
         characters (table) - The restored character data
         stats (table) - The restored character statistics
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character restoration
     hook.Add("OnCharactersRestored", "MyAddon", function(client, characters, stats)
@@ -12514,6 +13642,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle restoration effects
     hook.Add("OnCharactersRestored", "RestorationEffects", function(client, characters, stats)
@@ -12533,6 +13662,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character restoration system
     hook.Add("OnCharactersRestored", "AdvancedCharacterRestoration", function(client, characters, stats)
@@ -12600,15 +13730,20 @@ function OnCharactersRestored(client, characters, stats)
 end
 
 --[[
-    Purpose: Called when a cheater is caught
-    When Called: When anti-cheat systems detect cheating behavior
+    Purpose:
+        Called when a cheater is caught
+    When Called:
+        When anti-cheat systems detect cheating behavior
     Parameters:
         client (Player) - The player who was caught cheating
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log cheater detection
     hook.Add("OnCheaterCaught", "MyAddon", function(client)
@@ -12617,6 +13752,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle cheater punishment
     hook.Add("OnCheaterCaught", "CheaterPunishment", function(client)
@@ -12633,6 +13769,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex anti-cheat system
     hook.Add("OnCheaterCaught", "AdvancedAntiCheat", function(client)
@@ -12694,17 +13831,22 @@ function OnCheaterCaught(client)
 end
 
 --[[
-    Purpose: Called when a cheater's status changes
-    When Called: When a player's cheater status is modified
+    Purpose:
+        Called when a cheater's status changes
+    When Called:
+        When a player's cheater status is modified
     Parameters:
         client (Player) - The player whose status changed
         target (Player) - The target player (if applicable)
         status (string) - The new cheater status
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log cheater status changes
     hook.Add("OnCheaterStatusChanged", "MyAddon", function(client, target, status)
@@ -12713,6 +13855,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle status change effects
     hook.Add("OnCheaterStatusChanged", "StatusChangeEffects", function(client, target, status)
@@ -12727,6 +13870,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex cheater status system
     hook.Add("OnCheaterStatusChanged", "AdvancedCheaterStatus", function(client, target, status)
@@ -12805,16 +13949,21 @@ function OnCheaterStatusChanged(client, target, status)
 end
 
 --[[
-    Purpose: Called when a database column is added
-    When Called: When a new column is added to a database table
+    Purpose:
+        Called when a database column is added
+    When Called:
+        When a new column is added to a database table
     Parameters:
         column (string) - The name of the column that was added
         data (table) - The column data and properties
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log column additions
     hook.Add("OnColumnAdded", "MyAddon", function(column, data)
@@ -12823,6 +13972,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle column additions
     hook.Add("OnColumnAdded", "ColumnHandling", function(column, data)
@@ -12835,6 +13985,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex column addition system
     hook.Add("OnColumnAdded", "AdvancedColumnAddition", function(column, data)
@@ -12878,17 +14029,22 @@ function OnColumnAdded(column, data)
 end
 
 --[[
-    Purpose: Called when a database column is removed
-    When Called: When a column is removed from a database table
+    Purpose:
+        Called when a database column is removed
+    When Called:
+        When a column is removed from a database table
     Parameters:
         tableName (string) - The name of the table the column was removed from
         columnName (string) - The name of the column that was removed
         snapshot (table) - A snapshot of the data before removal
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log column removals
     hook.Add("OnColumnRemoved", "MyAddon", function(tableName, columnName, snapshot)
@@ -12897,6 +14053,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle column removals
     hook.Add("OnColumnRemoved", "ColumnRemovalHandling", function(tableName, columnName, snapshot)
@@ -12914,6 +14071,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex column removal system
     hook.Add("OnColumnRemoved", "AdvancedColumnRemoval", function(tableName, columnName, snapshot)
@@ -12968,17 +14126,22 @@ function OnColumnRemoved(tableName, columnName, snapshot)
 end
 
 --[[
-    Purpose: Called when a configuration is updated
-    When Called: When a configuration value is changed
+    Purpose:
+        Called when a configuration is updated
+    When Called:
+        When a configuration value is changed
     Parameters:
         key (string) - The configuration key that was updated
         oldValue (any) - The previous value
         value (any) - The new value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log config updates
     hook.Add("OnConfigUpdated", "MyAddon", function(key, oldValue, value)
@@ -12987,6 +14150,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle specific config changes
     hook.Add("OnConfigUpdated", "ConfigHandling", function(key, oldValue, value)
@@ -12999,6 +14163,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex config update system
     hook.Add("OnConfigUpdated", "AdvancedConfigUpdate", function(key, oldValue, value)
@@ -13044,17 +14209,22 @@ function OnConfigUpdated(key, oldValue, value)
 end
 
 --[[
-    Purpose: Called when creating a player ragdoll
-    When Called: When a player ragdoll is being created
+    Purpose:
+        Called when creating a player ragdoll
+    When Called:
+        When a player ragdoll is being created
     Parameters:
         self (Player) - The player whose ragdoll is being created
         entity (Entity) - The ragdoll entity
         isDead (boolean) - Whether the player is dead
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ragdoll creation
     hook.Add("OnCreatePlayerRagdoll", "MyAddon", function(self, entity, isDead)
@@ -13063,6 +14233,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up ragdoll data
     hook.Add("OnCreatePlayerRagdoll", "RagdollSetup", function(self, entity, isDead)
@@ -13073,6 +14244,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ragdoll creation system
     hook.Add("OnCreatePlayerRagdoll", "AdvancedRagdollCreation", function(self, entity, isDead)
@@ -13124,18 +14296,23 @@ function OnCreatePlayerRagdoll(self, entity, isDead)
 end
 
 --[[
-    Purpose: Called when data is set
-    When Called: When persistent data is being saved
+    Purpose:
+        Called when data is set
+    When Called:
+        When persistent data is being saved
     Parameters:
         key (string) - The data key
         value (any) - The data value
         gamemode (string) - The gamemode name
         map (string) - The map name
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data setting
     hook.Add("OnDataSet", "MyAddon", function(key, value, gamemode, map)
@@ -13144,6 +14321,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate data before saving
     hook.Add("OnDataSet", "DataValidation", function(key, value, gamemode, map)
@@ -13160,6 +14338,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data management system
     hook.Add("OnDataSet", "AdvancedDataManagement", function(key, value, gamemode, map)
@@ -13217,14 +14396,20 @@ function OnDataSet(key, value, gamemode, map)
 end
 
 --[[
-    Purpose: Called when database connection is established
-    When Called: When the database connection is successfully made
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when database connection is established
+    When Called:
+        When the database connection is successfully made
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database connection
     hook.Add("OnDatabaseConnected", "MyAddon", function()
@@ -13233,6 +14418,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize database tables
     hook.Add("OnDatabaseConnected", "DatabaseInit", function()
@@ -13245,6 +14431,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database initialization system
     hook.Add("OnDatabaseConnected", "AdvancedDatabaseInit", function()
@@ -13297,14 +14484,20 @@ function OnDatabaseConnected()
 end
 
 --[[
-    Purpose: Called when the database is initialized
-    When Called: After the database connection is established and tables are created
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when the database is initialized
+    When Called:
+        After the database connection is established and tables are created
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database initialization
     hook.Add("OnDatabaseInitialized", "MyAddon", function()
@@ -13313,6 +14506,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Setup custom tables
     hook.Add("OnDatabaseInitialized", "SetupCustomTables", function()
@@ -13322,6 +14516,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database initialization
     hook.Add("OnDatabaseInitialized", "AdvancedDBInit", function()
@@ -13347,14 +14542,20 @@ function OnDatabaseInitialized()
 end
 
 --[[
-    Purpose: Called when the database has finished loading all data
-    When Called: After all database operations and data loading is complete
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when the database has finished loading all data
+    When Called:
+        After all database operations and data loading is complete
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database loaded
     hook.Add("OnDatabaseLoaded", "MyAddon", function()
@@ -13363,6 +14564,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize addon after DB load
     hook.Add("OnDatabaseLoaded", "InitAfterDB", function()
@@ -13372,6 +14574,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex post-database initialization
     hook.Add("OnDatabaseLoaded", "AdvancedPostDBInit", function()
@@ -13401,14 +14604,20 @@ function OnDatabaseLoaded()
 end
 
 --[[
-    Purpose: Called when the database is reset
-    When Called: When the database is reset to default state
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when the database is reset
+    When Called:
+        When the database is reset to default state
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database reset
     hook.Add("OnDatabaseReset", "MyAddon", function()
@@ -13417,6 +14626,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clear addon data
     hook.Add("OnDatabaseReset", "ClearAddonData", function()
@@ -13427,6 +14637,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database reset handling
     hook.Add("OnDatabaseReset", "AdvancedDBReset", function()
@@ -13462,14 +14673,20 @@ function OnDatabaseReset()
 end
 
 --[[
-    Purpose: Called when the database is completely wiped
-    When Called: When all database data is permanently deleted
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when the database is completely wiped
+    When Called:
+        When all database data is permanently deleted
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database wipe
     hook.Add("OnDatabaseWiped", "MyAddon", function()
@@ -13478,6 +14695,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Reset addon state
     hook.Add("OnDatabaseWiped", "ResetAddonState", function()
@@ -13487,6 +14705,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database wipe handling
     hook.Add("OnDatabaseWiped", "AdvancedDBWipe", function()
@@ -13517,16 +14736,21 @@ function OnDatabaseWiped()
 end
 
 --[[
-    Purpose: Called when an entity is loaded from the database
-    When Called: When an entity is restored from saved data
+    Purpose:
+        Called when an entity is loaded from the database
+    When Called:
+        When an entity is restored from saved data
     Parameters:
         createdEnt (Entity) - The entity that was created
         data (table) - The saved entity data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log entity loading
     hook.Add("OnEntityLoaded", "MyAddon", function(createdEnt, data)
@@ -13535,6 +14759,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track loaded entities
     hook.Add("OnEntityLoaded", "TrackEntities", function(createdEnt, data)
@@ -13548,6 +14773,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity loading handling
     hook.Add("OnEntityLoaded", "AdvancedEntityLoading", function(createdEnt, data)
@@ -13579,16 +14805,21 @@ function OnEntityLoaded(createdEnt, data)
 end
 
 --[[
-    Purpose: Called when an entity's persistent data is updated
-    When Called: When an entity's save data is modified
+    Purpose:
+        Called when an entity's persistent data is updated
+    When Called:
+        When an entity's save data is modified
     Parameters:
         ent (Entity) - The entity being updated
         data (table) - The updated persistent data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log entity updates
     hook.Add("OnEntityPersistUpdated", "MyAddon", function(ent, data)
@@ -13597,6 +14828,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track entity changes
     hook.Add("OnEntityPersistUpdated", "TrackEntityChanges", function(ent, data)
@@ -13610,6 +14842,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity update handling
     hook.Add("OnEntityPersistUpdated", "AdvancedEntityUpdate", function(ent, data)
@@ -13645,16 +14878,21 @@ function OnEntityPersistUpdated(ent, data)
 end
 
 --[[
-    Purpose: Called when an entity is persisted to the database
-    When Called: When an entity's data is saved to the database
+    Purpose:
+        Called when an entity is persisted to the database
+    When Called:
+        When an entity's data is saved to the database
     Parameters:
         ent (Entity) - The entity being saved
         entData (table) - The entity data being saved
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log entity persistence
     hook.Add("OnEntityPersisted", "MyAddon", function(ent, entData)
@@ -13663,6 +14901,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track entity saves
     hook.Add("OnEntityPersisted", "TrackEntitySaves", function(ent, entData)
@@ -13676,6 +14915,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity persistence handling
     hook.Add("OnEntityPersisted", "AdvancedEntityPersistence", function(ent, entData)
@@ -13708,16 +14948,21 @@ function OnEntityPersisted(ent, entData)
 end
 
 --[[
-    Purpose: Called when an item is added to an inventory
-    When Called: When an item is successfully added to any inventory
+    Purpose:
+        Called when an item is added to an inventory
+    When Called:
+        When an item is successfully added to any inventory
     Parameters:
         owner (Player|Character) - The owner of the inventory
         item (Item) - The item that was added
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item additions
     hook.Add("OnItemAdded", "MyAddon", function(owner, item)
@@ -13726,6 +14971,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle special item effects
     hook.Add("OnItemAdded", "ItemEffects", function(owner, item)
@@ -13741,6 +14987,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item management system
     hook.Add("OnItemAdded", "AdvancedItems", function(owner, item)
@@ -13796,16 +15043,21 @@ function OnItemAdded(owner, item)
 end
 
 --[[
-    Purpose: Called when an item instance is created
-    When Called: When a new item instance is created from an item table
+    Purpose:
+        Called when an item instance is created
+    When Called:
+        When a new item instance is created from an item table
     Parameters:
         itemTable (table) - The item table definition
         self (Item) - The item instance being created
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item creation
     hook.Add("OnItemCreated", "MyAddon", function(itemTable, self)
@@ -13814,6 +15066,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up item-specific data
     hook.Add("OnItemCreated", "ItemSetup", function(itemTable, self)
@@ -13828,6 +15081,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item creation system
     hook.Add("OnItemCreated", "AdvancedItemCreation", function(itemTable, self)
@@ -13888,15 +15142,20 @@ function OnItemCreated(itemTable, self)
 end
 
 --[[
-    Purpose: Called when an item entity is spawned in the world
-    When Called: When an item is dropped or spawned as a world entity
+    Purpose:
+        Called when an item entity is spawned in the world
+    When Called:
+        When an item is dropped or spawned as a world entity
     Parameters:
         self (Entity) - The item entity that was spawned
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item spawning
     hook.Add("OnItemSpawned", "MyAddon", function(self)
@@ -13905,6 +15164,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set up item physics
     hook.Add("OnItemSpawned", "ItemPhysics", function(self)
@@ -13920,6 +15180,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item spawning system
     hook.Add("OnItemSpawned", "AdvancedItemSpawning", function(self)
@@ -13977,17 +15238,22 @@ function OnItemSpawned(self)
 end
 
 --[[
-    Purpose: Called after items have been successfully transferred between characters
-    When Called: After items are transferred from one character to another
+    Purpose:
+        Called after items have been successfully transferred between characters
+    When Called:
+        After items are transferred from one character to another
     Parameters:
         fromChar (Character) - The character items were transferred from
         toChar (Character) - The character items were transferred to
         items (table) - Table of items that were transferred
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item transfers
     hook.Add("OnItemsTransferred", "MyAddon", function(fromChar, toChar, items)
@@ -13996,6 +15262,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track transfer history
     hook.Add("OnItemsTransferred", "TrackTransfers", function(fromChar, toChar, items)
@@ -14013,6 +15280,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer tracking and validation
     hook.Add("OnItemsTransferred", "AdvancedTransferTracking", function(fromChar, toChar, items)
@@ -14042,14 +15310,20 @@ function OnItemsTransferred(fromChar, toChar, items)
 end
 
 --[[
-    Purpose: Called when database tables are being loaded
-    When Called: During database initialization when tables are loaded
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when database tables are being loaded
+    When Called:
+        During database initialization when tables are loaded
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log table loading
     hook.Add("OnLoadTables", "MyAddon", function()
@@ -14058,6 +15332,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize custom tables
     hook.Add("OnLoadTables", "InitCustomTables", function()
@@ -14067,6 +15342,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex table initialization and migration
     hook.Add("OnLoadTables", "AdvancedTableSetup", function()
@@ -14087,16 +15363,21 @@ function OnLoadTables()
 end
 
 --[[
-    Purpose: Called when a player sends an OOC (Out of Character) message
-    When Called: When a player sends a message in OOC chat
+    Purpose:
+        Called when a player sends an OOC (Out of Character) message
+    When Called:
+        When a player sends a message in OOC chat
     Parameters:
         client (Player) - The player sending the message
         message (string) - The OOC message text
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log OOC messages
     hook.Add("OnOOCMessageSent", "MyAddon", function(client, message)
@@ -14105,6 +15386,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter OOC messages
     hook.Add("OnOOCMessageSent", "OOCFiltering", function(client, message)
@@ -14123,6 +15405,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex OOC system
     hook.Add("OnOOCMessageSent", "AdvancedOOC", function(client, message)
@@ -14203,15 +15486,20 @@ function OnOOCMessageSent(client, message)
 end
 
 --[[
-    Purpose: Called when a PAC3 part is transferred
-    When Called: When a PAC3 part is moved between players or inventories
+    Purpose:
+        Called when a PAC3 part is transferred
+    When Called:
+        When a PAC3 part is moved between players or inventories
     Parameters:
         part (table) - The PAC3 part data being transferred
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log PAC3 part transfer
     hook.Add("OnPAC3PartTransfered", "MyAddon", function(part)
@@ -14220,6 +15508,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track PAC3 transfers
     hook.Add("OnPAC3PartTransfered", "TrackPAC3Transfers", function(part)
@@ -14232,6 +15521,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex PAC3 part transfer handling
     hook.Add("OnPAC3PartTransfered", "AdvancedPAC3Transfer", function(part)
@@ -14266,16 +15556,21 @@ function OnPAC3PartTransfered(part)
 end
 
 --[[
-    Purpose: Called when a player picks up money
-    When Called: When a player collects money from the ground
+    Purpose:
+        Called when a player picks up money
+    When Called:
+        When a player collects money from the ground
     Parameters:
         client (Player) - The player picking up money
         moneyEntity (Entity) - The money entity being picked up
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log money pickup
     hook.Add("OnPickupMoney", "MyAddon", function(client, moneyEntity)
@@ -14284,6 +15579,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track money pickups
     hook.Add("OnPickupMoney", "TrackMoneyPickups", function(client, moneyEntity)
@@ -14297,6 +15593,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex money pickup handling
     hook.Add("OnPickupMoney", "AdvancedMoneyPickup", function(client, moneyEntity)
@@ -14333,17 +15630,22 @@ function OnPickupMoney(client, moneyEntity)
 end
 
 --[[
-    Purpose: Called when a player drops a weapon
-    When Called: When a player drops a weapon from their inventory
+    Purpose:
+        Called when a player drops a weapon
+    When Called:
+        When a player drops a weapon from their inventory
     Parameters:
         client (Player) - The player dropping the weapon
         weapon (Weapon) - The weapon being dropped
         entity (Entity) - The weapon entity created
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log weapon drops
     hook.Add("OnPlayerDropWeapon", "MyAddon", function(client, weapon, entity)
@@ -14352,6 +15654,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track weapon drop statistics
     hook.Add("OnPlayerDropWeapon", "WeaponTracking", function(client, weapon, entity)
@@ -14364,6 +15667,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex weapon drop system
     hook.Add("OnPlayerDropWeapon", "AdvancedWeaponDrop", function(client, weapon, entity)
@@ -14437,19 +15741,24 @@ function OnPlayerDropWeapon(client, weapon, entity)
 end
 
 --[[
-    Purpose: Called when a player enters a sequence
-    When Called: When a player starts a sequence (animation)
+    Purpose:
+        Called when a player enters a sequence
+    When Called:
+        When a player starts a sequence (animation)
     Parameters:
         self (Player) - The player entering the sequence
         sequenceName (string) - The name of the sequence
         callback (function) - The callback function to call when sequence ends
         time (number) - The duration of the sequence
         noFreeze (boolean) - Whether the player should be frozen during sequence
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log sequence entry
     hook.Add("OnPlayerEnterSequence", "MyAddon", function(self, sequenceName, callback, time, noFreeze)
@@ -14458,6 +15767,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track sequence usage
     hook.Add("OnPlayerEnterSequence", "SequenceTracking", function(self, sequenceName, callback, time, noFreeze)
@@ -14470,6 +15780,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex sequence system
     hook.Add("OnPlayerEnterSequence", "AdvancedSequence", function(self, sequenceName, callback, time, noFreeze)
@@ -14557,19 +15868,24 @@ function OnPlayerEnterSequence(self, sequenceName, callback, time, noFreeze)
 end
 
 --[[
-    Purpose: Called when a player interacts with an item
-    When Called: When a player uses an item or performs an action on it
+    Purpose:
+        Called when a player interacts with an item
+    When Called:
+        When a player uses an item or performs an action on it
     Parameters:
         client (Player) - The player interacting with the item
         action (string) - The action being performed
         self (Item) - The item being interacted with
         result (any) - The result of the interaction
         data (table) - Additional data for the interaction
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item interactions
     hook.Add("OnPlayerInteractItem", "MyAddon", function(client, action, self, result, data)
@@ -14578,6 +15894,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle special item effects
     hook.Add("OnPlayerInteractItem", "ItemEffects", function(client, action, self, result, data)
@@ -14597,6 +15914,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item interaction system
     hook.Add("OnPlayerInteractItem", "AdvancedItemInteractions", function(client, action, self, result, data)
@@ -14679,17 +15997,22 @@ function OnPlayerInteractItem(client, action, self, result, data)
 end
 
 --[[
-    Purpose: Called when a player joins a class
-    When Called: When a player successfully joins a new class
+    Purpose:
+        Called when a player joins a class
+    When Called:
+        When a player successfully joins a new class
     Parameters:
         client (Player) - The player joining the class
         class (string) - The class being joined
         oldClass (string) - The previous class (if any)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log class changes
     hook.Add("OnPlayerJoinClass", "MyAddon", function(client, class, oldClass)
@@ -14698,6 +16021,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give class-specific bonuses
     hook.Add("OnPlayerJoinClass", "ClassBonuses", function(client, class, oldClass)
@@ -14720,6 +16044,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class system
     hook.Add("OnPlayerJoinClass", "AdvancedClasses", function(client, class, oldClass)
@@ -14804,15 +16129,20 @@ function OnPlayerJoinClass(client, class, oldClass)
 end
 
 --[[
-    Purpose: Called when a player leaves a sequence
-    When Called: When a player finishes or exits a sequence
+    Purpose:
+        Called when a player leaves a sequence
+    When Called:
+        When a player finishes or exits a sequence
     Parameters:
         self (Player) - The player leaving the sequence
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log sequence exit
     hook.Add("OnPlayerLeaveSequence", "MyAddon", function(self)
@@ -14821,6 +16151,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track sequence completion
     hook.Add("OnPlayerLeaveSequence", "SequenceTracking", function(self)
@@ -14833,6 +16164,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex sequence exit system
     hook.Add("OnPlayerLeaveSequence", "AdvancedSequenceExit", function(self)
@@ -14908,17 +16240,22 @@ function OnPlayerLeaveSequence(self)
 end
 
 --[[
-    Purpose: Called when a player levels up
-    When Called: When a player's level increases
+    Purpose:
+        Called when a player levels up
+    When Called:
+        When a player's level increases
     Parameters:
         player (Player) - The player who leveled up
         oldValue (number) - The previous level
         newValue (number) - The new level
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log level ups
     hook.Add("OnPlayerLevelUp", "MyAddon", function(player, oldValue, newValue)
@@ -14927,6 +16264,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give level up bonuses
     hook.Add("OnPlayerLevelUp", "LevelBonuses", function(player, oldValue, newValue)
@@ -14946,6 +16284,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex leveling system
     hook.Add("OnPlayerLevelUp", "AdvancedLeveling", function(player, oldValue, newValue)
@@ -15003,17 +16342,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player levels up
-    When Called: When a player's level increases
+    Purpose:
+        Called when a player levels up
+    When Called:
+        When a player's level increases
     Parameters:
         player (Player) - The player who leveled up
         oldValue (number) - The previous level
         newValue (number) - The new level
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log level ups
     hook.Add("OnPlayerLevelUp", "MyAddon", function(player, oldValue, newValue)
@@ -15022,6 +16366,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give level up bonuses
     hook.Add("OnPlayerLevelUp", "LevelBonuses", function(player, oldValue, newValue)
@@ -15041,6 +16386,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex leveling system
     hook.Add("OnPlayerLevelUp", "AdvancedLeveling", function(player, oldValue, newValue)
@@ -15098,17 +16444,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player levels up
-    When Called: When a player's level increases
+    Purpose:
+        Called when a player levels up
+    When Called:
+        When a player's level increases
     Parameters:
         player (Player) - The player who leveled up
         oldValue (number) - The previous level
         newValue (number) - The new level
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log level ups
     hook.Add("OnPlayerLevelUp", "MyAddon", function(player, oldValue, newValue)
@@ -15117,6 +16468,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give level up bonuses
     hook.Add("OnPlayerLevelUp", "LevelBonuses", function(player, oldValue, newValue)
@@ -15136,6 +16488,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex leveling system
     hook.Add("OnPlayerLevelUp", "AdvancedLeveling", function(player, oldValue, newValue)
@@ -15193,17 +16546,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player levels up
-    When Called: When a player's level increases
+    Purpose:
+        Called when a player levels up
+    When Called:
+        When a player's level increases
     Parameters:
         player (Player) - The player who leveled up
         oldValue (number) - The previous level
         newValue (number) - The new level
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log level ups
     hook.Add("OnPlayerLevelUp", "MyAddon", function(player, oldValue, newValue)
@@ -15212,6 +16570,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give level up bonuses
     hook.Add("OnPlayerLevelUp", "LevelBonuses", function(player, oldValue, newValue)
@@ -15231,6 +16590,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex leveling system
     hook.Add("OnPlayerLevelUp", "AdvancedLeveling", function(player, oldValue, newValue)
@@ -15288,17 +16648,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player levels up
-    When Called: When a player's level increases
+    Purpose:
+        Called when a player levels up
+    When Called:
+        When a player's level increases
     Parameters:
         player (Player) - The player who leveled up
         oldValue (number) - The previous level
         newValue (number) - The new level
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log level ups
     hook.Add("OnPlayerLevelUp", "MyAddon", function(player, oldValue, newValue)
@@ -15307,6 +16672,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give level up bonuses
     hook.Add("OnPlayerLevelUp", "LevelBonuses", function(player, oldValue, newValue)
@@ -15326,6 +16692,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex leveling system
     hook.Add("OnPlayerLevelUp", "AdvancedLeveling", function(player, oldValue, newValue)
@@ -15386,15 +16753,20 @@ function OnPlayerLevelUp(player, oldValue, newValue)
 end
 
 --[[
-    Purpose: Called when a player loses a stack item
-    When Called: When a player's stack item is removed or lost
+    Purpose:
+        Called when a player loses a stack item
+    When Called:
+        When a player's stack item is removed or lost
     Parameters:
         itemTypeOrItem (string/Item) - The item type or item instance that was lost
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log stack item loss
     hook.Add("OnPlayerLostStackItem", "MyAddon", function(itemTypeOrItem)
@@ -15403,6 +16775,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track stack item losses
     hook.Add("OnPlayerLostStackItem", "TrackStackLosses", function(itemTypeOrItem)
@@ -15413,6 +16786,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex stack item loss handling
     hook.Add("OnPlayerLostStackItem", "AdvancedStackLoss", function(itemTypeOrItem)
@@ -15451,16 +16825,21 @@ function OnPlayerLostStackItem(itemTypeOrItem)
 end
 
 --[[
-    Purpose: Called when a player enters or exits observer mode
-    When Called: When a player starts or stops observing
+    Purpose:
+        Called when a player enters or exits observer mode
+    When Called:
+        When a player starts or stops observing
     Parameters:
         client (Player) - The player entering/exiting observer mode
         state (boolean) - True if entering observer mode, false if exiting
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log observer mode changes
     hook.Add("OnPlayerObserve", "MyAddon", function(client, state)
@@ -15473,6 +16852,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle observer mode restrictions
     hook.Add("OnPlayerObserve", "ObserverRestrictions", function(client, state)
@@ -15505,6 +16885,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex observer mode system
     hook.Add("OnPlayerObserve", "AdvancedObserver", function(client, state)
@@ -15584,17 +16965,22 @@ function OnPlayerObserve(client, state)
 end
 
 --[[
-    Purpose: Called when a player purchases a door
-    When Called: When a player successfully buys a door
+    Purpose:
+        Called when a player purchases a door
+    When Called:
+        When a player successfully buys a door
     Parameters:
         client (Player) - The player purchasing the door
         door (Entity) - The door being purchased
         price (number) - The price paid for the door
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door purchases
     hook.Add("OnPlayerPurchaseDoor", "MyAddon", function(client, door, price)
@@ -15603,6 +16989,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle door purchase bonuses
     hook.Add("OnPlayerPurchaseDoor", "DoorBonuses", function(client, door, price)
@@ -15622,6 +17009,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door purchase system
     hook.Add("OnPlayerPurchaseDoor", "AdvancedDoorPurchases", function(client, door, price)
@@ -15682,16 +17070,21 @@ function OnPlayerPurchaseDoor(client, door, price)
 end
 
 --[[
-    Purpose: Called when a player ragdoll is created
-    When Called: When a player's ragdoll is spawned (usually on death)
+    Purpose:
+        Called when a player ragdoll is created
+    When Called:
+        When a player's ragdoll is spawned (usually on death)
     Parameters:
         player (Player) - The player whose ragdoll was created
         ragdoll (Entity) - The ragdoll entity that was created
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ragdoll creation
     hook.Add("OnPlayerRagdollCreated", "MyAddon", function(player, ragdoll)
@@ -15700,6 +17093,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Customize ragdoll appearance
     hook.Add("OnPlayerRagdollCreated", "RagdollCustomization", function(player, ragdoll)
@@ -15719,6 +17113,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ragdoll system
     hook.Add("OnPlayerRagdollCreated", "AdvancedRagdoll", function(player, ragdoll)
@@ -15787,14 +17182,20 @@ function OnPlayerRagdollCreated(player, ragdoll)
 end
 
 --[[
-    Purpose: Called when the player stats table is created
-    When Called: When the player statistics table is initialized
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when the player stats table is created
+    When Called:
+        When the player statistics table is initialized
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log table creation
     hook.Add("OnPlayerStatsTableCreated", "MyAddon", function()
@@ -15803,6 +17204,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Add custom stats columns
     hook.Add("OnPlayerStatsTableCreated", "CustomStats", function()
@@ -15814,6 +17216,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex stats system
     hook.Add("OnPlayerStatsTableCreated", "AdvancedStats", function()
@@ -15857,17 +17260,22 @@ function OnPlayerStatsTableCreated()
 end
 
 --[[
-    Purpose: Called when a player switches classes
-    When Called: When a player successfully changes their class
+    Purpose:
+        Called when a player switches classes
+    When Called:
+        When a player successfully changes their class
     Parameters:
         client (Player) - The player switching classes
         class (string) - The new class being switched to
         oldClass (string) - The previous class
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log class switches
     hook.Add("OnPlayerSwitchClass", "MyAddon", function(client, class, oldClass)
@@ -15876,6 +17284,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle class switch bonuses
     hook.Add("OnPlayerSwitchClass", "ClassSwitchBonuses", function(client, class, oldClass)
@@ -15891,6 +17300,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex class switching system
     hook.Add("OnPlayerSwitchClass", "AdvancedClassSwitching", function(client, class, oldClass)
@@ -15995,17 +17405,22 @@ function OnPlayerSwitchClass(client, class, oldClass)
 end
 
 --[[
-    Purpose: Called when a player gains experience points
-    When Called: When a player earns XP from any source
+    Purpose:
+        Called when a player gains experience points
+    When Called:
+        When a player earns XP from any source
     Parameters:
         player (Player) - The player gaining XP
         gained (number) - The amount of XP gained
         reason (string) - The reason for gaining XP
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log XP gain
     hook.Add("OnPlayerXPGain", "MyAddon", function(player, gained, reason)
@@ -16014,6 +17429,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply XP bonuses
     hook.Add("OnPlayerXPGain", "XPBonuses", function(player, gained, reason)
@@ -16037,6 +17453,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex XP system
     hook.Add("OnPlayerXPGain", "AdvancedXP", function(player, gained, reason)
@@ -16101,17 +17518,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player gains experience points
-    When Called: When a player earns XP from any source
+    Purpose:
+        Called when a player gains experience points
+    When Called:
+        When a player earns XP from any source
     Parameters:
         player (Player) - The player gaining XP
         gained (number) - The amount of XP gained
         reason (string) - The reason for gaining XP
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log XP gain
     hook.Add("OnPlayerXPGain", "MyAddon", function(player, gained, reason)
@@ -16120,6 +17542,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply XP bonuses
     hook.Add("OnPlayerXPGain", "XPBonuses", function(player, gained, reason)
@@ -16143,6 +17566,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex XP system
     hook.Add("OnPlayerXPGain", "AdvancedXP", function(player, gained, reason)
@@ -16207,17 +17631,22 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player gains experience points
-    When Called: When a player earns XP from any source
+    Purpose:
+        Called when a player gains experience points
+    When Called:
+        When a player earns XP from any source
     Parameters:
         player (Player) - The player gaining XP
         gained (number) - The amount of XP gained
         reason (string) - The reason for gaining XP
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log XP gain
     hook.Add("OnPlayerXPGain", "MyAddon", function(player, gained, reason)
@@ -16226,6 +17655,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply XP bonuses
     hook.Add("OnPlayerXPGain", "XPBonuses", function(player, gained, reason)
@@ -16249,6 +17679,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex XP system
     hook.Add("OnPlayerXPGain", "AdvancedXP", function(player, gained, reason)
@@ -16316,17 +17747,22 @@ function OnPlayerXPGain(player, gained, reason)
 end
 
 --[[
-    Purpose: Called when a database record is inserted or updated
-    When Called: When a record is upserted in the database
+    Purpose:
+        Called when a database record is inserted or updated
+    When Called:
+        When a record is upserted in the database
     Parameters:
         dbTable (string) - The name of the database table
         data (table) - The data that was upserted
         action (string) - The action performed ("insert" or "update")
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log record upserts
     hook.Add("OnRecordUpserted", "MyAddon", function(dbTable, data, action)
@@ -16335,6 +17771,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track database changes
     hook.Add("OnRecordUpserted", "TrackDBChanges", function(dbTable, data, action)
@@ -16348,6 +17785,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database change tracking
     hook.Add("OnRecordUpserted", "AdvancedDBTracking", function(dbTable, data, action)
@@ -16381,16 +17819,21 @@ function OnRecordUpserted(dbTable, data, action)
 end
 
 --[[
-    Purpose: Called when an item transfer is requested
-    When Called: When a request is made to transfer an item to another inventory
+    Purpose:
+        Called when an item transfer is requested
+    When Called:
+        When a request is made to transfer an item to another inventory
     Parameters:
         item (Item) - The item being transferred
         targetInventory (Inventory) - The target inventory
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item transfer requests
     hook.Add("OnRequestItemTransfer", "MyAddon", function(item, targetInventory)
@@ -16399,6 +17842,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track transfer requests
     hook.Add("OnRequestItemTransfer", "TrackTransferRequests", function(item, targetInventory)
@@ -16412,6 +17856,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer request handling
     hook.Add("OnRequestItemTransfer", "AdvancedTransferRequest", function(item, targetInventory)
@@ -16439,15 +17884,20 @@ function OnRequestItemTransfer(item, targetInventory)
 end
 
 --[[
-    Purpose: Called when a restore operation completes successfully
-    When Called: After a successful database restore operation
+    Purpose:
+        Called when a restore operation completes successfully
+    When Called:
+        After a successful database restore operation
     Parameters:
         restoreLog (table) - Information about the restore operation
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log restore completion
     hook.Add("OnRestoreCompleted", "MyAddon", function(restoreLog)
@@ -16456,6 +17906,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins of restore
     hook.Add("OnRestoreCompleted", "NotifyRestore", function(restoreLog)
@@ -16468,6 +17919,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex restore completion handling
     hook.Add("OnRestoreCompleted", "AdvancedRestoreCompletion", function(restoreLog)
@@ -16497,15 +17949,20 @@ function OnRestoreCompleted(restoreLog)
 end
 
 --[[
-    Purpose: Called when a restore operation fails
-    When Called: After a failed database restore operation
+    Purpose:
+        Called when a restore operation fails
+    When Called:
+        After a failed database restore operation
     Parameters:
         failedLog (table) - Information about the failed restore operation
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log restore failure
     hook.Add("OnRestoreFailed", "MyAddon", function(failedLog)
@@ -16514,6 +17971,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins of failure
     hook.Add("OnRestoreFailed", "NotifyRestoreFailure", function(failedLog)
@@ -16526,6 +17984,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex restore failure handling
     hook.Add("OnRestoreFailed", "AdvancedRestoreFailure", function(failedLog)
@@ -16557,15 +18016,20 @@ function OnRestoreFailed(failedLog)
 end
 
 --[[
-    Purpose: Called when a player's salary is adjusted
-    When Called: When a player's salary amount is modified
+    Purpose:
+        Called when a player's salary is adjusted
+    When Called:
+        When a player's salary amount is modified
     Parameters:
         client (Player) - The player whose salary is being adjusted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log salary adjustments
     hook.Add("OnSalaryAdjust", "MyAddon", function(client)
@@ -16574,6 +18038,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track salary changes
     hook.Add("OnSalaryAdjust", "TrackSalaryChanges", function(client)
@@ -16590,6 +18055,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary adjustment tracking
     hook.Add("OnSalaryAdjust", "AdvancedSalaryAdjustment", function(client)
@@ -16617,19 +18083,24 @@ function OnSalaryAdjust(client)
 end
 
 --[[
-    Purpose: Called when a player receives their salary
-    When Called: When salary is paid to a player
+    Purpose:
+        Called when a player receives their salary
+    When Called:
+        When salary is paid to a player
     Parameters:
         client (Player) - The player receiving the salary
         char (Character) - The character receiving the salary
         pay (number) - The amount of salary paid
         faction (number) - The faction ID
         class (number) - The class ID
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log salary payments
     hook.Add("OnSalaryGiven", "MyAddon", function(client, char, pay, faction, class)
@@ -16638,6 +18109,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track salary payments
     hook.Add("OnSalaryGiven", "TrackSalaryPayments", function(client, char, pay, faction, class)
@@ -16653,6 +18125,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary payment tracking
     hook.Add("OnSalaryGiven", "AdvancedSalaryTracking", function(client, char, pay, faction, class)
@@ -16682,15 +18155,20 @@ function OnSalaryGiven(client, char, pay, faction, class)
 end
 
 --[[
-    Purpose: Called when saved items are loaded
-    When Called: When items are loaded from the database
+    Purpose:
+        Called when saved items are loaded
+    When Called:
+        When items are loaded from the database
     Parameters:
         loadedItems (table) - Table of items that were loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log loaded items
     hook.Add("OnSavedItemLoaded", "MyAddon", function(loadedItems)
@@ -16699,6 +18177,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track loaded items
     hook.Add("OnSavedItemLoaded", "TrackLoadedItems", function(loadedItems)
@@ -16713,6 +18192,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item loading management
     hook.Add("OnSavedItemLoaded", "AdvancedItemLoading", function(loadedItems)
@@ -16741,18 +18221,23 @@ function OnSavedItemLoaded(loadedItems)
 end
 
 --[[
-    Purpose: Called when a server log entry is created
-    When Called: When a log message is written to the server log
+    Purpose:
+        Called when a server log entry is created
+    When Called:
+        When a log message is written to the server log
     Parameters:
         client (Player) - The player associated with the log (can be nil)
         logType (string) - The type of log entry
         logString (string) - The log message
         category (string) - The log category
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Print server logs
     hook.Add("OnServerLog", "MyAddon", function(client, logType, logString, category)
@@ -16761,6 +18246,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter and store logs
     hook.Add("OnServerLog", "FilterLogs", function(client, logType, logString, category)
@@ -16777,6 +18263,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex log management
     hook.Add("OnServerLog", "AdvancedLogManagement", function(client, logType, logString, category)
@@ -16813,17 +18300,22 @@ function OnServerLog(client, logType, logString, category)
 end
 
 --[[
-    Purpose: Called when a character's skills are changed
-    When Called: When a character's skill values are modified
+    Purpose:
+        Called when a character's skills are changed
+    When Called:
+        When a character's skill values are modified
     Parameters:
         character (Character) - The character whose skills changed
         oldValue (table) - The old skill values
         value (table) - The new skill values
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log skill changes
     hook.Add("OnSkillsChanged", "MyAddon", function(character, oldValue, value)
@@ -16832,6 +18324,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track skill progression
     hook.Add("OnSkillsChanged", "TrackSkills", function(character, oldValue, value)
@@ -16846,6 +18339,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex skill change tracking
     hook.Add("OnSkillsChanged", "AdvancedSkillTracking", function(character, oldValue, value)
@@ -16879,16 +18373,21 @@ function OnSkillsChanged(character, oldValue, value)
 end
 
 --[[
-    Purpose: Called when a database table is backed up
-    When Called: After a database table backup is created
+    Purpose:
+        Called when a database table is backed up
+    When Called:
+        After a database table backup is created
     Parameters:
         tableName (string) - The name of the table that was backed up
         snapshot (table) - The backup snapshot data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log table backups
     hook.Add("OnTableBackedUp", "MyAddon", function(tableName, snapshot)
@@ -16897,6 +18396,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track backups
     hook.Add("OnTableBackedUp", "TrackBackups", function(tableName, snapshot)
@@ -16909,6 +18409,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex backup management
     hook.Add("OnTableBackedUp", "AdvancedBackupManagement", function(tableName, snapshot)
@@ -16943,16 +18444,21 @@ function OnTableBackedUp(tableName, snapshot)
 end
 
 --[[
-    Purpose: Called when a database table is removed
-    When Called: After a database table is deleted
+    Purpose:
+        Called when a database table is removed
+    When Called:
+        After a database table is deleted
     Parameters:
         tableName (string) - The name of the table that was removed
         snapshot (table) - The final snapshot of the table data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log table removal
     hook.Add("OnTableRemoved", "MyAddon", function(tableName, snapshot)
@@ -16961,6 +18467,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Archive removed tables
     hook.Add("OnTableRemoved", "ArchiveRemovedTables", function(tableName, snapshot)
@@ -16973,6 +18480,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex table removal handling
     hook.Add("OnTableRemoved", "AdvancedTableRemoval", function(tableName, snapshot)
@@ -17002,16 +18510,21 @@ function OnTableRemoved(tableName, snapshot)
 end
 
 --[[
-    Purpose: Called when a database table is restored
-    When Called: After a database table is restored from a backup
+    Purpose:
+        Called when a database table is restored
+    When Called:
+        After a database table is restored from a backup
     Parameters:
         tableName (string) - The name of the table that was restored
         data (table) - The restored table data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log table restoration
     hook.Add("OnTableRestored", "MyAddon", function(tableName, data)
@@ -17020,6 +18533,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track table restorations
     hook.Add("OnTableRestored", "TrackRestorations", function(tableName, data)
@@ -17033,6 +18547,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex table restoration handling
     hook.Add("OnTableRestored", "AdvancedTableRestoration", function(tableName, data)
@@ -17066,14 +18581,20 @@ function OnTableRestored(tableName, data)
 end
 
 --[[
-    Purpose: Called when all database tables are ready
-    When Called: After all database tables have been initialized and are ready for use
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when all database tables are ready
+    When Called:
+        After all database tables have been initialized and are ready for use
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log tables ready
     hook.Add("OnTablesReady", "MyAddon", function()
@@ -17082,6 +18603,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize data after tables are ready
     hook.Add("OnTablesReady", "InitData", function()
@@ -17093,6 +18615,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex initialization after tables are ready
     hook.Add("OnTablesReady", "AdvancedInit", function()
@@ -17123,17 +18646,22 @@ function OnTablesReady()
 end
 
 --[[
-    Purpose: Called when a support ticket is claimed by an admin
-    When Called: When an admin claims a support ticket
+    Purpose:
+        Called when a support ticket is claimed by an admin
+    When Called:
+        When an admin claims a support ticket
     Parameters:
         client (Player) - The admin claiming the ticket
         requester (Player) - The player who created the ticket
         ticketMessage (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket claims
     hook.Add("OnTicketClaimed", "MyAddon", function(client, requester, ticketMessage)
@@ -17142,6 +18670,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track ticket claims
     hook.Add("OnTicketClaimed", "TrackTicketClaims", function(client, requester, ticketMessage)
@@ -17154,6 +18683,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket claim handling
     hook.Add("OnTicketClaimed", "AdvancedTicketClaim", function(client, requester, ticketMessage)
@@ -17183,17 +18713,22 @@ function OnTicketClaimed(client, requester, ticketMessage)
 end
 
 --[[
-    Purpose: Called when a support ticket is closed
-    When Called: When a support ticket is resolved and closed
+    Purpose:
+        Called when a support ticket is closed
+    When Called:
+        When a support ticket is resolved and closed
     Parameters:
         client (Player) - The admin closing the ticket
         requester (Player) - The player who created the ticket
         ticketMessage (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket closures
     hook.Add("OnTicketClosed", "MyAddon", function(client, requester, ticketMessage)
@@ -17202,6 +18737,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track ticket resolutions
     hook.Add("OnTicketClosed", "TrackTicketClosures", function(client, requester, ticketMessage)
@@ -17214,6 +18750,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket closure handling
     hook.Add("OnTicketClosed", "AdvancedTicketClosure", function(client, requester, ticketMessage)
@@ -17243,16 +18780,21 @@ function OnTicketClosed(client, requester, ticketMessage)
 end
 
 --[[
-    Purpose: Called when a new support ticket is created
-    When Called: When a player creates a support ticket
+    Purpose:
+        Called when a new support ticket is created
+    When Called:
+        When a player creates a support ticket
     Parameters:
         noob (Player) - The player creating the ticket
         message (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket creation
     hook.Add("OnTicketCreated", "MyAddon", function(noob, message)
@@ -17261,6 +18803,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins of new tickets
     hook.Add("OnTicketCreated", "NotifyAdmins", function(noob, message)
@@ -17273,6 +18816,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket creation handling
     hook.Add("OnTicketCreated", "AdvancedTicketCreation", function(noob, message)
@@ -17308,18 +18852,23 @@ function OnTicketCreated(noob, message)
 end
 
 --[[
-    Purpose: Called when an item transfer fails
-    When Called: When an attempt to transfer items between characters fails
+    Purpose:
+        Called when an item transfer fails
+    When Called:
+        When an attempt to transfer items between characters fails
     Parameters:
         fromChar (Character) - The character items were being transferred from
         toChar (Character) - The character items were being transferred to
         items (table) - Table of items that failed to transfer
         err (string) - The error message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log transfer failures
     hook.Add("OnTransferFailed", "MyAddon", function(fromChar, toChar, items, err)
@@ -17328,6 +18877,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify players of failure
     hook.Add("OnTransferFailed", "NotifyTransferFailure", function(fromChar, toChar, items, err)
@@ -17344,6 +18894,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer failure handling
     hook.Add("OnTransferFailed", "AdvancedTransferFailure", function(fromChar, toChar, items, err)
@@ -17378,15 +18929,20 @@ function OnTransferFailed(fromChar, toChar, items, err)
 end
 
 --[[
-    Purpose: Called when a player is transferred
-    When Called: When a player is successfully transferred
+    Purpose:
+        Called when a player is transferred
+    When Called:
+        When a player is successfully transferred
     Parameters:
         targetPlayer (Player) - The player who was transferred
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log player transfers
     hook.Add("OnTransferred", "MyAddon", function(targetPlayer)
@@ -17395,6 +18951,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track player transfers
     hook.Add("OnTransferred", "TrackTransfers", function(targetPlayer)
@@ -17407,6 +18964,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex transfer handling
     hook.Add("OnTransferred", "AdvancedTransfer", function(targetPlayer)
@@ -17438,16 +18996,21 @@ function OnTransferred(targetPlayer)
 end
 
 --[[
-    Purpose: Called when a new usergroup is created
-    When Called: When a usergroup is added to the system
+    Purpose:
+        Called when a new usergroup is created
+    When Called:
+        When a usergroup is added to the system
     Parameters:
         groupName (string) - The name of the usergroup
         groupData (table) - The usergroup configuration data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log usergroup creation
     hook.Add("OnUsergroupCreated", "MyAddon", function(groupName, groupData)
@@ -17456,6 +19019,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track usergroups
     hook.Add("OnUsergroupCreated", "TrackUsergroups", function(groupName, groupData)
@@ -17468,6 +19032,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex usergroup creation handling
     hook.Add("OnUsergroupCreated", "AdvancedUsergroupCreation", function(groupName, groupData)
@@ -17498,16 +19063,21 @@ function OnUsergroupCreated(groupName, groupData)
 end
 
 --[[
-    Purpose: Called when usergroup permissions are changed
-    When Called: When a usergroup's permissions are modified
+    Purpose:
+        Called when usergroup permissions are changed
+    When Called:
+        When a usergroup's permissions are modified
     Parameters:
         groupName (string) - The name of the usergroup
         permissions (table) - The new permissions table
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log permission changes
     hook.Add("OnUsergroupPermissionsChanged", "MyAddon", function(groupName, permissions)
@@ -17516,6 +19086,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track permission changes
     hook.Add("OnUsergroupPermissionsChanged", "TrackPermissionChanges", function(groupName, permissions)
@@ -17529,6 +19100,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex permission change handling
     hook.Add("OnUsergroupPermissionsChanged", "AdvancedPermissionChange", function(groupName, permissions)
@@ -17565,15 +19137,20 @@ function OnUsergroupPermissionsChanged(groupName, permissions)
 end
 
 --[[
-    Purpose: Called when a usergroup is removed
-    When Called: When a usergroup is deleted from the system
+    Purpose:
+        Called when a usergroup is removed
+    When Called:
+        When a usergroup is deleted from the system
     Parameters:
         groupName (string) - The name of the usergroup being removed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log usergroup removal
     hook.Add("OnUsergroupRemoved", "MyAddon", function(groupName)
@@ -17582,6 +19159,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up usergroup data
     hook.Add("OnUsergroupRemoved", "CleanupUsergroup", function(groupName)
@@ -17592,6 +19170,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex usergroup removal handling
     hook.Add("OnUsergroupRemoved", "AdvancedUsergroupRemoval", function(groupName)
@@ -17625,16 +19204,21 @@ function OnUsergroupRemoved(groupName)
 end
 
 --[[
-    Purpose: Called when a usergroup is renamed
-    When Called: When a usergroup's name is changed
+    Purpose:
+        Called when a usergroup is renamed
+    When Called:
+        When a usergroup's name is changed
     Parameters:
         oldName (string) - The old name of the usergroup
         newName (string) - The new name of the usergroup
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log usergroup rename
     hook.Add("OnUsergroupRenamed", "MyAddon", function(oldName, newName)
@@ -17643,6 +19227,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update usergroup tracking
     hook.Add("OnUsergroupRenamed", "UpdateUsergroupTracking", function(oldName, newName)
@@ -17654,6 +19239,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex usergroup rename handling
     hook.Add("OnUsergroupRenamed", "AdvancedUsergroupRename", function(oldName, newName)
@@ -17688,17 +19274,22 @@ function OnUsergroupRenamed(oldName, newName)
 end
 
 --[[
-    Purpose: Called when a vendor is edited
-    When Called: When a vendor's properties are modified
+    Purpose:
+        Called when a vendor is edited
+    When Called:
+        When a vendor's properties are modified
     Parameters:
         client (Player) - The player editing the vendor
         vendor (Entity) - The vendor entity being edited
         key (string) - The property being modified
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor edits
     hook.Add("OnVendorEdited", "MyAddon", function(client, vendor, key)
@@ -17707,6 +19298,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate vendor edits
     hook.Add("OnVendorEdited", "VendorValidation", function(client, vendor, key)
@@ -17727,6 +19319,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor editing system
     hook.Add("OnVendorEdited", "AdvancedVendorEditing", function(client, vendor, key)
@@ -17801,15 +19394,20 @@ function OnVendorEdited(client, vendor, key)
 end
 
 --[[
-    Purpose: Called when online staff data is received
-    When Called: When the server receives updated staff information
+    Purpose:
+        Called when online staff data is received
+    When Called:
+        When the server receives updated staff information
     Parameters:
         staffData (table) - The staff data containing online staff information
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log staff data
     hook.Add("OnlineStaffDataReceived", "MyAddon", function(staffData)
@@ -17818,6 +19416,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track online staff
     hook.Add("OnlineStaffDataReceived", "TrackStaff", function(staffData)
@@ -17833,6 +19432,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex staff management
     hook.Add("OnlineStaffDataReceived", "AdvancedStaffManagement", function(staffData)
@@ -17865,17 +19465,22 @@ function OnlineStaffDataReceived(staffData)
 end
 
 --[[
-    Purpose: Called when a client option is received
-    When Called: When the server receives an option setting from a client
+    Purpose:
+        Called when a client option is received
+    When Called:
+        When the server receives an option setting from a client
     Parameters:
         client (Player) - The player who sent the option
         key (string) - The option key
         value (any) - The option value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log option changes
     hook.Add("OptionReceived", "MyAddon", function(client, key, value)
@@ -17884,6 +19489,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track option changes
     hook.Add("OptionReceived", "TrackOptions", function(client, key, value)
@@ -17897,6 +19503,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex option handling
     hook.Add("OptionReceived", "AdvancedOptionHandling", function(client, key, value)
@@ -17928,16 +19535,21 @@ function OptionReceived(client, key, value)
 end
 
 --[[
-    Purpose: Called to override a player's respawn time
-    When Called: When a player's respawn time needs to be modified
+    Purpose:
+        Called to override a player's respawn time
+    When Called:
+        When a player's respawn time needs to be modified
     Parameters:
         client (Player) - The player respawning
         respawnTime (number) - The current respawn time in seconds
-    Returns: number - The overridden respawn time (or nil to use default)
-    Realm: Server
+    Returns:
+        number - The overridden respawn time (or nil to use default)
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Reduce respawn time
     hook.Add("OverrideSpawnTime", "MyAddon", function(client, respawnTime)
@@ -17946,6 +19558,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Faction-based respawn times
     hook.Add("OverrideSpawnTime", "FactionRespawnTime", function(client, respawnTime)
@@ -17962,6 +19575,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Dynamic respawn time system
     hook.Add("OverrideSpawnTime", "DynamicRespawnTime", function(client, respawnTime)
@@ -17997,16 +19611,21 @@ function OverrideSpawnTime(client, respawnTime)
 end
 
 --[[
-    Purpose: Called when a player accesses a vendor
-    When Called: When a player interacts with a vendor entity
+    Purpose:
+        Called when a player accesses a vendor
+    When Called:
+        When a player interacts with a vendor entity
     Parameters:
         activator (Player) - The player accessing the vendor
         self (Entity) - The vendor entity
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor access
     hook.Add("PlayerAccessVendor", "MyAddon", function(activator, self)
@@ -18015,6 +19634,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track vendor usage
     hook.Add("PlayerAccessVendor", "TrackVendorUsage", function(activator, self)
@@ -18027,6 +19647,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor access tracking
     hook.Add("PlayerAccessVendor", "AdvancedVendorAccess", function(activator, self)
@@ -18062,15 +19683,20 @@ function PlayerAccessVendor(activator, self)
 end
 
 --[[
-    Purpose: Called when a player is detected cheating
-    When Called: When anti-cheat systems detect suspicious behavior
+    Purpose:
+        Called when a player is detected cheating
+    When Called:
+        When anti-cheat systems detect suspicious behavior
     Parameters:
         client (Player) - The player who was detected cheating
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log cheat detection
     hook.Add("PlayerCheatDetected", "MyAddon", function(client)
@@ -18079,6 +19705,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle cheat detection
     hook.Add("PlayerCheatDetected", "HandleCheating", function(client)
@@ -18094,6 +19721,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex cheat detection handling
     hook.Add("PlayerCheatDetected", "AdvancedCheatDetection", function(client)
@@ -18139,15 +19767,20 @@ function PlayerCheatDetected(client)
 end
 
 --[[
-    Purpose: Called when a player disconnects from the server
-    When Called: When a player leaves the server
+    Purpose:
+        Called when a player disconnects from the server
+    When Called:
+        When a player leaves the server
     Parameters:
         client (Player) - The player who disconnected
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log player disconnections
     hook.Add("PlayerDisconnect", "MyAddon", function(client)
@@ -18156,6 +19789,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle player cleanup
     hook.Add("PlayerDisconnect", "PlayerCleanup", function(client)
@@ -18177,6 +19811,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex player disconnect system
     hook.Add("PlayerDisconnect", "AdvancedDisconnect", function(client)
@@ -18235,15 +19870,20 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player disconnects
-    When Called: When a player leaves the server
+    Purpose:
+        Called when a player disconnects
+    When Called:
+        When a player leaves the server
     Parameters:
         client (Player) - The player disconnecting
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log disconnect
     hook.Add("PlayerDisconnect", "MyAddon", function(client)
@@ -18252,6 +19892,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Save player data on disconnect
     hook.Add("PlayerDisconnect", "SaveOnDisconnect", function(client)
@@ -18263,6 +19904,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex disconnect handling
     hook.Add("PlayerDisconnect", "AdvancedDisconnect", function(client)
@@ -18295,16 +19937,21 @@ function PlayerDisconnect(client)
 end
 
 --[[
-    Purpose: Called when a player is gagged
-    When Called: When a player's voice chat is disabled
+    Purpose:
+        Called when a player is gagged
+    When Called:
+        When a player's voice chat is disabled
     Parameters:
         target (Player) - The player being gagged
         admin (Player) - The admin issuing the gag
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log gag
     hook.Add("PlayerGagged", "MyAddon", function(target, admin)
@@ -18313,6 +19960,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track gag history
     hook.Add("PlayerGagged", "TrackGagHistory", function(target, admin)
@@ -18326,6 +19974,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex gag management
     hook.Add("PlayerGagged", "AdvancedGagManagement", function(target, admin)
@@ -18361,15 +20010,20 @@ function PlayerGagged(target, admin)
 end
 
 --[[
-    Purpose: Called when a player's Lilia data is loaded
-    When Called: When a player's framework data has been loaded from the database
+    Purpose:
+        Called when a player's Lilia data is loaded
+    When Called:
+        When a player's framework data has been loaded from the database
     Parameters:
         client (Player) - The player whose data was loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data loading
     hook.Add("PlayerLiliaDataLoaded", "MyAddon", function(client)
@@ -18378,6 +20032,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize player after data load
     hook.Add("PlayerLiliaDataLoaded", "InitPlayer", function(client)
@@ -18389,6 +20044,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data loading handling
     hook.Add("PlayerLiliaDataLoaded", "AdvancedDataLoading", function(client)
@@ -18423,17 +20079,22 @@ function PlayerLiliaDataLoaded(client)
 end
 
 --[[
-    Purpose: Called when a player loads a character
-    When Called: When a player successfully loads a character
+    Purpose:
+        Called when a player loads a character
+    When Called:
+        When a player successfully loads a character
     Parameters:
         client (Player) - The player loading the character
         character (Character) - The character being loaded
         currentChar (Character) - The previously loaded character (if any)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character loading
     hook.Add("PlayerLoadedChar", "MyAddon", function(client, character, currentChar)
@@ -18442,6 +20103,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Handle character switching
     hook.Add("PlayerLoadedChar", "CharSwitching", function(client, character, currentChar)
@@ -18460,6 +20122,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character loading system
     hook.Add("PlayerLoadedChar", "AdvancedCharLoading", function(client, character, currentChar)
@@ -18545,19 +20208,24 @@ function PlayerLoadedChar(client, character, currentChar)
 end
 
 --[[
-    Purpose: Called when a player sends a message
-    When Called: When a player sends a chat message
+    Purpose:
+        Called when a player sends a message
+    When Called:
+        When a player sends a chat message
     Parameters:
         speaker (Player) - The player sending the message
         chatType (string) - The type of chat message
         text (string) - The message text
         anonymous (boolean) - Whether the message is anonymous
         receivers (table) - List of players who will receive the message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log all messages
     hook.Add("PlayerMessageSend", "MyAddon", function(speaker, chatType, text, anonymous, receivers)
@@ -18566,6 +20234,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter inappropriate messages
     hook.Add("PlayerMessageSend", "MessageFilter", function(speaker, chatType, text, anonymous, receivers)
@@ -18580,6 +20249,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex message system
     hook.Add("PlayerMessageSend", "AdvancedMessages", function(speaker, chatType, text, anonymous, receivers)
@@ -18648,19 +20318,24 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player sends a message
-    When Called: When a chat message is being sent
+    Purpose:
+        Called when a player sends a message
+    When Called:
+        When a chat message is being sent
     Parameters:
         speaker (Player) - The player sending the message
         chatType (string) - The type of chat
         text (string) - The message text
         anonymous (boolean) - Whether the message is anonymous
         receivers (table) - The players receiving the message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log messages
     hook.Add("PlayerMessageSend", "MyAddon", function(speaker, chatType, text, anonymous, receivers)
@@ -18669,6 +20344,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Filter inappropriate messages
     hook.Add("PlayerMessageSend", "FilterMessages", function(speaker, chatType, text, anonymous, receivers)
@@ -18683,6 +20359,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex message handling
     hook.Add("PlayerMessageSend", "AdvancedMessageHandling", function(speaker, chatType, text, anonymous, receivers)
@@ -18720,16 +20397,21 @@ function PlayerMessageSend(speaker, chatType, text, anonymous, receivers)
 end
 
 --[[
-    Purpose: Called when a player's model changes
-    When Called: When a player's character model is changed
+    Purpose:
+        Called when a player's model changes
+    When Called:
+        When a player's character model is changed
     Parameters:
         client (Player) - The player whose model changed
         value (string) - The new model path
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log model change
     hook.Add("PlayerModelChanged", "MyAddon", function(client, value)
@@ -18738,6 +20420,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track model changes
     hook.Add("PlayerModelChanged", "TrackModelChanges", function(client, value)
@@ -18751,6 +20434,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex model change tracking
     hook.Add("PlayerModelChanged", "AdvancedModelTracking", function(client, value)
@@ -18783,16 +20467,21 @@ function PlayerModelChanged(client, value)
 end
 
 --[[
-    Purpose: Called when a player is muted
-    When Called: When a player's chat is disabled
+    Purpose:
+        Called when a player is muted
+    When Called:
+        When a player's chat is disabled
     Parameters:
         target (Player) - The player being muted
         admin (Player) - The admin issuing the mute
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log mute
     hook.Add("PlayerMuted", "MyAddon", function(target, admin)
@@ -18801,6 +20490,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track mute history
     hook.Add("PlayerMuted", "TrackMuteHistory", function(target, admin)
@@ -18814,6 +20504,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex mute management
     hook.Add("PlayerMuted", "AdvancedMuteManagement", function(target, admin)
@@ -18849,14 +20540,20 @@ function PlayerMuted(target, admin)
 end
 
 --[[
-    Purpose: Called to check if a player should perform an action
-    When Called: When validating player actions
-    Parameters: None
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Purpose:
+        Called to check if a player should perform an action
+    When Called:
+        When validating player actions
+    Parameters:
+        None
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Always allow
     hook.Add("PlayerShouldAct", "MyAddon", function()
@@ -18865,6 +20562,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check player state
     hook.Add("PlayerShouldAct", "CheckPlayerState", function()
@@ -18877,6 +20575,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex action validation
     hook.Add("PlayerShouldAct", "AdvancedActionValidation", function()
@@ -18909,17 +20608,22 @@ function PlayerShouldAct()
 end
 
 --[[
-    Purpose: Called to check if a player should be permakilled
-    When Called: When a player dies and permakill is being considered
+    Purpose:
+        Called to check if a player should be permakilled
+    When Called:
+        When a player dies and permakill is being considered
     Parameters:
         client (Player) - The dying player
         inflictor (Entity) - The entity that caused death
         attacker (Entity) - The attacker
-    Returns: boolean - True to permakill, false otherwise
-    Realm: Server
+    Returns:
+        boolean - True to permakill, false otherwise
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Never permakill
     hook.Add("PlayerShouldPermaKill", "MyAddon", function(client, inflictor, attacker)
@@ -18928,6 +20632,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Permakill on admin command
     hook.Add("PlayerShouldPermaKill", "AdminPermakill", function(client, inflictor, attacker)
@@ -18940,6 +20645,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex permakill system
     hook.Add("PlayerShouldPermaKill", "AdvancedPermakill", function(client, inflictor, attacker)
@@ -18976,17 +20682,22 @@ function PlayerShouldPermaKill(client, inflictor, attacker)
 end
 
 --[[
-    Purpose: Called when a player spawn point is selected
-    When Called: When determining where a player should spawn
+    Purpose:
+        Called when a player spawn point is selected
+    When Called:
+        When determining where a player should spawn
     Parameters:
         client (Player) - The player spawning
         pos (Vector) - The spawn position
         ang (Angle) - The spawn angle
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log spawn point
     hook.Add("PlayerSpawnPointSelected", "MyAddon", function(client, pos, ang)
@@ -18995,6 +20706,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track spawn locations
     hook.Add("PlayerSpawnPointSelected", "TrackSpawnLocations", function(client, pos, ang)
@@ -19007,6 +20719,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex spawn tracking
     hook.Add("PlayerSpawnPointSelected", "AdvancedSpawnTracking", function(client, pos, ang)
@@ -19036,15 +20749,20 @@ function PlayerSpawnPointSelected(client, pos, ang)
 end
 
 --[[
-    Purpose: Called when a player throws a punch
-    When Called: When a player uses their fists to attack
+    Purpose:
+        Called when a player throws a punch
+    When Called:
+        When a player uses their fists to attack
     Parameters:
         client (Player) - The player throwing the punch
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log punch
     hook.Add("PlayerThrowPunch", "MyAddon", function(client)
@@ -19053,6 +20771,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track punch count
     hook.Add("PlayerThrowPunch", "TrackPunches", function(client)
@@ -19065,6 +20784,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex punch tracking system
     hook.Add("PlayerThrowPunch", "AdvancedPunchTracking", function(client)
@@ -19093,16 +20813,21 @@ function PlayerThrowPunch(client)
 end
 
 --[[
-    Purpose: Called when a player is ungagged
-    When Called: When a player's voice chat is re-enabled
+    Purpose:
+        Called when a player is ungagged
+    When Called:
+        When a player's voice chat is re-enabled
     Parameters:
         target (Player) - The player being ungagged
         admin (Player) - The admin removing the gag
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ungag
     hook.Add("PlayerUngagged", "MyAddon", function(target, admin)
@@ -19111,6 +20836,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify player
     hook.Add("PlayerUngagged", "NotifyUngag", function(target, admin)
@@ -19119,6 +20845,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ungag management
     hook.Add("PlayerUngagged", "AdvancedUngagManagement", function(target, admin)
@@ -19142,16 +20869,21 @@ function PlayerUngagged(target, admin)
 end
 
 --[[
-    Purpose: Called when a player is unmuted
-    When Called: When a player's chat is re-enabled
+    Purpose:
+        Called when a player is unmuted
+    When Called:
+        When a player's chat is re-enabled
     Parameters:
         target (Player) - The player being unmuted
         admin (Player) - The admin removing the mute
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log unmute
     hook.Add("PlayerUnmuted", "MyAddon", function(target, admin)
@@ -19160,6 +20892,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify player
     hook.Add("PlayerUnmuted", "NotifyUnmute", function(target, admin)
@@ -19168,6 +20901,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex unmute management
     hook.Add("PlayerUnmuted", "AdvancedUnmuteManagement", function(target, admin)
@@ -19191,16 +20925,21 @@ function PlayerUnmuted(target, admin)
 end
 
 --[[
-    Purpose: Called when a player uses a door
-    When Called: When a player attempts to open/close a door
+    Purpose:
+        Called when a player uses a door
+    When Called:
+        When a player attempts to open/close a door
     Parameters:
         client (Player) - The player using the door
         door (Entity) - The door being used
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door usage
     hook.Add("PlayerUseDoor", "MyAddon", function(client, door)
@@ -19209,6 +20948,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track door usage statistics
     hook.Add("PlayerUseDoor", "DoorUsageTracking", function(client, door)
@@ -19225,6 +20965,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door usage system
     hook.Add("PlayerUseDoor", "AdvancedDoorUsage", function(client, door)
@@ -19300,16 +21041,21 @@ end
     ```
 ]]
 --[[
-    Purpose: Called when a player uses a door
-    When Called: When a player interacts with a door entity
+    Purpose:
+        Called when a player uses a door
+    When Called:
+        When a player interacts with a door entity
     Parameters:
         client (Player) - The player using the door
         door (Entity) - The door entity
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door usage
     hook.Add("PlayerUseDoor", "MyAddon", function(client, door)
@@ -19318,6 +21064,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track door usage
     hook.Add("PlayerUseDoor", "TrackDoorUsage", function(client, door)
@@ -19330,6 +21077,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door usage tracking
     hook.Add("PlayerUseDoor", "AdvancedDoorUsage", function(client, door)
@@ -19359,16 +21107,21 @@ function PlayerUseDoor(client, door)
 end
 
 --[[
-    Purpose: Called after door data is loaded
-    When Called: After door configuration data is loaded from the database
+    Purpose:
+        Called after door data is loaded
+    When Called:
+        After door configuration data is loaded from the database
     Parameters:
         ent (Entity) - The door entity
         doorData (table) - The door data that was loaded
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door data load
     hook.Add("PostDoorDataLoad", "MyAddon", function(ent, doorData)
@@ -19377,6 +21130,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply custom door settings
     hook.Add("PostDoorDataLoad", "CustomDoorSettings", function(ent, doorData)
@@ -19387,6 +21141,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door data processing
     hook.Add("PostDoorDataLoad", "AdvancedDoorDataProcessing", function(ent, doorData)
@@ -19432,14 +21187,20 @@ function PostDoorDataLoad(ent, doorData)
 end
 
 --[[
-    Purpose: Called after data is loaded
-    When Called: After all persistent data has been loaded
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called after data is loaded
+    When Called:
+        After all persistent data has been loaded
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data load completion
     hook.Add("PostLoadData", "MyAddon", function()
@@ -19448,6 +21209,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Initialize systems after data load
     hook.Add("PostLoadData", "InitializeSystems", function()
@@ -19457,6 +21219,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex post-load initialization
     hook.Add("PostLoadData", "AdvancedPostLoadInit", function()
@@ -19484,15 +21247,20 @@ function PostLoadData()
 end
 
 --[[
-    Purpose: Called after a player's initial spawn
-    When Called: After a player has fully spawned for the first time
+    Purpose:
+        Called after a player's initial spawn
+    When Called:
+        After a player has fully spawned for the first time
     Parameters:
         client (Player) - The player who spawned
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Welcome message
     hook.Add("PostPlayerInitialSpawn", "MyAddon", function(client)
@@ -19501,6 +21269,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give starting items
     hook.Add("PostPlayerInitialSpawn", "GiveStartingItems", function(client)
@@ -19522,6 +21291,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex spawn initialization
     hook.Add("PostPlayerInitialSpawn", "AdvancedSpawnInit", function(client)
@@ -19563,17 +21333,22 @@ function PostPlayerInitialSpawn(client)
 end
 
 --[[
-    Purpose: Called after a player has loaded a character
-    When Called: After a character has been fully loaded for a player
+    Purpose:
+        Called after a player has loaded a character
+    When Called:
+        After a character has been fully loaded for a player
     Parameters:
         client (Player) - The player
         character (Character) - The character that was loaded
         currentChar (Character) - The previous character (if any)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Welcome message
     hook.Add("PostPlayerLoadedChar", "MyAddon", function(client, character, currentChar)
@@ -19582,6 +21357,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Restore character state
     hook.Add("PostPlayerLoadedChar", "RestoreCharState", function(client, character, currentChar)
@@ -19594,6 +21370,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character load handling
     hook.Add("PostPlayerLoadedChar", "AdvancedCharLoad", function(client, character, currentChar)
@@ -19631,15 +21408,20 @@ function PostPlayerLoadedChar(client, character, currentChar)
 end
 
 --[[
-    Purpose: Called after a player's loadout is given
-    When Called: After a player has received their weapons/equipment
+    Purpose:
+        Called after a player's loadout is given
+    When Called:
+        After a player has received their weapons/equipment
     Parameters:
         client (Player) - The player who received loadout
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log loadout
     hook.Add("PostPlayerLoadout", "MyAddon", function(client)
@@ -19648,6 +21430,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Give additional items
     hook.Add("PostPlayerLoadout", "GiveAdditionalItems", function(client)
@@ -19659,6 +21442,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex loadout system
     hook.Add("PostPlayerLoadout", "AdvancedLoadout", function(client)
@@ -19697,18 +21481,23 @@ function PostPlayerLoadout(client)
 end
 
 --[[
-    Purpose: Called after a player says something in chat
-    When Called: After a player's chat message is processed
+    Purpose:
+        Called after a player says something in chat
+    When Called:
+        After a player's chat message is processed
     Parameters:
         client (Player) - The player who spoke
         message (string) - The message that was said
         chatType (string) - The type of chat message
         anonymous (boolean) - Whether the message was anonymous
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log player speech
     hook.Add("PostPlayerSay", "MyAddon", function(client, message, chatType, anonymous)
@@ -19717,6 +21506,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track speech statistics
     hook.Add("PostPlayerSay", "SpeechTracking", function(client, message, chatType, anonymous)
@@ -19729,6 +21519,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex speech system
     hook.Add("PostPlayerSay", "AdvancedSpeech", function(client, message, chatType, anonymous)
@@ -19800,18 +21591,23 @@ end
     ```
 ]]
 --[[
-    Purpose: Called after a player says something in chat
-    When Called: After a chat message has been processed and sent
+    Purpose:
+        Called after a player says something in chat
+    When Called:
+        After a chat message has been processed and sent
     Parameters:
         client (Player) - The player who spoke
         message (string) - The message that was sent
         chatType (string) - The type of chat
         anonymous (boolean) - Whether the message was anonymous
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log chat messages
     hook.Add("PostPlayerSay", "MyAddon", function(client, message, chatType, anonymous)
@@ -19820,6 +21616,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track chat statistics
     hook.Add("PostPlayerSay", "TrackChatStats", function(client, message, chatType, anonymous)
@@ -19832,6 +21629,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex chat tracking system
     hook.Add("PostPlayerSay", "AdvancedChatTracking", function(client, message, chatType, anonymous)
@@ -19860,17 +21658,22 @@ function PostPlayerSay(client, message, chatType, anonymous)
 end
 
 --[[
-    Purpose: Called after damage scaling is calculated
-    When Called: After damage has been scaled but before it's applied
+    Purpose:
+        Called after damage scaling is calculated
+    When Called:
+        After damage has been scaled but before it's applied
     Parameters:
         hitgroup (number) - The hitgroup that was hit
         dmgInfo (CTakeDamageInfo) - The damage info
         damageScale (number) - The calculated damage scale
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log damage scaling
     hook.Add("PostScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
@@ -19879,6 +21682,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Apply damage effects
     hook.Add("PostScaleDamage", "ApplyDamageEffects", function(hitgroup, dmgInfo, damageScale)
@@ -19894,6 +21698,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex damage tracking system
     hook.Add("PostScaleDamage", "AdvancedDamageTracking", function(hitgroup, dmgInfo, damageScale)
@@ -19926,15 +21731,20 @@ function PostScaleDamage(hitgroup, dmgInfo, damageScale)
 end
 
 --[[
-    Purpose: Called before a character is deleted
-    When Called: Before a character deletion is processed
+    Purpose:
+        Called before a character is deleted
+    When Called:
+        Before a character deletion is processed
     Parameters:
         id (number) - The character ID being deleted
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character deletion
     hook.Add("PreCharDelete", "MyAddon", function(id)
@@ -19943,6 +21753,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Backup character data
     hook.Add("PreCharDelete", "BackupCharData", function(id)
@@ -19955,6 +21766,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character deletion preparation
     hook.Add("PreCharDelete", "AdvancedCharDeletePrep", function(id)
@@ -19982,16 +21794,21 @@ function PreCharDelete(id)
 end
 
 --[[
-    Purpose: Called before door data is saved
-    When Called: Before door configuration data is saved to database
+    Purpose:
+        Called before door data is saved
+    When Called:
+        Before door configuration data is saved to database
     Parameters:
         door (Entity) - The door entity
         doorData (table) - The door data being saved
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door save
     hook.Add("PreDoorDataSave", "MyAddon", function(door, doorData)
@@ -20000,6 +21817,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate door data
     hook.Add("PreDoorDataSave", "ValidateDoorData", function(door, doorData)
@@ -20010,6 +21828,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door data validation
     hook.Add("PreDoorDataSave", "AdvancedDoorDataValidation", function(door, doorData)
@@ -20043,17 +21862,22 @@ function PreDoorDataSave(door, doorData)
 end
 
 --[[
-    Purpose: Called before a player interacts with an item
-    When Called: Before an item interaction is processed
+    Purpose:
+        Called before a player interacts with an item
+    When Called:
+        Before an item interaction is processed
     Parameters:
         client (Player) - The player interacting
         action (string) - The action being performed
         self (Item) - The item being interacted with
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all interactions
     hook.Add("PrePlayerInteractItem", "MyAddon", function(client, action, self)
@@ -20062,6 +21886,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check cooldown
     hook.Add("PrePlayerInteractItem", "CheckCooldown", function(client, action, self)
@@ -20079,6 +21904,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item interaction validation
     hook.Add("PrePlayerInteractItem", "AdvancedItemInteraction", function(client, action, self)
@@ -20115,17 +21941,22 @@ function PrePlayerInteractItem(client, action, self)
 end
 
 --[[
-    Purpose: Called before a player loads a character
-    When Called: Before a character is loaded for a player
+    Purpose:
+        Called before a player loads a character
+    When Called:
+        Before a character is loaded for a player
     Parameters:
         client (Player) - The player
         character (Character) - The character being loaded
         currentChar (Character) - The current character (if any)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character load
     hook.Add("PrePlayerLoadedChar", "MyAddon", function(client, character, currentChar)
@@ -20134,6 +21965,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Save current character state
     hook.Add("PrePlayerLoadedChar", "SaveCurrentChar", function(client, character, currentChar)
@@ -20145,6 +21977,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character load preparation
     hook.Add("PrePlayerLoadedChar", "AdvancedCharLoadPrep", function(client, character, currentChar)
@@ -20173,19 +22006,24 @@ function PrePlayerLoadedChar(client, character, currentChar)
 end
 
 --[[
-    Purpose: Called before salary is given to a player
-    When Called: Before salary payment is processed
+    Purpose:
+        Called before salary is given to a player
+    When Called:
+        Before salary payment is processed
     Parameters:
         client (Player) - The player receiving salary
         char (Character) - The character receiving salary
         pay (number) - The salary amount
         faction (string) - The faction name
         class (string) - The class name
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log salary
     hook.Add("PreSalaryGive", "MyAddon", function(client, char, pay, faction, class)
@@ -20194,6 +22032,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Modify salary amount
     hook.Add("PreSalaryGive", "ModifySalary", function(client, char, pay, faction, class)
@@ -20206,6 +22045,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex salary calculation
     hook.Add("PreSalaryGive", "AdvancedSalaryCalculation", function(client, char, pay, faction, class)
@@ -20245,17 +22085,22 @@ function PreSalaryGive(client, char, pay, faction, class)
 end
 
 --[[
-    Purpose: Called before damage scaling is calculated
-    When Called: Before damage is scaled
+    Purpose:
+        Called before damage scaling is calculated
+    When Called:
+        Before damage is scaled
     Parameters:
         hitgroup (number) - The hitgroup that was hit
         dmgInfo (CTakeDamageInfo) - The damage info
         damageScale (number) - The current damage scale
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log damage scaling
     hook.Add("PreScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
@@ -20264,6 +22109,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Modify damage scale
     hook.Add("PreScaleDamage", "ModifyDamageScale", function(hitgroup, dmgInfo, damageScale)
@@ -20274,6 +22120,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex damage scaling system
     hook.Add("PreScaleDamage", "AdvancedDamageScaling", function(hitgroup, dmgInfo, damageScale)
@@ -20309,14 +22156,20 @@ function PreScaleDamage(hitgroup, dmgInfo, damageScale)
 end
 
 --[[
-    Purpose: Called to register prepared SQL statements
-    When Called: When setting up database prepared statements
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to register prepared SQL statements
+    When Called:
+        When setting up database prepared statements
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log statement registration
     hook.Add("RegisterPreparedStatements", "MyAddon", function()
@@ -20325,6 +22178,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Register custom statements
     hook.Add("RegisterPreparedStatements", "RegisterCustomStatements", function()
@@ -20334,6 +22188,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex statement registration
     hook.Add("RegisterPreparedStatements", "AdvancedStatementRegistration", function()
@@ -20358,16 +22213,21 @@ function RegisterPreparedStatements()
 end
 
 --[[
-    Purpose: Called when a warning is removed
-    When Called: When a character warning is deleted
+    Purpose:
+        Called when a warning is removed
+    When Called:
+        When a character warning is deleted
     Parameters:
         charID (number) - The character ID
         index (number) - The warning index
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log warning removal
     hook.Add("RemoveWarning", "MyAddon", function(charID, index)
@@ -20376,6 +22236,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track warning removals
     hook.Add("RemoveWarning", "TrackWarningRemovals", function(charID, index)
@@ -20388,6 +22249,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex warning removal system
     hook.Add("RemoveWarning", "AdvancedWarningRemoval", function(charID, index)
@@ -20421,19 +22283,24 @@ function RemoveWarning(charID, index)
 end
 
 --[[
-    Purpose: Called when an admin system command is run
-    When Called: When an admin command is executed
+    Purpose:
+        Called when an admin system command is run
+    When Called:
+        When an admin command is executed
     Parameters:
         cmd (string) - The command name
         admin (Player) - The admin running the command
         victim (Player) - The target player (if any)
         dur (number) - The duration (if applicable)
         reason (string) - The reason (if applicable)
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log admin commands
     hook.Add("RunAdminSystemCommand", "MyAddon", function(cmd, admin, victim, dur, reason)
@@ -20442,6 +22309,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track command usage
     hook.Add("RunAdminSystemCommand", "TrackCommandUsage", function(cmd, admin, victim, dur, reason)
@@ -20455,6 +22323,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex admin command tracking
     hook.Add("RunAdminSystemCommand", "AdvancedCommandTracking", function(cmd, admin, victim, dur, reason)
@@ -20487,14 +22356,20 @@ function RunAdminSystemCommand(cmd, admin, victim, dur, reason)
 end
 
 --[[
-    Purpose: Called to save persistent data
-    When Called: When data needs to be saved to storage
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to save persistent data
+    When Called:
+        When data needs to be saved to storage
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data save
     hook.Add("SaveData", "MyAddon", function()
@@ -20503,6 +22378,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Save custom data
     hook.Add("SaveData", "SaveCustomData", function()
@@ -20511,6 +22387,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data saving system
     hook.Add("SaveData", "AdvancedDataSaving", function()
@@ -20538,16 +22415,21 @@ function SaveData()
 end
 
 --[[
-    Purpose: Called to send a popup message
-    When Called: When displaying a popup to a player
+    Purpose:
+        Called to send a popup message
+    When Called:
+        When displaying a popup to a player
     Parameters:
         noob (Player) - The player receiving the popup
         message (string) - The popup message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log popup
     hook.Add("SendPopup", "MyAddon", function(noob, message)
@@ -20556,6 +22438,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Customize popup message
     hook.Add("SendPopup", "CustomizePopup", function(noob, message)
@@ -20568,6 +22451,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex popup system
     hook.Add("SendPopup", "AdvancedPopupSystem", function(noob, message)
@@ -20598,15 +22482,20 @@ function SendPopup(noob, message)
 end
 
 --[[
-    Purpose: Called to set up bag inventory access rules
-    When Called: When configuring access rules for a bag inventory
+    Purpose:
+        Called to set up bag inventory access rules
+    When Called:
+        When configuring access rules for a bag inventory
     Parameters:
         inventory (Inventory) - The bag inventory
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log access rules setup
     hook.Add("SetupBagInventoryAccessRules", "MyAddon", function(inventory)
@@ -20615,6 +22504,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set basic access rules
     hook.Add("SetupBagInventoryAccessRules", "BasicAccessRules", function(inventory)
@@ -20624,6 +22514,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex access rule system
     hook.Add("SetupBagInventoryAccessRules", "AdvancedAccessRules", function(inventory)
@@ -20652,15 +22543,20 @@ function SetupBagInventoryAccessRules(inventory)
 end
 
 --[[
-    Purpose: Called to set up a bot player
-    When Called: When initializing a bot player
+    Purpose:
+        Called to set up a bot player
+    When Called:
+        When initializing a bot player
     Parameters:
         client (Player) - The bot player
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log bot setup
     hook.Add("SetupBotPlayer", "MyAddon", function(client)
@@ -20669,6 +22565,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Configure bot behavior
     hook.Add("SetupBotPlayer", "ConfigureBot", function(client)
@@ -20678,6 +22575,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex bot setup system
     hook.Add("SetupBotPlayer", "AdvancedBotSetup", function(client)
@@ -20706,14 +22604,20 @@ function SetupBotPlayer(client)
 end
 
 --[[
-    Purpose: Called to set up the database
-    When Called: When initializing database connections and tables
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called to set up the database
+    When Called:
+        When initializing database connections and tables
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log database setup
     hook.Add("SetupDatabase", "MyAddon", function()
@@ -20722,6 +22626,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Create custom tables
     hook.Add("SetupDatabase", "CreateCustomTables", function()
@@ -20730,6 +22635,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex database setup
     hook.Add("SetupDatabase", "AdvancedDatabaseSetup", function()
@@ -20757,16 +22663,21 @@ function SetupDatabase()
 end
 
 --[[
-    Purpose: Called to set up a player's model
-    When Called: When configuring a player's character model
+    Purpose:
+        Called to set up a player's model
+    When Called:
+        When configuring a player's character model
     Parameters:
         client (Player) - The player
         character (Character) - The character
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log model setup
     hook.Add("SetupPlayerModel", "MyAddon", function(client, character)
@@ -20775,6 +22686,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set faction-based model
     hook.Add("SetupPlayerModel", "FactionModel", function(client, character)
@@ -20792,6 +22704,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex model setup system
     hook.Add("SetupPlayerModel", "AdvancedModelSetup", function(client, character)
@@ -20834,14 +22747,20 @@ function SetupPlayerModel(client, character)
 end
 
 --[[
-    Purpose: Called to check if data should be saved
-    When Called: When determining if current data should be persisted
-    Parameters: None
-    Returns: boolean - True to save, false to skip
-    Realm: Server
+    Purpose:
+        Called to check if data should be saved
+    When Called:
+        When determining if current data should be persisted
+    Parameters:
+        None
+    Returns:
+        boolean - True to save, false to skip
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Always save data
     hook.Add("ShouldDataBeSaved", "MyAddon", function()
@@ -20850,6 +22769,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check save conditions
     hook.Add("ShouldDataBeSaved", "CheckSaveConditions", function()
@@ -20859,6 +22779,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex save validation
     hook.Add("ShouldDataBeSaved", "AdvancedSaveValidation", function()
@@ -20887,14 +22808,20 @@ function ShouldDataBeSaved()
 end
 
 --[[
-    Purpose: Called to check if saved items should be deleted
-    When Called: When determining if old saved items should be cleaned up
-    Parameters: None
-    Returns: boolean - True to delete, false to keep
-    Realm: Server
+    Purpose:
+        Called to check if saved items should be deleted
+    When Called:
+        When determining if old saved items should be cleaned up
+    Parameters:
+        None
+    Returns:
+        boolean - True to delete, false to keep
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Never delete saved items
     hook.Add("ShouldDeleteSavedItems", "MyAddon", function()
@@ -20903,6 +22830,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Delete old items
     hook.Add("ShouldDeleteSavedItems", "DeleteOldItems", function()
@@ -20912,6 +22840,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item cleanup system
     hook.Add("ShouldDeleteSavedItems", "AdvancedItemCleanup", function()
@@ -20943,17 +22872,22 @@ function ShouldDeleteSavedItems()
 end
 
 --[[
-    Purpose: Called to check if an item can be transferred to storage
-    When Called: When attempting to transfer an item to storage
+    Purpose:
+        Called to check if an item can be transferred to storage
+    When Called:
+        When attempting to transfer an item to storage
     Parameters:
         client (Player) - The player transferring the item
         storage (Entity) - The storage entity
         item (Item) - The item being transferred
-    Returns: boolean - True to allow, false to deny
-    Realm: Server
+    Returns:
+        boolean - True to allow, false to deny
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Allow all transfers
     hook.Add("StorageCanTransferItem", "MyAddon", function(client, storage, item)
@@ -20962,6 +22896,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check item restrictions
     hook.Add("StorageCanTransferItem", "ItemRestrictions", function(client, storage, item)
@@ -20971,6 +22906,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage transfer system
     hook.Add("StorageCanTransferItem", "AdvancedStorageTransfer", function(client, storage, item)
@@ -21034,16 +22970,21 @@ function StorageCanTransferItem(client, storage, item)
 end
 
 --[[
-    Purpose: Called when a storage entity is removed
-    When Called: When a storage entity is deleted or removed
+    Purpose:
+        Called when a storage entity is removed
+    When Called:
+        When a storage entity is deleted or removed
     Parameters:
         self (Entity) - The storage entity being removed
         inventory (Inventory) - The inventory associated with the storage
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log storage removal
     hook.Add("StorageEntityRemoved", "MyAddon", function(self, inventory)
@@ -21052,6 +22993,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Clean up storage data
     hook.Add("StorageEntityRemoved", "CleanupStorage", function(self, inventory)
@@ -21065,6 +23007,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage cleanup system
     hook.Add("StorageEntityRemoved", "AdvancedStorageCleanup", function(self, inventory)
@@ -21114,17 +23057,22 @@ function StorageEntityRemoved(self, inventory)
 end
 
 --[[
-    Purpose: Called when a storage inventory is set
-    When Called: When a storage entity gets its inventory assigned
+    Purpose:
+        Called when a storage inventory is set
+    When Called:
+        When a storage entity gets its inventory assigned
     Parameters:
         entity (Entity) - The storage entity
         inventory (Inventory) - The inventory being set
         isCar (boolean) - Whether this is a car storage
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log storage inventory set
     hook.Add("StorageInventorySet", "MyAddon", function(entity, inventory, isCar)
@@ -21133,6 +23081,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Set storage properties
     hook.Add("StorageInventorySet", "SetStorageProperties", function(entity, inventory, isCar)
@@ -21144,6 +23093,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage inventory system
     hook.Add("StorageInventorySet", "AdvancedStorageInventory", function(entity, inventory, isCar)
@@ -21193,14 +23143,20 @@ function StorageInventorySet(entity, inventory, isCar)
 end
 
 --[[
-    Purpose: Called when an item is removed from storage
-    When Called: When an item is removed from a storage inventory
-    Parameters: None
-    Returns: None
-    Realm: Server
+    Purpose:
+        Called when an item is removed from storage
+    When Called:
+        When an item is removed from a storage inventory
+    Parameters:
+        None
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item removal
     hook.Add("StorageItemRemoved", "MyAddon", function()
@@ -21209,6 +23165,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update storage statistics
     hook.Add("StorageItemRemoved", "UpdateStats", function()
@@ -21224,6 +23181,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage item removal system
     hook.Add("StorageItemRemoved", "AdvancedStorageItemRemoval", function()
@@ -21278,16 +23236,21 @@ function StorageItemRemoved()
 end
 
 --[[
-    Purpose: Called when storage is opened
-    When Called: When a player opens a storage entity
+    Purpose:
+        Called when storage is opened
+    When Called:
+        When a player opens a storage entity
     Parameters:
         storage (Entity) - The storage entity being opened
         isCar (boolean) - Whether this is a car storage
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log storage opening
     hook.Add("StorageOpen", "MyAddon", function(storage, isCar)
@@ -21296,6 +23259,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track storage usage
     hook.Add("StorageOpen", "TrackUsage", function(storage, isCar)
@@ -21307,6 +23271,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage opening system
     hook.Add("StorageOpen", "AdvancedStorageOpening", function(storage, isCar)
@@ -21361,16 +23326,21 @@ function StorageOpen(storage, isCar)
 end
 
 --[[
-    Purpose: Called when storage is restored
-    When Called: When a storage entity is restored from save data
+    Purpose:
+        Called when storage is restored
+    When Called:
+        When a storage entity is restored from save data
     Parameters:
         ent (Entity) - The storage entity being restored
         inventory (Inventory) - The inventory being restored
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log storage restoration
     hook.Add("StorageRestored", "MyAddon", function(ent, inventory)
@@ -21379,6 +23349,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate storage data
     hook.Add("StorageRestored", "ValidateStorage", function(ent, inventory)
@@ -21390,6 +23361,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex storage restoration system
     hook.Add("StorageRestored", "AdvancedStorageRestoration", function(ent, inventory)
@@ -21449,15 +23421,20 @@ function StorageRestored(ent, inventory)
 end
 
 --[[
-    Purpose: Called to store spawn points
-    When Called: When spawn points are being stored
+    Purpose:
+        Called to store spawn points
+    When Called:
+        When spawn points are being stored
     Parameters:
         spawns (table) - The spawn points to store
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log spawn storage
     hook.Add("StoreSpawns", "MyAddon", function(spawns)
@@ -21466,6 +23443,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate spawn points
     hook.Add("StoreSpawns", "ValidateSpawns", function(spawns)
@@ -21478,6 +23456,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex spawn storage system
     hook.Add("StoreSpawns", "AdvancedSpawnStorage", function(spawns)
@@ -21526,15 +23505,20 @@ function StoreSpawns(spawns)
 end
 
 --[[
-    Purpose: Called to sync character list with client
-    When Called: When character list needs to be synchronized
+    Purpose:
+        Called to sync character list with client
+    When Called:
+        When character list needs to be synchronized
     Parameters:
         client (Player) - The client to sync with
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log character list sync
     hook.Add("SyncCharList", "MyAddon", function(client)
@@ -21543,6 +23527,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate character data
     hook.Add("SyncCharList", "ValidateChars", function(client)
@@ -21556,6 +23541,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex character list sync system
     hook.Add("SyncCharList", "AdvancedCharSync", function(client)
@@ -21603,17 +23589,22 @@ function SyncCharList(client)
 end
 
 --[[
-    Purpose: Called when a ticket is claimed
-    When Called: When a support ticket is claimed by an admin
+    Purpose:
+        Called when a ticket is claimed
+    When Called:
+        When a support ticket is claimed by an admin
     Parameters:
         client (Player) - The admin claiming the ticket
         requester (Player) - The player who requested the ticket
         ticketMessage (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket claim
     hook.Add("TicketSystemClaim", "MyAddon", function(client, requester, ticketMessage)
@@ -21622,6 +23613,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify players
     hook.Add("TicketSystemClaim", "NotifyClaim", function(client, requester, ticketMessage)
@@ -21636,6 +23628,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket claim system
     hook.Add("TicketSystemClaim", "AdvancedTicketClaim", function(client, requester, ticketMessage)
@@ -21682,17 +23675,22 @@ function TicketSystemClaim(client, requester, ticketMessage)
 end
 
 --[[
-    Purpose: Called when a ticket is closed
-    When Called: When a support ticket is closed
+    Purpose:
+        Called when a ticket is closed
+    When Called:
+        When a support ticket is closed
     Parameters:
         client (Player) - The admin closing the ticket
         requester (Player) - The player who requested the ticket
         ticketMessage (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket close
     hook.Add("TicketSystemClose", "MyAddon", function(client, requester, ticketMessage)
@@ -21701,6 +23699,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify players
     hook.Add("TicketSystemClose", "NotifyClose", function(client, requester, ticketMessage)
@@ -21715,6 +23714,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket close system
     hook.Add("TicketSystemClose", "AdvancedTicketClose", function(client, requester, ticketMessage)
@@ -21770,16 +23770,21 @@ function TicketSystemClose(client, requester, ticketMessage)
 end
 
 --[[
-    Purpose: Called when a ticket is created
-    When Called: When a player creates a support ticket
+    Purpose:
+        Called when a ticket is created
+    When Called:
+        When a player creates a support ticket
     Parameters:
         noob (Player) - The player creating the ticket
         message (string) - The ticket message
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log ticket creation
     hook.Add("TicketSystemCreated", "MyAddon", function(noob, message)
@@ -21788,6 +23793,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins
     hook.Add("TicketSystemCreated", "NotifyAdmins", function(noob, message)
@@ -21800,6 +23806,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex ticket creation system
     hook.Add("TicketSystemCreated", "AdvancedTicketCreation", function(noob, message)
@@ -21855,17 +23862,22 @@ function TicketSystemCreated(noob, message)
 end
 
 --[[
-    Purpose: Called when a door lock is toggled
-    When Called: When a door is locked or unlocked
+    Purpose:
+        Called when a door lock is toggled
+    When Called:
+        When a door is locked or unlocked
     Parameters:
         client (Player) - The player toggling the lock
         door (Entity) - The door entity
         state (boolean) - The new lock state
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log door lock toggle
     hook.Add("ToggleLock", "MyAddon", function(client, door, state)
@@ -21874,6 +23886,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify nearby players
     hook.Add("ToggleLock", "NotifyToggle", function(client, door, state)
@@ -21887,6 +23900,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex door lock system
     hook.Add("ToggleLock", "AdvancedDoorLock", function(client, door, state)
@@ -21938,15 +23952,20 @@ function ToggleLock(client, door, state)
 end
 
 --[[
-    Purpose: Called to transfer an item
-    When Called: When an item is being transferred
+    Purpose:
+        Called to transfer an item
+    When Called:
+        When an item is being transferred
     Parameters:
         itemID (string) - The ID of the item being transferred
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item transfer
     hook.Add("TransferItem", "MyAddon", function(itemID)
@@ -21955,6 +23974,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track item transfers
     hook.Add("TransferItem", "TrackTransfers", function(itemID)
@@ -21967,6 +23987,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex item transfer system
     hook.Add("TransferItem", "AdvancedItemTransfer", function(itemID)
@@ -22033,15 +24054,20 @@ function TransferItem(itemID)
 end
 
 --[[
-    Purpose: Called to update entity persistence
-    When Called: When an entity's persistence data needs to be updated
+    Purpose:
+        Called to update entity persistence
+    When Called:
+        When an entity's persistence data needs to be updated
     Parameters:
         ent (Entity) - The entity to update
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log entity persistence update
     hook.Add("UpdateEntityPersistence", "MyAddon", function(ent)
@@ -22050,6 +24076,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Update entity data
     hook.Add("UpdateEntityPersistence", "UpdateData", function(ent)
@@ -22061,6 +24088,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex entity persistence system
     hook.Add("UpdateEntityPersistence", "AdvancedPersistence", function(ent)
@@ -22119,17 +24147,22 @@ function UpdateEntityPersistence(ent)
 end
 
 --[[
-    Purpose: Called when a vendor class is updated
-    When Called: When a vendor's allowed classes are modified
+    Purpose:
+        Called when a vendor class is updated
+    When Called:
+        When a vendor's allowed classes are modified
     Parameters:
         vendor (Entity) - The vendor entity
         id (string) - The class ID being updated
         allowed (boolean) - Whether the class is allowed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor class update
     hook.Add("VendorClassUpdated", "MyAddon", function(vendor, id, allowed)
@@ -22138,6 +24171,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify players
     hook.Add("VendorClassUpdated", "NotifyPlayers", function(vendor, id, allowed)
@@ -22151,6 +24185,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor class system
     hook.Add("VendorClassUpdated", "AdvancedVendorClass", function(vendor, id, allowed)
@@ -22199,16 +24234,21 @@ function VendorClassUpdated(vendor, id, allowed)
 end
 
 --[[
-    Purpose: Called when a vendor is edited
-    When Called: When a vendor's properties are modified
+    Purpose:
+        Called when a vendor is edited
+    When Called:
+        When a vendor's properties are modified
     Parameters:
         liaVendorEnt (Entity) - The vendor entity being edited
         key (string) - The property key being edited
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor edit
     hook.Add("VendorEdited", "MyAddon", function(liaVendorEnt, key)
@@ -22217,6 +24257,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate vendor edits
     hook.Add("VendorEdited", "ValidateEdits", function(liaVendorEnt, key)
@@ -22227,6 +24268,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor editing system
     hook.Add("VendorEdited", "AdvancedVendorEdit", function(liaVendorEnt, key)
@@ -22278,17 +24320,22 @@ function VendorEdited(liaVendorEnt, key)
 end
 
 --[[
-    Purpose: Called when a vendor faction is updated
-    When Called: When a vendor's allowed factions are modified
+    Purpose:
+        Called when a vendor faction is updated
+    When Called:
+        When a vendor's allowed factions are modified
     Parameters:
         vendor (Entity) - The vendor entity
         id (string) - The faction ID being updated
         allowed (boolean) - Whether the faction is allowed
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor faction update
     hook.Add("VendorFactionUpdated", "MyAddon", function(vendor, id, allowed)
@@ -22297,6 +24344,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify players
     hook.Add("VendorFactionUpdated", "NotifyPlayers", function(vendor, id, allowed)
@@ -22313,6 +24361,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor faction system
     hook.Add("VendorFactionUpdated", "AdvancedVendorFaction", function(vendor, id, allowed)
@@ -22371,17 +24420,22 @@ function VendorFactionUpdated(vendor, id, allowed)
 end
 
 --[[
-    Purpose: Called when a vendor item max stock is updated
-    When Called: When a vendor item's maximum stock is modified
+    Purpose:
+        Called when a vendor item max stock is updated
+    When Called:
+        When a vendor item's maximum stock is modified
     Parameters:
         vendor (Entity) - The vendor entity
         itemType (string) - The item type being updated
         value (number) - The new maximum stock value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log max stock update
     hook.Add("VendorItemMaxStockUpdated", "MyAddon", function(vendor, itemType, value)
@@ -22390,6 +24444,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate max stock value
     hook.Add("VendorItemMaxStockUpdated", "ValidateMaxStock", function(vendor, itemType, value)
@@ -22404,6 +24459,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor max stock system
     hook.Add("VendorItemMaxStockUpdated", "AdvancedVendorMaxStock", function(vendor, itemType, value)
@@ -22462,17 +24518,22 @@ function VendorItemMaxStockUpdated(vendor, itemType, value)
 end
 
 --[[
-    Purpose: Called when a vendor item mode is updated
-    When Called: When a vendor item's mode is modified
+    Purpose:
+        Called when a vendor item mode is updated
+    When Called:
+        When a vendor item's mode is modified
     Parameters:
         vendor (Entity) - The vendor entity
         itemType (string) - The item type being updated
         value (string) - The new mode value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log item mode update
     hook.Add("VendorItemModeUpdated", "MyAddon", function(vendor, itemType, value)
@@ -22481,6 +24542,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate mode value
     hook.Add("VendorItemModeUpdated", "ValidateMode", function(vendor, itemType, value)
@@ -22494,6 +24556,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor item mode system
     hook.Add("VendorItemModeUpdated", "AdvancedVendorItemMode", function(vendor, itemType, value)
@@ -22557,17 +24620,22 @@ function VendorItemModeUpdated(vendor, itemType, value)
 end
 
 --[[
-    Purpose: Called when a vendor item price is updated
-    When Called: When a vendor item's price is modified
+    Purpose:
+        Called when a vendor item price is updated
+    When Called:
+        When a vendor item's price is modified
     Parameters:
         vendor (Entity) - The vendor entity
         itemType (string) - The item type being updated
         value (number) - The new price value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log price update
     hook.Add("VendorItemPriceUpdated", "MyAddon", function(vendor, itemType, value)
@@ -22576,6 +24644,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate price value
     hook.Add("VendorItemPriceUpdated", "ValidatePrice", function(vendor, itemType, value)
@@ -22590,6 +24659,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor price system
     hook.Add("VendorItemPriceUpdated", "AdvancedVendorPrice", function(vendor, itemType, value)
@@ -22657,17 +24727,22 @@ function VendorItemPriceUpdated(vendor, itemType, value)
 end
 
 --[[
-    Purpose: Called when a vendor item stock is updated
-    When Called: When a vendor item's stock is modified
+    Purpose:
+        Called when a vendor item stock is updated
+    When Called:
+        When a vendor item's stock is modified
     Parameters:
         vendor (Entity) - The vendor entity
         itemType (string) - The item type being updated
         value (number) - The new stock value
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log stock update
     hook.Add("VendorItemStockUpdated", "MyAddon", function(vendor, itemType, value)
@@ -22676,6 +24751,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate stock value
     hook.Add("VendorItemStockUpdated", "ValidateStock", function(vendor, itemType, value)
@@ -22688,6 +24764,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor stock system
     hook.Add("VendorItemStockUpdated", "AdvancedVendorStock", function(vendor, itemType, value)
@@ -22761,15 +24838,20 @@ function VendorItemStockUpdated(vendor, itemType, value)
 end
 
 --[[
-    Purpose: Called when a vendor is opened by a player
-    When Called: When a player successfully opens a vendor
+    Purpose:
+        Called when a vendor is opened by a player
+    When Called:
+        When a player successfully opens a vendor
     Parameters:
         vendor (Entity) - The vendor entity being opened
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor opening
     hook.Add("VendorOpened", "MyAddon", function(vendor)
@@ -22778,6 +24860,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track vendor usage
     hook.Add("VendorOpened", "VendorTracking", function(vendor)
@@ -22789,6 +24872,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor opening system
     hook.Add("VendorOpened", "AdvancedVendorOpening", function(vendor)
@@ -22841,18 +24925,23 @@ function VendorOpened(vendor)
 end
 
 --[[
-    Purpose: Called when a vendor trade event occurs
-    When Called: When a player trades with a vendor
+    Purpose:
+        Called when a vendor trade event occurs
+    When Called:
+        When a player trades with a vendor
     Parameters:
         client (Player) - The player trading
         vendor (Entity) - The vendor entity
         itemType (string) - The type of item being traded
         isSellingToVendor (boolean) - Whether the player is selling to the vendor
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log vendor trade
     hook.Add("VendorTradeEvent", "MyAddon", function(client, vendor, itemType, isSellingToVendor)
@@ -22861,6 +24950,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Track trade statistics
     hook.Add("VendorTradeEvent", "TrackTrades", function(client, vendor, itemType, isSellingToVendor)
@@ -22873,6 +24963,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex vendor trade system
     hook.Add("VendorTradeEvent", "AdvancedVendorTrade", function(client, vendor, itemType, isSellingToVendor)
@@ -22911,8 +25002,10 @@ function VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
 end
 
 --[[
-    Purpose: Called when a warning is issued
-    When Called: When a player receives a warning
+    Purpose:
+        Called when a warning is issued
+    When Called:
+        When a player receives a warning
     Parameters:
         client (Player) - The player who issued the warning
         target (Player) - The player who received the warning
@@ -22920,11 +25013,14 @@ end
         count (number) - The total warning count
         warnerSteamID (string) - The SteamID of the warner
         warnerName (string) - The name of the warner
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log warning
     hook.Add("WarningIssued", "MyAddon", function(client, target, reason, count, warnerSteamID, warnerName)
@@ -22933,6 +25029,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins
     hook.Add("WarningIssued", "NotifyAdmins", function(client, target, reason, count, warnerSteamID, warnerName)
@@ -22945,6 +25042,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex warning system
     hook.Add("WarningIssued", "AdvancedWarningSystem", function(client, target, reason, count, warnerSteamID, warnerName)
@@ -22981,8 +25079,10 @@ function WarningIssued(client, target, reason, count, warnerSteamID, warnerName)
 end
 
 --[[
-    Purpose: Called when a warning is removed
-    When Called: When a warning is removed from a player
+    Purpose:
+        Called when a warning is removed
+    When Called:
+        When a warning is removed from a player
     Parameters:
         client (Player) - The player who removed the warning
         targetClient (Player) - The player whose warning was removed
@@ -22990,11 +25090,14 @@ end
         count (number) - The remaining warning count
         warnerSteamID (string) - The SteamID of the original warner
         warnerName (string) - The name of the original warner
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log warning removal
     hook.Add("WarningRemoved", "MyAddon", function(client, targetClient, reason, count, warnerSteamID, warnerName)
@@ -23003,6 +25106,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Notify admins
     hook.Add("WarningRemoved", "NotifyWarningRemoval", function(client, targetClient, reason, count, warnerSteamID, warnerName)
@@ -23015,6 +25119,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex warning removal system
     hook.Add("WarningRemoved", "AdvancedWarningRemoval", function(client, targetClient, reason, count, warnerSteamID, warnerName)
@@ -23047,17 +25152,22 @@ function WarningRemoved(client, targetClient, reason, count, warnerSteamID, warn
 end
 
 --[[
-    Purpose: Called to set persistent data
-    When Called: When setting global or character-specific data
+    Purpose:
+        Called to set persistent data
+    When Called:
+        When setting global or character-specific data
     Parameters:
         value (any) - The value to set
         global (boolean) - Whether this is global data
         ignoreMap (boolean) - Whether to ignore map-specific data
-    Returns: None
-    Realm: Server
+    Returns:
+        None
+    Realm:
+        Server
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Log data setting
     hook.Add("setData", "MyAddon", function(value, global, ignoreMap)
@@ -23066,6 +25176,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Validate data before setting
     hook.Add("setData", "ValidateData", function(value, global, ignoreMap)
@@ -23078,6 +25189,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Complex data validation system
     hook.Add("setData", "AdvancedDataValidation", function(value, global, ignoreMap)

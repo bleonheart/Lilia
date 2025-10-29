@@ -23,12 +23,14 @@ lia.attribs.list = lia.attribs.list or {}
     Example Usage:
 
     Low Complexity:
+
         ```lua
         -- Simple: Load attributes from a single directory
         lia.attribs.loadFromDir("gamemode/attributes")
         ```
 
     Medium Complexity:
+
         ```lua
         -- Medium: Load attributes with conditional directory checking
         local attrDir = "gamemode/attributes"
@@ -38,6 +40,7 @@ lia.attribs.list = lia.attribs.list or {}
         ```
 
     High Complexity:
+
         ```lua
         -- High: Load attributes from multiple directories with error handling
         local attributeDirs = {"gamemode/attributes", "modules/attributes", "plugins/attributes"}
@@ -77,12 +80,14 @@ if SERVER then
         Example Usage:
 
         Low Complexity:
+
             ```lua
             -- Simple: Setup attributes for a client
             lia.attribs.setup(client)
             ```
 
         Medium Complexity:
+
             ```lua
             -- Medium: Setup attributes with validation
             if IsValid(client) and client:IsPlayer() then
@@ -91,6 +96,7 @@ if SERVER then
             ```
 
         High Complexity:
+
             ```lua
             -- High: Setup attributes with custom logic and error handling
             hook.Add("PlayerSpawn", "SetupAttributes", function(client)

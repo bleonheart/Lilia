@@ -12,28 +12,35 @@ lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
 if CLIENT then
     --[[
-        Purpose: Registers a named color for use throughout the gamemode
-        When Called: When defining custom colors or extending the color palette
+        Purpose:
+            Registers a named color for use throughout the gamemode
+        When Called:
+            When defining custom colors or extending the color palette
         Parameters:
             name (string) - The name identifier for the color
             color (table) - Color table with r, g, b, a values or array format
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Register a basic color
         lia.color.register("myred", {255, 0, 0})
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Register color with alpha channel
         lia.color.register("semitransparent", {255, 255, 255, 128})
         ```
 
         High Complexity:
+
         ```lua
         -- High: Register multiple colors from configuration
         local colorConfig = {
@@ -51,25 +58,31 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Adjusts color values by adding offsets to each channel
-        When Called: When creating color variations or adjusting existing colors
+        Purpose:
+            Adjusts color values by adding offsets to each channel
+        When Called:
+            When creating color variations or adjusting existing colors
         Parameters:
             color (Color) - The base color to adjust
             rOffset (number) - Red channel offset (-255 to 255)
             gOffset (number) - Green channel offset (-255 to 255)
             bOffset (number) - Blue channel offset (-255 to 255)
             aOffset (number, optional) - Alpha channel offset (-255 to 255)
-        Returns: Color - New adjusted color with clamped values
-        Realm: Client
+        Returns:
+            Color - New adjusted color with clamped values
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Brighten a color
         local brightRed = lia.color.adjust(Color(100, 0, 0), 50, 0, 0)
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Create color variations
         local baseColor = Color(128, 128, 128)
@@ -78,6 +91,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Dynamic color adjustment based on conditions
         local function adjustColorForTime(color, timeOfDay)
@@ -96,22 +110,28 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Darkens a color by multiplying RGB values by a factor
-        When Called: When creating darker variations of colors for shadows or depth
+        Purpose:
+            Darkens a color by multiplying RGB values by a factor
+        When Called:
+            When creating darker variations of colors for shadows or depth
         Parameters:
             color (Color) - The color to darken
             factor (number, optional) - Darkening factor (0-1), defaults to 0.1
-        Returns: Color - New darkened color with preserved alpha
-        Realm: Client
+        Returns:
+            Color - New darkened color with preserved alpha
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Darken a color slightly
         local darkBlue = lia.color.darken(Color(0, 0, 255))
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Create shadow effect
         local baseColor = Color(100, 150, 200)
@@ -119,6 +139,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Dynamic darkening based on distance
         local function getShadowColor(baseColor, distance)
@@ -134,14 +155,20 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Gets the current active theme name in lowercase
-        When Called: When checking which theme is currently active
-        Parameters: None
-        Returns: string - Current theme name in lowercase
-        Realm: Client
+        Purpose:
+            Gets the current active theme name in lowercase
+        When Called:
+            When checking which theme is currently active
+        Parameters:
+            None
+        Returns:
+            string - Current theme name in lowercase
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Check current theme
         local currentTheme = lia.color.getCurrentTheme()
@@ -149,6 +176,7 @@ if CLIENT then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Conditional theme-based logic
         if lia.color.getCurrentTheme() == "dark" then
@@ -157,6 +185,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Theme-based UI customization
         local function getThemeSpecificColor(colorName)
@@ -174,14 +203,20 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Gets the current active theme name with proper capitalization
-        When Called: When displaying theme name to users or for configuration
-        Parameters: None
-        Returns: string - Current theme name with proper capitalization
-        Realm: Client
+        Purpose:
+            Gets the current active theme name with proper capitalization
+        When Called:
+            When displaying theme name to users or for configuration
+        Parameters:
+            None
+        Returns:
+            string - Current theme name with proper capitalization
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Display theme name
         local themeName = lia.color.getCurrentThemeName()
@@ -189,6 +224,7 @@ if CLIENT then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Theme selection menu
         local function createThemeMenu()
@@ -199,6 +235,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Theme validation and fallback
         local function validateTheme()
@@ -218,20 +255,27 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Gets the main color from the current theme
-        When Called: When needing the primary accent color for UI elements
-        Parameters: None
-        Returns: Color - The main color from current theme or default teal
-        Realm: Client
+        Purpose:
+            Gets the main color from the current theme
+        When Called:
+            When needing the primary accent color for UI elements
+        Parameters:
+            None
+        Returns:
+            Color - The main color from current theme or default teal
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Get main theme color
         local mainColor = lia.color.getMainColor()
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Use main color for UI elements
         local function createThemedButton(text)
@@ -243,6 +287,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Dynamic color scheme generation
         local function generateColorScheme()
@@ -265,28 +310,35 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Applies a theme to the interface with optional smooth transition
-        When Called: When switching themes or initializing the color system
+        Purpose:
+            Applies a theme to the interface with optional smooth transition
+        When Called:
+            When switching themes or initializing the color system
         Parameters:
             themeName (string, optional) - Name of theme to apply, defaults to current theme
             useTransition (boolean, optional) - Whether to use smooth transition animation
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Apply theme without transition
         lia.color.applyTheme("dark")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Apply theme with smooth transition
         lia.color.applyTheme("light", true)
         ```
 
         High Complexity:
+
         ```lua
         -- High: Theme switching with validation and fallback
         local function switchTheme(themeName)
@@ -335,14 +387,20 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Checks if a theme transition animation is currently active
-        When Called: When checking transition state before starting new transitions
-        Parameters: None
-        Returns: boolean - True if transition is active, false otherwise
-        Realm: Client
+        Purpose:
+            Checks if a theme transition animation is currently active
+        When Called:
+            When checking transition state before starting new transitions
+        Parameters:
+            None
+        Returns:
+            boolean - True if transition is active, false otherwise
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Check if transition is running
         if lia.color.isTransitionActive() then
@@ -351,6 +409,7 @@ if CLIENT then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Prevent multiple transitions
         local function safeThemeSwitch(themeName)
@@ -363,6 +422,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Queue theme changes during transitions
         local themeQueue = {}
@@ -387,21 +447,27 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Tests a theme transition by applying it with animation
-        When Called: When previewing theme changes or testing transitions
+        Purpose:
+            Tests a theme transition by applying it with animation
+        When Called:
+            When previewing theme changes or testing transitions
         Parameters:
             themeName (string) - Name of theme to test transition to
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Test theme transition
         lia.color.testThemeTransition("dark")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Preview multiple themes
         local function previewTheme(themeName)
@@ -413,6 +479,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Theme preview system with cycling
         local previewThemes = {"dark", "light", "blue", "red"}
@@ -442,21 +509,27 @@ if CLIENT then
     }
 
     --[[
-        Purpose: Starts a smooth animated transition to a new theme
-        When Called: When applying themes with transition animation enabled
+        Purpose:
+            Starts a smooth animated transition to a new theme
+        When Called:
+            When applying themes with transition animation enabled
         Parameters:
             name (string) - Name of the theme to transition to
-        Returns: None
-        Realm: Client
+        Returns:
+            None
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Start theme transition
         lia.color.startThemeTransition("dark")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Transition with validation
         local function transitionToTheme(themeName)
@@ -473,6 +546,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Custom transition with progress tracking
         local function customThemeTransition(themeName, callback)
@@ -554,15 +628,20 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Checks if a value is a valid color object
-        When Called: When validating color data or processing theme transitions
+        Purpose:
+            Checks if a value is a valid color object
+        When Called:
+            When validating color data or processing theme transitions
         Parameters:
             v (any) - Value to check if it's a color
-        Returns: boolean - True if value is a valid color, false otherwise
-        Realm: Client
+        Returns:
+            boolean - True if value is a valid color, false otherwise
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Check if value is color
         if lia.color.isColor(someValue) then
@@ -571,6 +650,7 @@ if CLIENT then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Validate color data
         local function processColorData(data)
@@ -583,6 +663,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Recursive color validation in nested tables
         local function validateThemeData(themeData)
@@ -607,14 +688,20 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Returns a set of adjusted colors based on the main theme color
-        When Called: When creating UI color schemes or theme-based color palettes
-        Parameters: None
-        Returns: table - Table containing adjusted colors (background, sidebar, accent, text, hover, border, highlight)
-        Realm: Client
+        Purpose:
+            Returns a set of adjusted colors based on the main theme color
+        When Called:
+            When creating UI color schemes or theme-based color palettes
+        Parameters:
+            None
+        Returns:
+            table - Table containing adjusted colors (background, sidebar, accent, text, hover, border, highlight)
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Get theme colors
         local colors = lia.color.returnMainAdjustedColors()
@@ -622,6 +709,7 @@ if CLIENT then
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Apply colors to UI elements
         local function createThemedPanel()
@@ -637,6 +725,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Dynamic UI system with theme colors
         local function createAdvancedUI()
@@ -679,23 +768,29 @@ if CLIENT then
     end
 
     --[[
-        Purpose: Interpolates between two colors using frame time for smooth transitions
-        When Called: During theme transitions to smoothly blend between colors
+        Purpose:
+            Interpolates between two colors using frame time for smooth transitions
+        When Called:
+            During theme transitions to smoothly blend between colors
         Parameters:
             frac (number) - Interpolation factor/speed multiplier
             col1 (Color) - Starting color
             col2 (Color) - Target color
-        Returns: Color - Interpolated color between col1 and col2
-        Realm: Client
+        Returns:
+            Color - Interpolated color between col1 and col2
+        Realm:
+            Client
         Example Usage:
 
         Low Complexity:
+
         ```lua
         -- Simple: Lerp between colors
         local blendedColor = lia.color.lerp(5, Color(255, 0, 0), Color(0, 255, 0))
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Smooth color transition
         local function fadeBetweenColors(startColor, endColor, duration)
@@ -716,6 +811,7 @@ if CLIENT then
         ```
 
         High Complexity:
+
         ```lua
         -- High: Multi-color gradient system
         local function createColorGradient(colors, steps)
@@ -783,16 +879,21 @@ if CLIENT then
 end
 
 --[[
-    Purpose: Registers a new theme with color definitions
-    When Called: When creating custom themes or extending the theme system
+    Purpose:
+        Registers a new theme with color definitions
+    When Called:
+        When creating custom themes or extending the theme system
     Parameters:
         name (string) - Name of the theme to register
         themeData (table) - Table containing color definitions for the theme
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Register a basic theme
     lia.color.registerTheme("MyTheme", {
@@ -803,6 +904,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Register theme with full color set
     lia.color.registerTheme("CustomDark", {
@@ -816,6 +918,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Dynamic theme generation
     local function generateThemeFromConfig(config)
@@ -841,14 +944,20 @@ function lia.color.registerTheme(name, themeData)
 end
 
 --[[
-    Purpose: Gets a list of all available theme names
-    When Called: When building theme selection menus or validating theme names
-    Parameters: None
-    Returns: table - Array of theme names in alphabetical order
-    Realm: Shared
+    Purpose:
+        Gets a list of all available theme names
+    When Called:
+        When building theme selection menus or validating theme names
+    Parameters:
+        None
+    Returns:
+        table - Array of theme names in alphabetical order
+    Realm:
+        Shared
     Example Usage:
 
     Low Complexity:
+
     ```lua
     -- Simple: Get all themes
     local themes = lia.color.getAllThemes()
@@ -856,6 +965,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Create theme selection menu
     local function createThemeMenu()
@@ -873,6 +983,7 @@ end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Theme validation and management system
     local function validateAndManageThemes()

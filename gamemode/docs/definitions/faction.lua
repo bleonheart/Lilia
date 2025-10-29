@@ -70,8 +70,10 @@
 ]]
 --[[
     FACTION.name
-    Purpose: Sets the display name of the character faction
-    When Called: During faction definition
+    Purpose:
+        Sets the display name of the character faction
+    When Called:
+        During faction definition
 
     Example Usage:
         ```lua
@@ -81,8 +83,10 @@
 FACTION.name = ""
 --[[
     FACTION.desc
-    Purpose: Sets the description of the character faction
-    When Called: During faction definition
+    Purpose:
+        Sets the description of the character faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.desc = "Law enforcement officers responsible for maintaining order and protecting citizens"
@@ -91,8 +95,10 @@ FACTION.name = ""
 FACTION.desc = ""
 --[[
     FACTION.color
-    Purpose: Sets the team/faction color for UI elements and identification
-    When Called: During faction definition
+    Purpose:
+        Sets the team/faction color for UI elements and identification
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.color = Color(0, 100, 255)  -- Blue color for police
@@ -101,8 +107,10 @@ FACTION.desc = ""
 FACTION.color = Color(255, 255, 255)
 --[[
     FACTION.models
-    Purpose: Sets the player models available for this faction
-    When Called: During faction definition
+    Purpose:
+        Sets the player models available for this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.models = {"models/player/police.mdl", "models/player/swat.mdl"}
@@ -123,8 +131,10 @@ FACTION.color = Color(255, 255, 255)
 FACTION.models = {}
 --[[
     FACTION.weapons
-    Purpose: Sets weapons to give to players when they join this faction
-    When Called: During faction definition (applied when player spawns)
+    Purpose:
+        Sets weapons to give to players when they join this faction
+    When Called:
+        During faction definition (applied when player spawns)
     Example Usage:
         ```lua
         FACTION.weapons = {"weapon_pistol", "weapon_stunstick"}  -- Table of weapons
@@ -134,8 +144,10 @@ FACTION.models = {}
 FACTION.weapons = {}
 --[[
     FACTION.isDefault
-    Purpose: Sets whether this is a default faction that new characters can join
-    When Called: During faction definition
+    Purpose:
+        Sets whether this is a default faction that new characters can join
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.isDefault = true  -- Players can create characters in this faction
@@ -145,8 +157,10 @@ FACTION.weapons = {}
 FACTION.isDefault = true
 --[[
     FACTION.uniqueID
-    Purpose: Unique identifier for the faction (INTERNAL - set automatically when registered)
-    When Called: Set automatically during faction registration
+    Purpose:
+        Unique identifier for the faction (INTERNAL - set automatically when registered)
+    When Called:
+        Set automatically during faction registration
     Note: This property is internal and should not be modified directly
     Auto-Assignment: If not explicitly defined, the uniqueID is automatically set to the faction file name (without .lua extension)
     Example Usage:
@@ -166,8 +180,10 @@ FACTION.isDefault = true
 FACTION.uniqueID = ""
 --[[
     FACTION.index
-    Purpose: Numeric index of the faction in the faction list (set automatically or manually)
-    When Called: Set automatically during faction registration, or manually specified
+    Purpose:
+        Numeric index of the faction in the faction list (set automatically or manually)
+    When Called:
+        Set automatically during faction registration, or manually specified
     Example Usage:
         ```lua
         -- This is set automatically when you register the faction
@@ -183,8 +199,10 @@ FACTION.uniqueID = ""
 FACTION.index = 0
 --[[
     FACTION.health
-    Purpose: Sets the maximum health for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the maximum health for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.health = 120  -- Police officers have 120 max health
@@ -193,8 +211,10 @@ FACTION.index = 0
 FACTION.health = 0
 --[[
     FACTION.armor
-    Purpose: Sets the armor value for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the armor value for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.armor = 50  -- Standard police armor
@@ -203,8 +223,10 @@ FACTION.health = 0
 FACTION.armor = 0
 --[[
     FACTION.scale
-    Purpose: Sets the model scale for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the model scale for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.scale = 1.1  -- Slightly larger model
@@ -213,8 +235,10 @@ FACTION.armor = 0
 FACTION.scale = 1
 --[[
     FACTION.runSpeed
-    Purpose: Sets the running speed for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the running speed for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.runSpeed = 300  -- Absolute run speed
@@ -225,8 +249,10 @@ FACTION.scale = 1
 FACTION.runSpeed = 0
 --[[
     FACTION.walkSpeed
-    Purpose: Sets the walking speed for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the walking speed for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.walkSpeed = 150  -- Absolute walk speed
@@ -237,8 +263,10 @@ FACTION.runSpeed = 0
 FACTION.walkSpeed = 0
 --[[
     FACTION.jumpPower
-    Purpose: Sets the jump power for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the jump power for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.jumpPower = 200  -- Absolute jump power
@@ -249,8 +277,10 @@ FACTION.walkSpeed = 0
 FACTION.jumpPower = 0
 --[[
     FACTION.NPCRelations
-    Purpose: Sets NPC relationship overrides for this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets NPC relationship overrides for this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.NPCRelations = {
@@ -262,8 +292,10 @@ FACTION.jumpPower = 0
 FACTION.NPCRelations = {}
 --[[
     FACTION.bloodcolor
-    Purpose: Sets the blood color for players in this faction
-    When Called: During faction definition (applied when player joins faction)
+    Purpose:
+        Sets the blood color for players in this faction
+    When Called:
+        During faction definition (applied when player joins faction)
     Example Usage:
         ```lua
         FACTION.bloodcolor = BLOOD_COLOR_RED  -- Red blood
@@ -273,8 +305,10 @@ FACTION.NPCRelations = {}
 FACTION.bloodcolor = BLOOD_COLOR_RED
 --[[
     FACTION.runSpeedMultiplier
-    Purpose: Whether runSpeed should be treated as a multiplier instead of absolute value
-    When Called: During faction definition (used with runSpeed property)
+    Purpose:
+        Whether runSpeed should be treated as a multiplier instead of absolute value
+    When Called:
+        During faction definition (used with runSpeed property)
     Example Usage:
         ```lua
         FACTION.runSpeedMultiplier = true
@@ -284,8 +318,10 @@ FACTION.bloodcolor = BLOOD_COLOR_RED
 FACTION.runSpeedMultiplier = false
 --[[
     FACTION.walkSpeedMultiplier
-    Purpose: Whether walkSpeed should be treated as a multiplier instead of absolute value
-    When Called: During faction definition (used with walkSpeed property)
+    Purpose:
+        Whether walkSpeed should be treated as a multiplier instead of absolute value
+    When Called:
+        During faction definition (used with walkSpeed property)
     Example Usage:
         ```lua
         FACTION.walkSpeedMultiplier = true
@@ -295,8 +331,10 @@ FACTION.runSpeedMultiplier = false
 FACTION.walkSpeedMultiplier = false
 --[[
     FACTION.jumpPowerMultiplier
-    Purpose: Whether jumpPower should be treated as a multiplier instead of absolute value
-    When Called: During faction definition (used with jumpPower property)
+    Purpose:
+        Whether jumpPower should be treated as a multiplier instead of absolute value
+    When Called:
+        During faction definition (used with jumpPower property)
     Example Usage:
         ```lua
         FACTION.jumpPowerMultiplier = true
@@ -306,8 +344,10 @@ FACTION.walkSpeedMultiplier = false
 FACTION.jumpPowerMultiplier = false
 --[[
     FACTION.items
-    Purpose: Sets items to give to characters when they are created in this faction
-    When Called: During faction definition (applied when character is created)
+    Purpose:
+        Sets items to give to characters when they are created in this faction
+    When Called:
+        During faction definition (applied when character is created)
     Example Usage:
         ```lua
         FACTION.items = {"item_police_badge", "item_handcuffs"}  -- Starting items for police
@@ -316,8 +356,10 @@ FACTION.jumpPowerMultiplier = false
 FACTION.items = {}
 --[[
     FACTION.oneCharOnly
-    Purpose: Sets whether players can only have one character in this faction
-    When Called: During faction definition
+    Purpose:
+        Sets whether players can only have one character in this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.oneCharOnly = true  -- Players can only have one character in this faction
@@ -327,8 +369,10 @@ FACTION.items = {}
 FACTION.oneCharOnly = false
 --[[
     FACTION.limit
-    Purpose: Sets the maximum number of players allowed in this faction
-    When Called: During faction definition
+    Purpose:
+        Sets the maximum number of players allowed in this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         FACTION.limit = 8  -- Maximum 8 players in this faction
@@ -339,8 +383,10 @@ FACTION.oneCharOnly = false
 FACTION.limit = 0
 --[[
     FACTION.NameTemplate
-    Purpose: Sets a function to generate default character names for this faction
-    When Called: During faction definition
+    Purpose:
+        Sets a function to generate default character names for this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         function FACTION:NameTemplate(info, client)
@@ -352,8 +398,10 @@ FACTION.limit = 0
 FACTION.NameTemplate = nil
 --[[
     FACTION.GetDefaultName
-    Purpose: Sets a method to get the default character name for this faction
-    When Called: During faction definition
+    Purpose:
+        Sets a method to get the default character name for this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         function FACTION:GetDefaultName(client)
@@ -364,8 +412,10 @@ FACTION.NameTemplate = nil
 FACTION.GetDefaultName = nil
 --[[
     FACTION.GetDefaultDesc
-    Purpose: Sets a method to get the default character description for this faction
-    When Called: During faction definition
+    Purpose:
+        Sets a method to get the default character description for this faction
+    When Called:
+        During faction definition
     Example Usage:
         ```lua
         function FACTION:GetDefaultDesc(client)
@@ -376,12 +426,15 @@ FACTION.GetDefaultName = nil
 FACTION.GetDefaultDesc = nil
 --[[
     FACTION.OnCheckLimitReached
-    Purpose: Custom callback to check if faction player limit is reached
-    When Called: When a player tries to join a faction that might be at capacity
+    Purpose:
+        Custom callback to check if faction player limit is reached
+    When Called:
+        When a player tries to join a faction that might be at capacity
     Parameters:
         - character (Character): The character trying to join
         - client (Player): The player whose character is joining
-    Returns: true if limit reached, false if not
+    Returns:
+        true if limit reached, false if not
     Example Usage:
         ```lua
         function FACTION:OnCheckLimitReached(character, client)
@@ -401,11 +454,14 @@ FACTION.GetDefaultDesc = nil
 FACTION.OnCheckLimitReached = nil
 --[[
     FACTION.OnTransferred
-    Purpose: Called when a player transfers to this faction
-    When Called: When a player changes factions and this becomes their new faction
+    Purpose:
+        Called when a player transfers to this faction
+    When Called:
+        When a player changes factions and this becomes their new faction
     Parameters:
         - client (Player): The player transferring to this faction
-    Realm: Server
+    Realm:
+        Server
     Example Usage:
         ```lua
         function FACTION:OnTransferred(client)
@@ -420,11 +476,14 @@ end
 
 --[[
     FACTION.OnSpawn
-    Purpose: Called when a player spawns with this faction
-    When Called: When a player spawns with this faction
+    Purpose:
+        Called when a player spawns with this faction
+    When Called:
+        When a player spawns with this faction
     Parameters:
         - client (Player): The player spawning
-    Realm: Server
+    Realm:
+        Server
     Example Usage:
         ```lua
         function FACTION:OnSpawn(client)

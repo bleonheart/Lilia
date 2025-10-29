@@ -10,15 +10,20 @@
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 --[[
-    Purpose: Registers a new character class with the specified unique ID and data
-    When Called: During gamemode initialization or when dynamically creating classes
+    Purpose:
+        Registers a new character class with the specified unique ID and data
+    When Called:
+        During gamemode initialization or when dynamically creating classes
     Parameters:
         - uniqueID (string): Unique identifier for the class
         - data (table): Table containing class properties (name, desc, limit, faction, etc.)
-    Returns: The registered class table
-    Realm: Shared
+    Returns:
+        The registered class table
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         lia.class.register("citizen", {
             name = "Citizen",
@@ -29,6 +34,7 @@ lia.class.list = lia.class.list or {}
         ```
 
         Medium Complexity:
+
         ```lua
         lia.class.register("police_officer", {
             name = "Police Officer",
@@ -42,6 +48,7 @@ lia.class.list = lia.class.list or {}
         ```
 
         High Complexity:
+
         ```lua
         local classData = {
             name = "Elite Soldier",
@@ -99,19 +106,25 @@ function lia.class.register(uniqueID, data)
 end
 
 --[[
-    Purpose: Loads character classes from a directory containing class definition files
-    When Called: During gamemode initialization to load classes from files
+    Purpose:
+        Loads character classes from a directory containing class definition files
+    When Called:
+        During gamemode initialization to load classes from files
     Parameters:
         - directory (string): Path to directory containing class files
-    Returns: None
-    Realm: Shared
+    Returns:
+        None
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         lia.class.loadFromDir("gamemodes/lilia/classes")
         ```
 
         Medium Complexity:
+
         ```lua
         local classDir = "gamemodes/lilia/modules/custom_classes/classes"
         if file.Exists(classDir, "LUA") then
@@ -120,6 +133,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local classDirectories = {
             "gamemodes/lilia/classes",
@@ -175,15 +189,20 @@ function lia.class.loadFromDir(directory)
 end
 
 --[[
-    Purpose: Checks if a client can join a specific character class
-    When Called: When a player attempts to join a class or when checking class availability
+    Purpose:
+        Checks if a client can join a specific character class
+    When Called:
+        When a player attempts to join a class or when checking class availability
     Parameters:
         - client (Player): The player attempting to join the class
         - class (number): The class index to check
-    Returns: boolean, string - Whether the player can join and reason if they cannot
-    Realm: Shared
+    Returns:
+        boolean, string - Whether the player can join and reason if they cannot
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local canJoin, reason = lia.class.canBe(client, 1)
         if canJoin then
@@ -194,6 +213,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         local function checkClassAvailability(client, className)
             local classIndex = lia.class.retrieveClass(className)
@@ -207,6 +227,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function validateClassSwitch(client, newClass)
             local currentChar = client:getChar()
@@ -247,14 +268,19 @@ function lia.class.canBe(client, class)
 end
 
 --[[
-    Purpose: Retrieves a character class by its identifier (index or uniqueID)
-    When Called: When needing to access class information or properties
+    Purpose:
+        Retrieves a character class by its identifier (index or uniqueID)
+    When Called:
+        When needing to access class information or properties
     Parameters:
         - identifier (number/string): Class index or uniqueID to retrieve
-    Returns: table - The class data table or nil if not found
-    Realm: Shared
+    Returns:
+        table - The class data table or nil if not found
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local class = lia.class.get(1)
         if class then
@@ -263,6 +289,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         local function getClassInfo(identifier)
             local class = lia.class.get(identifier)
@@ -280,6 +307,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function getClassDetails(identifier)
             local class = lia.class.get(identifier)
@@ -309,20 +337,26 @@ function lia.class.get(identifier)
 end
 
 --[[
-    Purpose: Gets all players currently using a specific character class
-    When Called: When needing to find players in a particular class or check class population
+    Purpose:
+        Gets all players currently using a specific character class
+    When Called:
+        When needing to find players in a particular class or check class population
     Parameters:
         - class (number): The class index to get players for
-    Returns: table - Array of player entities in the specified class
-    Realm: Shared
+    Returns:
+        table - Array of player entities in the specified class
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local players = lia.class.getPlayers(1)
         print("Players in class 1: " .. #players)
         ```
 
         Medium Complexity:
+
         ```lua
         local function getClassMembers(className)
             local classIndex = lia.class.retrieveClass(className)
@@ -342,6 +376,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function getClassStatistics(classIndex)
             local players = lia.class.getPlayers(classIndex)
@@ -383,20 +418,26 @@ function lia.class.getPlayers(class)
 end
 
 --[[
-    Purpose: Gets the count of players currently using a specific character class
-    When Called: When needing to check class population without retrieving player objects
+    Purpose:
+        Gets the count of players currently using a specific character class
+    When Called:
+        When needing to check class population without retrieving player objects
     Parameters:
         - class (number): The class index to count players for
-    Returns: number - Number of players in the specified class
-    Realm: Shared
+    Returns:
+        number - Number of players in the specified class
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local count = lia.class.getPlayerCount(1)
         print("Players in class: " .. count)
         ```
 
         Medium Complexity:
+
         ```lua
         local function checkClassAvailability(classIndex)
             local class = lia.class.get(classIndex)
@@ -412,6 +453,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function getClassPopulationReport()
             local report = {}
@@ -449,14 +491,19 @@ function lia.class.getPlayerCount(class)
 end
 
 --[[
-    Purpose: Finds a class by matching its uniqueID or name with a search string
-    When Called: When needing to find a class by name or partial identifier
+    Purpose:
+        Finds a class by matching its uniqueID or name with a search string
+    When Called:
+        When needing to find a class by name or partial identifier
     Parameters:
         - class (string): String to match against class uniqueID or name
-    Returns: number - The class index if found, nil otherwise
-    Realm: Shared
+    Returns:
+        number - The class index if found, nil otherwise
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local classIndex = lia.class.retrieveClass("citizen")
         if classIndex then
@@ -465,6 +512,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         local function findClassByName(searchTerm)
             local classIndex = lia.class.retrieveClass(searchTerm)
@@ -478,6 +526,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function searchClasses(searchTerm)
             local results = {}
@@ -509,14 +558,19 @@ function lia.class.retrieveClass(class)
 end
 
 --[[
-    Purpose: Checks if a character class has whitelist restrictions
-    When Called: When checking if a class requires special permissions or whitelist access
+    Purpose:
+        Checks if a character class has whitelist restrictions
+    When Called:
+        When checking if a class requires special permissions or whitelist access
     Parameters:
         - class (number): The class index to check for whitelist
-    Returns: boolean - True if the class has whitelist restrictions, false otherwise
-    Realm: Shared
+    Returns:
+        boolean - True if the class has whitelist restrictions, false otherwise
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local hasWhitelist = lia.class.hasWhitelist(1)
         if hasWhitelist then
@@ -525,6 +579,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         local function checkClassAccess(client, classIndex)
             local class = lia.class.get(classIndex)
@@ -543,6 +598,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function getWhitelistClasses()
             local whitelistClasses = {}
@@ -581,20 +637,26 @@ function lia.class.hasWhitelist(class)
 end
 
 --[[
-    Purpose: Retrieves all classes that a specific client can join
-    When Called: When displaying available classes to a player or checking joinable options
+    Purpose:
+        Retrieves all classes that a specific client can join
+    When Called:
+        When displaying available classes to a player or checking joinable options
     Parameters:
         - client (Player): The player to check joinable classes for (optional, defaults to LocalPlayer on client)
-    Returns: table - Array of class tables that the client can join
-    Realm: Shared
+    Returns:
+        table - Array of class tables that the client can join
+    Realm:
+        Shared
     Example Usage:
         Low Complexity:
+
         ```lua
         local joinableClasses = lia.class.retrieveJoinable(client)
         print("Player can join " .. #joinableClasses .. " classes")
         ```
 
         Medium Complexity:
+
         ```lua
         local function getJoinableClassNames(client)
             local joinableClasses = lia.class.retrieveJoinable(client)
@@ -609,6 +671,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         local function getDetailedJoinableClasses(client)
             local joinableClasses = lia.class.retrieveJoinable(client)

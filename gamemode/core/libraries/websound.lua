@@ -91,22 +91,28 @@ local function validateURL(url)
 end
 
 --[[
-    Purpose: Downloads a sound file from a URL and caches it locally for future use
-    When Called: When a sound needs to be downloaded from a web URL, either directly or through other websound functions
+    Purpose:
+        Downloads a sound file from a URL and caches it locally for future use
+    When Called:
+        When a sound needs to be downloaded from a web URL, either directly or through other websound functions
     Parameters:
         - name (string): The name/path for the sound file (will be normalized)
         - url (string, optional): The HTTP/HTTPS URL to download from (uses stored URL if not provided)
         - cb (function, optional): Callback function called with (path, fromCache, error) parameters
-    Returns: None (uses callback for results)
-    Realm: Client and Server
+    Returns:
+        None (uses callback for results)
+    Realm:
+        Client and Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Download a sound file
         lia.websound.download("notification.wav", "https://example.com/sound.wav")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Download with callback handling
         lia.websound.download("alert.mp3", "https://example.com/alert.mp3", function(path, fromCache, error)
@@ -122,6 +128,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch download with validation and error handling
         local sounds = {
@@ -230,22 +237,28 @@ function lia.websound.download(name, url, cb)
 end
 
 --[[
-    Purpose: Registers a sound file URL for future use and immediately downloads it
-    When Called: When registering a new sound file that should be available for playback
+    Purpose:
+        Registers a sound file URL for future use and immediately downloads it
+    When Called:
+        When registering a new sound file that should be available for playback
     Parameters:
         - name (string): The name/path for the sound file (will be normalized)
         - url (string): The HTTP/HTTPS URL to download from
         - cb (function, optional): Callback function called with (path, fromCache, error) parameters
-    Returns: None (uses callback for results)
-    Realm: Client and Server
+    Returns:
+        None (uses callback for results)
+    Realm:
+        Client and Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Register a sound file
         lia.websound.register("button_click.wav", "https://example.com/click.wav")
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Register with callback and error handling
         lia.websound.register("notification.mp3", "https://cdn.example.com/notify.mp3", function(path, fromCache, error)
@@ -259,6 +272,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Register multiple sounds with validation and progress tracking
         local soundRegistry = {
@@ -304,14 +318,19 @@ function lia.websound.register(name, url, cb)
 end
 
 --[[
-    Purpose: Retrieves the local file path of a cached sound file
-    When Called: When checking if a sound file is available locally or getting its path for playback
+    Purpose:
+        Retrieves the local file path of a cached sound file
+    When Called:
+        When checking if a sound file is available locally or getting its path for playback
     Parameters:
         - name (string): The name/path of the sound file to retrieve (will be normalized)
-    Returns: string or nil - The local file path if found, nil if not cached
-    Realm: Client and Server
+    Returns:
+        string or nil - The local file path if found, nil if not cached
+    Realm:
+        Client and Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Check if a sound is cached
         local soundPath = lia.websound.get("button_click.wav")
@@ -323,6 +342,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Get sound path with fallback handling
         local function playSoundIfAvailable(soundName)
@@ -344,6 +364,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Batch check multiple sounds with availability tracking
         local requiredSounds = {
@@ -602,13 +623,19 @@ function surface.PlaySound(soundPath, _, cb)
 end
 
 --[[
-    Purpose: Retrieves statistics about downloaded and stored sound files
-    When Called: When monitoring websound library performance or displaying usage statistics
-    Parameters: None
-    Returns: table - Contains downloaded count, stored count, and last reset timestamp
-    Realm: Client and Server
+    Purpose:
+        Retrieves statistics about downloaded and stored sound files
+    When Called:
+        When monitoring websound library performance or displaying usage statistics
+    Parameters:
+        None
+    Returns:
+        table - Contains downloaded count, stored count, and last reset timestamp
+    Realm:
+        Client and Server
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Get basic statistics
         local stats = lia.websound.getStats()
@@ -617,6 +644,7 @@ end
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Display formatted statistics with timestamp
         local function displayWebSoundStats()
@@ -633,6 +661,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Monitor statistics with logging and performance tracking
         local function monitorWebSoundPerformance()
@@ -686,21 +715,27 @@ function lia.websound.getStats()
 end
 
 --[[
-    Purpose: Plays a button click sound with automatic fallback to default button_click.wav
-    When Called: When a button is clicked and needs to play a sound
+    Purpose:
+        Plays a button click sound with automatic fallback to default button_click.wav
+    When Called:
+        When a button is clicked and needs to play a sound
     Parameters:
         - customSound (string, optional): Custom sound to play instead of default
         - callback (function, optional): Callback function called with (success) parameter
-    Returns: None (uses callback for results)
-    Realm: Client only
+    Returns:
+        None (uses callback for results)
+    Realm:
+        Client only
     Example Usage:
         Low Complexity:
+
         ```lua
         -- Simple: Play default button sound
         lia.websound.playButtonSound()
         ```
 
         Medium Complexity:
+
         ```lua
         -- Medium: Play custom sound with fallback
         lia.websound.playButtonSound("custom_click.wav", function(success)
@@ -713,6 +748,7 @@ end
         ```
 
         High Complexity:
+
         ```lua
         -- High: Conditional button sounds with error handling
         local function handleButtonClick(buttonType, customSound)
