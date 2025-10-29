@@ -215,7 +215,6 @@ function lia.derma.optionsMenu(rawOptions, config)
     if mode ~= "interaction" and mode ~= "action" then mode = "custom" end
     local client = LocalPlayer()
     if not IsValid(client) then return end
-
     local ent = config.entity
     if ent == nil and (mode ~= "custom" or config.resolveEntity ~= false) then
         if isfunction(client.getTracedEntity) then
@@ -233,7 +232,6 @@ function lia.derma.optionsMenu(rawOptions, config)
     if registryKey == nil then registryKey = mode ~= "custom" and "InteractionMenu" or "OptionsMenu" end
     lia.gui = lia.gui or {}
     if registryKey and IsValid(lia.gui[registryKey]) then lia.gui[registryKey]:Remove() end
-
     local visible = {}
     local function addOption(id, option, overrideLabel)
         if not option then return end
@@ -251,7 +249,9 @@ function lia.derma.optionsMenu(rawOptions, config)
                 if istable(entry) then addOption(entry.id or entry.name or tostring(_), entry.opt or entry, entry.label) end
             end
         else
-            for id, option in pairs(rawOptions) do addOption(id, option) end
+            for id, option in pairs(rawOptions) do
+                addOption(id, option)
+            end
         end
     elseif mode == "interaction" then
         if not IsValid(ent) then return end
@@ -287,7 +287,6 @@ function lia.derma.optionsMenu(rawOptions, config)
     end
 
     if #visible == 0 then return end
-
     local optionsList
     if mode ~= "custom" and lia.playerinteract and lia.playerinteract.getCategorizedOptions then
         optionsList = lia.playerinteract.getCategorizedOptions(visible)
@@ -308,6 +307,7 @@ function lia.derma.optionsMenu(rawOptions, config)
             frameH = math.min(baseH, maxHeight)
         end
     end
+
     local titleH = config.titleHeight or (mode == "interaction" and 36 or 16)
     local titleY = config.titleOffsetY or 2
     local gap = config.verticalGap or 24
@@ -333,9 +333,7 @@ function lia.derma.optionsMenu(rawOptions, config)
     frame:MakePopup()
     frame:SetTitle("")
     frame:ShowCloseButton(false)
-
     if emitHooks then hook.Run("InteractionMenuOpened", frame) end
-
     local oldOnRemove = frame.OnRemove
     function frame:OnRemove()
         if oldOnRemove then oldOnRemove(self) end
@@ -367,18 +365,15 @@ function lia.derma.optionsMenu(rawOptions, config)
     title:SetFont(config.titleFont or "liaSmallFont")
     title:SetColor(config.titleColor or color_white)
     title:SetContentAlignment(5)
-
     local scroll = frame:Add("liaScrollPanel")
     scroll:SetPos(0, titleH + titleY + gap)
     scroll:SetSize(frameW, frameH - titleH - titleY - gap)
     local layout = vgui.Create("DListLayout", scroll)
     layout:Dock(FILL)
-
     local buttonFont = config.buttonFont or "liaSmallFont"
     local buttonTextColor = config.buttonTextColor or color_white
     local shouldCloseOnSelect = config.closeOnSelect
     if shouldCloseOnSelect == nil then shouldCloseOnSelect = true end
-
     for _, entry in ipairs(optionsList) do
         local btn = vgui.Create("liaButton", layout)
         btn:SetTall(entryH)
@@ -389,15 +384,14 @@ function lia.derma.optionsMenu(rawOptions, config)
             local localized = L(displayText)
             if localized and localized ~= "" then displayText = localized end
         end
+
         btn:SetText(displayText)
         btn:SetFont(buttonFont)
         btn:SetTextColor(entry.opt and entry.opt.textColor or buttonTextColor)
         btn:SetContentAlignment(5)
         local description = entry.opt and (entry.opt.description or entry.opt.desc)
         if isstring(description) and description ~= "" then
-            if entry.opt.localizedDescription ~= false and L then
-                description = L(description)
-            end
+            if entry.opt.localizedDescription ~= false and L then description = L(description) end
             btn:SetTooltip(description)
         end
 
@@ -435,7 +429,6 @@ function lia.derma.optionsMenu(rawOptions, config)
             end
 
             runOptionCallback()
-
             local messageName = optionData.serverOnly and (optionData.netMessage or netMsg) or nil
             if messageName then
                 net.Start(messageName)

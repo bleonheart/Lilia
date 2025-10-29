@@ -1102,6 +1102,7 @@ if SERVER then
             if IsValid(client) and client:hasPrivilege("canSeeAltingNotifications") then client:notifyAdminLocalized(notification) end
         end
     end
+
     --[[
         Purpose:
             Adds a permission to a specific user group
