@@ -17,17 +17,37 @@ def _get_paths_from_file_location():
     current_file = Path(__file__).resolve()
     file_path_str = str(current_file)
 
-    # Check if file is in the E:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure
-    if r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+    # Check if file is in the E:\Server\garrysmod\gamemodes\Lilia\ structure
+    if r"E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
+        gamemode_root = lilia_root / "gamemode"
+        docs_root = lilia_root / "documentation"
+        language_file = gamemode_root / "languages" / "english.lua"
+        # Derive metrorp path relative to lilia_root
+        metrorp_root = lilia_root.parent / "metrorp"
+        modules_paths = [
+            metrorp_root / "gitmodules",
+            metrorp_root / "modules",
+            # Note: devmodules doesn't exist in the actual directory structure
+            # metrorp_root / "devmodules",
+        ]
+        output_dir = docs_root
+
+    # Check if file is in the E:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure (legacy support)
+    elif r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
         # File is in E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
         lilia_root = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia")
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
+        # Derive metrorp path relative to lilia_root
+        metrorp_root = lilia_root.parent / "metrorp"
         modules_paths = [
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+            metrorp_root / "gitmodules",
+            metrorp_root / "modules",
+            # Note: devmodules doesn't exist in the actual directory structure
+            # metrorp_root / "devmodules",
         ]
         output_dir = docs_root
 
@@ -38,10 +58,10 @@ def _get_paths_from_file_location():
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
+        # For D:\ drive, we can't derive metrorp path, so use E:\Server as fallback
         modules_paths = [
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
-            Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+            Path(r"E:\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+            Path(r"E:\Server\garrysmod\gamemodes\metrorp\modules"),
         ]
         output_dir = docs_root
 
@@ -64,22 +84,29 @@ def _get_paths_from_file_location():
             gamemode_root = lilia_root / "gamemode"
             docs_root = lilia_root / "documentation"
             language_file = gamemode_root / "languages" / "english.lua"
+            # Derive metrorp path relative to lilia_root
+            metrorp_root = lilia_root.parent / "metrorp"
             modules_paths = [
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+                metrorp_root / "gitmodules",
+                metrorp_root / "modules",
+                # Note: devmodules doesn't exist in the actual directory structure
+                # metrorp_root / "devmodules",
             ]
             output_dir = docs_root
         else:
             # Ultimate fallback - use hardcoded defaults
             print("Warning: Could not determine Lilia root from file location, using hardcoded defaults")
-            gamemode_root = Path(r"D:\Lilia\gamemode")
-            docs_root = Path(r"D:\Lilia\documentation")
-            language_file = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
+            gamemode_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode")
+            docs_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia\documentation")
+            language_file = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
+            # Derive metrorp path relative to lilia_root
+            lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
+            metrorp_root = lilia_root.parent / "metrorp"
             modules_paths = [
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
-                Path(r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"),
+                metrorp_root / "gitmodules",
+                metrorp_root / "modules",
+                # Note: devmodules doesn't exist in the actual directory structure
+                # metrorp_root / "devmodules",
             ]
             output_dir = docs_root
 
@@ -97,6 +124,9 @@ _paths = _get_paths_from_file_location()
 DEFAULT_GAMEMODE_ROOT = _paths['gamemode_root']
 DEFAULT_DOCS_ROOT = _paths['docs_root']
 DEFAULT_LANGUAGE_FILE = _paths['language_file']
+# Ensure correct path for E:\Server structure
+if str(DEFAULT_LANGUAGE_FILE).startswith(r'E:\GMOD\Server'):
+    DEFAULT_LANGUAGE_FILE = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
 DEFAULT_MODULES_PATHS = _paths['modules_paths']
 DEFAULT_OUTPUT_DIR = _paths['output_dir']
 
@@ -941,6 +971,64 @@ class FunctionComparisonReportGenerator:
         
         return documented_hooks
 
+    def _remove_lua_comments(self, content: str) -> str:
+        """Remove Lua comments from content to avoid detecting commented-out code.
+
+        Handles:
+        - Single line comments: -- comment
+        - Multi-line comments: --[[ comment ]]
+        - Long string comments: --[=[ comment ]=]
+        """
+        # First, handle long string comments (--[=[...]=], --[[...]], etc.)
+        # Pattern matches --[ followed by optional = signs, then content until matching ]=]
+        long_comment_pattern = r'--\[(=*)\[.*?\]\1\]'
+        content = re.sub(long_comment_pattern, '', content, flags=re.DOTALL)
+
+        # Handle single-line comments (-- comment)
+        # Split into lines, remove comments from each line
+        lines = content.split('\n')
+        processed_lines = []
+
+        for line in lines:
+            # Find the first -- that's not inside a string
+            in_string = False
+            string_char = None
+            comment_start = -1
+
+            i = 0
+            while i < len(line):
+                char = line[i]
+
+                if not in_string:
+                    if char in ('"', "'"):
+                        in_string = True
+                        string_char = char
+                    elif char == '-' and i + 1 < len(line) and line[i + 1] == '-':
+                        # Found --, this starts a comment
+                        comment_start = i
+                        break
+                else:
+                    if char == string_char:
+                        # Check if this quote is escaped
+                        escape_count = 0
+                        check_pos = i - 1
+                        while check_pos >= 0 and line[check_pos] == '\\':
+                            escape_count += 1
+                            check_pos -= 1
+                        if escape_count % 2 == 0:  # Not escaped
+                            in_string = False
+                            string_char = None
+
+                i += 1
+
+            if comment_start != -1:
+                # Remove everything from -- to end of line
+                line = line[:comment_start]
+
+            processed_lines.append(line)
+
+        return '\n'.join(processed_lines)
+
     def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]]]:
         """Scan Lua files for hooks and attempt to capture their parameter names.
 
@@ -960,6 +1048,9 @@ class FunctionComparisonReportGenerator:
             try:
                 with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
+
+                # Remove comments from content before processing
+                content = self._remove_lua_comments(content)
 
                 # Names only
                 file_hooks = self._extract_hooks_from_file_content(content)
@@ -1163,6 +1254,9 @@ class FunctionComparisonReportGenerator:
                 with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
 
+                # Remove comments from content before processing
+                content = self._remove_lua_comments(content)
+
                 # Find vgui.Register() calls
                 # Pattern: vgui.Register("PanelName", panelData) or vgui.Register('PanelName', panelData)
                 pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
@@ -1182,41 +1276,38 @@ class FunctionComparisonReportGenerator:
         """Read documented panels from panels documentation files"""
         documented_panels = set()
 
-        # Check panels documentation directory
-        panels_doc_dir = self.docs_path / "docs" / "panels"
-        if not panels_doc_dir.exists():
-            print(f"Warning: Panels documentation directory not found: {panels_doc_dir}")
+        # Check panels documentation file in definitions directory
+        panels_doc_file = self.docs_path / "docs" / "definitions" / "panels.md"
+        if not panels_doc_file.exists():
+            print(f"Warning: Panels documentation file not found: {panels_doc_file}")
             return documented_panels
 
-        # Read from all .md files in the panels directory
-        for md_file in panels_doc_dir.glob("*.md"):
-            try:
-                with open(md_file, 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
+        try:
+            with open(panels_doc_file, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
 
-                # Look for panel names in headers or content
-                # Pattern matches: ### PanelName or # PanelName or mentions in content
-                lines = content.split('\n')
-                for line in lines:
-                    line = line.strip()
-                    # Check for headers like ### liaMenu or # liaMenu
-                    if line.startswith('#') and len(line) > 1:
-                        # Extract panel name from header (remove # symbols and get first word)
-                        header_content = line.lstrip('#').strip()
-                        panel_name = header_content.split()[0] if header_content else ""
-                        if panel_name and panel_name not in ['Panels', 'Panel']:
-                            documented_panels.add(panel_name)
+            # Look for panel names in headers or content
+            # Pattern matches: ### PanelName or # PanelName or mentions in content
+            lines = content.split('\n')
+            for line in lines:
+                line = line.strip()
+                # Check for headers like ### liaMenu or # liaMenu
+                if line.startswith('#') and len(line) > 1:
+                    # Extract panel name from header (remove # symbols and get first word)
+                    header_content = line.lstrip('#').strip()
+                    panel_name = header_content.split()[0] if header_content else ""
+                    if panel_name and panel_name not in ['Panels', 'Panel']:
+                        documented_panels.add(panel_name)
 
-                    # Also check for vgui.Register mentions in content
-                    register_pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
-                    matches = re.findall(register_pattern, line, re.IGNORECASE)
-                    for panel_name in matches:
-                        if panel_name and panel_name.strip():
-                            documented_panels.add(panel_name.strip())
+                # Also check for vgui.Register mentions in content
+                register_pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
+                matches = re.findall(register_pattern, line, re.IGNORECASE)
+                for panel_name in matches:
+                    if panel_name and panel_name.strip():
+                        documented_panels.add(panel_name.strip())
 
-            except Exception as e:
-                print(f"Warning: Could not read panels from {md_file}: {e}")
-                continue
+        except Exception as e:
+            print(f"Warning: Could not read panels from {panels_doc_file}: {e}")
 
         return documented_panels
 
@@ -1931,26 +2022,47 @@ class FunctionComparisonReportGenerator:
             lines.append("")
             return lines
 
-        # Find missing panels (panels found in code but not documented)
-        panels_missing = [p for p in data.panels_found if p not in data.panels_documented]
+        # Categorize panels
+        panels_found_set = set(data.panels_found)
+        panels_documented_set = set(data.panels_documented)
+
+        # Panels registered in code but not documented
+        panels_missing_docs = [p for p in data.panels_found if p not in panels_documented_set]
+
+        # Panels documented but not registered in code (potentially obsolete)
+        panels_obsolete_docs = [p for p in data.panels_documented if p not in panels_found_set]
+
+        # Panels that are both registered and documented (properly documented)
+        panels_properly_documented = [p for p in data.panels_found if p in panels_documented_set]
 
         lines.extend([
             "### Summary",
-            f"- **Panels Found:** {len(data.panels_found)}",
-            f"- **Documented Panels:** {len(data.panels_documented)}",
-            f"- **Missing Documentation:** {len(panels_missing)}",
+            f"- **Panels Registered in Code:** {len(data.panels_found)}",
+            f"- **Panels in Documentation:** {len(data.panels_documented)}",
+            f"- **Missing Documentation:** {len(panels_missing_docs)}",
+            f"- **Obsolete Documentation:** {len(panels_obsolete_docs)}",
+            f"- **Properly Documented:** {len(panels_properly_documented)}",
             "",
         ])
 
-        if panels_missing:
-            lines.append("### Missing Panel Documentation:")
-            for panel in sorted(panels_missing):
+        if panels_missing_docs:
+            lines.append("### Panels Missing Documentation:")
+            lines.append("These panels are registered in code but not documented:")
+            for panel in sorted(panels_missing_docs):
                 lines.append(f"- `{panel}()`")
             lines.append("")
 
-        if data.panels_documented:
-            lines.append("### Documented Panels:")
-            for panel in sorted(data.panels_documented):
+        if panels_obsolete_docs:
+            lines.append("### Obsolete Panel Documentation:")
+            lines.append("These panels are documented but not registered in code:")
+            for panel in sorted(panels_obsolete_docs):
+                lines.append(f"- `{panel}()`")
+            lines.append("")
+
+        if panels_properly_documented:
+            lines.append("### Properly Documented Panels:")
+            lines.append("These panels are both registered in code and documented:")
+            for panel in sorted(panels_properly_documented):
                 lines.append(f"- `{panel}()`")
             lines.append("")
 
@@ -2188,8 +2300,12 @@ Examples:
                        help=f"Base path to gamemode directory (default: {DEFAULT_GAMEMODE_ROOT})")
     parser.add_argument("--docs-path", default=str(DEFAULT_DOCS_ROOT),
                        help=f"Path to documentation directory (default: {DEFAULT_DOCS_ROOT})")
-    parser.add_argument("--language-file", default=str(DEFAULT_LANGUAGE_FILE),
-                       help=f"Path to main language file (default: {DEFAULT_LANGUAGE_FILE})")
+    # Use correct language file path for E:\Server structure
+    default_lang_file = str(DEFAULT_LANGUAGE_FILE)
+    if default_lang_file.startswith(r'E:\GMOD\Server'):
+        default_lang_file = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
+    parser.add_argument("--language-file", default=default_lang_file,
+                       help=f"Path to main language file (default: {default_lang_file})")
     parser.add_argument("--modules-path", action="append",
                        help=f"Paths to modules directories (default: {DEFAULT_MODULES_PATHS})")
     parser.add_argument("--output", "-o", help="Output file path (default: report.md)")
@@ -2284,6 +2400,12 @@ def test_path_detection():
     if not paths['docs_root'].exists():
         print(f"ERROR: Documentation root does not exist: {paths['docs_root']}")
         all_good = False
+
+    # Check modules paths
+    for path in paths['modules_paths']:
+        if not path.exists():
+            print(f"ERROR: Modules path does not exist: {path}")
+            all_good = False
 
     if all_good:
         print("SUCCESS: Path detection test passed!")
