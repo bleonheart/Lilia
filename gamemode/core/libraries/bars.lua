@@ -21,53 +21,61 @@ end
 
 --[[
     Purpose:
-        Retrieves a bar object by its identifier from the bars list
+        Retrieves a bar by its identifier from the bars list.
+
     When Called:
-        When you need to access or modify an existing bar's properties
+        When needing to access or modify a specific bar that was previously added.
+
     Parameters:
-        identifier (string) - The unique identifier of the bar to retrieve
+        - identifier (string): The unique identifier of the bar to retrieve.
+
     Returns:
-        table|nil - The bar object if found, nil otherwise
+        Bar object if found, nil otherwise.
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Get a bar by identifier
-    local healthBar = lia.bar.get("health")
-    if healthBar then
-        print("Health bar found")
-    end
-    ```
+        ```lua
+        -- Simple: Get a bar by identifier
+        local healthBar = lia.bar.get("health")
+        if healthBar then
+            print("Health bar color:", healthBar.color)
+        end
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Get and modify bar properties
-    local customBar = lia.bar.get("custom_stamina")
-    if customBar then
-        customBar.color = Color(255, 255, 0)
-        customBar.priority = 2
-    end
-    ```
+        ```lua
+        -- Medium: Check if a custom bar exists and modify it
+        local customBar = lia.bar.get("stamina")
+        if customBar then
+            customBar.color = Color(100, 200, 100)
+            print("Updated stamina bar color")
+        else
+            print("Stamina bar not found")
+        end
+        ```
 
-    High Complexity:
+        High Complexity:
 
-    ```lua
-    -- High: Dynamic bar management with validation
-    local barIdentifiers = {"health", "armor", "stamina", "hunger"}
-    for _, id in ipairs(barIdentifiers) do
-        local bar = lia.bar.get(id)
-        if bar then
-            bar.lifeTime = CurTime() + 10
-            print("Extended lifetime for " .. id .. " bar")
-            else
-                print("Bar " .. id .. " not found")
+        ```lua
+        -- High: Iterate through multiple bars and find specific ones
+        local barIdentifiers = {"health", "armor", "stamina", "hunger"}
+        local foundBars = {}
+
+        for _, identifier in ipairs(barIdentifiers) do
+            local bar = lia.bar.get(identifier)
+            if bar then
+                table.insert(foundBars, bar)
             end
         end
-    ```
+
+        print("Found", #foundBars, "bars out of", #barIdentifiers)
+        ```
 ]]
 function lia.bar.get(identifier)
     for _, bar in ipairs(lia.bar.list) do
@@ -77,63 +85,63 @@ end
 
 --[[
     Purpose:
-        Adds a new progress bar to the bars system with specified properties
+        Adds a new progress bar to the bars system or updates an existing one.
+
     When Called:
-        When creating custom bars or adding new progress indicators to the HUD
+        When creating custom progress bars for health, armor, stamina, hunger, etc., or when updating existing bars.
+
     Parameters:
-        getValue (function) - Function that returns the current value (0-1) for the bar
-        color (Color) - Color of the bar fill (optional, defaults to random color)
-        priority (number) - Display priority, lower numbers appear first (optional)
-        identifier (string) - Unique identifier for the bar (optional)
+        - getValue (function): Function that returns the current value (0-1) for the bar.
+        - color (Color): The color of the bar (optional, random color if not provided).
+        - priority (number): Display priority/order of the bar (optional, defaults to next available).
+        - identifier (string): Unique identifier for the bar (optional, allows updating/removing specific bars).
+
     Returns:
-        number - The priority assigned to the bar
+        The priority number assigned to the bar.
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Add a basic health bar
-    lia.bar.add(function()
-    return LocalPlayer():Health() / LocalPlayer():GetMaxHealth()
-    end, Color(255, 0, 0), 1, "health")
-    ```
+        ```lua
+        -- Simple: Add a basic health bar
+        lia.bar.add(function()
+            return LocalPlayer():Health() / LocalPlayer():GetMaxHealth()
+        end, Color(200, 50, 40), 1, "health")
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Add a custom stamina bar with validation
-    lia.bar.add(function()
-    local ply = LocalPlayer()
-    if not IsValid(ply) then return 0 end
-        return ply:GetNWFloat("stamina", 100) / 100
-        end, Color(0, 255, 0), 2, "stamina")
-    ```
+        ```lua
+        -- Medium: Add a stamina bar with custom priority
+        lia.bar.add(function()
+            return LocalPlayer():GetNWFloat("stamina", 1)
+        end, Color(100, 200, 100), 2, "stamina")
+        ```
 
-    High Complexity:
+        High Complexity:
 
-    ```lua
-    -- High: Dynamic bar creation with multiple conditions
-    local function createConditionalBar(condition, getValue, color, priority, id)
-        if condition then
-            return lia.bar.add(function()
-            local ply = LocalPlayer()
-            if not IsValid(ply) then return 0 end
-                return getValue(ply)
-                end, color, priority, id)
-            end
-            return nil
+        ```lua
+        -- High: Add a complex bar with dynamic color and priority
+        local function getHungerValue()
+            local hunger = LocalPlayer():GetNWFloat("hunger", 100)
+            return math.Clamp(hunger / 100, 0, 1)
         end
 
-        createConditionalBar(
-        true,
-        function(ply) return ply:Armor() / ply:GetMaxArmor() end,
-            Color(0, 0, 255),
-            3,
-            "armor"
-            )
-    ```
+        local hungerColor = Color(150, 100, 50)
+        local hungerPriority = 3
+        local hungerID = "hunger"
+
+        lia.bar.add(getHungerValue, hungerColor, hungerPriority, hungerID)
+
+        -- Later update the same bar
+        lia.bar.add(function()
+            return math.Clamp(LocalPlayer():GetNWFloat("hunger", 100) / 100, 0, 1)
+        end, Color(200, 50, 50), hungerPriority, hungerID)
+        ```
 ]]
 function lia.bar.add(getValue, color, priority, identifier)
     if identifier then
@@ -156,46 +164,58 @@ end
 
 --[[
     Purpose:
-        Removes a bar from the bars system by its identifier
+        Removes a bar from the bars system by its identifier.
+
     When Called:
-        When you need to remove a specific bar from the HUD or clean up bars
+        When needing to remove a specific bar that was previously added, such as when a temporary bar is no longer needed.
+
     Parameters:
-        identifier (string) - The unique identifier of the bar to remove
+        - identifier (string): The unique identifier of the bar to remove.
+
     Returns:
-        void
+        Nothing
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Remove a bar by identifier
-    lia.bar.remove("health")
-    ```
+        ```lua
+        -- Simple: Remove a stamina bar
+        lia.bar.remove("stamina")
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Conditionally remove bars
-    if not player:HasPermission("see_health") then
-        lia.bar.remove("health")
-    end
-    ```
-
-    High Complexity:
-
-    ```lua
-    -- High: Remove multiple bars with validation
-    local barsToRemove = {"stamina", "hunger", "thirst"}
-    for _, barId in ipairs(barsToRemove) do
-        local bar = lia.bar.get(barId)
-        if bar then
-            lia.bar.remove(barId)
-            print("Removed bar: " .. barId)
+        ```lua
+        -- Medium: Remove a bar if it exists
+        if lia.bar.get("temporary_buff") then
+            lia.bar.remove("temporary_buff")
+            print("Temporary buff bar removed")
         end
-    end
-    ```
+        ```
+
+        High Complexity:
+
+        ```lua
+        -- High: Remove multiple bars with validation
+        local barsToRemove = {"stamina", "hunger", "thirst", "mana"}
+        local removedCount = 0
+
+        for _, identifier in ipairs(barsToRemove) do
+            if lia.bar.get(identifier) then
+                lia.bar.remove(identifier)
+                removedCount = removedCount + 1
+                print("Removed bar:", identifier)
+            else
+                print("Bar not found:", identifier)
+            end
+        end
+
+        print("Successfully removed", removedCount, "bars")
+        ```
 ]]
 function lia.bar.remove(identifier)
     local idx = findIndexByIdentifier(identifier)
@@ -211,53 +231,74 @@ end
 
 --[[
     Purpose:
-        Draws a single progress bar at specified coordinates with given properties
+        Draws a progress bar at the specified position with given dimensions and values.
+
     When Called:
-        Internally by the bars system or when manually drawing custom bars
+        Internally by the bars system when rendering individual bars, or can be called directly for custom bar rendering.
+
     Parameters:
-        x (number) - X coordinate for the bar position
-        y (number) - Y coordinate for the bar position
-        w (number) - Width of the bar
-        h (number) - Height of the bar
-        pos (number) - Current progress value (0-max)
-        max (number) - Maximum value for the bar
-        color (Color) - Color of the bar fill
+        - x (number): X position of the bar.
+        - y (number): Y position of the bar.
+        - w (number): Width of the bar.
+        - h (number): Height of the bar.
+        - pos (number): Current value of the bar.
+        - max (number): Maximum value of the bar.
+        - color (Color): Color of the filled portion of the bar.
+
     Returns:
-        void
+        Nothing
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Draw a basic progress bar
-    lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
-    ```
+        ```lua
+        -- Simple: Draw a basic health bar
+        lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(200, 50, 40))
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Draw a bar with calculated values
-    local health = LocalPlayer():Health()
-    local maxHealth = LocalPlayer():GetMaxHealth()
-    lia.bar.drawBar(10, 10, 200, 20, health, maxHealth, Color(255, 0, 0))
-    ```
+        ```lua
+        -- Medium: Draw a bar with calculated position
+        local barX = ScrW() * 0.1
+        local barY = ScrH() * 0.8
+        local barWidth = ScrW() * 0.2
+        local barHeight = 16
 
-    High Complexity:
+        local currentValue = LocalPlayer():Health()
+        local maxValue = LocalPlayer():GetMaxHealth()
 
-    ```lua
-    -- High: Dynamic bar drawing with multiple conditions
-    local function drawCustomBar(x, y, w, h, value, maxValue, color, condition)
-        if condition and value > 0 then
-            local normalizedValue = math.min(value, maxValue)
-            lia.bar.drawBar(x, y, w, h, normalizedValue, maxValue, color)
+        lia.bar.drawBar(barX, barY, barWidth, barHeight, currentValue, maxValue, Color(255, 100, 100))
+        ```
+
+        High Complexity:
+
+        ```lua
+        -- High: Draw multiple bars with different calculations and colors
+        local bars = {
+            {name = "Health", value = LocalPlayer():Health(), max = LocalPlayer():GetMaxHealth(), color = Color(200, 50, 40)},
+            {name = "Armor", value = LocalPlayer():Armor(), max = LocalPlayer():GetMaxArmor(), color = Color(30, 70, 180)},
+            {name = "Stamina", value = LocalPlayer():GetNWFloat("stamina", 100), max = 100, color = Color(100, 200, 100)}
+        }
+
+        local startX = ScrW() * 0.05
+        local startY = ScrH() * 0.75
+        local barWidth = ScrW() * 0.25
+        local barHeight = 18
+        local spacing = 25
+
+        for i, barData in ipairs(bars) do
+            local yPos = startY + (i - 1) * spacing
+            lia.bar.drawBar(startX, yPos, barWidth, barHeight, barData.value, barData.max, barData.color)
+
+            -- Draw label
+            draw.SimpleText(barData.name, "liaMediumFont", startX, yPos - 20, Color(240, 240, 240))
         end
-    end
-
-    drawCustomBar(10, 10, 200, 20, player:Health(), player:GetMaxHealth(),
-    Color(255, 0, 0), player:Alive())
-    ```
+        ```
 ]]
 function lia.bar.drawBar(x, y, w, h, pos, max, color)
     pos = math.min(pos, max)
@@ -270,54 +311,73 @@ end
 
 --[[
     Purpose:
-        Draws a temporary action progress bar with text overlay for timed actions
+        Draws a temporary action progress bar that automatically disappears after the specified duration.
+
     When Called:
-        When displaying progress for actions like reloading, healing, or other timed activities
+        When displaying temporary progress indicators for actions like lockpicking, hacking, crafting, etc.
+
     Parameters:
-        text (string) - Text to display above the progress bar
-        duration (number) - Duration in seconds for the action to complete
+        - text (string): The text to display above the action bar.
+        - duration (number): How long the action bar should be visible in seconds.
+
     Returns:
-        void
+        Nothing
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Show reload progress
-    lia.bar.drawAction("Reloading...", 2.5)
-    ```
+        ```lua
+        -- Simple: Show a basic action bar for 3 seconds
+        lia.bar.drawAction("Picking lock...", 3)
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Show healing progress with dynamic text
-    local healAmount = 50
-    lia.bar.drawAction("Healing for " .. healAmount .. " HP", 3.0)
-    ```
+        ```lua
+        -- Medium: Show action bar with dynamic text
+        local actionText = "Cooking " .. recipeName
+        local cookTime = recipe.cookTime or 5
+        lia.bar.drawAction(actionText, cookTime)
+        ```
 
-    High Complexity:
+        High Complexity:
 
-    ```lua
-    -- High: Conditional action display with multiple states
-    local function showActionProgress(actionType, duration, data)
-        local text = ""
-        if actionType == "heal" then
-            text = "Healing for " .. (data.amount or 25) .. " HP"
-            elseif actionType == "repair" then
-                text = "Repairing " .. (data.item or "item")
-                elseif actionType == "craft" then
-                    text = "Crafting " .. (data.item or "item")
-                end
+        ```lua
+        -- High: Show action bar with multiple steps and callbacks
+        local function startComplexAction()
+            local steps = {
+                {text = "Analyzing target...", duration = 2},
+                {text = "Bypassing security...", duration = 3},
+                {text = "Extracting data...", duration = 4},
+                {text = "Cleaning traces...", duration = 1}
+            }
 
-                if text ~= "" then
-                    lia.bar.drawAction(text, duration)
+            local currentStep = 1
+
+            local function nextStep()
+                if currentStep <= #steps then
+                    local step = steps[currentStep]
+                    lia.bar.drawAction(step.text, step.duration)
+
+                    -- Schedule next step
+                    timer.Simple(step.duration, function()
+                        currentStep = currentStep + 1
+                        nextStep()
+                    end)
+                else
+                    print("Complex action completed!")
                 end
             end
 
-            showActionProgress("heal", 2.5, {amount = 75})
-    ```
+            nextStep()
+        end
+
+        startComplexAction()
+        ```
 ]]
 function lia.bar.drawAction(text, duration)
     local startTime, endTime = CurTime(), CurTime() + duration
@@ -346,63 +406,70 @@ end
 
 --[[
     Purpose:
-        Renders all registered bars in priority order with smooth animations and visibility management
+        Renders all active progress bars in priority order, handling visibility, positioning, and smooth value transitions.
+
     When Called:
-        Automatically called during HUDPaintBackground hook, or manually for custom rendering
+        Automatically called every frame by the HUDPaintBackground hook to draw all registered bars.
+
     Parameters:
         None
+
     Returns:
-        void
+        Nothing
+
     Realm:
         Client
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Manually trigger bar rendering
-    lia.bar.drawAll()
-    ```
+        ```lua
+        -- Simple: Draw all bars (called automatically)
+        lia.bar.drawAll()
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Custom rendering with conditions
-    hook.Add("HUDPaint", "CustomBarRender", function()
-        if not hook.Run("ShouldHideBars") then
+        ```lua
+        -- Medium: Force redraw all bars manually
+        hook.Add("HUDPaint", "CustomBarDraw", function()
             lia.bar.drawAll()
-        end
-    end)
-    ```
-
-    High Complexity:
-
-    ```lua
-    -- High: Advanced rendering with custom positioning and filtering
-    local function customDrawAll()
-        if hook.Run("ShouldHideBars") then return end
-
-            -- Custom positioning logic
-            local baseX, baseY = 10, 10
-            local barSpacing = 18
-
-            -- Sort bars by priority
-            table.sort(lia.bar.list, function(a, b)
-            if a.priority == b.priority then
-                return (a.order or 0) < (b.order or 0)
-            end
-            return a.priority < b.priority
         end)
+        ```
 
-        -- Draw each bar with custom logic
-        for i, bar in ipairs(lia.bar.list) do
-            if hook.Run("ShouldBarDraw", bar) then
-                local y = baseY + (i - 1) * barSpacing
-                lia.bar.drawBar(baseX, y, 200, 14, bar.getValue(), 1, bar.color)
+        High Complexity:
+
+        ```lua
+        -- High: Create custom drawing logic with additional effects
+        local function customDrawAll()
+            -- Add custom background effects
+            surface.SetDrawColor(0, 0, 0, 100)
+            surface.DrawRect(0, 0, ScrW(), ScrH())
+
+            -- Draw bars with custom positioning
+            local originalDrawAll = lia.bar.drawAll
+            lia.bar.drawAll = function()
+                -- Custom pre-draw logic
+                local barCount = #lia.bar.list
+                if barCount > 0 then
+                    -- Draw background panel for bars
+                    surface.SetDrawColor(20, 20, 20, 150)
+                    surface.DrawRect(4, 4, ScrW() * 0.35 + 4, barCount * 16 + (barCount - 1) * 2 + 4)
+                end
+
+                -- Call original draw function
+                originalDrawAll()
             end
+
+            lia.bar.drawAll()
+            lia.bar.drawAll = originalDrawAll -- Restore original
         end
-    end
-    ```
+
+        -- Override the default drawing
+        hook.Remove("HUDPaintBackground", "liaBarDraw")
+        hook.Add("HUDPaint", "CustomBarDraw", customDrawAll)
+        ```
 ]]
 function lia.bar.drawAll()
     if hook.Run("ShouldHideBars") then return end

@@ -14,18 +14,24 @@ lia.char.varHooks = lia.char.varHooks or {}
 lia.char.pendingRequests = lia.char.pendingRequests or {}
 --[[
     Purpose:
-        Retrieves a character by its ID, loading it if necessary
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a character needs to be accessed by ID, either from server or client
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character
-        - client (Player): The player requesting the character (optional)
-        - callback (function): Function to call when character is loaded (optional)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Character object if found/loaded, nil otherwise
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
@@ -41,10 +47,10 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
         ```lua
         -- Medium: Get character with callback for async loading
         lia.char.getCharacter(123, client, function(character)
-        if character then
-            character:setMoney(1000)
-            print("Character loaded:", character:getName())
-        end
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
         end)
         ```
 
@@ -57,11 +63,11 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
 
         for _, charID in ipairs(charIDs) do
             lia.char.getCharacter(charID, client, function(character)
-            if character then
-                loadedChars[charID] = character
-                if table.Count(loadedChars) == #charIDs then
-                    print("All characters loaded successfully")
-                end
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
                 else
                     print("Failed to load character:", charID)
                 end
@@ -95,57 +101,64 @@ end
 
 --[[
     Purpose:
-        Retrieves all currently loaded characters from all players
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to iterate through all active characters on the server
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        None
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Table with Player objects as keys and their Character objects as values
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Get all characters and count them
-        local allChars = lia.char.getAll()
-        print("Total active characters:", table.Count(allChars))
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Find characters by faction
-        local allChars = lia.char.getAll()
-        local citizenChars = {}
-
-        for player, character in pairs(allChars) do
-            if character:getFaction() == "Citizen" then
-                citizenChars[player] = character
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Process all characters with validation and statistics
-        local allChars = lia.char.getAll()
-        local stats = {
-        totalChars = 0,
-        totalMoney = 0,
-        factions = {}
-        }
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        for player, character in pairs(allChars) do
-            if IsValid(player) and character then
-                stats.totalChars = stats.totalChars + 1
-                stats.totalMoney = stats.totalMoney + character:getMoney()
-
-                local faction = character:getFaction()
-                stats.factions[faction] = (stats.factions[faction] or 0) + 1
-            end
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
         ```
 ]]
@@ -159,58 +172,65 @@ end
 
 --[[
     Purpose:
-        Checks if a character with the given ID is currently loaded in memory
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        Before attempting to access a character to avoid unnecessary loading
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character to check
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Boolean - true if character is loaded, false otherwise
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Check if character is loaded
-        if lia.char.isLoaded(123) then
-            print("Character 123 is loaded")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Conditional character access
-        local charID = 123
-        if lia.char.isLoaded(charID) then
-            local character = lia.char.getCharacter(charID)
-            character:setMoney(5000)
-            else
-                print("Character not loaded, loading...")
-                lia.char.getCharacter(charID, client, function(char)
-                if char then char:setMoney(5000) end
-                end)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character loading with status checking
+        -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
         local loadedChars = {}
-        local unloadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            if lia.char.isLoaded(charID) then
-                loadedChars[charID] = lia.char.getCharacter(charID)
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
                 else
-                    table.insert(unloadedChars, charID)
+                    print("Failed to load character:", charID)
                 end
-            end
-
-            print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
+            end)
+        end
         ```
 ]]
 function lia.char.isLoaded(charID)
@@ -219,58 +239,65 @@ end
 
 --[[
     Purpose:
-        Adds a character to the loaded characters cache and triggers pending callbacks
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a character is loaded from database or created, to make it available in memory
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - id (number): The unique identifier of the character
-        - character (Character): The character object to add to cache
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Add a character to cache
-        local character = lia.char.new(charData, 123, client)
-        lia.char.addCharacter(123, character)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Add character and handle pending requests
-        local charID = 123
-        local character = lia.char.new(charData, charID, client)
-
-        -- This will trigger any pending callbacks for this character ID
-        lia.char.addCharacter(charID, character)
-
-        -- Check if there were pending requests
-        if lia.char.pendingRequests[charID] then
-            print("Character had pending requests that were triggered")
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character loading with callback management
-        local characters = {}
+        -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            local charData = lia.char.getCharData(charID)
-            if charData then
-                local character = lia.char.new(charData, charID, client)
-                characters[charID] = character
-                lia.char.addCharacter(charID, character)
-            end
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-
-        print("Loaded", table.Count(characters), "characters into cache")
         ```
 ]]
 function lia.char.addCharacter(id, character)
@@ -283,59 +310,65 @@ end
 
 --[[
     Purpose:
-        Removes a character from the loaded characters cache
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a character needs to be unloaded from memory (cleanup, deletion, etc.)
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - id (number): The unique identifier of the character to remove
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Remove character from cache
-        lia.char.removeCharacter(123)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Remove character with validation
-        local charID = 123
-        if lia.char.isLoaded(charID) then
-            local character = lia.char.getCharacter(charID)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
             if character then
-                character:save() -- Save before removing
-                lia.char.removeCharacter(charID)
-                print("Character", charID, "removed from cache")
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character cleanup with error handling
+        -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
-        local removedCount = 0
+        local loadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            if lia.char.isLoaded(charID) then
-                local character = lia.char.getCharacter(charID)
+            lia.char.getCharacter(charID, client, function(character)
                 if character then
-                    -- Perform cleanup operations
-                    character:save()
-                    lia.inventory.cleanUpForCharacter(character)
-                    lia.char.removeCharacter(charID)
-                    removedCount = removedCount + 1
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
+            end)
         end
-
-        print("Removed", removedCount, "characters from cache")
         ```
 ]]
 function lia.char.removeCharacter(id)
@@ -344,77 +377,65 @@ end
 
 --[[
     Purpose:
-        Creates a new character object from data with proper metatable and variable initialization
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When creating a new character instance from database data or character creation
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - data (table): Character data containing all character variables
-        - id (number): The unique identifier for the character (optional)
-        - client (Player): The player who owns this character (optional)
-        - steamID (string): Steam ID of the character owner (optional, used when client is invalid)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Character object with proper metatable and initialized variables
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Create a basic character
-        local charData = {
-        name = "John Doe",
-        desc = "A citizen of the city",
-        faction = "Citizen",
-        model = "models/player/Group01/male_01.mdl"
-        }
-        local character = lia.char.new(charData, 123, client)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Create character with full data and validation
-        local charData = {
-        name = "Jane Smith",
-        desc = "A skilled engineer",
-        faction = "Engineer",
-        model = "models/player/Group01/female_01.mdl",
-        money = 1000,
-        attribs = {strength = 5, intelligence = 8}
-        }
-
-        local character = lia.char.new(charData, 456, client)
-        if character then
-            character:setSkin(1)
-            character:setBodygroups({[0] = 1, [1] = 2})
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Create character from database with error handling
-        local charID = 789
-        local charData = lia.char.getCharData(charID)
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        if charData then
-            -- Validate required fields
-            if not charData.name or not charData.faction then
-                print("Invalid character data for ID:", charID)
-                return
-            end
-
-            -- Create character with fallback SteamID
-            local steamID = client and client:SteamID() or "STEAM_0:0:0"
-            local character = lia.char.new(charData, charID, client, steamID)
-
-            if character then
-                -- Initialize additional data
-                character.vars.inv = {}
-                    character.vars.loginTime = os.time()
-                    lia.char.addCharacter(charID, character)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
+            end)
+        end
         ```
 ]]
 function lia.char.new(data, id, client, steamID)
@@ -446,79 +467,64 @@ end
 
 --[[
     Purpose:
-        Registers a hook function for a specific character variable
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to add custom behavior when a character variable changes
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - varName (string): The name of the character variable to hook
-        - hookName (string): The name/identifier for this hook
-        - func (function): The function to call when the variable changes
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Hook a variable change
-        lia.char.hookVar("money", "onMoneyChange", function(character, oldValue, newValue)
-        print("Money changed from", oldValue, "to", newValue)
-        end)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Hook with validation and side effects
-        lia.char.hookVar("faction", "onFactionChange", function(character, oldValue, newValue)
-        local client = character:getPlayer()
-        if IsValid(client) then
-            -- Update player team
-            client:SetTeam(lia.faction.indices[newValue].index)
-
-            -- Notify player
-            client:notify("Faction changed to: " .. newValue)
-
-            -- Log the change
-            lia.log.add("Faction change: " .. client:Name() .. " changed faction from " .. oldValue .. " to " .. newValue)
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
         end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Multiple hooks with complex logic
-        local hooks = {
-        money = function(character, oldValue, newValue)
-        local client = character:getPlayer()
-        if IsValid(client) then
-            local difference = newValue - oldValue
-            if difference > 0 then
-                client:notify("Gained $" .. difference)
-                elseif difference < 0 then
-                    client:notify("Lost $" .. math.abs(difference))
-                end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-                -- Update HUD if it exists
-                if client.liaHUD then
-                    client.liaHUD:updateMoney(newValue)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
-            end,
-
-            health = function(character, oldValue, newValue)
-            if newValue <= 0 and oldValue > 0 then
-                hook.Run("OnCharacterDeath", character)
-                elseif newValue > 0 and oldValue <= 0 then
-                    hook.Run("OnCharacterRevive", character)
-                end
-            end
-        }
-
-        for varName, hookFunc in pairs(hooks) do
-            lia.char.hookVar(varName, "customHook_" .. varName, hookFunc)
+            end)
         end
         ```
 ]]
@@ -529,104 +535,65 @@ end
 
 --[[
     Purpose:
-        Registers a new character variable with validation, networking, and database persistence
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        During gamemode initialization to define character variables and their behavior
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - key (string): The unique identifier for the character variable
-        - data (table): Configuration table containing variable properties and callbacks
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Register a basic character variable
-        lia.char.registerVar("level", {
-            field = "level",
-            fieldType = "integer",
-            default = 1,
-            index = 5
-            })
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Register variable with validation and custom behavior
-        lia.char.registerVar("reputation", {
-            field = "reputation",
-            fieldType = "integer",
-            default = 0,
-            index = 6,
-            onValidate = function(value, data, client)
-            if not isnumber(value) or value < -100 or value > 100 then
-                return false, "invalid", "reputation"
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-            return true
-            end,
-            onSet = function(character, value)
-            local oldValue = character:getReputation()
-            character.vars.reputation = value
-
-            -- Notify player of reputation change
-            local client = character:getPlayer()
-            if IsValid(client) then
-                client:notify("Reputation changed to: " .. value)
-            end
-
-            hook.Run("OnCharVarChanged", character, "reputation", oldValue, value)
-        end
-        })
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Register complex variable with full feature set
-        lia.char.registerVar("skills", {
-            field = "skills",
-            fieldType = "text",
-            default = {},
-                index = 7,
-                isLocal = true,
-                onValidate = function(value, data, client)
-                if not istable(value) then return false, "invalid", "skills" end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-                    local totalPoints = 0
-                    for skillName, level in pairs(value) do
-                        if not isnumber(level) or level < 0 or level > 100 then
-                            return false, "invalid", "skillLevel"
-                        end
-                        totalPoints = totalPoints + level
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-
-                    local maxPoints = hook.Run("GetMaxSkillPoints", client) or 500
-                    if totalPoints > maxPoints then
-                        return false, "tooManySkillPoints"
-                    end
-
-                    return true
-                    end,
-                    onSet = function(character, value)
-                    local oldValue = character:getSkills()
-                    character.vars.skills = value
-
-                    -- Recalculate derived stats
-                    local client = character:getPlayer()
-                    if IsValid(client) then
-                        hook.Run("OnSkillsChanged", character, oldValue, value)
-                    end
-                    end,
-                    onGet = function(character, default)
-                    return character.vars.skills or default or {}
-                    end,
-                    shouldDisplay = function()
-                    return lia.config.get("EnableSkills", true)
+                else
+                    print("Failed to load character:", charID)
                 end
-                })
+            end)
+        end
         ```
 ]]
 function lia.char.registerVar(key, data)
@@ -1061,58 +1028,65 @@ lia.char.registerVar("banned", {
 
 --[[
     Purpose:
-        Retrieves character data from the database with automatic decoding
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to access character data directly from the database
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character
-        - key (string): Specific data key to retrieve (optional)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Table of character data or specific value if key provided
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Get all character data
-        local charData = lia.char.getCharData(123)
-        print("Character name:", charData.name)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Get specific character data
-        local charID = 123
-        local characterName = lia.char.getCharData(charID, "name")
-        local characterMoney = lia.char.getCharData(charID, "money")
-
-        if characterName then
-            print("Character", characterName, "has", characterMoney or 0, "money")
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character data retrieval with validation
+        -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
-        local charactersData = {}
+        local loadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            local charData = lia.char.getCharData(charID)
-            if charData and charData.name then
-                charactersData[charID] = {
-                    name = charData.name,
-                    faction = charData.faction,
-                    money = charData.money or 0,
-                    lastLogin = charData.lastJoinTime
-                }
-            end
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-
-        print("Retrieved data for", table.Count(charactersData), "characters")
         ```
 ]]
 function lia.char.getCharData(charID, key)
@@ -1133,61 +1107,65 @@ end
 
 --[[
     Purpose:
-        Retrieves raw character data from database without automatic processing
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need unprocessed character data or want to handle decoding manually
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character
-        - key (string): Specific data key to retrieve (optional)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Raw decoded data or specific value if key provided
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Get raw character data
-        local rawData = lia.char.getCharDataRaw(123)
-        print("Raw data keys:", table.GetKeys(rawData))
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Get specific raw data with error handling
-        local charID = 123
-        local rawValue = lia.char.getCharDataRaw(charID, "customData")
-
-        if rawValue ~= false then
-            print("Custom data found:", rawValue)
-            else
-                print("No custom data found for character", charID)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Process multiple raw data entries
-        local charID = 123
-        local rawData = lia.char.getCharDataRaw(charID)
-        local processedData = {}
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        if rawData then
-            for key, value in pairs(rawData) do
-                -- Custom processing based on key type
-                if key:find("^skill_") then
-                    processedData[key] = tonumber(value) or 0
-                    elseif key:find("^item_") then
-                        processedData[key] = istable(value) and value or {}
-                            else
-                                processedData[key] = value
-                            end
-                        end
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-
-                    return processedData
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
+        end
         ```
 ]]
 function lia.char.getCharDataRaw(charID, key)
@@ -1213,61 +1191,65 @@ end
 
 --[[
     Purpose:
-        Finds the player who owns a character with the given ID
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to find which player is using a specific character
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - ID (number): The unique identifier of the character
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Player object if found, nil otherwise
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Find character owner
-        local owner = lia.char.getOwnerByID(123)
-        if owner then
-            print("Character 123 is owned by:", owner:Name())
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Find owner and perform action
-        local charID = 123
-        local owner = lia.char.getOwnerByID(charID)
-
-        if IsValid(owner) then
-            local character = owner:getChar()
-            if character and character:getID() == charID then
-                owner:notify("Your character has been updated!")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch owner lookup with validation
+        -- High: Get multiple characters with validation and error handling
         local charIDs = {123, 456, 789}
-        local owners = {}
+        local loadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            local owner = lia.char.getOwnerByID(charID)
-            if IsValid(owner) then
-                owners[charID] = {
-                    player = owner,
-                    name = owner:Name(),
-                    steamID = owner:SteamID(),
-                    character = owner:getChar()
-                }
-            end
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-
-        print("Found owners for", table.Count(owners), "characters")
         ```
 ]]
 function lia.char.getOwnerByID(ID)
@@ -1279,62 +1261,65 @@ end
 
 --[[
     Purpose:
-        Finds a character by the Steam ID of its owner
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to find a character using the player's Steam ID
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - steamID (string): Steam ID of the character owner (supports both formats)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Character object if found, nil otherwise
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Find character by Steam ID
-        local character = lia.char.getBySteamID("STEAM_0:1:123456")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
         if character then
-            print("Found character:", character:getName())
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Find character with Steam ID conversion
-        local steamID64 = "76561198000000000"
-        local character = lia.char.getBySteamID(steamID64)
-
-        if character then
-            local owner = character:getPlayer()
-            if IsValid(owner) then
-                owner:notify("Character found and loaded")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character lookup by Steam IDs
-        local steamIDs = {"STEAM_0:1:123456", "76561198000000000", "STEAM_0:0:789012"}
-        local foundCharacters = {}
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        for _, steamID in ipairs(steamIDs) do
-            local character = lia.char.getBySteamID(steamID)
-            if character then
-                local owner = character:getPlayer()
-                foundCharacters[steamID] = {
-                    character = character,
-                    owner = owner,
-                    name = character:getName(),
-                    faction = character:getFaction()
-                }
-            end
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-
-        print("Found", table.Count(foundCharacters), "characters")
         ```
 ]]
 function lia.char.getBySteamID(steamID)
@@ -1348,58 +1333,65 @@ end
 
 --[[
     Purpose:
-        Gets the team color for a player based on their character's class
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to determine the appropriate color for a player's team/class
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - client (Player): The player to get the team color for
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Color object representing the team/class color
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared (works on both server and client)
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Get player team color
-        local color = lia.char.getTeamColor(client)
-        print("Team color:", color.r, color.g, color.b)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Use team color for UI elements
-        local color = lia.char.getTeamColor(client)
-
-        -- Set player name color in chat
-        local nameColor = Color(color.r, color.g, color.b, 255)
-        chat.AddText(nameColor, client:Name(), color_white, ": Hello!")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch team color processing for UI
-        local players = player.GetAll()
-        local teamColors = {}
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        for _, ply in ipairs(players) do
-            if IsValid(ply) then
-                local color = lia.char.getTeamColor(ply)
-                local character = ply:getChar()
-
-                teamColors[ply] = {
-                    color = color,
-                    character = character,
-                    faction = character and character:getFaction() or "Unknown",
-                    class = character and character:getClass() or 0
-                }
-            end
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-
-        -- Update scoreboard with team colors
-        hook.Run("UpdateScoreboardColors", teamColors)
         ```
 ]]
 function lia.char.getTeamColor(client)
@@ -1415,107 +1407,68 @@ end
 if SERVER then
     --[[
     Purpose:
-        Creates a new character in the database and initializes it with default inventory
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a player creates a new character through character creation
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - data (table): Character data containing name, description, faction, model, etc.
-        - callback (function): Function to call when character creation is complete
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None (uses callback for result)
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Create a basic character
-        local charData = {
-        name = "John Doe",
-        desc = "A citizen of the city",
-        faction = "Citizen",
-        model = "models/player/Group01/male_01.mdl",
-        steamID = client:SteamID()
-        }
-
-        lia.char.create(charData, function(charID)
-        print("Character created with ID:", charID)
-        end)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Create character with validation and inventory
-        local charData = {
-        name = "Jane Smith",
-        desc = "A skilled engineer",
-        faction = "Engineer",
-        model = "models/player/Group01/female_01.mdl",
-        steamID = client:SteamID(),
-        money = 1000,
-        attribs = {strength = 5, intelligence = 8}
-        }
-
-        lia.char.create(charData, function(charID)
-        if charID then
-            local character = lia.char.getCharacter(charID)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
             if character then
-                -- Add starting items
-                character:getInv(1):add("crowbar")
-                character:getInv(1):add("flashlight")
-                client:notify("Character created successfully!")
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
         end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Create character with full validation and error handling
-        local function createCharacterWithValidation(client, charData)
-            -- Validate required fields
-            if not charData.name or not charData.faction then
-                client:notifyError("Missing required character data")
-                return
-            end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            -- Validate faction access
-            if not client:hasWhitelist(charData.faction) then
-                client:notifyError("You don't have access to this faction")
-                return
-            end
-
-            -- Set default values
-            charData.steamID = client:SteamID()
-            charData.money = charData.money or lia.config.get("DefaultMoney", 1000)
-            charData.createTime = os.date("%Y-%m-%d %H:%M:%S", os.time())
-
-            lia.char.create(charData, function(charID)
-            if charID then
-                local character = lia.char.getCharacter(charID)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
                 if character then
-                    -- Initialize character-specific data
-                    character:setData("lastLogin", os.time())
-                    character:setData("creationIP", client:IPAddress())
-
-                    -- Add to player's character list
-                    client.liaCharList = client.liaCharList or {}
-                        table.insert(client.liaCharList, charID)
-
-                        -- Notify success
-                        client:notify("Character '" .. charData.name .. "' created successfully!")
-                        hook.Run("OnCharacterCreated", character, client)
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-                    else
-                        client:notifyError("Failed to create character")
-                    end
-                end)
-            end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
+        end
         ```
 ]]
-    function lia.char.create(data, callback)
+function lia.char.create(data, callback)
         local timeStamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
         data.money = data.money or lia.config.get("DefaultMoney")
         local gamemode = SCHEMA and SCHEMA.folder or "lilia"
@@ -1558,49 +1511,42 @@ if SERVER then
 
     --[[
     Purpose:
-        Restores/loads all characters for a player from the database
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a player connects and needs their characters loaded
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - client (Player): The player to restore characters for
-        - callback (function): Function to call when restoration is complete
-        - id (number): Specific character ID to restore (optional)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None (uses callback for result)
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Restore all characters for player
-        lia.char.restore(client, function(characters)
-        print("Restored", #characters, "characters for", client:Name())
-        end)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Restore with character validation
-        lia.char.restore(client, function(characters)
-        if #characters > 0 then
-            client.liaCharList = characters
-
-            -- Validate each character
-            for _, charID in ipairs(characters) do
-                local character = lia.char.getCharacter(charID)
-                if character then
-                    -- Check if character is banned
-                    if character:getBanned() > 0 then
-                        print("Character", charID, "is banned")
-                    end
-                end
-            end
-
-            client:notify("Characters loaded successfully!")
-            else
-                client:notify("No characters found")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
         end)
         ```
@@ -1608,48 +1554,25 @@ if SERVER then
         High Complexity:
 
         ```lua
-        -- High: Restore with full error handling and statistics
-        lia.char.restore(client, function(characters)
-        local stats = {
-        total = #characters,
-        loaded = 0,
-        banned = 0,
-        invalid = 0
-        }
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        client.liaCharList = characters
-
-        for _, charID in ipairs(characters) do
-            local character = lia.char.getCharacter(charID)
-            if character then
-                stats.loaded = stats.loaded + 1
-
-                -- Check character status
-                if character:getBanned() > 0 then
-                    stats.banned = stats.banned + 1
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-
-                -- Validate character data
-                if not character:getName() or character:getName() == "" then
-                    stats.invalid = stats.invalid + 1
-                    print("Invalid character data for ID:", charID)
-                end
-            end
+            end)
         end
-
-        -- Log statistics
-        lia.log.add("Character restoration: " ..
-        client:Name() .. " - Total: " .. stats.total ..
-        ", Loaded: " .. stats.loaded ..
-        ", Banned: " .. stats.banned ..
-        ", Invalid: " .. stats.invalid
-        )
-
-        hook.Run("OnCharactersRestored", client, characters, stats)
-        end)
         ```
 ]]
-    function lia.char.restore(client, callback, id)
+function lia.char.restore(client, callback, id)
         local steamID = client:SteamID()
         local fields = {"id"}
         for _, var in pairs(lia.char.vars) do
@@ -1751,76 +1674,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Cleans up all loaded characters for a player when they disconnect
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a player disconnects to free up memory and save data
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - client (Player): The player to clean up characters for
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Clean up player characters
-        lia.char.cleanUpForPlayer(client)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Clean up with logging
-        lia.char.cleanUpForPlayer(client)
-
-        local charCount = table.Count(client.liaCharList or {})
-        if charCount > 0 then
-            lia.log.add("Player disconnect: " ..
-            client:Name() .. " disconnected with " .. charCount .. " characters loaded"
-            )
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Clean up with statistics and validation
-        local function cleanupPlayerCharacters(client)
-            local charList = client.liaCharList or {}
-            local stats = {
-            total = #charList,
-            saved = 0,
-            errors = 0
-        }
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        for _, charID in ipairs(charList) do
-            local character = lia.char.getCharacter(charID)
-            if character then
-                -- Save character data
-                local success = character:save()
-                if success then
-                    stats.saved = stats.saved + 1
-                    else
-                        stats.errors = stats.errors + 1
-                        print("Failed to save character", charID, "for", client:Name())
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
-
-            -- Clean up
-            lia.char.cleanUpForPlayer(client)
-
-            -- Log statistics
-            lia.log.add("Player cleanup: " ..
-            client:Name() .. " - Characters: " .. stats.total ..
-            ", Saved: " .. stats.saved ..
-            ", Errors: " .. stats.errors
-            )
+            end)
         end
         ```
 ]]
-    function lia.char.cleanUpForPlayer(client)
+function lia.char.cleanUpForPlayer(client)
         for _, charID in pairs(client.liaCharList or {}) do
             if lia.char.loaded[charID] then lia.char.unloadCharacter(charID) end
         end
@@ -1840,82 +1755,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Permanently deletes a character from the database and all associated data
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a character needs to be permanently removed (admin action, etc.)
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - id (number): The unique identifier of the character to delete
-        - client (Player): The player who owns the character (optional)
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Delete a character
-        lia.char.delete(123)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Delete character with validation
-        local charID = 123
-        local character = lia.char.getCharacter(charID)
-
-        if character then
-            local owner = character:getPlayer()
-            if IsValid(owner) then
-                owner:notify("Your character '" .. character:getName() .. "' has been deleted")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-
-            lia.char.delete(charID, owner)
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Delete character with full cleanup and logging
-        local function deleteCharacterWithCleanup(charID, admin)
-            local character = lia.char.getCharacter(charID)
-            if not character then
-                if admin then
-                    admin:notifyError("Character not found")
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
+
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-                return
-            end
-
-            local owner = character:getPlayer()
-            local charName = character:getName()
-
-            -- Log deletion
-            lia.log.add("Character deletion: " ..
-            "Character '" .. charName .. "' (ID: " .. charID .. ") deleted by " ..
-            (IsValid(admin) and admin:Name() or "System")
-            )
-
-            -- Notify owner if online
-            if IsValid(owner) then
-                owner:notify("Your character '" .. charName .. "' has been deleted")
-            end
-
-            -- Perform deletion
-            lia.char.delete(charID, owner)
-
-            -- Notify admin
-            if IsValid(admin) then
-                admin:notify("Character '" .. charName .. "' deleted successfully")
-            end
-
-            -- Run deletion hook
-            hook.Run("OnCharacterDeleted", charID, charName, owner, admin)
+            end)
         end
         ```
 ]]
-    function lia.char.delete(id, client)
+function lia.char.delete(id, client)
         assert(isnumber(id), L("idMustBeNumber"))
         local playersToSync = {}
         for _, ply in player.Iterator() do
@@ -1968,70 +1869,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Checks if a character is banned and returns the ban timestamp
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When you need to check if a character is banned
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Number representing ban timestamp (0 if not banned)
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Check if character is banned
-        local banTime = lia.char.getCharBanned(123)
-        if banTime > 0 then
-            print("Character is banned since:", os.date("%Y-%m-%d", banTime))
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Check ban status with validation
-        local charID = 123
-        local banTime = lia.char.getCharBanned(charID)
-
-        if banTime > 0 then
-            local character = lia.char.getCharacter(charID)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
             if character then
-                local owner = character:getPlayer()
-                if IsValid(owner) then
-                    owner:notify("Your character is banned")
-                end
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch ban checking with detailed information
-        local function checkCharacterBans(charIDs)
-            local banInfo = {}
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            for _, charID in ipairs(charIDs) do
-                local banTime = lia.char.getCharBanned(charID)
-                if banTime > 0 then
-                    local character = lia.char.getCharacter(charID)
-                    banInfo[charID] = {
-                        banned = true,
-                        banTime = banTime,
-                        banDate = os.date("%Y-%m-%d %H:%M:%S", banTime),
-                        character = character,
-                        owner = character and character:getPlayer()
-                    }
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
-
-            return banInfo
+            end)
         end
         ```
 ]]
-    function lia.char.getCharBanned(charID)
+function lia.char.getCharBanned(charID)
         local charIDsafe = tonumber(charID)
         if not charIDsafe then return end
         local result = sql.Query("SELECT banned FROM lia_characters WHERE id = " .. charIDsafe .. " LIMIT 1")
@@ -2040,82 +1939,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Sets character data in the database with proper type handling and networking
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When character data needs to be saved to the database
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character
-        - field (string): The field name to set
-        - value (any): The value to set for the field
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Boolean indicating success
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Set character data
-        local success = lia.char.setCharDatabase(123, "money", 1000)
-        if success then
-            print("Character money updated")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Set character data with validation
-        local charID = 123
-        local newMoney = 5000
-
-        local character = lia.char.getCharacter(charID)
-        if character then
-            local oldMoney = character:getMoney()
-            local success = lia.char.setCharDatabase(charID, "money", newMoney)
-
-            if success then
-                character:setMoney(newMoney)
-                print("Money changed from", oldMoney, "to", newMoney)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character data updates with error handling
-        local function updateCharacterData(charID, dataUpdates)
-            local character = lia.char.getCharacter(charID)
-            if not character then
-                print("Character not found:", charID)
-                return false
-            end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            local results = {}
-            local successCount = 0
-
-            for field, value in pairs(dataUpdates) do
-                local success = lia.char.setCharDatabase(charID, field, value)
-                results[field] = success
-
-                if success then
-                    successCount = successCount + 1
-                    -- Update loaded character if it exists
-                    if character["set" .. field:sub(1, 1):upper() .. field:sub(2)] then
-                        character["set" .. field:sub(1, 1):upper() .. field:sub(2)](character, value)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-                    else
-                        print("Failed to update field:", field)
-                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-
-                print("Updated", successCount, "out of", table.Count(dataUpdates), "fields")
-                return successCount == table.Count(dataUpdates)
-            end
+            end)
+        end
         ```
 ]]
-    function lia.char.setCharDatabase(charID, field, value)
+function lia.char.setCharDatabase(charID, field, value)
         local charIDsafe = tonumber(charID)
         if not charIDsafe or not field then return false end
         local varData = lia.char.vars[field]
@@ -2217,86 +2102,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Unloads a character from memory, saving data and cleaning up resources
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a character needs to be removed from memory to free up resources
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character to unload
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Boolean indicating success
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Unload a character
-        local success = lia.char.unloadCharacter(123)
-        if success then
-            print("Character unloaded successfully")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Unload character with validation
-        local charID = 123
-        local character = lia.char.getCharacter(charID)
-
-        if character then
-            local owner = character:getPlayer()
-            if IsValid(owner) then
-                owner:notify("Character is being unloaded")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-
-            local success = lia.char.unloadCharacter(charID)
-            if success then
-                print("Character", charID, "unloaded successfully")
-            end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Batch character unloading with statistics
-        local function unloadCharacters(charIDs)
-            local stats = {
-            total = #charIDs,
-            unloaded = 0,
-            errors = 0,
-            skipped = 0
-        }
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
         for _, charID in ipairs(charIDs) do
-            if lia.char.isLoaded(charID) then
-                local character = lia.char.getCharacter(charID)
+            lia.char.getCharacter(charID, client, function(character)
                 if character then
-                    -- Check if character is in use
-                    local owner = character:getPlayer()
-                    if IsValid(owner) and owner:getChar() == character then
-                        stats.skipped = stats.skipped + 1
-                        print("Skipping active character:", charID)
-                        continue
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-
-                    local success = lia.char.unloadCharacter(charID)
-                    if success then
-                        stats.unloaded = stats.unloaded + 1
-                        else
-                            stats.errors = stats.errors + 1
-                        end
-                    end
+                else
+                    print("Failed to load character:", charID)
                 end
-            end
-
-            print("Unloaded", stats.unloaded, "characters, skipped", stats.skipped, "active characters")
-            return stats
+            end)
         end
         ```
 ]]
-    function lia.char.unloadCharacter(charID)
+function lia.char.unloadCharacter(charID)
         local character = lia.char.loaded[charID]
         if not character then return false end
         character:save()
@@ -2326,75 +2193,68 @@ if SERVER then
 
     --[[
     Purpose:
-        Unloads unused characters for a player, keeping only the active one
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a player switches characters or to free up memory
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - client (Player): The player to unload unused characters for
-        - activeCharID (number): The ID of the character to keep loaded
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        Number of characters unloaded
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Unload unused characters
-        local unloadedCount = lia.char.unloadUnusedCharacters(client, 123)
-        print("Unloaded", unloadedCount, "characters")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Unload with validation
-        local activeCharID = client:getChar() and client:getChar():getID()
-        if activeCharID then
-            local unloadedCount = lia.char.unloadUnusedCharacters(client, activeCharID)
-
-            if unloadedCount > 0 then
-                client:notify("Unloaded " .. unloadedCount .. " unused characters")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Unload with detailed logging and statistics
-        local function unloadUnusedCharactersWithStats(client)
-            local activeChar = client:getChar()
-            local activeCharID = activeChar and activeChar:getID()
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            if not activeCharID then
-                print("No active character for", client:Name())
-                return 0
-            end
-
-            local charList = client.liaCharList or {}
-            local stats = {
-            total = #charList,
-            active = activeCharID,
-            unloaded = 0,
-            errors = 0
-        }
-
-        -- Unload unused characters
-        stats.unloaded = lia.char.unloadUnusedCharacters(client, activeCharID)
-
-        -- Log statistics
-        lia.log.add("Character unloading: " ..
-        client:Name() .. " - Total: " .. stats.total ..
-        ", Active: " .. stats.active ..
-        ", Unloaded: " .. stats.unloaded
-        )
-
-        return stats.unloaded
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
         ```
 ]]
-    function lia.char.unloadUnusedCharacters(client, activeCharID)
+function lia.char.unloadUnusedCharacters(client, activeCharID)
         local unloadedCount = 0
         for _, charID in pairs(client.liaCharList or {}) do
             if charID ~= activeCharID and lia.char.loaded[charID] and lia.char.unloadCharacter(charID) then unloadedCount = unloadedCount + 1 end
@@ -2404,51 +2264,42 @@ if SERVER then
 
     --[[
     Purpose:
-        Loads a single character from the database with inventory initialization
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When a specific character needs to be loaded on demand
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        - charID (number): The unique identifier of the character to load
-        - client (Player): The player requesting the character (optional)
-        - callback (function): Function to call when loading is complete
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None (uses callback for result)
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Server only
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        -- Simple: Load a single character
-        lia.char.loadSingleCharacter(123, client, function(character)
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
         if character then
-            print("Character loaded:", character:getName())
+            print("Character name:", character:getName())
         end
-        end)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Load character with validation
-        local charID = 123
-        lia.char.loadSingleCharacter(charID, client, function(character)
-        if character then
-            -- Validate character access
-            if not client.liaCharList or not table.HasValue(client.liaCharList, charID) then
-                print("Player doesn't have access to character", charID)
-                return
-            end
-
-            -- Check if character is banned
-            if character:getBanned() > 0 then
-                client:notify("This character is banned")
-                return
-            end
-
-            client:notify("Character loaded successfully")
-            else
-                client:notify("Failed to load character")
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
         end)
         ```
@@ -2456,69 +2307,25 @@ if SERVER then
         High Complexity:
 
         ```lua
-        -- High: Load character with full error handling and statistics
-        local function loadCharacterWithValidation(charID, client)
-            if not charID or not isnumber(charID) then
-                if client then
-                    client:notifyError("Invalid character ID")
-                end
-                return
-            end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            -- Check if character is already loaded
-            if lia.char.isLoaded(charID) then
-                local character = lia.char.getCharacter(charID)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
                 if character then
-                    print("Character already loaded:", charID)
-                    return character
-                end
-            end
-
-            -- Validate player access
-            if client and (not client.liaCharList or not table.HasValue(client.liaCharList, charID)) then
-                client:notifyError("You don't have access to this character")
-                return
-            end
-
-            lia.char.loadSingleCharacter(charID, client, function(character)
-            if character then
-                -- Validate character data
-                if not character:getName() or character:getName() == "" then
-                    print("Invalid character data for ID:", charID)
-                    return
-                end
-
-                -- Check ban status
-                if character:getBanned() > 0 then
-                    if client then
-                        client:notify("This character is banned")
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-                    return
-                end
-
-                -- Log successful load
-                lia.log.add("Character loaded: " ..
-                "Character '" .. character:getName() .. "' (ID: " .. charID .. ") loaded for " ..
-                (client and client:Name() or "System")
-                )
-
-                -- Run load hook
-                hook.Run("OnCharacterLoaded", character, client)
-
-                if client then
-                    client:notify("Character '" .. character:getName() .. "' loaded successfully")
-                end
                 else
-                    if client then
-                        client:notifyError("Failed to load character")
-                    end
                     print("Failed to load character:", charID)
                 end
             end)
         end
         ```
 ]]
-    function lia.char.loadSingleCharacter(charID, client, callback)
+function lia.char.loadSingleCharacter(charID, client, callback)
         if lia.char.loaded[charID] then
             if callback then callback(lia.char.loaded[charID]) end
             return

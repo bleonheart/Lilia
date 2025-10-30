@@ -9,65 +9,82 @@
 ]]
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
---[[
+    --[[
     Purpose:
-        Registers a new character class with the specified unique ID and data
+        Registers a new character class in the class system with custom properties and validation rules.
+
     When Called:
-        During gamemode initialization or when dynamically creating classes
+        During gamemode initialization to define available classes within factions.
+        When dynamically adding new classes through plugins or modules.
+
     Parameters:
-        - uniqueID (string): Unique identifier for the class
-        - data (table): Table containing class properties (name, desc, limit, faction, etc.)
+        - uniqueID (string): Unique identifier for the class.
+        - data (table): Configuration table containing class properties:
+            - name (string): Display name of the class.
+            - desc (string): Description of the class.
+            - faction (number): Team/faction ID this class belongs to.
+            - limit (number): Maximum number of players allowed in this class (0 = unlimited).
+            - isDefault (boolean): Whether this is the default class for the faction.
+            - isWhitelisted (boolean): Whether the class requires whitelist approval.
+            - OnCanBe (function): Custom validation function for class availability.
+
     Returns:
-        The registered class table
+        Class table if registration successful, nil otherwise.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
+        -- Simple: Register a basic citizen class
         lia.class.register("citizen", {
             name = "Citizen",
             desc = "A regular citizen",
             faction = FACTION_CITIZEN,
             limit = 0
-            })
+        })
         ```
 
         Medium Complexity:
 
         ```lua
-        lia.class.register("police_officer", {
+        -- Medium: Register a police officer class with limits
+        lia.class.register("police", {
             name = "Police Officer",
-            desc = "A law enforcement officer",
+            desc = "Law enforcement officer",
             faction = FACTION_POLICE,
-            limit = 5,
-            OnCanBe = function(self, client)
-            return client:getChar():getAttrib("strength", 0) >= 10
-        end
+            limit = 10,
+            isWhitelisted = true,
+            OnCanBe = function(client)
+                return client:getChar():getAttrib("endurance", 0) > 5
+            end
         })
         ```
 
         High Complexity:
 
         ```lua
-        local classData = {
-        name = "Elite Soldier",
-        desc = "A highly trained military operative",
-        faction = FACTION_MILITARY,
-        limit = 2,
-        isWhitelisted = true,
-        OnCanBe = function(self, client)
-        local char = client:getChar()
-        return char:getAttrib("strength", 0) >= 15 and
-        char:getAttrib("endurance", 0) >= 12 and
-        client:IsAdmin()
-        end,
-        OnSpawn = function(self, client)
-        client:Give("weapon_ar2")
-        client:SetHealth(150)
-        end
-        }
-        lia.class.register("elite_soldier", classData)
+        -- High: Register a complex class with multiple validation rules
+        lia.class.register("chief", {
+            name = "Police Chief",
+            desc = "Head of police department",
+            faction = FACTION_POLICE,
+            limit = 1,
+            isWhitelisted = true,
+            OnCanBe = function(client)
+                local char = client:getChar()
+                -- Must be police officer first
+                if char:getClass() ~= "police" then return false end
+                -- Must have high enough attributes
+                if char:getAttrib("intelligence", 0) < 8 then return false end
+                if char:getAttrib("leadership", 0) < 7 then return false end
+                -- Must have been in faction for certain time
+                return char:getTimeInFaction() > 604800 -- 1 week
+            end
+        })
         ```
 ]]
 function lia.class.register(uniqueID, data)
@@ -105,48 +122,63 @@ function lia.class.register(uniqueID, data)
     return class
 end
 
---[[
+    --[[
     Purpose:
-        Loads character classes from a directory containing class definition files
+        Loads all class definition files from a specified directory and registers them in the class system.
+
     When Called:
-        During gamemode initialization to load classes from files
+        During framework initialization to load class definitions from the classes directory.
+        When reloading or refreshing class definitions during development.
+
     Parameters:
-        - directory (string): Path to directory containing class files
+        - directory (string): The path to the directory containing class definition files (relative to Lua search paths).
+
     Returns:
-        None
+        None.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        lia.class.loadFromDir("gamemodes/lilia/classes")
+        -- Simple: Load classes from default directory
+        lia.class.loadFromDir("classes")
         ```
 
         Medium Complexity:
 
         ```lua
-        local classDir = "gamemodes/lilia/modules/custom_classes/classes"
-        if file.Exists(classDir, "LUA") then
-            lia.class.loadFromDir(classDir)
-        end
+        -- Medium: Load classes from custom schema directory
+        lia.class.loadFromDir("gamemode/schema/classes")
+        print("Loaded " .. #lia.class.list .. " classes")
         ```
 
         High Complexity:
 
         ```lua
-        local classDirectories = {
-        "gamemodes/lilia/classes",
-        "gamemodes/lilia/modules/factions/classes",
-        "gamemodes/lilia/modules/custom_classes/classes"
-        }
+        -- High: Load classes with validation and error handling
+        local function safeLoadClasses(directory)
+            local success, err = pcall(function()
+                lia.class.loadFromDir(directory)
+            end)
 
-        for _, dir in ipairs(classDirectories) do
-            if file.Exists(dir, "LUA") then
-                print("Loading classes from: " .. dir)
-                lia.class.loadFromDir(dir)
+            if success then
+                print("Successfully loaded classes from: " .. directory)
+                -- Validate loaded classes
+                for _, class in ipairs(lia.class.list) do
+                    if not class.faction or not team.Valid(class.faction) then
+                        print("Warning: Class '" .. class.uniqueID .. "' has invalid faction")
+                    end
+                end
+            else
+                print("Failed to load classes from " .. directory .. ": " .. err)
             end
         end
+
+        safeLoadClasses("classes")
         ```
 ]]
 function lia.class.loadFromDir(directory)
@@ -188,70 +220,93 @@ function lia.class.loadFromDir(directory)
     end
 end
 
---[[
+    --[[
     Purpose:
-        Checks if a client can join a specific character class
+        Checks if a player can join or be assigned to a specific class, validating all requirements and restrictions.
+
     When Called:
-        When a player attempts to join a class or when checking class availability
+        When a player attempts to join a class through commands or menus.
+        When validating class assignments during character creation or changes.
+        When checking class availability for UI display.
+
     Parameters:
-        - client (Player): The player attempting to join the class
-        - class (number): The class index to check
+        - client (Player): The player to check class availability for.
+        - class (string|number): The class identifier (uniqueID or index) to check.
+
     Returns:
-        boolean, string - Whether the player can join and reason if they cannot
+        boolean, string: True if player can join the class, false and error message if not.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local canJoin, reason = lia.class.canBe(client, 1)
+        -- Simple: Check if player can join police class
+        local canJoin, reason = lia.class.canBe(player, "police")
         if canJoin then
-            print("Player can join class")
-            else
-                print("Cannot join: " .. reason)
-            end
+            print("Player can join police class")
+        else
+            print("Cannot join: " .. reason)
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        local function checkClassAvailability(client, className)
-            local classIndex = lia.class.retrieveClass(className)
-            if not classIndex then
-                return false, "Class not found"
-            end
+        -- Medium: Check multiple classes for a player
+        local availableClasses = {}
+        local classIDs = {"citizen", "police", "medic"}
 
-            local canJoin, reason = lia.class.canBe(client, classIndex)
-            return canJoin, reason
+        for _, classID in ipairs(classIDs) do
+            local canJoin = lia.class.canBe(player, classID)
+            if canJoin then
+                table.insert(availableClasses, classID)
+            end
         end
+
+        print("Player can join: " .. table.concat(availableClasses, ", "))
         ```
 
         High Complexity:
 
         ```lua
-        local function validateClassSwitch(client, newClass)
-            local currentChar = client:getChar()
-            if not currentChar then
-                return false, "No character"
+        -- High: Create a class selection UI with availability checking
+        local function buildClassMenu(player)
+            local menu = vgui.Create("DFrame")
+            menu:SetSize(400, 300)
+            menu:SetTitle("Select Class")
+
+            local scroll = vgui.Create("DScrollPanel", menu)
+            scroll:Dock(FILL)
+
+            for _, class in ipairs(lia.class.list) do
+                local canJoin, reason = lia.class.canBe(player, class.uniqueID)
+                local button = scroll:Add("DButton")
+                button:SetText(class.name)
+                button:Dock(TOP)
+                button:DockMargin(5, 5, 5, 0)
+
+                if canJoin then
+                    button:SetTextColor(Color(0, 255, 0))
+                    button.DoClick = function()
+                        RunConsoleCommand("say", "/class " .. class.uniqueID)
+                        menu:Close()
+                    end
+                else
+                    button:SetTextColor(Color(255, 0, 0))
+                    button:SetTooltip(reason or "Cannot join this class")
+                    button:SetEnabled(false)
+                end
             end
 
-            local currentClass = currentChar:getClass()
-            if currentClass == newClass then
-                return false, "Already in this class"
-            end
-
-            local canJoin, reason = lia.class.canBe(client, newClass)
-            if not canJoin then
-                return false, reason
-            end
-
-            -- Additional custom validation
-            if hook.Run("CustomClassValidation", client, newClass) == false then
-                return false, "Custom validation failed"
-            end
-
-            return true, "Valid"
+            menu:Center()
+            menu:MakePopup()
         end
+
+        buildClassMenu(LocalPlayer())
         ```
 ]]
 function lia.class.canBe(client, class)
@@ -267,68 +322,65 @@ function lia.class.canBe(client, class)
     return info.isDefault
 end
 
---[[
+    --[[
     Purpose:
-        Retrieves a character class by its identifier (index or uniqueID)
+        Retrieves class information by its unique identifier or index.
+
     When Called:
-        When needing to access class information or properties
+        When accessing class data for display, validation, or processing.
+        When checking class properties or configurations.
+
     Parameters:
-        - identifier (number/string): Class index or uniqueID to retrieve
+        - identifier (string|number): The class uniqueID (string) or index (number) to retrieve.
+
     Returns:
-        table - The class data table or nil if not found
+        Class table containing class information, or nil if not found.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local class = lia.class.get(1)
-        if class then
-            print("Class name: " .. class.name)
+        -- Simple: Get class information
+        local policeClass = lia.class.get("police")
+        if policeClass then
+            print("Police class name: " .. policeClass.name)
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        local function getClassInfo(identifier)
-            local class = lia.class.get(identifier)
-            if not class then
-                return nil, "Class not found"
-            end
-
-            return {
-            name = class.name,
-            description = class.desc,
-            limit = class.limit,
-            faction = class.faction
-        }
+        -- Medium: Get class by index
+        local classByIndex = lia.class.get(2)
+        if classByIndex then
+            print("Class at index 2: " .. classByIndex.uniqueID)
         end
         ```
 
         High Complexity:
 
         ```lua
-        local function getClassDetails(identifier)
-            local class = lia.class.get(identifier)
-            if not class then
-                return nil, "Class not found"
+        -- High: Iterate through all classes and find specific ones
+        local function findClassesByFaction(factionID)
+            local factionClasses = {}
+            local classCount = #lia.class.list
+
+            for i = 1, classCount do
+                local class = lia.class.get(i)
+                if class and class.faction == factionID then
+                    table.insert(factionClasses, class)
+                end
             end
 
-            local players = lia.class.getPlayers(identifier)
-            local playerCount = #players
+            return factionClasses
+        end
 
-            return {
-            info = class,
-            currentPlayers = players,
-            playerCount = playerCount,
-            isAvailable = class.limit == 0 or playerCount < class.limit,
-            isWhitelisted = class.isWhitelisted or false,
-            canJoin = function(client)
-            return lia.class.canBe(client, identifier)
-        end
-        }
-        end
+        local policeClasses = findClassesByFaction(FACTION_POLICE)
+        print("Found " .. #policeClasses .. " police classes")
         ```
 ]]
 function lia.class.get(identifier)
@@ -338,73 +390,89 @@ end
 
 --[[
     Purpose:
-        Gets all players currently using a specific character class
+        Retrieves all players currently assigned to a specific class.
+
     When Called:
-        When needing to find players in a particular class or check class population
+        When counting players in a class for limit checking.
+        When managing class-specific player lists or operations.
+        When displaying class population information.
+
     Parameters:
-        - class (number): The class index to get players for
+        - class (string|number): The class identifier (uniqueID or index) to get players for.
+
     Returns:
-        table - Array of player entities in the specified class
+        Array of player entities currently in the specified class.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local players = lia.class.getPlayers(1)
-        print("Players in class 1: " .. #players)
+        -- Simple: Get all police officers
+        local policePlayers = lia.class.getPlayers("police")
+        print("Police officers online: " .. #policePlayers)
         ```
 
         Medium Complexity:
 
         ```lua
-        local function getClassMembers(className)
-            local classIndex = lia.class.retrieveClass(className)
-            if not classIndex then
-                return {}
-            end
-
-            local players = lia.class.getPlayers(classIndex)
-            local memberNames = {}
-
-            for _, player in ipairs(players) do
-                table.insert(memberNames, player:Name())
-            end
-
-            return memberNames
+        -- Medium: Check if class has available slots
+        local maxPolice = 10
+        local currentPolice = #lia.class.getPlayers("police")
+        if currentPolice < maxPolice then
+            print("Police class has " .. (maxPolice - currentPolice) .. " slots available")
+        else
+            print("Police class is full")
         end
         ```
 
         High Complexity:
 
         ```lua
-        local function getClassStatistics(classIndex)
-            local players = lia.class.getPlayers(classIndex)
-            local stats = {
-            count = #players,
-            players = {},
-                onlineTime = 0,
-                averageLevel = 0
-            }
+        -- High: Create a class management interface
+        local function showClassManagementUI()
+            local frame = vgui.Create("DFrame")
+            frame:SetSize(600, 400)
+            frame:SetTitle("Class Management")
+            frame:Center()
 
-            for _, player in ipairs(players) do
-                local char = player:getChar()
-                if char then
-                    table.insert(stats.players, {
-                        name = player:Name(),
-                        level = char:getLevel(),
-                        playtime = char:getPlayTime()
-                        })
-                        stats.onlineTime = stats.onlineTime + char:getPlayTime()
-                    end
+            local scroll = vgui.Create("DScrollPanel", frame)
+            scroll:Dock(FILL)
+
+            for _, class in ipairs(lia.class.list) do
+                local classPanel = scroll:Add("DPanel")
+                classPanel:Dock(TOP)
+                classPanel:DockMargin(5, 5, 5, 0)
+                classPanel:SetTall(60)
+
+                local className = vgui.Create("DLabel", classPanel)
+                className:SetText(class.name)
+                className:SetFont("liaMediumFont")
+                className:Dock(LEFT)
+                className:DockMargin(10, 10, 10, 10)
+
+                local playerCount = #lia.class.getPlayers(class.uniqueID)
+                local maxPlayers = class.limit > 0 and class.limit or "∞"
+
+                local countLabel = vgui.Create("DLabel", classPanel)
+                countLabel:SetText(playerCount .. "/" .. maxPlayers)
+                countLabel:Dock(RIGHT)
+                countLabel:DockMargin(10, 10, 10, 10)
+
+                if class.limit > 0 and playerCount >= class.limit then
+                    countLabel:SetTextColor(Color(255, 100, 100))
+                else
+                    countLabel:SetTextColor(Color(100, 255, 100))
                 end
-
-                if stats.count > 0 then
-                    stats.averageLevel = stats.onlineTime / stats.count
-                end
-
-                return stats
             end
+
+            frame:MakePopup()
+        end
+
+        showClassManagementUI()
         ```
 ]]
 function lia.class.getPlayers(class)
@@ -417,67 +485,76 @@ function lia.class.getPlayers(class)
     return players
 end
 
---[[
+    --[[
     Purpose:
-        Gets the count of players currently using a specific character class
+        Returns the number of players currently assigned to a specific class.
+
     When Called:
-        When needing to check class population without retrieving player objects
+        When checking class population for limit enforcement.
+        When displaying class statistics or availability information.
+
     Parameters:
-        - class (number): The class index to count players for
+        - class (string|number): The class identifier (uniqueID or index) to count players for.
+
     Returns:
-        number - Number of players in the specified class
+        number - The number of players currently in the specified class.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local count = lia.class.getPlayerCount(1)
-        print("Players in class: " .. count)
+        -- Simple: Get police officer count
+        local policeCount = lia.class.getPlayerCount("police")
+        print("Police officers online: " .. policeCount)
         ```
 
         Medium Complexity:
 
         ```lua
-        local function checkClassAvailability(classIndex)
-            local class = lia.class.get(classIndex)
-            if not class then
-                return false, "Class not found"
+        -- Medium: Check class capacity
+        local classInfo = lia.class.get("medic")
+        if classInfo then
+            local current = lia.class.getPlayerCount(classInfo.uniqueID)
+            local max = classInfo.limit
+            if max > 0 and current >= max then
+                print("Medic class is full (" .. current .. "/" .. max .. ")")
+            else
+                print("Medic class: " .. current .. "/" .. (max > 0 and max or "∞"))
             end
-
-            local currentCount = lia.class.getPlayerCount(classIndex)
-            local isFull = class.limit > 0 and currentCount >= class.limit
-
-            return not isFull, isFull and "Class is full" or "Available"
         end
         ```
 
         High Complexity:
 
         ```lua
-        local function getClassPopulationReport()
-            local report = {}
+        -- High: Generate faction population report
+        local function generateFactionReport(factionID)
+            local report = {
+                totalPlayers = 0,
+                classBreakdown = {}
+            }
 
-            for i, class in ipairs(lia.class.list) do
-                local count = lia.class.getPlayerCount(i)
-                local percentage = 0
-
-                if class.limit > 0 then
-                    percentage = (count / class.limit) * 100
+            for _, class in ipairs(lia.class.list) do
+                if class.faction == factionID then
+                    local count = lia.class.getPlayerCount(class.uniqueID)
+                    report.classBreakdown[class.name] = count
+                    report.totalPlayers = report.totalPlayers + count
                 end
-
-                table.insert(report, {
-                    name = class.name,
-                    currentCount = count,
-                    limit = class.limit,
-                    percentage = percentage,
-                    isFull = class.limit > 0 and count >= class.limit,
-                    faction = class.faction
-                    })
-                end
-
-                return report
             end
+
+            return report
+        end
+
+        local policeReport = generateFactionReport(FACTION_POLICE)
+        print("Police Department Report:")
+        print("Total Officers: " .. policeReport.totalPlayers)
+        for className, count in pairs(policeReport.classBreakdown) do
+            print("  " .. className .. ": " .. count)
+        end
         ```
 ]]
 function lia.class.getPlayerCount(class)
@@ -490,63 +567,65 @@ function lia.class.getPlayerCount(class)
     return count
 end
 
---[[
+    --[[
     Purpose:
-        Finds a class by matching its uniqueID or name with a search string
+        Finds a class by matching its uniqueID or name against a search string.
+
     When Called:
-        When needing to find a class by name or partial identifier
+        When searching for classes by partial name or ID.
+        When implementing class selection or autocomplete features.
+
     Parameters:
-        - class (string): String to match against class uniqueID or name
+        - class (string): The search string to match against class uniqueIDs or names.
+
     Returns:
-        number - The class index if found, nil otherwise
+        number - The index of the matching class, or nil if not found.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local classIndex = lia.class.retrieveClass("citizen")
-        if classIndex then
-            print("Found class at index: " .. classIndex)
+        -- Simple: Find police class
+        local policeIndex = lia.class.retrieveClass("police")
+        if policeIndex then
+            print("Police class found at index: " .. policeIndex)
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        local function findClassByName(searchTerm)
-            local classIndex = lia.class.retrieveClass(searchTerm)
-            if not classIndex then
-                return nil, "Class '" .. searchTerm .. "' not found"
-            end
-
-            local class = lia.class.get(classIndex)
-            return classIndex, class
+        -- Medium: Find class by partial name
+        local medicIndex = lia.class.retrieveClass("medic")
+        local classInfo = medicIndex and lia.class.get(medicIndex)
+        if classInfo then
+            print("Found medic class: " .. classInfo.name)
         end
         ```
 
         High Complexity:
 
         ```lua
-        local function searchClasses(searchTerm)
-            local results = {}
-            local term = string.lower(searchTerm)
-
+        -- High: Implement class autocomplete
+        local function findClasses(searchTerm)
+            local matches = {}
             for i, class in ipairs(lia.class.list) do
-                local uniqueID = string.lower(class.uniqueID or "")
-                local name = string.lower(class.name or "")
-
-                if string.find(uniqueID, term) or string.find(name, term) then
-                    table.insert(results, {
-                        index = i,
-                        class = class,
-                        matchType = string.find(uniqueID, term) and "uniqueID" or "name"
-                        })
-                    end
+                if string.find(string.lower(class.uniqueID), string.lower(searchTerm), 1, true) or
+                   string.find(string.lower(class.name), string.lower(searchTerm), 1, true) then
+                    table.insert(matches, {index = i, class = class})
                 end
-
-                return results
             end
+            return matches
+        end
+
+        local searchResults = findClasses("pol")
+        for _, result in ipairs(searchResults) do
+            print("Match: " .. result.class.name .. " (ID: " .. result.class.uniqueID .. ")")
+        end
         ```
 ]]
 function lia.class.retrieveClass(class)
@@ -557,75 +636,82 @@ function lia.class.retrieveClass(class)
     return nil
 end
 
---[[
+    --[[
     Purpose:
-        Checks if a character class has whitelist restrictions
+        Checks if a class requires whitelist approval before players can join.
+
     When Called:
-        When checking if a class requires special permissions or whitelist access
+        When determining if a class requires special permissions.
+        When displaying class availability information to players.
+        During class assignment validation.
+
     Parameters:
-        - class (number): The class index to check for whitelist
+        - class (string|number): The class identifier (uniqueID or index) to check.
+
     Returns:
-        boolean - True if the class has whitelist restrictions, false otherwise
+        boolean - True if the class requires whitelist approval, false otherwise.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local hasWhitelist = lia.class.hasWhitelist(1)
-        if hasWhitelist then
-            print("This class requires whitelist")
+        -- Simple: Check if police class needs whitelist
+        if lia.class.hasWhitelist("police") then
+            print("Police class requires whitelist approval")
+        else
+            print("Police class is open to all")
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        local function checkClassAccess(client, classIndex)
-            local class = lia.class.get(classIndex)
-            if not class then
-                return false, "Class not found"
-            end
+        -- Medium: Filter available classes by whitelist status
+        local availableClasses = {}
+        local requiresWhitelist = {}
 
-            if lia.class.hasWhitelist(classIndex) then
-                -- Check if player has whitelist access
-                local hasAccess = client:IsAdmin() or client:IsSuperAdmin()
-                return hasAccess, hasAccess and "Access granted" or "Whitelist required"
+        for _, class in ipairs(lia.class.list) do
+            if lia.class.hasWhitelist(class.uniqueID) then
+                table.insert(requiresWhitelist, class)
+            else
+                table.insert(availableClasses, class)
             end
-
-            return true, "No whitelist required"
         end
+
+        print("Available classes: " .. #availableClasses)
+        print("Whitelist-required classes: " .. #requiresWhitelist)
         ```
 
         High Complexity:
 
         ```lua
-        local function getWhitelistClasses()
-            local whitelistClasses = {}
-            local regularClasses = {}
+        -- High: Create whitelist management interface
+        local function showWhitelistUI()
+            local frame = vgui.Create("DFrame")
+            frame:SetSize(500, 400)
+            frame:SetTitle("Class Whitelist Management")
+            frame:Center()
 
-            for i, class in ipairs(lia.class.list) do
-                if lia.class.hasWhitelist(i) then
-                    table.insert(whitelistClasses, {
-                        index = i,
-                        class = class,
-                        requiredPermissions = class.requiredPermissions or {}
-                            })
-                            else
-                                table.insert(regularClasses, {
-                                    index = i,
-                                    class = class
-                                    })
-                                end
-                            end
+            local list = vgui.Create("DListView", frame)
+            list:Dock(FILL)
+            list:AddColumn("Class Name")
+            list:AddColumn("Requires Whitelist")
+            list:AddColumn("Player Count")
 
-                            return {
-                            whitelist = whitelistClasses,
-                            regular = regularClasses,
-                            totalWhitelist = #whitelistClasses,
-                            totalRegular = #regularClasses
-                        }
-                    end
+            for _, class in ipairs(lia.class.list) do
+                local whitelistRequired = lia.class.hasWhitelist(class.uniqueID) and "Yes" or "No"
+                local playerCount = lia.class.getPlayerCount(class.uniqueID)
+                list:AddLine(class.name, whitelistRequired, playerCount)
+            end
+
+            frame:MakePopup()
+        end
+
+        showWhitelistUI()
         ```
 ]]
 function lia.class.hasWhitelist(class)
@@ -636,71 +722,96 @@ function lia.class.hasWhitelist(class)
     return info.isWhitelisted
 end
 
---[[
+    --[[
     Purpose:
-        Retrieves all classes that a specific client can join
+        Returns a list of classes that a specific player can join based on their current character and permissions.
+
     When Called:
-        When displaying available classes to a player or checking joinable options
+        When building class selection menus or interfaces.
+        When checking available class options for a player.
+        During character creation or class change operations.
+
     Parameters:
-        - client (Player): The player to check joinable classes for (optional, defaults to LocalPlayer on client)
+        - client (Player): The player to get joinable classes for (optional, uses LocalPlayer() if not provided on client).
+
     Returns:
-        table - Array of class tables that the client can join
+        table - Array of class tables that the player can join.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
+
         Low Complexity:
 
         ```lua
-        local joinableClasses = lia.class.retrieveJoinable(client)
-        print("Player can join " .. #joinableClasses .. " classes")
+        -- Simple: Get available classes for current player
+        local availableClasses = lia.class.retrieveJoinable()
+        print("You can join " .. #availableClasses .. " classes")
         ```
 
         Medium Complexity:
 
         ```lua
-        local function getJoinableClassNames(client)
-            local joinableClasses = lia.class.retrieveJoinable(client)
-            local classNames = {}
+        -- Medium: Display available classes in a menu
+        local joinableClasses = lia.class.retrieveJoinable(player)
 
-            for _, class in ipairs(joinableClasses) do
-                table.insert(classNames, class.name)
-            end
-
-            return classNames
+        for _, class in ipairs(joinableClasses) do
+            print("Available: " .. class.name .. " (" .. class.uniqueID .. ")")
         end
         ```
 
         High Complexity:
 
         ```lua
-        local function getDetailedJoinableClasses(client)
-            local joinableClasses = lia.class.retrieveJoinable(client)
-            local detailedClasses = {}
+        -- High: Create a comprehensive class selection interface
+        local function createClassSelectionMenu(player)
+            local joinableClasses = lia.class.retrieveJoinable(player)
+            local frame = vgui.Create("DFrame")
+            frame:SetSize(400, 500)
+            frame:SetTitle("Select Class")
+            frame:Center()
+
+            local scroll = vgui.Create("DScrollPanel", frame)
+            scroll:Dock(FILL)
 
             for _, class in ipairs(joinableClasses) do
-                local playerCount = lia.class.getPlayerCount(class.index)
-                local isFull = class.limit > 0 and playerCount >= class.limit
+                local classButton = scroll:Add("DButton")
+                classButton:SetText(class.name)
+                classButton:Dock(TOP)
+                classButton:DockMargin(5, 5, 5, 0)
+                classButton:SetTall(40)
 
-                table.insert(detailedClasses, {
-                    class = class,
-                    playerCount = playerCount,
-                    limit = class.limit,
-                    isFull = isFull,
-                    availability = isFull and "Full" or "Available",
-                    requiresWhitelist = lia.class.hasWhitelist(class.index)
-                    })
+                -- Add description as tooltip
+                if class.desc then
+                    classButton:SetTooltip(class.desc)
                 end
 
-                -- Sort by availability and name
-                table.sort(detailedClasses, function(a, b)
-                if a.isFull ~= b.isFull then
-                    return not a.isFull -- Available classes first
+                -- Color based on whitelist status
+                if lia.class.hasWhitelist(class.uniqueID) then
+                    classButton:SetTextColor(Color(255, 215, 0)) -- Gold for whitelisted
+                else
+                    classButton:SetTextColor(Color(255, 255, 255)) -- White for regular
                 end
-                return a.class.name < b.class.name
-            end)
 
-            return detailedClasses
+                classButton.DoClick = function()
+                    RunConsoleCommand("say", "/class " .. class.uniqueID)
+                    frame:Close()
+                end
+            end
+
+            if #joinableClasses == 0 then
+                local noClassesLabel = scroll:Add("DLabel")
+                noClassesLabel:SetText("No classes available for your current character.")
+                noClassesLabel:SetContentAlignment(5)
+                noClassesLabel:Dock(TOP)
+                noClassesLabel:DockMargin(10, 20, 10, 10)
+            end
+
+            frame:MakePopup()
         end
+
+        createClassSelectionMenu(LocalPlayer())
         ```
 ]]
 function lia.class.retrieveJoinable(client)

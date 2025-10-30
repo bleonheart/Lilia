@@ -12,296 +12,358 @@ lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
 if CLIENT then
     --[[
-        Purpose:
-            Registers a named color for use throughout the gamemode
-        When Called:
-            When defining custom colors or extending the color palette
-        Parameters:
-            name (string) - The name identifier for the color
-            color (table) - Color table with r, g, b, a values or array format
-        Returns:
-            None
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Registers a color name in the color system for easy reference throughout the framework.
+
+    When Called:
+        During framework initialization or when defining custom color palettes.
+        When adding new color names for consistent theming.
+
+    Parameters:
+        - name (string): The name identifier for the color (case-insensitive).
+        - color (Color): The Color object to associate with the name.
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
         -- Simple: Register a basic color
-        lia.color.register("myred", {255, 0, 0})
+        lia.color.register("myRed", Color(255, 0, 0))
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Register color with alpha channel
-        lia.color.register("semitransparent", {255, 255, 255, 128})
+        -- Medium: Register multiple colors for a theme
+        local themeColors = {
+            primary = Color(100, 150, 200),
+            secondary = Color(200, 100, 150),
+            accent = Color(150, 200, 100)
+        }
+
+        for name, color in pairs(themeColors) do
+            lia.color.register("theme_" .. name, color)
+        end
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Register multiple colors from configuration
-        local colorConfig = {
-        primary = {100, 150, 200},
-            secondary = {200, 100, 150},
-                accent = {150, 200, 100}
-                }
-                for name, color in pairs(colorConfig) do
-                    lia.color.register(name, color)
-                end
+        -- High: Register colors with validation and fallbacks
+        local function registerSafeColor(name, color)
+            if not lia.color.stored[name:lower()] then
+                lia.color.register(name, color)
+                print("Registered color:", name)
+            else
+                print("Color already exists:", name)
+            end
+        end
+
+        registerSafeColor("brandPrimary", Color(60, 140, 140))
+        registerSafeColor("brandSecondary", Color(140, 60, 140))
         ```
-    ]]
-    function lia.color.register(name, color)
+]]
+function lia.color.register(name, color)
         lia.color.stored[name:lower()] = color
     end
 
     --[[
-        Purpose:
-            Adjusts color values by adding offsets to each channel
-        When Called:
-            When creating color variations or adjusting existing colors
-        Parameters:
-            color (Color) - The base color to adjust
-            rOffset (number) - Red channel offset (-255 to 255)
-            gOffset (number) - Green channel offset (-255 to 255)
-            bOffset (number) - Blue channel offset (-255 to 255)
-            aOffset (number, optional) - Alpha channel offset (-255 to 255)
-        Returns:
-            Color - New adjusted color with clamped values
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Adjusts a color by adding offset values to its RGBA components, clamping the results to valid ranges.
+
+    When Called:
+        When creating color variations for UI elements, hover states, or theme adjustments.
+        When programmatically modifying colors for visual effects.
+
+    Parameters:
+        - color (Color): The base color to adjust.
+        - rOffset (number): Red component offset (optional, default: 0).
+        - gOffset (number): Green component offset (optional, default: 0).
+        - bOffset (number): Blue component offset (optional, default: 0).
+        - aOffset (number): Alpha component offset (optional, default: 0).
+
+    Returns:
+        Color - A new Color object with adjusted values.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Brighten a color
-        local brightRed = lia.color.adjust(Color(100, 0, 0), 50, 0, 0)
+        -- Simple: Darken a color
+        local baseColor = Color(200, 150, 100)
+        local darkerColor = lia.color.adjust(baseColor, -50, -30, -20)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Create color variations
-        local baseColor = Color(128, 128, 128)
-        local lighter = lia.color.adjust(baseColor, 30, 30, 30)
-        local darker = lia.color.adjust(baseColor, -30, -30, -30)
+        -- Medium: Create hover effect colors
+        local buttonColor = Color(100, 150, 200)
+        local hoverColor = lia.color.adjust(buttonColor, 20, 20, 20) -- Lighter
+        local pressedColor = lia.color.adjust(buttonColor, -30, -30, -30) -- Darker
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Dynamic color adjustment based on conditions
-        local function adjustColorForTime(color, timeOfDay)
-            local multiplier = math.sin(timeOfDay * math.pi / 12) * 0.3
-            return lia.color.adjust(color,
-            multiplier * 50,
-            multiplier * 30,
-            multiplier * 20,
-            multiplier * 100
-            )
+        -- High: Generate a color palette with variations
+        local function generateColorPalette(baseColor)
+            return {
+                original = baseColor,
+                light = lia.color.adjust(baseColor, 40, 40, 40),
+                dark = lia.color.adjust(baseColor, -60, -60, -60),
+                accent = lia.color.adjust(baseColor, 0, 50, -30),
+                muted = lia.color.adjust(baseColor, -20, -20, -20, -50)
+            }
         end
+
+        local palette = generateColorPalette(Color(120, 180, 140))
         ```
-    ]]
-    function lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)
+]]
+function lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)
         return Color(math.Clamp(color.r + rOffset, 0, 255), math.Clamp(color.g + gOffset, 0, 255), math.Clamp(color.b + bOffset, 0, 255), math.Clamp((color.a or 255) + (aOffset or 0), 0, 255))
     end
 
     --[[
-        Purpose:
-            Darkens a color by multiplying RGB values by a factor
-        When Called:
-            When creating darker variations of colors for shadows or depth
-        Parameters:
-            color (Color) - The color to darken
-            factor (number, optional) - Darkening factor (0-1), defaults to 0.1
-        Returns:
-            Color - New darkened color with preserved alpha
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Creates a darker version of a color by reducing its RGB components by a specified factor.
+
+    When Called:
+        When creating shadow colors, pressed button states, or darker color variations.
+        When building color schemes that need darker accents.
+
+    Parameters:
+        - color (Color): The base color to darken.
+        - factor (number): The darkening factor (0.0 to 1.0, default: 0.1). Higher values create darker colors.
+
+    Returns:
+        Color - A new Color object with reduced brightness.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Darken a color slightly
-        local darkBlue = lia.color.darken(Color(0, 0, 255))
+        -- Simple: Create a darker shade
+        local baseColor = Color(200, 180, 160)
+        local darkColor = lia.color.darken(baseColor, 0.3)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Create shadow effect
-        local baseColor = Color(100, 150, 200)
-        local shadowColor = lia.color.darken(baseColor, 0.5)
+        -- Medium: Create button states
+        local buttonColor = Color(120, 160, 200)
+        local normalColor = buttonColor
+        local pressedColor = lia.color.darken(buttonColor, 0.2)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Dynamic darkening based on distance
-        local function getShadowColor(baseColor, distance)
-            local darkenFactor = math.min(distance / 1000, 0.8)
-            return lia.color.darken(baseColor, darkenFactor)
+        -- High: Generate shadow color based on brightness
+        local function createShadowColor(baseColor)
+            local brightness = (baseColor.r * 0.299 + baseColor.g * 0.587 + baseColor.b * 0.114) / 255
+            local shadowFactor = brightness > 0.5 and 0.4 or 0.2 -- Darker shadows for light colors
+            return lia.color.darken(baseColor, shadowFactor)
         end
+
+        local panelColor = Color(240, 240, 240)
+        local shadowColor = createShadowColor(panelColor)
         ```
-    ]]
-    function lia.color.darken(color, factor)
+]]
+function lia.color.darken(color, factor)
         factor = factor or 0.1
         local darkenFactor = 1 - math.Clamp(factor, 0, 1)
         return Color(math.floor(color.r * darkenFactor), math.floor(color.g * darkenFactor), math.floor(color.b * darkenFactor), color.a or 255)
     end
 
     --[[
-        Purpose:
-            Gets the current active theme name in lowercase
-        When Called:
-            When checking which theme is currently active
-        Parameters:
-            None
-        Returns:
-            string - Current theme name in lowercase
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves the name of the currently active theme.
+
+    When Called:
+        When checking which theme is currently applied.
+        When making theme-dependent UI decisions.
+
+    Parameters:
+        None.
+
+    Returns:
+        string - The lowercase name of the current theme.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Check current theme
-        local currentTheme = lia.color.getCurrentTheme()
-        print("Current theme:", currentTheme)
+        -- Simple: Get current theme name
+        local theme = lia.color.getCurrentTheme()
+        print("Current theme:", theme)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Conditional theme-based logic
-        if lia.color.getCurrentTheme() == "dark" then
-            -- Apply dark theme specific settings
+        -- Medium: Check theme for conditional styling
+        local currentTheme = lia.color.getCurrentTheme()
+        local isDarkTheme = currentTheme == "dark" or currentTheme == "dark mono"
+
+        if isDarkTheme then
+            -- Apply dark theme adjustments
+            adjustForDarkTheme()
         end
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Theme-based UI customization
-        local function getThemeSpecificColor(colorName)
+        -- High: Theme-aware color selection
+        local function getThemeAwareColor(colorName)
             local theme = lia.color.getCurrentTheme()
             local themeColors = {
-            dark = {primary = Color(100, 100, 100)},
-                light = {primary = Color(200, 200, 200)}
-                }
-                return themeColors[theme] and themeColors[theme][colorName] or Color(255, 255, 255)
-            end
+                teal = {primary = Color(60, 140, 140), secondary = Color(140, 60, 140)},
+                dark = {primary = Color(106, 108, 197), secondary = Color(197, 106, 108)},
+                light = {primary = Color(106, 108, 197), secondary = Color(197, 108, 106)}
+            }
+
+            return themeColors[theme] and themeColors[theme][colorName] or Color(128, 128, 128)
+        end
+
+        local primaryColor = getThemeAwareColor("primary")
         ```
-    ]]
-    function lia.color.getCurrentTheme()
+]]
+function lia.color.getCurrentTheme()
         return lia.config.get("Theme", "Teal"):lower()
     end
 
     --[[
-        Purpose:
-            Gets the current active theme name with proper capitalization
-        When Called:
-            When displaying theme name to users or for configuration
-        Parameters:
-            None
-        Returns:
-            string - Current theme name with proper capitalization
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves the display name of the currently active theme.
+
+    When Called:
+        When displaying the current theme name to users.
+        When logging theme changes or user preferences.
+
+    Parameters:
+        None.
+
+    Returns:
+        string - The display name of the current theme.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Display theme name
+        -- Simple: Get current theme display name
         local themeName = lia.color.getCurrentThemeName()
-        print("Active theme:", themeName)
+        print("Current theme:", themeName)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Theme selection menu
-        local function createThemeMenu()
-            local currentTheme = lia.color.getCurrentThemeName()
-            local menu = vgui.Create("DFrame")
-            menu:SetTitle("Current Theme: " .. currentTheme)
-        end
+        -- Medium: Display theme in UI
+        local currentThemeDisplay = lia.color.getCurrentThemeName()
+        draw.SimpleText("Theme: " .. currentThemeDisplay, "liaMediumFont", x, y, Color(255, 255, 255))
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Theme validation and fallback
-        local function validateTheme()
-            local themeName = lia.color.getCurrentThemeName()
-            local availableThemes = lia.color.getAllThemes()
+        -- High: Theme change notification
+        local oldTheme = lia.color.getCurrentThemeName()
+        -- ... theme change logic ...
+        local newTheme = lia.color.getCurrentThemeName()
 
-            if not table.HasValue(availableThemes, themeName:lower()) then
-                lia.config.set("Theme", "Teal")
-                return "Teal"
-            end
-            return themeName
+        if oldTheme ~= newTheme then
+            showNotification("Theme changed from " .. oldTheme .. " to " .. newTheme)
         end
         ```
-    ]]
-    function lia.color.getCurrentThemeName()
+]]
+function lia.color.getCurrentThemeName()
         return lia.config.get("Theme", "Teal")
     end
 
     --[[
-        Purpose:
-            Gets the main color from the current theme
-        When Called:
-            When needing the primary accent color for UI elements
-        Parameters:
-            None
-        Returns:
-            Color - The main color from current theme or default teal
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves the main accent color of the currently active theme.
+
+    When Called:
+        When accessing the primary theme color for UI elements.
+        When creating theme-consistent color schemes.
+
+    Parameters:
+        None.
+
+    Returns:
+        Color - The main color of the current theme, or a default teal color if not found.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
         -- Simple: Get main theme color
         local mainColor = lia.color.getMainColor()
+        draw.SimpleText("Welcome", "liaLargeFont", x, y, mainColor)
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Use main color for UI elements
-        local function createThemedButton(text)
-            local button = vgui.Create("DButton")
-            button:SetText(text)
-            button:SetTextColor(lia.color.getMainColor())
-            return button
-        end
+        -- Medium: Create theme-consistent button
+        local accentColor = lia.color.getMainColor()
+        local buttonColor = accentColor
+        local hoverColor = lia.color.adjust(accentColor, 20, 20, 20)
+
+        surface.SetDrawColor(buttonColor.r, buttonColor.g, buttonColor.b, buttonColor.a)
+        surface.DrawRect(x, y, width, height)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Dynamic color scheme generation
-        local function generateColorScheme()
+        -- High: Generate complete color palette from theme
+        local function createThemePalette()
             local mainColor = lia.color.getMainColor()
             return {
-            primary = mainColor,
-            secondary = lia.color.adjust(mainColor, -50, -50, -50),
-            accent = lia.color.adjust(mainColor, 50, 50, 50),
-            background = lia.color.darken(mainColor, 0.8)
-        }
+                primary = mainColor,
+                secondary = lia.color.adjust(mainColor, -20, -10, 30),
+                tertiary = lia.color.adjust(mainColor, 30, -20, 10),
+                background = lia.color.darken(mainColor, 0.7),
+                text = Color(240, 240, 240) -- Usually white/near-white for contrast
+            }
         end
+
+        local palette = createThemePalette()
         ```
-    ]]
-    function lia.color.getMainColor()
+]]
+function lia.color.getMainColor()
         local currentTheme = lia.color.getCurrentTheme()
         local themeData = lia.color.themes[currentTheme]
         if themeData and themeData.maincolor then return themeData.maincolor end
@@ -310,52 +372,68 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Applies a theme to the interface with optional smooth transition
-        When Called:
-            When switching themes or initializing the color system
-        Parameters:
-            themeName (string, optional) - Name of theme to apply, defaults to current theme
-            useTransition (boolean, optional) - Whether to use smooth transition animation
-        Returns:
-            None
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Applies a theme to the color system, optionally with smooth transitions.
+
+    When Called:
+        When changing the active theme.
+        During initialization to set the default theme.
+        When responding to user theme selection.
+
+    Parameters:
+        - themeName (string): The name of the theme to apply (optional, uses current if not provided).
+        - useTransition (boolean): Whether to use smooth color transitions (optional, default: false).
+
+    Returns:
+        None.
+
+    Realm:
+        Client.
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Apply theme without transition
-        lia.color.applyTheme("dark")
+        -- Simple: Apply a theme immediately
+        lia.color.applyTheme("Dark")
         ```
 
         Medium Complexity:
 
         ```lua
         -- Medium: Apply theme with smooth transition
-        lia.color.applyTheme("light", true)
+        lia.color.applyTheme("Teal", true)
         ```
 
         High Complexity:
 
         ```lua
         -- High: Theme switching with validation and fallback
-        local function switchTheme(themeName)
+        local function safeApplyTheme(themeName, useTransition)
             local availableThemes = lia.color.getAllThemes()
-            if not table.HasValue(availableThemes, themeName:lower()) then
-                themeName = "teal"
+            local themeExists = false
+
+            for _, theme in ipairs(availableThemes) do
+                if theme == themeName:lower() then
+                    themeExists = true
+                    break
+                end
             end
 
-            lia.color.applyTheme(themeName, true)
-            lia.config.set("Theme", themeName)
-
-            -- Notify other systems of theme change
-            hook.Run("OnThemeChanged", themeName, true)
+            if themeExists then
+                lia.color.applyTheme(themeName, useTransition)
+                print("Applied theme:", themeName)
+            else
+                lia.color.applyTheme("Teal", useTransition) -- Fallback to default
+                print("Theme not found, using default")
+            end
         end
+
+        safeApplyTheme("Purple", true)
         ```
-    ]]
-    function lia.color.applyTheme(themeName, useTransition)
+]]
+function lia.color.applyTheme(themeName, useTransition)
         themeName = themeName or lia.color.getCurrentTheme()
         local themeData = lia.color.themes[themeName]
         if not themeData then
@@ -387,116 +465,136 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Checks if a theme transition animation is currently active
-        When Called:
-            When checking transition state before starting new transitions
-        Parameters:
-            None
-        Returns:
-            boolean - True if transition is active, false otherwise
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Check if transition is running
-        if lia.color.isTransitionActive() then
-            print("Theme transition in progress")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Prevent multiple transitions
-        local function safeThemeSwitch(themeName)
-            if lia.color.isTransitionActive() then
-                print("Please wait for current transition to finish")
-                return
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-            lia.color.applyTheme(themeName, true)
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Queue theme changes during transitions
-        local themeQueue = {}
-        local function queueThemeChange(themeName)
-            if lia.color.isTransitionActive() then
-                table.insert(themeQueue, themeName)
-                else
-                    lia.color.applyTheme(themeName, true)
-                end
-            end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            hook.Add("OnThemeChanged", "ProcessThemeQueue", function()
-                if #themeQueue > 0 and not lia.color.isTransitionActive() then
-                    local nextTheme = table.remove(themeQueue, 1)
-                    lia.color.applyTheme(nextTheme, true)
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
                 end
             end)
+        end
         ```
-    ]]
-    function lia.color.isTransitionActive()
+]]
+function lia.color.isTransitionActive()
         return lia.color.transition and lia.color.transition.active or false
     end
 
     --[[
-        Purpose:
-            Tests a theme transition by applying it with animation
-        When Called:
-            When previewing theme changes or testing transitions
-        Parameters:
-            themeName (string) - Name of theme to test transition to
-        Returns:
-            None
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Test theme transition
-        lia.color.testThemeTransition("dark")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Preview multiple themes
-        local function previewTheme(themeName)
-            lia.color.testThemeTransition(themeName)
-            timer.Simple(2, function()
-            lia.color.applyTheme(lia.color.getCurrentTheme(), true)
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
         end)
-        end
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Theme preview system with cycling
-        local previewThemes = {"dark", "light", "blue", "red"}
-        local currentPreview = 1
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-        local function cycleThemePreview()
-            if lia.color.isTransitionActive() then return end
-
-                local theme = previewThemes[currentPreview]
-                lia.color.testThemeTransition(theme)
-
-                currentPreview = (currentPreview % #previewThemes) + 1
-                timer.Simple(3, cycleThemePreview)
-            end
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
+        end
         ```
-    ]]
-    function lia.color.testThemeTransition(themeName)
+]]
+function lia.color.testThemeTransition(themeName)
         lia.color.applyTheme(themeName, true)
     end
 
@@ -509,61 +607,69 @@ if CLIENT then
     }
 
     --[[
-        Purpose:
-            Starts a smooth animated transition to a new theme
-        When Called:
-            When applying themes with transition animation enabled
-        Parameters:
-            name (string) - Name of the theme to transition to
-        Returns:
-            None
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Start theme transition
-        lia.color.startThemeTransition("dark")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Transition with validation
-        local function transitionToTheme(themeName)
-            if lia.color.isTransitionActive() then
-                print("Transition already in progress")
-                return
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
-
-            local availableThemes = lia.color.getAllThemes()
-            if table.HasValue(availableThemes, themeName:lower()) then
-                lia.color.startThemeTransition(themeName)
-            end
-        end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Custom transition with progress tracking
-        local function customThemeTransition(themeName, callback)
-            lia.color.startThemeTransition(themeName)
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            local function checkProgress()
-                if not lia.color.isTransitionActive() then
-                    if callback then callback() end
-                        return
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-                    timer.Simple(0.1, checkProgress)
+                else
+                    print("Failed to load character:", charID)
                 end
-                checkProgress()
-            end
+            end)
+        end
         ```
-    ]]
-    function lia.color.startThemeTransition(name)
+]]
+function lia.color.startThemeTransition(name)
         local targetTheme = lia.color.themes[name:lower()]
         if not targetTheme then
             name = "Teal"
@@ -628,130 +734,136 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Checks if a value is a valid color object
-        When Called:
-            When validating color data or processing theme transitions
-        Parameters:
-            v (any) - Value to check if it's a color
-        Returns:
-            boolean - True if value is a valid color, false otherwise
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Check if value is color
-        if lia.color.isColor(someValue) then
-            print("It's a color!")
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Validate color data
-        local function processColorData(data)
-            if lia.color.isColor(data) then
-                return data
-                else
-                    return Color(255, 255, 255)
-                end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Recursive color validation in nested tables
-        local function validateThemeData(themeData)
-            for key, value in pairs(themeData) do
-                if istable(value) and #value > 0 then
-                    for i, item in ipairs(value) do
-                        if not lia.color.isColor(item) then
-                            error("Invalid color at " .. key .. "[" .. i .. "]")
-                        end
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
+
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
                     end
-                    elseif lia.color.isColor(value) then
-                        -- Valid color
-                        else
-                            error("Invalid color at " .. key)
-                        end
-                    end
+                else
+                    print("Failed to load character:", charID)
                 end
+            end)
+        end
         ```
-    ]]
-    function lia.color.isColor(v)
+]]
+function lia.color.isColor(v)
         return istable(v) and isnumber(v.r) and isnumber(v.g) and isnumber(v.b) and isnumber(v.a)
     end
 
     --[[
-        Purpose:
-            Returns a set of adjusted colors based on the main theme color
-        When Called:
-            When creating UI color schemes or theme-based color palettes
-        Parameters:
-            None
-        Returns:
-            table - Table containing adjusted colors (background, sidebar, accent, text, hover, border, highlight)
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Get theme colors
-        local colors = lia.color.returnMainAdjustedColors()
-        local bgColor = colors.background
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Apply colors to UI elements
-        local function createThemedPanel()
-            local colors = lia.color.returnMainAdjustedColors()
-            local panel = vgui.Create("DPanel")
-            panel:SetBackgroundColor(colors.background)
-            panel.Paint = function(self, w, h)
-            draw.RoundedBox(4, 0, 0, w, h, colors.background)
-            draw.RoundedBox(4, 0, 0, w, 2, colors.accent)
-        end
-        return panel
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Dynamic UI system with theme colors
-        local function createAdvancedUI()
-            local colors = lia.color.returnMainAdjustedColors()
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            local ui = {
-            background = colors.background,
-            primary = colors.accent,
-            secondary = colors.sidebar,
-            text = colors.text,
-            hover = colors.hover,
-            border = colors.border,
-            highlight = colors.highlight
-        }
-
-        -- Apply colors to multiple UI elements
-        for _, element in ipairs(uiElements) do
-            element:SetColor(ui.primary)
-            element:SetTextColor(ui.text)
-        end
-
-        return ui
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
         ```
-    ]]
-    function lia.color.returnMainAdjustedColors()
+]]
+function lia.color.returnMainAdjustedColors()
         local base = lia.color.getMainColor()
         local background = lia.color.adjust(base, -20, -10, -50, 0)
         local brightness = background.r * 0.299 + background.g * 0.587 + background.b * 0.114
@@ -768,69 +880,69 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Interpolates between two colors using frame time for smooth transitions
-        When Called:
-            During theme transitions to smoothly blend between colors
-        Parameters:
-            frac (number) - Interpolation factor/speed multiplier
-            col1 (Color) - Starting color
-            col2 (Color) - Target color
-        Returns:
-            Color - Interpolated color between col1 and col2
-        Realm:
-            Client
-        Example Usage:
+    Purpose:
+        Retrieves a character by its ID, loading it if necessary.
+
+    When Called:
+        When a character needs to be accessed by ID, either from the server or the client.
+
+    Parameters:
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
+    Returns:
+        Character object if found or loaded, nil otherwise.
+
+    Realm:
+        Shared (works on both server and client).
+
+    Example Usage:
 
         Low Complexity:
 
         ```lua
-        -- Simple: Lerp between colors
-        local blendedColor = lia.color.lerp(5, Color(255, 0, 0), Color(0, 255, 0))
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
         ```
 
         Medium Complexity:
 
         ```lua
-        -- Medium: Smooth color transition
-        local function fadeBetweenColors(startColor, endColor, duration)
-            local startTime = CurTime()
-
-            hook.Add("Think", "ColorFade", function()
-                local elapsed = CurTime() - startTime
-                local progress = math.min(elapsed / duration, 1)
-
-                if progress >= 1 then
-                    hook.Remove("Think", "ColorFade")
-                end
-
-                local currentColor = lia.color.lerp(10, startColor, endColor)
-                -- Use currentColor for UI elements
-            end)
-        end
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
         ```
 
         High Complexity:
 
         ```lua
-        -- High: Multi-color gradient system
-        local function createColorGradient(colors, steps)
-            local gradient = {}
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-            for i = 1, steps do
-                local t = (i - 1) / (steps - 1)
-                local colorIndex = math.floor(t * (#colors - 1)) + 1
-                local nextIndex = math.min(colorIndex + 1, #colors)
-
-                local localT = (t * (#colors - 1)) - (colorIndex - 1)
-                gradient[i] = lia.color.lerp(1, colors[colorIndex], colors[nextIndex])
-            end
-
-            return gradient
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
         ```
-    ]]
-    function lia.color.lerp(frac, col1, col2)
+]]
+function lia.color.lerp(frac, col1, col2)
         local ft = FrameTime() * frac
         local r1 = col1 and col1.r or 255
         local g1 = col1 and col1.g or 255
@@ -880,63 +992,66 @@ end
 
 --[[
     Purpose:
-        Registers a new theme with color definitions
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When creating custom themes or extending the theme system
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        name (string) - Name of the theme to register
-        themeData (table) - Table containing color definitions for the theme
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        None
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Register a basic theme
-    lia.color.registerTheme("MyTheme", {
-        maincolor = Color(100, 150, 200),
-        background = Color(20, 20, 20),
-        text = Color(255, 255, 255)
-        })
-    ```
+        ```lua
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
+        end
+        ```
 
-    Medium Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- Medium: Register theme with full color set
-    lia.color.registerTheme("CustomDark", {
-        header = Color(40, 40, 40),
-        background = Color(25, 25, 25),
-        button = Color(54, 54, 54),
-        maincolor = Color(106, 108, 197),
-        text = Color(255, 255, 255),
-        accent = Color(106, 108, 197)
-        })
-    ```
+        ```lua
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
+            end
+        end)
+        ```
 
-    High Complexity:
+        High Complexity:
 
-    ```lua
-    -- High: Dynamic theme generation
-    local function generateThemeFromConfig(config)
-        local themeData = {
-        maincolor = Color(config.primary.r, config.primary.g, config.primary.b),
-        background = Color(config.background.r, config.background.g, config.background.b),
-        text = Color(config.text.r, config.text.g, config.text.b),
-        accent = Color(config.accent.r, config.accent.g, config.accent.b),
-        panel = {
-            Color(config.panel1.r, config.panel1.g, config.panel1.b),
-            Color(config.panel2.r, config.panel2.g, config.panel2.b),
-            Color(config.panel3.r, config.panel3.g, config.panel3.b)
-        }
-    }
+        ```lua
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
 
-    lia.color.registerTheme(config.name, themeData)
-    end
-    ```
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
+        end
+        ```
 ]]
 function lia.color.registerTheme(name, themeData)
     local id = name:lower()
@@ -945,67 +1060,66 @@ end
 
 --[[
     Purpose:
-        Gets a list of all available theme names
+        Retrieves a character by its ID, loading it if necessary.
+
     When Called:
-        When building theme selection menus or validating theme names
+        When a character needs to be accessed by ID, either from the server or the client.
+
     Parameters:
-        None
+        - charID (number): The unique identifier of the character.
+        - client (Player): The player requesting the character (optional).
+        - callback (function): Function to call when the character is loaded (optional).
+
     Returns:
-        table - Array of theme names in alphabetical order
+        Character object if found or loaded, nil otherwise.
+
     Realm:
-        Shared
+        Shared (works on both server and client).
+
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
-    ```lua
-    -- Simple: Get all themes
-    local themes = lia.color.getAllThemes()
-    print("Available themes:", table.concat(themes, ", "))
-    ```
-
-    Medium Complexity:
-
-    ```lua
-    -- Medium: Create theme selection menu
-    local function createThemeMenu()
-        local themes = lia.color.getAllThemes()
-        local menu = vgui.Create("DFrame")
-
-        for _, themeName in ipairs(themes) do
-            local button = vgui.Create("DButton", menu)
-            button:SetText(themeName)
-            button.DoClick = function()
-            lia.color.applyTheme(themeName, true)
+        ```lua
+        -- Simple: Get a character by ID
+        local character = lia.char.getCharacter(123)
+        if character then
+            print("Character name:", character:getName())
         end
-    end
-    end
-    ```
+        ```
 
-    High Complexity:
+        Medium Complexity:
 
-    ```lua
-    -- High: Theme validation and management system
-    local function validateAndManageThemes()
-        local themes = lia.color.getAllThemes()
-        local validThemes = {}
-
-        for _, themeName in ipairs(themes) do
-            local themeData = lia.color.themes[themeName]
-            if themeData and themeData.maincolor then
-                table.insert(validThemes, {
-                    name = themeName,
-                    displayName = themeName:gsub("_", " "):gsub("(%a)([%w]*)", function(first, rest)
-                    return first:upper() .. rest:lower()
-                    end),
-                    mainColor = themeData.maincolor
-                    })
-                end
+        ```lua
+        -- Medium: Get character with callback for async loading
+        lia.char.getCharacter(123, client, function(character)
+            if character then
+                character:setMoney(1000)
+                print("Character loaded:", character:getName())
             end
+        end)
+        ```
 
-            return validThemes
+        High Complexity:
+
+        ```lua
+        -- High: Get multiple characters with validation and error handling
+        local charIDs = {123, 456, 789}
+        local loadedChars = {}
+
+        for _, charID in ipairs(charIDs) do
+            lia.char.getCharacter(charID, client, function(character)
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
+                else
+                    print("Failed to load character:", charID)
+                end
+            end)
         end
-    ```
+        ```
 ]]
 function lia.color.getAllThemes()
     local themes = {}
