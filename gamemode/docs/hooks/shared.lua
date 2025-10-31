@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Shared Hooks
 
     Shared hook system for the Lilia framework.
@@ -84,7 +84,7 @@
         end
 
         -- Equipment bonuses
-        local items = char:getInv()
+        local items = char:getInv():getItems()
         for _, item in pairs(items) do
             if item.uniqueID == "stamina_boost" then
                 modifiers.regeneration = modifiers.regeneration + 0.5
