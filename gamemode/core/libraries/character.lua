@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Character Library
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
@@ -59,11 +59,11 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
 
         for _, charID in ipairs(charIDs) do
             lia.char.getCharacter(charID, client, function(character)
-            if character then
-                loadedChars[charID] = character
-                if table.Count(loadedChars) == #charIDs then
-                    print("All characters loaded successfully")
-                end
+                if character then
+                    loadedChars[charID] = character
+                    if table.Count(loadedChars) == #charIDs then
+                        print("All characters loaded successfully")
+                    end
                 else
                     print("Failed to load character:", charID)
                 end

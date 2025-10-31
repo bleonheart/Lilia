@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Item Meta
 
     Item management system for the Lilia framework.
@@ -55,11 +55,11 @@ ITEM.scale = 1
         local function getItemDisplaySize(item)
             if item:isRotated() then
                 return item:getHeight(), item:getWidth()
-                else
-                    return item:getWidth(), item:getHeight()
-                end
+            else
+                return item:getWidth(), item:getHeight()
             end
-            local displayW, displayH = getItemDisplaySize(myItem)
+        end
+        local displayW, displayH = getItemDisplaySize(myItem)
         ```
 ]]
 function ITEM:isRotated()

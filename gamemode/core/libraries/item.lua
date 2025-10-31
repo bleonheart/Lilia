@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Item Library
 
     Comprehensive item registration, instantiation, and management system for the Lilia framework.
@@ -227,10 +227,10 @@ end
     if result then
         if result.location == "inventory" then
             print("Item is in inventory")
-            elseif result.location == "world" then
-                print("Item is in world")
-            end
+        elseif result.location == "world" then
+            print("Item is in world")
         end
+    end
     ```
 
     High Complexity:
@@ -244,10 +244,10 @@ end
             if inv then
                 print("Item in inventory:", inv:getName())
             end
-            elseif result.location == "world" and IsValid(item.entity) then
-                print("Item entity position:", item.entity:GetPos())
-            end
+        elseif result.location == "world" and IsValid(item.entity) then
+            print("Item entity position:", item.entity:GetPos())
         end
+    end
     ```
 ]]
 function lia.item.getItemByID(itemID)
