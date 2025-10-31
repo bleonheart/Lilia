@@ -13,7 +13,6 @@ do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
     --[[
-
     Purpose:
         Retrieves the player's current character object
 
@@ -28,9 +27,9 @@ do
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player's character
         local char = player:getChar()
@@ -40,7 +39,6 @@ do
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check character and access properties
         local char = player:getChar()
@@ -51,7 +49,6 @@ do
         ```
 
         High Complexity:
-
         ```lua
         -- High: Full character validation and operations
         local char = player:getChar()
@@ -69,7 +66,6 @@ do
     end
 
     --[[
-
     Purpose:
         Retrieves the player's current character object
 
@@ -84,9 +80,9 @@ do
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player's character
         local char = player:getChar()
@@ -96,7 +92,6 @@ do
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check character and access properties
         local char = player:getChar()
@@ -107,7 +102,6 @@ do
         ```
 
         High Complexity:
-
         ```lua
         -- High: Full character validation and operations
         local char = player:getChar()
@@ -130,7 +124,6 @@ do
     end
 
     --[[
-
     Purpose:
         Converts the player to a string representation using character name or Steam name
 
@@ -145,9 +138,9 @@ do
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Convert player to string for display
         local playerName = player:tostring()
@@ -155,7 +148,6 @@ do
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Use in logging with fallback
         local playerName = player:tostring()
@@ -163,7 +155,6 @@ do
         ```
 
         High Complexity:
-
         ```lua
         -- High: Use in complex display logic with validation
         local playerName = player:tostring()
@@ -183,7 +174,6 @@ do
 end
 
 --[[
-
     Purpose:
         Makes the player perform a gesture animation and synchronizes it across clients
 
@@ -200,16 +190,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Make player wave
         player:doGesture(ACT_GMOD_GESTURE_WAVE, 1, true)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Conditional gesture based on player state
         if player:IsOnGround() then
@@ -218,7 +207,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex gesture system with validation
         local gesture = ACT_GMOD_GESTURE_AGREE
@@ -242,7 +230,6 @@ function playerMeta:doGesture(a, b, c)
 end
 
 --[[
-
     Purpose:
         Checks if the player has a specific administrative privilege
 
@@ -257,9 +244,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is admin
         if player:hasPrivilege("admin") then
@@ -268,7 +255,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Conditional access based on privilege
         if player:hasPrivilege("moderator") then
@@ -277,7 +263,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex permission system with multiple checks
         local requiredPrivs = {"admin", "superadmin"}
@@ -302,7 +287,6 @@ function playerMeta:hasPrivilege(privilegeName)
 end
 
 --[[
-
     Purpose:
         Removes the player's ragdoll entity and clears associated blur effect
 
@@ -317,16 +301,15 @@ end
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Remove player's ragdoll
         player:removeRagdoll()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Remove ragdoll with validation
         if player:getNetVar("ragdoll") then
@@ -335,7 +318,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex ragdoll cleanup with state management
         local ragdoll = player:getNetVar("ragdoll")
@@ -354,7 +336,6 @@ function playerMeta:removeRagdoll()
 end
 
 --[[
-
     Purpose:
         Checks if the player is stuck inside a solid object or wall
 
@@ -369,9 +350,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is stuck
         if player:isStuck() then
@@ -380,7 +361,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Handle stuck player with teleport
         if player:isStuck() then
@@ -389,7 +369,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex stuck detection with logging and recovery
         if player:isStuck() then
@@ -411,7 +390,6 @@ function playerMeta:isStuck()
 end
 
 --[[
-
     Purpose:
         Checks if the player is within a specified radius of another entity
 
@@ -427,9 +405,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is near another player
         if player:isNearPlayer(100, otherPlayer) then
@@ -438,7 +416,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Proximity-based interaction
         local npc = ents.FindByClass("npc_citizen")[1]
@@ -448,7 +425,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex proximity system with multiple entities
         local nearbyEntities = {}
@@ -466,7 +442,6 @@ function playerMeta:isNearPlayer(radius, entity)
 end
 
 --[[
-
     Purpose:
         Gets all entities within a specified radius of the player
 
@@ -482,9 +457,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get all nearby entities
         local nearby = player:entitiesNearPlayer(100)
@@ -492,7 +467,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get only nearby players
         local nearbyPlayers = player:entitiesNearPlayer(150, true)
@@ -502,7 +476,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex entity filtering and processing
         local nearby = player:entitiesNearPlayer(200, false)
@@ -523,7 +496,6 @@ function playerMeta:entitiesNearPlayer(radius, playerOnly)
 end
 
 --[[
-
     Purpose:
         Gets the weapon entity and corresponding item data for the player's active weapon
 
@@ -538,9 +510,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player's active weapon item
         local weapon, item = player:getItemWeapon()
@@ -550,7 +522,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check weapon and modify properties
         local weapon, item = player:getItemWeapon()
@@ -563,7 +534,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex weapon system with inventory management
         local weapon, item = player:getItemWeapon()
@@ -595,7 +565,6 @@ function playerMeta:getItemWeapon()
 end
 
 --[[
-
     Purpose:
         Checks if the player is currently running (moving faster than walk speed)
 
@@ -610,9 +579,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is running
         if player:isRunning() then
@@ -621,7 +590,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Running-based stamina system
         if player:isRunning() then
@@ -631,7 +599,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex movement system with effects
         if player:isRunning() then
@@ -649,7 +616,6 @@ function playerMeta:isRunning()
 end
 
 --[[
-
     Purpose:
         Checks if the player is using a family shared Steam account
 
@@ -664,9 +630,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if account is family shared
         if player:isFamilySharedAccount() then
@@ -675,7 +641,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Restrict features for family shared accounts
         if player:isFamilySharedAccount() then
@@ -685,7 +650,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex account validation with logging
         if player:isFamilySharedAccount() then
@@ -700,7 +664,6 @@ function playerMeta:isFamilySharedAccount()
 end
 
 --[[
-
     Purpose:
         Calculates the position where items should be dropped in front of the player
 
@@ -715,9 +678,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get drop position for item
         local dropPos = player:getItemDropPos()
@@ -726,7 +689,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Drop item with validation
         local dropPos = player:getItemDropPos()
@@ -737,7 +699,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex item dropping with physics and effects
         local dropPos = player:getItemDropPos()
@@ -763,7 +724,6 @@ function playerMeta:getItemDropPos()
 end
 
 --[[
-
     Purpose:
         Gets all items from the player's character inventory
 
@@ -778,9 +738,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player's items
         local items = player:getItems()
@@ -790,7 +750,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Search for specific items
         local items = player:getItems()
@@ -804,7 +763,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex inventory analysis and management
         local items = player:getItems()
@@ -830,7 +788,6 @@ function playerMeta:getItems()
 end
 
 --[[
-
     Purpose:
         Gets the entity that the player is looking at within a specified distance
 
@@ -845,9 +802,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get what player is looking at
         local ent = player:getTracedEntity()
@@ -857,7 +814,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Interaction with traced entity
         local ent = player:getTracedEntity(150)
@@ -867,7 +823,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex interaction system with validation
         local ent = player:getTracedEntity(200)
@@ -893,7 +848,6 @@ function playerMeta:getTracedEntity(distance)
 end
 
 --[[
-
     Purpose:
         Performs a hull trace from the player's position to detect collisions and surfaces
 
@@ -908,9 +862,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check what's in front of player
         local trace = player:getTrace()
@@ -920,7 +874,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Surface detection and interaction
         local trace = player:getTrace(150)
@@ -932,7 +885,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex spatial analysis with physics
         local trace = player:getTrace(300)
@@ -962,7 +914,6 @@ function playerMeta:getTrace(distance)
 end
 
 --[[
-
     Purpose:
         Gets the entity that the player is looking at within a specified distance using eye trace
 
@@ -977,9 +928,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get entity player is looking at
         local ent = player:getEyeEnt()
@@ -989,7 +940,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Distance-based interaction
         local ent = player:getEyeEnt(100)
@@ -999,7 +949,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex targeting system with validation
         local ent = player:getEyeEnt(200)
@@ -1021,7 +970,6 @@ function playerMeta:getEyeEnt(distance)
 end
 
 --[[
-
     Purpose:
         Sends a notification message to the player
 
@@ -1037,16 +985,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send basic notification
         player:notify("Hello, player!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send typed notification
         player:notify("You found a weapon!", "success")
@@ -1054,7 +1001,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex notification system with conditions
         local health = player:Health()
@@ -1076,7 +1022,6 @@ function playerMeta:notify(message, notifType)
 end
 
 --[[
-
     Purpose:
         Sends a localized notification message to the player with string formatting
 
@@ -1093,16 +1038,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized notification
         player:notifyLocalized("welcome_message")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized notification with formatting
         player:notifySuccessLocalized("item_found")
@@ -1110,7 +1054,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized notification system
         local itemName = item:getName()
@@ -1128,7 +1071,6 @@ function playerMeta:notifyLocalized(message, notifType, ...)
 end
 
 --[[
-
     Purpose:
         Sends an error notification message to the player
 
@@ -1143,16 +1085,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send error notification
         player:notifyError("Something went wrong!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send error with context
         if not player:hasPrivilege("admin") then
@@ -1161,7 +1102,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex error handling with logging
         local success, err = pcall(function()
@@ -1183,7 +1123,6 @@ function playerMeta:notifyError(message)
 end
 
 --[[
-
     Purpose:
         Sends a warning notification message to the player
 
@@ -1198,16 +1137,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send warning notification
         player:notifyWarning("Be careful!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send warning with condition
         if player:Health() < 25 then
@@ -1216,7 +1154,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex warning system with multiple conditions
         local health = player:Health()
@@ -1237,7 +1174,6 @@ function playerMeta:notifyWarning(message)
 end
 
 --[[
-
     Purpose:
         Sends an informational notification message to the player
 
@@ -1252,23 +1188,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send info notification
         player:notifyInfo("Welcome to the server!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send info with context
         player:notifyInfo("You have " .. player:GetAmmoCount("Pistol") .. " pistol rounds")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex info system with data
         local char = player:getChar()
@@ -1288,7 +1222,6 @@ function playerMeta:notifyInfo(message)
 end
 
 --[[
-
     Purpose:
         Sends a success notification message to the player
 
@@ -1303,23 +1236,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send success notification
         player:notifySuccess("Task completed!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send success with context
         player:notifySuccess("You earned $" .. amount .. "!")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex success system with rewards
         local char = player:getChar()
@@ -1340,7 +1271,6 @@ function playerMeta:notifySuccess(message)
 end
 
 --[[
-
     Purpose:
         Sends a money-related notification message to the player
 
@@ -1355,16 +1285,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send money notification
         player:notifyMoney("You received $100!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send money notification with context
         local amount = 500
@@ -1372,7 +1301,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex money system with character data
         local char = player:getChar()
@@ -1393,7 +1321,6 @@ function playerMeta:notifyMoney(message)
 end
 
 --[[
-
     Purpose:
         Sends an admin notification message to the player
 
@@ -1408,23 +1335,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send admin notification
         player:notifyAdmin("Admin command executed!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send admin notification with context
         player:notifyAdmin("Player " .. target:Name() .. " has been banned")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex admin system with logging
         local adminName = player:Name()
@@ -1443,7 +1368,6 @@ function playerMeta:notifyAdmin(message)
 end
 
 --[[
-
     Purpose:
         Sends a localized error notification message to the player with string formatting
 
@@ -1459,23 +1383,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized error notification
         player:notifyErrorLocalized("error_generic")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized error with formatting
         player:notifyErrorLocalized("error_permission_denied")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized error system with context
         local char = player:getChar()
@@ -1499,7 +1421,6 @@ function playerMeta:notifyErrorLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Sends a localized warning notification message to the player with string formatting
 
@@ -1515,23 +1436,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized warning notification
         player:notifyWarningLocalized("warning_generic")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized warning with formatting
         player:notifyWarningLocalized("warning_health_low")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized warning system with conditions
         local char = player:getChar()
@@ -1555,7 +1474,6 @@ function playerMeta:notifyWarningLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Sends a localized informational notification message to the player with string formatting
 
@@ -1571,23 +1489,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized info notification
         player:notifyInfoLocalized("info_welcome")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized info with formatting
         player:notifyInfoLocalized("info_ammo_count")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized info system with character data
         local char = player:getChar()
@@ -1607,7 +1523,6 @@ function playerMeta:notifyInfoLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Sends a localized success notification message to the player with string formatting
 
@@ -1623,23 +1538,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized success notification
         player:notifySuccessLocalized("success_task_completed")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized success with formatting
         player:notifySuccessLocalized("success_money_earned")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized success system with rewards
         local char = player:getChar()
@@ -1660,7 +1573,6 @@ function playerMeta:notifySuccessLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Sends a localized money-related notification message to the player with string formatting
 
@@ -1676,23 +1588,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized money notification
         player:notifyMoneyLocalized("money_received")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized money notification with formatting
         player:notifyMoneyLocalized("money_payment_received")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized money system with character data
         local char = player:getChar()
@@ -1713,7 +1623,6 @@ function playerMeta:notifyMoneyLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Sends a localized admin notification message to the player with string formatting
 
@@ -1729,23 +1638,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send localized admin notification
         player:notifyAdminLocalized("admin_command_executed")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized admin notification with formatting
         player:notifyAdminLocalized("admin_player_banned")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex localized admin system with logging
         local adminName = player:Name()
@@ -1764,7 +1671,6 @@ function playerMeta:notifyAdminLocalized(key, ...)
 end
 
 --[[
-
     Purpose:
         Checks if the player can edit a specific vendor entity
 
@@ -1779,9 +1685,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player can edit vendor
         if player:canEditVendor(vendor) then
@@ -1790,7 +1696,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Conditional vendor editing with feedback
         if player:canEditVendor(vendor) then
@@ -1801,7 +1706,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex vendor system with logging and validation
         if player:canEditVendor(vendor) then
@@ -1840,7 +1744,6 @@ local function groupHasType(groupName, t)
 end
 
 --[[
-
     Purpose:
         Checks if the player is a staff member based on their user group
 
@@ -1855,9 +1758,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is staff
         if player:isStaff() then
@@ -1866,7 +1769,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Staff-only feature access
         if player:isStaff() then
@@ -1877,7 +1779,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex staff system with different levels
         if player:isStaff() then
@@ -1897,7 +1798,6 @@ function playerMeta:isStaff()
 end
 
 --[[
-
     Purpose:
         Checks if the player is a VIP member based on their user group
 
@@ -1912,9 +1812,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is VIP
         if player:isVIP() then
@@ -1923,7 +1823,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: VIP-only feature access
         if player:isVIP() then
@@ -1934,7 +1833,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex VIP system with benefits
         if player:isVIP() then
@@ -1953,7 +1851,6 @@ function playerMeta:isVIP()
 end
 
 --[[
-
     Purpose:
         Checks if the player is currently on duty as staff (in staff faction)
 
@@ -1968,9 +1865,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is on duty
         if player:isStaffOnDuty() then
@@ -1979,7 +1876,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Duty-based feature access
         if player:isStaffOnDuty() then
@@ -1990,7 +1886,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex duty system with logging and management
         if player:isStaffOnDuty() then
@@ -2008,7 +1903,6 @@ function playerMeta:isStaffOnDuty()
 end
 
 --[[
-
     Purpose:
         Checks if the player has whitelist access to a specific faction
 
@@ -2023,9 +1917,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player has whitelist
         if player:hasWhitelist("police") then
@@ -2034,7 +1928,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Faction selection with whitelist check
         if player:hasWhitelist("police") then
@@ -2045,7 +1938,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex whitelist system with multiple checks
         local faction = "police"
@@ -2071,7 +1963,6 @@ function playerMeta:hasWhitelist(faction)
 end
 
 --[[
-
     Purpose:
         Gets the class data for the player's current character class
 
@@ -2086,9 +1977,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player's class data
         local classData = player:getClassData()
@@ -2098,7 +1989,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Use class data for features
         local classData = player:getClassData()
@@ -2108,7 +1998,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex class system with abilities and restrictions
         local classData = player:getClassData()
@@ -2134,7 +2023,6 @@ function playerMeta:getClassData()
 end
 
 --[[
-
     Purpose:
         Gets DarkRP-compatible variable values for the player (currently only supports money)
 
@@ -2149,9 +2037,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player money via DarkRP compatibility
         local money = player:getDarkRPVar("money")
@@ -2161,7 +2049,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Use DarkRP var for compatibility
         local money = player:getDarkRPVar("money")
@@ -2171,7 +2058,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex DarkRP compatibility system
         local var = "money"
@@ -2194,7 +2080,6 @@ function playerMeta:getDarkRPVar(var)
 end
 
 --[[
-
     Purpose:
         Gets the player's current money amount from their character
 
@@ -2209,9 +2094,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player money
         local money = player:getMoney()
@@ -2219,7 +2104,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check if player can afford something
         local cost = 1000
@@ -2232,7 +2116,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex economic system with multiple currencies
         local money = player:getMoney()
@@ -2250,7 +2133,6 @@ function playerMeta:getMoney()
 end
 
 --[[
-
     Purpose:
         Checks if the player can afford a specific amount of money
 
@@ -2265,9 +2147,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player can afford something
         if player:canAfford(1000) then
@@ -2276,7 +2158,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Purchase validation with feedback
         local cost = 500
@@ -2288,7 +2169,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex economic system with multiple checks
         local cost = 1000
@@ -2310,7 +2190,6 @@ function playerMeta:canAfford(amount)
 end
 
 --[[
-
     Purpose:
         Checks if the player has a specific skill level or higher
 
@@ -2326,9 +2205,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player has skill level
         if player:hasSkillLevel("strength", 5) then
@@ -2337,7 +2216,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Skill-based feature access
         if player:hasSkillLevel("engineering", 10) then
@@ -2348,7 +2226,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex skill system with multiple requirements
         local requiredSkills = {
@@ -2373,7 +2250,6 @@ function playerMeta:hasSkillLevel(skill, level)
 end
 
 --[[
-
     Purpose:
         Checks if the player meets all required skill levels for a task or feature
 
@@ -2388,9 +2264,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check multiple skill requirements
         local requirements = {strength = 5, intelligence = 3}
@@ -2400,7 +2276,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Complex feature with multiple skill checks
         local requirements = {engineering = 10, strength = 8, intelligence = 6}
@@ -2412,7 +2287,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Dynamic skill system with detailed feedback
         local requirements = {engineering = 10, strength = 8, intelligence = 6}
@@ -2438,7 +2312,6 @@ function playerMeta:meetsRequiredSkills(requiredSkillLevels)
 end
 
 --[[
-
     Purpose:
         Forces the player to play a specific animation sequence with optional callback
 
@@ -2456,16 +2329,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Play animation sequence
         player:forceSequence("sit")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Play sequence with callback
         player:forceSequence("wave", function()
@@ -2474,7 +2346,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex sequence system with timing and effects
         local sequenceName = "salute"
@@ -2519,7 +2390,6 @@ function playerMeta:forceSequence(sequenceName, callback, time, noFreeze)
 end
 
 --[[
-
     Purpose:
         Makes the player leave their current animation sequence and restore normal movement
 
@@ -2534,16 +2404,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: End animation sequence
         player:leaveSequence()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: End sequence with notification
         player:leaveSequence()
@@ -2551,7 +2420,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex sequence management with cleanup
         player:leaveSequence()
@@ -2574,7 +2442,6 @@ function playerMeta:leaveSequence()
 end
 
 --[[
-
     Purpose:
         Gets the player's character flags string
 
@@ -2589,9 +2456,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player flags
         local flags = player:getFlags()
@@ -2599,7 +2466,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check for specific flags
         local flags = player:getFlags()
@@ -2609,7 +2475,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex flag system with multiple checks
         local flags = player:getFlags()
@@ -2627,7 +2492,6 @@ function playerMeta:getFlags()
 end
 
 --[[
-
     Purpose:
         Gives flags to the player's character
 
@@ -2642,16 +2506,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Give flags to player
         player:giveFlags("a")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Give flags with validation
         if player:hasPrivilege("admin") then
@@ -2661,7 +2524,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex flag system with logging
         local flags = "a"
@@ -2681,7 +2543,6 @@ function playerMeta:giveFlags(flags)
 end
 
 --[[
-
     Purpose:
         Takes flags from the player's character
 
@@ -2696,16 +2557,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Take flags from player
         player:takeFlags("a")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Take flags with validation
         if player:hasPrivilege("admin") then
@@ -2715,7 +2575,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex flag system with logging
         local flags = "a"
@@ -2735,7 +2594,6 @@ function playerMeta:takeFlags(flags)
 end
 
 --[[
-
     Purpose:
         Networks bone animation data to all clients for the player
 
@@ -2751,9 +2609,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Network basic animation
         local boneData = {ValveBiped.Bip01_Head1 = Angle(0, 0, 0)}
@@ -2761,7 +2619,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Network animation with multiple bones
         local boneData = {
@@ -2772,7 +2629,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex animation system with timing
         local boneData = {
@@ -2804,7 +2660,6 @@ function playerMeta:networkAnimation(active, boneData)
 end
 
 --[[
-
     Purpose:
         Gets all Lilia data for the player (server-side) or local data (client-side)
 
@@ -2819,9 +2674,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get all player data
         local data = player:getAllLiliaData()
@@ -2829,7 +2684,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Access specific data with validation
         local data = player:getAllLiliaData()
@@ -2839,7 +2693,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex data management with logging
         local data = player:getAllLiliaData()
@@ -2862,7 +2715,6 @@ function playerMeta:getAllLiliaData()
 end
 
 --[[
-
     Purpose:
         Sets a waypoint for the player to navigate to
 
@@ -2880,23 +2732,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set basic waypoint
         player:setWaypoint("Objective", Vector(100, 200, 50))
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set waypoint with icon
         player:setWaypoint("Treasure", Vector(500, 300, 100), "icon16/star.png")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex waypoint system with callback
         local waypointName = "Mission Objective"
@@ -2990,7 +2840,6 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
 end
 
 --[[
-
     Purpose:
         Gets a specific Lilia data value for the player with optional default
 
@@ -3006,9 +2855,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player data with default
         local settings = player:getLiliaData("settings", {})
@@ -3016,7 +2865,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get data with validation
         local level = player:getLiliaData("level", 1)
@@ -3026,7 +2874,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex data management with fallbacks
         local config = player:getLiliaData("config", {})
@@ -3055,7 +2902,6 @@ function playerMeta:getLiliaData(key, default)
 end
 
 --[[
-
     Purpose:
         Checks if the player has any of the specified flags
 
@@ -3070,9 +2916,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player has flags
         if player:hasFlags("a") then
@@ -3081,7 +2927,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check multiple flags
         if player:hasFlags("abc") then
@@ -3090,7 +2935,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex flag system with detailed feedback
         local requiredFlags = "abc"
@@ -3116,7 +2960,6 @@ function playerMeta:hasFlags(flags)
 end
 
 --[[
-
     Purpose:
         Checks if the player's play time is greater than a specified amount
 
@@ -3131,9 +2974,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player has enough play time
         if player:playTimeGreaterThan(3600) then
@@ -3142,7 +2985,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Time-based feature access
         if player:playTimeGreaterThan(7200) then
@@ -3153,7 +2995,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex time-based system with rewards
         local requiredTime = 86400 -- 24 hours
@@ -3172,7 +3013,6 @@ function playerMeta:playTimeGreaterThan(time)
 end
 
 --[[
-
     Purpose:
         Requests the player to select from a list of options via a UI dialog
 
@@ -3191,16 +3031,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Request single option
         player:requestOptions("Choose Action", "What do you want to do?", {"Option 1", "Option 2"})
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Request with callback
         local options = {"Yes", "No", "Maybe"}
@@ -3211,7 +3050,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex options system with validation
         local title = "Character Creation"
@@ -3252,7 +3090,6 @@ function playerMeta:requestOptions(title, subTitle, options, limit, callback)
 end
 
 --[[
-
     Purpose:
         Requests the player to input a string via a UI dialog
 
@@ -3270,9 +3107,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Request string input
         player:requestString("Enter Name", "What is your name?", function(name)
@@ -3281,7 +3118,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Request with default value
         player:requestString("Enter Message", "Type your message:", function(message)
@@ -3290,7 +3126,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex string input with validation
         local title = "Character Name"
@@ -3334,7 +3169,6 @@ function playerMeta:requestString(title, subTitle, callback, default)
 end
 
 --[[
-
     Purpose:
         Requests the player to input multiple arguments via a UI dialog
 
@@ -3351,9 +3185,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Request basic arguments
         local argTypes = {{type = "string", name = "Name"}, {type = "number", name = "Age"}}
@@ -3363,7 +3197,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Request with validation
         local argTypes = {
@@ -3376,7 +3209,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex argument system with multiple types
         local argTypes = {
@@ -3425,7 +3257,6 @@ function playerMeta:requestArguments(title, argTypes, callback)
 end
 
 --[[
-
     Purpose:
         Presents a binary question to the player with two options
 
@@ -3444,16 +3275,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Ask yes/no question
         player:binaryQuestion("Do you want to continue?", "Yes", "No")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Ask with callback
         player:binaryQuestion("Delete this item?", "Delete", "Cancel", true, function(choice)
@@ -3466,7 +3296,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex confirmation system with validation
         local question = "Are you sure you want to reset your character? This cannot be undone!"
@@ -3503,7 +3332,6 @@ function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, ca
 end
 
 --[[
-
     Purpose:
         Presents a custom button dialog to the player with multiple action buttons
 
@@ -3519,9 +3347,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Request basic buttons
         local buttons = {
@@ -3532,7 +3360,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Request with different actions
         local buttons = {
@@ -3544,7 +3371,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex button system with validation
         local title = "Character Management"
@@ -3594,7 +3420,6 @@ function playerMeta:requestButtons(title, buttons)
 end
 
 --[[
-
     Purpose:
         Presents a dropdown selection dialog to the player
 
@@ -3612,9 +3437,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Request dropdown selection
         local options = {"Option 1", "Option 2", "Option 3"}
@@ -3622,7 +3447,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Request with callback
         local options = {"Red", "Green", "Blue", "Yellow"}
@@ -3633,7 +3457,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex dropdown system with validation
         local title = "Character Class"
@@ -3691,6 +3514,7 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         ```lua
         -- Low: Basic part checking
@@ -3701,7 +3525,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Part validation and management
         local parts = player:getParts()
@@ -3715,7 +3538,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex part system with validation and effects
         local parts = player:getParts()
@@ -3742,7 +3564,6 @@ end
 
 if SERVER then
     --[[
-
     Purpose:
         Synchronizes the player's PAC parts with all clients
 
@@ -3757,17 +3578,15 @@ if SERVER then
 
     Realm:
         Server
+
     Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Basic part synchronization
         player:syncParts()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Sync parts after validation
         local parts = player:getParts()
@@ -3782,7 +3601,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- Complex synchronization with logging and validation
         local parts = player:getParts()
@@ -3812,7 +3630,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Adds a PAC part to the player and synchronizes it with all clients
 
@@ -3827,17 +3644,15 @@ if SERVER then
 
     Realm:
         Server
+
     Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Basic part addition
         player:addPart("hat_001")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Part addition with validation and limits
         local parts = player:getParts()
@@ -3855,7 +3670,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- Complex part system with permissions and effects
         local partID = "premium_hat_001"
@@ -3895,7 +3709,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Removes a PAC part from the player and synchronizes the change with all clients
 
@@ -3910,17 +3723,15 @@ if SERVER then
 
     Realm:
         Server
+
     Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Basic part removal
         player:removePart("hat_001")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Part removal with validation and cleanup
         local parts = player:getParts()
@@ -3936,7 +3747,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- Complex part removal with effects and logging
         local partID = "premium_hat_001"
@@ -3982,7 +3792,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Removes all PAC parts from the player and synchronizes the reset with all clients
 
@@ -3997,17 +3806,15 @@ if SERVER then
 
     Realm:
         Server
+
     Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Basic parts reset
         player:resetParts()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Reset parts with validation and notification
         local parts = player:getParts()
@@ -4025,7 +3832,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- Complex parts reset with logging and cleanup
         local parts = player:getParts()
@@ -4072,7 +3878,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Restores stamina to the player's character
 
@@ -4087,16 +3892,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Restore stamina
         player:restoreStamina(25)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Restore stamina with notification
         local amount = 50
@@ -4105,7 +3909,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex stamina system with effects
         local char = player:getChar()
@@ -4133,7 +3936,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Consumes stamina from the player's character
 
@@ -4148,16 +3950,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Consume stamina
         player:consumeStamina(10)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Consume stamina with validation
         local cost = 15
@@ -4171,7 +3972,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex stamina system with effects
         local char = player:getChar()
@@ -4199,7 +3999,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Adds money to the player's character
 
@@ -4214,16 +4013,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add money to player
         player:addMoney(100)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add money with notification
         local amount = 500
@@ -4233,7 +4031,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex economic system with logging
         local amount = 1000
@@ -4259,7 +4056,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Takes money from the player's character
 
@@ -4274,16 +4070,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Take money from player
         player:takeMoney(50)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Take money with validation
         local cost = 100
@@ -4296,7 +4091,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex economic system with logging
         local amount = 200
@@ -4320,7 +4114,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Loads Lilia data for the player from the database
 
@@ -4335,16 +4128,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Load player data
         player:loadLiliaData()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load data with callback
         player:loadLiliaData(function(data)
@@ -4353,7 +4145,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex data loading with validation
         player:loadLiliaData(function(data)
@@ -4409,7 +4200,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Saves Lilia data for the player to the database
 
@@ -4424,16 +4214,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Save player data
         player:saveLiliaData()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Save data with validation
         if player:IsValid() and not player:IsBot() then
@@ -4443,7 +4232,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex data saving with logging
         if player:IsValid() and not player:IsBot() then
@@ -4475,7 +4263,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Sets a Lilia data value for the player with optional networking and saving control
 
@@ -4493,23 +4280,21 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set player data
         player:setLiliaData("level", 5)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set data with networking
         player:setLiliaData("settings", {theme = "dark"}, false, true)
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex data management with validation
         local key = "achievements"
@@ -4533,7 +4318,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Bans the player from the server with a reason and duration
 
@@ -4550,16 +4334,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Ban player
         player:banPlayer("Cheating")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Ban with duration
         local duration = 86400 -- 24 hours
@@ -4567,7 +4350,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex ban system with logging
         local reason = "Multiple violations"
@@ -4593,7 +4375,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Sets an action for the player with optional duration and callback
 
@@ -4610,23 +4391,21 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set action
         player:setAction("Loading...")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set action with duration
         player:setAction("Crafting item...", 5)
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex action system with callback
         local actionText = "Repairing weapon..."
@@ -4665,7 +4444,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Makes the player perform an action by staring at an entity for a specified duration
 
@@ -4684,16 +4462,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Stare at entity
         player:doStaredAction(ent, function() print("Action completed") end, 3)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Stare with cancellation
         local onCancel = function() player:notify("Action cancelled") end
@@ -4701,7 +4478,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex interaction system with validation
         local entity = player:getTracedEntity()
@@ -4742,7 +4518,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Stops the player's current action and clears action timers
 
@@ -4757,16 +4532,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Stop player action
         player:stopAction()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Stop action with notification
         player:stopAction()
@@ -4774,7 +4548,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex action management with cleanup
         if player:getNetVar("actionActive", false) then
@@ -4794,7 +4567,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Gets the player's total play time in seconds
 
@@ -4809,9 +4581,9 @@ if SERVER then
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player play time
         local playTime = player:getPlayTime()
@@ -4819,7 +4591,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display play time in hours
         local playTime = player:getPlayTime()
@@ -4828,7 +4599,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex play time system with rewards
         local playTime = player:getPlayTime()
@@ -4856,7 +4626,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Gets the player's current session time in seconds
 
@@ -4871,9 +4640,9 @@ if SERVER then
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get session time
         local sessionTime = player:getSessionTime()
@@ -4881,7 +4650,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display session time in minutes
         local sessionTime = player:getSessionTime()
@@ -4890,7 +4658,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex session system with rewards
         local sessionTime = player:getSessionTime()
@@ -4907,7 +4674,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Creates a ragdoll entity for the player with their current appearance and state
 
@@ -4923,16 +4689,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Create ragdoll
         local ragdoll = player:createRagdoll()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create ragdoll for death
         local ragdoll = player:createRagdoll(false, true)
@@ -4940,7 +4705,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex ragdoll system with effects
         local ragdoll = player:createRagdoll(false, true)
@@ -4996,7 +4760,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Sets the player's ragdoll state (knocked down or standing up)
 
@@ -5014,23 +4777,21 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Ragdoll player
         player:setRagdolled(true)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Ragdoll with custom time
         player:setRagdolled(true, 15, 5, "Getting up...")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex ragdoll system with effects
         local state = true
@@ -5143,7 +4904,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Synchronizes network variables to the player client
 
@@ -5158,16 +4918,15 @@ if SERVER then
 
     Realm:
         Server (only called on server side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Sync variables to player
         player:syncVars()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Sync variables with validation
         if player:IsValid() and player:IsConnected() then
@@ -5177,7 +4936,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex synchronization with logging
         local varCount = 0
@@ -5214,7 +4972,6 @@ if SERVER then
     end
 
     --[[
-
     Purpose:
         Sets a network variable for the player that synchronizes to all clients
 
@@ -5231,16 +4988,15 @@ if SERVER then
     Realm:
         Server (only called on server side)
         Notes: Broadcasts to all clients so other players can see the player's state changes
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set network variable
         player:setNetVar("health", 100)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set network variable with validation
         local health = math.Clamp(newHealth, 0, 100)
@@ -5249,7 +5005,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex network variable system with hooks
         local oldValue = player:getNetVar("level", 1)
@@ -5280,7 +5035,6 @@ if SERVER then
     end
 else
     --[[
-
     Purpose:
         Checks if the player can override their view (third person mode)
 
@@ -5295,9 +5049,9 @@ else
 
     Realm:
         Client (only called on client side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player can override view
         if player:canOverrideView() then
@@ -5306,7 +5060,6 @@ else
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Conditional view override
         if player:canOverrideView() then
@@ -5317,7 +5070,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex view system with validation
         if player:canOverrideView() then
@@ -5341,7 +5093,6 @@ else
     end
 
     --[[
-
     Purpose:
         Checks if the player is currently in third person mode
 
@@ -5356,9 +5107,9 @@ else
 
     Realm:
         Client (only called on client side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is in third person
         if player:isInThirdPerson() then
@@ -5367,7 +5118,6 @@ else
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Conditional third person handling
         if player:isInThirdPerson() then
@@ -5378,7 +5128,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex camera system with effects
         if player:isInThirdPerson() then
@@ -5397,7 +5146,6 @@ else
     end
 
     --[[
-
     Purpose:
         Gets the player's total play time in seconds (client-side version)
 
@@ -5412,9 +5160,9 @@ else
 
     Realm:
         Client (only called on client side)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get player play time
         local playTime = player:getPlayTime()
@@ -5422,7 +5170,6 @@ else
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display play time in hours
         local playTime = player:getPlayTime()
@@ -5431,7 +5178,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex play time system with rewards
         local playTime = player:getPlayTime()

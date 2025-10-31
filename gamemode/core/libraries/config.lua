@@ -11,7 +11,6 @@ local GM = GM or GAMEMODE
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 --[[
-
     Purpose:
         Adds a new configuration option to the system with specified properties and validation
 
@@ -30,9 +29,9 @@ lia.config.stored = lia.config.stored or {}
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add a basic boolean configuration
         lia.config.add("EnableFeature", "Enable Feature", true, nil, {
@@ -43,7 +42,6 @@ lia.config.stored = lia.config.stored or {}
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add configuration with callback and constraints
         lia.config.add("WalkSpeed", "Walk Speed", 130, function(_, newValue)
@@ -60,7 +58,6 @@ lia.config.stored = lia.config.stored or {}
         ```
 
         High Complexity:
-
         ```lua
         -- High: Add configuration with dynamic options and complex validation
         lia.config.add("Language", "Language", "English", nil, {
@@ -118,7 +115,6 @@ function lia.config.add(key, name, value, callback, data)
 end
 
 --[[
-
     Purpose:
         Retrieves the available options for a configuration setting, supporting both static and dynamic option lists
 
@@ -133,9 +129,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get static options for a configuration
         local options = lia.config.getOptions("DermaSkin")
@@ -145,7 +141,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Use options in UI creation
         local combo = vgui.Create("liaComboBox")
@@ -156,7 +151,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Dynamic options with validation and filtering
         local function createDynamicOptions()
@@ -191,7 +185,6 @@ function lia.config.getOptions(key)
 end
 
 --[[
-
     Purpose:
         Updates the default value for an existing configuration option without changing the current value
 
@@ -207,16 +200,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Update default value for a configuration
         lia.config.setDefault("MaxCharacters", 10)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Update default based on server conditions
         local maxChars = SERVER and 5 or 3
@@ -224,7 +216,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Update multiple defaults based on module availability
         local function updateModuleDefaults()
@@ -245,7 +236,6 @@ function lia.config.setDefault(key, value)
 end
 
 --[[
-
     Purpose:
         Forces a configuration value to be set immediately without triggering networking or callbacks, with optional save control
 
@@ -262,16 +252,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Force set a configuration value
         lia.config.forceSet("WalkSpeed", 150)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Force set without saving for temporary changes
         lia.config.forceSet("DebugMode", true, true)
@@ -280,7 +269,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Bulk force set with conditional saving
         local function applyModuleConfigs(moduleName, configs, saveAfter)
@@ -305,7 +293,6 @@ function lia.config.forceSet(key, value, noSave)
 end
 
 --[[
-
     Purpose:
         Sets a configuration value with full networking, callback execution, and automatic saving on server
 
@@ -321,16 +308,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set a configuration value
         lia.config.set("WalkSpeed", 150)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set configuration with validation
         local function setConfigWithValidation(key, value, min, max)
@@ -343,7 +329,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Batch configuration updates with rollback
         local function batchConfigUpdate(updates)
@@ -382,7 +367,6 @@ function lia.config.set(key, value)
 end
 
 --[[
-
     Purpose:
         Retrieves the current value of a configuration option with fallback to default values
 
@@ -398,9 +382,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get a configuration value
         local walkSpeed = lia.config.get("WalkSpeed")
@@ -408,7 +392,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get configuration with validation and fallback
         local function getConfigValue(key, expectedType, fallback)
@@ -422,7 +405,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Get multiple configurations with type checking and validation
         local function getPlayerSettings()
@@ -459,7 +441,6 @@ function lia.config.get(key, default)
 end
 
 --[[
-
     Purpose:
         Loads configuration values from the database on server or requests them from server on client
 
@@ -474,16 +455,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Load configurations during initialization
         lia.config.load()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load configurations with callback
         lia.config.load()
@@ -494,7 +474,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Load configurations with error handling and fallback
         local function loadConfigWithFallback()
@@ -559,7 +538,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Retrieves all configuration values that differ from their default values for efficient synchronization
 
@@ -574,10 +552,9 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Get all changed values
             local changed = lia.config.getChangedValues()
@@ -585,7 +562,6 @@ if SERVER then
             ```
 
             Medium Complexity:
-
             ```lua
             -- Medium: Send only changed configurations to specific client
             local function sendConfigToClient(client)
@@ -599,7 +575,6 @@ if SERVER then
             ```
 
             High Complexity:
-
             ```lua
             -- High: Export changed configurations with filtering and validation
             local function exportChangedConfigs(filterFunc)
@@ -631,7 +606,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Sends configuration data to clients with intelligent batching and rate limiting for large datasets
 
@@ -646,17 +620,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Send configurations to all clients
             lia.config.send()
             ```
 
             Medium Complexity:
-
             ```lua
             -- Medium: Send configurations to specific client on connect
             hook.Add("PlayerInitialSpawn", "SendConfigs", function(client)
@@ -669,7 +641,6 @@ if SERVER then
             ```
 
             High Complexity:
-
             ```lua
             -- High: Send configurations with priority and filtering
             local function sendConfigsWithPriority(priority, filterFunc)
@@ -749,7 +720,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Saves all changed configuration values to the database using transaction-based operations
 
@@ -764,17 +734,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Save all configurations
             lia.config.save()
             ```
 
             Medium Complexity:
-
             ```lua
             -- Medium: Save configurations with error handling
             local function saveConfigsSafely()
@@ -787,7 +755,6 @@ if SERVER then
             ```
 
             High Complexity:
-
             ```lua
             -- High: Save configurations with backup and validation
             local function saveConfigsWithBackup()
@@ -827,7 +794,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Resets all configuration values to their default values and synchronizes changes to clients
 
@@ -842,17 +808,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Reset all configurations to defaults
             lia.config.reset()
             ```
 
             Medium Complexity:
-
             ```lua
             -- Medium: Reset configurations with confirmation
             local function resetConfigsWithConfirmation()
@@ -863,7 +827,6 @@ if SERVER then
             ```
 
             High Complexity:
-
             ```lua
             -- High: Reset configurations with selective restoration and logging
             local function resetConfigsSelectively(keepConfigs)

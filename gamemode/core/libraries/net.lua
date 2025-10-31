@@ -13,7 +13,6 @@ lia.net.globals = lia.net.globals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.registry = lia.net.registry or {}
 --[[
-
     Purpose:
         Registers a network message handler for receiving messages sent via lia.net.send
 
@@ -29,9 +28,9 @@ lia.net.registry = lia.net.registry or {}
 
     Realm:
         Shared (works on both server and client)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Register a basic message handler
         lia.net.register("playerMessage", function(data)
@@ -40,7 +39,6 @@ lia.net.registry = lia.net.registry or {}
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Register handler with validation
         lia.net.register("updateHealth", function(data)
@@ -51,7 +49,6 @@ lia.net.registry = lia.net.registry or {}
         ```
 
         High Complexity:
-
         ```lua
         -- High: Register handler with multiple data types and error handling
         lia.net.register("syncInventory", function(data)
@@ -79,7 +76,6 @@ function lia.net.register(name, callback)
 end
 
 --[[
-
     Purpose:
         Sends a network message to specified targets or broadcasts to all clients
 
@@ -96,9 +92,9 @@ end
 
     Realm:
         Shared (works on both server and client)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Send message to all clients
         lia.net.send("playerMessage", nil, "Hello everyone!")
@@ -163,7 +159,6 @@ function lia.net.send(name, target, ...)
 end
 
 --[[
-
     Purpose:
         Sets up a receiver for large table data that is sent in chunks via lia.net.writeBigTable
 
@@ -179,9 +174,9 @@ end
 
     Realm:
         Shared (works on both server and client)
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set up receiver for large data
         lia.net.readBigTable("largeData", function(data)
@@ -348,7 +343,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Sends large table data to clients in chunks to avoid network limits
 
@@ -366,10 +360,9 @@ if SERVER then
 
         Realm:
             Server only
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Send large table to all players
             local largeData = {}
@@ -500,7 +493,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Sets a global network variable value and synchronizes it to clients
 
@@ -517,10 +509,9 @@ if SERVER then
 
         Realm:
             Server only
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Set a global variable
             setNetVar("serverName", "My Lilia Server")
@@ -619,7 +610,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Retrieves a global network variable value with optional default fallback
 
@@ -635,10 +625,9 @@ if SERVER then
 
         Realm:
             Server only (server-side version)
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Get a global variable
             local serverName = getNetVar("serverName", "Unknown Server")
@@ -683,7 +672,6 @@ if SERVER then
     hook.Add("PlayerInitialSpawn", "liaNetworkingSync", function(client) client:syncVars() end)
 else
     --[[
-
         Purpose:
             Retrieves a global network variable value with optional default fallback (client-side)
 
@@ -699,10 +687,9 @@ else
 
         Realm:
             Client only (client-side version)
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Get a global variable on client
             local serverName = getNetVar("serverName", "Unknown Server")

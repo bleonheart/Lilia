@@ -18,187 +18,143 @@
     - Weapons drop on death if ITEM.DropOnDeath is true
 ]]
 --[[
-
     Purpose:
-
         Sets the display name of the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.name = "Pistol"
         ```
 ]]
 ITEM.name = "weaponsName"
 --[[
-
     Purpose:
-
         Sets the description of the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.desc = "A standard issue pistol"
         ```
 ]]
 ITEM.desc = "weaponsDesc"
 --[[
-
     Purpose:
-
         Sets the category for the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.category = "weapons"
         ```
 ]]
 ITEM.category = "weapons"
 --[[
-
     Purpose:
-
         Sets the 3D model for the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.model = "models/weapons/w_pistol.mdl"
         ```
 ]]
 ITEM.model = "models/weapons/w_pistol.mdl"
 --[[
-
     Purpose:
-
         Sets the weapon class name
 
     When Called:
-
         During item definition (used in equip/unequip functions)
 
     Example Usage:
-
         ```lua
         ITEM.class = "weapon_pistol"
         ```
 ]]
 ITEM.class = "weapon_pistol"
 --[[
-
     Purpose:
-
         Sets the inventory width of the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.width = 2  -- Takes 2 slot width
         ```
 ]]
 ITEM.width = 2
 --[[
-
     Purpose:
-
         Sets the inventory height of the weapon item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.height = 2  -- Takes 2 slot height
         ```
 ]]
 ITEM.height = 2
 --[[
-
     Purpose:
-
         Marks the item as a weapon
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.isWeapon = true
         ```
 ]]
 ITEM.isWeapon = true
 --[[
-
     Purpose:
-
         Sets required skill levels for the weapon
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.RequiredSkillLevels = {}  -- No skill requirements
         ```
 ]]
 ITEM.RequiredSkillLevels = {}
 --[[
-
     Purpose:
-
         Sets whether the weapon drops when player dies
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.DropOnDeath = true  -- Drops on death
         ```
 ]]
 ITEM.DropOnDeath = true
 --[[
-
     Purpose:
-
         Post-hook for weapon dropping
 
     When Called:
-
         After weapon is dropped
 
     Example Usage:
-
         ```lua
         function ITEM.postHooks:drop()
             local client = self.player
@@ -211,17 +167,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-
     Purpose:
-
         Handles weapon dropping with ragdoll and equip checks
 
     When Called:
-
         When weapon is dropped
 
     Example Usage:
-
         ```lua
         ITEM:hook("drop", function(item)
         local client = item.player
@@ -235,17 +187,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-
     Purpose:
-
         Prevents transfer of equipped weapons
 
     When Called:
-
         When attempting to transfer the weapon
 
     Example Usage:
-
         ```lua
         function ITEM:OnCanBeTransfered(_, newInventory)
             if newInventory and self:getData("equip") then return false end
@@ -254,17 +202,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-
     Purpose:
-
         Handles weapon loading on player spawn
 
     When Called:
-
         When player spawns with equipped weapon
 
     Example Usage:
-
         ```lua
         function ITEM:onLoadout()
             if self:getData("equip") then
@@ -282,17 +226,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-
     Purpose:
-
         Saves weapon ammo data
 
     When Called:
-
         When saving the weapon item
 
     Example Usage:
-
         ```lua
         function ITEM:OnSave()
             local client = self.player
@@ -303,17 +243,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-
     Purpose:
-
         Custom name function for weapons (CLIENT only)
 
     When Called:
-
         When displaying weapon name
 
     Example Usage:
-
         ```lua
         function ITEM:getName()
             local weapon = weapons.GetStored(self.class)

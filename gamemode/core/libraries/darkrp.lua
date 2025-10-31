@@ -16,7 +16,6 @@ RPExtraTeams = RPExtraTeams or {}
 DarkRP.disabledDefaults = DarkRP.disabledDefaults or {}
 if SERVER then
     --[[
-
         Purpose:
             Checks if a given position is empty and suitable for spawning entities or players
 
@@ -34,9 +33,7 @@ if SERVER then
             Server
 
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Check if a position is empty
         local pos = Vector(100, 200, 50)
@@ -46,7 +43,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check position while ignoring specific entities
         local pos = player:GetPos()
@@ -57,7 +53,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Validate spawn position with multiple checks
         local spawnPos = Vector(0, 0, 0)
@@ -91,7 +86,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Finds the nearest empty position to a starting position within specified parameters
 
@@ -112,9 +106,7 @@ if SERVER then
             Server
 
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Find empty position near spawn point
         local spawnPos = Vector(0, 0, 0)
@@ -123,7 +115,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Find spawn position ignoring specific entities
         local startPos = Vector(100, 200, 50)
@@ -135,7 +126,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Advanced spawn system with multiple checks
         local spawnPoints = {Vector(0, 0, 0), Vector(100, 0, 0), Vector(0, 100, 0)}
@@ -172,7 +162,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Sends a localized notification to a client (DarkRP compatibility function)
 
@@ -192,16 +181,13 @@ if SERVER then
             Server
 
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Send basic notification
         lia.darkrp.notify(player, nil, nil, "welcome_message")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send notification with context
         local message = "player_joined"
@@ -209,7 +195,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Send notifications to multiple players
         local message = "server_restart_warning"
@@ -239,7 +224,6 @@ else
     end
 
     --[[
-
         Purpose:
             Wraps text to fit within a specified maximum line width using font metrics
 
@@ -258,9 +242,7 @@ else
             Client
 
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Wrap basic text
         local wrappedText = lia.darkrp.textWrap("Hello world this is a long text", "DermaDefault", 200)
@@ -268,7 +250,6 @@ else
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Wrap text with different fonts
         local text = "This is a sample text that needs to be wrapped properly"
@@ -283,7 +264,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Dynamic text wrapping with multiple paragraphs
         local paragraphs = {
@@ -335,7 +315,6 @@ else
 end
 
 --[[
-
     Purpose:
         Formats a numeric amount as currency using the Lilia currency system
 
@@ -352,9 +331,7 @@ end
         Shared
 
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Format a basic amount
     local formatted = lia.darkrp.formatMoney(1000)
@@ -362,7 +339,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Format player's money for display
     local playerMoney = player:getMoney()
@@ -371,7 +347,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Format multiple amounts for transaction display
     local amounts = {500, 1250, 9999, 150000}
@@ -391,7 +366,6 @@ function lia.darkrp.formatMoney(amount)
 end
 
 --[[
-
     Purpose:
         Creates a DarkRP-compatible entity item in the Lilia item system
 
@@ -415,9 +389,7 @@ end
         Shared
 
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create a basic entity
     lia.darkrp.createEntity("Chair", {
@@ -427,7 +399,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create entity with full configuration
     lia.darkrp.createEntity("Advanced Computer", {
@@ -441,7 +412,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create multiple entities from configuration table
     local entities = {
@@ -485,7 +455,6 @@ function lia.darkrp.createEntity(name, data)
 end
 
 --[[
-
     Purpose:
         Creates a DarkRP-compatible category (placeholder function for compatibility)
 
@@ -502,16 +471,13 @@ end
         Shared
 
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Call the function (no effect)
     lia.darkrp.createCategory()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Use in DarkRP compatibility code
     if DarkRP and DarkRP.createCategory then
@@ -520,7 +486,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Use in addon initialization
     local function initializeDarkRPCompatibility()

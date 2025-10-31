@@ -18,119 +18,91 @@
     - Maximum quantity is controlled by ITEM.maxQuantity
 ]]
 --[[
-
     Purpose:
-
         Sets the display name of the stackable item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.name = "Ammo Box"
         ```
 ]]
 ITEM.name = "stackableName"
 --[[
-
     Purpose:
-
         Sets the 3D model for the stackable item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.model = "models/props_junk/cardboard_box001a.mdl"
         ```
 ]]
 ITEM.model = "models/props_junk/cardboard_box001a.mdl"
 --[[
-
     Purpose:
-
         Sets the inventory width of the stackable item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.width = 1  -- Takes 1 slot width
         ```
 ]]
 ITEM.width = 1
 --[[
-
     Purpose:
-
         Sets the inventory height of the stackable item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.height = 1  -- Takes 1 slot height
         ```
 ]]
 ITEM.height = 1
 --[[
-
     Purpose:
-
         Marks the item as stackable
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.isStackable = true
         ```
 ]]
 ITEM.isStackable = true
 --[[
-
     Purpose:
-
         Sets the maximum quantity for the stackable item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.maxQuantity = 10  -- Maximum 10 items per stack
         ```
 ]]
 ITEM.maxQuantity = 10
 --[[
-
     Purpose:
-
         Sets whether the item can be split
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.canSplit = true  -- Allows splitting the stack
         ```

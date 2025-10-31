@@ -10,7 +10,6 @@
 lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
 --[[
-
     Purpose:
         Loads attribute definitions from a specified directory and registers them in the attributes system
 
@@ -25,17 +24,15 @@ lia.attribs.list = lia.attribs.list or {}
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
         ```lua
         -- Simple: Load attributes from a single directory
         lia.attribs.loadFromDir("gamemode/attributes")
         ```
 
     Medium Complexity:
-
         ```lua
         -- Medium: Load attributes with conditional directory checking
         local attrDir = "gamemode/attributes"
@@ -45,7 +42,6 @@ lia.attribs.list = lia.attribs.list or {}
         ```
 
     High Complexity:
-
         ```lua
         -- High: Load attributes from multiple directories with error handling
         local attributeDirs = {"gamemode/attributes", "modules/attributes", "plugins/attributes"}
@@ -72,7 +68,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Sets up attributes for a client's character by calling OnSetup hooks for each registered attribute
 
@@ -87,17 +82,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
             ```lua
             -- Simple: Setup attributes for a client
             lia.attribs.setup(client)
             ```
 
         Medium Complexity:
-
             ```lua
             -- Medium: Setup attributes with validation
             if IsValid(client) and client:IsPlayer() then
@@ -106,7 +99,6 @@ if SERVER then
             ```
 
         High Complexity:
-
             ```lua
             -- High: Setup attributes with custom logic and error handling
             hook.Add("PlayerSpawn", "SetupAttributes", function(client)

@@ -15,7 +15,6 @@ local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
 --[[
-
     Purpose:
         Creates a context menu at the current mouse cursor position
 
@@ -30,10 +29,9 @@ local color_target = Color(255, 255, 255, 200)
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create a basic context menu
     local menu = lia.derma.dermaMenu()
@@ -41,7 +39,6 @@ local color_target = Color(255, 255, 255, 200)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create context menu with multiple options
     local menu = lia.derma.dermaMenu()
@@ -52,7 +49,6 @@ local color_target = Color(255, 255, 255, 200)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create dynamic context menu based on conditions
     local menu = lia.derma.dermaMenu()
@@ -86,7 +82,6 @@ local function liaDermaIsSequential(tbl)
 end
 
 --[[
-
     Purpose:
         Creates a generic options menu that can display interaction/action menus or arbitrary option lists
 
@@ -131,10 +126,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
@@ -144,7 +138,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
@@ -173,7 +166,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
@@ -468,7 +460,6 @@ function lia.derma.optionsMenu(rawOptions, config)
 end
 
 --[[
-
     Purpose:
         Opens a color picker dialog for selecting colors
 
@@ -484,10 +475,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Open color picker with callback
     lia.derma.colorPicker(function(color)
@@ -496,7 +486,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Open color picker with default color
     local defaultColor = Color(255, 0, 0)
@@ -506,7 +495,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Color picker with validation and multiple callbacks
     local currentColor = settings:GetColor("theme_color")
@@ -683,7 +671,6 @@ function lia.derma.colorPicker(func, color_standart)
 end
 
 --[[
-
     Purpose:
         Creates a radial menu interface with circular option selection
 
@@ -703,10 +690,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create a basic radial menu
     local menu = lia.derma.radialMenu()
@@ -715,7 +701,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create radial menu with icons and descriptions
     local menu = lia.derma.radialMenu()
@@ -725,7 +710,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create radial menu with custom options and submenus
     local options = {
@@ -764,7 +748,6 @@ function lia.derma.radialMenu(options)
 end
 
 --[[
-
     Purpose:
         Opens a player selection dialog showing all connected players
 
@@ -779,10 +762,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Open player selector with callback
     lia.derma.playerSelector(function(player)
@@ -791,7 +773,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Player selector with validation
     lia.derma.playerSelector(function(player)
@@ -802,7 +783,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Player selector with admin checks and multiple actions
     lia.derma.playerSelector(function(player)
@@ -909,7 +889,6 @@ function lia.derma.playerSelector(do_click)
 end
 
 --[[
-
     Purpose:
         Opens a text input dialog for user text entry
 
@@ -926,10 +905,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Open text input dialog
     lia.derma.textBox("Enter Name", "Type your name here", function(text)
@@ -938,7 +916,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Text input with validation
     lia.derma.textBox("Set Password", "Enter new password", function(text)
@@ -951,7 +928,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Text input with multiple validations and processing
     lia.derma.textBox("Create Item", "Enter item name", function(text)
@@ -1208,7 +1184,6 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
 end
 
 --[[
-
     Purpose:
         Draws a rounded rectangle with specified parameters
 
@@ -1229,17 +1204,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw a basic rounded rectangle
     lia.derma.draw(8, 100, 100, 200, 100, Color(255, 0, 0))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom flags and color
     local flags = lia.derma.SHAPE_IOS
@@ -1247,7 +1220,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic drawing with conditions
     local radius = isHovered and 16 or 8
@@ -1261,7 +1233,6 @@ function lia.derma.draw(radius, x, y, w, h, col, flags)
 end
 
 --[[
-
     Purpose:
         Draws a rounded rectangle with an outline border
 
@@ -1283,17 +1254,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw outlined rounded rectangle
     lia.derma.drawOutlined(8, 100, 100, 200, 100, Color(255, 0, 0), 2)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom thickness and flags
     local flags = lia.derma.SHAPE_IOS
@@ -1301,7 +1270,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic outlined drawing with hover effects
     local thickness = isHovered and 3 or 1
@@ -1314,7 +1282,6 @@ function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
 end
 
 --[[
-
     Purpose:
         Draws a rounded rectangle with a texture applied
 
@@ -1336,10 +1303,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw textured rounded rectangle
     local texture = Material("icon16/user.png"):GetTexture("$basetexture")
@@ -1347,7 +1313,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with color tint and custom flags
     local texture = Material("gui/button.png"):GetTexture("$basetexture")
@@ -1356,7 +1321,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic textured drawing with multiple textures
     local texture = isHovered and hoverTexture or normalTexture
@@ -1369,7 +1333,6 @@ function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
 end
 
 --[[
-
     Purpose:
         Draws a rounded rectangle with a material applied
 
@@ -1391,10 +1354,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw material-based rounded rectangle
     local mat = Material("gui/button.png")
@@ -1402,7 +1364,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with color tint and validation
     local mat = Material("effects/fire_cloud1")
@@ -1412,7 +1373,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic material drawing with fallback
     local mat = getMaterialForState(currentState)
@@ -1431,7 +1391,6 @@ function lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)
 end
 
 --[[
-
     Purpose:
         Draws a filled circle with specified parameters
 
@@ -1450,17 +1409,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw a basic circle
     lia.derma.drawCircle(100, 100, 50, Color(255, 0, 0))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw circle with custom flags
     local flags = lia.derma.SHAPE_CIRCLE
@@ -1468,7 +1425,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic circle drawing with hover effects
     local radius = isHovered and 60 or 50
@@ -1481,7 +1437,6 @@ function lia.derma.drawCircle(x, y, radius, col, flags)
 end
 
 --[[
-
     Purpose:
         Draws a circle with an outline border
 
@@ -1501,17 +1456,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw outlined circle
     lia.derma.drawCircleOutlined(100, 100, 50, Color(255, 0, 0), 2)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom thickness and flags
     local flags = lia.derma.SHAPE_CIRCLE
@@ -1519,7 +1472,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic outlined circle with hover effects
     local thickness = isHovered and 3 or 1
@@ -1532,7 +1484,6 @@ function lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)
 end
 
 --[[
-
     Purpose:
         Draws a circle with a texture applied
 
@@ -1552,10 +1503,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw textured circle
     local texture = Material("icon16/user.png"):GetTexture("$basetexture")
@@ -1563,7 +1513,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with color tint and custom flags
     local texture = Material("gui/button.png"):GetTexture("$basetexture")
@@ -1572,7 +1521,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic textured circle with multiple textures
     local texture = isHovered and hoverTexture or normalTexture
@@ -1585,7 +1533,6 @@ function lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)
 end
 
 --[[
-
     Purpose:
         Draws a circle with a material applied
 
@@ -1605,10 +1552,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw material-based circle
     local mat = Material("gui/button.png")
@@ -1616,7 +1562,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with color tint and validation
     local mat = Material("effects/fire_cloud1")
@@ -1626,7 +1571,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic material circle with fallback
     local mat = getMaterialForState(currentState)
@@ -1662,7 +1606,6 @@ local function drawBlur()
 end
 
 --[[
-
     Purpose:
         Draws a blurred rounded rectangle using custom shaders
 
@@ -1686,17 +1629,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw blurred rectangle
     lia.derma.drawBlur(100, 100, 200, 100)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom corner radii and flags
     local flags = lia.derma.SHAPE_IOS
@@ -1704,7 +1645,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic blur with different corner radii
     local tl = isTopLeft and 16 or 8
@@ -1755,7 +1695,6 @@ local function drawShadows(r, g, b, a)
 end
 
 --[[
-
     Purpose:
         Draws shadows for rounded rectangles with extensive customization
 
@@ -1782,24 +1721,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw basic shadow
     lia.derma.drawShadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom spread and intensity
     lia.derma.drawShadowsEx(50, 50, 300, 150, Color(0, 0, 0, 150), flags, 12, 12, 12, 12, 20, 25)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic shadow with different corner radii
     local spread = isHovered and 40 or 20
@@ -1826,7 +1762,6 @@ function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread,
 end
 
 --[[
-
     Purpose:
         Draws shadows for rounded rectangles with uniform corner radius
 
@@ -1849,24 +1784,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw basic shadow with uniform radius
     lia.derma.drawShadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom spread and intensity
     lia.derma.drawShadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic shadow with hover effects
     local radius = isHovered and 16 or 8
@@ -1880,7 +1812,6 @@ function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags
 end
 
 --[[
-
     Purpose:
         Draws outlined shadows for rounded rectangles with uniform corner radius
 
@@ -1904,24 +1835,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw outlined shadow
     lia.derma.drawShadowsOutlined(8, 100, 100, 200, 100, Color(0, 0, 0, 100), 2)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom thickness and spread
     lia.derma.drawShadowsOutlined(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 3, 20, 25)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic outlined shadow with hover effects
     local thickness = isHovered and 3 or 1
@@ -2100,7 +2028,6 @@ lia.derma.Types = {
 }
 
 --[[
-
     Purpose:
         Creates a fluent rectangle drawing object for chained operations
 
@@ -2118,17 +2045,15 @@ lia.derma.Types = {
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create and draw a rectangle
     lia.derma.rect(100, 100, 200, 100):Color(Color(255, 0, 0)):Draw()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create rectangle with multiple properties
     lia.derma.rect(50, 50, 300, 150)
@@ -2139,7 +2064,6 @@ lia.derma.Types = {
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex rectangle with shadows and clipping
     lia.derma.rect(x, y, w, h)
@@ -2155,7 +2079,6 @@ function lia.derma.rect(x, y, w, h)
 end
 
 --[[
-
     Purpose:
         Creates a fluent circle drawing object for chained operations
 
@@ -2172,17 +2095,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create and draw a circle
     lia.derma.circle(100, 100, 50):Color(Color(255, 0, 0)):Draw()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create circle with multiple properties
     lia.derma.circle(200, 200, 75)
@@ -2192,7 +2113,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex circle with shadows and textures
     lia.derma.circle(x, y, radius)
@@ -2231,7 +2151,6 @@ function lia.derma.setDefaultShape(shape)
 end
 
 --[[
-
     Purpose:
         Draws text with a shadow effect for better readability
 
@@ -2254,24 +2173,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw text with shadow
     lia.derma.shadowText("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom alignment
     lia.derma.shadowText("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), Color(0, 0, 0, 150), 3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic shadow text with hover effects
     local shadowDist = isHovered and 4 or 2
@@ -2293,7 +2209,6 @@ function lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xa
 end
 
 --[[
-
     Purpose:
         Draws text with an outline border for better visibility
 
@@ -2315,24 +2230,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw outlined text
     lia.derma.drawTextOutlined("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom alignment and outline
     lia.derma.drawTextOutlined("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0, 200))
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic outlined text with hover effects
     local outlineWidth = isHovered and 4 or 2
@@ -2352,7 +2264,6 @@ function lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewid
 end
 
 --[[
-
     Purpose:
         Draws a tooltip-style speech bubble with text
 
@@ -2374,24 +2285,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw basic tooltip
     lia.derma.drawTip(100, 100, 200, 80, "Help text", "DermaDefault", Color(255, 255, 255), Color(0, 0, 0))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom styling
     lia.derma.drawTip(50, 50, 300, 100, "This is a tooltip", "LiliaFont.16", Color(255, 255, 255), Color(100, 100, 100))
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic tooltip with hover effects
     local w = math.max(200, surface.GetTextSize(text) + 40)
@@ -2442,7 +2350,6 @@ function lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)
 end
 
 --[[
-
     Purpose:
         Draws text with automatic shadow effect for better readability
 
@@ -2464,24 +2371,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw text with automatic shadow
     lia.derma.drawText("Hello World", 100, 100)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom color and alignment
     lia.derma.drawText("Centered Text", 200, 200, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic text with hover effects
     local textColor = Color(255, 255, 255)
@@ -2607,7 +2511,6 @@ function lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)
 end
 
 --[[
-
     Purpose:
         Performs exponential interpolation between current and target values
 
@@ -2625,17 +2528,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Smooth value transition
     local currentValue = lia.derma.approachExp(currentValue, targetValue, 5, FrameTime())
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Animate panel alpha
     local targetAlpha = isVisible and 255 or 0
@@ -2643,7 +2544,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex animation with multiple properties
     local dt = FrameTime()
@@ -2667,7 +2567,6 @@ function lia.derma.approachExp(current, target, speed, dt)
 end
 
 --[[
-
     Purpose:
         Applies cubic ease-out easing function to a normalized time value
 
@@ -2682,10 +2581,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Apply ease-out to animation progress
     local eased = lia.derma.easeOutCubic(animationProgress)
@@ -2693,7 +2591,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Smooth panel movement with ease-out
     local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
@@ -2702,7 +2599,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex animation with multiple eased properties
     local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
@@ -2724,7 +2620,6 @@ function lia.derma.easeOutCubic(t)
 end
 
 --[[
-
     Purpose:
         Applies cubic ease-in-out easing function to a normalized time value
 
@@ -2739,10 +2634,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Apply ease-in-out to animation progress
     local eased = lia.derma.easeInOutCubic(animationProgress)
@@ -2750,7 +2644,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Smooth panel scaling with ease-in-out
     local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
@@ -2760,7 +2653,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex UI animation with ease-in-out
     local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
@@ -2787,7 +2679,6 @@ function lia.derma.easeInOutCubic(t)
 end
 
 --[[
-
     Purpose:
         Animates panel appearance with scaling and fade effects
 
@@ -2808,17 +2699,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Animate panel appearance
     lia.derma.animateAppearance(myPanel, 300, 200)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Animate with custom duration and callback
     lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
@@ -2827,7 +2716,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex animation with validation and effects
     if IsValid(panel) then
@@ -2943,7 +2831,6 @@ function lia.derma.wrapText(text, width, font)
 end
 
 --[[
-
     Purpose:
         Draws blur effect behind a panel using screen space effects
 
@@ -2961,24 +2848,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw blur behind panel
     lia.derma.drawBlur(myPanel)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom blur settings
     lia.derma.drawBlur(myPanel, 8, 0.3, 200)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic blur with panel validation
     if IsValid(panel) and panel:IsVisible() then
@@ -3028,7 +2912,6 @@ function lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
 end
 
 --[[
-
     Purpose:
         Draws blur effect at specific screen coordinates
 
@@ -3049,24 +2932,21 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw blur at specific position
     lia.derma.drawBlurAt(100, 100, 200, 100)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom blur settings
     lia.derma.drawBlurAt(50, 50, 300, 150, 8, 0.3, 200)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic blur with screen bounds checking
     local x, y = getScreenPosition()
@@ -3093,7 +2973,6 @@ function lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)
 end
 
 --[[
-
     Purpose:
         Creates a dialog for requesting multiple arguments from the user
 
@@ -3111,10 +2990,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request basic arguments
     local argTypes = {
@@ -3130,7 +3008,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with dropdown and defaults
     local argTypes = {
@@ -3143,7 +3020,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex argument validation with ordered fields
     local argTypes = {
@@ -3669,7 +3545,6 @@ end
 
 lia.derma.entsScales = lia.derma.entsScales or {}
 --[[
-
     Purpose:
         Draws text above entities in 3D space with distance-based scaling
 
@@ -3687,24 +3562,21 @@ lia.derma.entsScales = lia.derma.entsScales or {}
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw entity name
     lia.derma.drawEntText(entity, entity:GetName())
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw with custom offset and alpha
     lia.derma.drawEntText(entity, "Custom Text", 20, 200)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic entity text with conditions
     if IsValid(entity) and entity:IsPlayer() then
@@ -3774,7 +3646,6 @@ function lia.derma.drawEntText(ent, text, posY, alphaOverride)
 end
 
 --[[
-
     Purpose:
         Creates a dropdown selection dialog for user choice
 
@@ -3792,10 +3663,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request dropdown selection
     local options = {"Option 1", "Option 2", "Option 3"}
@@ -3805,7 +3675,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with data values and default
     local options = {
@@ -3819,7 +3688,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic options with validation
     local options = {}
@@ -3939,7 +3807,6 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
 end
 
 --[[
-
     Purpose:
         Creates a text input dialog for user string entry
 
@@ -3958,10 +3825,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request text input
     lia.derma.requestString("Enter Name", "Type your name:", function(text)
@@ -3972,7 +3838,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with default value and max length
     lia.derma.requestString("Set Password", "Enter new password:", function(password)
@@ -3983,7 +3848,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Request with validation and processing
     lia.derma.requestString("Create Item", "Enter item name:", function(name)
@@ -4065,7 +3929,6 @@ function lia.derma.requestString(title, description, callback, defaultValue, max
 end
 
 --[[
-
     Purpose:
         Creates a multi-select dialog for choosing multiple options
 
@@ -4083,10 +3946,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request multiple selections
     local options = {"Option 1", "Option 2", "Option 3"}
@@ -4096,7 +3958,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with data values and defaults
     local options = {
@@ -4111,7 +3972,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic options with validation
     local options = {}
@@ -4204,7 +4064,6 @@ function lia.derma.requestOptions(title, options, callback, defaults)
 end
 
 --[[
-
     Purpose:
         Creates a yes/no confirmation dialog
 
@@ -4223,10 +4082,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request confirmation
     lia.derma.requestBinaryQuestion("Confirm", "Are you sure?", function(result)
@@ -4239,7 +4097,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with custom button text
     lia.derma.requestBinaryQuestion("Delete Item", "Delete this item permanently?", function(result)
@@ -4250,7 +4107,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Request with validation and logging
     lia.derma.requestBinaryQuestion("Admin Action", "Execute admin command: " .. command .. "?", function(result)
@@ -4312,7 +4168,6 @@ function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noT
 end
 
 --[[
-
     Purpose:
         Creates a dialog with multiple action buttons
 
@@ -4330,10 +4185,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Request button selection
     local buttons = {"Option 1", "Option 2", "Option 3"}
@@ -4343,7 +4197,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Request with custom callbacks and icons
     local buttons = {
@@ -4355,7 +4208,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic buttons with validation
     local buttons = {}

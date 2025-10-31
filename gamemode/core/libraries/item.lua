@@ -149,7 +149,6 @@ local DefaultFunctions = {
 lia.meta.item.width = 1
 lia.meta.item.height = 1
 --[[
-
     Purpose:
         Retrieves an item definition by its unique identifier from either base items or registered items
 
@@ -164,17 +163,15 @@ lia.meta.item.height = 1
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get a basic item definition
     local itemDef = lia.item.get("base_weapons")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get item definition with validation
     local itemDef = lia.item.get("weapon_pistol")
@@ -184,7 +181,6 @@ lia.meta.item.height = 1
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get item definition and check inheritance
     local itemDef = lia.item.get("custom_rifle")
@@ -199,7 +195,6 @@ function lia.item.get(identifier)
 end
 
 --[[
-
     Purpose:
         Retrieves an item instance by its ID along with location information
 
@@ -214,10 +209,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get item with location
     local result = lia.item.getItemByID(123)
@@ -227,7 +221,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get item and handle different locations
     local result = lia.item.getItemByID(456)
@@ -241,7 +234,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get item and perform location-specific actions
     local result = lia.item.getItemByID(789)
@@ -276,7 +268,6 @@ function lia.item.getItemByID(itemID)
 end
 
 --[[
-
     Purpose:
         Retrieves an item instance by its ID without location information
 
@@ -291,10 +282,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get item instance
     local item = lia.item.getInstancedItemByID(123)
@@ -304,7 +294,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get item and access properties
     local item = lia.item.getInstancedItemByID(456)
@@ -316,7 +305,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get item and perform operations
     local item = lia.item.getInstancedItemByID(789)
@@ -342,7 +330,6 @@ function lia.item.getInstancedItemByID(itemID)
 end
 
 --[[
-
     Purpose:
         Retrieves the data table of an item instance by its ID
 
@@ -357,10 +344,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get item data
     local data = lia.item.getItemDataByID(123)
@@ -370,7 +356,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get item data and access specific fields
     local data = lia.item.getItemDataByID(456)
@@ -385,7 +370,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get item data and perform complex operations
     local data = lia.item.getItemDataByID(789)
@@ -414,7 +398,6 @@ function lia.item.getItemDataByID(itemID)
 end
 
 --[[
-
     Purpose:
         Loads an item definition from a file path and registers it
 
@@ -429,24 +412,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Load a basic item file
     lia.item.load("lilia/gamemode/items/weapon_pistol.lua")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load item with base inheritance
     lia.item.load("lilia/gamemode/items/custom_rifle.lua", "base_weapons")
     ```
 
     High Complexity:
-
     ```lua
     -- High: Load base item and derived items
     lia.item.load("lilia/gamemode/items/base/weapons.lua", nil, true)
@@ -467,7 +447,6 @@ function lia.item.load(path, baseID, isBaseItem)
 end
 
 --[[
-
     Purpose:
         Checks if an object is a valid item instance
 
@@ -482,10 +461,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if object is an item
     if lia.item.isItem(someObject) then
@@ -494,7 +472,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Validate item before operations
     local function processItem(item)
@@ -508,7 +485,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Check multiple objects and filter items
     local function filterItems(objects)
@@ -527,7 +503,6 @@ function lia.item.isItem(object)
 end
 
 --[[
-
     Purpose:
         Retrieves an inventory instance by its ID
 
@@ -542,17 +517,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get inventory by ID
     local inv = lia.item.getInv(123)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get inventory and check if valid
     local inv = lia.item.getInv(456)
@@ -562,7 +535,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get inventory and perform operations
     local inv = lia.item.getInv(789)
@@ -579,7 +551,6 @@ function lia.item.getInv(invID)
 end
 
 --[[
-
     Purpose:
         Registers a new item definition with the item system
 
@@ -594,17 +565,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Register a basic item
     lia.item.register("my_item", "base_stackable")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register item with custom properties
     local ITEM = lia.item.register("custom_weapon", "base_weapons")
@@ -614,7 +583,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Register complex item with inheritance
     local ITEM = lia.item.register("advanced_rifle", "base_weapons", false, nil, true)
@@ -700,7 +668,6 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
 end
 
 --[[
-
     Purpose:
         Loads all item definitions from a directory structure
 
@@ -715,24 +682,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Load items from default directory
     lia.item.loadFromDir("lilia/gamemode/items")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load items from custom directory
     lia.item.loadFromDir("addons/myaddon/items")
     ```
 
     High Complexity:
-
     ```lua
     -- High: Load items from multiple directories
     local itemDirs = {
@@ -771,7 +735,6 @@ function lia.item.loadFromDir(directory)
 end
 
 --[[
-
     Purpose:
         Creates a new item instance from an item definition
 
@@ -786,17 +749,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create a new item instance
     local item = lia.item.new("weapon_pistol", 123)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create item with validation
     local item = lia.item.new("custom_rifle", 456)
@@ -807,7 +768,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create item and set up initial data
     local item = lia.item.new("stackable_item", 789)
@@ -842,7 +802,6 @@ function lia.item.new(uniqueID, id)
 end
 
 --[[
-
     Purpose:
         Registers a new inventory type with specified dimensions
 
@@ -857,24 +816,21 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Register a basic inventory type
     lia.item.registerInv("player", 5, 4)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register inventory with custom properties
     lia.item.registerInv("storage_box", 8, 6)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Register multiple inventory types
     local inventoryTypes = {
@@ -905,7 +861,6 @@ function lia.item.registerInv(invType, w, h)
 end
 
 --[[
-
     Purpose:
         Creates a new inventory instance for a specific owner
 
@@ -920,17 +875,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create inventory for player
     lia.item.newInv(player:getChar():getID(), "player")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create inventory with callback
     lia.item.newInv(charID, "storage", function(inv)
@@ -939,7 +892,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create inventory and populate with items
     lia.item.newInv(charID, "player", function(inv)
@@ -969,7 +921,6 @@ function lia.item.newInv(owner, invType, callback)
 end
 
 --[[
-
     Purpose:
         Creates a new inventory instance with specified dimensions and ID
 
@@ -984,17 +935,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Create basic inventory
     local inv = lia.item.createInv(5, 4, 123)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create inventory and validate
     local inv = lia.item.createInv(8, 6, 456)
@@ -1005,7 +954,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create inventory and set up data
     local inv = lia.item.createInv(10, 8, 789)
@@ -1095,7 +1043,6 @@ lia.item.holdTypeSizeMapping = {
 }
 
 --[[
-
     Purpose:
         Adds override data for a specific weapon class during automatic weapon generation
 
@@ -1110,10 +1057,9 @@ lia.item.holdTypeSizeMapping = {
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Override weapon name
     lia.item.addWeaponOverride("weapon_pistol", {
@@ -1122,7 +1068,6 @@ lia.item.holdTypeSizeMapping = {
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Override multiple weapon properties
     lia.item.addWeaponOverride("weapon_ak47", {
@@ -1134,7 +1079,6 @@ lia.item.holdTypeSizeMapping = {
     ```
 
     High Complexity:
-
     ```lua
     -- High: Override multiple weapons with custom properties
     local weaponOverrides = {
@@ -1166,7 +1110,6 @@ function lia.item.addWeaponOverride(className, data)
 end
 
 --[[
-
     Purpose:
         Adds a weapon class to the blacklist to prevent it from being automatically generated
 
@@ -1181,17 +1124,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Blacklist a single weapon
     lia.item.addWeaponToBlacklist("weapon_crowbar")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Blacklist multiple weapons
     lia.item.addWeaponToBlacklist("weapon_crowbar")
@@ -1200,7 +1141,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Blacklist weapons based on conditions
     local weaponsToBlacklist = {
@@ -1221,7 +1161,6 @@ function lia.item.addWeaponToBlacklist(className)
 end
 
 --[[
-
     Purpose:
         Automatically generates item definitions for all weapons in Garry's Mod
 
@@ -1236,17 +1175,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Generate all weapons
     lia.item.generateWeapons()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Generate weapons with custom overrides
     lia.item.addWeaponOverride("weapon_pistol", {
@@ -1257,7 +1194,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Generate weapons with blacklist and overrides
     local blacklistedWeapons = {
@@ -1308,7 +1244,6 @@ function lia.item.generateWeapons()
 end
 
 --[[
-
     Purpose:
         Automatically generates item definitions for ammunition entities (ARC9 and ARCCW)
 
@@ -1323,17 +1258,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Generate all ammunition items
     lia.item.generateAmmo()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Generate ammunition with custom overrides
     lia.item.addWeaponOverride("arc9_ammo_9mm", {
@@ -1344,7 +1277,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Generate ammunition with filtering and overrides
     local ammoOverrides = {
@@ -1398,7 +1330,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Sets data for an item instance by its ID on the server
 
@@ -1413,17 +1344,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Set item data
         lia.item.setItemDataByID(123, "customProperty", "value")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set item data with validation
         local success, error = lia.item.setItemDataByID(456, "lastUsed", os.time())
@@ -1435,7 +1364,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Set item data with custom sync and save options
         local function updateItemData(itemID, data, players)
@@ -1461,7 +1389,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Creates a new item instance in a specific inventory with database persistence
 
@@ -1476,17 +1403,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Create item in inventory
         lia.item.instance(invID, "weapon_pistol")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create item with position and callback
         lia.item.instance(invID, "weapon_pistol", {}, 1, 1, function(item)
@@ -1495,7 +1420,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Create item with complex data and error handling
         local promise = lia.item.instance(charID, "custom_item", {
@@ -1564,7 +1488,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Deletes an item instance by its ID from both memory and database
 
@@ -1579,17 +1502,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Delete an item
         lia.item.deleteByID(123)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Delete item with validation
         local item = lia.item.getInstancedItemByID(456)
@@ -1600,7 +1521,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Delete multiple items with error handling
         local function deleteItems(itemIDs)
@@ -1625,7 +1545,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Loads item instances from the database by their IDs
 
@@ -1640,24 +1559,21 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Load a single item
         lia.item.loadItemByID(123)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load multiple items
         lia.item.loadItemByID({123, 456, 789})
         ```
 
         High Complexity:
-
         ```lua
         -- High: Load items with validation and error handling
         local function loadPlayerItems(player)
@@ -1710,7 +1626,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Spawns an item entity in the world at a specific position
 
@@ -1725,17 +1640,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Spawn item at position
         lia.item.spawn("weapon_pistol", Vector(0, 0, 0))
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Spawn item with angles and callback
         lia.item.spawn("weapon_pistol", Vector(100, 200, 50), function(item)
@@ -1744,7 +1657,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Spawn item with complex data and error handling
         local promise = lia.item.spawn("custom_item", Vector(0, 0, 0), function(item)
@@ -1795,7 +1707,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Restores an inventory from the database with specified dimensions
 
@@ -1810,17 +1721,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Restore inventory
         lia.item.restoreInv(123, 5, 4)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Restore inventory with callback
         lia.item.restoreInv(456, 8, 6, function(inv)
@@ -1829,7 +1738,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Restore multiple inventories with error handling
         local function restorePlayerInventories(player)

@@ -12,7 +12,6 @@ lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
 --[[
-
     Purpose:
         Registers a new faction with the specified unique ID and data
 
@@ -29,10 +28,9 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Register a basic faction
     lia.faction.register("citizen", {
@@ -43,7 +41,6 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register faction with custom models and weapons
     lia.faction.register("police", {
@@ -57,7 +54,6 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
     ```
 
     High Complexity:
-
     ```lua
     -- High: Register faction with complex model data and bodygroups
     lia.faction.register("medic", {
@@ -119,7 +115,6 @@ function lia.faction.register(uniqueID, data)
 end
 
 --[[
-
     Purpose:
         Precaches faction models to ensure they are loaded before use
 
@@ -134,17 +129,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Cache basic string models
     lia.faction.cacheModels({"models/player/police.mdl", "models/player/swat.mdl"})
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Cache mixed model data types
     local models = {
@@ -156,7 +149,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Cache categorized models with bodygroup data
     local models = {
@@ -183,7 +175,6 @@ function lia.faction.cacheModels(models)
 end
 
 --[[
-
     Purpose:
         Loads all faction files from a specified directory
 
@@ -198,17 +189,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Load factions from a basic directory
     lia.faction.loadFromDir("gamemode/factions")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load factions from module directory with error handling
     local factionDir = "gamemode/modules/customfactions/factions"
@@ -218,7 +207,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Load factions from multiple directories with validation
     local factionDirs = {
@@ -287,7 +275,6 @@ function lia.faction.loadFromDir(directory)
 end
 
 --[[
-
     Purpose:
         Retrieves a faction by its identifier (index or uniqueID)
 
@@ -302,10 +289,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get faction by unique ID
     local faction = lia.faction.get("citizen")
@@ -315,7 +301,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get faction by index with validation
     local factionIndex = 1
@@ -328,7 +313,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get faction with fallback and error handling
     local function getFactionSafely(identifier)
@@ -351,7 +335,6 @@ function lia.faction.get(identifier)
 end
 
 --[[
-
     Purpose:
         Gets the team index of a faction by its unique ID
 
@@ -366,10 +349,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get faction index
     local index = lia.faction.getIndex("citizen")
@@ -379,7 +361,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get faction index with validation
     local factionID = "police"
@@ -392,7 +373,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get multiple faction indices with error handling
     local factionIDs = {"citizen", "police", "medic", "staff"}
@@ -415,7 +395,6 @@ function lia.faction.getIndex(uniqueID)
 end
 
 --[[
-
     Purpose:
         Gets all classes that belong to a specific faction
 
@@ -430,10 +409,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get all classes for a faction
     local classes = lia.faction.getClasses("citizen")
@@ -441,7 +419,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get classes with validation and display
     local factionID = "police"
@@ -457,7 +434,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get classes for multiple factions with filtering
     local function getFactionClasses(factionID)
@@ -494,7 +470,6 @@ function lia.faction.getClasses(faction)
 end
 
 --[[
-
     Purpose:
         Gets all players currently in a specific faction
 
@@ -509,10 +484,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get all players in a faction
     local players = lia.faction.getPlayers("citizen")
@@ -520,7 +494,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get players with validation and display
     local factionID = "police"
@@ -536,7 +509,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get players with additional character data
     local function getFactionPlayers(factionID)
@@ -572,7 +544,6 @@ function lia.faction.getPlayers(faction)
 end
 
 --[[
-
     Purpose:
         Gets the count of players currently in a specific faction
 
@@ -587,10 +558,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get player count for a faction
     local count = lia.faction.getPlayerCount("citizen")
@@ -598,7 +568,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get player count with validation
     local factionID = "police"
@@ -611,7 +580,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get player counts for multiple factions with statistics
     local function getFactionStatistics()
@@ -643,7 +611,6 @@ function lia.faction.getPlayerCount(faction)
 end
 
 --[[
-
     Purpose:
         Checks if a faction belongs to a specific category of factions
 
@@ -659,10 +626,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if faction is in a category
     local lawEnforcement = {"police", "swat", "fbi"}
@@ -671,7 +637,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check faction category with validation
     local medicalFactions = {"medic", "doctor", "paramedic"}
@@ -685,7 +650,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Check multiple factions against multiple categories
     local function categorizeFactions(factionIDs)
@@ -720,7 +684,6 @@ function lia.faction.isFactionCategory(faction, categoryFactions)
 end
 
 --[[
-
     Purpose:
         Generates a faction/job with the specified parameters (legacy compatibility function)
 
@@ -739,17 +702,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Generate a basic faction
     local faction = lia.faction.jobGenerate(1, "Citizen", Color(150, 150, 150), true)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Generate faction with custom models
     local models = {"models/player/police.mdl", "models/player/swat.mdl"}
@@ -757,7 +718,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Generate faction with complex model data
     local function generateCustomFaction(index, name, color, isDefault)
@@ -843,7 +803,6 @@ local function formatModelDataEntry(name, faction, modelIndex, modelData, catego
 end
 
 --[[
-
     Purpose:
         Formats and processes model data for all factions, converting bodygroup strings to proper format
 
@@ -858,17 +817,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Format all faction model data
     lia.faction.formatModelData()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Format model data with validation
     if lia.faction.teams and table.Count(lia.faction.teams) > 0 then
@@ -879,7 +836,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Format model data with progress tracking and error handling
     local function formatFactionModels()
@@ -923,7 +879,6 @@ function lia.faction.formatModelData()
 end
 
 --[[
-
     Purpose:
         Gets all model categories for a specific faction
 
@@ -938,10 +893,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get categories for a faction
     local categories = lia.faction.getCategories("police")
@@ -949,7 +903,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get categories with validation
     local factionID = "medic"
@@ -966,7 +919,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get categories for multiple factions with detailed info
     local function getFactionCategories(factionIDs)
@@ -1002,7 +954,6 @@ function lia.faction.getCategories(teamName)
 end
 
 --[[
-
     Purpose:
         Gets all models from a specific category within a faction
 
@@ -1018,10 +969,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get models from a category
     local models = lia.faction.getModelsFromCategory("police", "male")
@@ -1029,7 +979,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get models with validation
     local factionID = "medic"
@@ -1047,7 +996,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get models from multiple categories with detailed processing
     local function getFactionModelsByCategory(factionID, categories)
@@ -1085,7 +1033,6 @@ function lia.faction.getModelsFromCategory(teamName, category)
 end
 
 --[[
-
     Purpose:
         Gets the default class for a specific faction
 
@@ -1100,10 +1047,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get default class for a faction
     local defaultClass = lia.faction.getDefaultClass("citizen")
@@ -1113,7 +1059,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get default class with validation
     local factionID = "police"
@@ -1128,7 +1073,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get default classes for multiple factions with fallback handling
     local function getDefaultClasses(factionIDs)
@@ -1183,7 +1127,6 @@ FACTION_STAFF = lia.faction.register("staff", {
 })
 
 --[[
-
     Purpose:
         Checks if a faction has whitelist restrictions (client-side implementation)
 
@@ -1198,10 +1141,9 @@ FACTION_STAFF = lia.faction.register("staff", {
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if faction has whitelist
     local hasWhitelist = lia.faction.hasWhitelist("police")
@@ -1209,7 +1151,6 @@ FACTION_STAFF = lia.faction.register("staff", {
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check whitelist with validation
     local factionID = "medic"
@@ -1223,7 +1164,6 @@ FACTION_STAFF = lia.faction.register("staff", {
     ```
 
     High Complexity:
-
     ```lua
     -- High: Check whitelist for multiple factions with detailed info
     local function checkFactionWhitelists(factionIDs)
@@ -1264,7 +1204,6 @@ if CLIENT then
         return false
     end
     --[[
-
     Purpose:
         Checks if a faction has whitelist restrictions (server-side implementation)
 
@@ -1279,10 +1218,9 @@ if CLIENT then
 
     Realm:
         Server
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if faction has whitelist
     local hasWhitelist = lia.faction.hasWhitelist("police")
@@ -1290,7 +1228,6 @@ if CLIENT then
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check whitelist with validation
     local factionID = "medic"
@@ -1304,7 +1241,6 @@ if CLIENT then
     ```
 
     High Complexity:
-
     ```lua
     -- High: Check whitelist for multiple factions with detailed info
     local function checkFactionWhitelists(factionIDs)

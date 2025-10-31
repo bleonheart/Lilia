@@ -11,7 +11,6 @@ lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
 --[[
-
     Purpose:
         Loads language files from a specified directory and processes them into the language storage system
 
@@ -26,17 +25,15 @@ lia.lang.stored = lia.lang.stored or {}
 
     Realm:
         Server/Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Load languages from default directory
     lia.lang.loadFromDir("lilia/gamemode/languages")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load languages from custom module directory
     local moduleDir = "lilia/gamemode/modules/mymodule/languages"
@@ -46,7 +43,6 @@ lia.lang.stored = lia.lang.stored or {}
     ```
 
     High Complexity:
-
     ```lua
     -- High: Load languages from multiple directories with validation
     local languageDirs = {
@@ -90,7 +86,6 @@ function lia.lang.loadFromDir(directory)
 end
 
 --[[
-
     Purpose:
         Adds a custom language table to the language storage system
 
@@ -105,10 +100,9 @@ end
 
     Realm:
         Server/Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add basic language strings
     lia.lang.addTable("english", {
@@ -118,7 +112,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add module-specific language strings
     local moduleLang = {
@@ -130,7 +123,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add multiple language tables with validation
     local languages = {
@@ -155,7 +147,6 @@ function lia.lang.addTable(name, tbl)
 end
 
 --[[
-
     Purpose:
         Retrieves a sorted list of all available language names
 
@@ -170,10 +161,9 @@ end
 
     Realm:
         Server/Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get list of available languages
     local languages = lia.lang.getLanguages()
@@ -181,7 +171,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create language selection menu
     local languages = lia.lang.getLanguages()
@@ -194,7 +183,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Validate language selection with fallback
     local function setLanguage(langName)
@@ -229,7 +217,6 @@ function lia.lang.getLanguages()
 end
 
 --[[
-
     Purpose:
         Retrieves a localized string with parameter substitution and formatting
 
@@ -244,10 +231,9 @@ end
 
     Realm:
         Server/Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get basic localized string
     local message = lia.lang.getLocalizedString("hello")
@@ -255,7 +241,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get localized string with parameters
     local playerName = "John"
@@ -264,7 +249,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex localized string with multiple parameters and error handling
     local function displayItemInfo(itemName, quantity, price)
@@ -310,7 +294,6 @@ function lia.lang.getLocalizedString(key, ...)
 end
 
 --[[
-
     Purpose:
         Global alias for lia.lang.getLocalizedString for convenient access to localized strings
 
@@ -325,17 +308,15 @@ end
 
     Realm:
         Server/Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Use global L function for basic strings
     print(L("hello")) -- Outputs: "Hello" (in current language)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Use L function with parameters in chat
     local function onPlayerChat(ply, text)
@@ -345,7 +326,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Use L function in complex UI with multiple languages
     local function updateUI()

@@ -21,151 +21,116 @@
     if not pac then return end
 
     Purpose:
-
         Prevents loading if PAC addon is not available
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         if not pac then return end
         ```
 ]]
 if not pac then return end
 --[[
-
     Purpose:
-
         Sets the display name of the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.name = "Hat"
         ```
 ]]
 ITEM.name = "pacoutfitName"
 --[[
-
     Purpose:
-
         Sets the description of the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.desc = "A stylish hat"
         ```
 ]]
 ITEM.desc = "pacoutfitDesc"
 --[[
-
     Purpose:
-
         Sets the category for the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.category = "outfit"
         ```
 ]]
 ITEM.category = "outfit"
 --[[
-
     Purpose:
-
         Sets the 3D model for the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.model = "models/Gibs/HGIBS.mdl"
         ```
 ]]
 ITEM.model = "models/Gibs/HGIBS.mdl"
 --[[
-
     Purpose:
-
         Sets the inventory width of the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.width = 1  -- Takes 1 slot width
         ```
 ]]
 ITEM.width = 1
 --[[
-
     Purpose:
-
         Sets the inventory height of the PAC outfit item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.height = 1  -- Takes 1 slot height
         ```
 ]]
 ITEM.height = 1
 --[[
-
     Purpose:
-
         Sets the outfit category for conflict checking
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.outfitCategory = "hat"  -- Prevents multiple items of same category
         ```
 ]]
 ITEM.outfitCategory = "hat"
 --[[
-
     Purpose:
-
         Sets the PAC data for the outfit
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.pacData = {}  -- PAC attachment data
         ```
@@ -175,14 +140,12 @@ ITEM.pacData = {}
     ITEM:paintOver(item, w, h)
 
     Purpose:
-
         Custom paint function to show equipped status
 
     When Called:
-
         When rendering the item in inventory (CLIENT only)
-    Example Usage:
 
+    Example Usage:
         ```lua
         function ITEM:paintOver(item, w, h)
             if item:getData("equip") then
@@ -196,14 +159,12 @@ ITEM.pacData = {}
     ITEM:removePart(client)
 
     Purpose:
-
         Removes the PAC part from the player
 
     When Called:
-
         When unequipping the PAC outfit
-    Example Usage:
 
+    Example Usage:
         ```lua
         function ITEM:removePart(client)
             local char = client:getChar()
@@ -217,14 +178,12 @@ ITEM.pacData = {}
     ITEM:onCanBeTransfered(_, newInventory)
 
     Purpose:
-
         Prevents transfer of equipped PAC outfits
 
     When Called:
-
         When attempting to transfer the item
-    Example Usage:
 
+    Example Usage:
         ```lua
         function ITEM:onCanBeTransfered(_, newInventory)
             if newInventory and self:getData("equip") then return false end
@@ -236,14 +195,12 @@ ITEM.pacData = {}
     ITEM:onLoadout()
 
     Purpose:
-
         Handles PAC outfit loading on player spawn
 
     When Called:
-
         When player spawns with equipped PAC outfit
-    Example Usage:
 
+    Example Usage:
         ```lua
         function ITEM:onLoadout()
             if self:getData("equip") and self.player.addPart then self.player:addPart(self.uniqueID) end
@@ -254,14 +211,12 @@ ITEM.pacData = {}
     ITEM:onRemoved()
 
     Purpose:
-
         Handles PAC outfit removal when item is removed
 
     When Called:
-
         When item is removed from inventory
-    Example Usage:
 
+    Example Usage:
         ```lua
         function ITEM:onRemoved()
             local inv = lia.item.inventories[self.invID]
@@ -274,14 +229,12 @@ ITEM.pacData = {}
     ITEM:hook("drop", function(item) ... end)
 
     Purpose:
-
         Handles PAC outfit removal when item is dropped
 
     When Called:
-
         When item is dropped
-    Example Usage:
 
+    Example Usage:
         ```lua
         ITEM:hook("drop", function(item)
         local client = item.player

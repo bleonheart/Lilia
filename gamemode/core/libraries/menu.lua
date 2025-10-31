@@ -50,7 +50,6 @@ local function buildItems(opts)
 end
 
 --[[
-
     Purpose:
         Creates and adds a new context menu to the menu system
 
@@ -67,9 +66,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Create a basic context menu
         lia.menu.add({
@@ -79,7 +78,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create menu attached to an entity
         local ent = Entity(1)
@@ -91,7 +89,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Create menu with custom position and cleanup
         local menuData = {
@@ -153,7 +150,6 @@ local function drawBackground(x, y, w, h, a)
 end
 
 --[[
-
     Purpose:
         Renders all active context menus with animations and interaction detection
 
@@ -168,9 +164,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Called automatically by the framework
         -- This function is typically called from hooks like HUDPaint
@@ -178,7 +174,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Custom rendering with additional checks
         hook.Add("HUDPaint", "CustomMenuDraw", function()
@@ -188,7 +183,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Conditional rendering with performance optimization
         local lastDrawTime = 0
@@ -252,7 +246,6 @@ function lia.menu.drawAll()
 end
 
 --[[
-
     Purpose:
         Gets the currently active menu item that the player is hovering over
 
@@ -267,9 +260,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player is hovering over a menu
         local menuIndex, callback = lia.menu.getActiveMenu()
@@ -279,7 +272,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuInteraction", function(ply, button)
@@ -294,7 +286,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Advanced menu interaction with cooldown and logging
         local lastMenuTime = 0
@@ -340,7 +331,6 @@ function lia.menu.getActiveMenu()
 end
 
 --[[
-
     Purpose:
         Handles button press events for menu items and removes the menu
 
@@ -356,9 +346,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Remove menu and execute callback
         local menuIndex = 1
@@ -368,7 +358,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuButtonPress", function(ply, button)
@@ -385,7 +374,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Advanced menu handling with error checking and logging
         local function handleMenuPress(menuIndex, callback)

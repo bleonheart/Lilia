@@ -10,7 +10,6 @@
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 --[[
-
     Purpose:
         Registers a new character class with the specified unique ID and data
 
@@ -26,9 +25,9 @@ lia.class.list = lia.class.list or {}
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         lia.class.register("citizen", {
         name = "Citizen",
@@ -39,7 +38,6 @@ lia.class.list = lia.class.list or {}
         ```
 
         Medium Complexity:
-
         ```lua
         lia.class.register("police_officer", {
         name = "Police Officer",
@@ -53,7 +51,6 @@ lia.class.list = lia.class.list or {}
         ```
 
         High Complexity:
-
         ```lua
         local classData = {
         name = "Elite Soldier",
@@ -111,7 +108,6 @@ function lia.class.register(uniqueID, data)
 end
 
 --[[
-
     Purpose:
         Loads character classes from a directory containing class definition files
 
@@ -126,15 +122,14 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         lia.class.loadFromDir("gamemodes/lilia/classes")
         ```
 
         Medium Complexity:
-
         ```lua
         local classDir = "gamemodes/lilia/modules/custom_classes/classes"
         if file.Exists(classDir, "LUA") then
@@ -143,7 +138,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local classDirectories = {
         "gamemodes/lilia/classes",
@@ -199,7 +193,6 @@ function lia.class.loadFromDir(directory)
 end
 
 --[[
-
     Purpose:
         Checks if a client can join a specific character class
 
@@ -215,9 +208,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local canJoin, reason = lia.class.canBe(client, 1)
         if canJoin then
@@ -228,7 +221,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         local function checkClassAvailability(client, className)
             local classIndex = lia.class.retrieveClass(className)
@@ -242,7 +234,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function validateClassSwitch(client, newClass)
             local currentChar = client:getChar()
@@ -283,7 +274,6 @@ function lia.class.canBe(client, class)
 end
 
 --[[
-
     Purpose:
         Retrieves a character class by its identifier (index or uniqueID)
 
@@ -298,9 +288,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local class = lia.class.get(1)
         if class then
@@ -309,7 +299,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         local function getClassInfo(identifier)
             local class = lia.class.get(identifier)
@@ -327,7 +316,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function getClassDetails(identifier)
             local class = lia.class.get(identifier)
@@ -357,7 +345,6 @@ function lia.class.get(identifier)
 end
 
 --[[
-
     Purpose:
         Gets all players currently using a specific character class
 
@@ -372,16 +359,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local players = lia.class.getPlayers(1)
         print("Players in class 1: " .. #players)
         ```
 
         Medium Complexity:
-
         ```lua
         local function getClassMembers(className)
             local classIndex = lia.class.retrieveClass(className)
@@ -401,7 +387,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function getClassStatistics(classIndex)
             local players = lia.class.getPlayers(classIndex)
@@ -443,7 +428,6 @@ function lia.class.getPlayers(class)
 end
 
 --[[
-
     Purpose:
         Gets the count of players currently using a specific character class
 
@@ -458,16 +442,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local count = lia.class.getPlayerCount(1)
         print("Players in class: " .. count)
         ```
 
         Medium Complexity:
-
         ```lua
         local function checkClassAvailability(classIndex)
             local class = lia.class.get(classIndex)
@@ -483,7 +466,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function getClassPopulationReport()
             local report = {}
@@ -521,7 +503,6 @@ function lia.class.getPlayerCount(class)
 end
 
 --[[
-
     Purpose:
         Finds a class by matching its uniqueID or name with a search string
 
@@ -536,9 +517,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local classIndex = lia.class.retrieveClass("citizen")
         if classIndex then
@@ -547,7 +528,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         local function findClassByName(searchTerm)
             local classIndex = lia.class.retrieveClass(searchTerm)
@@ -561,7 +541,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function searchClasses(searchTerm)
             local results = {}
@@ -593,7 +572,6 @@ function lia.class.retrieveClass(class)
 end
 
 --[[
-
     Purpose:
         Checks if a character class has whitelist restrictions
 
@@ -608,9 +586,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local hasWhitelist = lia.class.hasWhitelist(1)
         if hasWhitelist then
@@ -619,7 +597,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         local function checkClassAccess(client, classIndex)
             local class = lia.class.get(classIndex)
@@ -638,7 +615,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function getWhitelistClasses()
             local whitelistClasses = {}
@@ -677,7 +653,6 @@ function lia.class.hasWhitelist(class)
 end
 
 --[[
-
     Purpose:
         Retrieves all classes that a specific client can join
 
@@ -692,16 +667,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         local joinableClasses = lia.class.retrieveJoinable(client)
         print("Player can join " .. #joinableClasses .. " classes")
         ```
 
         Medium Complexity:
-
         ```lua
         local function getJoinableClassNames(client)
             local joinableClasses = lia.class.retrieveJoinable(client)
@@ -716,7 +690,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         local function getDetailedJoinableClasses(client)
             local joinableClasses = lia.class.retrieveJoinable(client)

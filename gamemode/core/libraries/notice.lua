@@ -10,7 +10,6 @@
 lia.notices = lia.notices or {}
 if SERVER then
     --[[
-
         Purpose:
             Sends a notification message to a specific client or all clients
 
@@ -27,17 +26,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Send basic notification to all players
         lia.notices.notify(nil, "Server restarting in 5 minutes!")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send error notification to specific player
         local player = Player(1)
@@ -47,7 +44,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Send notifications to multiple players with different types
         local players = player.GetAll()
@@ -72,7 +68,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Sends a localized notification message to a specific client or all clients
 
@@ -90,17 +85,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Send localized notification to all players
         lia.notices.notifyInfoLocalized(nil, "server.restart")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Send localized notification with one parameter
         local player = Player(1)
@@ -108,7 +101,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Send localized notifications with multiple parameters
         local players = player.GetAll()
@@ -142,7 +134,6 @@ if SERVER then
     end
 else
     --[[
-
         Purpose:
             Receives and displays notification messages from the server
 
@@ -157,17 +148,15 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Function is called automatically when server sends notification
         -- No direct usage needed - handled by network receiver
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotificationData", function()
@@ -178,7 +167,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Override default behavior with custom notification handling
         local originalReceiveNotify = lia.notices.receiveNotify
@@ -214,7 +202,6 @@ else
 
     net.Receive("liaNotificationData", lia.notices.receiveNotify)
     --[[
-
         Purpose:
             Receives and displays localized notification messages from the server
 
@@ -229,17 +216,15 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Function is called automatically when server sends localized notification
         -- No direct usage needed - handled by network receiver
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotifyLocal", function()
@@ -250,7 +235,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Override default behavior with custom localized notification handling
         local originalReceiveNotifyL = lia.notices.receiveNotifyL
@@ -298,7 +282,6 @@ else
 
     net.Receive("liaNotifyLocal", lia.notices.receiveNotifyL)
     --[[
-
         Purpose:
             Creates and displays a notification message directly on the client
 
@@ -315,17 +298,15 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Display basic notification
         lia.notices.notify(nil, "Settings saved!", "success")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display notification with dynamic content
         local playerName = LocalPlayer():Name()
@@ -333,7 +314,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Display notifications based on conditions
         local player = LocalPlayer()
@@ -360,7 +340,6 @@ else
     end
 
     --[[
-
         Purpose:
             Creates and displays a localized notification message directly on the client
 
@@ -378,17 +357,15 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Display localized notification
         lia.notices.notifySuccessLocalized(nil, "ui.settings.saved")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display localized notification with one parameter
         local playerName = LocalPlayer():Name()
@@ -396,7 +373,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Display localized notifications with multiple parameters
         local player = LocalPlayer()
@@ -445,7 +421,6 @@ else
     end
 
     --[[
-
         Purpose:
             Provides compatibility with Garry's Mod's legacy notification system
 
@@ -461,17 +436,15 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Use legacy notification system
         notification.AddLegacy("Server restarting!", 0)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Convert legacy notifications to new system
         local legacyTypes = {[0] = "info", [1] = "error", [2] = "success"}
@@ -481,7 +454,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Override legacy notification with custom handling
         local originalAddLegacy = notification.AddLegacy
@@ -512,7 +484,6 @@ else
 end
 
 --[[
-
     Purpose:
         Organizes and positions notification panels on the screen
 
@@ -527,17 +498,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Function is called automatically when notifications are created
     -- No direct usage needed - handled internally
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Manually organize notices after bulk creation
     for i = 1, 5 do
@@ -547,7 +516,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Custom notice organization with different positioning
     local originalOrganizeNotices = OrganizeNotices

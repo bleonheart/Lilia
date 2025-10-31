@@ -9,17 +9,13 @@
         Client-side hooks in the Lilia framework handle UI, rendering, input, and other client-specific functionality; they can be used to customize the user experience and can be overridden or extended by addons and modules.
 ]]
 --[[
-
     Purpose:
-
         Adds a bar field to a character information section in the F1 menu
 
     When Called:
-
         When you want to add a progress bar field to display character statistics
 
     Parameters:
-
         - sectionName (string): The name of the section to add the field to
         - fieldName (string): Unique identifier for the field
         - labelText (string): Display text for the field label
@@ -28,16 +24,13 @@
         - valueFunc (function): Function that returns the current value for the bar
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a health bar field
     hook.Run("AddBarField", "character", "health", "Health",
@@ -47,7 +40,6 @@
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add a stamina bar field with character data
     hook.Run("AddBarField", "character", "stamina", "Stamina",
@@ -60,7 +52,6 @@
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add multiple attribute bars dynamically
     local attributes = {"str", "con", "dex", "int", "wis", "cha"}
@@ -82,47 +73,38 @@ function AddBarField(sectionName, fieldName, labelText, minFunc, maxFunc, valueF
 end
 
 --[[
-
     Purpose:
-
         Adds a new section to the character information panel in the F1 menu
 
     When Called:
-
         When you want to create a new section for displaying character information
 
     Parameters:
-
         - sectionName (string): The name of the section to create
         - color (Color): The color for the section header (optional)
         - priority (number): Display priority, lower numbers appear first (optional)
         - location (number): Location of the section in the panel (optional)
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a basic section
     hook.Run("AddSection", "General Info", Color(255, 255, 255), 1, 1)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add a section with custom styling
     hook.Run("AddSection", "Character Stats", Color(100, 150, 200), 2, 1)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add multiple sections with conditional logic
     local sections = {
@@ -140,33 +122,26 @@ function AddSection(sectionName, color, priority, location)
 end
 
 --[[
-
     Purpose:
-
         Adds a text field to a character information section in the F1 menu
 
     When Called:
-
         When you want to add a text field to display character information
 
     Parameters:
-
         - sectionName (string): The name of the section to add the field to
         - fieldName (string): Unique identifier for the field
         - labelText (string): Display text for the field label
         - valueFunc (function): Function that returns the current value to display
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a character name field
     hook.Run("AddTextField", "General Info", "name", "Name",
@@ -174,7 +149,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add a faction field with character data
     hook.Run("AddTextField", "General Info", "faction", "Faction",
@@ -185,7 +159,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add multiple character info fields dynamically
     local infoFields = {
@@ -209,32 +182,25 @@ function AddTextField(sectionName, fieldName, labelText, valueFunc)
 end
 
 --[[
-
     Purpose:
-
         Adds information to the admin stick HUD display when looking at entities
 
     When Called:
-
         When an admin uses the admin stick and looks at an entity
 
     Parameters:
-
         - client (Player): The admin player using the admin stick
         - target (Entity): The entity being looked at
         - information (table): Table to add information strings to
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic entity information
     hook.Add("AddToAdminStickHUD", "MyAddon", function(client, target, information)
@@ -245,7 +211,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add vendor-specific information
     hook.Add("AddToAdminStickHUD", "VendorInfo", function(client, target, information)
@@ -263,7 +228,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add comprehensive entity information with validation
     hook.Add("AddToAdminStickHUD", "DetailedInfo", function(client, target, information)
@@ -286,6 +250,7 @@ end
         elseif target.IsDoor then
             local doorData = target:getNetVar("doorData")
             if doorData then
+
                 table.insert(information, "Door Title: " .. (doorData.title or "Untitled"))
                 table.insert(information, "Door Price: $" .. (doorData.price or 0))
                 end
@@ -297,32 +262,25 @@ function AddToAdminStickHUD(client, target, information)
 end
 
 --[[
-
     Purpose:
-
         Allows modification of PAC3 part data before it's applied to a player
 
     When Called:
-
         When PAC3 parts are being attached to a player, allowing customization
 
     Parameters:
-
         - wearer (Player): The player who will wear the PAC3 part
         - id (string): The identifier of the PAC3 part
         - data (table): The PAC3 part data to be modified
 
     Returns:
-
         table|nil - Modified part data, or nil to use original data
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Modify part color
     hook.Add("AdjustPACPartData", "MyAddon", function(wearer, id, data)
@@ -334,7 +292,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Modify part based on player faction
     hook.Add("AdjustPACPartData", "FactionPAC", function(wearer, id, data)
@@ -354,7 +311,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex PAC part modification system
     hook.Add("AdjustPACPartData", "AdvancedPAC", function(wearer, id, data)
@@ -403,38 +359,30 @@ function AdjustPACPartData(wearer, id, data)
 end
 
 --[[
-
     Purpose:
-
         Attaches a PAC3 part to a player
 
     When Called:
-
         When a PAC3 part needs to be attached to a player
 
     Parameters:
-
         - client (Player): The player to attach the part to
         - id (string): The identifier of the PAC3 part to attach
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Attach a hat to a player
     hook.Run("AttachPart", client, "hat_01")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Attach part with validation
     hook.Add("AttachPart", "MyAddon", function(client, id)
@@ -449,7 +397,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex part attachment system
     hook.Add("AttachPart", "AdvancedPAC", function(client, id)
@@ -499,30 +446,23 @@ function AttachPart(client, id)
 end
 
 --[[
-
     Purpose:
-
         Determines if character information should be displayed for a given name
 
     When Called:
-
         When displaying character information in UI elements
 
     Parameters:
-
         - name (string): The character name to check
 
     Returns:
-
         boolean - True if info should be displayed, false otherwise
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Display all character info
     hook.Add("CanDisplayCharInfo", "MyAddon", function(name)
@@ -531,7 +471,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide info for certain characters
     hook.Add("CanDisplayCharInfo", "PrivacyMode", function(name)
@@ -546,7 +485,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex privacy system
     hook.Add("CanDisplayCharInfo", "AdvancedPrivacy", function(name)
@@ -579,30 +517,23 @@ function CanDisplayCharInfo(name)
 end
 
 --[[
-
     Purpose:
-
         Determines if a bag item's inventory panel can be opened
 
     When Called:
-
         When a player attempts to open a bag's inventory
 
     Parameters:
-
         - item (Item): The bag item being opened
 
     Returns:
-
         boolean - True if panel can be opened, false otherwise
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Allow all bag panels to open
     hook.Add("CanOpenBagPanel", "MyAddon", function(item)
@@ -611,7 +542,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check if bag is locked
     hook.Add("CanOpenBagPanel", "LockedBags", function(item)
@@ -624,7 +554,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex bag access system
     hook.Add("CanOpenBagPanel", "AdvancedBags", function(item)
@@ -671,30 +600,23 @@ end
     ```
 ]]
 --[[
-
     Purpose:
-
         Called to check if a bag panel can be opened
 
     When Called:
-
         When attempting to open a bag's inventory panel
 
     Parameters:
-
         - item (Item): The bag item being opened
 
     Returns:
-
         boolean - True to allow, false to deny
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always allow
     hook.Add("CanOpenBagPanel", "MyAddon", function(item)
@@ -703,7 +625,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check if bag is locked
     hook.Add("CanOpenBagPanel", "BagPanelCheck", function(item)
@@ -716,7 +637,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex bag access system
     hook.Add("CanOpenBagPanel", "AdvancedBagAccess", function(item)
@@ -747,30 +667,23 @@ function CanOpenBagPanel(item)
 end
 
 --[[
-
     Purpose:
-
         Called to modify character list columns
 
     When Called:
-
         When building the character list display
 
     Parameters:
-
         - columns (table): The columns to display in the character list
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add custom column
     hook.Add("CharListColumns", "MyAddon", function(columns)
@@ -779,7 +692,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Modify existing columns
     hook.Add("CharListColumns", "ColumnModification", function(columns)
@@ -797,7 +709,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex column system
     hook.Add("CharListColumns", "AdvancedColumns", function(columns)
@@ -836,31 +747,24 @@ function CharListColumns(columns)
 end
 
 --[[
-
     Purpose:
-
         Called to modify character list entries
 
     When Called:
-
         When building each character list entry
 
     Parameters:
-
         - entry (table): The character data for this entry
         - row (Panel): The row panel being created
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add custom data to entry
     hook.Add("CharListEntry", "MyAddon", function(entry, row)
@@ -869,7 +773,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Modify entry display
     hook.Add("CharListEntry", "EntryModification", function(entry, row)
@@ -885,7 +788,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex entry system
     hook.Add("CharListEntry", "AdvancedEntry", function(entry, row)
@@ -931,32 +833,25 @@ function CharListEntry(entry, row)
 end
 
 --[[
-
     Purpose:
-
         Called to add extra details to character list entries
 
     When Called:
-
         When building character list entries with additional information
 
     Parameters:
-
         - client (Player): The client viewing the character list
         - entry (table): The character data for this entry
         - stored (table): The stored character data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic extra details
     hook.Add("CharListExtraDetails", "MyAddon", function(client, entry, stored)
@@ -965,7 +860,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add faction-specific details
     hook.Add("CharListExtraDetails", "FactionDetails", function(client, entry, stored)
@@ -982,7 +876,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex extra details system
     hook.Add("CharListExtraDetails", "AdvancedExtraDetails", function(client, entry, stored)
@@ -1029,30 +922,23 @@ function CharListExtraDetails(client, entry, stored)
 end
 
 --[[
-
     Purpose:
-
         Called when character list is loaded
 
     When Called:
-
         When the character list data is successfully loaded
 
     Parameters:
-
         - newCharList (table): The loaded character list data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log character list loading
     hook.Add("CharListLoaded", "MyAddon", function(newCharList)
@@ -1061,7 +947,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Process character list data
     hook.Add("CharListLoaded", "CharListProcessing", function(newCharList)
@@ -1080,7 +965,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character list processing
     hook.Add("CharListLoaded", "AdvancedCharListProcessing", function(newCharList)
@@ -1133,31 +1017,24 @@ function CharListLoaded(newCharList)
 end
 
 --[[
-
     Purpose:
-
         Called when character list is updated
 
     When Called:
-
         When the character list data is modified
 
     Parameters:
-
         - oldCharList (table): The previous character list data
         - newCharList (table): The updated character list data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log character list updates
     hook.Add("CharListUpdated", "MyAddon", function(oldCharList, newCharList)
@@ -1166,7 +1043,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track character changes
     hook.Add("CharListUpdated", "CharChangeTracking", function(oldCharList, newCharList)
@@ -1201,7 +1077,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character list update system
     hook.Add("CharListUpdated", "AdvancedCharListUpdate", function(oldCharList, newCharList)
@@ -1258,29 +1133,23 @@ function CharListUpdated(oldCharList, newCharList)
 end
 
 --[[
-
     Purpose:
-
         Called when the character menu is closed
 
     When Called:
-
         When the character selection menu is closed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log menu closing
     hook.Add("CharMenuClosed", "MyAddon", function()
@@ -1289,7 +1158,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up menu data
     hook.Add("CharMenuClosed", "MenuCleanup", function()
@@ -1300,7 +1168,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu close handling
     hook.Add("CharMenuClosed", "AdvancedMenuClose", function()
@@ -1322,30 +1189,23 @@ function CharMenuClosed()
 end
 
 --[[
-
     Purpose:
-
         Called when the character menu is opened
 
     When Called:
-
         When the character selection menu is opened
 
     Parameters:
-
         - self (Panel): The character menu panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log menu opening
     hook.Add("CharMenuOpened", "MyAddon", function(self)
@@ -1354,7 +1214,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load character data
     hook.Add("CharMenuOpened", "MenuDataLoad", function(self)
@@ -1365,7 +1224,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu open handling
     hook.Add("CharMenuOpened", "AdvancedMenuOpen", function(self)
@@ -1392,31 +1250,24 @@ function CharMenuOpened(self)
 end
 
 --[[
-
     Purpose:
-
         Called to add text to the chat
 
     When Called:
-
         When text is being added to the chatbox
 
     Parameters:
-
         - markup (table): The markup table containing text formatting
         ... (vararg) - Additional arguments for the text
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log chat text
     hook.Add("ChatAddText", "MyAddon", function(markup, ...)
@@ -1425,7 +1276,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Modify chat text color
     hook.Add("ChatAddText", "ChatColorMod", function(markup, ...)
@@ -1440,7 +1290,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chat text processing
     hook.Add("ChatAddText", "AdvancedChatText", function(markup, ...)
@@ -1470,30 +1319,23 @@ function ChatAddText(markup, ...)
 end
 
 --[[
-
     Purpose:
-
         Called when the chatbox panel is created
 
     When Called:
-
         When the chatbox UI panel is initialized
 
     Parameters:
-
         - panel (Panel): The chatbox panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log panel creation
     hook.Add("ChatboxPanelCreated", "MyAddon", function(panel)
@@ -1502,7 +1344,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize chatbox appearance
     hook.Add("ChatboxPanelCreated", "ChatboxCustomize", function(panel)
@@ -1513,7 +1354,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chatbox customization
     hook.Add("ChatboxPanelCreated", "AdvancedChatbox", function(panel)
@@ -1539,29 +1379,23 @@ function ChatboxPanelCreated(panel)
 end
 
 --[[
-
     Purpose:
-
         Called when text is added to the chatbox
 
     When Called:
-
         When new text is displayed in the chatbox
 
     Parameters: 
         ... (vararg) - Variable arguments containing the text data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log chatbox text
     hook.Add("ChatboxTextAdded", "MyAddon", function(...)
@@ -1570,7 +1404,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Process chatbox text
     hook.Add("ChatboxTextAdded", "ChatboxProcess", function(...)
@@ -1584,7 +1417,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chatbox text handling
     hook.Add("ChatboxTextAdded", "AdvancedChatboxText", function(...)
@@ -1612,30 +1444,23 @@ function ChatboxTextAdded(...)
 end
 
 --[[
-
     Purpose:
-
         Called when a character is chosen
 
     When Called:
-
         When a player selects a character to play
 
     Parameters:
-
         - id (number): The ID of the character being chosen
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log character choice
     hook.Add("ChooseCharacter", "MyAddon", function(id)
@@ -1644,7 +1469,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Cache character data
     hook.Add("ChooseCharacter", "CharacterCache", function(id)
@@ -1654,7 +1478,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character selection
     hook.Add("ChooseCharacter", "AdvancedCharSelect", function(id)
@@ -1680,30 +1503,23 @@ function ChooseCharacter(id)
 end
 
 --[[
-
     Purpose:
-
         Called to configure character creation steps
 
     When Called:
-
         When setting up the character creation process
 
     Parameters:
-
         - self (Panel): The character creation panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log creation step configuration
     hook.Add("ConfigureCharacterCreationSteps", "MyAddon", function(self)
@@ -1712,7 +1528,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add custom creation step
     hook.Add("ConfigureCharacterCreationSteps", "CustomStep", function(self)
@@ -1727,7 +1542,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex creation step configuration
     hook.Add("ConfigureCharacterCreationSteps", "AdvancedCreationSteps", function(self)
@@ -1767,29 +1581,23 @@ function ConfigureCharacterCreationSteps(self)
 end
 
 --[[
-
     Purpose:
-
         Called to create the chat interface
 
     When Called:
-
         When the chat UI is being initialized
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log chat creation
     hook.Add("CreateChat", "MyAddon", function()
@@ -1798,7 +1606,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize chat appearance
     hook.Add("CreateChat", "ChatCustomize", function()
@@ -1809,7 +1616,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chat customization
     hook.Add("CreateChat", "AdvancedChatSetup", function()
@@ -1832,30 +1638,23 @@ function CreateChat()
 end
 
 --[[
-
     Purpose:
-
         Called to create information buttons in the F1 menu
 
     When Called:
-
         When building the information panel buttons
 
     Parameters:
-
         - pages (table): The pages table to add buttons to
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a basic information button
     hook.Add("CreateInformationButtons", "MyAddon", function(pages)
@@ -1866,7 +1665,6 @@ end)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple information pages
     hook.Add("CreateInformationButtons", "InfoPages", function(pages)
@@ -1885,7 +1683,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex information pages
     hook.Add("CreateInformationButtons", "AdvancedInfoPages", function(pages)
@@ -1923,31 +1720,24 @@ function CreateInformationButtons(pages)
 end
 
 --[[
-
     Purpose:
-
         Called to create an inventory panel
 
     When Called:
-
         When an inventory UI panel needs to be created
 
     Parameters:
-
         - inventory (Inventory): The inventory to create a panel for
         - parent (Panel): The parent panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log inventory panel creation
     hook.Add("CreateInventoryPanel", "MyAddon", function(inventory, parent)
@@ -1956,7 +1746,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize inventory panel
     hook.Add("CreateInventoryPanel", "InventoryCustomize", function(inventory, parent)
@@ -1967,7 +1756,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory panel customization
     hook.Add("CreateInventoryPanel", "AdvancedInventoryPanel", function(inventory, parent)
@@ -1997,30 +1785,23 @@ function CreateInventoryPanel(inventory, parent)
 end
 
 --[[
-
     Purpose:
-
         Called to create menu buttons
 
     When Called:
-
         When building the main menu button tabs
 
     Parameters:
-
         - tabs (table): The tabs table to add buttons to
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a basic menu button
     hook.Add("CreateMenuButtons", "MyAddon", function(tabs)
@@ -2031,7 +1812,6 @@ end)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple menu tabs
     hook.Add("CreateMenuButtons", "MenuTabs", function(tabs)
@@ -2050,7 +1830,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu system
     hook.Add("CreateMenuButtons", "AdvancedMenu", function(tabs)
@@ -2087,30 +1866,23 @@ function CreateMenuButtons(tabs)
 end
 
 --[[
-
     Purpose:
-
         Called when derma skin is changed
 
     When Called:
-
         When the UI skin is changed
 
     Parameters:
-
         - newSkin (string): The new skin name
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log skin change
     hook.Add("DermaSkinChanged", "MyAddon", function(newSkin)
@@ -2119,7 +1891,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Save skin preference
     hook.Add("DermaSkinChanged", "SkinPreference", function(newSkin)
@@ -2132,7 +1903,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex skin management system
     hook.Add("DermaSkinChanged", "AdvancedSkinManagement", function(newSkin)
@@ -2159,32 +1929,25 @@ function DermaSkinChanged(newSkin)
 end
 
 --[[
-
     Purpose:
-
         Called to draw character information
 
     When Called:
-
         When character information needs to be rendered
 
     Parameters:
-
         - client (Player): The player whose character info is being drawn
         - character (Character): The character being displayed
         - info (table): The information table to populate
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic character info
     hook.Add("DrawCharInfo", "MyAddon", function(client, character, info)
@@ -2193,7 +1956,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple character details
     hook.Add("DrawCharInfo", "CharDetails", function(client, character, info)
@@ -2204,7 +1966,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character information display
     hook.Add("DrawCharInfo", "AdvancedCharInfo", function(client, character, info)
@@ -2236,32 +1997,25 @@ function DrawCharInfo(client, character, info)
 end
 
 --[[
-
     Purpose:
-
         Called to draw door information box
 
     When Called:
-
         When rendering door information UI
 
     Parameters:
-
         - entity (Entity): The door entity
         - infoTexts (table): The information texts to display
         - alphaOverride (number): Alpha override value for transparency
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic door info
     hook.Add("DrawDoorInfoBox", "MyAddon", function(entity, infoTexts, alphaOverride)
@@ -2270,7 +2024,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add door ownership info
     hook.Add("DrawDoorInfoBox", "DoorOwnership", function(entity, infoTexts, alphaOverride)
@@ -2284,14 +2037,13 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex door information display
     hook.Add("DrawDoorInfoBox", "AdvancedDoorInfo", function(entity, infoTexts, alphaOverride)
     -- Door title
     local title = entity:getNetVar("title", "Door")
-    table.insert(infoTexts, "Title: " .. title)
 
+    table.insert(infoTexts, "Title: " .. title)
     -- Owner info
     local owner = entity:getNetVar("owner")
     if owner then
@@ -2322,32 +2074,25 @@ function DrawDoorInfoBox(entity, infoTexts, alphaOverride)
 end
 
 --[[
-
     Purpose:
-
         Called to draw entity information
 
     When Called:
-
         When rendering entity information UI
 
     Parameters:
-
         - entity (Entity): The entity to draw information for
         - alpha (number): The alpha/transparency value
         - position (Vector): The position to draw at
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic entity info
     hook.Add("DrawEntityInfo", "MyAddon", function(entity, alpha, position)
@@ -2356,7 +2101,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add entity details
     hook.Add("DrawEntityInfo", "EntityDetails", function(entity, alpha, position)
@@ -2369,7 +2113,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex entity information display
     hook.Add("DrawEntityInfo", "AdvancedEntityInfo", function(entity, alpha, position)
@@ -2405,31 +2148,24 @@ function DrawEntityInfo(entity, alpha, position)
 end
 
 --[[
-
     Purpose:
-
         Called to draw Lilia model view
 
     When Called:
-
         When rendering a model view panel
 
     Parameters:
-
         - self (Panel): The model view panel
         - ent (Entity): The entity being displayed
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log model view drawing
     hook.Add("DrawLiliaModelView", "MyAddon", function(self, ent)
@@ -2438,7 +2174,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize model view
     hook.Add("DrawLiliaModelView", "ModelViewCustomize", function(self, ent)
@@ -2449,7 +2184,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex model view customization
     hook.Add("DrawLiliaModelView", "AdvancedModelView", function(self, ent)
@@ -2475,30 +2209,23 @@ function DrawLiliaModelView(self, ent)
 end
 
 --[[
-
     Purpose:
-
         Called to draw a player's ragdoll
 
     When Called:
-
         When rendering a player ragdoll entity
 
     Parameters:
-
         - entity (Entity): The ragdoll entity
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log ragdoll drawing
     hook.Add("DrawPlayerRagdoll", "MyAddon", function(entity)
@@ -2507,7 +2234,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize ragdoll appearance
     hook.Add("DrawPlayerRagdoll", "RagdollCustomize", function(entity)
@@ -2518,7 +2244,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex ragdoll rendering
     hook.Add("DrawPlayerRagdoll", "AdvancedRagdoll", function(entity)
@@ -2565,29 +2290,23 @@ function DrawPlayerRagdoll(entity)
 end
 
 --[[
-
     Purpose:
-
         Called when exiting storage
 
     When Called:
-
         When a player closes a storage container
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log storage exit
     hook.Add("ExitStorage", "MyAddon", function()
@@ -2596,7 +2315,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up storage UI
     hook.Add("ExitStorage", "StorageCleanup", function()
@@ -2608,7 +2326,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex storage exit handling
     hook.Add("ExitStorage", "AdvancedStorageExit", function()
@@ -2642,29 +2359,23 @@ function ExitStorage()
 end
 
 --[[
-
     Purpose:
-
         Called when the F1 menu is closed
 
     When Called:
-
         When the F1 character information menu is closed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log F1 menu closing
     hook.Add("F1MenuClosed", "MyAddon", function()
@@ -2673,7 +2384,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up F1 menu data
     hook.Add("F1MenuClosed", "F1MenuCleanup", function()
@@ -2683,7 +2393,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex F1 menu close handling
     hook.Add("F1MenuClosed", "AdvancedF1Close", function()
@@ -2712,30 +2421,23 @@ function F1MenuClosed()
 end
 
 --[[
-
     Purpose:
-
         Called when the F1 menu is opened
 
     When Called:
-
         When the F1 character information menu is opened
 
     Parameters:
-
         - self (Panel): The F1 menu panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log F1 menu opening
     hook.Add("F1MenuOpened", "MyAddon", function(self)
@@ -2744,7 +2446,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Update F1 menu state
     hook.Add("F1MenuOpened", "F1MenuState", function(self)
@@ -2755,7 +2456,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex F1 menu open handling
     hook.Add("F1MenuOpened", "AdvancedF1Open", function(self)
@@ -2790,30 +2490,23 @@ function F1MenuOpened(self)
 end
 
 --[[
-
     Purpose:
-
         Called to filter character models
 
     When Called:
-
         When character models need to be filtered or restricted
 
     Parameters:
-
         - models (table): The table of available models to filter
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log model filtering
     hook.Add("FilterCharModels", "MyAddon", function(models)
@@ -2822,7 +2515,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Remove specific models
     hook.Add("FilterCharModels", "ModelRestriction", function(models)
@@ -2840,7 +2532,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex model filtering system
     hook.Add("FilterCharModels", "AdvancedModelFilter", function(models)
@@ -2887,32 +2578,25 @@ function FilterCharModels(models)
 end
 
 --[[
-
     Purpose:
-
         Called to filter door information
 
     When Called:
-
         When door information is being displayed
 
     Parameters:
-
         - entity (Entity): The door entity
         - doorData (table): The door data
         - doorInfo (table): The door information to filter
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log door info filtering
     hook.Add("FilterDoorInfo", "MyAddon", function(entity, doorData, doorInfo)
@@ -2921,7 +2605,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide sensitive door information
     hook.Add("FilterDoorInfo", "DoorInfoSecurity", function(entity, doorData, doorInfo)
@@ -2937,7 +2620,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex door information filtering
     hook.Add("FilterDoorInfo", "AdvancedDoorInfoFilter", function(entity, doorData, doorInfo)
@@ -2979,31 +2661,24 @@ function FilterDoorInfo(entity, doorData, doorInfo)
 end
 
 --[[
-
     Purpose:
-
         Called to get adjusted PAC part data
 
     When Called:
-
         When retrieving PAC part data with adjustments applied
 
     Parameters:
-
         - wearer (Player): The player wearing the part
         - id (string): The part ID
 
     Returns:
-
         table - The adjusted part data
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return basic part data
     hook.Add("GetAdjustedPartData", "MyAddon", function(wearer, id)
@@ -3012,7 +2687,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Apply basic adjustments
     hook.Add("GetAdjustedPartData", "PartAdjustments", function(wearer, id)
@@ -3034,7 +2708,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex part data adjustment system
     hook.Add("GetAdjustedPartData", "AdvancedPartData", function(wearer, id)
@@ -3079,31 +2752,24 @@ function GetAdjustedPartData(wearer, id)
 end
 
 --[[
-
     Purpose:
-
         Called to get door information for admin stick
 
     When Called:
-
         When displaying door information in the admin stick HUD
 
     Parameters:
-
         - target (Entity): The door entity
         - extraInfo (table): Additional information to add
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic door info
     hook.Add("GetDoorInfoForAdminStick", "MyAddon", function(target, extraInfo)
@@ -3112,7 +2778,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add door ownership info
     hook.Add("GetDoorInfoForAdminStick", "DoorOwnership", function(target, extraInfo)
@@ -3129,14 +2794,13 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex door information display
     hook.Add("GetDoorInfoForAdminStick", "AdvancedDoorInfo", function(target, extraInfo)
     -- Door title
     local title = target:getNetVar("title", "Door")
-    table.insert(extraInfo, "Title: " .. title)
 
+    table.insert(extraInfo, "Title: " .. title)
     -- Owner information
     local owner = target:getNetVar("owner")
     if owner then
@@ -3178,30 +2842,23 @@ function GetDoorInfoForAdminStick(target, extraInfo)
 end
 
 --[[
-
     Purpose:
-
         Called to get injured text
 
     When Called:
-
         When displaying injury status text
 
     Parameters:
-
         - c (Character): The character to get injury text for
 
     Returns:
-
         string - The injury text to display
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return basic injury text
     hook.Add("GetInjuredText", "MyAddon", function(c)
@@ -3210,7 +2867,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Base text on health level
     hook.Add("GetInjuredText", "HealthBasedText", function(c)
@@ -3230,7 +2886,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex injury text system
     hook.Add("GetInjuredText", "AdvancedInjuryText", function(c)
@@ -3279,32 +2934,25 @@ function GetInjuredText(c)
 end
 
 --[[
-
     Purpose:
-
         Allows modification of the voice indicator text displayed when a player is speaking
 
     When Called:
-
         When the voice indicator is being drawn during voice chat
 
     Parameters:
-
         - client (Player): The LocalPlayer() who is currently speaking
         - voiceText (string): The current voice indicator text (e.g., "You are talking - 3 people can hear you")
         - voiceType (string): The voice type string (e.g., "talking", "whispering", "yelling")
 
     Returns:
-
         string|nil - Return a string to replace the voice text, or return nil/false to keep the original text
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add emojis to voice indicator
     hook.Add("ModifyVoiceIndicatorText", "AddVoiceEmojis", function(client, voiceText, voiceType)
@@ -3320,7 +2968,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Custom formatting based on voice type
     hook.Add("ModifyVoiceIndicatorText", "CustomVoiceFormat", function(client, voiceText, voiceType)
@@ -3339,7 +2986,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced voice indicator with listener count calculation
     hook.Add("ModifyVoiceIndicatorText", "AdvancedVoiceIndicator", function(client, voiceText, voiceType)
@@ -3385,30 +3031,23 @@ function ModifyVoiceIndicatorText(client, voiceText, voiceType)
 end
 
 --[[
-
     Purpose:
-
         Called to get main menu position
 
     When Called:
-
         When positioning the main menu UI
 
     Parameters:
-
         - character (Character): The character to position menu for
 
     Returns:
-
         table - Position data for the menu
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return default position
     hook.Add("GetMainMenuPosition", "MyAddon", function(character)
@@ -3417,7 +3056,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Position based on screen size
     hook.Add("GetMainMenuPosition", "ScreenBasedPosition", function(character)
@@ -3432,7 +3070,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu positioning system
     hook.Add("GetMainMenuPosition", "AdvancedMenuPosition", function(character)
@@ -3475,30 +3112,23 @@ function GetMainMenuPosition(character)
 end
 
 --[[
-
     Purpose:
-
         Called to get weapon name
 
     When Called:
-
         When displaying the name of a weapon
 
     Parameters:
-
         - weapon (Weapon): The weapon entity
 
     Returns:
-
         string - The display name of the weapon
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return weapon class name
     hook.Add("GetWeaponName", "MyAddon", function(weapon)
@@ -3507,7 +3137,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Use weapon print name
     hook.Add("GetWeaponName", "WeaponPrintName", function(weapon)
@@ -3516,7 +3145,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex weapon naming system
     hook.Add("GetWeaponName", "AdvancedWeaponNaming", function(weapon)
@@ -3567,31 +3195,24 @@ function GetWeaponName(weapon)
 end
 
 --[[
-
     Purpose:
-
         Called to display player HUD information, primarily for admin tools
 
     When Called:
-
         Every frame during HUD rendering to allow modules to add custom HUD information
 
     Parameters:
-
         - client (Player): The local player
         - hudInfos (table): Array of HUD information objects to display, each containing text, position, color, and font properties
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic player health info
     hook.Add("DisplayPlayerHUDInformation", "BasicHUDInfo", function(client, hudInfos)
@@ -3604,7 +3225,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add character and faction info
     hook.Add("DisplayPlayerHUDInformation", "CharacterHUDInfo", function(client, hudInfos)
@@ -3629,7 +3249,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced admin HUD with multiple info panels
     hook.Add("DisplayPlayerHUDInformation", "AdvancedAdminHUD", function(client, hudInfos)
@@ -3677,29 +3296,23 @@ function DisplayPlayerHUDInformation(client, hudInfos)
 end
 
 --[[
-
     Purpose:
-
         Called when keybinds are initialized
 
     When Called:
-
         When the keybind system has finished loading
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log keybind initialization
     hook.Add("InitializedKeybinds", "MyAddon", function()
@@ -3708,7 +3321,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register custom keybinds
     hook.Add("InitializedKeybinds", "CustomKeybinds", function()
@@ -3719,7 +3331,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex keybind initialization system
     hook.Add("InitializedKeybinds", "AdvancedKeybindInit", function()
@@ -3764,29 +3375,23 @@ function InitializedKeybinds()
 end
 
 --[[
-
     Purpose:
-
         Called when options are initialized
 
     When Called:
-
         When the option system has finished loading
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log option initialization
     hook.Add("InitializedOptions", "MyAddon", function()
@@ -3795,7 +3400,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register custom options
     hook.Add("InitializedOptions", "CustomOptions", function()
@@ -3804,7 +3408,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex option initialization system
     hook.Add("InitializedOptions", "AdvancedOptionInit", function()
@@ -3858,29 +3461,23 @@ function InitializedOptions()
 end
 
 --[[
-
     Purpose:
-
         Called when the interaction menu is closed
 
     When Called:
-
         When the interaction menu UI is closed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log menu closing
     hook.Add("InteractionMenuClosed", "MyAddon", function()
@@ -3889,7 +3486,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up menu data
     hook.Add("InteractionMenuClosed", "MenuCleanup", function()
@@ -3899,7 +3495,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex interaction menu close handling
     hook.Add("InteractionMenuClosed", "AdvancedMenuClose", function()
@@ -3931,30 +3526,23 @@ function InteractionMenuClosed()
 end
 
 --[[
-
     Purpose:
-
         Called when the interaction menu is opened
 
     When Called:
-
         When the interaction menu UI is opened
 
     Parameters:
-
         - frame (Panel): The interaction menu frame
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log menu opening
     hook.Add("InteractionMenuOpened", "MyAddon", function(frame)
@@ -3963,7 +3551,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Update menu state
     hook.Add("InteractionMenuOpened", "MenuState", function(frame)
@@ -3973,7 +3560,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex interaction menu open handling
     hook.Add("InteractionMenuOpened", "AdvancedMenuOpen", function(frame)
@@ -4012,32 +3598,25 @@ function InteractionMenuOpened(frame)
 end
 
 --[[
-
     Purpose:
-
         Called when an item icon is clicked
 
     When Called:
-
         When a player clicks on an item icon in inventory
 
     Parameters:
-
         - self (Panel): The inventory panel
         - itemIcon (Panel): The item icon that was clicked
         - keyCode (number): The mouse button code
 
     Returns:
-
         boolean - True to intercept, false to allow
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log item clicks
     hook.Add("InterceptClickItemIcon", "MyAddon", function(self, itemIcon, keyCode)
@@ -4046,7 +3625,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Custom right-click menu
     hook.Add("InterceptClickItemIcon", "CustomItemMenu", function(self, itemIcon, keyCode)
@@ -4065,7 +3643,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item interaction system
     hook.Add("InterceptClickItemIcon", "AdvancedItemInteraction", function(self, itemIcon, keyCode)
@@ -4123,31 +3700,24 @@ function InterceptClickItemIcon(self, itemIcon, keyCode)
 end
 
 --[[
-
     Purpose:
-
         Called when an inventory is closed
 
     When Called:
-
         When a player closes an inventory panel
 
     Parameters:
-
         - self (Panel): The inventory panel
         - inventory (Inventory): The inventory that was closed
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log inventory close
     hook.Add("InventoryClosed", "MyAddon", function(self, inventory)
@@ -4156,7 +3726,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Save inventory state
     hook.Add("InventoryClosed", "SaveInventoryState", function(self, inventory)
@@ -4168,7 +3737,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory close handling
     hook.Add("InventoryClosed", "AdvancedInventoryClose", function(self, inventory)
@@ -4206,32 +3774,25 @@ function InventoryClosed(self, inventory)
 end
 
 --[[
-
     Purpose:
-
         Called when an inventory item icon is created
 
     When Called:
-
         When building the visual icon for an item in inventory
 
     Parameters:
-
         - icon (Panel): The icon panel being created
         - item (Item): The item the icon represents
         - self (Panel): The inventory panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log icon creation
     hook.Add("InventoryItemIconCreated", "MyAddon", function(icon, item, self)
@@ -4240,7 +3801,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize icon appearance
     hook.Add("InventoryItemIconCreated", "CustomizeItemIcon", function(icon, item, self)
@@ -4258,7 +3818,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item icon customization
     hook.Add("InventoryItemIconCreated", "AdvancedItemIcon", function(icon, item, self)
@@ -4315,31 +3874,24 @@ function InventoryItemIconCreated(icon, item, self)
 end
 
 --[[
-
     Purpose:
-
         Called when an inventory is opened
 
     When Called:
-
         When a player opens an inventory panel
 
     Parameters:
-
         - panel (Panel): The inventory panel
         - inventory (Inventory): The inventory being opened
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log inventory open
     hook.Add("InventoryOpened", "MyAddon", function(panel, inventory)
@@ -4348,7 +3900,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Save open state
     hook.Add("InventoryOpened", "SaveInventoryOpen", function(panel, inventory)
@@ -4360,7 +3911,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory open handling
     hook.Add("InventoryOpened", "AdvancedInventoryOpen", function(panel, inventory)
@@ -4399,32 +3949,25 @@ function InventoryOpened(panel, inventory)
 end
 
 --[[
-
     Purpose:
-
         Called when an inventory panel is created
 
     When Called:
-
         When building an inventory UI panel
 
     Parameters:
-
         - panel (Panel): The inventory panel being created
         - inventory (Inventory): The inventory the panel represents
         - parent (Panel): The parent panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log panel creation
     hook.Add("InventoryPanelCreated", "MyAddon", function(panel, inventory, parent)
@@ -4433,7 +3976,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize panel appearance
     hook.Add("InventoryPanelCreated", "CustomizeInventoryPanel", function(panel, inventory, parent)
@@ -4443,7 +3985,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory panel customization
     hook.Add("InventoryPanelCreated", "AdvancedInventoryPanel", function(panel, inventory, parent)
@@ -4522,33 +4063,26 @@ function InventoryPanelCreated(panel, inventory, parent)
 end
 
 --[[
-
     Purpose:
-
         Called to paint over an item icon
 
     When Called:
-
         When rendering additional graphics on an item icon
 
     Parameters:
-
         - self (Panel): The item icon panel
         - itemTable (table): The item data table
         - w (number): The width of the icon
         - h (number): The height of the icon
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Draw item name
     hook.Add("ItemPaintOver", "MyAddon", function(self, itemTable, w, h)
@@ -4557,7 +4091,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw durability bar
     hook.Add("ItemPaintOver", "DrawDurabilityBar", function(self, itemTable, w, h)
@@ -4577,7 +4110,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item icon overlay
     hook.Add("ItemPaintOver", "AdvancedItemOverlay", function(self, itemTable, w, h)
@@ -4628,30 +4160,23 @@ function ItemPaintOver(self, itemTable, w, h)
 end
 
 --[[
-
     Purpose:
-
         Called to show entity menu for an item
 
     When Called:
-
         When displaying the interaction menu for an item entity
 
     Parameters:
-
         - entity (Entity): The item entity
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log entity menu display
     hook.Add("ItemShowEntityMenu", "MyAddon", function(entity)
@@ -4660,7 +4185,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add custom menu options
     hook.Add("ItemShowEntityMenu", "CustomEntityMenu", function(entity)
@@ -4676,7 +4200,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex entity menu system
     hook.Add("ItemShowEntityMenu", "AdvancedEntityMenu", function(entity)
@@ -4726,31 +4249,24 @@ function ItemShowEntityMenu(entity)
 end
 
 --[[
-
     Purpose:
-
         Called when a player is kicked from a character
 
     When Called:
-
         When a player is forcibly removed from their character
 
     Parameters:
-
         - id (number): The character ID
         - isCurrentChar (boolean): Whether this is the current character
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log character kick
     hook.Add("KickedFromChar", "MyAddon", function(id, isCurrentChar)
@@ -4759,7 +4275,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show notification
     hook.Add("KickedFromChar", "NotifyCharKick", function(id, isCurrentChar)
@@ -4770,7 +4285,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character kick handling
     hook.Add("KickedFromChar", "AdvancedCharKick", function(id, isCurrentChar)
@@ -4813,29 +4327,23 @@ function KickedFromChar(id, isCurrentChar)
 end
 
 --[[
-
     Purpose:
-
         Called to load character information
 
     When Called:
-
         When character data needs to be loaded
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log character info load
     hook.Add("LoadCharInformation", "MyAddon", function()
@@ -4844,7 +4352,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Load custom character data
     hook.Add("LoadCharInformation", "LoadCustomCharData", function()
@@ -4857,7 +4364,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex character data loading
     hook.Add("LoadCharInformation", "AdvancedCharDataLoad", function()
@@ -4884,31 +4390,24 @@ function LoadCharInformation()
 end
 
 --[[
-
     Purpose:
-
         Called to load main menu information
 
     When Called:
-
         When building the main menu character information
 
     Parameters:
-
         - info (table): The information table to populate
         - character (Character): The character being displayed
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic info
     hook.Add("LoadMainMenuInformation", "MyAddon", function(info, character)
@@ -4917,7 +4416,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple info fields
     hook.Add("LoadMainMenuInformation", "AddCharacterInfo", function(info, character)
@@ -4928,7 +4426,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu information system
     hook.Add("LoadMainMenuInformation", "AdvancedMenuInfo", function(info, character)
@@ -4960,31 +4457,24 @@ function LoadMainMenuInformation(info, character)
 end
 
 --[[
-
     Purpose:
-
         Called to modify a player's model on the scoreboard
 
     When Called:
-
         When rendering a player's model in the scoreboard
 
     Parameters:
-
         - client (Player): The viewing player
         - ply (Player): The player whose model is being displayed
 
     Returns:
-
         string - The modified model path
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return player model
     hook.Add("ModifyScoreboardModel", "MyAddon", function(client, ply)
@@ -4993,7 +4483,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show faction models
     hook.Add("ModifyScoreboardModel", "ScoreboardFactionModels", function(client, ply)
@@ -5006,7 +4495,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex scoreboard model system
     hook.Add("ModifyScoreboardModel", "AdvancedScoreboardModel", function(client, ply)
@@ -5031,29 +4519,23 @@ function ModifyScoreboardModel(client, ply)
 end
 
 --[[
-
     Purpose:
-
         Called when admin stick menu is closed
 
     When Called:
-
         When the admin stick context menu is closed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log menu close
     hook.Add("OnAdminStickMenuClosed", "MyAddon", function()
@@ -5062,7 +4544,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up menu state
     hook.Add("OnAdminStickMenuClosed", "CleanupAdminMenu", function()
@@ -5072,7 +4553,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex menu cleanup
     hook.Add("OnAdminStickMenuClosed", "AdvancedMenuCleanup", function()
@@ -5097,33 +4577,26 @@ function OnAdminStickMenuClosed()
 end
 
 --[[
-
     Purpose:
-
         Called when a chat message is received
 
     When Called:
-
         When a player receives a chat message
 
     Parameters:
-
         - client (Player): The player receiving the message
         - chatType (string): The type of chat message
         - text (string): The message text
         - anonymous (boolean): Whether the message is anonymous
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log received messages
     hook.Add("OnChatReceived", "MyAddon", function(client, chatType, text, anonymous)
@@ -5132,7 +4605,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Filter messages based on type
     hook.Add("OnChatReceived", "MessageFiltering", function(client, chatType, text, anonymous)
@@ -5149,7 +4621,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chat system
     hook.Add("OnChatReceived", "AdvancedChat", function(client, chatType, text, anonymous)
@@ -5211,33 +4682,26 @@ end
     ```
 ]]
 --[[
-
     Purpose:
-
         Called when a chat message is received
 
     When Called:
-
         When a player receives a chat message
 
     Parameters:
-
         - client (Player): The player receiving the message
         - chatType (string): The type of chat message
         - text (string): The message text
         - anonymous (boolean): Whether the message is anonymous
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log received messages
     hook.Add("OnChatReceived", "MyAddon", function(client, chatType, text, anonymous)
@@ -5246,7 +4710,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Filter messages based on type
     hook.Add("OnChatReceived", "MessageFiltering", function(client, chatType, text, anonymous)
@@ -5263,7 +4726,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex chat system
     hook.Add("OnChatReceived", "AdvancedChat", function(client, chatType, text, anonymous)
@@ -5328,32 +4790,25 @@ function OnChatReceived(client, chatType, text, anonymous)
 end
 
 --[[
-
     Purpose:
-
         Called when creating an item interaction menu
 
     When Called:
-
         When building the context menu for an item
 
     Parameters:
-
         - self (Item): The item instance
         - menu (Menu): The menu being created
         - itemTable (table): The item table data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic menu option
     hook.Add("OnCreateItemInteractionMenu", "MyAddon", function(self, menu, itemTable)
@@ -5364,7 +4819,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add conditional menu options
     hook.Add("OnCreateItemInteractionMenu", "ItemMenuOptions", function(self, menu, itemTable)
@@ -5388,7 +4842,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item interaction menu system
     hook.Add("OnCreateItemInteractionMenu", "AdvancedItemMenu", function(self, menu, itemTable)
@@ -5450,32 +4903,25 @@ function OnCreateItemInteractionMenu(self, menu, itemTable)
 end
 
 --[[
-
     Purpose:
-
         Called when creating a storage panel
 
     When Called:
-
         When building the storage UI panel
 
     Parameters:
-
         - localInvPanel (Panel): The local inventory panel
         - storageInvPanel (Panel): The storage inventory panel
         - storage (Entity): The storage entity
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log storage panel creation
     hook.Add("OnCreateStoragePanel", "MyAddon", function(localInvPanel, storageInvPanel, storage)
@@ -5484,7 +4930,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize storage panel appearance
     hook.Add("OnCreateStoragePanel", "StoragePanelCustomize", function(localInvPanel, storageInvPanel, storage)
@@ -5499,7 +4944,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex storage panel system
     hook.Add("OnCreateStoragePanel", "AdvancedStoragePanel", function(localInvPanel, storageInvPanel, storage)
@@ -5554,31 +4998,24 @@ function OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
 end
 
 --[[
-
     Purpose:
-
         Called when a death sound is played
 
     When Called:
-
         When a player death sound is triggered
 
     Parameters:
-
         - client (Player): The player who died
         - deathSound (string): The sound file that was played
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log death sounds
     hook.Add("OnDeathSoundPlayed", "MyAddon", function(client, deathSound)
@@ -5587,7 +5024,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track death sounds
     hook.Add("OnDeathSoundPlayed", "TrackDeathSounds", function(client, deathSound)
@@ -5601,7 +5037,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex death sound handling
     hook.Add("OnDeathSoundPlayed", "AdvancedDeathSound", function(client, deathSound)
@@ -5632,31 +5067,24 @@ function OnDeathSoundPlayed(client, deathSound)
 end
 
 --[[
-
     Purpose:
-
         Called when a vendor menu is opened
 
     When Called:
-
         When a player opens a vendor's trading interface
 
     Parameters:
-
         - self (Entity): The vendor entity
         - vendor (table): The vendor data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log vendor menu opening
     hook.Add("OnOpenVendorMenu", "MyAddon", function(self, vendor)
@@ -5665,7 +5093,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize vendor menu appearance
     hook.Add("OnOpenVendorMenu", "VendorCustomization", function(self, vendor)
@@ -5680,7 +5107,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex vendor menu system
     hook.Add("OnOpenVendorMenu", "AdvancedVendorMenu", function(self, vendor)
@@ -5744,31 +5170,24 @@ function OnOpenVendorMenu(self, vendor)
 end
 
 --[[
-
     Purpose:
-
         Called when a pain sound is played
 
     When Called:
-
         When a player pain sound is triggered
 
     Parameters:
-
         - client (Player): The player who is in pain
         - painSound (string): The sound file that was played
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log pain sounds
     hook.Add("OnPainSoundPlayed", "MyAddon", function(client, painSound)
@@ -5777,7 +5196,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track pain sounds
     hook.Add("OnPainSoundPlayed", "TrackPainSounds", function(client, painSound)
@@ -5791,7 +5209,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex pain sound handling
     hook.Add("OnPainSoundPlayed", "AdvancedPainSound", function(client, painSound)
@@ -5822,31 +5239,24 @@ function OnPainSoundPlayed(client, painSound)
 end
 
 --[[
-
     Purpose:
-
         Called when the UI theme is changed
 
     When Called:
-
         When the active theme is switched
 
     Parameters:
-
         - themeName (string): The name of the new theme
         - themeData (table): The theme configuration data
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log theme changes
     hook.Add("OnThemeChanged", "MyAddon", function(themeName, themeData)
@@ -5855,7 +5265,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Update UI colors
     hook.Add("OnThemeChanged", "UpdateUIColors", function(themeName, themeData)
@@ -5867,7 +5276,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex theme change handling
     hook.Add("OnThemeChanged", "AdvancedThemeChange", function(themeName, themeData)
@@ -5895,30 +5303,23 @@ function OnThemeChanged(themeName, themeData)
 end
 
 --[[
-
     Purpose:
-
         Called when the admin stick UI is opened
 
     When Called:
-
         When an admin opens the admin stick interface
 
     Parameters:
-
         - tgt (Entity): The target entity being examined
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log admin stick usage
     hook.Add("OpenAdminStickUI", "MyAddon", function(tgt)
@@ -5927,7 +5328,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize admin stick display
     hook.Add("OpenAdminStickUI", "CustomAdminStick", function(tgt)
@@ -5941,7 +5341,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex admin stick functionality
     hook.Add("OpenAdminStickUI", "AdvancedAdminStick", function(tgt)
@@ -5975,30 +5374,23 @@ function OpenAdminStickUI(tgt)
 end
 
 --[[
-
     Purpose:
-
         Called to paint/render an item
 
     When Called:
-
         When an item needs custom rendering
 
     Parameters:
-
         - item (Item): The item being painted
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Draw item name
     hook.Add("PaintItem", "MyAddon", function(item)
@@ -6007,7 +5399,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw item with quality color
     hook.Add("PaintItem", "PaintItemQuality", function(item)
@@ -6025,7 +5416,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item rendering
     hook.Add("PaintItem", "AdvancedItemPaint", function(item)
@@ -6062,32 +5452,25 @@ function PaintItem(item)
 end
 
 --[[
-
     Purpose:
-
         Called to populate the admin stick menu
 
     When Called:
-
         When building the admin stick context menu
 
     Parameters:
-
         - tempMenu (Menu): The menu being populated
         - tgt (Entity): The target entity
         - stores (table): A table containing references to existing submenu categories
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic option
     hook.Add("PopulateAdminStick", "MyAddon", function(tempMenu, tgt, stores)
@@ -6098,7 +5481,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add conditional options
     hook.Add("PopulateAdminStick", "ConditionalAdminOptions", function(tempMenu, tgt, stores)
@@ -6111,7 +5493,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex admin stick menu
     hook.Add("PopulateAdminStick", "AdvancedAdminStick", function(tempMenu, tgt, stores)
@@ -6167,26 +5548,20 @@ function PopulateAdminStick(tempMenu, tgt, stores)
 end
 
 --[[
-
     Purpose:
-
         Called to add custom list options to the admin stick menu
 
     When Called:
-
         When building the admin stick context menu, before it's populated
 
     Parameters:
-
         - tgt (Entity): The target entity
         - lists (table): The table to populate with list data
 
     Returns:
-
         None (modified by reference)
 
     Realm:
-
         Client
     List Data Structure:
         Each entry in lists should be a table with:
@@ -6199,10 +5574,9 @@ end
         - name (string) - The display name of the option
         - callback (function) - Function to execute when clicked (receives target and item as parameters)
         - icon (string, optional) - Icon path to display
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a list of custom options
     hook.Add("GetAdminStickLists", "MyAddon", function(tgt, lists)
@@ -6219,7 +5593,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add conditional list based on target
     hook.Add("GetAdminStickLists", "ConditionalLists", function(tgt, lists)
@@ -6250,7 +5623,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add multiple lists with dynamic data
     hook.Add("GetAdminStickLists", "AdvancedLists", function(tgt, lists)
@@ -6289,25 +5661,19 @@ function GetAdminStickLists(tgt, lists)
 end
 
 --[[
-
     Purpose:
-
         Called to register custom subcategories for admin stick menu categories
 
     When Called:
-
         During admin stick menu generation, before menu population
 
     Parameters:
-
         - categories (table): The categories table to modify by reference
 
     Returns:
-
         None (modified by reference)
 
     Realm:
-
         Client
     Category Structure:
         categories[categoryKey] should be a table with:
@@ -6318,10 +5684,9 @@ end
         Each subcategory in subcategories[subKey] should be a table with:
         - name (string) - Display name of the subcategory
         - icon (string) - Icon path for the subcategory
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add a single subcategory to an existing category
     hook.Add("RegisterAdminStickSubcategories", "MyAddonSubcategories", function(categories)
@@ -6336,7 +5701,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple subcategories and ensure category exists
     hook.Add("RegisterAdminStickSubcategories", "BankingSubcategories", function(categories)
@@ -6360,7 +5724,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex addon with multiple categories and subcategories
     hook.Add("RegisterAdminStickSubcategories", "ComplexAddon", function(categories)
@@ -6398,30 +5761,23 @@ function RegisterAdminStickSubcategories(categories)
 end
 
 --[[
-
     Purpose:
-
         Called to populate admin tabs
 
     When Called:
-
         When building the admin panel tabs
 
     Parameters:
-
         - adminPages (table): The admin pages table
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic tab
     hook.Add("PopulateAdminTabs", "MyAddon", function(adminPages)
@@ -6434,7 +5790,6 @@ end)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add tab with content
     hook.Add("PopulateAdminTabs", "CustomAdminTab", function(adminPages)
@@ -6455,7 +5810,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex admin tab system
     hook.Add("PopulateAdminTabs", "AdvancedAdminTabs", function(adminPages)
@@ -6501,30 +5855,23 @@ function PopulateAdminTabs(adminPages)
 end
 
 --[[
-
     Purpose:
-
         Called to populate configuration buttons
 
     When Called:
-
         When building the configuration menu
 
     Parameters:
-
         - pages (table): The configuration pages table
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic config page
     hook.Add("PopulateConfigurationButtons", "MyAddon", function(pages)
@@ -6537,7 +5884,6 @@ end)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add config page with options
     hook.Add("PopulateConfigurationButtons", "CustomConfigPage", function(pages)
@@ -6559,7 +5905,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex configuration system
     hook.Add("PopulateConfigurationButtons", "AdvancedConfigSystem", function(pages)
@@ -6608,31 +5953,24 @@ function PopulateConfigurationButtons(pages)
 end
 
 --[[
-
     Purpose:
-
         Called to populate inventory items
 
     When Called:
-
         When building the inventory item list
 
     Parameters:
-
         - pnlContent (Panel): The content panel
         - tree (Panel): The tree view panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic category
     hook.Add("PopulateInventoryItems", "MyAddon", function(pnlContent, tree)
@@ -6641,7 +5979,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add category with items
     hook.Add("PopulateInventoryItems", "CustomInventoryItems", function(pnlContent, tree)
@@ -6659,7 +5996,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory population
     hook.Add("PopulateInventoryItems", "AdvancedInventoryPopulation", function(pnlContent, tree)
@@ -6705,31 +6041,24 @@ function PopulateInventoryItems(pnlContent, tree)
 end
 
 --[[
-
     Purpose:
-
         Called after drawing the inventory
 
     When Called:
-
         After the inventory UI has been rendered
 
     Parameters:
-
         - mainPanel (Panel): The main inventory panel
         - parentPanel (Panel): The parent panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log inventory draw
     hook.Add("PostDrawInventory", "MyAddon", function(mainPanel, parentPanel)
@@ -6738,7 +6067,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add custom UI elements
     hook.Add("PostDrawInventory", "CustomInventoryUI", function(mainPanel, parentPanel)
@@ -6751,7 +6079,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory UI customization
     hook.Add("PostDrawInventory", "AdvancedInventoryUI", function(mainPanel, parentPanel)
@@ -6778,31 +6105,24 @@ function PostDrawInventory(mainPanel, parentPanel)
 end
 
 --[[
-
     Purpose:
-
         Called after fonts are loaded
 
     When Called:
-
         After the font system has been initialized
 
     Parameters:
-
         - mainFont (string): The main font name
         - configuredFont (string): The configured font name
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log font load
     hook.Add("PostLoadFonts", "MyAddon", function(mainFont, configuredFont)
@@ -6811,7 +6131,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create custom fonts
     hook.Add("PostLoadFonts", "CreateCustomFonts", function(mainFont, configuredFont)
@@ -6824,7 +6143,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex font system
     hook.Add("PostLoadFonts", "AdvancedFontSystem", function(mainFont, configuredFont)
@@ -6857,29 +6175,23 @@ function PostLoadFonts(mainFont, configuredFont)
 end
 
 --[[
-
     Purpose:
-
         Called before drawing the physgun beam
 
     When Called:
-
         Before the physgun beam is rendered
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log physgun beam
     hook.Add("PreDrawPhysgunBeam", "MyAddon", function()
@@ -6888,7 +6200,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize beam appearance
     hook.Add("PreDrawPhysgunBeam", "CustomizeBeam", function()
@@ -6902,7 +6213,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex physgun beam system
     hook.Add("PreDrawPhysgunBeam", "AdvancedPhysgunBeam", function()
@@ -6938,29 +6248,23 @@ function PreDrawPhysgunBeam()
 end
 
 --[[
-
     Purpose:
-
         Called to refresh fonts
 
     When Called:
-
         When the font system needs to be refreshed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log font refresh
     hook.Add("RefreshFonts", "MyAddon", function()
@@ -6969,7 +6273,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Recreate custom fonts
     hook.Add("RefreshFonts", "RecreateCustomFonts", function()
@@ -6982,7 +6285,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex font refresh system
     hook.Add("RefreshFonts", "AdvancedFontRefresh", function()
@@ -7014,31 +6316,24 @@ function RefreshFonts()
 end
 
 --[[
-
     Purpose:
-
         Called when a PAC3 part is removed
 
     When Called:
-
         When a PAC3 part is detached from a player
 
     Parameters:
-
         - client (Player): The player losing the part
         - id (string): The part ID
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log part removal
     hook.Add("RemovePart", "MyAddon", function(client, id)
@@ -7047,7 +6342,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track part usage
     hook.Add("RemovePart", "TrackPartUsage", function(client, id)
@@ -7061,7 +6355,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex part removal system
     hook.Add("RemovePart", "AdvancedPartRemoval", function(client, id)
@@ -7090,29 +6383,23 @@ function RemovePart(client, id)
 end
 
 --[[
-
     Purpose:
-
         Called to reset the character panel
 
     When Called:
-
         When the character panel needs to be refreshed
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log panel reset
     hook.Add("ResetCharacterPanel", "MyAddon", function()
@@ -7121,7 +6408,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clear custom data
     hook.Add("ResetCharacterPanel", "ClearCustomData", function()
@@ -7131,7 +6417,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex panel reset system
     hook.Add("ResetCharacterPanel", "AdvancedPanelReset", function()
@@ -7157,30 +6442,23 @@ function ResetCharacterPanel()
 end
 
 --[[
-
     Purpose:
-
         Called when the scoreboard is closed
 
     When Called:
-
         When the scoreboard UI is closed
 
     Parameters:
-
         - self (Panel): The scoreboard panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log scoreboard close
     hook.Add("ScoreboardClosed", "MyAddon", function(self)
@@ -7189,7 +6467,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up scoreboard data
     hook.Add("ScoreboardClosed", "CleanupScoreboard", function(self)
@@ -7199,7 +6476,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex scoreboard cleanup
     hook.Add("ScoreboardClosed", "AdvancedScoreboardCleanup", function(self)
@@ -7223,30 +6499,23 @@ function ScoreboardClosed(self)
 end
 
 --[[
-
     Purpose:
-
         Called when the scoreboard is opened
 
     When Called:
-
         When the scoreboard UI is displayed
 
     Parameters:
-
         - self (Panel): The scoreboard panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log scoreboard open
     hook.Add("ScoreboardOpened", "MyAddon", function(self)
@@ -7255,7 +6524,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Initialize scoreboard data
     hook.Add("ScoreboardOpened", "InitializeScoreboard", function(self)
@@ -7267,7 +6535,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex scoreboard initialization
     hook.Add("ScoreboardOpened", "AdvancedScoreboardInit", function(self)
@@ -7298,31 +6565,24 @@ function ScoreboardOpened(self)
 end
 
 --[[
-
     Purpose:
-
         Called when a scoreboard row is created
 
     When Called:
-
         When a player row is added to the scoreboard
 
     Parameters:
-
         - slot (Panel): The row panel
         - ply (Player): The player for the row
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log row creation
     hook.Add("ScoreboardRowCreated", "MyAddon", function(slot, ply)
@@ -7331,7 +6591,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize row appearance
     hook.Add("ScoreboardRowCreated", "CustomizeRow", function(slot, ply)
@@ -7346,7 +6605,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex scoreboard row customization
     hook.Add("ScoreboardRowCreated", "AdvancedRowCustomization", function(slot, ply)
@@ -7376,31 +6634,24 @@ function ScoreboardRowCreated(slot, ply)
 end
 
 --[[
-
     Purpose:
-
         Called when a scoreboard row is removed
 
     When Called:
-
         When a player row is removed from the scoreboard
 
     Parameters:
-
         - self (Panel): The scoreboard panel
         - ply (Player): The player whose row was removed
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log row removal
     hook.Add("ScoreboardRowRemoved", "MyAddon", function(self, ply)
@@ -7409,7 +6660,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up row data
     hook.Add("ScoreboardRowRemoved", "CleanupRowData", function(self, ply)
@@ -7418,7 +6668,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex row cleanup
     hook.Add("ScoreboardRowRemoved", "AdvancedRowCleanup", function(self, ply)
@@ -7440,29 +6689,23 @@ function ScoreboardRowRemoved(self, ply)
 end
 
 --[[
-
     Purpose:
-
         Called to set up PAC3 data from items
 
     When Called:
-
         When configuring PAC3 data based on equipped items
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log PAC3 setup
     hook.Add("SetupPACDataFromItems", "MyAddon", function()
@@ -7471,7 +6714,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Apply item-based PAC3 data
     hook.Add("SetupPACDataFromItems", "ApplyItemPAC3", function()
@@ -7490,7 +6732,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex PAC3 item system
     hook.Add("SetupPACDataFromItems", "AdvancedPAC3Items", function()
@@ -7533,29 +6774,23 @@ function SetupPACDataFromItems()
 end
 
 --[[
-
     Purpose:
-
         Called to determine if the quick menu should be shown when the context menu opens
 
     When Called:
-
         When the context menu (right-click menu) is opened
 
     Parameters: 
         None
 
     Returns:
-
         boolean - Return false to prevent the quick menu from opening, return nil or true to allow it
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Disable quick menu completely
     hook.Add("ShouldShowQuickMenu", "DisableQuickMenu", function()
@@ -7564,7 +6799,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Disable quick menu for specific players
     hook.Add("ShouldShowQuickMenu", "RestrictQuickMenu", function()
@@ -7575,7 +6809,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Conditional quick menu based on game state
     hook.Add("ShouldShowQuickMenu", "ConditionalQuickMenu", function()
@@ -7594,30 +6827,23 @@ function ShouldShowQuickMenu()
 end
 
 --[[
-
     Purpose:
-
         Called to set up the quick menu
 
     When Called:
-
         When initializing the quick access menu
 
     Parameters:
-
         - self (Panel): The quick menu panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log quick menu setup
     hook.Add("SetupQuickMenu", "MyAddon", function(self)
@@ -7626,7 +6852,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add custom buttons
     hook.Add("SetupQuickMenu", "AddCustomButtons", function(self)
@@ -7640,7 +6865,6 @@ end)
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex quick menu system
     hook.Add("SetupQuickMenu", "AdvancedQuickMenu", function(self)
@@ -7679,31 +6903,24 @@ function SetupQuickMenu(self)
 end
 
 --[[
-
     Purpose:
-
         Called to check if scoreboard override should be allowed
 
     When Called:
-
         When determining if a player can override scoreboard behavior
 
     Parameters:
-
         - ply (Player): The player
         - override (string): The override type
 
     Returns:
-
         boolean - True to allow, false to deny
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Allow all overrides
     hook.Add("ShouldAllowScoreboardOverride", "MyAddon", function(ply, override)
@@ -7712,7 +6929,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check admin status
     hook.Add("ShouldAllowScoreboardOverride", "AdminOverride", function(ply, override)
@@ -7721,7 +6937,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex override system
     hook.Add("ShouldAllowScoreboardOverride", "AdvancedOverride", function(ply, override)
@@ -7743,30 +6958,23 @@ function ShouldAllowScoreboardOverride(ply, override)
 end
 
 --[[
-
     Purpose:
-
         Determines if a bar should be drawn on the HUD
 
     When Called:
-
         When the bar system is rendering bars
 
     Parameters:
-
         - bar (table): The bar object to check
 
     Returns:
-
         boolean - True if the bar should be drawn, false otherwise
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Draw all bars
     hook.Add("ShouldBarDraw", "MyAddon", function(bar)
@@ -7775,7 +6983,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide certain bars based on conditions
     hook.Add("ShouldBarDraw", "BarVisibility", function(bar)
@@ -7790,7 +6997,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex bar visibility system
     hook.Add("ShouldBarDraw", "AdvancedBarVisibility", function(bar)
@@ -7852,30 +7058,23 @@ end
     ```
 ]]
 --[[
-
     Purpose:
-
         Called to check if a bar should be drawn
 
     When Called:
-
         When determining if a UI bar should be rendered
 
     Parameters:
-
         - bar (table): The bar data
 
     Returns:
-
         boolean - True to draw, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always draw bars
     hook.Add("ShouldBarDraw", "MyAddon", function(bar)
@@ -7884,7 +7083,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide specific bars
     hook.Add("ShouldBarDraw", "HideSpecificBars", function(bar)
@@ -7896,7 +7094,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex bar visibility system
     hook.Add("ShouldBarDraw", "AdvancedBarVisibility", function(bar)
@@ -7927,30 +7124,23 @@ function ShouldBarDraw(bar)
 end
 
 --[[
-
     Purpose:
-
         Called to check if thirdperson should be disabled
 
     When Called:
-
         When determining if thirdperson view should be blocked
 
     Parameters:
-
         - self (Player): The player
 
     Returns:
-
         boolean - True to disable, false to allow
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Never disable thirdperson
     hook.Add("ShouldDisableThirdperson", "MyAddon", function(self)
@@ -7959,7 +7149,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Disable in specific areas
     hook.Add("ShouldDisableThirdperson", "DisableInAreas", function(self)
@@ -7979,7 +7168,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex thirdperson restrictions
     hook.Add("ShouldDisableThirdperson", "AdvancedThirdpersonRestrictions", function(self)
@@ -8019,30 +7207,23 @@ function ShouldDisableThirdperson(self)
 end
 
 --[[
-
     Purpose:
-
         Called to check if ammo should be drawn
 
     When Called:
-
         When determining if weapon ammo should be displayed
 
     Parameters:
-
         - wpn (Weapon): The weapon
 
     Returns:
-
         boolean - True to draw, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always draw ammo
     hook.Add("ShouldDrawAmmo", "MyAddon", function(wpn)
@@ -8051,7 +7232,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide ammo for specific weapons
     hook.Add("ShouldDrawAmmo", "HideSpecificAmmo", function(wpn)
@@ -8063,7 +7243,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex ammo display system
     hook.Add("ShouldDrawAmmo", "AdvancedAmmoDisplay", function(wpn)
@@ -8102,30 +7281,23 @@ function ShouldDrawAmmo(wpn)
 end
 
 --[[
-
     Purpose:
-
         Called to check if entity info should be drawn
 
     When Called:
-
         When determining if entity information should be displayed
 
     Parameters:
-
         - e (Entity): The entity
 
     Returns:
-
         boolean - True to draw, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always draw entity info
     hook.Add("ShouldDrawEntityInfo", "MyAddon", function(e)
@@ -8134,7 +7306,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide info for specific entities
     hook.Add("ShouldDrawEntityInfo", "HideSpecificInfo", function(e)
@@ -8146,7 +7317,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex entity info system
     hook.Add("ShouldDrawEntityInfo", "AdvancedEntityInfo", function(e)
@@ -8196,30 +7366,23 @@ function ShouldDrawEntityInfo(e)
 end
 
 --[[
-
     Purpose:
-
         Determines if player information should be drawn
 
     When Called:
-
         When deciding whether to draw player info above a player
 
     Parameters:
-
         - e (Entity): The entity to check
 
     Returns:
-
         boolean - True if player info should be drawn, false otherwise
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Draw all player info
     hook.Add("ShouldDrawPlayerInfo", "MyAddon", function(e)
@@ -8228,7 +7391,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide info for certain players
     hook.Add("ShouldDrawPlayerInfo", "PlayerInfoVisibility", function(e)
@@ -8247,7 +7409,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex player info visibility system
     hook.Add("ShouldDrawPlayerInfo", "AdvancedPlayerInfo", function(e)
@@ -8317,30 +7478,23 @@ function ShouldDrawPlayerInfo(e)
 end
 
 --[[
-
     Purpose:
-
         Called to determine if weapon selection should be drawn
 
     When Called:
-
         When the system checks if weapon selection UI should be displayed
 
     Parameters:
-
         - client (Player): The player to check for
 
     Returns:
-
         boolean - Whether to draw weapon selection (true) or not (false)
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always show weapon selection
     hook.Add("ShouldDrawWepSelect", "MyAddon", function(client)
@@ -8349,7 +7503,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Conditional weapon selection
     hook.Add("ShouldDrawWepSelect", "ConditionalWepSelect", function(client)
@@ -8362,7 +7515,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex weapon selection logic
     hook.Add("ShouldDrawWepSelect", "AdvancedWepSelect", function(client)
@@ -8400,29 +7552,23 @@ function ShouldDrawWepSelect(client)
 end
 
 --[[
-
     Purpose:
-
         Determines if all bars should be hidden
 
     When Called:
-
         When the bar system is about to render
 
     Parameters: 
         None
 
     Returns:
-
         boolean - True if bars should be hidden, false otherwise
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Never hide bars
     hook.Add("ShouldHideBars", "MyAddon", function()
@@ -8431,7 +7577,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide bars in certain situations
     hook.Add("ShouldHideBars", "BarHiding", function()
@@ -8452,7 +7597,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex bar hiding system
     hook.Add("ShouldHideBars", "AdvancedBarHiding", function()
@@ -8519,30 +7663,23 @@ function ShouldHideBars()
 end
 
 --[[
-
     Purpose:
-
         Called to check if a menu button should be shown
 
     When Called:
-
         When displaying menu buttons
 
     Parameters:
-
         - button (string): The button identifier
 
     Returns:
-
         boolean - True to show, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Show all buttons
     hook.Add("ShouldMenuButtonShow", "MyAddon", function(button)
@@ -8551,7 +7688,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide specific buttons
     hook.Add("ShouldMenuButtonShow", "HideButtons", function(button)
@@ -8561,7 +7697,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex button visibility system
     hook.Add("ShouldMenuButtonShow", "AdvancedButtonVisibility", function(button)
@@ -8600,31 +7735,24 @@ function ShouldMenuButtonShow(button)
 end
 
 --[[
-
     Purpose:
-
         Called to check if a death sound should be played
 
     When Called:
-
         When a player dies
 
     Parameters:
-
         - client (Player): The player who died
         - deathSound (string): The death sound to play
 
     Returns:
-
         boolean - True to play, false to suppress
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Play all death sounds
     hook.Add("ShouldPlayDeathSound", "MyAddon", function(client, deathSound)
@@ -8633,7 +7761,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Suppress specific sounds
     hook.Add("ShouldPlayDeathSound", "SuppressSounds", function(client, deathSound)
@@ -8643,7 +7770,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex death sound system
     hook.Add("ShouldPlayDeathSound", "AdvancedDeathSound", function(client, deathSound)
@@ -8686,31 +7812,24 @@ function ShouldPlayDeathSound(client, deathSound)
 end
 
 --[[
-
     Purpose:
-
         Called to check if a pain sound should be played
 
     When Called:
-
         When a player takes damage
 
     Parameters:
-
         - client (Player): The player taking damage
         - painSound (string): The pain sound to play
 
     Returns:
-
         boolean - True to play, false to suppress
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Play all pain sounds
     hook.Add("ShouldPlayPainSound", "MyAddon", function(client, painSound)
@@ -8719,7 +7838,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Suppress specific sounds
     hook.Add("ShouldPlayPainSound", "SuppressPainSounds", function(client, painSound)
@@ -8729,7 +7847,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex pain sound system
     hook.Add("ShouldPlayPainSound", "AdvancedPainSound", function(client, painSound)
@@ -8781,29 +7898,23 @@ function ShouldPlayPainSound(client, painSound)
 end
 
 --[[
-
     Purpose:
-
         Called to check if the respawn screen should appear
 
     When Called:
-
         When a player dies
 
     Parameters: 
         None
 
     Returns:
-
         boolean - True to show respawn screen, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Always show respawn screen
     hook.Add("ShouldRespawnScreenAppear", "MyAddon", function()
@@ -8812,7 +7923,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide respawn screen for specific factions
     hook.Add("ShouldRespawnScreenAppear", "HideForFactions", function()
@@ -8826,7 +7936,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex respawn screen system
     hook.Add("ShouldRespawnScreenAppear", "AdvancedRespawnScreen", function()
@@ -8873,30 +7982,23 @@ function ShouldRespawnScreenAppear()
 end
 
 --[[
-
     Purpose:
-
         Called to check if a class should be shown on the scoreboard
 
     When Called:
-
         When displaying the scoreboard
 
     Parameters:
-
         - clsData (table): The class data
 
     Returns:
-
         boolean - True to show, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Show all classes
     hook.Add("ShouldShowClassOnScoreboard", "MyAddon", function(clsData)
@@ -8905,7 +8007,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide specific classes
     hook.Add("ShouldShowClassOnScoreboard", "HideClasses", function(clsData)
@@ -8915,7 +8016,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex class visibility system
     hook.Add("ShouldShowClassOnScoreboard", "AdvancedClassVisibility", function(clsData)
@@ -8959,30 +8059,23 @@ function ShouldShowClassOnScoreboard(clsData)
 end
 
 --[[
-
     Purpose:
-
         Called to check if a faction should be shown on the scoreboard
 
     When Called:
-
         When displaying the scoreboard
 
     Parameters:
-
         - ply (Player): The player whose faction is being checked
 
     Returns:
-
         boolean - True to show, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Show all factions
     hook.Add("ShouldShowFactionOnScoreboard", "MyAddon", function(ply)
@@ -8991,7 +8084,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide specific factions
     hook.Add("ShouldShowFactionOnScoreboard", "HideFactions", function(ply)
@@ -9005,7 +8097,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex faction visibility system
     hook.Add("ShouldShowFactionOnScoreboard", "AdvancedFactionVisibility", function(ply)
@@ -9056,30 +8147,23 @@ function ShouldShowFactionOnScoreboard(ply)
 end
 
 --[[
-
     Purpose:
-
         Called to check if a player should be shown on the scoreboard
 
     When Called:
-
         When displaying the scoreboard
 
     Parameters:
-
         - ply (Player): The player to check
 
     Returns:
-
         boolean - True to show, false to hide
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Show all players
     hook.Add("ShouldShowPlayerOnScoreboard", "MyAddon", function(ply)
@@ -9088,7 +8172,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Hide specific players
     hook.Add("ShouldShowPlayerOnScoreboard", "HidePlayers", function(ply)
@@ -9102,7 +8185,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex player visibility system
     hook.Add("ShouldShowPlayerOnScoreboard", "AdvancedPlayerVisibility", function(ply)
@@ -9159,30 +8241,23 @@ function ShouldShowPlayerOnScoreboard(ply)
 end
 
 --[[
-
     Purpose:
-
         Called to check if a client ragdoll should be spawned
 
     When Called:
-
         When a player dies
 
     Parameters:
-
         - client (Player): The player who died
 
     Returns:
-
         boolean - True to spawn, false to suppress
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Spawn all ragdolls
     hook.Add("ShouldSpawnClientRagdoll", "MyAddon", function(client)
@@ -9191,7 +8266,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Suppress ragdolls for specific factions
     hook.Add("ShouldSpawnClientRagdoll", "SuppressRagdolls", function(client)
@@ -9205,7 +8279,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex ragdoll spawning system
     hook.Add("ShouldSpawnClientRagdoll", "AdvancedRagdollSpawning", function(client)
@@ -9264,31 +8337,24 @@ function ShouldSpawnClientRagdoll(client)
 end
 
 --[[
-
     Purpose:
-
         Called to show player options menu
 
     When Called:
-
         When displaying player options
 
     Parameters:
-
         - ply (Player): The player to show options for
         - initialOpts (table): Initial options table
 
     Returns:
-
         table - Modified options table
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Add basic options
     hook.Add("ShowPlayerOptions", "MyAddon", function(ply, initialOpts)
@@ -9298,7 +8364,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add faction-specific options
     hook.Add("ShowPlayerOptions", "FactionOptions", function(ply, initialOpts)
@@ -9315,7 +8380,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex player options system
     hook.Add("ShowPlayerOptions", "AdvancedPlayerOptions", function(ply, initialOpts)
@@ -9384,30 +8448,23 @@ function ShowPlayerOptions(ply, initialOpts)
 end
 
 --[[
-
     Purpose:
-
         Called when storage unlock prompt is shown
 
     When Called:
-
         When a player attempts to unlock a locked storage
 
     Parameters:
-
         - entity (Entity): The storage entity being unlocked
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log unlock prompt
     hook.Add("StorageUnlockPrompt", "MyAddon", function(entity)
@@ -9416,7 +8473,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show custom unlock message
     hook.Add("StorageUnlockPrompt", "CustomMessage", function(entity)
@@ -9425,7 +8481,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex storage unlock system
     hook.Add("StorageUnlockPrompt", "AdvancedStorageUnlock", function(entity)
@@ -9485,30 +8540,23 @@ function StorageUnlockPrompt(entity)
 end
 
 --[[
-
     Purpose:
-
         Called when third person is toggled
 
     When Called:
-
         When third person view is enabled or disabled
 
     Parameters:
-
         - newValue (boolean): The new third person state
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log third person toggle
     hook.Add("ThirdPersonToggled", "MyAddon", function(newValue)
@@ -9517,7 +8565,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show notification
     hook.Add("ThirdPersonToggled", "NotifyToggle", function(newValue)
@@ -9526,7 +8573,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex third person system
     hook.Add("ThirdPersonToggled", "AdvancedThirdPerson", function(newValue)
@@ -9569,32 +8615,25 @@ function ThirdPersonToggled(newValue)
 end
 
 --[[
-
     Purpose:
-
         Called to create a ticket frame
 
     When Called:
-
         When displaying a support ticket
 
     Parameters:
-
         - requester (Player): The player who requested the ticket
         - message (string): The ticket message
         - claimed (boolean): Whether the ticket is claimed
 
     Returns:
-
         Panel - The ticket frame panel
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Create basic ticket frame
     hook.Add("TicketFrame", "MyAddon", function(requester, message, claimed)
@@ -9608,7 +8647,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Create styled ticket frame
     hook.Add("TicketFrame", "StyledTicket", function(requester, message, claimed)
@@ -9632,7 +8670,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex ticket frame system
     hook.Add("TicketFrame", "AdvancedTicketFrame", function(requester, message, claimed)
@@ -9693,31 +8730,24 @@ function TicketFrame(requester, message, claimed)
 end
 
 --[[
-
     Purpose:
-
         Called to initialize a tooltip
 
     When Called:
-
         When a tooltip is being created
 
     Parameters:
-
         - self (Panel): The tooltip panel
         - panel (Panel): The parent panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Set basic tooltip properties
     hook.Add("TooltipInitialize", "MyAddon", function(self, panel)
@@ -9726,7 +8756,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set tooltip based on panel
     hook.Add("TooltipInitialize", "PanelTooltip", function(self, panel)
@@ -9739,7 +8768,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex tooltip system
     hook.Add("TooltipInitialize", "AdvancedTooltip", function(self, panel)
@@ -9784,30 +8812,23 @@ function TooltipInitialize(self, panel)
 end
 
 --[[
-
     Purpose:
-
         Called to layout a tooltip
 
     When Called:
-
         When a tooltip needs to be laid out
 
     Parameters:
-
         - self (Panel): The tooltip panel
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Set basic layout
     hook.Add("TooltipLayout", "MyAddon", function(self)
@@ -9816,7 +8837,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set layout with constraints
     hook.Add("TooltipLayout", "ConstrainedLayout", function(self)
@@ -9833,7 +8853,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex tooltip layout system
     hook.Add("TooltipLayout", "AdvancedTooltipLayout", function(self)
@@ -9885,32 +8904,25 @@ function TooltipLayout(self)
 end
 
 --[[
-
     Purpose:
-
         Called to paint a tooltip
 
     When Called:
-
         When a tooltip is being painted
 
     Parameters:
-
         - self (Panel): The tooltip panel
         - w (number): The width of the tooltip
         - h (number): The height of the tooltip
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Draw basic background
     hook.Add("TooltipPaint", "MyAddon", function(self, w, h)
@@ -9919,7 +8931,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw styled tooltip
     hook.Add("TooltipPaint", "StyledTooltip", function(self, w, h)
@@ -9935,7 +8946,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex tooltip painting system
     hook.Add("TooltipPaint", "AdvancedTooltipPaint", function(self, w, h)
@@ -9982,30 +8992,23 @@ function TooltipPaint(self, w, h)
 end
 
 --[[
-
     Purpose:
-
         Called to try to view a model
 
     When Called:
-
         When attempting to view an entity model
 
     Parameters:
-
         - entity (Entity): The entity to view
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log model view attempt
     hook.Add("TryViewModel", "MyAddon", function(entity)
@@ -10014,7 +9017,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check if entity is valid
     hook.Add("TryViewModel", "ValidateEntity", function(entity)
@@ -10028,7 +9030,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex model viewing system
     hook.Add("TryViewModel", "AdvancedModelView", function(entity)
@@ -10108,29 +9109,23 @@ function TryViewModel(entity)
 end
 
 --[[
-
     Purpose:
-
         Called when a vendor is exited
 
     When Called:
-
         When a player closes a vendor
 
     Parameters: 
         None
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log vendor exit
     hook.Add("VendorExited", "MyAddon", function()
@@ -10139,7 +9134,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up vendor data
     hook.Add("VendorExited", "CleanupVendor", function()
@@ -10149,7 +9143,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex vendor exit system
     hook.Add("VendorExited", "AdvancedVendorExit", function()
@@ -10194,30 +9187,23 @@ function VendorExited()
 end
 
 --[[
-
     Purpose:
-
         Called when a vendor is synchronized
 
     When Called:
-
         When vendor data is synced between client and server
 
     Parameters:
-
         - vendor (Entity): The vendor entity
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log vendor sync
     hook.Add("VendorSynchronized", "MyAddon", function(vendor)
@@ -10226,7 +9212,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Update vendor UI
     hook.Add("VendorSynchronized", "UpdateVendorUI", function(vendor)
@@ -10237,7 +9222,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex vendor sync system
     hook.Add("VendorSynchronized", "AdvancedVendorSync", function(vendor)
@@ -10271,30 +9255,23 @@ function VendorSynchronized(vendor)
 end
 
 --[[
-
     Purpose:
-
         Called when voice chat is toggled
 
     When Called:
-
         When voice chat is enabled or disabled
 
     Parameters:
-
         - enabled (boolean): Whether voice chat is enabled
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log voice toggle
     hook.Add("VoiceToggled", "MyAddon", function(enabled)
@@ -10303,7 +9280,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show notification
     hook.Add("VoiceToggled", "NotifyVoiceToggle", function(enabled)
@@ -10312,7 +9288,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex voice toggle system
     hook.Add("VoiceToggled", "AdvancedVoiceToggle", function(enabled)
@@ -10344,29 +9319,23 @@ function VoiceToggled(enabled)
 end
 
 --[[
-
     Purpose:
-
         Called to get the weapon cycle sound
 
     When Called:
-
         When cycling through weapons
 
     Parameters: 
         None
 
     Returns:
-
         string - The sound path
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return default sound
     hook.Add("WeaponCycleSound", "MyAddon", function()
@@ -10375,7 +9344,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Return custom sound based on settings
     hook.Add("WeaponCycleSound", "CustomCycleSound", function()
@@ -10386,7 +9354,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex weapon cycle sound system
     hook.Add("WeaponCycleSound", "AdvancedCycleSound", function()
@@ -10417,29 +9384,23 @@ function WeaponCycleSound()
 end
 
 --[[
-
     Purpose:
-
         Called to get the weapon select sound
 
     When Called:
-
         When selecting a weapon
 
     Parameters: 
         None
 
     Returns:
-
         string - The sound path
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Return default sound
     hook.Add("WeaponSelectSound", "MyAddon", function()
@@ -10448,7 +9409,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Return custom sound based on settings
     hook.Add("WeaponSelectSound", "CustomSelectSound", function()
@@ -10459,7 +9419,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex weapon select sound system
     hook.Add("WeaponSelectSound", "AdvancedSelectSound", function()
@@ -10490,31 +9449,24 @@ function WeaponSelectSound()
 end
 
 --[[
-
     Purpose:
-
         Called when a web image is downloaded
 
     When Called:
-
         When an image from a URL is successfully downloaded
 
     Parameters:
-
         - url (string): The URL of the image
         - material (Material): The downloaded material
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log image download
     hook.Add("WebImageDownloaded", "MyAddon", function(url, material)
@@ -10523,7 +9475,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Cache downloaded images
     hook.Add("WebImageDownloaded", "CacheImages", function(url, material)
@@ -10533,7 +9484,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex web image system
     hook.Add("WebImageDownloaded", "AdvancedWebImage", function(url, material)
@@ -10567,31 +9517,24 @@ function WebImageDownloaded(url, material)
 end
 
 --[[
-
     Purpose:
-
         Called when a web sound is downloaded
 
     When Called:
-
         When a sound from a URL is successfully downloaded
 
     Parameters:
-
         - name (string): The name of the sound
         - path (string): The path to the downloaded sound
 
     Returns:
-
         None
 
     Realm:
-
         Client
+
     Example Usage:
-
         Low Complexity:
-
     ```lua
     -- Simple: Log sound download
     hook.Add("WebSoundDownloaded", "MyAddon", function(name, path)
@@ -10600,7 +9543,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Cache downloaded sounds
     hook.Add("WebSoundDownloaded", "CacheSounds", function(name, path)
@@ -10610,7 +9552,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex web sound system
     hook.Add("WebSoundDownloaded", "AdvancedWebSound", function(name, path)
