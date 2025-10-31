@@ -342,13 +342,12 @@ end
         for _, item in ipairs(items) do
             if action == "remove" then
                 item:Remove()
-                elseif action == "transfer" then
-                    item:SetCreator(newOwner)
-                    elseif action == "info" then
-                        print("Item: " .. item:getNetVar("id") .. " at " .. tostring(item:GetPos()))
-                    end
-                end
+            elseif action == "transfer" then
+                item:SetCreator(newOwner)
+            elseif action == "info" then
+                print("Item: " .. item:getNetVar("id") .. " at " .. tostring(item:GetPos()))
             end
+        end
     ```
 ]]
 function lia.util.findPlayerItems(client)
@@ -2599,7 +2598,7 @@ else
                     if ent:IsPlayer() then
                         text = ent:Name()
                         offset = 40
-                        elseif ent:isItem() then
+                    elseif ent:isItem() then
                             text = ent:getNetVar("id", "Item")
                             offset = 25
                             alpha = 200 -- Slightly transparent for items
@@ -2726,7 +2725,7 @@ else
             if IsValid(hitEntity) then
                 if hitEntity:IsPlayer() then
                     lia.util.drawLookText("Player: " .. hitEntity:Name(), 30)
-                    elseif hitEntity:isItem() then
+                elseif hitEntity:isItem() then
                         local itemName = hitEntity:getNetVar("id", "Unknown Item")
                         lia.util.drawLookText("Item: " .. itemName, 25)
                         else
