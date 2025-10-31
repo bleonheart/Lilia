@@ -11,57 +11,51 @@ lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
 --[[
     Purpose:
-        Loads all attribute definition files from a specified directory, processes them to extract attribute information, localizes display names and descriptions, and registers them in the global attribute system.
-
+        Loads attribute definitions from a specified directory and registers them in the attributes system
     When Called:
-        During framework initialization to load attribute definitions.
-        When reloading or refreshing attribute definitions during development or schema changes.
-
+        During gamemode initialization or when loading attribute modules
     Parameters:
-        - directory (string): The path to the directory containing attribute definition files (relative to the Lua search paths).
-
+        directory (string) - The directory path to search for attribute files
     Returns:
-        None.
-
+        None (modifies lia.attribs.list)
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
         ```lua
-        -- Load attributes from the default directory
-        lia.attribs.loadFromDir("attributes")
+        -- Simple: Load attributes from a single directory
+        lia.attribs.loadFromDir("gamemode/attributes")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
 
         ```lua
-        -- Load attributes from a custom folder in a schema or plugin
-        lia.attribs.loadFromDir("schema/customattribs")
-        print("Custom attributes loaded:", table.Count(lia.attribs.list))
+        -- Medium: Load attributes with conditional directory checking
+        local attrDir = "gamemode/attributes"
+        if file.Exists(attrDir, "LUA") then
+            lia.attribs.loadFromDir(attrDir)
+        end
         ```
 
-        High Complexity:
+    High Complexity:
 
         ```lua
-        -- Dynamically reload attributes for debugging
-        concommand.Add("lia_reload_attributes", function()
-            lia.attribs.loadFromDir("attributes")
-            print("Attributes have been reloaded.")
-        end)
+        -- High: Load attributes from multiple directories with error handling
+        local attributeDirs = {"gamemode/attributes", "modules/attributes", "plugins/attributes"}
+        for _, dir in ipairs(attributeDirs) do
+            if file.Exists(dir, "LUA") then
+                lia.attribs.loadFromDir(dir)
+                else
+                    print("Warning: Attribute directory not found: " .. dir)
+                end
+            end
         ```
 ]]
 function lia.attribs.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
-        local niceName
-        if v:sub(1, 3) == "sh_" then
-            niceName = v:sub(4, -5):lower()
-        else
-            niceName = v:sub(1, -5)
-        end
-
+        local niceName = v:sub(1, 3) == "sh_" and v:sub(4, -5):lower() or v:sub(1, -5)
         ATTRIBUTE = lia.attribs.list[niceName] or {}
         lia.loader.include(directory .. "/" .. v, "shared")
         ATTRIBUTE.name = ATTRIBUTE.name and L(ATTRIBUTE.name) or L("unknown")
@@ -71,54 +65,52 @@ function lia.attribs.loadFromDir(directory)
     end
 end
 
---[[
-    Purpose:
-        Initializes all registered attributes for a player's character by retrieving their current attribute values and calling any custom OnSetup functions defined in the attribute definitions.
-
-    When Called:
-        During character loading and spawning (typically in PostPlayerLoadout hook).
-        When attribute data needs to be refreshed or re-initialized.
-        During character or class changes that may affect attribute setup.
-
-    Parameters:
-        - client (Player): The player entity whose character's attributes should be set up.
-
-    Returns:
-        None.
-
-    Realm:
-        Server.
-
-    Example Usage:
+if SERVER then
+    --[[
+        Purpose:
+            Sets up attributes for a client's character by calling OnSetup hooks for each registered attribute
+        When Called:
+            When a client spawns or when their character is created
+        Parameters:
+            client (Player) - The client whose character attributes need to be set up
+        Returns:
+            None
+        Realm:
+            Server
+        Example Usage:
 
         Low Complexity:
 
-        ```lua
-        -- On player spawn, set up attributes
-        hook.Add("PlayerSpawn", "SetupAttributesOnSpawn", function(ply)
-            lia.attribs.setup(ply)
-        end)
-        ```
+            ```lua
+            -- Simple: Setup attributes for a client
+            lia.attribs.setup(client)
+            ```
 
         Medium Complexity:
 
-        ```lua
-        -- Explicitly set up for a player after character loading
-        net.Receive("MyCustomAttribSetup", function(len, ply)
-            lia.attribs.setup(ply)
-        end)
-        ```
+            ```lua
+            -- Medium: Setup attributes with validation
+            if IsValid(client) and client:IsPlayer() then
+                lia.attribs.setup(client)
+            end
+            ```
 
         High Complexity:
 
-        ```lua
-        -- Use as part of a system that batches attribute setup for all players after a schema reload
-        for _, ply in ipairs(player.GetAll()) do
-            lia.attribs.setup(ply)
-        end
-        ```
-]]
-if SERVER then
+            ```lua
+            -- High: Setup attributes with custom logic and error handling
+            hook.Add("PlayerSpawn", "SetupAttributes", function(client)
+                if not client:getChar() then return end
+
+                    timer.Simple(0.1, function()
+                    if IsValid(client) then
+                        lia.attribs.setup(client)
+                        print("Attributes set up for " .. client:Name())
+                    end
+                end)
+            end)
+            ```
+    ]]
     function lia.attribs.setup(client)
         local character = client:getChar()
         if not character then return end

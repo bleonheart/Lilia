@@ -11,56 +11,47 @@ lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}
 --[[
     Purpose:
-        Generates a timestamp string for chat messages based on current time settings.
-
+        Generates a formatted timestamp string for chat messages based on current time
     When Called:
-        When formatting chat messages to include timestamps if the option is enabled.
-
+        Automatically called when displaying chat messages if timestamps are enabled
     Parameters:
-        - ooc (boolean): Whether this is an out-of-character message (affects formatting).
-
+        ooc (boolean) - Whether this is an OOC message (affects spacing format)
     Returns:
-        Formatted timestamp string or empty string if timestamps are disabled.
-
+        string - Formatted timestamp string or empty string if timestamps disabled
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Get timestamp for IC message
-        local timeStamp = lia.chat.timestamp(false)
-        -- Returns something like: " (14) " if time is enabled
-        ```
+    ```lua
+    -- Simple: Get timestamp for IC message
+    local timestamp = lia.chat.timestamp(false)
+    -- Returns: " (14:30) " or "" if timestamps disabled
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Get timestamp for OOC message
-        local oocTimeStamp = lia.chat.timestamp(true)
-        -- Returns something like: " (14)" if time is enabled
-        ```
+    ```lua
+    -- Medium: Use timestamp in custom chat format
+    local function customChatFormat(speaker, text)
+        local timeStr = lia.chat.timestamp(false)
+        chat.AddText(timeStr, Color(255, 255, 255), speaker:Name() .. ": " .. text)
+    end
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Use in custom chat formatting
-        local function customChatFormat(speaker, text, isOOC)
-            local timeStr = lia.chat.timestamp(isOOC)
-            local prefix = isOOC and "[OOC]" or "[IC]"
-            return timeStr .. prefix .. " " .. speaker:Name() .. ": " .. text
+    ```lua
+    -- High: Dynamic timestamp with custom formatting
+    local function getFormattedTimestamp(isOOC, customFormat)
+        local baseTime = lia.chat.timestamp(isOOC)
+        if customFormat and baseTime ~= "" then
+            return baseTime:gsub("%((%d+:%d+)%)", "[" .. customFormat .. "]")
         end
-
-        -- Override default chat formatting
-        hook.Add("OnPlayerChat", "CustomChatFormat", function(ply, text, team, dead)
-            if team then
-                chat.AddText(Color(100, 200, 100), customChatFormat(ply, text, false))
-                return true
-            end
-        end)
-        ```
+        return baseTime
+    end
+    ```
 ]]
 function lia.chat.timestamp(ooc)
     return lia.option.ChatShowTime and (ooc and " " or "") .. "(" .. lia.time.getHour() .. ")" .. (ooc and "" or " ") or ""
@@ -68,85 +59,62 @@ end
 
 --[[
     Purpose:
-        Registers a new chat type with custom behavior, formatting, and restrictions.
-
+        Registers a new chat type with the chatbox system, defining its behavior and properties
     When Called:
-        During gamemode initialization to set up different chat channels like IC, OOC, whisper, etc.
-
+        During module initialization to register custom chat types (IC, OOC, whisper, etc.)
     Parameters:
-        - chatType (string): Unique identifier for the chat type.
-        - data (table): Configuration table with chat behavior settings:
-            - prefix (string/table): Command prefix(es) to trigger this chat type.
-            - color (Color): Color for chat messages.
-            - format (string): Localization key for message formatting.
-            - radius (number/function): Hearing radius for distance-based chat.
-            - onCanSay (function): Function to check if player can send messages.
-            - onCanHear (function): Function to check if player can hear messages.
-            - onChatAdd (function): Custom function for adding messages to chat.
-            - deadCanChat (boolean): Whether dead players can use this chat.
-            - noSpaceAfter (boolean): Whether prefix requires no space after.
-            - arguments (table): Command-style arguments for complex chat commands.
-            - filter (string): Chat filter category.
-
+        chatType (string) - Unique identifier for the chat type
+        data (table) - Configuration table containing chat type properties
     Returns:
-        Nothing
-
+        void
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Register a basic OOC chat
-        lia.chat.register("ooc", {
-            prefix = "//",
-            color = Color(255, 100, 100),
-            format = "oocFormat"
+    ```lua
+    -- Simple: Register basic IC chat
+    lia.chat.register("ic", {
+        prefix = "/",
+        color = Color(255, 255, 255),
+        radius = 200
         })
-        ```
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Register a whisper chat with distance limits
-        lia.chat.register("whisper", {
-            prefix = "/w",
+    ```lua
+    -- Medium: Register whisper chat with custom properties
+    lia.chat.register("whisper", {
+        prefix = {"/w", "/whisper"},
             color = Color(150, 150, 255),
-            radius = 200, -- 200 units hearing range
-            format = "whisperFormat"
-        })
-        ```
+            radius = 50,
+            format = "whisperFormat",
+            desc = "Whisper to nearby players"
+            })
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Register a complex radio chat with custom logic
-        lia.chat.register("radio", {
-            prefix = "/r",
-            color = Color(100, 255, 100),
-            onCanSay = function(speaker, text)
-                -- Check if player has radio
-                local char = speaker:getChar()
-                if not char or not char:getInv():hasItem("radio") then
-                    speaker:notify("You need a radio to use radio chat!")
-                    return false
-                end
-                return true
-            end,
-            onCanHear = function(speaker, listener)
-                -- Only players with radios can hear
-                local char = listener:getChar()
-                return char and char:getInv():hasItem("radio")
-            end,
-            onChatAdd = function(speaker, text, anonymous)
-                -- Custom radio message formatting
-                chat.AddText(Color(100, 255, 100), "[RADIO] ", speaker:Name(), ": ", text)
-            end,
-            filter = "ic"
-        })
-        ```
+    ```lua
+    -- High: Register admin chat with complex validation
+    lia.chat.register("admin", {
+        prefix = "/a",
+        color = Color(255, 100, 100),
+        onCanSay = function(speaker)
+        return speaker:IsAdmin()
+        end,
+        onCanHear = function(speaker, listener)
+        return listener:IsAdmin()
+        end,
+        format = "adminFormat",
+        arguments = {
+            {type = "string", name = "message"}
+                },
+                desc = "Admin-only communication channel"
+                })
+    ```
 ]]
 function lia.chat.register(chatType, data)
     data.arguments = data.arguments or {}
@@ -226,80 +194,61 @@ end
 
 --[[
     Purpose:
-        Parses a chat message to determine its type and content, handling prefixes and routing.
-
+        Parses a chat message to determine its type and extract the actual message content
     When Called:
-        When a player sends a chat message, to determine how it should be processed and routed.
-
+        When a player sends a chat message, either from client input or server processing
     Parameters:
-        - client (Player): The player sending the message.
-        - message (string): The raw chat message text.
-        - noSend (boolean): If true, prevents automatic sending (for parsing only).
-
+        client (Player) - The player who sent the message
+        message (string) - The raw message text to parse
+        noSend (boolean, optional) - If true, prevents sending the message to other players
     Returns:
-        chatType (string): The determined chat type.
-        message (string): The processed message text.
-        anonymous (boolean): Whether the message should be anonymous.
-
+        chatType (string), message (string), anonymous (boolean)
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Parse a basic IC message
-        local chatType, text, anon = lia.chat.parse(client, "Hello everyone!")
-        -- Returns: "ic", "Hello everyone!", false
-        ```
+    ```lua
+    -- Simple: Parse a basic IC message
+    local chatType, message, anonymous = lia.chat.parse(LocalPlayer(), "Hello everyone!")
+    -- Returns: "ic", "Hello everyone!", false
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Parse an OOC message with prefix
-        local chatType, text, anon = lia.chat.parse(client, "//This is OOC text")
-        -- Returns: "ooc", "This is OOC text", false
-        ```
+    ```lua
+    -- Medium: Parse message with prefix detection
+    local function processPlayerMessage(player, rawMessage)
+        local chatType, cleanMessage, anonymous = lia.chat.parse(player, rawMessage)
+        if chatType == "ooc" then
+            print(player:Name() .. " said OOC: " .. cleanMessage)
+        end
+        return chatType, cleanMessage, anonymous
+    end
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Custom chat parsing with command integration
-        local function customChatHandler(client, text)
-            -- First try to parse as command
-            local isCommand = lia.command.parse(client, text)
-            if isCommand then return end -- Command was handled
+    ```lua
+    -- High: Advanced message processing with validation
+    local function advancedMessageParser(player, message, options)
+        local chatType, cleanMessage, anonymous = lia.chat.parse(player, message, options.noSend)
 
-            -- Otherwise parse as chat
-            local chatType, message, anonymous = lia.chat.parse(client, text)
-
-            -- Custom processing based on chat type
-            if chatType == "ooc" then
-                -- Log OOC messages
-                lia.log.add(client, "ooc_chat", message)
-            elseif chatType == "ic" then
-                -- Check for profanity in IC chat
-                if containsProfanity(message) then
-                    client:notify("Please keep IC chat appropriate!")
-                    return
-                end
-            end
-
-            -- Allow the message to be sent normally
-            return chatType, message, anonymous
+        -- Custom validation based on chat type
+        if chatType == "admin" and not player:IsAdmin() then
+            player:notifyErrorLocalized("noPerm")
+            return nil, nil, nil
         end
 
-        -- Hook into chat processing
-        hook.Add("PlayerSay", "CustomChatHandler", function(ply, text, teamChat)
-            local chatType, message, anonymous = customChatHandler(ply, text)
-            if chatType then
-                -- Send the processed message
-                lia.chat.send(ply, chatType, message, anonymous)
-                return "" -- Suppress default chat
-            end
-        end)
-        ```
+        -- Log message for moderation
+        if options.logMessages then
+            lia.log.add("chat", player:Name() .. " [" .. chatType .. "]: " .. cleanMessage)
+        end
+
+        return chatType, cleanMessage, anonymous
+    end
+    ```
 ]]
 function lia.chat.parse(client, message, noSend)
     local anonymous = false
@@ -341,94 +290,63 @@ function lia.chat.parse(client, message, noSend)
     return chatType, message, anonymous
 end
 
-if SERVER then
-    --[[
+--[[
     Purpose:
-        Sends a chat message to appropriate recipients based on chat type rules and permissions.
-
+        Sends a chat message to appropriate recipients based on chat type and hearing rules
     When Called:
-        After parsing and validating a chat message, to distribute it to players who can hear it.
-
+        Server-side when distributing parsed chat messages to players
     Parameters:
-        - speaker (Player): The player sending the message.
-        - chatType (string): The type of chat message.
-        - text (string): The message content.
-        - anonymous (boolean): Whether the message should be anonymous.
-        - receivers (table): Optional array of specific players to receive the message.
-
+        speaker (Player) - The player who sent the message
+        chatType (string) - The type of chat message (ic, ooc, whisper, etc.)
+        text (string) - The message content to send
+        anonymous (boolean, optional) - Whether to hide the speaker's identity
+        receivers (table, optional) - Specific list of players to send to
     Returns:
-        Nothing
-
+        void
     Realm:
         Server
-
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Send an IC message
-        lia.chat.send(client, "ic", "Hello everyone!", false)
-        ```
+    ```lua
+    -- Simple: Send IC message to all nearby players
+    lia.chat.send(player, "ic", "Hello everyone!")
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Send a message to specific players
-        local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
-            if ply:GetPos():Distance(client:GetPos()) < 500 then
-                table.insert(nearbyPlayers, ply)
+    ```lua
+    -- Medium: Send anonymous whisper to specific players
+    local function sendAnonymousWhisper(speaker, message, targets)
+        lia.chat.send(speaker, "whisper", message, true, targets)
+    end
+    ```
+
+    High Complexity:
+
+    ```lua
+    -- High: Advanced message broadcasting with custom logic
+    local function broadcastAdminMessage(speaker, message, options)
+        local receivers = {}
+
+        -- Collect admin players
+        for _, player in pairs(player.GetAll()) do
+            if player:IsAdmin() and (not options.excludeSelf or player ~= speaker) then
+                table.insert(receivers, player)
             end
         end
-        lia.chat.send(client, "whisper", "Psst...", false, nearbyPlayers)
-        ```
 
-        High Complexity:
+        -- Send with custom formatting
+        lia.chat.send(speaker, "admin", "[ADMIN] " .. message, false, receivers)
 
-        ```lua
-        -- High: Custom broadcasting system with advanced filtering
-        local function broadcastToFaction(speaker, message, factionName)
-            local receivers = {}
-            local speakerChar = speaker:getChar()
-            if not speakerChar or speakerChar:getFaction() ~= factionName then
-                speaker:notify("You are not in the " .. factionName .. " faction!")
-                return
-            end
-
-            -- Find all players in the same faction
-            for _, ply in ipairs(player.GetAll()) do
-                local char = ply:getChar()
-                if char and char:getFaction() == factionName then
-                    table.insert(receivers, ply)
-                end
-            end
-
-            if #receivers == 0 then
-                speaker:notify("No other faction members online.")
-                return
-            end
-
-            -- Send the faction message
-            lia.chat.send(speaker, "radio", "[FACTION] " .. message, false, receivers)
-
-            -- Log faction communication
-            lia.log.add(speaker, "faction_chat", factionName .. ": " .. message)
-        end
-
-        -- Register a command to use this system
-        lia.command.add("faction", {
-            arguments = {
-                {name = "message", type = "string"}
-            },
-            onRun = function(client, arguments)
-                local message = arguments[1]
-                broadcastToFaction(client, message, "police") -- Example for police faction
-            end
-        })
-        ```
+        -- Log the message
+        lia.log.add("admin_chat", speaker:Name() .. ": " .. message)
+    end
+    ```
 ]]
-function lia.chat.send(speaker, chatType, text, anonymous, receivers)
+if SERVER then
+    function lia.chat.send(speaker, chatType, text, anonymous, receivers)
         local class = lia.chat.classes[chatType]
         if class and class.onCanSay(speaker, text) ~= false then
             if class.onCanHear and not receivers then

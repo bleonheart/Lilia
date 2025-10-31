@@ -11,68 +11,54 @@ lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
 --[[
     Purpose:
-        Builds a syntax string from command argument definitions for display and help systems.
-
+        Generates a human-readable syntax string from command argument definitions
     When Called:
-        When registering a command to generate its syntax string, or when displaying command help.
-
+        Automatically called by lia.command.add when registering commands
     Parameters:
-        - args (table): Array of argument definition tables, each containing name, type, and optional fields.
-
+        args (table) - Array of argument definition tables with type, name, and optional properties
     Returns:
-        Formatted syntax string showing argument types and names.
-
+        string - Formatted syntax string showing argument types and names
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Build syntax for basic arguments
-        local args = {
-            {name = "target", type = "player"},
-            {name = "amount", type = "number"}
+    ```lua
+    -- Simple: Generate syntax for basic arguments
+    local args = {
+    {type = "string", name = "target"},
+        {type = "player", name = "player"}
         }
         local syntax = lia.command.buildSyntaxFromArguments(args)
-        -- Returns: "[player target] [number amount]"
-        ```
+        -- Returns: "[string target] [player player]"
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Build syntax with optional arguments
-        local args = {
-            {name = "target", type = "player", optional = false},
-            {name = "reason", type = "string", optional = true}
+    ```lua
+    -- Medium: Generate syntax with optional arguments
+    local args = {
+    {type = "string", name = "message"},
+        {type = "bool", name = "silent", optional = true}
         }
         local syntax = lia.command.buildSyntaxFromArguments(args)
-        -- Returns: "[player target] [string reason optional]"
-        ```
+        -- Returns: "[string message] [bool silent optional]"
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Build complex syntax with multiple argument types
-        local args = {
-            {name = "player", type = "player"},
-            {name = "item", type = "string"},
-            {name = "quantity", type = "number", optional = true},
-            {name = "force", type = "bool", optional = true}
-        }
-        local syntax = lia.command.buildSyntaxFromArguments(args)
-        -- Returns: "[player player] [string item] [number quantity optional] [bool force optional]"
-
-        -- Use in command registration
-        lia.command.add("giveitem", {
-            syntax = lia.command.buildSyntaxFromArguments(args),
-            arguments = args,
-            onRun = function(client, arguments)
-                -- Command implementation
-            end
-        })
-        ```
+    ```lua
+    -- High: Generate syntax for complex command with multiple argument types
+    local args = {
+    {type = "player", name = "target"},
+        {type = "string", name = "reason"},
+            {type = "number", name = "duration", optional = true},
+                {type = "bool", name = "notify", optional = true}
+                }
+                local syntax = lia.command.buildSyntaxFromArguments(args)
+                -- Returns: "[player target] [string reason] [number duration optional] [bool notify optional]"
+    ```
 ]]
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
@@ -97,99 +83,73 @@ end
 
 --[[
     Purpose:
-        Registers a new command in the Lilia command system with full argument parsing, access control, and execution handling.
-
+        Registers a new command with the command system, handling privileges, aliases, and access control
     When Called:
-        When adding new commands to the framework, typically during initialization or module loading.
-
+        When registering commands during gamemode initialization or module loading
     Parameters:
-        - command (string): The command name (without slash).
-        - data (table): Command configuration table with the following fields:
-            - syntax (string): Optional syntax string (auto-generated if not provided).
-            - arguments (table): Array of argument definitions.
-            - onRun (function): Function called when command executes (required).
-            - privilege (string): Custom privilege ID for access control.
-            - superAdminOnly (boolean): Restricts to superadmin only.
-            - adminOnly (boolean): Restricts to admin only.
-            - onCheckAccess (function): Custom access check function.
-            - desc (string): Command description.
-
+        command (string) - The command name, data (table) - Command configuration including onRun, arguments, privilege, etc.
     Returns:
-        Nothing
-
+        void
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Add a basic teleport command
-        lia.command.add("tp", {
-            arguments = {
-                {name = "target", type = "player"}
-            },
-            onRun = function(client, arguments)
-                local target = arguments[1]
-                if IsValid(target) then
-                    client:SetPos(target:GetPos())
-                    client:notify("Teleported to " .. target:Name())
-                end
-            end
+    ```lua
+    -- Simple: Register a basic command
+    lia.command.add("hello", {
+        onRun = function(client, arguments)
+        client:notify("Hello, " .. client:Name() .. "!")
+        end,
+        desc = "Say hello"
         })
-        ```
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Add command with privilege restriction
-        lia.command.add("setmoney", {
-            privilege = "money_management",
-            arguments = {
-                {name = "target", type = "player"},
-                {name = "amount", type = "number"}
-            },
-            onRun = function(client, arguments)
-                local target, amount = arguments[1], arguments[2]
-                if IsValid(target) and target:getChar() then
-                    target:getChar():setMoney(amount)
-                    client:notify("Set " .. target:Name() .. "'s money to $" .. amount)
-                end
-            end
-        })
-        ```
+    ```lua
+    -- Medium: Register command with arguments and admin privilege
+    lia.command.add("kick", {
+        arguments = {
+            {type = "player", name = "target"},
+                {type = "string", name = "reason", optional = true}
+                    },
+                    onRun = function(client, arguments)
+                    local target = arguments[1]
+                    local reason = arguments[2] or "No reason provided"
+                    target:Kick(reason)
+                    client:notify("Kicked " .. target:Name())
+                    end,
+                    adminOnly = true,
+                    desc = "Kick a player from the server"
+                    })
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Add complex command with custom access control
-        lia.command.add("spawnitem", {
-            adminOnly = true,
-            arguments = {
-                {name = "item", type = "string"},
-                {name = "quantity", type = "number", optional = true}
-            },
-            onCheckAccess = function(client, command, data)
-                -- Custom access check
-                local char = client:getChar()
-                if char and char:getFaction() == FACTION_ADMIN then
-                    return true
-                end
-                return false, "Admin faction required"
-            end,
-            onRun = function(client, arguments)
-                local itemID = arguments[1]
-                local quantity = arguments[2] or 1
-
-                for i = 1, quantity do
-                    lia.item.spawn(itemID, client:GetPos() + Vector(0, 0, 10))
-                end
-
-                client:notify("Spawned " .. quantity .. "x " .. itemID)
-            end
-        })
-        ```
+    ```lua
+    -- High: Register complex command with aliases, custom access check, and privilege
+    lia.command.add("ban", {
+        arguments = {
+            {type = "player", name = "target"},
+                {type = "string", name = "reason"},
+                    {type = "number", name = "duration", optional = true}
+                        },
+                        alias = {"tempban", "tban"},
+                            onRun = function(client, arguments)
+                            local target = arguments[1]
+                            local reason = arguments[2]
+                            local duration = arguments[3] or 0
+                            -- Ban logic here
+                            end,
+                            onCheckAccess = function(client, command, data)
+                            return client:IsSuperAdmin() or client:hasPrivilege("moderation")
+                            end,
+                            privilege = "moderation",
+                            desc = "Ban a player temporarily or permanently"
+                            })
+    ```
 ]]
 function lia.command.add(command, data)
     data.arguments = data.arguments or {}
@@ -294,78 +254,56 @@ end
 
 --[[
     Purpose:
-        Checks if a player has access to execute a specific command based on privileges, admin status, and custom access rules.
-
+        Checks if a client has access to execute a specific command based on privileges, faction, and class permissions
     When Called:
-        Before executing a command to verify the player's permissions, or when displaying command availability.
-
+        Before command execution to verify player permissions
     Parameters:
-        - client (Player): The player to check access for.
-        - command (string): The command name to check access for.
-        - data (table): Optional command data table (will be looked up if not provided).
-
+        client (Player) - The player attempting to use the command, command (string) - Command name, data (table, optional) - Command data table
     Returns:
-        hasAccess (boolean): Whether the player can use the command.
-        privilegeName (string): The name of the privilege that was checked.
-
+        boolean, string - Access granted status and privilege name
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Check if player can use a command
-        local canUse, privilege = lia.command.hasAccess(client, "kick")
-        if canUse then
-            client:notify("You can use the kick command")
-        else
-            client:notify("Access denied: " .. privilege)
-        end
-        ```
+    ```lua
+    -- Simple: Check basic command access
+    local hasAccess, privilege = lia.command.hasAccess(client, "hello")
+    if hasAccess then
+        client:notify("You can use the hello command!")
+    end
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Check access before running custom logic
-        if lia.command.hasAccess(client, "setmoney") then
-            -- Perform money setting operation
-            target:getChar():setMoney(amount)
-            lia.log.add(client, "money", "Set " .. target:Name() .. "'s money to $" .. amount)
-        else
-            client:notify("You don't have permission to set money")
-        end
-        ```
+    ```lua
+    -- Medium: Check admin command access with custom privilege
+    local hasAccess, privilege = lia.command.hasAccess(client, "kick")
+    if not hasAccess then
+        client:notifyError("You need " .. privilege .. " to use this command!")
+        return
+    end
+    -- Execute kick command
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Implement command with access checking and logging
-        local function runAdminCommand(client, commandName, ...)
-            local hasAccess, privilegeName = lia.command.hasAccess(client, commandName)
-
-            if not hasAccess then
-                client:notify("Access denied for command '" .. commandName .. "': " .. privilegeName)
-
-                -- Log failed access attempt
-                lia.log.add(client, "command_denied", commandName .. " - " .. privilegeName)
-                return false
+    ```lua
+    -- High: Check access with faction/class specific permissions
+    local hasAccess, privilege = lia.command.hasAccess(client, "arrest")
+    if hasAccess then
+        local char = client:getChar()
+        local faction = lia.faction.indices[char:getFaction()]
+        if faction and faction.commands and faction.commands["arrest"] then
+            client:notify("Faction command access granted!")
+            elseif client:hasPrivilege(privilege) then
+                client:notify("Privilege-based access granted!")
             end
-
-            -- Log successful command execution
-            lia.log.add(client, "command_executed", commandName)
-
-            -- Execute the actual command logic
-            local commandData = lia.command.list[commandName]
-            if commandData and commandData.onRun then
-                return commandData.onRun(client, {...})
+            else
+                client:notifyError("Access denied: " .. privilege)
             end
-        end
-
-        -- Usage
-        runAdminCommand(client, "ban", targetPlayer, "Spamming", 60) -- 60 minutes
-        ```
+    ```
 ]]
 function lia.command.hasAccess(client, command, data)
     if not data then data = lia.command.list[command] end
@@ -404,68 +342,46 @@ end
 
 --[[
     Purpose:
-        Parses a text string into individual command arguments, handling quoted strings and spaces properly.
-
+        Parses command text and extracts individual arguments, handling quoted strings and spaces
     When Called:
-        When processing command input to separate arguments, especially for complex commands with quoted strings.
-
+        When parsing command input to separate arguments for command execution
     Parameters:
-        - text (string): The raw text to parse into arguments.
-
+        text (string) - The command text to parse (excluding the command name)
     Returns:
-        Array of parsed argument strings.
-
+        table - Array of extracted argument strings
     Realm:
-        Shared (works on both server and client).
-
+        Shared
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Parse basic command arguments
-        local args = lia.command.extractArgs("kick player1 spamming")
-        -- Returns: {"kick", "player1", "spamming"}
-        ```
+    ```lua
+    -- Simple: Extract basic arguments
+    local args = lia.command.extractArgs("player1 Hello World")
+    -- Returns: {"player1", "Hello", "World"}
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Parse arguments with quoted strings
-        local args = lia.command.extractArgs('ban "Bad Player" "Griefing" 60')
-        -- Returns: {"ban", "Bad Player", "Griefing", "60"}
-        ```
+    ```lua
+    -- Medium: Extract arguments with quoted strings
+    local args = lia.command.extractArgs('player1 "Hello World" true')
+    -- Returns: {"player1", "Hello World", "true"}
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Parse complex command with mixed quotes and spaces
-        local args = lia.command.extractArgs('giveitem "player one" "special item" 5 true')
-        -- Returns: {"giveitem", "player one", "special item", "5", "true"}
+    ```lua
+    -- High: Extract complex arguments with mixed quotes and spaces
+    local args = lia.command.extractArgs('"John Doe" "This is a long message with spaces" 123 true')
+    -- Returns: {"John Doe", "This is a long message with spaces", "123", "true"}
 
-        -- Use in command processing
-        local function processCommand(client, text)
-            local args = lia.command.extractArgs(text)
-            local command = args[1]
-
-            if command == "teleport" then
-                local targetName = args[2]
-                local x, y, z = tonumber(args[3]), tonumber(args[4]), tonumber(args[5])
-
-                if targetName and x and y and z then
-                    local target = lia.util.findPlayer(targetName)
-                    if IsValid(target) then
-                        target:SetPos(Vector(x, y, z))
-                        client:notify("Teleported " .. target:Name())
-                    end
-                end
-            end
-        end
-
-        -- Handle various input formats
-        processCommand(client, 'teleport "John Doe" 100 200 300')
-        processCommand(client, "teleport Jane 150 250 350")
-        ```
+    -- Process arguments for command
+    local target = args[1]
+    local message = args[2]
+    local duration = tonumber(args[3])
+    local silent = args[4] == "true"
+    ```
 ]]
 function lia.command.extractArgs(text)
     local skip = 0
@@ -528,84 +444,50 @@ end
 if SERVER then
     --[[
     Purpose:
-        Executes a registered command with the given client and arguments, handling result notifications and logging.
-
+        Executes a registered command for a client with proper error handling and result processing
     When Called:
-        When a command needs to be executed, typically after access checks and argument validation.
-
+        When a command needs to be executed after parsing and access validation
     Parameters:
-        - client (Player): The player executing the command.
-        - command (string): The command name to execute.
-        - arguments (table): Array of parsed command arguments.
-
+        client (Player) - The player executing the command, command (string) - Command name, arguments (table) - Command arguments
     Returns:
-        The result of the command's onRun function (can be a string for notifications).
-
+        void
     Realm:
         Server
-
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Run a command directly
-        lia.command.run(client, "givemoney", {targetPlayer, 1000})
-        ```
+    ```lua
+    -- Simple: Execute a basic command
+    lia.command.run(client, "hello", {})
+        -- Executes the hello command for the client
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Run command with result handling
-        local result = lia.command.run(client, "sethealth", {targetPlayer, 100})
-        if result then
-            print("Command result:", result)
+    ```lua
+    -- Medium: Execute command with arguments
+    local args = {"player1", "Hello World"}
+    lia.command.run(client, "pm", args)
+    -- Executes PM command with target and message
+    ```
+
+    High Complexity:
+
+    ```lua
+    -- High: Execute command with error handling and logging
+    local command = "kick"
+    local args = {target:Name(), "Rule violation"}
+
+    -- Check access first
+    local hasAccess = lia.command.hasAccess(client, command)
+    if hasAccess then
+        lia.command.run(client, command, args)
+        lia.log.add(client, "command", "/" .. command .. " " .. table.concat(args, " "))
+        else
+            client:notifyError("Access denied!")
         end
-        ```
-
-        High Complexity:
-
-        ```lua
-        -- High: Custom command execution with comprehensive error handling
-        local function safeRunCommand(client, commandName, ...)
-            -- Check if command exists
-            if not lia.command.list[commandName] then
-                client:notify("Unknown command: " .. commandName)
-                return false
-            end
-
-            -- Check access
-            local hasAccess, privilegeName = lia.command.hasAccess(client, commandName)
-            if not hasAccess then
-                client:notify("Access denied: " .. privilegeName)
-                lia.log.add(client, "command_denied", commandName .. " - " .. privilegeName)
-                return false
-            end
-
-            -- Parse arguments
-            local args = {...}
-
-            -- Execute command
-            local success, result = pcall(function()
-                return lia.command.run(client, commandName, args)
-            end)
-
-            if not success then
-                client:notify("Command execution failed")
-                lia.log.add(client, "command_error", commandName .. " - " .. tostring(result))
-                return false
-            end
-
-            -- Log successful execution
-            lia.log.add(client, "command_executed", commandName .. " with " .. #args .. " arguments")
-
-            return true, result
-        end
-
-        -- Usage examples
-        safeRunCommand(client, "kick", badPlayer, "Spamming")
-        safeRunCommand(client, "giveitem", targetPlayer, "health_kit", 5)
-        ```
+    ```
 ]]
     function lia.command.run(client, command, arguments)
         local commandTbl = lia.command.list[command:lower()]
@@ -627,79 +509,51 @@ if SERVER then
 
     --[[
     Purpose:
-        Parses and executes a command from text input, handling argument validation and prompting for missing arguments.
-
+        Parses command text input, validates arguments, and executes commands with proper error handling
     When Called:
-        When processing chat commands or console commands, handling the full command execution pipeline.
-
+        When processing player chat input or console commands that start with "/"
     Parameters:
-        - client (Player): The player executing the command.
-        - text (string): The raw command text to parse.
-        - realCommand (string): Optional pre-parsed command name.
-        - arguments (table): Optional pre-parsed arguments.
-
+        client (Player) - The player executing the command, text (string) - Full command text, realCommand (string, optional) - Pre-parsed command name, arguments (table, optional) - Pre-parsed arguments
     Returns:
-        true if argument prompt was sent, nil otherwise.
-
+        boolean - True if command was processed, false if not a command
     Realm:
-        Shared (works on both server and client).
-
+        Server
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Parse and execute a command
-        lia.command.parse(client, "/kick badplayer spamming")
-        ```
+    ```lua
+    -- Simple: Parse basic command from chat
+    local success = lia.command.parse(client, "/hello")
+    if success then
+        -- Command was processed
+    end
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Parse command with pre-parsed arguments
-        local args = {"badplayer", "spamming"}
-        lia.command.parse(client, "/kick badplayer spamming", "kick", args)
-        ```
+    ```lua
+    -- Medium: Parse command with arguments
+    local success = lia.command.parse(client, "/kick player1 Rule violation")
+    if success then
+        -- Kick command was executed
+    end
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Custom command parser with validation
-        local function customCommandParser(client, text)
-            -- Remove leading slash if present
-            if text:sub(1, 1) == "/" then
-                text = text:sub(2)
-            end
-
-            -- Check for custom command prefixes
-            if text:sub(1, 1) == "!" then
-                -- Admin command
-                if not client:hasPrivilege("admin_commands") then
-                    client:notify("Admin commands require admin privileges")
-                    return
-                end
-                text = text:sub(2)
-            elseif text:sub(1, 1) == "?" then
-                -- Help command
-                text = "help " .. text:sub(2)
-            end
-
-            -- Parse and execute
-            local promptSent = lia.command.parse(client, text)
-            if not promptSent then
-                -- Command executed successfully or failed
-                -- Additional logging could be done here
-            end
+    ```lua
+    -- High: Parse command with argument validation and prompting
+    local text = "/pm"
+    local success = lia.command.parse(client, text)
+    if success then
+        -- If arguments are missing, client will be prompted
+        -- If arguments are valid, PM command will execute
+        else
+            -- Not a command, treat as regular chat
+            lia.chatbox.add(client, text)
         end
-
-        -- Hook into chat for custom command handling
-        hook.Add("PlayerSay", "CustomCommandParser", function(client, text, teamChat)
-            if not teamChat and text:sub(1, 1) == "/" or text:sub(1, 1) == "!" or text:sub(1, 1) == "?" then
-                customCommandParser(client, text)
-                return "" -- Suppress normal chat message
-            end
-        end)
-        ```
+    ```
 ]]
     function lia.command.parse(client, text, realCommand, arguments)
         if realCommand or utf8.sub(text, 1, 1) == "/" then
@@ -757,85 +611,44 @@ if SERVER then
 else
     --[[
     Purpose:
-        Opens a GUI prompt for the player to fill in missing command arguments interactively.
-
+        Creates a GUI prompt for users to input missing command arguments with validation
     When Called:
-        When a command is executed but some required arguments are missing, prompting the user for input.
-
+        When a command is executed with missing required arguments
     Parameters:
-        - cmdKey (string): The command name.
-        - missing (table): Array of missing argument names.
-        - prefix (table): Array of already provided arguments.
-
+        cmdKey (string) - Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments
     Returns:
-        Nothing
-
+        void
     Realm:
         Client
-
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Open prompt for missing arguments
-        lia.command.openArgumentPrompt("kick", {"reason"}, {"badplayer"})
-        ```
+    ```lua
+    -- Simple: Open prompt for single missing argument
+    lia.command.openArgumentPrompt("pm", {"target"}, {})
+        -- Shows GUI to select target player for PM command
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Open prompt with multiple missing arguments
-        lia.command.openArgumentPrompt("ban", {"reason", "duration"}, {"badplayer"})
-        ```
+    ```lua
+    -- Medium: Open prompt with partial arguments
+    lia.command.openArgumentPrompt("kick", {"reason"}, {"player1"})
+        -- Shows GUI to enter reason, player1 already provided
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Custom argument prompt system
-        local function createCustomArgumentPrompt(commandName, requiredArgs, providedArgs)
-            local missingArgs = {}
-
-            -- Determine which arguments are missing
-            for _, arg in ipairs(requiredArgs) do
-                local isProvided = false
-                for _, provided in ipairs(providedArgs) do
-                    if provided.name == arg.name then
-                        isProvided = true
-                        break
-                    end
-                end
-
-                if not isProvided and not arg.optional then
-                    table.insert(missingArgs, arg.name)
-                end
-            end
-
-            if #missingArgs > 0 then
-                -- Open the standard prompt
-                lia.command.openArgumentPrompt(commandName, missingArgs, providedArgs)
-
-                -- Could add custom validation or logging here
-                print("Opened argument prompt for command: " .. commandName)
-                print("Missing arguments: " .. table.concat(missingArgs, ", "))
-            else
-                -- All arguments provided, execute command directly
-                lia.command.run(LocalPlayer(), commandName, providedArgs)
-            end
-        end
-
-        -- Usage with complex command
-        local requiredArgs = {
-            {name = "target", type = "player"},
-            {name = "item", type = "string"},
-            {name = "quantity", type = "number", optional = true}
-        }
-
-        createCustomArgumentPrompt("giveitem", requiredArgs, {
-            {name = "target", value = targetPlayer}
-            -- item and quantity are missing
-        })
-        ```
+    ```lua
+    -- High: Open prompt for complex command with multiple argument types
+    lia.command.openArgumentPrompt("ban", {"reason", "duration"}, {"player1"})
+        -- Shows GUI with:
+        -- - Reason text field
+        -- - Duration number field
+        -- - Submit button (enabled when all required fields filled)
+        -- - Cancel button
+    ```
 ]]
     function lia.command.openArgumentPrompt(cmdKey, missing, prefix)
         local command = lia.command.list[cmdKey]
@@ -1063,72 +876,43 @@ else
 
     --[[
     Purpose:
-        Sends command execution data from client to server for processing.
-
+        Sends a command execution request from client to server via network
     When Called:
-        When a client needs to execute a command that requires server-side processing.
-
+        When client needs to execute a command on the server
     Parameters:
-        - command (string): The command name to execute.
-        - ... (varargs): Variable number of arguments to pass to the command.
-
+        command (string) - Command name, ... (vararg) - Command arguments
     Returns:
-        Nothing
-
+        void
     Realm:
         Client
-
     Example Usage:
 
-        Low Complexity:
+    Low Complexity:
 
-        ```lua
-        -- Simple: Send a command to server
-        lia.command.send("givemoney", targetPlayer, 1000)
-        ```
+    ```lua
+    -- Simple: Send basic command
+    lia.command.send("hello")
+    -- Sends hello command to server
+    ```
 
-        Medium Complexity:
+    Medium Complexity:
 
-        ```lua
-        -- Medium: Send command with multiple arguments
-        lia.command.send("ban", badPlayer, "Griefing", 60)
-        ```
+    ```lua
+    -- Medium: Send command with arguments
+    lia.command.send("pm", "player1", "Hello there!")
+    -- Sends PM command with target and message
+    ```
 
-        High Complexity:
+    High Complexity:
 
-        ```lua
-        -- High: Custom command sending with validation
-        local function sendCommandSafely(commandName, ...)
-            -- Validate command exists
-            if not lia.command.list[commandName] then
-                print("Command does not exist: " .. commandName)
-                return false
-            end
-
-            -- Check basic access (client-side check)
-            local hasAccess, privilegeName = lia.command.hasAccess(LocalPlayer(), commandName)
-            if not hasAccess then
-                print("Access denied: " .. privilegeName)
-                return false
-            end
-
-            -- Prepare arguments
-            local args = {...}
-
-            -- Log the command attempt
-            print("Sending command to server: " .. commandName .. " with " .. #args .. " arguments")
-
-            -- Send to server
-            lia.command.send(commandName, unpack(args))
-
-            return true
-        end
-
-        -- Usage examples
-        sendCommandSafely("teleport", targetPlayer, 100, 200, 300)
-        sendCommandSafely("sethealth", patient, 100)
-        sendCommandSafely("spawnitem", "health_kit", player:GetPos())
-        ```
+    ```lua
+    -- High: Send complex command with multiple arguments
+    local target = "player1"
+    local reason = "Rule violation"
+    local duration = 300
+    lia.command.send("ban", target, reason, duration)
+    -- Sends ban command with all parameters
+    ```
 ]]
     function lia.command.send(command, ...)
         net.Start("liaCommandData")
@@ -1196,6 +980,60 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
     })
 end)
 
+--[[
+    Purpose:
+        Alias for lia.util.findPlayer - finds a player by name, SteamID, or partial match
+    When Called:
+        When commands need to resolve player names to player entities
+    Parameters:
+        client (Player) - The player executing the command, name (string) - Player name or identifier to find
+    Returns:
+        Player or nil - Found player entity or nil if not found
+    Realm:
+        Shared
+    Example Usage:
+
+    Low Complexity:
+
+    ```lua
+    -- Simple: Find player by exact name
+    local target = lia.command.findPlayer(client, "John")
+    if IsValid(target) then
+        client:notify("Found player: " .. target:Name())
+    end
+    ```
+
+    Medium Complexity:
+
+    ```lua
+    -- Medium: Find player with error handling
+    local target = lia.command.findPlayer(client, "John")
+    if not IsValid(target) then
+        client:notifyError("Player not found!")
+        return
+    end
+    -- Use target player
+    ```
+
+    High Complexity:
+
+    ```lua
+    -- High: Find player with multiple fallback methods
+    local identifier = arguments[1] -- Could be name, SteamID, or partial match
+    local target = lia.command.findPlayer(client, identifier)
+
+    if not IsValid(target) then
+        client:notifyError("Player '" .. identifier .. "' not found!")
+        return
+        elseif target == client then
+            client:notifyError("You cannot target yourself!")
+            return
+        end
+
+        -- Execute command on target
+        target:Kick("Banned by " .. client:Name())
+    ```
+]]
 lia.command.findPlayer = lia.util.findPlayer
 if SERVER then
     concommand.Add("kickbots", function()
