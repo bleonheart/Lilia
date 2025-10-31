@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Server-Side Hooks
 
     Server-side hook system for the Lilia framework.
@@ -47,28 +47,29 @@
     ```
 
     High Complexity:
+
     ```lua
     -- High: Add warning with validation and logging
     hook.Add("AddWarning", "MyAddon", function(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)
-    -- Log the warning to a custom system
-    print(string.format("Warning issued: %s warned %s for: %s", warner, warned, message))
+        -- Log the warning to a custom system
+        print(string.format("Warning issued: %s warned %s for: %s", warner, warned, message))
 
-    -- Send notification to other admins
-    for _, admin in ipairs(player.GetAll()) do
-        if admin:IsAdmin() then
-            admin:ChatPrint(string.format("[WARNING] %s warned %s: %s", warner, warned, message))
+        -- Send notification to other admins
+        for _, admin in ipairs(player.GetAll()) do
+            if admin:IsAdmin() then
+                admin:ChatPrint(string.format("[WARNING] %s warned %s: %s", warner, warned, message))
+            end
         end
-    end
 
-    -- Check for warning limits
-    local warnings = hook.Run("GetWarnings", charID)
-    if #warnings >= 3 then
-        -- Auto-kick after 3 warnings
-        local target = player.GetBySteamID(warnedSteamID)
-        if IsValid(target) then
-            target:Kick("Too many warnings")
+        -- Check for warning limits
+        local warnings = hook.Run("GetWarnings", charID)
+        if #warnings >= 3 then
+            -- Auto-kick after 3 warnings
+            local target = player.GetBySteamID(warnedSteamID)
+            if IsValid(target) then
+                target:Kick("Too many warnings")
+            end
         end
-    end
     end)
     ```
 ]]

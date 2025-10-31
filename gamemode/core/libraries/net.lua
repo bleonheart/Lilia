@@ -31,6 +31,8 @@ lia.net.registry = lia.net.registry or {}
 
     Example Usage:
         Low Complexity:
+
+        
         ```lua
         -- Simple: Register a basic message handler
         lia.net.register("playerMessage", function(data)
@@ -39,6 +41,8 @@ lia.net.registry = lia.net.registry or {}
         ```
 
         Medium Complexity:
+
+        
         ```lua
         -- Medium: Register handler with validation
         lia.net.register("updateHealth", function(data)
@@ -49,6 +53,8 @@ lia.net.registry = lia.net.registry or {}
         ```
 
         High Complexity:
+
+        
         ```lua
         -- High: Register handler with multiple data types and error handling
         lia.net.register("syncInventory", function(data)
@@ -95,12 +101,16 @@ end
 
     Example Usage:
         Low Complexity:
+
+        
         ```lua
         -- Simple: Send message to all clients
         lia.net.send("playerMessage", nil, "Hello everyone!")
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+        
         ```lua
         -- Medium: Send message to specific player
         local targetPlayer = player.GetByID(1)
@@ -109,7 +119,9 @@ end
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+        
         ```lua
         -- High: Send message to multiple players with complex data
         local admins = {}
@@ -177,6 +189,8 @@ end
 
     Example Usage:
         Low Complexity:
+
+        
         ```lua
         -- Simple: Set up receiver for large data
         lia.net.readBigTable("largeData", function(data)
@@ -184,7 +198,9 @@ end
         end)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+        
         ```lua
         -- Medium: Set up receiver with validation
         lia.net.readBigTable("playerData", function(data)
@@ -198,7 +214,9 @@ end
         end)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+        
         ```lua
         -- High: Set up receiver with error handling and processing
         lia.net.readBigTable("inventorySync", function(data)
@@ -363,6 +381,8 @@ if SERVER then
 
         Example Usage:
             Low Complexity:
+
+        
             ```lua
             -- Simple: Send large table to all players
             local largeData = {}
@@ -372,7 +392,9 @@ if SERVER then
             lia.net.writeBigTable(nil, "largeData", largeData)
             ```
 
-            Medium Complexity Example:
+            Medium Complexity:
+
+        
             ```lua
             -- Medium: Send to specific players with custom chunk size
             local playerData = {}
@@ -394,7 +416,9 @@ if SERVER then
             lia.net.writeBigTable(admins, "adminPlayerData", playerData, 1024)
             ```
 
-            High Complexity Example:
+            High Complexity:
+
+        
             ```lua
             -- High: Send complex inventory data with validation and error handling
             local function sendInventoryData(targets)
@@ -512,12 +536,16 @@ if SERVER then
 
         Example Usage:
             Low Complexity:
+
+        
             ```lua
             -- Simple: Set a global variable
             setNetVar("serverName", "My Lilia Server")
             ```
 
-            Medium Complexity Example:
+            Medium Complexity:
+
+        
             ```lua
             -- Medium: Set variable with validation
             local function setMaxPlayers(count)
@@ -530,7 +558,9 @@ if SERVER then
             setMaxPlayers(64)
             ```
 
-            High Complexity Example:
+            High Complexity:
+
+        
             ```lua
             -- High: Set complex configuration with validation and hooks
             local function updateServerConfig(config)
@@ -628,13 +658,17 @@ if SERVER then
 
         Example Usage:
             Low Complexity:
+
+        
             ```lua
             -- Simple: Get a global variable
             local serverName = getNetVar("serverName", "Unknown Server")
             print("Server name:", serverName)
             ```
 
-            Medium Complexity Example:
+            Medium Complexity:
+
+        
             ```lua
             -- Medium: Get variable with validation
             local maxPlayers = getNetVar("maxPlayers", 32)
@@ -643,7 +677,9 @@ if SERVER then
             end
             ```
 
-            High Complexity Example:
+            High Complexity:
+
+        
             ```lua
             -- High: Get complex configuration with fallbacks
             local function getServerConfig()
@@ -690,13 +726,17 @@ else
 
         Example Usage:
             Low Complexity:
+
+        
             ```lua
             -- Simple: Get a global variable on client
             local serverName = getNetVar("serverName", "Unknown Server")
             print("Connected to:", serverName)
             ```
 
-            Medium Complexity Example:
+            Medium Complexity:
+
+        
             ```lua
             -- Medium: Get variable with UI update
             local maxPlayers = getNetVar("maxPlayers", 32)
@@ -705,7 +745,9 @@ else
             end
             ```
 
-            High Complexity Example:
+            High Complexity:
+
+        
             ```lua
             -- High: Get configuration and update multiple UI elements
             local function updateServerInfo()

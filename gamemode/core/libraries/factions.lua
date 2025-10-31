@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Faction Library
 
     Comprehensive faction (team) management and registration system for the Lilia framework.
@@ -54,25 +54,26 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
     ```
 
     High Complexity:
+
     ```lua
     -- High: Register faction with complex model data and bodygroups
     lia.faction.register("medic", {
-    name = "Medical Staff",
-    desc = "Emergency medical personnel",
-    color = Color(255, 0, 0),
-    models = {
-    "male" = {
-    {"models/player/medic_male.mdl", "Male Medic", {1, 2, 3}},
-    {"models/player/doctor_male.mdl", "Male Doctor", {0, 1, 2}}
-    },
-    "female" = {
-    {"models/player/medic_female.mdl", "Female Medic", {1, 2}},
-    {"models/player/doctor_female.mdl", "Female Doctor", {0, 1}}
-    }
-    },
-    weapons = {"weapon_medkit", "weapon_defibrillator"},
-    isDefault = false,
-    index = 5
+        name = "Medical Staff",
+        desc = "Emergency medical personnel",
+        color = Color(255, 0, 0),
+        models = {
+            male = {
+                {"models/player/medic_male.mdl", "Male Medic", {1, 2, 3}},
+                {"models/player/doctor_male.mdl", "Male Doctor", {0, 1, 2}}
+            },
+            female = {
+                {"models/player/medic_female.mdl", "Female Medic", {1, 2}},
+                {"models/player/doctor_female.mdl", "Female Doctor", {0, 1}}
+            }
+        },
+        weapons = {"weapon_medkit", "weapon_defibrillator"},
+        isDefault = false,
+        index = 5
     })
     ```
 ]]

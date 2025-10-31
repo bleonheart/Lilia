@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Attributes Library
 
     Character attribute management system for the Lilia framework.
@@ -41,17 +41,18 @@ lia.attribs.list = lia.attribs.list or {}
         end
         ```
 
-    High Complexity:
+        High Complexity:
+
         ```lua
         -- High: Load attributes from multiple directories with error handling
         local attributeDirs = {"gamemode/attributes", "modules/attributes", "plugins/attributes"}
         for _, dir in ipairs(attributeDirs) do
             if file.Exists(dir, "LUA") then
                 lia.attribs.loadFromDir(dir)
-                else
-                    print("Warning: Attribute directory not found: " .. dir)
-                end
+            else
+                print("Warning: Attribute directory not found: " .. dir)
             end
+        end
         ```
 ]]
 function lia.attribs.loadFromDir(directory)
