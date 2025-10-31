@@ -165,13 +165,16 @@ lia.meta.item.height = 1
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Get a basic item definition
     local itemDef = lia.item.get("base_weapons")
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Get item definition with validation
     local itemDef = lia.item.get("weapon_pistol")
@@ -181,6 +184,7 @@ lia.meta.item.height = 1
     ```
 
     High Complexity:
+
     ```lua
     -- High: Get item definition and check inheritance
     local itemDef = lia.item.get("custom_rifle")

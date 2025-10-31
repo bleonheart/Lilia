@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Time Library
 
     Time manipulation, formatting, and calculation system for the Lilia framework.
@@ -26,12 +26,14 @@ lia.time = lia.time or {}
 
     Example Usage:
     Low Complexity:
+
     ```lua
     -- Simple: Get time since a timestamp
     local lastSeen = lia.time.timeSince(1640995200) -- Returns "2 hours ago"
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Get time since a date string with validation
     local playerData = {lastLogin = "2024-01-01"}
@@ -101,7 +103,9 @@ end
         Shared (works on both client and server)
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Parse current time
     local timeData = lia.time.toNumber() -- Returns current time components
@@ -109,6 +113,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Parse specific date with validation
     local dateStr = "2024-01-15 14:30:45"
@@ -159,7 +164,9 @@ end
         Shared (works on both client and server)
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Display current date
     local currentDate = lia.time.getDate()
@@ -167,6 +174,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Use in UI with conditional formatting
     local dateStr = lia.time.getDate()
@@ -229,7 +237,9 @@ end
         Shared (works on both client and server)
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Format a duration
     local duration = lia.time.formatDHM(90000) -- Returns "1 day, 1 hour, 0 minutes"
@@ -237,6 +247,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Format cooldown with validation
     local cooldownTime = player:GetNWInt("cooldown", 0)
@@ -295,7 +306,9 @@ end
         Shared (works on both client and server)
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Get current hour
     local currentHour = lia.time.getHour()
@@ -303,6 +316,7 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Time-based greeting system
     local hour = lia.time.getHour()
@@ -313,24 +327,25 @@ end
         local hourNum = tonumber(hour:match("%d+"))
         if hourNum >= 6 and hourNum < 12 then
             greeting = "Good morning!"
-            elseif hourNum >= 12 and hourNum < 18 then
-                greeting = "Good afternoon!"
-                else
-                    greeting = "Good evening!"
-                end
-                else
-                    -- 24-hour format returns number
-                    if hour >= 6 and hour < 12 then
-                        greeting = "Good morning!"
-                        elseif hour >= 12 and hour < 18 then
-                            greeting = "Good afternoon!"
-                            else
-                                greeting = "Good evening!"
-                            end
-                        end
+        elseif hourNum >= 12 and hourNum < 18 then
+            greeting = "Good afternoon!"
+        else
+            greeting = "Good evening!"
+        end
+    else
+        -- 24-hour format returns number
+        if hour >= 6 and hour < 12 then
+            greeting = "Good morning!"
+        elseif hour >= 12 and hour < 18 then
+            greeting = "Good afternoon!"
+        else
+            greeting = "Good evening!"
+        end
+    end
     ```
 
     High Complexity:
+
     ```lua
     -- High: Dynamic server events based on time with multiple time zones
     local function getServerEvents()
@@ -344,26 +359,26 @@ end
             local isPM = hour:find("pm")
             if isPM and hourNum ~= 12 then
                 hourNum = hourNum + 12
-                elseif not isPM and hourNum == 12 then
-                    hourNum = 0
-                end
-                else
-                    hourNum = hour
-                end
+            elseif not isPM and hourNum == 12 then
+                hourNum = 0
+            end
+        else
+            hourNum = hour
+        end
 
-                -- Schedule events based on hour
-                if hourNum >= 0 and hourNum < 6 then
-                    table.insert(events, "Night shift bonus active")
-                    elseif hourNum >= 6 and hourNum < 12 then
-                        table.insert(events, "Morning rush hour")
-                        elseif hourNum >= 12 and hourNum < 18 then
-                            table.insert(events, "Afternoon activities")
-                            else
-                                table.insert(events, "Evening events")
-                            end
+        -- Schedule events based on hour
+        if hourNum >= 0 and hourNum < 6 then
+            table.insert(events, "Night shift bonus active")
+        elseif hourNum >= 6 and hourNum < 12 then
+            table.insert(events, "Morning rush hour")
+        elseif hourNum >= 12 and hourNum < 18 then
+            table.insert(events, "Afternoon activities")
+        else
+            table.insert(events, "Evening events")
+        end
 
-                            return events
-                        end
+        return events
+    end
     ```
 ]]
 function lia.time.getHour()
