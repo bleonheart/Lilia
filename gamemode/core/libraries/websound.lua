@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     WebSound Library
 
     Web-based audio content downloading, caching, and playback system for the Lilia framework.
@@ -147,9 +147,9 @@ end
             downloadCount = downloadCount + 1
             if path then
                 -- Downloaded sound
-                else
-                    -- Failed to download sound
-                end
+            else
+                -- Failed to download sound
+            end
 
                 if downloadCount == totalSounds then
                     -- All sounds processed
