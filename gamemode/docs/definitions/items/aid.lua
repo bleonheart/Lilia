@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the aid item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "aidName"
 --[[
 
     Purpose:
+
         Sets the description of the aid item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.desc = "aidDesc"
 --[[
 
     Purpose:
+
         Sets the 3D model for the aid item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.model = "models/weapons/w_package.mdl"
 --[[
 
     Purpose:
+
         Sets the inventory width of the aid item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.width = 1
 --[[
 
     Purpose:
+
         Sets the inventory height of the aid item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -90,9 +100,11 @@ ITEM.height = 1
 --[[
 
     Purpose:
+
         Sets the amount of health restored by the aid item
 
     When Called:
+
         During item definition (used in use functions)
     Example Usage:
 

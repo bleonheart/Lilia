@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the ammo item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "ammoName"
 --[[
 
     Purpose:
+
         Sets the 3D model for the ammo item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.model = "models/props_c17/SuitCase001a.mdl"
 --[[
 
     Purpose:
+
         Sets the inventory width of the ammo item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.width = 1
 --[[
 
     Purpose:
+
         Sets the inventory height of the ammo item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.height = 1
 --[[
 
     Purpose:
+
         Sets the ammo type for the item
 
     When Called:
+
         During item definition (used in use functions)
     Example Usage:
 
@@ -91,9 +101,11 @@ ITEM.ammo = "pistol"
 --[[
 
     Purpose:
+
         Sets the category for the ammo item
 
     When Called:
+
         During item definition
     Example Usage:
 

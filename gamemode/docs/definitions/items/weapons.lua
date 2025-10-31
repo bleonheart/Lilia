@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "weaponsName"
 --[[
 
     Purpose:
+
         Sets the description of the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.desc = "weaponsDesc"
 --[[
 
     Purpose:
+
         Sets the category for the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.category = "weapons"
 --[[
 
     Purpose:
+
         Sets the 3D model for the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.model = "models/weapons/w_pistol.mdl"
 --[[
 
     Purpose:
+
         Sets the weapon class name
 
     When Called:
+
         During item definition (used in equip/unequip functions)
     Example Usage:
 
@@ -90,9 +100,11 @@ ITEM.class = "weapon_pistol"
 --[[
 
     Purpose:
+
         Sets the inventory width of the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -104,9 +116,11 @@ ITEM.width = 2
 --[[
 
     Purpose:
+
         Sets the inventory height of the weapon item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -118,9 +132,11 @@ ITEM.height = 2
 --[[
 
     Purpose:
+
         Marks the item as a weapon
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -132,9 +148,11 @@ ITEM.isWeapon = true
 --[[
 
     Purpose:
+
         Sets required skill levels for the weapon
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -146,9 +164,11 @@ ITEM.RequiredSkillLevels = {}
 --[[
 
     Purpose:
+
         Sets whether the weapon drops when player dies
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -160,9 +180,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Post-hook for weapon dropping
 
     When Called:
+
         After weapon is dropped
     Example Usage:
 
@@ -180,9 +202,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Handles weapon dropping with ragdoll and equip checks
 
     When Called:
+
         When weapon is dropped
     Example Usage:
 
@@ -201,9 +225,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Prevents transfer of equipped weapons
 
     When Called:
+
         When attempting to transfer the weapon
     Example Usage:
 
@@ -217,9 +243,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Handles weapon loading on player spawn
 
     When Called:
+
         When player spawns with equipped weapon
     Example Usage:
 
@@ -242,9 +270,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Saves weapon ammo data
 
     When Called:
+
         When saving the weapon item
     Example Usage:
 
@@ -260,9 +290,11 @@ ITEM.DropOnDeath = true
 --[[
 
     Purpose:
+
         Custom name function for weapons (CLIENT only)
 
     When Called:
+
         When displaying weapon name
     Example Usage:
 

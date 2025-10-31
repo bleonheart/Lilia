@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the stackable item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "stackableName"
 --[[
 
     Purpose:
+
         Sets the 3D model for the stackable item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.model = "models/props_junk/cardboard_box001a.mdl"
 --[[
 
     Purpose:
+
         Sets the inventory width of the stackable item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.width = 1
 --[[
 
     Purpose:
+
         Sets the inventory height of the stackable item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.height = 1
 --[[
 
     Purpose:
+
         Marks the item as stackable
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -90,9 +100,11 @@ ITEM.isStackable = true
 --[[
 
     Purpose:
+
         Sets the maximum quantity for the stackable item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -104,9 +116,11 @@ ITEM.maxQuantity = 10
 --[[
 
     Purpose:
+
         Sets whether the item can be split
 
     When Called:
+
         During item definition
     Example Usage:
 

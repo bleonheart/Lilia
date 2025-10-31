@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the book item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "booksName"
 --[[
 
     Purpose:
+
         Sets the description of the book item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.desc = "booksDesc"
 --[[
 
     Purpose:
+
         Sets the category for the book item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.category = "itemCatLiterature"
 --[[
 
     Purpose:
+
         Sets the 3D model for the book item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.model = "models/props_lab/bindergraylabel01b.mdl"
 --[[
 
     Purpose:
+
         Sets the HTML content to display when reading the book
 
     When Called:
+
         During item definition (used in Read function)
     Example Usage:
 

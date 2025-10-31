@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the URL item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "urlName"
 --[[
 
     Purpose:
+
         Sets the description of the URL item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.desc = "urlDesc"
 --[[
 
     Purpose:
+
         Sets the 3D model for the URL item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.model = "models/props_interiors/pot01a.mdl"
 --[[
 
     Purpose:
+
         Sets the URL to open when the item is used
 
     When Called:
+
         During item definition (used in use function)
     Example Usage:
 

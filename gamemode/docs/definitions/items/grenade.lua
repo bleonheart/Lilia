@@ -20,9 +20,11 @@
 --[[
 
     Purpose:
+
         Sets the display name of the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -34,9 +36,11 @@ ITEM.name = "grenadeName"
 --[[
 
     Purpose:
+
         Sets the description of the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -48,9 +52,11 @@ ITEM.desc = "grenadeDesc"
 --[[
 
     Purpose:
+
         Sets the category for the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -62,9 +68,11 @@ ITEM.category = "itemCatGrenades"
 --[[
 
     Purpose:
+
         Sets the 3D model for the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -76,9 +84,11 @@ ITEM.model = "models/weapons/w_eq_fraggrenade.mdl"
 --[[
 
     Purpose:
+
         Sets the weapon class name for the grenade
 
     When Called:
+
         During item definition (used in Use function)
     Example Usage:
 
@@ -90,9 +100,11 @@ ITEM.class = "weapon_frag"
 --[[
 
     Purpose:
+
         Sets the inventory width of the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -104,9 +116,11 @@ ITEM.width = 1
 --[[
 
     Purpose:
+
         Sets the inventory height of the grenade item
 
     When Called:
+
         During item definition
     Example Usage:
 
@@ -118,9 +132,11 @@ ITEM.height = 1
 --[[
 
     Purpose:
+
         Sets whether the grenade drops when player dies
 
     When Called:
+
         During item definition
     Example Usage:
 

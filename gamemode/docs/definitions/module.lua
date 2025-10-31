@@ -32,6 +32,7 @@
 --[[
 
     Purpose:
+
         Sets the display name of the module
     Example Usage:
 
@@ -44,6 +45,7 @@ MODULE.name = ""
 --[[
 
     Purpose:
+
         Sets the author of the module
     Example Usage:
 
@@ -56,6 +58,7 @@ MODULE.author = ""
 --[[
 
     Purpose:
+
         Sets the Discord contact for the module author
     Example Usage:
 
@@ -68,6 +71,7 @@ MODULE.discord = ""
 --[[
 
     Purpose:
+
         Sets the description of the module
     Example Usage:
 
@@ -80,6 +84,7 @@ MODULE.desc = ""
 --[[
 
     Purpose:
+
         Sets the version number of the module
     Example Usage:
 
@@ -92,6 +97,7 @@ MODULE.version = 0
 --[[
 
     Purpose:
+
         Sets the unique version identifier for the module
     Example Usage:
 
@@ -104,9 +110,11 @@ MODULE.versionID = ""
 --[[
 
     Purpose:
+
         Unique identifier for the module (INTERNAL - set automatically when loaded)
 
     When Called:
+
         Set automatically during module loading
     Note: This property is internal and should not be modified directly
     Example Usage:
@@ -120,6 +128,7 @@ MODULE.uniqueID = ""
 --[[
 
     Purpose:
+
         Sets the privileges required for this module
     Example Usage:
 
@@ -137,6 +146,7 @@ MODULE.Privileges = {}
 --[[
 
     Purpose:
+
         Sets the file dependencies for this module
     Example Usage:
 
@@ -154,6 +164,7 @@ MODULE.Dependencies = {}
 --[[
 
     Purpose:
+
         Sets the network strings used by this module
     Example Usage:
 
@@ -166,6 +177,7 @@ MODULE.NetworkStrings = {}
 --[[
 
     Purpose:
+
         Sets the Workshop content IDs required by this module
     Example Usage:
 
@@ -179,6 +191,7 @@ MODULE.WorkshopContent = ""
 --[[
 
     Purpose:
+
         Sets the web-hosted sound files used by this module
     Example Usage:
 
@@ -193,6 +206,7 @@ MODULE.WebSounds = {}
 --[[
 
     Purpose:
+
         Sets the web-hosted image files used by this module
     Example Usage:
 
@@ -207,6 +221,7 @@ MODULE.WebImages = {}
 --[[
 
     Purpose:
+
         Sets whether the module is enabled by default
     Example Usage:
 
@@ -219,6 +234,7 @@ MODULE.enabled = true
 --[[
 
     Purpose:
+
         Sets the folder path for the module
     Internal Variable: This is set automatically by the module system
 ]]
@@ -226,6 +242,7 @@ MODULE.folder = ""
 --[[
 
     Purpose:
+
         Sets the file path for the module
     Internal Variable: This is set automatically by the module system
 ]]
@@ -233,6 +250,7 @@ MODULE.path = ""
 --[[
 
     Purpose:
+
         Sets the variable name for the module
     Internal Variable: This is set automatically by the module system
 ]]
@@ -240,6 +258,7 @@ MODULE.variable = ""
 --[[
 
     Purpose:
+
         Sets whether the module is currently loading
     Internal Variable: This is set automatically by the module system
 ]]
@@ -247,9 +266,11 @@ MODULE.loading = false
 --[[
 
     Purpose:
+
         Called when the module is fully loaded
 
     When Called:
+
         After all module files have been loaded and initialized
 
     Parameters:
