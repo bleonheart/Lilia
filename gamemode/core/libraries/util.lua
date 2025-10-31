@@ -25,13 +25,20 @@
         Both (Universal)
 
     Example Usage:
+
     Low Complexity:
+
+    
+
     ```lua
     -- Simple: Find players in a small area around a position
     local players = lia.util.findPlayersInBox(Vector(-100, -100, -50), Vector(100, 100, 50))
     ```
 
     Medium Complexity:
+
+    
+
     ```lua
     -- Medium: Find players in a zone and notify them
     local zonePlayers = lia.util.findPlayersInBox(zoneMin, zoneMax)
@@ -41,6 +48,9 @@
     ```
 
     High Complexity:
+
+    
+
     ```lua
     -- High: Create a dynamic zone system with multiple areas
     local zones = {
@@ -82,13 +92,19 @@ end
         Both (Universal)
 
     Example Usage:
+
     Low Complexity:
+
+    
+
     ```lua
     -- Simple: Find player by Steam ID
     local player = lia.util.getBySteamID("STEAM_0:0:12345678")
     ```
 
     Medium Complexity:
+
+    
 
     ```lua
     -- Medium: Check if player is online before performing action
@@ -101,6 +117,8 @@ end
     ```
 
     High Complexity:
+
+    
     ```lua
     -- High: Process multiple Steam IDs with validation
     local steamIDs = {"STEAM_0:0:123456", "STEAM_0:1:789012", "76561198012345678"}
@@ -145,13 +163,20 @@ end
         Both (Universal)
 
     Example Usage:
+
     Low Complexity:
+
+    
+
     ```lua
     -- Simple: Find players within 500 units of a position
     local nearbyPlayers = lia.util.findPlayersInSphere(playerPos, 500)
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
+
     ```lua
     -- Medium: Apply effect to players within radius
     local explosionPos = Vector(100, 200, 50)
@@ -163,7 +188,10 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
+
     ```lua
     -- High: Create a zone system with multiple overlapping spheres
     local zones = {
@@ -215,13 +243,19 @@ end
         Both (Universal)
 
     Example Usage:
+
     Low Complexity:
+
+    
+
     ```lua
     -- Simple: Find player by partial name
     local targetPlayer = lia.util.findPlayer(client, "John")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Find player and perform action with error handling
     local targetPlayer = lia.util.findPlayer(client, targetSteamID)
@@ -231,7 +265,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a player selection system with multiple methods
     local function selectPlayer(admin, identifier)
@@ -319,12 +355,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find all items dropped by a player
     local playerItems = lia.util.findPlayerItems(somePlayer)
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Clean up items after player disconnects
     local droppedItems = lia.util.findPlayerItems(disconnectingPlayer)
@@ -333,7 +373,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create an item management system with ownership tracking
     local function managePlayerItems(player, action)
@@ -377,12 +419,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find all weapons dropped by a player
     local droppedWeapons = lia.util.findPlayerItemsByClass(player, "weapon_ar2")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Remove specific item types after player death
     local healthKits = lia.util.findPlayerItemsByClass(deadPlayer, "item_healthkit")
@@ -391,7 +437,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create an inventory management system with class-based filtering
     local function cleanupPlayerItems(player, itemClasses)
@@ -439,12 +487,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find all entities created by a player
     local playerEntities = lia.util.findPlayerEntities(somePlayer)
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Find specific entity types created by player
     local playerProps = lia.util.findPlayerEntities(player, "prop_physics")
@@ -453,7 +505,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create an entity management system with ownership tracking
     local function managePlayerEntities(player, action, classFilter)
@@ -504,12 +558,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Check if strings are equal (case-insensitive)
     local matches = lia.util.stringMatches("Hello", "hello")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Check if player name contains search term
     local function playerNameMatches(player, searchTerm)
@@ -517,7 +575,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a flexible search system with multiple criteria
     local function advancedStringSearch(text, searchTerms)
@@ -569,12 +629,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Get all online admins
     local admins = lia.util.getAdmins()
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Send notification to all admins
     local admins = lia.util.getAdmins()
@@ -583,7 +647,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create an admin monitoring system with activity tracking
     local function getActiveAdmins()
@@ -635,12 +701,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find player by Steam ID 64
     local player = lia.util.findPlayerBySteamID64("76561198012345678")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Check if Steam ID 64 is currently online
     local targetPlayer = lia.util.findPlayerBySteamID64(steamID64)
@@ -649,7 +719,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Process multiple Steam ID 64s for batch operations
     local steamID64s = {"76561198012345678", "76561198098765432", "76561198111111111"}
@@ -691,12 +763,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find player by Steam ID
     local player = lia.util.findPlayerBySteamID("STEAM_0:0:12345678")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Verify player identity before action
     local targetPlayer = lia.util.findPlayerBySteamID(steamID)
@@ -705,7 +781,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a player tracking system with Steam ID validation
     local function trackPlayerActivity(steamID)
@@ -756,12 +834,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Check if player can fit at position
     local canTeleport = lia.util.canFit(targetPosition)
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Validate spawn position for entity
     local spawnPos = Vector(100, 200, 50)
@@ -772,7 +854,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a smart placement system with multiple validation checks
     local function findValidPlacement(centerPos, entitySize, attempts)
@@ -830,12 +914,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find players within 100 units
     local nearbyPlayers = lia.util.playerInRadius(playerPos, 100)
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Apply area effect to players in radius
     local explosionCenter = Vector(500, 300, 100)
@@ -847,7 +935,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a zone management system with multiple areas
     local zones = {
@@ -902,19 +992,25 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Format string with individual arguments
     local message = lia.util.formatStringNamed("Hello {name}!", "John")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Format string with named parameters
     local data = {name = "Alice", score = 150}
     local message = lia.util.formatStringNamed("Player {name} scored {score} points!", data)
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a templating system with complex data structures
     local template = "Player {name} from {faction} has {health} HP and {money} credits"
@@ -978,12 +1074,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Get a cached material
     local blurMaterial = lia.util.getMaterial("pp/blurscreen")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Use material for rendering effects
     local material = lia.util.getMaterial("effects/flashlight001")
@@ -992,7 +1092,9 @@ end
     surface.DrawTexturedRect(x, y, w, h)
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a material management system with preloading
     local materialCache = {}
@@ -1042,12 +1144,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Find faction by name
     local faction = lia.util.findFaction(player, "Security")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Check faction before performing action
     local faction = lia.util.findFaction(client, factionName)
@@ -1057,7 +1163,9 @@ end
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a faction management system with validation
     local function managePlayerFaction(admin, targetPlayer, factionName, action)
@@ -1184,12 +1292,16 @@ end
 
     Example Usage:
     Low Complexity:
+
+    
     ```lua
     -- Simple: Generate a random name using defaults
     local randomName = lia.util.generateRandomName()
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
+    
     ```lua
     -- Medium: Generate name with custom name lists
     local fantasyFirstNames = {"Aragorn", "Legolas", "Gimli", "Frodo"}
@@ -1197,7 +1309,9 @@ end
     local fantasyName = lia.util.generateRandomName(fantasyFirstNames, fantasyLastNames)
     ```
 
-    High Complexity Example:
+    High Complexity:
+
+    
     ```lua
     -- High: Create a name generation system with cultural variations
     local nameCultures = {
@@ -1260,6 +1374,8 @@ if SERVER then
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Send basic player list
         local columns = {
@@ -1274,7 +1390,9 @@ if SERVER then
         lia.util.sendTableUI(client, "Player List", columns, data)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Send inventory with action options
         local columns = {
@@ -1289,7 +1407,9 @@ if SERVER then
         lia.util.sendTableUI(client, "Inventory", columns, inventoryData, options, characterID)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a comprehensive admin panel with multiple data types
         local function sendAdminPanel(admin, targetPlayer)
@@ -1362,12 +1482,16 @@ if SERVER then
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Find nearby empty spaces
         local emptySpaces = lia.util.findEmptySpace(someEntity)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Find spawn locations for NPCs around player
         local spawnPositions = lia.util.findEmptySpace(player, player, 64, 5, 72, 10)
@@ -1379,7 +1503,9 @@ if SERVER then
             end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a smart spawning system with validation
         local function spawnEntitiesInArea(centerEntity, entityType, count, spacing)
@@ -1473,6 +1599,8 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Basic panel appearance animation
         local panel = vgui.Create("DPanel")
@@ -1480,7 +1608,9 @@ else
         lia.util.animateAppearance(panel, 200, 100)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Animate panel with custom duration and callback
         local frame = vgui.Create("DFrame")
@@ -1493,7 +1623,9 @@ else
         end)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a complex UI system with staggered animations
         local function createAnimatedMenu(title, options)
@@ -1587,6 +1719,8 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Keep panel within screen bounds
         local panel = vgui.Create("DPanel")
@@ -1594,7 +1728,9 @@ else
         lia.util.clampMenuPosition(panel) -- Will move panel back on screen
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a draggable panel that stays within bounds
         local frame = vgui.Create("DFrame")
@@ -1607,7 +1743,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a smart positioning system for multiple panels
         local function positionPanelsSmartly(panels)
@@ -1725,12 +1863,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Draw a basic gradient background
         lia.util.drawGradient(100, 100, 200, 150, 2, Color(0, 0, 0, 150))
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a gradient panel background
         local panel = vgui.Create("DPanel")
@@ -1739,7 +1881,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create animated gradient backgrounds
         local gradients = {
@@ -1793,12 +1937,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Wrap text to fit in a label
         local lines, maxWidth = lia.util.wrapText("This is a long text that needs wrapping", 200)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a multi-line label with wrapped text
         local text = "This is a very long description that should wrap to multiple lines when displayed in the UI."
@@ -1816,7 +1964,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a dynamic text wrapping system with font scaling
         local function createResponsiveTextPanel(text, maxWidth, fontBase)
@@ -1903,13 +2053,17 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Add basic blur behind a panel
         local panel = vgui.Create("DPanel")
         lia.util.drawBlur(panel, 5, nil, 200)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a blurred dialog background
         local frame = vgui.Create("DFrame")
@@ -1923,7 +2077,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create an animated blur effect system
         local blurIntensity = 0
@@ -2003,13 +2159,17 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Add dark blur behind a panel
         local panel = vgui.Create("DPanel")
         lia.util.drawBlackBlur(panel, 6, 5, 255, 220)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a cinematic menu with dark blur
         local menu = vgui.Create("DFrame")
@@ -2023,7 +2183,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create an adaptive blur system based on context
         local function drawContextualBlur(panel, context)
@@ -2106,12 +2268,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Blur a specific screen area
         lia.util.drawBlurAt(100, 100, 200, 150, 5, 0.2, 255)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create a blurred HUD overlay for damage effects
         local function drawDamageOverlay(damage)
@@ -2120,7 +2286,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a dynamic minimap with blur effects
         local function drawMinimapWithEffects(playerPos, mapSize)
@@ -2179,12 +2347,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Create basic table UI
         local frame, listView = lia.util.createTableUI("Player List", columns, playerData)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create table with action options
         local options = {
@@ -2194,7 +2366,9 @@ else
         local frame, listView = lia.util.createTableUI("Admin Panel", columns, data, options, charID)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create comprehensive data management interface
         local function createDataManager(dataType)
@@ -2386,6 +2560,8 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Create basic options menu
         local frame = lia.util.openOptionsMenu("Choose Action", {
@@ -2394,7 +2570,9 @@ else
         })
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Create contextual options menu
         local options = {
@@ -2405,7 +2583,9 @@ else
         lia.util.openOptionsMenu("Player Actions", options)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create dynamic options system with categories
         local function createCategorizedOptions(categories)
@@ -2564,12 +2744,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Draw text above an entity
         lia.util.drawEntText(someEntity, "Important Item")
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Draw contextual entity information
         local function drawEntityInfo(ent)
@@ -2582,7 +2766,9 @@ else
             end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create a comprehensive entity labeling system
         local function drawSmartEntityLabels()
@@ -2693,12 +2879,16 @@ else
 
         Example Usage:
         Low Complexity:
+
+    
         ```lua
         -- Simple: Draw text where player is looking
         lia.util.drawLookText("Target Location")
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
+    
         ```lua
         -- Medium: Show distance-based information
         local trace = LocalPlayer():GetEyeTrace()
@@ -2708,7 +2898,9 @@ else
         end
         ```
 
-        High Complexity Example:
+        High Complexity:
+
+    
         ```lua
         -- High: Create an interactive world information system
         local function drawContextualWorldInfo()
