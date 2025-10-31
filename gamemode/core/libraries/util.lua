@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Utility Library
 
     Common operations and helper functions for the Lilia framework.
@@ -89,14 +89,15 @@ end
     ```
 
     Medium Complexity:
+
     ```lua
     -- Medium: Check if player is online before performing action
     local targetPlayer = lia.util.getBySteamID(playerSteamID)
     if IsValid(targetPlayer) then
         targetPlayer:giveMoney(1000)
-        else
-            print("Player not found or offline")
-        end
+    else
+        print("Player not found or offline")
+    end
     ```
 
     High Complexity:
