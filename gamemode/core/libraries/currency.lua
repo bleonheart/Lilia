@@ -15,7 +15,6 @@ lia.currency.symbol = lia.config.get("CurrencySymbol", "")
 lia.currency.singular = L(lia.config.get("CurrencySingularName", "currencySingular"))
 lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
 --[[
-
     Purpose:
         Formats a currency amount with the proper symbol, singular/plural form, and localization.
 
@@ -32,10 +31,9 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
         Low Complexity:
-
             ```lua
             -- Simple: Format a basic currency amount
             local formatted = lia.currency.get(100)
@@ -43,7 +41,6 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
             ```
 
         Medium Complexity:
-
             ```lua
             -- Medium: Format currency with conditional display
             local playerMoney = 1500
@@ -54,7 +51,6 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
             ```
 
         High Complexity:
-
             ```lua
             -- High: Format multiple currency amounts with validation
             local transactions = {100, 1, 0, -50, 2500}
@@ -73,7 +69,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Creates and spawns a physical money entity at the specified position with the given amount.
 
@@ -94,10 +89,9 @@ if SERVER then
 
         Realm:
             Server only
+
         Example Usage:
-
             Low Complexity:
-
                 ```lua
                 -- Simple: Spawn money at player's position
                 local pos = player:GetPos()
@@ -105,7 +99,6 @@ if SERVER then
                 ```
 
             Medium Complexity:
-
                 ```lua
                 -- Medium: Spawn money with specific angle and validation
                 local dropPos = trace.HitPos
@@ -119,7 +112,6 @@ if SERVER then
                 ```
 
             High Complexity:
-
                 ```lua
                 -- High: Spawn multiple money entities with advanced positioning
                 local spawnPositions = {

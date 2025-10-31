@@ -9,7 +9,6 @@
 ]]
 lia.time = lia.time or {}
 --[[
-
     Purpose:
         Calculate and return a human-readable string representing how long ago a given time was
 
@@ -24,17 +23,15 @@ lia.time = lia.time or {}
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get time since a timestamp
     local lastSeen = lia.time.timeSince(1640995200) -- Returns "2 hours ago"
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get time since a date string with validation
     local playerData = {lastLogin = "2024-01-01"}
@@ -45,7 +42,6 @@ lia.time = lia.time or {}
     ```
 
     High Complexity:
-
     ```lua
     -- High: Batch process multiple timestamps with error handling
     local timestamps = {1640995200, "2024-01-01", 1641081600}
@@ -89,7 +85,6 @@ function lia.time.timeSince(strTime)
 end
 
 --[[
-
     Purpose:
         Parse a date/time string and convert it into a structured table with individual time components
 
@@ -104,10 +99,9 @@ end
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Parse current time
     local timeData = lia.time.toNumber() -- Returns current time components
@@ -115,7 +109,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Parse specific date with validation
     local dateStr = "2024-01-15 14:30:45"
@@ -126,7 +119,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Batch parse multiple dates and validate ranges
     local dates = {"2024-01-01 00:00:00", "2024-12-31 23:59:59", "2023-06-15 12:30:00"}
@@ -151,7 +143,6 @@ function lia.time.toNumber(str)
 end
 
 --[[
-
     Purpose:
         Get a formatted, localized string representation of the current date and time
 
@@ -166,10 +157,9 @@ end
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Display current date
     local currentDate = lia.time.getDate()
@@ -177,7 +167,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Use in UI with conditional formatting
     local dateStr = lia.time.getDate()
@@ -186,7 +175,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Log system with date formatting and multiple outputs
     local function logWithTimestamp(message)
@@ -225,7 +213,6 @@ function lia.time.getDate()
 end
 
 --[[
-
     Purpose:
         Format a duration in seconds into a human-readable string showing days, hours, and minutes
 
@@ -240,10 +227,9 @@ end
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Format a duration
     local duration = lia.time.formatDHM(90000) -- Returns "1 day, 1 hour, 0 minutes"
@@ -251,7 +237,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Format cooldown with validation
     local cooldownTime = player:GetNWInt("cooldown", 0)
@@ -262,7 +247,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Multiple duration formatting with conditional display
     local function formatMultipleDurations(durations)
@@ -295,7 +279,6 @@ function lia.time.formatDHM(seconds)
 end
 
 --[[
-
     Purpose:
         Get the current hour in either 12-hour (AM/PM) or 24-hour format based on configuration
 
@@ -310,10 +293,9 @@ end
 
     Realm:
         Shared (works on both client and server)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get current hour
     local currentHour = lia.time.getHour()
@@ -321,7 +303,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Time-based greeting system
     local hour = lia.time.getHour()
@@ -350,7 +331,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic server events based on time with multiple time zones
     local function getServerEvents()

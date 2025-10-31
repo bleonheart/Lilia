@@ -66,7 +66,6 @@ local function validateURL(url)
 end
 
 --[[
-
     Purpose:
         Downloads an image from a URL and caches it locally for future use
 
@@ -84,16 +83,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Download a single image
         lia.webimage.download("logo", "https://example.com/logo.png")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Download with callback and custom flags
         lia.webimage.download("avatar", "https://example.com/avatar.jpg", function(material, fromCache)
@@ -106,7 +104,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Batch download with error handling and progress tracking
         local images = {
@@ -217,7 +214,6 @@ function lia.webimage.download(n, u, cb, flags)
 end
 
 --[[
-
     Purpose:
         Registers an image URL for future use and immediately downloads it
 
@@ -235,16 +231,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Register and download a single image
         lia.webimage.register("logo", "https://example.com/logo.png")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Register with callback for UI updates
         lia.webimage.register("avatar", "https://example.com/avatar.jpg", function(material)
@@ -256,7 +251,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Register multiple images with progress tracking
         local imageConfigs = {
@@ -290,7 +284,6 @@ function lia.webimage.register(n, u, cb, flags)
 end
 
 --[[
-
     Purpose:
         Retrieves a cached material from a previously downloaded image
 
@@ -306,9 +299,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get a cached material
         local logo = lia.webimage.get("logo")
@@ -319,7 +312,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get material with custom flags and fallback
         local avatar = lia.webimage.get("avatar", "noclamp smooth")
@@ -331,7 +323,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Batch retrieval with validation and error handling
         local imageNames = {"banner", "icon", "background", "logo"}
@@ -445,7 +436,6 @@ function dimage:SetImage(src, backup)
 end
 
 --[[
-
     Purpose:
         Retrieves statistics about downloaded and stored web images
 
@@ -460,9 +450,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get basic statistics
         local stats = lia.webimage.getStats()
@@ -471,7 +461,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Display statistics in a panel
         local stats = lia.webimage.getStats()
@@ -492,7 +481,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Create a comprehensive statistics dashboard
         local function createStatsDashboard()

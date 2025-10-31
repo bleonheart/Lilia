@@ -9,7 +9,6 @@
 ]]
 local panelMeta = FindMetaTable("Panel")
 --[[
-
     Purpose:
         Sets up event listeners for inventory changes on a panel
 
@@ -24,16 +23,15 @@ local panelMeta = FindMetaTable("Panel")
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set up inventory listening for a basic panel
         panel:liaListenForInventoryChanges(playerInventory)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set up inventory listening with conditional setup
         if playerInventory then
@@ -42,7 +40,6 @@ local panelMeta = FindMetaTable("Panel")
         ```
 
         High Complexity:
-
         ```lua
         -- High: Set up inventory listening for multiple panels with error handling
         local panels = {inventoryPanel, characterPanel, equipmentPanel}
@@ -92,7 +89,6 @@ function panelMeta:liaListenForInventoryChanges(inventory)
 end
 
 --[[
-
     Purpose:
         Removes inventory change event listeners from a panel
 
@@ -107,16 +103,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Remove hooks for a specific inventory
         panel:liaDeleteInventoryHooks(inventoryID)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Clean up hooks when closing a panel
         if IsValid(panel) then
@@ -125,7 +120,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Clean up multiple panels with different inventory IDs
         local panels = {inventoryPanel, equipmentPanel, storagePanel}
@@ -160,7 +154,6 @@ function panelMeta:liaDeleteInventoryHooks(id)
 end
 
 --[[
-
     Purpose:
         Sets the position of a panel with automatic screen scaling
 
@@ -176,16 +169,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Position a button at scaled coordinates
         button:setScaledPos(100, 50)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Position panel based on screen dimensions
         local x = ScrW() * 0.5 - 200
@@ -194,7 +186,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Position multiple panels with responsive layout
         local panels = {mainPanel, sidePanel, footerPanel}
@@ -222,7 +213,6 @@ function panelMeta:setScaledPos(x, y)
 end
 
 --[[
-
     Purpose:
         Sets the size of a panel with automatic screen scaling
 
@@ -238,16 +228,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set panel size with scaled dimensions
         panel:setScaledSize(400, 300)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set size based on screen proportions
         local w = ScrW() * 0.8
@@ -256,7 +245,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Set sizes for multiple panels with responsive layout
         local panels = {mainPanel, sidePanel, footerPanel}

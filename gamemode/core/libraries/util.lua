@@ -8,7 +8,6 @@
         The utility library provides comprehensive functionality for common operations and helper functions used throughout the Lilia framework. It contains a wide range of utilities for player management, string processing, entity handling, UI operations, and general purpose calculations. The library is divided into server-side functions for game logic and data management, and client-side functions for user interface, visual effects, and player interaction. These utilities simplify complex operations, provide consistent behavior across the framework, and offer reusable components for modules and plugins. The library handles everything from player identification and spatial queries to advanced UI animations and text processing, ensuring robust and efficient operations across both server and client environments.
 ]]
 --[[
-
     Purpose:
         Find all players within a specified 3D box area
 
@@ -24,17 +23,15 @@
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find players in a small area around a position
     local players = lia.util.findPlayersInBox(Vector(-100, -100, -50), Vector(100, 100, 50))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Find players in a zone and notify them
     local zonePlayers = lia.util.findPlayersInBox(zoneMin, zoneMax)
@@ -44,7 +41,6 @@
     ```
 
     High Complexity:
-
     ```lua
     -- High: Create a dynamic zone system with multiple areas
     local zones = {
@@ -70,7 +66,6 @@ function lia.util.findPlayersInBox(mins, maxs)
 end
 
 --[[
-
     Purpose:
         Find a player by their Steam ID or Steam ID 64
 
@@ -85,17 +80,15 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find player by Steam ID
     local player = lia.util.getBySteamID("STEAM_0:0:12345678")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check if player is online before performing action
     local targetPlayer = lia.util.getBySteamID(playerSteamID)
@@ -107,7 +100,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Process multiple Steam IDs with validation
     local steamIDs = {"STEAM_0:0:123456", "STEAM_0:1:789012", "76561198012345678"}
@@ -135,7 +127,6 @@ function lia.util.getBySteamID(steamID)
 end
 
 --[[
-
     Purpose:
         Find all players within a specified spherical radius from a center point
 
@@ -151,10 +142,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find players within 500 units of a position
     local nearbyPlayers = lia.util.findPlayersInSphere(playerPos, 500)
@@ -207,7 +197,6 @@ function lia.util.findPlayersInSphere(origin, radius)
 end
 
 --[[
-
     Purpose:
         Find a player by various identifier types including Steam ID, Steam ID 64, name, or special selectors
 
@@ -223,10 +212,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find player by partial name
     local targetPlayer = lia.util.findPlayer(client, "John")
@@ -313,7 +301,6 @@ function lia.util.findPlayer(client, identifier)
 end
 
 --[[
-
     Purpose:
         Find all items created by a specific player in the world
 
@@ -328,10 +315,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find all items dropped by a player
     local playerItems = lia.util.findPlayerItems(somePlayer)
@@ -373,7 +359,6 @@ function lia.util.findPlayerItems(client)
 end
 
 --[[
-
     Purpose:
         Find all items of a specific class created by a particular player
 
@@ -389,10 +374,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find all weapons dropped by a player
     local droppedWeapons = lia.util.findPlayerItemsByClass(player, "weapon_ar2")
@@ -437,7 +421,6 @@ function lia.util.findPlayerItemsByClass(client, class)
 end
 
 --[[
-
     Purpose:
         Find all entities created by or associated with a specific player, optionally filtered by class
 
@@ -453,10 +436,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find all entities created by a player
     local playerEntities = lia.util.findPlayerEntities(somePlayer)
@@ -504,7 +486,6 @@ function lia.util.findPlayerEntities(client, class)
 end
 
 --[[
-
     Purpose:
         Check if two strings match using flexible comparison methods including case-insensitive and partial matching
 
@@ -520,10 +501,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if strings are equal (case-insensitive)
     local matches = lia.util.stringMatches("Hello", "hello")
@@ -572,7 +552,6 @@ function lia.util.stringMatches(a, b)
 end
 
 --[[
-
     Purpose:
         Get a list of all currently online administrators/staff members
 
@@ -587,10 +566,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get all online admins
     local admins = lia.util.getAdmins()
@@ -640,7 +618,6 @@ function lia.util.getAdmins()
 end
 
 --[[
-
     Purpose:
         Find a player by their Steam ID 64, converting it to Steam ID format first
 
@@ -655,10 +632,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find player by Steam ID 64
     local player = lia.util.findPlayerBySteamID64("76561198012345678")
@@ -698,7 +674,6 @@ function lia.util.findPlayerBySteamID64(SteamID64)
 end
 
 --[[
-
     Purpose:
         Find a player by their Steam ID
 
@@ -713,10 +688,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find player by Steam ID
     local player = lia.util.findPlayerBySteamID("STEAM_0:0:12345678")
@@ -762,7 +736,6 @@ function lia.util.findPlayerBySteamID(SteamID)
 end
 
 --[[
-
     Purpose:
         Check if an entity can fit at a specific position without colliding with solid objects
 
@@ -780,10 +753,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if player can fit at position
     local canTeleport = lia.util.canFit(targetPosition)
@@ -840,7 +812,6 @@ function lia.util.canFit(pos, mins, maxs, filter)
 end
 
 --[[
-
     Purpose:
         Find all players within a specified radius from a center position
 
@@ -856,10 +827,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find players within 100 units
     local nearbyPlayers = lia.util.playerInRadius(playerPos, 100)
@@ -914,7 +884,6 @@ function lia.util.playerInRadius(pos, dist)
 end
 
 --[[
-
     Purpose:
         Format a string using named placeholders with flexible argument handling
 
@@ -930,10 +899,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Format string with individual arguments
     local message = lia.util.formatStringNamed("Hello {name}!", "John")
@@ -992,7 +960,6 @@ function lia.util.formatStringNamed(format, ...)
 end
 
 --[[
-
     Purpose:
         Get a cached material object from a file path, creating it if it doesn't exist
 
@@ -1008,10 +975,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get a cached material
     local blurMaterial = lia.util.getMaterial("pp/blurscreen")
@@ -1058,7 +1024,6 @@ function lia.util.getMaterial(materialPath, materialParameters)
 end
 
 --[[
-
     Purpose:
         Find a faction by name or unique ID using flexible matching
 
@@ -1074,10 +1039,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Find faction by name
     local faction = lia.util.findFaction(player, "Security")
@@ -1202,7 +1166,6 @@ if system.IsLinux() then
 end
 
 --[[
-
     Purpose:
         Generate a random full name by combining first and last names from provided or default lists
 
@@ -1218,10 +1181,9 @@ end
 
     Realm:
         Both (Universal)
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Generate a random name using defaults
     local randomName = lia.util.generateRandomName()
@@ -1276,7 +1238,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Send a table-based user interface to a specific client for displaying data in a structured format
 
@@ -1296,10 +1257,9 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Send basic player list
         local columns = {
@@ -1380,7 +1340,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Find empty spaces around an entity for spawning or placement purposes
 
@@ -1400,10 +1359,9 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Find nearby empty spaces
         local emptySpaces = lia.util.findEmptySpace(someEntity)
@@ -1492,7 +1450,6 @@ else
     lia.util.easeOutCubic = lia.derma.easeOutCubic
     lia.util.easeInOutCubic = lia.derma.easeInOutCubic
     --[[
-
         Purpose:
             Animate a panel's appearance with scaling, positioning, and alpha transitions
 
@@ -1513,10 +1470,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Basic panel appearance animation
         local panel = vgui.Create("DPanel")
@@ -1614,7 +1570,6 @@ else
     end
 
     --[[
-
         Purpose:
             Clamp a panel's position to stay within screen boundaries while avoiding UI overlap
 
@@ -1629,10 +1584,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Keep panel within screen bounds
         local panel = vgui.Create("DPanel")
@@ -1747,7 +1701,6 @@ else
     end
 
     --[[
-
         Purpose:
             Draw a gradient background using predefined gradient materials
 
@@ -1769,10 +1722,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Draw a basic gradient background
         lia.util.drawGradient(100, 100, 200, 150, 2, Color(0, 0, 0, 150))
@@ -1822,7 +1774,6 @@ else
     end
 
     --[[
-
         Purpose:
             Wrap text to fit within a specified width, breaking it into multiple lines
 
@@ -1839,10 +1790,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Wrap text to fit in a label
         local lines, maxWidth = lia.util.wrapText("This is a long text that needs wrapping", 200)
@@ -1933,7 +1883,6 @@ else
     end
 
     --[[
-
         Purpose:
             Draw a blur effect behind a panel using screen-space blurring
 
@@ -1951,10 +1900,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Add basic blur behind a panel
         local panel = vgui.Create("DPanel")
@@ -2034,7 +1982,6 @@ else
     end
 
     --[[
-
         Purpose:
             Draw a black blur effect with enhanced darkness behind a panel
 
@@ -2053,10 +2000,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Add dark blur behind a panel
         local panel = vgui.Create("DPanel")
@@ -2137,7 +2083,6 @@ else
     end
 
     --[[
-
         Purpose:
             Draw a blur effect at specific screen coordinates
 
@@ -2158,10 +2103,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Blur a specific screen area
         lia.util.drawBlurAt(100, 100, 200, 150, 5, 0.2, 255)
@@ -2214,7 +2158,6 @@ else
 
     lia.util.requestArguments = lia.derma.requestArguments
     --[[
-
         Purpose:
             Create a complete table-based UI window for displaying data with interactive features
 
@@ -2233,10 +2176,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Create basic table UI
         local frame, listView = lia.util.createTableUI("Player List", columns, playerData)
@@ -2426,7 +2368,6 @@ else
     end
 
     --[[
-
         Purpose:
             Create and display an options menu with interactive buttons
 
@@ -2442,10 +2383,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Create basic options menu
         local frame = lia.util.openOptionsMenu("Choose Action", {
@@ -2604,7 +2544,6 @@ else
 
     lia.util.entsScales = lia.util.entsScales or {}
     --[[
-
         Purpose:
             Draw floating text above an entity with distance-based fade effects
 
@@ -2622,10 +2561,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Draw text above an entity
         lia.util.drawEntText(someEntity, "Important Item")
@@ -2735,7 +2673,6 @@ else
     end
 
     --[[
-
         Purpose:
             Draw floating text at the player's look position with distance-based fade effects
 
@@ -2753,10 +2690,9 @@ else
 
         Realm:
             Client
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Draw text where player is looking
         lia.util.drawLookText("Target Location")

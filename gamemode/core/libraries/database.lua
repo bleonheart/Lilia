@@ -53,7 +53,6 @@ lia.db.modules = {
 lia.db.escape = lia.db.escape or lia.db.modules.sqlite.escape
 lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueue + 1] = {...} end
 --[[
-
     Purpose:
         Establishes a connection to the database using the configured database module
 
@@ -69,9 +68,9 @@ lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueu
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Connect to database with callback
         lia.db.connect(function()
@@ -80,7 +79,6 @@ lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueu
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Connect with error handling and reconnection
         lia.db.connect(function()
@@ -90,7 +88,6 @@ lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueu
         ```
 
         High Complexity:
-
         ```lua
         -- High: Connect with conditional logic and module validation
         if lia.db.module and lia.db.modules[lia.db.module] then
@@ -126,7 +123,6 @@ function lia.db.connect(callback, reconnect)
 end
 
 --[[
-
     Purpose:
         Removes all Lilia database tables and their data from the database
 
@@ -141,9 +137,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Wipe all tables with confirmation
         lia.db.wipeTables(function()
@@ -152,7 +148,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Wipe tables with logging and backup
         lia.log.add("Starting database wipe operation")
@@ -163,7 +158,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Wipe tables with confirmation and error handling
         local function confirmWipe()
@@ -209,7 +203,6 @@ function lia.db.wipeTables(callback)
 end
 
 --[[
-
     Purpose:
         Creates all core Lilia database tables if they don't exist and initializes the database schema
 
@@ -224,9 +217,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Load tables after connection
         lia.db.connect(function()
@@ -235,7 +228,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load tables with hook integration
         lia.db.connect(function()
@@ -245,7 +237,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Load tables with conditional logic and error handling
         local function initializeDatabase()
@@ -439,7 +430,6 @@ CREATE TABLE IF NOT EXISTS lia_data (
 end
 
 --[[
-
     Purpose:
         Returns a deferred promise that resolves when database tables have finished loading
 
@@ -454,9 +444,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Wait for tables to load before proceeding
         lia.db.waitForTablesToLoad():next(function()
@@ -465,7 +455,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Wait for tables with error handling
         lia.db.waitForTablesToLoad():next(function()
@@ -477,7 +466,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Wait for tables with timeout and fallback
         local function initializeAfterTables()
@@ -555,7 +543,6 @@ local function buildWhereClause(conditions)
 end
 
 --[[
-
     Purpose:
         Converts Lua values to SQL-compatible format with proper escaping and type handling
 
@@ -571,9 +558,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Convert basic data types
         local sqlString = lia.db.convertDataType("Hello World")
@@ -582,7 +569,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Convert complex data with escaping
         local playerData = {
@@ -599,7 +585,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Convert with conditional logic and error handling
         local function safeConvert(value, fieldName)
@@ -643,7 +628,6 @@ function lia.db.convertDataType(value, noEscape)
 end
 
 --[[
-
     Purpose:
         Inserts a new record into a specified database table
 
@@ -660,9 +644,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Insert a new character
         lia.db.insertTable({
@@ -675,7 +659,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Insert with error handling and validation
         local characterData = {
@@ -695,7 +678,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Insert with validation, error handling, and rollback
         local function createCharacterWithValidation(playerData)
@@ -727,7 +709,6 @@ function lia.db.insertTable(value, callback, dbTable)
 end
 
 --[[
-
     Purpose:
         Updates existing records in a specified database table based on conditions
 
@@ -745,9 +726,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Update character money
         lia.db.updateTable({
@@ -758,7 +739,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Update with complex conditions and logging
         local updateData = {
@@ -775,7 +755,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Update with validation, transaction, and rollback
         local function updateCharacterWithValidation(charID, updateData)
@@ -810,7 +789,6 @@ function lia.db.updateTable(value, callback, dbTable, condition)
 end
 
 --[[
-
     Purpose:
         Performs a SELECT query on a specified database table with optional conditions and limits
 
@@ -828,9 +806,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Select all characters
         lia.db.select("*", "characters"):next(function(results)
@@ -839,7 +817,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Select with conditions and specific fields
         lia.db.select({"name", "money", "faction"}, "characters", {
@@ -852,7 +829,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Select with complex conditions, pagination, and error handling
         local function getCharactersByFaction(faction, page, pageSize)
@@ -895,7 +871,6 @@ function lia.db.select(fields, dbTable, condition, limit)
 end
 
 --[[
-
     Purpose:
         Performs a SELECT query with advanced condition handling and optional ordering
 
@@ -914,9 +889,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Select with basic condition
         lia.db.selectWithCondition("*", "characters", {
@@ -927,7 +902,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Select with operators and ordering
         lia.db.selectWithCondition({"name", "money"}, "characters", {
@@ -941,7 +915,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Select with complex conditions, pagination, and error handling
         local function searchCharacters(searchTerm, faction, minMoney, maxResults)
@@ -1014,7 +987,6 @@ function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
 end
 
 --[[
-
     Purpose:
         Counts the number of records in a database table matching specified conditions
 
@@ -1030,9 +1002,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Count all characters
         lia.db.count("characters"):next(function(count)
@@ -1041,7 +1013,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Count with conditions
         lia.db.count("characters", {
@@ -1053,7 +1024,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Count with validation and error handling
         local function getPlayerStats(steamID)
@@ -1087,7 +1057,6 @@ function lia.db.count(dbTable, condition)
 end
 
 --[[
-
     Purpose:
         Dynamically adds new columns to the lia_characters table based on character variables
 
@@ -1102,16 +1071,15 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add fields after table creation
         lia.db.loadTables() -- This automatically calls addDatabaseFields()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add fields with logging
         lia.db.addDatabaseFields()
@@ -1119,7 +1087,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Add fields with validation and error handling
         local function ensureCharacterFields()
@@ -1162,7 +1129,6 @@ function lia.db.addDatabaseFields()
 end
 
 --[[
-
     Purpose:
         Checks if any records exist in a database table matching specified conditions
 
@@ -1178,9 +1144,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if player exists
         lia.db.exists("players", {steamID = "STEAM_0:1:12345678"}):next(function(exists)
@@ -1193,7 +1159,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check with complex conditions
         lia.db.exists("characters", {
@@ -1208,7 +1173,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Check with validation and error handling
         local function validatePlayerData(steamID)
@@ -1234,7 +1198,6 @@ function lia.db.exists(dbTable, condition)
 end
 
 --[[
-
     Purpose:
         Retrieves a single record from a database table matching specified conditions
 
@@ -1251,9 +1214,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get character by ID
         lia.db.selectOne("*", "characters", {id = 1}):next(function(char)
@@ -1264,7 +1227,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get player data with specific fields
         lia.db.selectOne({"steamName", "userGroup", "lastJoin"}, "players", {
@@ -1278,7 +1240,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Get with validation and error handling
         local function loadCharacter(charID)
@@ -1321,7 +1282,6 @@ function lia.db.selectOne(fields, dbTable, condition)
 end
 
 --[[
-
     Purpose:
         Inserts multiple records into a database table in a single operation for better performance
 
@@ -1337,9 +1297,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Insert multiple items
         local items = {
@@ -1352,7 +1312,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Insert with validation and error handling
         local function insertInventoryItems(invID, items)
@@ -1377,7 +1336,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Insert with batching, validation, and progress tracking
         local function bulkInsertWithBatching(dbTable, data, batchSize)
@@ -1435,7 +1393,6 @@ function lia.db.bulkInsert(dbTable, rows)
 end
 
 --[[
-
     Purpose:
         Performs bulk INSERT OR REPLACE operations for updating existing records or inserting new ones
 
@@ -1451,9 +1408,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Upsert configuration data
         local configs = {
@@ -1466,7 +1423,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Upsert with validation and error handling
         local function syncPlayerData(players)
@@ -1490,7 +1446,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Upsert with conflict resolution and progress tracking
         local function bulkSyncWithConflictResolution(dbTable, data, conflictFields)
@@ -1552,7 +1507,6 @@ function lia.db.bulkUpsert(dbTable, rows)
 end
 
 --[[
-
     Purpose:
         Inserts a record into a database table, ignoring the operation if it would cause a constraint violation
 
@@ -1568,9 +1522,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Insert configuration without duplicates
         lia.db.insertOrIgnore({
@@ -1583,7 +1537,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Insert with validation and logging
         local function ensureDefaultConfig(configs)
@@ -1602,7 +1555,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Insert with conflict detection and fallback
         local function safeInsertWithFallback(data, dbTable, fallbackData)
@@ -1646,7 +1598,6 @@ function lia.db.insertOrIgnore(value, dbTable)
 end
 
 --[[
-
     Purpose:
         Checks if a database table exists in the current database
 
@@ -1661,9 +1612,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if table exists
         lia.db.tableExists("lia_characters"):next(function(exists)
@@ -1676,7 +1627,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check with conditional logic
         lia.db.tableExists("lia_custom_table"):next(function(exists)
@@ -1691,7 +1641,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Check with validation and error handling
         local function validateDatabaseSchema()
@@ -1730,7 +1679,6 @@ function lia.db.tableExists(tbl)
 end
 
 --[[
-
     Purpose:
         Checks if a specific field/column exists in a database table
 
@@ -1746,9 +1694,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Check if field exists
         lia.db.fieldExists("lia_characters", "money"):next(function(exists)
@@ -1761,7 +1709,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Check with conditional field creation
         lia.db.fieldExists("lia_characters", "newField"):next(function(exists)
@@ -1773,7 +1720,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Check with validation and error handling
         local function validateCharacterFields()
@@ -1816,7 +1762,6 @@ function lia.db.fieldExists(tbl, field)
 end
 
 --[[
-
     Purpose:
         Retrieves a list of all Lilia database tables in the current database
 
@@ -1831,9 +1776,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get all Lilia tables
         lia.db.getTables():next(function(tables)
@@ -1845,7 +1790,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get tables with analysis
         lia.db.getTables():next(function(tables)
@@ -1867,7 +1811,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Get tables with validation and management
         local function auditDatabaseStructure()
@@ -1911,7 +1854,6 @@ function lia.db.getTables()
 end
 
 --[[
-
     Purpose:
         Executes multiple database queries as a single atomic transaction with rollback on failure
 
@@ -1926,9 +1868,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Transfer money between characters
         lia.db.transaction({
@@ -1942,7 +1884,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create character with inventory
         local function createCharacterWithInventory(charData)
@@ -1962,7 +1903,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex transaction with validation and rollback
         local function transferItemsWithValidation(fromChar, toChar, items)
@@ -2017,7 +1957,6 @@ function lia.db.transaction(queries)
 end
 
 --[[
-
     Purpose:
         Escapes database identifiers (table names, column names) to prevent SQL injection
 
@@ -2032,9 +1971,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Escape a column name
         local escapedColumn = lia.db.escapeIdentifier("user_name")
@@ -2043,7 +1982,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Escape multiple identifiers
         local function buildSelectQuery(tableName, columns)
@@ -2059,7 +1997,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Escape with validation and error handling
         local function safeEscapeIdentifiers(identifiers)
@@ -2081,7 +2018,6 @@ function lia.db.escapeIdentifier(id)
 end
 
 --[[
-
     Purpose:
         Inserts a new record or updates an existing one based on primary key conflicts
 
@@ -2097,9 +2033,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Upsert configuration
         lia.db.upsert({
@@ -2112,7 +2048,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Upsert with validation and logging
         local function syncPlayerData(player)
@@ -2133,7 +2068,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Upsert with conflict resolution and validation
         local function upsertWithValidation(data, dbTable, validationRules)
@@ -2173,7 +2107,6 @@ function lia.db.upsert(value, dbTable)
 end
 
 --[[
-
     Purpose:
         Deletes records from a database table based on specified conditions
 
@@ -2189,9 +2122,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Delete character by ID
         lia.db.delete("characters", {id = 1}):next(function(results, lastID)
@@ -2200,7 +2133,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Delete with validation and logging
         local function deleteCharacter(charID)
@@ -2218,7 +2150,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Delete with cascade and transaction safety
         local function deleteCharacterWithCascade(charID)
@@ -2258,7 +2189,6 @@ function lia.db.delete(dbTable, condition)
 end
 
 --[[
-
     Purpose:
         Creates a new database table with specified schema and primary key
 
@@ -2275,9 +2205,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Create a basic table
         lia.db.createTable("custom_data", "id", {
@@ -2289,7 +2219,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create table with validation
         local function createPlayerStatsTable()
@@ -2314,7 +2243,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Create table with validation and error handling
         local function createModuleTable(moduleName, tableConfig)
@@ -2378,7 +2306,6 @@ function lia.db.createTable(dbName, primaryKey, schema)
 end
 
 --[[
-
     Purpose:
         Adds a new column to an existing database table
 
@@ -2396,9 +2323,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add a new column
         lia.db.createColumn("characters", "level", "INTEGER", 1):next(function(success)
@@ -2411,7 +2338,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add column with validation
         local function addPlayerStatsColumn()
@@ -2429,7 +2355,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Add column with validation and error handling
         local function migrateCharacterTable()
@@ -2489,7 +2414,6 @@ function lia.db.createColumn(tableName, columnName, columnType, defaultValue)
 end
 
 --[[
-
     Purpose:
         Removes a database table and all its data from the database
 
@@ -2504,9 +2428,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Remove a table
         lia.db.removeTable("old_data"):next(function(success)
@@ -2519,7 +2443,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Remove table with validation
         local function cleanupOldModule(moduleName)
@@ -2537,7 +2460,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Remove table with backup and validation
         local function removeTableWithBackup(tableName)
@@ -2582,7 +2504,6 @@ function lia.db.removeTable(tableName)
 end
 
 --[[
-
     Purpose:
         Removes a column from an existing database table using table recreation
 
@@ -2598,9 +2519,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Remove a column
         lia.db.removeColumn("characters", "old_field"):next(function(success)
@@ -2613,7 +2534,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Remove column with validation
         local function cleanupOldColumn(tableName, columnName)
@@ -2631,7 +2551,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Remove column with backup and validation
         local function removeColumnWithBackup(tableName, columnName)
@@ -2717,7 +2636,6 @@ function lia.db.removeColumn(tableName, columnName)
 end
 
 --[[
-
     Purpose:
         Retrieves the column information for the lia_characters table
 
@@ -2732,9 +2650,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get character table columns
         lia.db.getCharacterTable(function(columns)
@@ -2746,7 +2664,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get columns with analysis
         local function analyzeCharacterTable()
@@ -2770,7 +2687,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Get columns with validation and error handling
         local function validateCharacterSchema()
@@ -2842,7 +2758,6 @@ function lia.db.getCharacterTable(callback)
 end
 
 --[[
-
     Purpose:
         Creates a backup snapshot of a database table and saves it to a JSON file
 
@@ -2857,9 +2772,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Create a snapshot
         lia.db.createSnapshot("characters"):next(function(snapshot)
@@ -2869,7 +2784,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Create snapshot with validation
         local function backupTable(tableName)
@@ -2884,7 +2798,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Create snapshot with validation and error handling
         local function createBackupWithValidation(tableName)
@@ -2962,7 +2875,6 @@ function lia.db.createSnapshot(tableName)
 end
 
 --[[
-
     Purpose:
         Restores a database table from a previously created snapshot file
 
@@ -2977,9 +2889,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Load a snapshot
         lia.db.loadSnapshot("snapshot_characters_1234567890.json"):next(function(result)
@@ -2988,7 +2900,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load snapshot with validation
         local function restoreTable(fileName)
@@ -3003,7 +2914,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Load snapshot with validation and error handling
         local function restoreWithValidation(fileName)

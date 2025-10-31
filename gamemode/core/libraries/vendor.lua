@@ -134,7 +134,6 @@ else
 end
 
 --[[
-
     Purpose:
         Adds a new item rarity type with an associated color to the vendor system
 
@@ -149,17 +148,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add a basic rarity
     lia.vendor.addRarities("common", Color(255, 255, 255))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add multiple rarities with custom colors
     lia.vendor.addRarities("rare", Color(0, 255, 0))
@@ -167,7 +164,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add rarities with validation and error handling
     local rarities = {
@@ -190,7 +186,6 @@ function lia.vendor.addRarities(name, color)
 end
 
 --[[
-
     Purpose:
         Creates a vendor preset with predefined items and their configurations
 
@@ -205,10 +200,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add a basic weapon vendor preset
     lia.vendor.addPreset("weapon_vendor", {
@@ -218,7 +212,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add a medical vendor preset with various items
     lia.vendor.addPreset("medical_vendor", {
@@ -229,7 +222,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add a comprehensive vendor preset with validation
     local weaponPreset = {
@@ -255,7 +247,6 @@ function lia.vendor.addPreset(name, items)
 end
 
 --[[
-
     Purpose:
         Retrieves a vendor preset by name for applying to vendors
 
@@ -270,10 +261,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get a preset and apply it to a vendor
     local preset = lia.vendor.getPreset("weapon_vendor")
@@ -283,7 +273,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check if preset exists and validate items
     local presetName = "medical_vendor"
@@ -296,7 +285,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get preset and dynamically configure vendor based on preset data
     local presetName = "gun_dealer"

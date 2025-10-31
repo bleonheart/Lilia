@@ -9,13 +9,10 @@
         Shared hooks in the Lilia framework handle functionality available on both client and server, typically for data synchronization, shared utilities, and cross-realm features. They follow the Garry's Mod hook system and can be overridden or extended by addons and modules.
 ]]
 --[[
-
     Purpose:
-
                 Allows modification of stamina regeneration/drain offset for a player
 
     When Called:
-
                 During stamina calculation, allowing custom stamina modifiers
 
     Parameters:
@@ -29,9 +26,7 @@
         Shared
 
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Increase stamina regeneration
     hook.Add("AdjustStaminaOffset", "MyAddon", function(client, offset)
@@ -42,7 +37,6 @@
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Modify stamina based on character attributes
     hook.Add("AdjustStaminaOffset", "AttributeStamina", function(client, offset)
@@ -59,7 +53,6 @@
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex stamina system with multiple factors
     hook.Add("AdjustStaminaOffset", "AdvancedStamina", function(client, offset)
@@ -109,13 +102,10 @@ function AdjustStaminaOffset(client, offset)
 end
 
 --[[
-
     Purpose:
-
                 Called to check if an outfit can change model
 
     When Called:
-
                 When attempting to change a player's model via outfit
 
     Parameters:
@@ -126,10 +116,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Always allow
     hook.Add("CanOutfitChangeModel", "MyAddon", function(self)
@@ -138,7 +127,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check faction restrictions
     hook.Add("CanOutfitChangeModel", "OutfitModelCheck", function(self)
@@ -158,7 +146,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex outfit model system
     hook.Add("CanOutfitChangeModel", "AdvancedOutfitModel", function(self)
@@ -195,13 +182,10 @@ function CanOutfitChangeModel(self)
 end
 
 --[[
-
     Purpose:
-
                 Called when a command is added
 
     When Called:
-
                 When a new command is registered to the framework
 
     Parameters:
@@ -213,10 +197,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log command additions
     hook.Add("CommandAdded", "MyAddon", function(command, data)
@@ -225,7 +208,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track registered commands
     hook.Add("CommandAdded", "CommandTracking", function(command, data)
@@ -236,7 +218,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex command registration tracking
     hook.Add("CommandAdded", "AdvancedCommandTracking", function(command, data)
@@ -260,13 +241,10 @@ function CommandAdded(command, data)
 end
 
 --[[
-
     Purpose:
-
                 Called when doing module includes
 
     When Called:
-
                 When a module is being loaded and files are being included
 
     Parameters:
@@ -278,10 +256,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log module includes
     hook.Add("DoModuleIncludes", "MyAddon", function(path, MODULE)
@@ -290,7 +267,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track module load times
     hook.Add("DoModuleIncludes", "ModuleLoadTime", function(path, MODULE)
@@ -304,7 +280,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex module loading system
     hook.Add("DoModuleIncludes", "AdvancedModuleLoading", function(path, MODULE)
@@ -335,13 +310,10 @@ function DoModuleIncludes(path, MODULE)
 end
 
 --[[
-
     Purpose:
-
                 Called to get displayed description
 
     When Called:
-
                 When showing a player's description
 
     Parameters:
@@ -353,10 +325,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return unchanged
     hook.Add("GetDisplayedDescription", "MyAddon", function(ply, description)
@@ -365,7 +336,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add faction prefix
     hook.Add("GetDisplayedDescription", "FactionDescPrefix", function(ply, description)
@@ -380,7 +350,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex description formatting
     hook.Add("GetDisplayedDescription", "AdvancedDescDisplay", function(ply, description)
@@ -411,13 +380,10 @@ function GetDisplayedDescription(ply, description)
 end
 
 --[[
-
     Purpose:
-
                 Called to get displayed name in chat
 
     When Called:
-
                 When showing a player's name in chat
 
     Parameters:
@@ -429,10 +395,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return character name
     hook.Add("GetDisplayedName", "MyAddon", function(speaker, chatType)
@@ -442,7 +407,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Chat type-specific names
     hook.Add("GetDisplayedName", "ChatTypeNames", function(speaker, chatType)
@@ -458,7 +422,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex name display system
     hook.Add("GetDisplayedName", "AdvancedNameDisplay", function(speaker, chatType)
@@ -495,13 +458,10 @@ function GetDisplayedName(speaker, chatType)
 end
 
 --[[
-
     Purpose:
-
                 Called to get door information
 
     When Called:
-
                 When retrieving door data
 
     Parameters:
@@ -514,10 +474,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return unchanged
     hook.Add("GetDoorInfo", "MyAddon", function(entity, doorData, doorInfo)
@@ -526,7 +485,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add custom door info
     hook.Add("GetDoorInfo", "CustomDoorInfo", function(entity, doorData, doorInfo)
@@ -538,7 +496,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex door info system
     hook.Add("GetDoorInfo", "AdvancedDoorInfo", function(entity, doorData, doorInfo)
@@ -571,13 +528,10 @@ function GetDoorInfo(entity, doorData, doorInfo)
 end
 
 --[[
-
     Purpose:
-
                 Called to get model gender
 
     When Called:
-
                 When determining a model's gender
 
     Parameters:
@@ -588,10 +542,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return default gender
     hook.Add("GetModelGender", "MyAddon", function(model)
@@ -600,7 +553,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check model path
     hook.Add("GetModelGender", "ModelGenderCheck", function(model)
@@ -613,7 +565,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex gender detection
     hook.Add("GetModelGender", "AdvancedGenderDetection", function(model)
@@ -643,13 +594,10 @@ function GetModelGender(model)
 end
 
 --[[
-
     Purpose:
-
                 Called when configuration is initialized
 
     When Called:
-
                 When the configuration system has finished loading
 
     Parameters:
@@ -660,10 +608,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log config initialization
     hook.Add("InitializedConfig", "MyAddon", function()
@@ -672,7 +619,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set up custom config values
     hook.Add("InitializedConfig", "CustomConfig", function()
@@ -682,7 +628,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex configuration initialization
     hook.Add("InitializedConfig", "AdvancedConfigInit", function()
@@ -717,13 +662,10 @@ function InitializedConfig()
 end
 
 --[[
-
     Purpose:
-
                 Called when items are initialized
 
     When Called:
-
                 When the item system has finished loading
 
     Parameters:
@@ -734,10 +676,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log item initialization
     hook.Add("InitializedItems", "MyAddon", function()
@@ -746,7 +687,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register custom items
     hook.Add("InitializedItems", "CustomItems", function()
@@ -759,7 +699,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item initialization system
     hook.Add("InitializedItems", "AdvancedItemInit", function()
@@ -815,13 +754,10 @@ function InitializedItems()
 end
 
 --[[
-
     Purpose:
-
                 Called when modules are initialized
 
     When Called:
-
                 When the module system has finished loading
 
     Parameters:
@@ -832,10 +768,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log module initialization
     hook.Add("InitializedModules", "MyAddon", function()
@@ -844,7 +779,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register custom modules
     hook.Add("InitializedModules", "CustomModules", function()
@@ -858,7 +792,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex module initialization system
     hook.Add("InitializedModules", "AdvancedModuleInit", function()
@@ -909,13 +842,10 @@ function InitializedModules()
 end
 
 --[[
-
     Purpose:
-
                 Called when schema is initialized
 
     When Called:
-
                 When the schema system has finished loading
 
     Parameters:
@@ -926,10 +856,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log schema initialization
     hook.Add("InitializedSchema", "MyAddon", function()
@@ -938,7 +867,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set up custom schema data
     hook.Add("InitializedSchema", "CustomSchema", function()
@@ -948,7 +876,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex schema initialization system
     hook.Add("InitializedSchema", "AdvancedSchemaInit", function()
@@ -993,13 +920,10 @@ function InitializedSchema()
 end
 
 --[[
-
     Purpose:
-
                 Called when inventory data changes
 
     When Called:
-
                 When an inventory's data is modified
 
     Parameters:
@@ -1013,10 +937,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log data changes
     hook.Add("InventoryDataChanged", "MyAddon", function(instance, key, oldValue, value)
@@ -1025,7 +948,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track specific data changes
     hook.Add("InventoryDataChanged", "TrackInventoryChanges", function(instance, key, oldValue, value)
@@ -1038,7 +960,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory data tracking
     hook.Add("InventoryDataChanged", "AdvancedInventoryTracking", function(instance, key, oldValue, value)
@@ -1074,13 +995,10 @@ function InventoryDataChanged(instance, key, oldValue, value)
 end
 
 --[[
-
     Purpose:
-
                 Called when an inventory is initialized
 
     When Called:
-
                 When an inventory is first created and set up
 
     Parameters:
@@ -1091,10 +1009,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log inventory initialization
     hook.Add("InventoryInitialized", "MyAddon", function(instance)
@@ -1103,7 +1020,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set default inventory data
     hook.Add("InventoryInitialized", "SetDefaultInventoryData", function(instance)
@@ -1114,7 +1030,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex inventory initialization
     hook.Add("InventoryInitialized", "AdvancedInventoryInit", function(instance)
@@ -1163,13 +1078,10 @@ function InventoryInitialized(instance)
 end
 
 --[[
-
     Purpose:
-
                 Called when an item's data changes in an inventory
 
     When Called:
-
                 When an item's data is modified while in an inventory
 
     Parameters:
@@ -1184,10 +1096,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log item data changes
     hook.Add("InventoryItemDataChanged", "MyAddon", function(item, key, oldValue, newValue, inventory)
@@ -1196,7 +1107,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track durability changes
     hook.Add("InventoryItemDataChanged", "TrackDurability", function(item, key, oldValue, newValue, inventory)
@@ -1211,7 +1121,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item data tracking
     hook.Add("InventoryItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue, inventory)
@@ -1259,13 +1168,10 @@ function InventoryItemDataChanged(item, key, oldValue, newValue, inventory)
 end
 
 --[[
-
     Purpose:
-
                 Called to check if a character is fake recognized
 
     When Called:
-
                 When checking if a character appears recognized but isn't truly
 
     Parameters:
@@ -1277,10 +1183,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Always return false
     hook.Add("IsCharFakeRecognized", "MyAddon", function(self, id)
@@ -1289,7 +1194,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check fake recognition list
     hook.Add("IsCharFakeRecognized", "FakeRecognitionCheck", function(self, id)
@@ -1299,7 +1203,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex fake recognition system
     hook.Add("IsCharFakeRecognized", "AdvancedFakeRecognition", function(self, id)
@@ -1326,13 +1229,10 @@ function IsCharFakeRecognized(self, id)
 end
 
 --[[
-
     Purpose:
-
                 Called to check if a character is recognized
 
     When Called:
-
                 When checking if one character recognizes another
 
     Parameters:
@@ -1344,10 +1244,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check recognition list
     hook.Add("IsCharRecognized", "MyAddon", function(self, id)
@@ -1357,7 +1256,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check recognition with faction bonus
     hook.Add("IsCharRecognized", "FactionRecognition", function(self, id)
@@ -1377,7 +1275,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex recognition system
     hook.Add("IsCharRecognized", "AdvancedRecognition", function(self, id)
@@ -1419,13 +1316,10 @@ function IsCharRecognized(self, id)
 end
 
 --[[
-
     Purpose:
-
                 Called to check if a chat type requires recognition
 
     When Called:
-
                 When determining if players need to be recognized to see names in chat
 
     Parameters:
@@ -1436,10 +1330,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Only IC chat requires recognition
     hook.Add("IsRecognizedChatType", "MyAddon", function(chatType)
@@ -1448,7 +1341,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Multiple chat types require recognition
     hook.Add("IsRecognizedChatType", "RecognizedChatTypes", function(chatType)
@@ -1458,7 +1350,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex recognition requirements
     hook.Add("IsRecognizedChatType", "AdvancedChatRecognition", function(chatType)
@@ -1488,13 +1379,10 @@ function IsRecognizedChatType(chatType)
 end
 
 --[[
-
     Purpose:
-
                 Called to validate an entity
 
     When Called:
-
                 When checking if an entity reference is valid
 
     Parameters:
@@ -1505,10 +1393,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Basic validation
     hook.Add("IsValid", "MyAddon", function()
@@ -1517,7 +1404,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check entity state
     hook.Add("IsValid", "EntityStateCheck", function()
@@ -1528,7 +1414,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex validation
     hook.Add("IsValid", "AdvancedValidation", function()
@@ -1543,13 +1428,10 @@ function IsValid()
 end
 
 --[[
-
     Purpose:
-
                 Called when an item's data changes
 
     When Called:
-
                 When an item's data is modified
 
     Parameters:
@@ -1563,10 +1445,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log item data changes
     hook.Add("ItemDataChanged", "MyAddon", function(item, key, oldValue, newValue)
@@ -1575,7 +1456,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track durability changes
     hook.Add("ItemDataChanged", "TrackItemDurability", function(item, key, oldValue, newValue)
@@ -1590,7 +1470,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item data tracking
     hook.Add("ItemDataChanged", "AdvancedItemDataTracking", function(item, key, oldValue, newValue)
@@ -1645,13 +1524,10 @@ function ItemDataChanged(item, key, oldValue, newValue)
 end
 
 --[[
-
     Purpose:
-
                 Called to get default functions for an item
 
     When Called:
-
                 When building the default interaction functions for an item
 
     Parameters:
@@ -1662,10 +1538,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return basic functions
     hook.Add("ItemDefaultFunctions", "MyAddon", function(item)
@@ -1677,7 +1552,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Conditional functions
     hook.Add("ItemDefaultFunctions", "ConditionalItemFunctions", function(item)
@@ -1697,7 +1571,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex function system
     hook.Add("ItemDefaultFunctions", "AdvancedItemFunctions", function(item)
@@ -1737,13 +1610,10 @@ function ItemDefaultFunctions(item)
 end
 
 --[[
-
     Purpose:
-
                 Called when an item is initialized
 
     When Called:
-
                 When an item is first created and set up
 
     Parameters:
@@ -1754,10 +1624,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log item initialization
     hook.Add("ItemInitialized", "MyAddon", function(item)
@@ -1766,7 +1635,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Set default item data
     hook.Add("ItemInitialized", "SetDefaultItemData", function(item)
@@ -1780,7 +1648,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item initialization
     hook.Add("ItemInitialized", "AdvancedItemInit", function(item)
@@ -1818,13 +1685,10 @@ function ItemInitialized(item)
 end
 
 --[[
-
     Purpose:
-
                 Called when an item's quantity changes
 
     When Called:
-
                 When the stack size of an item is modified
 
     Parameters:
@@ -1837,10 +1701,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log quantity changes
     hook.Add("ItemQuantityChanged", "MyAddon", function(item, oldValue, quantity)
@@ -1849,7 +1712,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Remove item if quantity is zero
     hook.Add("ItemQuantityChanged", "RemoveEmptyItems", function(item, oldValue, quantity)
@@ -1860,7 +1722,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex quantity management
     hook.Add("ItemQuantityChanged", "AdvancedQuantityManagement", function(item, oldValue, quantity)
@@ -1909,13 +1770,10 @@ function ItemQuantityChanged(item, oldValue, quantity)
 end
 
 --[[
-
     Purpose:
-
                 Called when Lilia framework is fully loaded
 
     When Called:
-
                 After all Lilia systems are initialized
 
     Parameters:
@@ -1926,10 +1784,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log framework load
     hook.Add("LiliaLoaded", "MyAddon", function()
@@ -1938,7 +1795,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Initialize addon systems
     hook.Add("LiliaLoaded", "InitializeAddon", function()
@@ -1948,7 +1804,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex framework initialization
     hook.Add("LiliaLoaded", "AdvancedFrameworkInit", function()
@@ -1978,13 +1833,10 @@ function LiliaLoaded()
 end
 
 --[[
-
     Purpose:
-
                 Called when a network variable changes
 
     When Called:
-
                 When an entity's netvar is modified
 
     Parameters:
@@ -1998,10 +1850,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log netvar changes
     hook.Add("NetVarChanged", "MyAddon", function(entity, key, oldValue, value)
@@ -2010,7 +1861,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track specific netvars
     hook.Add("NetVarChanged", "TrackNetvars", function(entity, key, oldValue, value)
@@ -2023,7 +1873,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex netvar tracking system
     hook.Add("NetVarChanged", "AdvancedNetvarTracking", function(entity, key, oldValue, value)
@@ -2055,13 +1904,10 @@ function NetVarChanged(entity, key, oldValue, value)
 end
 
 --[[
-
     Purpose:
-
                 Called when an item is registered
 
     When Called:
-
                 When a new item is added to the item system
 
     Parameters:
@@ -2072,10 +1918,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log item registration
     hook.Add("OnItemRegistered", "MyAddon", function(ITEM)
@@ -2084,7 +1929,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track registered items
     hook.Add("OnItemRegistered", "TrackItems", function(ITEM)
@@ -2098,7 +1942,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex item registration handling
     hook.Add("OnItemRegistered", "AdvancedItemRegistration", function(ITEM)
@@ -2134,13 +1977,10 @@ function OnItemRegistered(ITEM)
 end
 
 --[[
-
     Purpose:
-
                 Called when the framework has finished loading
 
     When Called:
-
                 After all framework components have been initialized
 
     Parameters:
@@ -2151,10 +1991,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log framework loaded
     hook.Add("OnLoaded", "MyAddon", function()
@@ -2163,7 +2002,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Initialize addon after framework loads
     hook.Add("OnLoaded", "InitMyAddon", function()
@@ -2178,7 +2016,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex post-load initialization
     hook.Add("OnLoaded", "AdvancedInit", function()
@@ -2204,13 +2041,10 @@ function OnLoaded()
 end
 
 --[[
-
     Purpose:
-
                 Called when a new privilege is registered
 
     When Called:
-
                 When a privilege is added to the system
 
     Parameters:
@@ -2224,10 +2058,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log privilege registration
     hook.Add("OnPrivilegeRegistered", "MyAddon", function(privilege, name, access, category)
@@ -2236,7 +2069,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track privileges
     hook.Add("OnPrivilegeRegistered", "TrackPrivileges", function(privilege, name, access, category)
@@ -2250,7 +2082,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex privilege management
     hook.Add("OnPrivilegeRegistered", "AdvancedPrivilegeManagement", function(privilege, name, access, category)
@@ -2280,13 +2111,10 @@ function OnPrivilegeRegistered(privilege, name, access, category)
 end
 
 --[[
-
     Purpose:
-
                 Called when a privilege is unregistered
 
     When Called:
-
                 When a privilege is removed from the system
 
     Parameters:
@@ -2298,10 +2126,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log privilege removal
     hook.Add("OnPrivilegeUnregistered", "MyAddon", function(privilege, name)
@@ -2310,7 +2137,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Clean up privilege data
     hook.Add("OnPrivilegeUnregistered", "CleanupPrivilege", function(privilege, name)
@@ -2321,7 +2147,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex privilege cleanup
     hook.Add("OnPrivilegeUnregistered", "AdvancedPrivilegeCleanup", function(privilege, name)
@@ -2347,13 +2172,10 @@ function OnPrivilegeUnregistered(privilege, name)
 end
 
 --[[
-
     Purpose:
-
                 Called when an option is added to the options system
 
     When Called:
-
                 When a new option is registered
 
     Parameters:
@@ -2365,10 +2187,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log when options are added
     hook.Add("OptionAdded", "MyAddon", function(key, option)
@@ -2377,7 +2198,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track added options
     hook.Add("OptionAdded", "TrackOptions", function(key, option)
@@ -2387,7 +2207,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced option handling
     hook.Add("OptionAdded", "AdvancedOptionHandler", function(key, option)
@@ -2428,13 +2247,10 @@ function OptionAdded(key, option)
 end
 
 --[[
-
     Purpose:
-
                 Called when a configuration option is changed
 
     When Called:
-
                 When a configuration value is modified
 
     Parameters:
@@ -2447,10 +2263,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log option changes
     hook.Add("OptionChanged", "MyAddon", function(key, old, value)
@@ -2459,7 +2274,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track option changes
     hook.Add("OptionChanged", "TrackOptions", function(key, old, value)
@@ -2474,7 +2288,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex option change handling
     hook.Add("OptionChanged", "AdvancedOptionChange", function(key, old, value)
@@ -2507,13 +2320,10 @@ function OptionChanged(key, old, value)
 end
 
 --[[
-
     Purpose:
-
                 Called to override a faction's description
 
     When Called:
-
                 When a faction description needs to be modified
 
     Parameters:
@@ -2525,10 +2335,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add prefix to description
     hook.Add("OverrideFactionDesc", "MyAddon", function(uniqueID, description)
@@ -2537,7 +2346,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Customize specific faction descriptions
     hook.Add("OverrideFactionDesc", "CustomFactionDesc", function(uniqueID, description)
@@ -2548,7 +2356,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic faction description
     hook.Add("OverrideFactionDesc", "DynamicFactionDesc", function(uniqueID, description)
@@ -2572,13 +2379,10 @@ function OverrideFactionDesc(uniqueID, description)
 end
 
 --[[
-
     Purpose:
-
                 Called to override a faction's models
 
     When Called:
-
                 When a faction's available models need to be modified
 
     Parameters:
@@ -2590,10 +2394,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add a model to faction
     hook.Add("OverrideFactionModels", "MyAddon", function(uniqueID, models)
@@ -2605,7 +2408,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Replace faction models
     hook.Add("OverrideFactionModels", "ReplaceFactionModels", function(uniqueID, models)
@@ -2619,7 +2421,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic faction models based on rank
     hook.Add("OverrideFactionModels", "DynamicFactionModels", function(uniqueID, models)
@@ -2649,13 +2450,10 @@ function OverrideFactionModels(uniqueID, models)
 end
 
 --[[
-
     Purpose:
-
                 Called to override a faction's name
 
     When Called:
-
                 When a faction name needs to be modified
 
     Parameters:
@@ -2667,10 +2465,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add prefix to name
     hook.Add("OverrideFactionName", "MyAddon", function(uniqueID, name)
@@ -2679,7 +2476,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Localize faction names
     hook.Add("OverrideFactionName", "LocalizeFactionNames", function(uniqueID, name)
@@ -2694,7 +2490,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic faction naming
     hook.Add("OverrideFactionName", "DynamicFactionName", function(uniqueID, name)
@@ -2724,13 +2519,10 @@ function OverrideFactionName(uniqueID, name)
 end
 
 --[[
-
     Purpose:
-
                 Called when player gains stamina
 
     When Called:
-
                 When a player's stamina increases
 
     Parameters:
@@ -2741,10 +2533,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log stamina gain
     hook.Add("PlayerStaminaGained", "MyAddon", function(self)
@@ -2753,7 +2544,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track stamina gains
     hook.Add("PlayerStaminaGained", "TrackStaminaGains", function(self)
@@ -2768,7 +2558,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex stamina gain tracking
     hook.Add("PlayerStaminaGained", "AdvancedStaminaGain", function(self)
@@ -2795,13 +2584,10 @@ function PlayerStaminaGained(self)
 end
 
 --[[
-
     Purpose:
-
                 Called when player loses stamina
 
     When Called:
-
                 When a player's stamina decreases
 
     Parameters:
@@ -2812,10 +2598,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log stamina loss
     hook.Add("PlayerStaminaLost", "MyAddon", function(self)
@@ -2824,7 +2609,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Track stamina loss
     hook.Add("PlayerStaminaLost", "TrackStaminaLoss", function(self)
@@ -2839,7 +2623,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex stamina loss tracking
     hook.Add("PlayerStaminaLost", "AdvancedStaminaLoss", function(self)
@@ -2864,13 +2647,10 @@ function PlayerStaminaLost(self)
 end
 
 --[[
-
     Purpose:
-
                 Called before Lilia framework is loaded
 
     When Called:
-
                 Before Lilia systems are initialized
 
     Parameters:
@@ -2881,10 +2661,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log pre-load
     hook.Add("PreLiliaLoaded", "MyAddon", function()
@@ -2893,7 +2672,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Initialize addon systems
     hook.Add("PreLiliaLoaded", "InitializeAddon", function()
@@ -2903,7 +2681,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex pre-load initialization
     hook.Add("PreLiliaLoaded", "AdvancedPreLoadInit", function()
@@ -2926,13 +2703,10 @@ function PreLiliaLoaded()
 end
 
 --[[
-
     Purpose:
-
                 Called to calculate stamina change
 
     When Called:
-
                 When calculating how much stamina should change
 
     Parameters:
@@ -2943,10 +2717,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Return default stamina change
     hook.Add("calcStaminaChange", "MyAddon", function(client)
@@ -2955,7 +2728,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Calculate based on character attributes
     hook.Add("calcStaminaChange", "AttributeStamina", function(client)
@@ -2968,7 +2740,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex stamina calculation system
     hook.Add("calcStaminaChange", "AdvancedStaminaCalc", function(client)
@@ -3022,13 +2793,10 @@ function calcStaminaChange(client)
 end
 
 --[[
-
     Purpose:
-
                 Called to get persistent data
 
     When Called:
-
                 When retrieving stored data
 
     Parameters:
@@ -3039,10 +2807,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get data with default
     hook.Add("getData", "MyAddon", function(default)
@@ -3051,7 +2818,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get data with validation
     hook.Add("getData", "ValidateData", function(default)
@@ -3064,7 +2830,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Complex data retrieval system
     hook.Add("getData", "AdvancedDataGet", function(default)

@@ -10,7 +10,6 @@
 lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
 --[[
-
     Purpose:
         Adds a new flag to the flag system with optional description and callback function
 
@@ -27,16 +26,15 @@ lia.flag.list = lia.flag.list or {}
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add a basic flag with description
         lia.flag.add("A", "flagAdmin")
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add flag with callback for weapon management
         lia.flag.add("w", "flagWeapon", function(client, isGiven)
@@ -49,7 +47,6 @@ lia.flag.list = lia.flag.list or {}
         ```
 
         High Complexity:
-
         ```lua
         -- High: Add flag with complex callback and validation
         lia.flag.add("M", "flagModerator", function(client, isGiven)
@@ -75,7 +72,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Processes and executes callbacks for all flags assigned to a character when they spawn
 
@@ -90,17 +86,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
             Low Complexity:
-
             ```lua
             -- Simple: Called automatically when player spawns
             -- No direct usage needed - handled by framework
             ```
 
             Medium Complexity:
-
             ```lua
             -- Medium: Manual flag processing for specific cases
             local client = Player(1)
@@ -110,7 +104,6 @@ if SERVER then
             ```
 
             High Complexity:
-
             ```lua
             -- High: Custom spawn handling with flag validation
             hook.Add("PlayerSpawn", "CustomFlagHandler", function(client)

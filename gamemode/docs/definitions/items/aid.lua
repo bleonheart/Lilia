@@ -18,101 +18,78 @@
     - Items are removed from inventory after use
 ]]
 --[[
-
     Purpose:
-
         Sets the display name of the aid item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.name = "Medical Kit"
         ```
 ]]
 ITEM.name = "aidName"
 --[[
-
     Purpose:
-
         Sets the description of the aid item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.desc = "A medical kit that restores health"
         ```
 ]]
 ITEM.desc = "aidDesc"
 --[[
-
     Purpose:
-
         Sets the 3D model for the aid item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.model = "models/weapons/w_package.mdl"
         ```
 ]]
 ITEM.model = "models/weapons/w_package.mdl"
 --[[
-
     Purpose:
-
         Sets the inventory width of the aid item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.width = 1  -- Takes 1 slot width
         ```
 ]]
 ITEM.width = 1
 --[[
-
     Purpose:
-
         Sets the inventory height of the aid item
 
     When Called:
-
         During item definition
 
     Example Usage:
-
         ```lua
         ITEM.height = 1  -- Takes 1 slot height
         ```
 ]]
 ITEM.height = 1
 --[[
-
     Purpose:
-
         Sets the amount of health restored by the aid item
 
     When Called:
-
         During item definition (used in use functions)
-    Example Usage:
 
+    Example Usage:
         ```lua
         ITEM.health = 25  -- Restores 25 health points
         ```

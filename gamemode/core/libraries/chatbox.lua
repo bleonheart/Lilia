@@ -10,7 +10,6 @@
 lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}
 --[[
-
     Purpose:
         Generates a formatted timestamp string for chat messages based on current time
 
@@ -25,10 +24,9 @@ lia.chat.classes = lia.chat.classes or {}
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get timestamp for IC message
     local timestamp = lia.chat.timestamp(false)
@@ -37,7 +35,6 @@ lia.chat.classes = lia.chat.classes or {}
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Use timestamp in custom chat format
     local function customChatFormat(speaker, text)
@@ -47,7 +44,6 @@ lia.chat.classes = lia.chat.classes or {}
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic timestamp with custom formatting
     local function getFormattedTimestamp(isOOC, customFormat)
@@ -64,7 +60,6 @@ function lia.chat.timestamp(ooc)
 end
 
 --[[
-
     Purpose:
         Registers a new chat type with the chatbox system, defining its behavior and properties
 
@@ -80,10 +75,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Register basic IC chat
     lia.chat.register("ic", {
@@ -94,7 +88,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Register whisper chat with custom properties
     lia.chat.register("whisper", {
@@ -107,7 +100,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Register admin chat with complex validation
     lia.chat.register("admin", {
@@ -204,7 +196,6 @@ function lia.chat.register(chatType, data)
 end
 
 --[[
-
     Purpose:
         Parses a chat message to determine its type and extract the actual message content
 
@@ -221,10 +212,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Parse a basic IC message
     local chatType, message, anonymous = lia.chat.parse(LocalPlayer(), "Hello everyone!")
@@ -233,7 +223,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Parse message with prefix detection
     local function processPlayerMessage(player, rawMessage)
@@ -246,7 +235,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced message processing with validation
     local function advancedMessageParser(player, message, options)
@@ -308,7 +296,6 @@ function lia.chat.parse(client, message, noSend)
 end
 
 --[[
-
     Purpose:
         Sends a chat message to appropriate recipients based on chat type and hearing rules
 
@@ -327,17 +314,15 @@ end
 
     Realm:
         Server
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Send IC message to all nearby players
     lia.chat.send(player, "ic", "Hello everyone!")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Send anonymous whisper to specific players
     local function sendAnonymousWhisper(speaker, message, targets)
@@ -346,7 +331,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced message broadcasting with custom logic
     local function broadcastAdminMessage(speaker, message, options)

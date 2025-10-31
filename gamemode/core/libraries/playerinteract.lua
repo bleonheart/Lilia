@@ -11,7 +11,6 @@ lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
 lia.playerinteract.categories = lia.playerinteract.categories or {}
 --[[
-
     Purpose:
         Checks if a client is within interaction range of an entity
 
@@ -28,10 +27,9 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Check if player is within default range of an entity
     if lia.playerinteract.isWithinRange(client, targetEntity) then
@@ -40,7 +38,6 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Check with custom range for specific interaction
     local customRange = 100
@@ -50,7 +47,6 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic range checking with validation
     local interactionRange = interactionData.range or 250
@@ -68,7 +64,6 @@ function lia.playerinteract.isWithinRange(client, entity, customRange)
 end
 
 --[[
-
     Purpose:
         Retrieves all available interactions for a client based on their traced entity
 
@@ -83,10 +78,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get all available interactions for local player
     local interactions = lia.playerinteract.getInteractions()
@@ -96,7 +90,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get interactions for specific player with validation
     local client = LocalPlayer()
@@ -110,7 +103,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Filter interactions by category and validate conditions
     local interactions = lia.playerinteract.getInteractions()
@@ -140,7 +132,6 @@ function lia.playerinteract.getInteractions(client)
 end
 
 --[[
-
     Purpose:
         Retrieves all available personal actions for a client
 
@@ -155,10 +146,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get all available personal actions
     local actions = lia.playerinteract.getActions()
@@ -168,7 +158,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get actions with character validation
     local client = LocalPlayer()
@@ -182,7 +171,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Filter actions by category and execute specific ones
     local actions = lia.playerinteract.getActions()
@@ -206,7 +194,6 @@ function lia.playerinteract.getActions(client)
 end
 
 --[[
-
     Purpose:
         Prepares interaction/action options for UI display in a flat list
 
@@ -221,10 +208,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get options for display
     local interactions = lia.playerinteract.getInteractions()
@@ -235,7 +221,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Process options for custom display
     local actions = lia.playerinteract.getActions()
@@ -247,7 +232,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Filter and process options
     local interactions = lia.playerinteract.getInteractions()
@@ -270,7 +254,6 @@ end
 
 if SERVER then
     --[[
-
         Purpose:
             Registers a new player-to-player or player-to-entity interaction
 
@@ -296,10 +279,9 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Add basic player interaction
         lia.playerinteract.addInteraction("giveMoney", {
@@ -313,7 +295,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add timed interaction with progress indicators
         lia.playerinteract.addInteraction("healPlayer", {
@@ -333,7 +314,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex interaction with validation and server-side processing
         lia.playerinteract.addInteraction("arrestPlayer", {
@@ -393,7 +373,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Registers a new personal action that doesn't require a target entity
 
@@ -418,10 +397,9 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Add basic personal action
         lia.playerinteract.addAction("changeToWhisper", {
@@ -438,7 +416,6 @@ if SERVER then
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add timed personal action with progress indicator
         lia.playerinteract.addAction("meditate", {
@@ -463,7 +440,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Complex personal action with multiple conditions and effects
         lia.playerinteract.addAction("emergencyCall", {
@@ -533,7 +509,6 @@ if SERVER then
     end
 
     --[[
-
         Purpose:
             Synchronizes interaction and action data from server to clients
 
@@ -548,17 +523,15 @@ if SERVER then
 
         Realm:
             Server
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Sync all interactions to all clients
         lia.playerinteract.syncToClients()
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Sync to specific client after they connect
         hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
@@ -571,7 +544,6 @@ if SERVER then
         ```
 
         High Complexity:
-
         ```lua
         -- High: Conditional sync with validation and error handling
         function syncInteractionsToClient(client)
@@ -720,7 +692,6 @@ if SERVER then
     })
 else
     --[[
-
         Purpose:
             Opens the interaction/action menu UI by delegating to lia.derma.optionsMenu
 
@@ -741,10 +712,9 @@ else
         Realm:
             Client
         Note: This function is now a thin wrapper around lia.derma.optionsMenu for backwards compatibility.
+
         Example Usage:
-
         Low Complexity:
-
         ```lua
         -- Simple: Open basic interaction menu
         local interactions = lia.playerinteract.getInteractions()
@@ -752,7 +722,6 @@ else
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Open action menu with custom title and key
         local actions = lia.playerinteract.getActions()
@@ -760,7 +729,6 @@ else
         ```
 
         High Complexity:
-
         ```lua
         -- High: Custom menu with pre-filtered options and validation
         local client = LocalPlayer()

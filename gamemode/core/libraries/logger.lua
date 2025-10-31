@@ -251,7 +251,6 @@ for category, logTypes in pairs(logTypeData) do
 end
 
 --[[
-
     Purpose:
         Registers a new log type with a custom formatting function and category
 
@@ -268,10 +267,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add a basic custom log type
     lia.log.addType("customAction", function(client, action)
@@ -280,7 +278,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add log type with validation and localization
     lia.log.addType("moduleEvent", function(client, moduleName, event, data)
@@ -290,7 +287,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Add complex log type with multiple parameters and error handling
     lia.log.addType("advancedAction", function(client, target, action, amount, reason)
@@ -310,7 +306,6 @@ function lia.log.addType(logType, func, category)
 end
 
 --[[
-
     Purpose:
         Generates a formatted log string from a log type and parameters
 
@@ -328,10 +323,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get a basic log string
     local message, category = lia.log.getString(client, "charCreate", character)
@@ -341,7 +335,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get log string with multiple parameters
     local message, category = lia.log.getString(client, "itemTransfer", itemName, fromID, toID)
@@ -351,7 +344,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Get log string with error handling and validation
     local function safeGetLogString(client, logType, ...)
@@ -376,7 +368,6 @@ function lia.log.getString(client, logType, ...)
 end
 
 --[[
-
     Purpose:
         Adds a log entry to the database and displays it in the server console
 
@@ -393,17 +384,15 @@ end
 
     Realm:
         Server
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Log a basic player action
     lia.log.add(client, "charCreate", character)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Log with multiple parameters and validation
     if IsValid(target) then
@@ -412,7 +401,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Log with conditional parameters and error handling
     local function logAdminAction(client, target, action, reason, amount)

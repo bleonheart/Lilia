@@ -10,7 +10,6 @@
 lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 --[[
-
     Purpose:
         Registers a new configurable option in the Lilia framework with automatic type detection and UI generation
 
@@ -30,9 +29,9 @@ lia.option.stored = lia.option.stored or {}
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Add a boolean toggle option
         lia.option.add("showHUD", "Show HUD", "Toggle HUD visibility", true, nil, {
@@ -42,7 +41,6 @@ lia.option.stored = lia.option.stored or {}
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Add a numeric slider with callback
         lia.option.add("volume", "Volume", "Master volume level", 0.8, function(oldVal, newVal)
@@ -56,7 +54,6 @@ lia.option.stored = lia.option.stored or {}
         ```
 
         High Complexity:
-
         ```lua
         -- High: Add a color picker with visibility condition and networking
         lia.option.add("espColor", "ESP Color", "Color for ESP display", Color(255, 0, 0), nil, {
@@ -110,7 +107,6 @@ function lia.option.add(key, name, desc, default, callback, data)
 end
 
 --[[
-
     Purpose:
         Retrieves the available options for a dropdown/selection type option, handling both static and dynamic option lists
 
@@ -125,9 +121,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get static options for a dropdown
         local options = lia.option.getOptions("weaponSelectorPosition")
@@ -136,7 +132,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Use options in UI creation
         local combo = vgui.Create("liaComboBox")
@@ -147,7 +142,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Dynamic options with validation
         local options = lia.option.getOptions("teamSelection")
@@ -182,7 +176,6 @@ function lia.option.getOptions(key)
 end
 
 --[[
-
     Purpose:
         Sets the value of an option, triggers callbacks, saves to file, and optionally networks to clients
 
@@ -198,16 +191,15 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Set a boolean option
         lia.option.set("showHUD", true)
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Set option with callback execution
         lia.option.set("volume", 0.5)
@@ -215,7 +207,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Set multiple options with validation
         local optionsToSet = {
@@ -244,7 +235,6 @@ function lia.option.set(key, value)
 end
 
 --[[
-
     Purpose:
         Retrieves the current value of an option, falling back to default value or provided fallback if not set
 
@@ -260,9 +250,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Get a boolean option
         local showHUD = lia.option.get("showHUD")
@@ -272,7 +262,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Get option with fallback
         local volume = lia.option.get("volume", 0.5)
@@ -280,7 +269,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Get multiple options with validation and type checking
         local config = {
@@ -309,7 +297,6 @@ function lia.option.get(key, default)
 end
 
 --[[
-
     Purpose:
         Saves all current option values to a JSON file for persistence across sessions
 
@@ -324,9 +311,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Save options after changes
         lia.option.set("showHUD", true)
@@ -334,7 +321,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Save options with error handling
         local function saveOptionsSafely()
@@ -347,7 +333,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Batch save with validation and backup
         local function batchSaveOptions()
@@ -384,7 +369,6 @@ function lia.option.save()
 end
 
 --[[
-
     Purpose:
         Loads saved option values from JSON file and initializes options with defaults if no saved data exists
 
@@ -399,9 +383,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
         Low Complexity:
-
         ```lua
         -- Simple: Load options at startup
         lia.option.load()
@@ -409,7 +393,6 @@ end
         ```
 
         Medium Complexity:
-
         ```lua
         -- Medium: Load options with error handling
         local function loadOptionsSafely()
@@ -426,7 +409,6 @@ end
         ```
 
         High Complexity:
-
         ```lua
         -- High: Load options with validation and migration
         local function loadOptionsWithMigration()

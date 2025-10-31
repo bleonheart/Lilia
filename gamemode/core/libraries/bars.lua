@@ -20,7 +20,6 @@ local function findIndexByIdentifier(identifier)
 end
 
 --[[
-
     Purpose:
         Retrieves a bar object by its identifier from the bars list
 
@@ -35,10 +34,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Get a bar by identifier
     local healthBar = lia.bar.get("health")
@@ -48,7 +46,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Get and modify bar properties
     local customBar = lia.bar.get("custom_stamina")
@@ -59,7 +56,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic bar management with validation
     local barIdentifiers = {"health", "armor", "stamina", "hunger"}
@@ -81,7 +77,6 @@ function lia.bar.get(identifier)
 end
 
 --[[
-
     Purpose:
         Adds a new progress bar to the bars system with specified properties
 
@@ -99,10 +94,9 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Add a basic health bar
     lia.bar.add(function()
@@ -111,7 +105,6 @@ end
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Add a custom stamina bar with validation
     lia.bar.add(function()
@@ -122,7 +115,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic bar creation with multiple conditions
     local function createConditionalBar(condition, getValue, color, priority, id)
@@ -165,7 +157,6 @@ function lia.bar.add(getValue, color, priority, identifier)
 end
 
 --[[
-
     Purpose:
         Removes a bar from the bars system by its identifier
 
@@ -180,17 +171,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Remove a bar by identifier
     lia.bar.remove("health")
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Conditionally remove bars
     if not player:HasPermission("see_health") then
@@ -199,7 +188,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Remove multiple bars with validation
     local barsToRemove = {"stamina", "hunger", "thirst"}
@@ -225,7 +213,6 @@ local function PaintPanel(x, y, w, h)
 end
 
 --[[
-
     Purpose:
         Draws a single progress bar at specified coordinates with given properties
 
@@ -246,17 +233,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Draw a basic progress bar
     lia.bar.drawBar(10, 10, 200, 20, 75, 100, Color(255, 0, 0))
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Draw a bar with calculated values
     local health = LocalPlayer():Health()
@@ -265,7 +250,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Dynamic bar drawing with multiple conditions
     local function drawCustomBar(x, y, w, h, value, maxValue, color, condition)
@@ -289,7 +273,6 @@ function lia.bar.drawBar(x, y, w, h, pos, max, color)
 end
 
 --[[
-
     Purpose:
         Draws a temporary action progress bar with text overlay for timed actions
 
@@ -305,17 +288,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Show reload progress
     lia.bar.drawAction("Reloading...", 2.5)
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Show healing progress with dynamic text
     local healAmount = 50
@@ -323,7 +304,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Conditional action display with multiple states
     local function showActionProgress(actionType, duration, data)
@@ -370,7 +350,6 @@ function lia.bar.drawAction(text, duration)
 end
 
 --[[
-
     Purpose:
         Renders all registered bars in priority order with smooth animations and visibility management
 
@@ -385,17 +364,15 @@ end
 
     Realm:
         Client
+
     Example Usage:
-
     Low Complexity:
-
     ```lua
     -- Simple: Manually trigger bar rendering
     lia.bar.drawAll()
     ```
 
     Medium Complexity:
-
     ```lua
     -- Medium: Custom rendering with conditions
     hook.Add("HUDPaint", "CustomBarRender", function()
@@ -406,7 +383,6 @@ end
     ```
 
     High Complexity:
-
     ```lua
     -- High: Advanced rendering with custom positioning and filtering
     local function customDrawAll()

@@ -280,7 +280,6 @@ local ConditionalFiles = {
 }
 
 --[[
-
     Purpose:
         Includes a Lua file with automatic realm detection and proper client/server handling
 
@@ -296,9 +295,9 @@ local ConditionalFiles = {
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Include a shared library file
     lia.loader.include("lilia/gamemode/core/libraries/util.lua")
@@ -358,7 +357,6 @@ function lia.loader.include(path, realm)
 end
 
 --[[
-
     Purpose:
         Recursively includes all Lua files in a directory with optional deep traversal
 
@@ -376,9 +374,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Include all files in a directory
     lia.loader.includeDir("lilia/gamemode/core/libraries")
@@ -419,7 +417,6 @@ function lia.loader.includeDir(dir, raw, deep, realm)
 end
 
 --[[
-
     Purpose:
         Includes files from a directory with automatic realm detection based on filename prefixes
 
@@ -437,9 +434,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Include files with automatic realm detection
     lia.loader.includeGroupedDir("lilia/gamemode/core/libraries")
@@ -534,7 +531,6 @@ local publicURL = "https://liliaframework.github.io/versioning/modules.json"
 local privateURL = "https://bleonheart.github.io/modules.json"
 local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
 --[[
-
     Purpose:
         Checks for updates to both the Lilia framework and installed modules by querying remote version data
 
@@ -549,9 +545,9 @@ local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Check for updates during server startup
     lia.loader.checkForUpdates()
@@ -703,7 +699,6 @@ lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
 --[[
-
     Purpose:
         Outputs error messages to the console with Lilia branding and red color formatting
 
@@ -718,9 +713,9 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Display a basic error message
     lia.error("Failed to load module")
@@ -762,7 +757,6 @@ function lia.error(msg)
 end
 
 --[[
-
     Purpose:
         Outputs warning messages to the console with Lilia branding and yellow color formatting
 
@@ -777,9 +771,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Display a basic warning message
     lia.warning("Module version mismatch detected")
@@ -820,7 +814,6 @@ function lia.warning(msg)
 end
 
 --[[
-
     Purpose:
         Outputs informational messages to the console with Lilia branding and blue color formatting
 
@@ -835,9 +828,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Display a basic information message
     lia.information("Framework initialized successfully")
@@ -874,7 +867,6 @@ function lia.information(msg)
 end
 
 --[[
-
     Purpose:
         Outputs bootstrap progress messages to the console with Lilia branding and section-specific formatting
 
@@ -890,9 +882,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Display a basic bootstrap message
     lia.bootstrap("Database", "Connection established")
@@ -928,7 +920,6 @@ function lia.bootstrap(section, msg)
 end
 
 --[[
-
     Purpose:
         Sends formatted messages to Discord webhook with embed support and automatic fallback handling
 
@@ -943,9 +934,9 @@ end
 
     Realm:
         Server
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Send a basic Discord message
     lia.relaydiscordMessage({
@@ -1041,7 +1032,6 @@ for _, files in ipairs(FilesToLoad) do
 end
 
 --[[
-
     Purpose:
         Registers and includes all entity types (entities, weapons, tools, effects) from a specified path
 
@@ -1056,9 +1046,9 @@ end
 
     Realm:
         Shared
+
     Example Usage:
         Low Complexity:
-
     ```lua
     -- Simple: Include entities from the default gamemode path
     lia.loader.includeEntities("lilia/gamemode/entities")
