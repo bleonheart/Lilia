@@ -26,6 +26,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -42,6 +43,7 @@ ITEM.name = "outfit"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -58,6 +60,7 @@ ITEM.desc = "outfitDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -74,6 +77,7 @@ ITEM.category = "outfit"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -90,6 +94,7 @@ ITEM.model = "models/props_c17/BriefCase001a.mdl"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -106,6 +111,7 @@ ITEM.width = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -122,6 +128,7 @@ ITEM.height = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -138,6 +145,7 @@ ITEM.outfitCategory = "model"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -154,6 +162,7 @@ ITEM.pacData = {}
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua

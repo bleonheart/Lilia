@@ -26,6 +26,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -42,6 +43,7 @@ ITEM.name = "grenadeName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -58,6 +60,7 @@ ITEM.desc = "grenadeDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -74,6 +77,7 @@ ITEM.category = "itemCatGrenades"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -106,6 +110,7 @@ ITEM.class = "weapon_frag"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -122,6 +127,7 @@ ITEM.width = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -138,6 +144,7 @@ ITEM.height = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua

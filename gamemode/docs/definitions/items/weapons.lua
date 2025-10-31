@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Weapons Item Definition
 
     Weapon item system for the Lilia framework.
@@ -26,6 +26,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -42,6 +43,7 @@ ITEM.name = "weaponsName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -58,6 +60,7 @@ ITEM.desc = "weaponsDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -74,6 +77,7 @@ ITEM.category = "weapons"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -90,6 +94,7 @@ ITEM.model = "models/weapons/w_pistol.mdl"
     When Called:
 
         During item definition (used in equip/unequip functions)
+
     Example Usage:
 
         ```lua
@@ -106,6 +111,7 @@ ITEM.class = "weapon_pistol"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -122,6 +128,7 @@ ITEM.width = 2
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -138,6 +145,7 @@ ITEM.height = 2
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -154,6 +162,7 @@ ITEM.isWeapon = true
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -170,6 +179,7 @@ ITEM.RequiredSkillLevels = {}
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -186,6 +196,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         After weapon is dropped
+
     Example Usage:
 
         ```lua
@@ -208,6 +219,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         When weapon is dropped
+
     Example Usage:
 
         ```lua
@@ -231,6 +243,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         When attempting to transfer the weapon
+
     Example Usage:
 
         ```lua
@@ -249,6 +262,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         When player spawns with equipped weapon
+
     Example Usage:
 
         ```lua
@@ -276,6 +290,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         When saving the weapon item
+
     Example Usage:
 
         ```lua
@@ -296,6 +311,7 @@ ITEM.DropOnDeath = true
     When Called:
 
         When displaying weapon name
+
     Example Usage:
 
         ```lua
@@ -320,3 +336,6 @@ ITEM.width = 2                                    -- Inventory width (2 slots)
 ITEM.height = 2                                   -- Inventory height (2 slots)
 ```
 ]]
+
+
+

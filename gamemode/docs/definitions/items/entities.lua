@@ -26,6 +26,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -42,6 +43,7 @@ ITEM.name = "entitiesName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -58,6 +60,7 @@ ITEM.model = ""
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -74,6 +77,7 @@ ITEM.desc = "entitiesDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua

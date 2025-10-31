@@ -26,6 +26,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -42,6 +43,7 @@ ITEM.name = "ammoName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -58,6 +60,7 @@ ITEM.model = "models/props_c17/SuitCase001a.mdl"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -74,6 +77,7 @@ ITEM.width = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -107,6 +111,7 @@ ITEM.ammo = "pistol"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
