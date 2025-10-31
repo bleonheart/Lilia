@@ -10,14 +10,19 @@
 lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
 --[[
+
     Purpose:
         Loads attribute definitions from a specified directory and registers them in the attributes system
+
     When Called:
         During gamemode initialization or when loading attribute modules
+
     Parameters:
         directory (string) - The directory path to search for attribute files
+
     Returns:
         None (modifies lia.attribs.list)
+
     Realm:
         Shared
     Example Usage:
@@ -67,14 +72,19 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Sets up attributes for a client's character by calling OnSetup hooks for each registered attribute
+
         When Called:
             When a client spawns or when their character is created
+
         Parameters:
             client (Player) - The client whose character attributes need to be set up
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -100,14 +110,14 @@ if SERVER then
             ```lua
             -- High: Setup attributes with custom logic and error handling
             hook.Add("PlayerSpawn", "SetupAttributes", function(client)
-                if not client:getChar() then return end
+            if not client:getChar() then return end
 
-                    timer.Simple(0.1, function()
-                    if IsValid(client) then
-                        lia.attribs.setup(client)
-                        print("Attributes set up for " .. client:Name())
-                    end
-                end)
+                timer.Simple(0.1, function()
+                if IsValid(client) then
+                    lia.attribs.setup(client)
+                    print("Attributes set up for " .. client:Name())
+                end
+            end)
             end)
             ```
     ]]

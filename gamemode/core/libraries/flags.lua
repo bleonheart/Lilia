@@ -10,16 +10,21 @@
 lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
 --[[
+
     Purpose:
         Adds a new flag to the flag system with optional description and callback function
+
     When Called:
         During module initialization or when registering new permission flags
+
     Parameters:
         - flag (string): Single character flag identifier (e.g., "C", "p", "t")
         - desc (string, optional): Localized description key for the flag
         - callback (function, optional): Function to execute when flag is granted/removed
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -70,14 +75,19 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Processes and executes callbacks for all flags assigned to a character when they spawn
+
         When Called:
             Automatically called when a character spawns on the server
+
         Parameters:
             - client (Player): The player whose character is spawning
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -104,11 +114,11 @@ if SERVER then
             ```lua
             -- High: Custom spawn handling with flag validation
             hook.Add("PlayerSpawn", "CustomFlagHandler", function(client)
-                if client:getChar() then
-                    -- Custom pre-spawn logic
-                    lia.flag.onSpawn(client)
-                    -- Custom post-spawn logic
-                end
+            if client:getChar() then
+                -- Custom pre-spawn logic
+                lia.flag.onSpawn(client)
+                -- Custom post-spawn logic
+            end
             end)
             ```
     ]]

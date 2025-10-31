@@ -10,14 +10,19 @@
 lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}
 --[[
+
     Purpose:
         Generates a formatted timestamp string for chat messages based on current time
+
     When Called:
         Automatically called when displaying chat messages if timestamps are enabled
+
     Parameters:
         ooc (boolean) - Whether this is an OOC message (affects spacing format)
+
     Returns:
         string - Formatted timestamp string or empty string if timestamps disabled
+
     Realm:
         Shared
     Example Usage:
@@ -27,6 +32,7 @@ lia.chat.classes = lia.chat.classes or {}
     ```lua
     -- Simple: Get timestamp for IC message
     local timestamp = lia.chat.timestamp(false)
+
     -- Returns: " (14:30) " or "" if timestamps disabled
     ```
 
@@ -58,15 +64,20 @@ function lia.chat.timestamp(ooc)
 end
 
 --[[
+
     Purpose:
         Registers a new chat type with the chatbox system, defining its behavior and properties
+
     When Called:
         During module initialization to register custom chat types (IC, OOC, whisper, etc.)
+
     Parameters:
         chatType (string) - Unique identifier for the chat type
         data (table) - Configuration table containing chat type properties
+
     Returns:
         void
+
     Realm:
         Shared
     Example Usage:
@@ -76,10 +87,10 @@ end
     ```lua
     -- Simple: Register basic IC chat
     lia.chat.register("ic", {
-        prefix = "/",
-        color = Color(255, 255, 255),
-        radius = 200
-        })
+    prefix = "/",
+    color = Color(255, 255, 255),
+    radius = 200
+    })
     ```
 
     Medium Complexity:
@@ -87,12 +98,12 @@ end
     ```lua
     -- Medium: Register whisper chat with custom properties
     lia.chat.register("whisper", {
-        prefix = {"/w", "/whisper"},
-            color = Color(150, 150, 255),
-            radius = 50,
-            format = "whisperFormat",
-            desc = "Whisper to nearby players"
-            })
+    prefix = {"/w", "/whisper"},
+    color = Color(150, 150, 255),
+    radius = 50,
+    format = "whisperFormat",
+    desc = "Whisper to nearby players"
+    })
     ```
 
     High Complexity:
@@ -100,20 +111,20 @@ end
     ```lua
     -- High: Register admin chat with complex validation
     lia.chat.register("admin", {
-        prefix = "/a",
-        color = Color(255, 100, 100),
-        onCanSay = function(speaker)
-        return speaker:IsAdmin()
-        end,
-        onCanHear = function(speaker, listener)
-        return listener:IsAdmin()
-        end,
-        format = "adminFormat",
-        arguments = {
-            {type = "string", name = "message"}
-                },
-                desc = "Admin-only communication channel"
-                })
+    prefix = "/a",
+    color = Color(255, 100, 100),
+    onCanSay = function(speaker)
+    return speaker:IsAdmin()
+    end,
+    onCanHear = function(speaker, listener)
+    return listener:IsAdmin()
+    end,
+    format = "adminFormat",
+    arguments = {
+    {type = "string", name = "message"}
+    },
+    desc = "Admin-only communication channel"
+    })
     ```
 ]]
 function lia.chat.register(chatType, data)
@@ -193,16 +204,21 @@ function lia.chat.register(chatType, data)
 end
 
 --[[
+
     Purpose:
         Parses a chat message to determine its type and extract the actual message content
+
     When Called:
         When a player sends a chat message, either from client input or server processing
+
     Parameters:
         client (Player) - The player who sent the message
         message (string) - The raw message text to parse
         noSend (boolean, optional) - If true, prevents sending the message to other players
+
     Returns:
         chatType (string), message (string), anonymous (boolean)
+
     Realm:
         Shared
     Example Usage:
@@ -212,6 +228,7 @@ end
     ```lua
     -- Simple: Parse a basic IC message
     local chatType, message, anonymous = lia.chat.parse(LocalPlayer(), "Hello everyone!")
+
     -- Returns: "ic", "Hello everyone!", false
     ```
 
@@ -291,18 +308,23 @@ function lia.chat.parse(client, message, noSend)
 end
 
 --[[
+
     Purpose:
         Sends a chat message to appropriate recipients based on chat type and hearing rules
+
     When Called:
         Server-side when distributing parsed chat messages to players
+
     Parameters:
         speaker (Player) - The player who sent the message
         chatType (string) - The type of chat message (ic, ooc, whisper, etc.)
         text (string) - The message content to send
         anonymous (boolean, optional) - Whether to hide the speaker's identity
         receivers (table, optional) - Specific list of players to send to
+
     Returns:
         void
+
     Realm:
         Server
     Example Usage:

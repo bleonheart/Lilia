@@ -122,17 +122,22 @@ local KeybindKeys = {
 }
 
 --[[
+
     Purpose:
         Registers a new keybind with the keybind system, allowing players to bind custom actions to keyboard keys
+
     When Called:
         During initialization of modules or when registering custom keybinds for gameplay features
+
     Parameters:
         k (string|number): Either the action name (string) or key code (number) depending on parameter format
         d (table|string): Either configuration table with keyBind, desc, onPress, etc. or action name (string)
         desc (string, optional): Description of the keybind action (used when d is action name)
         cb (table, optional): Callback table with onPress, onRelease, shouldRun, serverOnly functions (used when d is action name)
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -141,11 +146,11 @@ local KeybindKeys = {
         ```lua
         -- Simple: Add a basic keybind with table configuration
         lia.keybind.add("openInventory", {
-            keyBind = KEY_I,
-            desc = "openInventoryDesc",
-            onPress = function()
-            local f1Menu = vgui.Create("liaMenu")
-            f1Menu:setActiveTab(L("inv"))
+        keyBind = KEY_I,
+        desc = "openInventoryDesc",
+        onPress = function()
+        local f1Menu = vgui.Create("liaMenu")
+        f1Menu:setActiveTab(L("inv"))
         end
         })
         ```
@@ -155,18 +160,18 @@ local KeybindKeys = {
         ```lua
         -- Medium: Add keybind with conditional execution and server-only flag
         lia.keybind.add("adminMode", {
-            keyBind = KEY_F1,
-            desc = "adminModeDesc",
-            serverOnly = true,
-            onPress = function(client)
-            if not IsValid(client) then return end
-                client:ChatPrint(L("adminModeToggle"))
-                -- Admin mode logic here
-                end,
-                shouldRun = function(client)
-                return client:IsAdmin()
-            end
-            })
+        keyBind = KEY_F1,
+        desc = "adminModeDesc",
+        serverOnly = true,
+        onPress = function(client)
+        if not IsValid(client) then return end
+            client:ChatPrint(L("adminModeToggle"))
+            -- Admin mode logic here
+        end,
+        shouldRun = function(client)
+        return client:IsAdmin()
+        end
+        })
         ```
 
         High Complexity:
@@ -174,22 +179,22 @@ local KeybindKeys = {
         ```lua
         -- High: Add keybind with multiple callbacks and complex validation
         lia.keybind.add("convertEntity", {
-            keyBind = KEY_E,
-            desc = "convertEntityDesc",
-            onPress = function(client)
-            if not IsValid(client) or not client:getChar() then return end
-                local trace = client:GetEyeTrace()
-                local targetEntity = trace.Entity
-                -- Complex entity conversion logic
-                end,
-                onRelease = function(client)
-                -- Handle key release if needed
-                end,
-                shouldRun = function(client)
-                return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
-                end,
-                serverOnly = true
-                })
+        keyBind = KEY_E,
+        desc = "convertEntityDesc",
+        onPress = function(client)
+        if not IsValid(client) or not client:getChar() then return end
+            local trace = client:GetEyeTrace()
+            local targetEntity = trace.Entity
+            -- Complex entity conversion logic
+        end,
+        onRelease = function(client)
+        -- Handle key release if needed
+        end,
+        shouldRun = function(client)
+        return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
+        end,
+        serverOnly = true
+        })
         ```
 ]]
 function lia.keybind.add(k, d, desc, cb)
@@ -429,15 +434,20 @@ if CLIENT then
     end)
 
     --[[
+
         Purpose:
             Retrieves the current key code bound to a specific keybind action
+
         When Called:
             When checking what key is currently bound to an action, typically in UI or validation code
+
         Parameters:
             a (string): The action name to get the key for
             df (number, optional): Default key code to return if no key is bound
+
         Returns:
             number - The key code bound to the action, or the default value if none is set
+
         Realm:
             Client
         Example Usage:
@@ -473,8 +483,8 @@ if CLIENT then
                 local key = lia.keybind.get(action, KEY_NONE)
                 if key ~= KEY_NONE then
                     boundKeys[action] = {
-                        key = key,
-                        name = input.GetKeyName(key) or "Unknown"
+                    key = key,
+                    name = input.GetKeyName(key) or "Unknown"
                     }
                 end
             end
@@ -489,14 +499,19 @@ if CLIENT then
     end
 
     --[[
+
         Purpose:
             Saves all current keybind configurations to a JSON file for persistent storage
+
         When Called:
             When keybind settings are changed by the player or during shutdown to preserve settings
+
         Parameters:
             None
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -570,14 +585,19 @@ if CLIENT then
     end
 
     --[[
+
         Purpose:
             Loads keybind configurations from a JSON file and applies them to the keybind system
+
         When Called:
             During client initialization to restore previously saved keybind settings
+
         Parameters:
             None
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:

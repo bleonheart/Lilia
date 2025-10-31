@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Item Meta
 
     Item management system for the Lilia framework.
@@ -21,14 +21,19 @@ ITEM.maxQuantity = 1
 ITEM.canSplit = true
 ITEM.scale = 1
 --[[
+
     Purpose:
         Checks if the item is currently rotated in the inventory grid
+
     When Called:
         When determining item dimensions or display orientation
+
     Parameters:
         None
+
     Returns:
         Boolean indicating if the item is rotated
+
     Realm:
         Both
     Example Usage:
@@ -54,11 +59,11 @@ ITEM.scale = 1
         local function getItemDisplaySize(item)
             if item:isRotated() then
                 return item:getHeight(), item:getWidth()
-            else
-                return item:getWidth(), item:getHeight()
+                else
+                    return item:getWidth(), item:getHeight()
+                end
             end
-        end
-        local displayW, displayH = getItemDisplaySize(myItem)
+            local displayW, displayH = getItemDisplaySize(myItem)
         ```
 ]]
 function ITEM:isRotated()
@@ -66,14 +71,19 @@ function ITEM:isRotated()
 end
 
 --[[
+
     Purpose:
         Gets the current width of the item considering rotation
+
     When Called:
         When determining item grid space requirements or display size
+
     Parameters:
         None
+
     Returns:
         Number representing the item's width in grid units
+
     Realm:
         Both
     Example Usage:
@@ -110,14 +120,19 @@ function ITEM:getWidth()
 end
 
 --[[
+
     Purpose:
         Gets the current height of the item considering rotation
+
     When Called:
         When determining item grid space requirements or display size
+
     Parameters:
         None
+
     Returns:
         Number representing the item's height in grid units
+
     Realm:
         Both
     Example Usage:
@@ -154,14 +169,19 @@ function ITEM:getHeight()
 end
 
 --[[
+
     Purpose:
         Gets the current quantity of the item
+
     When Called:
         When checking how many of this item exist, for display or validation
+
     Parameters:
         None
+
     Returns:
         Number representing the item's current quantity
+
     Realm:
         Both
     Example Usage:
@@ -201,14 +221,19 @@ function ITEM:getQuantity()
 end
 
 --[[
+
     Purpose:
         Creates a string representation of the item for debugging/logging
+
     When Called:
         For logging, debugging, or console output
+
     Parameters:
         None
+
     Returns:
         String representation of the item
+
     Realm:
         Both
     Example Usage:
@@ -230,10 +255,10 @@ end
         ```lua
         local function logItemTransaction(item, action, player)
             local logEntry = string.format("[%s] %s performed %s on %s",
-                os.date("%H:%M:%S"),
-                player:GetName(),
-                action,
-                item:tostring()
+            os.date("%H:%M:%S"),
+            player:GetName(),
+            action,
+            item:tostring()
             )
             file.Append("item_transactions.txt", logEntry .. "\n")
         end
@@ -245,14 +270,19 @@ function ITEM:tostring()
 end
 
 --[[
+
     Purpose:
         Gets the unique instance ID of this item
+
     When Called:
         When you need to reference this specific item instance
+
     Parameters:
         None
+
     Returns:
         Number representing the item's unique ID
+
     Realm:
         Both
     Example Usage:
@@ -290,14 +320,19 @@ function ITEM:getID()
 end
 
 --[[
+
     Purpose:
         Gets the model path for the item
+
     When Called:
         When displaying the item or creating item entities
+
     Parameters:
         None
+
     Returns:
         String representing the item's model path
+
     Realm:
         Both
     Example Usage:
@@ -337,14 +372,19 @@ function ITEM:getModel()
 end
 
 --[[
+
     Purpose:
         Gets the skin index for the item's model
+
     When Called:
         When setting up item display or entity appearance
+
     Parameters:
         None
+
     Returns:
         Number representing the skin index, or nil if none set
+
     Realm:
         Both
     Example Usage:
@@ -382,14 +422,19 @@ function ITEM:getSkin()
 end
 
 --[[
+
     Purpose:
         Gets the bodygroup settings for the item's model
+
     When Called:
         When setting up item display or entity appearance
+
     Parameters:
         None
+
     Returns:
         Table of bodygroup settings, empty table if none set
+
     Realm:
         Both
     Example Usage:
@@ -419,12 +464,12 @@ end
                     if id ~= -1 then
                         entity:SetBodygroup(id, bodygroupValue)
                     end
-                else
-                    entity:SetBodygroup(bodygroupID, bodygroupValue)
+                    else
+                        entity:SetBodygroup(bodygroupID, bodygroupValue)
+                    end
                 end
             end
-        end
-        applyBodygroups(myEntity, item:getBodygroups())
+            applyBodygroups(myEntity, item:getBodygroups())
         ```
 ]]
 function ITEM:getBodygroups()
@@ -432,14 +477,19 @@ function ITEM:getBodygroups()
 end
 
 --[[
+
     Purpose:
         Gets the current price of the item, potentially calculated dynamically
+
     When Called:
         When selling, trading, or displaying item value
+
     Parameters:
         None
+
     Returns:
         Number representing the item's price
+
     Realm:
         Both
     Example Usage:
@@ -484,17 +534,22 @@ function ITEM:getPrice()
 end
 
 --[[
+
     Purpose:
         Calls an item method with specified player and entity context
+
     When Called:
         When executing item functions that need player/entity context
+
     Parameters:
         method - String name of the method to call
         client - Player entity to set as context
         entity - Entity to set as context
         ... - Additional arguments to pass to the method
+
     Returns:
         The return values from the called method
+
     Realm:
         Both
     Example Usage:
@@ -523,12 +578,12 @@ end
                 local result = {item:call("on" .. action, player, entity, ...)}
                 hook.Run("OnItem" .. action, item, player, entity, unpack(result))
                 return true, unpack(result)
-            else
-                player:notifyError(reason or "Cannot perform action")
-                return false
+                else
+                    player:notifyError(reason or "Cannot perform action")
+                    return false
+                end
             end
-        end
-        local success, data = executeItemAction(myItem, "Use", player, nil, target)
+            local success, data = executeItemAction(myItem, "Use", player, nil, target)
         ```
 ]]
 function ITEM:call(method, client, entity, ...)
@@ -548,14 +603,19 @@ function ITEM:call(method, client, entity, ...)
 end
 
 --[[
+
     Purpose:
         Gets the player who owns this item
+
     When Called:
         When you need to determine item ownership or permissions
+
     Parameters:
         None
+
     Returns:
         Player entity who owns the item, or nil if not found
+
     Realm:
         Both
     Example Usage:
@@ -581,23 +641,23 @@ end
             local owner = item:getOwner()
             if not owner then return false end
 
-            -- Check if player is the owner
-            if owner == player then return true end
+                -- Check if player is the owner
+                if owner == player then return true end
 
-            -- Check if player has admin permissions
-            if player:isAdmin() then return true end
+                    -- Check if player has admin permissions
+                    if player:isAdmin() then return true end
 
-            -- Check if item is in shared inventory
-            local inventory = lia.inventory.instances[item.invID]
-            if inventory and inventory:getData("shared") then
-                return inventory:canAccess("view", {client = player})
-            end
+                        -- Check if item is in shared inventory
+                        local inventory = lia.inventory.instances[item.invID]
+                        if inventory and inventory:getData("shared") then
+                            return inventory:canAccess("view", {client = player})
+                        end
 
-            return false
-        end
-        if canPlayerAccessItem(client, myItem) then
-            -- Allow access
-        end
+                        return false
+                    end
+                    if canPlayerAccessItem(client, myItem) then
+                        -- Allow access
+                    end
         ```
 ]]
 function ITEM:getOwner()
@@ -611,15 +671,20 @@ function ITEM:getOwner()
 end
 
 --[[
+
     Purpose:
         Retrieves data from the item's data table with fallback to entity data
+
     When Called:
         When accessing item-specific data or configuration
+
     Parameters:
         key - The data key to retrieve
         default - Optional default value if key doesn't exist
+
     Returns:
         The data value or default value if key doesn't exist
+
     Realm:
         Both
     Example Usage:
@@ -673,14 +738,19 @@ function ITEM:getData(key, default)
 end
 
 --[[
+
     Purpose:
         Gets all data associated with the item from both item and entity
+
     When Called:
         When you need a complete view of all item data
+
     Parameters:
         None
+
     Returns:
         Table containing all item data
+
     Realm:
         Both
     Example Usage:
@@ -730,15 +800,20 @@ function ITEM:getAllData()
 end
 
 --[[
+
     Purpose:
         Registers a hook function to be called before item actions
+
     When Called:
         During item configuration to add custom behavior
+
     Parameters:
         name - String name of the hook (e.g., "use", "drop")
         func - Function to call when the hook is triggered
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -747,7 +822,7 @@ end
 
         ```lua
         item:hook("use", function(item)
-            print("Item used!")
+        print("Item used!")
         end)
         ```
 
@@ -755,9 +830,9 @@ end
 
         ```lua
         item:hook("drop", function(item)
-            if item:getData("soulbound") then
-                return false -- Prevent dropping
-            end
+        if item:getData("soulbound") then
+            return false -- Prevent dropping
+        end
         end)
         ```
 
@@ -765,17 +840,17 @@ end
 
         ```lua
         item:hook("use", function(item)
-            -- Check cooldown
-            local lastUsed = item:getData("lastUsed", 0)
-            local cooldown = item:getData("cooldown", 60)
-            if CurTime() - lastUsed < cooldown then
-                item.player:notifyError("Item is on cooldown")
-                return false
-            end
-            -- Update last used time
-            item:setData("lastUsed", CurTime())
-            -- Apply custom effects
-            applyItemEffect(item.player, item.uniqueID)
+        -- Check cooldown
+        local lastUsed = item:getData("lastUsed", 0)
+        local cooldown = item:getData("cooldown", 60)
+        if CurTime() - lastUsed < cooldown then
+            item.player:notifyError("Item is on cooldown")
+            return false
+        end
+        -- Update last used time
+        item:setData("lastUsed", CurTime())
+        -- Apply custom effects
+        applyItemEffect(item.player, item.uniqueID)
         end)
         ```
 ]]
@@ -784,15 +859,20 @@ function ITEM:hook(name, func)
 end
 
 --[[
+
     Purpose:
         Registers a post-hook function to be called after item actions
+
     When Called:
         During item configuration to add cleanup or follow-up behavior
+
     Parameters:
         name - String name of the hook (e.g., "use", "drop")
         func - Function to call after the hook is triggered
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -801,7 +881,7 @@ end
 
         ```lua
         item:postHook("use", function(item)
-            print("Item use completed")
+        print("Item use completed")
         end)
         ```
 
@@ -809,7 +889,7 @@ end
 
         ```lua
         item:postHook("drop", function(item)
-            lia.log.add(item.player, "item_dropped", item:getName())
+        lia.log.add(item.player, "item_dropped", item:getName())
         end)
         ```
 
@@ -817,20 +897,20 @@ end
 
         ```lua
         item:postHook("use", function(item, result)
-            -- Log usage statistics
-            local stats = lia.data.get("item_usage_stats", {})
-            stats[item.uniqueID] = (stats[item.uniqueID] or 0) + 1
-            lia.data.set("item_usage_stats", stats)
+        -- Log usage statistics
+        local stats = lia.data.get("item_usage_stats", {})
+        stats[item.uniqueID] = (stats[item.uniqueID] or 0) + 1
+        lia.data.set("item_usage_stats", stats)
 
-            -- Apply post-use effects
-            if result == true and item:getData("consumable") then
-                item:addQuantity(-1)
-            end
+        -- Apply post-use effects
+        if result == true and item:getData("consumable") then
+            item:addQuantity(-1)
+        end
 
-            -- Trigger achievements
-            if stats[item.uniqueID] >= 100 then
-                item.player:unlockAchievement("frequent_user")
-            end
+        -- Trigger achievements
+        if stats[item.uniqueID] >= 100 then
+            item.player:unlockAchievement("frequent_user")
+        end
         end)
         ```
 ]]
@@ -839,14 +919,19 @@ function ITEM:postHook(name, func)
 end
 
 --[[
+
     Purpose:
         Called when the item is registered with the system
+
     When Called:
         Automatically during item registration
+
     Parameters:
         None
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -901,14 +986,19 @@ function ITEM:onRegistered()
 end
 
 --[[
+
     Purpose:
         Prints basic item information to the server console
+
     When Called:
         For debugging or logging item state
+
     Parameters:
         detail - Optional boolean to show detailed information
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -946,14 +1036,19 @@ function ITEM:print(detail)
 end
 
 --[[
+
     Purpose:
         Prints all item data to the server console
+
     When Called:
         For detailed debugging of item data
+
     Parameters:
         None
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -997,14 +1092,19 @@ function ITEM:printData()
 end
 
 --[[
+
     Purpose:
         Gets the display name of the item
+
     When Called:
         When displaying item names in UI or chat
+
     Parameters:
         None
+
     Returns:
         String representing the item's name
+
     Realm:
         Both
     Example Usage:
@@ -1029,10 +1129,10 @@ end
             local quality = item:getData("quality")
             if quality then
                 local colors = {
-                    common = Color(255, 255, 255),
-                    rare = Color(0, 255, 255),
-                    epic = Color(255, 0, 255),
-                    legendary = Color(255, 165, 0)
+                common = Color(255, 255, 255),
+                rare = Color(0, 255, 255),
+                epic = Color(255, 0, 255),
+                legendary = Color(255, 165, 0)
                 }
                 return colors[quality], name
             end
@@ -1046,14 +1146,19 @@ function ITEM:getName()
 end
 
 --[[
+
     Purpose:
         Gets the description of the item
+
     When Called:
         When displaying item details or tooltips
+
     Parameters:
         None
+
     Returns:
         String representing the item's description
+
     Realm:
         Both
     Example Usage:
@@ -1097,45 +1202,50 @@ end
 
 if SERVER then
     --[[
-        Purpose:
-            Removes the item from its current inventory without deleting it
-        When Called:
-            When transferring items between inventories or temporarily removing them
-        Parameters:
-            preserveItem - Optional boolean to preserve item data in database
-        Returns:
-            Deferred object that resolves when removal is complete
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Removes the item from its current inventory without deleting it
 
-            ```lua
-            item:removeFromInventory()
-            ```
+    When Called:
+        When transferring items between inventories or temporarily removing them
 
-            Medium Complexity:
+    Parameters:
+        preserveItem - Optional boolean to preserve item data in database
 
-            ```lua
-            item:removeFromInventory(true):next(function()
-                print("Item removed but preserved")
-            end)
-            ```
+    Returns:
+        Deferred object that resolves when removal is complete
 
-            High Complexity:
+    Realm:
+        Server
+    Example Usage:
 
-            ```lua
-            local function transferItem(item, fromInv, toInv)
-                return item:removeFromInventory(true):next(function()
-                    return toInv:add(item)
-                end):next(function()
-                    lia.log.add(nil, "item_transferred",
-                        item:getID(), fromInv:getID(), toInv:getID())
-                end)
-            end
-            transferItem(myItem, playerInv, bankInv)
-            ```
+        Low Complexity:
+
+        ```lua
+        item:removeFromInventory()
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        item:removeFromInventory(true):next(function()
+        print("Item removed but preserved")
+        end)
+        ```
+
+        High Complexity:
+
+        ```lua
+        local function transferItem(item, fromInv, toInv)
+            return item:removeFromInventory(true):next(function()
+            return toInv:add(item)
+        end):next(function()
+        lia.log.add(nil, "item_transferred",
+        item:getID(), fromInv:getID(), toInv:getID())
+        end)
+        end
+        transferItem(myItem, playerInv, bankInv)
+        ```
     ]]
     function ITEM:removeFromInventory(preserveItem)
         local inventory = lia.inventory.instances[self.invID]
@@ -1147,17 +1257,22 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Permanently deletes the item from the database and system
+
         When Called:
             When completely removing an item from the game world
+
         Parameters:
             None
+
         Returns:
             Deferred object that resolves when deletion is complete
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -1169,7 +1284,7 @@ if SERVER then
 
             ```lua
             item:delete():next(function()
-                print("Item permanently deleted")
+            print("Item permanently deleted")
             end)
             ```
 
@@ -1179,16 +1294,16 @@ if SERVER then
             local function safelyDeleteExpiredItems()
                 local expiredItems = lia.db.select("*", "items", "expiry_date < " .. os.time())
                 expiredItems:next(function(results)
-                    for _, row in ipairs(results.results or {}) do
-                        local item = lia.item.instances[tonumber(row.itemID)]
-                        if item then
-                            -- Log deletion reason
-                            lia.log.add(nil, "expired_item_deleted", row.itemID, row.uniqueID)
-                            -- Delete the item
-                            item:delete()
-                        end
+                for _, row in ipairs(results.results or {}) do
+                    local item = lia.item.instances[tonumber(row.itemID)]
+                    if item then
+                        -- Log deletion reason
+                        lia.log.add(nil, "expired_item_deleted", row.itemID, row.uniqueID)
+                        -- Delete the item
+                        item:delete()
                     end
-                end)
+                end
+            end)
             end
             safelyDeleteExpiredItems()
             ```
@@ -1199,59 +1314,64 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Completely removes the item from the world, inventory, and database
-        When Called:
-            When an item is used up, destroyed, or needs to be completely eliminated
-        Parameters:
-            None
-        Returns:
-            Deferred object that resolves when removal is complete
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Completely removes the item from the world, inventory, and database
 
-            ```lua
-            item:remove()
-            ```
+    When Called:
+        When an item is used up, destroyed, or needs to be completely eliminated
 
-            Medium Complexity:
+    Parameters:
+        None
 
-            ```lua
-            item:remove():next(function()
-                player:notify("Item consumed")
-            end)
-            ```
+    Returns:
+        Deferred object that resolves when removal is complete
 
-            High Complexity:
+    Realm:
+        Server
+    Example Usage:
 
-            ```lua
-            local function consumeItemWithEffects(item, player)
-                -- Apply item effects before removal
-                if item.onConsume then
-                    item:call("onConsume", player)
-                end
+        Low Complexity:
 
-                -- Remove the item
-                return item:remove():next(function()
-                    -- Post-consumption effects
-                    if item:getData("reusable") then
-                        -- Create a new instance if reusable
-                        local newItem = lia.item.new(item.uniqueID, 1)
-                        player:getInventory():add(newItem)
-                    end
+        ```lua
+        item:remove()
+        ```
 
-                    -- Trigger achievements
-                    local consumedCount = player:getData("items_consumed", 0) + 1
-                    player:setData("items_consumed", consumedCount)
-                    if consumedCount >= 100 then
-                        player:unlockAchievement("consumptive")
-                    end
-                end)
+        Medium Complexity:
+
+        ```lua
+        item:remove():next(function()
+        player:notify("Item consumed")
+        end)
+        ```
+
+        High Complexity:
+
+        ```lua
+        local function consumeItemWithEffects(item, player)
+            -- Apply item effects before removal
+            if item.onConsume then
+                item:call("onConsume", player)
             end
-            consumeItemWithEffects(myItem, player)
+
+            -- Remove the item
+            return item:remove():next(function()
+            -- Post-consumption effects
+            if item:getData("reusable") then
+                -- Create a new instance if reusable
+                local newItem = lia.item.new(item.uniqueID, 1)
+                player:getInventory():add(newItem)
+            end
+
+            -- Trigger achievements
+            local consumedCount = player:getData("items_consumed", 0) + 1
+            player:setData("items_consumed", consumedCount)
+            if consumedCount >= 100 then
+                player:unlockAchievement("consumptive")
+            end
+        end)
+        end
+        consumeItemWithEffects(myItem, player)
             ```
     ]]
     function ITEM:remove()
@@ -1265,56 +1385,61 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Destroys the item instance and notifies all clients to remove it
-        When Called:
-            When an item needs to be removed from the game world immediately
-        Parameters:
-            None
-        Returns:
-            Nothing
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Destroys the item instance and notifies all clients to remove it
 
-            ```lua
+    When Called:
+        When an item needs to be removed from the game world immediately
+
+    Parameters:
+        None
+
+    Returns:
+        Nothing
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        item:destroy()
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        if item:getData("temporary") then
             item:destroy()
-            ```
+        end
+        ```
 
-            Medium Complexity:
+        High Complexity:
 
-            ```lua
-            if item:getData("temporary") then
-                item:destroy()
-            end
-            ```
+        ```lua
+        local function destroyItemsInRadius(position, radius)
+            local items = ents.FindInSphere(position, radius)
+            local destroyedCount = 0
 
-            High Complexity:
-
-            ```lua
-            local function destroyItemsInRadius(position, radius)
-                local items = ents.FindInSphere(position, radius)
-                local destroyedCount = 0
-
-                for _, ent in ipairs(items) do
-                    if ent:GetClass() == "lia_item" and ent.liaItemID then
-                        local item = lia.item.instances[ent.liaItemID]
-                        if item then
-                            -- Log destruction
-                            lia.log.add(nil, "area_destruction", item:getID(), item:getName())
-                            item:destroy()
-                            destroyedCount = destroyedCount + 1
-                        end
+            for _, ent in ipairs(items) do
+                if ent:GetClass() == "lia_item" and ent.liaItemID then
+                    local item = lia.item.instances[ent.liaItemID]
+                    if item then
+                        -- Log destruction
+                        lia.log.add(nil, "area_destruction", item:getID(), item:getName())
+                        item:destroy()
+                        destroyedCount = destroyedCount + 1
                     end
                 end
-
-                lia.chat.send(nil, "Destroyed " .. destroyedCount .. " items in area")
-                return destroyedCount
             end
-            destroyItemsInRadius(explosionPos, 500)
-            ```
+
+            lia.chat.send(nil, "Destroyed " .. destroyedCount .. " items in area")
+            return destroyedCount
+        end
+        destroyItemsInRadius(explosionPos, 500)
+        ```
     ]]
     function ITEM:destroy()
         net.Start("liaItemDelete")
@@ -1325,115 +1450,125 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Called when the item is disposed/destroyed
-        When Called:
-            Automatically when destroy() is called
-        Parameters:
-            None
-        Returns:
-            Nothing
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Called when the item is disposed/destroyed
 
-            ```lua
-            function ITEM:onDisposed()
-                -- Cleanup code here
+    When Called:
+        Automatically when destroy() is called
+
+    Parameters:
+        None
+
+    Returns:
+        Nothing
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        function ITEM:onDisposed()
+            -- Cleanup code here
+        end
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        function ITEM:onDisposed()
+            -- Clean up associated entities
+            if self.associatedEntity then
+                SafeRemoveEntity(self.associatedEntity)
             end
-            ```
+        end
+        ```
 
-            Medium Complexity:
+        High Complexity:
 
-            ```lua
-            function ITEM:onDisposed()
-                -- Clean up associated entities
-                if self.associatedEntity then
-                    SafeRemoveEntity(self.associatedEntity)
+        ```lua
+        function ITEM:onDisposed()
+            -- Comprehensive cleanup
+            if self.temporaryEntities then
+                for _, ent in ipairs(self.temporaryEntities) do
+                    SafeRemoveEntity(ent)
                 end
+                self.temporaryEntities = nil
             end
-            ```
 
-            High Complexity:
-
-            ```lua
-            function ITEM:onDisposed()
-                -- Comprehensive cleanup
-                if self.temporaryEntities then
-                    for _, ent in ipairs(self.temporaryEntities) do
-                        SafeRemoveEntity(ent)
-                    end
-                    self.temporaryEntities = nil
-                end
-
-                -- Remove from global item lists
-                if self.category then
-                    local categoryItems = lia.data.get("category_items_" .. self.category, {})
-                    categoryItems[self:getID()] = nil
-                    lia.data.set("category_items_" .. self.category, categoryItems)
-                end
-
-                -- Log disposal
-                lia.log.add(nil, "item_disposed", self:getID(), self.uniqueID)
-
-                -- Trigger disposal hooks
-                hook.Run("OnItemDisposed", self)
+            -- Remove from global item lists
+            if self.category then
+                local categoryItems = lia.data.get("category_items_" .. self.category, {})
+                categoryItems[self:getID()] = nil
+                lia.data.set("category_items_" .. self.category, categoryItems)
             end
-            ```
+
+            -- Log disposal
+            lia.log.add(nil, "item_disposed", self:getID(), self.uniqueID)
+
+            -- Trigger disposal hooks
+            hook.Run("OnItemDisposed", self)
+        end
+        ```
     ]]
     function ITEM:onDisposed()
     end
 
     --[[
-        Purpose:
-            Gets the world entity associated with this item instance
-        When Called:
-            When you need to manipulate the physical item entity in the world
-        Parameters:
-            None
-        Returns:
-            Entity object if found, nil otherwise
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Gets the world entity associated with this item instance
 
-            ```lua
-            local entity = item:getEntity()
-            ```
+    When Called:
+        When you need to manipulate the physical item entity in the world
 
-            Medium Complexity:
+    Parameters:
+        None
 
-            ```lua
+    Returns:
+        Entity object if found, nil otherwise
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        local entity = item:getEntity()
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        local entity = item:getEntity()
+        if entity then
+            entity:SetPos(newPosition)
+        end
+        ```
+
+        High Complexity:
+
+        ```lua
+        local function teleportItemToPlayer(item, player)
             local entity = item:getEntity()
             if entity then
-                entity:SetPos(newPosition)
+                -- Remove from inventory first
+                item:removeFromInventory(true):next(function()
+                -- Teleport entity to player
+                entity:SetPos(player:GetPos() + Vector(0, 0, 50))
+                entity:SetVelocity(Vector(0, 0, 0))
+                -- Log the action
+                lia.log.add(player, "item_teleported", item:getID(), item:getName())
+            end)
+            else
+                player:notifyError("Item has no physical entity")
             end
-            ```
-
-            High Complexity:
-
-            ```lua
-            local function teleportItemToPlayer(item, player)
-                local entity = item:getEntity()
-                if entity then
-                    -- Remove from inventory first
-                    item:removeFromInventory(true):next(function()
-                        -- Teleport entity to player
-                        entity:SetPos(player:GetPos() + Vector(0, 0, 50))
-                        entity:SetVelocity(Vector(0, 0, 0))
-                        -- Log the action
-                        lia.log.add(player, "item_teleported", item:getID(), item:getName())
-                    end)
-                else
-                    player:notifyError("Item has no physical entity")
-                end
-            end
-            teleportItemToPlayer(myItem, player)
-            ```
+        end
+        teleportItemToPlayer(myItem, player)
+        ```
     ]]
     function ITEM:getEntity()
         local id = self:getID()
@@ -1443,55 +1578,60 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Creates a physical entity for the item in the world
-        When Called:
-            When dropping items or spawning them in the world
-        Parameters:
-            position - Position to spawn the item (Vector, table, or Player entity)
-            angles - Optional angles for the spawned item
-        Returns:
-            The created entity
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Creates a physical entity for the item in the world
 
-            ```lua
-            item:spawn(Vector(0, 0, 0))
-            ```
+    When Called:
+        When dropping items or spawning them in the world
 
-            Medium Complexity:
+    Parameters:
+        position - Position to spawn the item (Vector, table, or Player entity)
+        angles - Optional angles for the spawned item
 
-            ```lua
-            item:spawn(player:GetPos() + Vector(0, 0, 50), Angle(0, 0, 0))
-            ```
+    Returns:
+        The created entity
 
-            High Complexity:
+    Realm:
+        Server
+    Example Usage:
 
-            ```lua
-            local function dropItemWithPhysics(item, player, force)
-                -- Remove from inventory
-                item:removeFromInventory(true):next(function()
-                    -- Spawn with physics
-                    local entity = item:spawn(player:GetPos() + Vector(0, 50, 0))
+        Low Complexity:
 
-                    if entity and IsValid(entity:GetPhysicsObject()) then
-                        -- Apply throw force
-                        local phys = entity:GetPhysicsObject()
-                        phys:ApplyForceCenter(player:GetAimVector() * force)
+        ```lua
+        item:spawn(Vector(0, 0, 0))
+        ```
 
-                        -- Add some spin
-                        phys:AddAngleVelocity(VectorRand() * 100)
+        Medium Complexity:
 
-                        -- Log the drop
-                        lia.log.add(player, "item_dropped", item:getID(), item:getName())
-                    end
-                end)
+        ```lua
+        item:spawn(player:GetPos() + Vector(0, 0, 50), Angle(0, 0, 0))
+        ```
+
+        High Complexity:
+
+        ```lua
+        local function dropItemWithPhysics(item, player, force)
+            -- Remove from inventory
+            item:removeFromInventory(true):next(function()
+            -- Spawn with physics
+            local entity = item:spawn(player:GetPos() + Vector(0, 50, 0))
+
+            if entity and IsValid(entity:GetPhysicsObject()) then
+                -- Apply throw force
+                local phys = entity:GetPhysicsObject()
+                phys:ApplyForceCenter(player:GetAimVector() * force)
+
+                -- Add some spin
+                phys:AddAngleVelocity(VectorRand() * 100)
+
+                -- Log the drop
+                lia.log.add(player, "item_dropped", item:getID(), item:getName())
             end
-            dropItemWithPhysics(myItem, player, 1000)
-            ```
+        end)
+        end
+        dropItemWithPhysics(myItem, player, 1000)
+        ```
     ]]
     function ITEM:spawn(position, angles)
         local instance = lia.item.instances[self.id]
@@ -1551,39 +1691,44 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Transfers the item from its current inventory to a new inventory
-        When Called:
-            When moving items between inventories (trading, storing, etc.)
-        Parameters:
-            newInventory - The inventory to transfer the item to
-            bBypass - Optional boolean to bypass access control checks
-        Returns:
-            Boolean indicating if transfer was successful
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Transfers the item from its current inventory to a new inventory
 
-            ```lua
-            item:transfer(otherInventory)
-            ```
+    When Called:
+        When moving items between inventories (trading, storing, etc.)
 
-            Medium Complexity:
+    Parameters:
+        newInventory - The inventory to transfer the item to
+        bBypass - Optional boolean to bypass access control checks
 
-            ```lua
-            if item:transfer(bankInventory) then
-                player:notify("Item stored in bank")
-            end
-            ```
+    Returns:
+        Boolean indicating if transfer was successful
 
-            High Complexity:
+    Realm:
+        Server
+    Example Usage:
 
-            ```lua
-            local function tradeItems(player1, player2, itemID, payment)
-                local item = player1:getInventory():getItems()[itemID]
-                if not item then return false, "Item not found" end
+        Low Complexity:
+
+        ```lua
+        item:transfer(otherInventory)
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        if item:transfer(bankInventory) then
+            player:notify("Item stored in bank")
+        end
+        ```
+
+        High Complexity:
+
+        ```lua
+        local function tradeItems(player1, player2, itemID, payment)
+            local item = player1:getInventory():getItems()[itemID]
+            if not item then return false, "Item not found" end
 
                 -- Check if player2 has enough money
                 if player2:getMoney() < payment then
@@ -1598,15 +1743,15 @@ if SERVER then
 
                     -- Log the trade
                     lia.log.add(nil, "item_trade",
-                        item:getID(), player1:GetName(), player2:GetName(), payment)
+                    item:getID(), player1:GetName(), player2:GetName(), payment)
 
                     return true
-                else
-                    return false, "Transfer failed"
+                    else
+                        return false, "Transfer failed"
+                    end
                 end
-            end
-            local success, reason = tradeItems(seller, buyer, itemID, 500)
-            ```
+                local success, reason = tradeItems(seller, buyer, itemID, 500)
+        ```
     ]]
     function ITEM:transfer(newInventory, bBypass)
         if not bBypass and not newInventory:canAccess("transfer") then return false end
@@ -1616,78 +1761,88 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Called when the item instance is first created
-        When Called:
-            Automatically when item instances are created
-        Parameters:
-            None
-        Returns:
-            Nothing
-        Realm:
-            Server
-        Example Usage:
 
-            Low Complexity:
+    Purpose:
+        Called when the item instance is first created
 
-            ```lua
-            function ITEM:onInstanced()
-                print("New item instance created")
+    When Called:
+        Automatically when item instances are created
+
+    Parameters:
+        None
+
+    Returns:
+        Nothing
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        function ITEM:onInstanced()
+            print("New item instance created")
+        end
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        function ITEM:onInstanced()
+            -- Set default data for new instances
+            if not self:getData("created") then
+                self:setData("created", os.time())
             end
-            ```
+        end
+        ```
 
-            Medium Complexity:
+        High Complexity:
 
-            ```lua
-            function ITEM:onInstanced()
-                -- Set default data for new instances
-                if not self:getData("created") then
-                    self:setData("created", os.time())
-                end
-            end
-            ```
+        ```lua
+        function ITEM:onInstanced()
+            -- Initialize complex item state
+            self:setData("durability", self:getData("maxDurability", 100))
+            self:setData("serialNumber", "SN-" .. self:getID())
 
-            High Complexity:
+            -- Register with item tracking system
+            local trackingData = lia.data.get("item_tracking", {})
+            trackingData[self:getID()] = {
+            uniqueID = self.uniqueID,
+            created = os.time(),
+            owner = self:getOwner() and self:getOwner():GetName() or "unknown"
+            }
+            lia.data.set("item_tracking", trackingData)
 
-            ```lua
-            function ITEM:onInstanced()
-                -- Initialize complex item state
-                self:setData("durability", self:getData("maxDurability", 100))
-                self:setData("serialNumber", "SN-" .. self:getID())
-
-                -- Register with item tracking system
-                local trackingData = lia.data.get("item_tracking", {})
-                trackingData[self:getID()] = {
-                    uniqueID = self.uniqueID,
-                    created = os.time(),
-                    owner = self:getOwner() and self:getOwner():GetName() or "unknown"
-                }
-                lia.data.set("item_tracking", trackingData)
-
-                -- Apply category-specific initialization
-                if self.category == "weapons" then
-                    self:setData("ammo", self:getData("maxAmmo", 30))
+            -- Apply category-specific initialization
+            if self.category == "weapons" then
+                self:setData("ammo", self:getData("maxAmmo", 30))
                 elseif self.category == "armor" then
                     self:setData("protection", self:getData("maxProtection", 50))
                 end
             end
-            ```
+        ```
     ]]
     function ITEM:onInstanced()
     end
 
     --[[
+
         Purpose:
             Called when the item is synchronized to clients
+
         When Called:
             Automatically when item data is sent to clients
+
         Parameters:
             recipient - Optional specific client to sync to
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -1721,38 +1876,43 @@ if SERVER then
                 -- Only send sensitive data to item owner
                 if recipient == self:getOwner() then
                     dataToSend = self:getAllData()
-                else
-                    -- Filter out sensitive data for other players
-                    for key, value in pairs(self:getAllData()) do
-                        if not self.sensitiveDataKeys[key] then
-                            dataToSend[key] = value
+                    else
+                        -- Filter out sensitive data for other players
+                        for key, value in pairs(self:getAllData()) do
+                            if not self.sensitiveDataKeys[key] then
+                                dataToSend[key] = value
+                            end
                         end
                     end
-                end
 
-                -- Send filtered data
-                net.Start("FilteredItemData")
-                net.WriteType(self:getID())
-                net.WriteTable(dataToSend)
-                net.Send(recipient)
-            end
+                    -- Send filtered data
+                    net.Start("FilteredItemData")
+                    net.WriteType(self:getID())
+                    net.WriteTable(dataToSend)
+                    net.Send(recipient)
+                end
             ```
     ]]
     function ITEM:onSync()
     end
 
     --[[
+
         Purpose:
             Called when the item is permanently removed from the system
+
         When Called:
             Automatically when delete() completes
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -1804,17 +1964,22 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Called when the item is loaded from the database
+
         When Called:
             Automatically when item data is restored from storage
+
         Parameters:
             inventory - The inventory this item belongs to
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -1859,16 +2024,16 @@ if SERVER then
                     if expiryTime and expiryTime < os.time() then
                         -- Item has expired, schedule removal
                         timer.Simple(0, function()
-                            if IsValid(self) then
-                                self:remove()
-                                lia.log.add(nil, "expired_item_removed_on_restore", itemID)
-                            end
-                        end)
-                    end
+                        if IsValid(self) then
+                            self:remove()
+                            lia.log.add(nil, "expired_item_removed_on_restore", itemID)
+                        end
+                    end)
                 end
+            end
 
-                -- Trigger restoration hooks
-                hook.Run("OnItemRestored", self, inventory)
+            -- Trigger restoration hooks
+            hook.Run("OnItemRestored", self, inventory)
             end
             ```
     ]]
@@ -1876,17 +2041,22 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Synchronizes item instance data to clients
+
         When Called:
             When item data needs to be sent to clients
+
         Parameters:
             recipient - Optional specific client to sync to, broadcasts if nil
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -1908,16 +2078,16 @@ if SERVER then
                 for _, player in ipairs(players) do
                     if player:canAccessItem(item) then
                         item:sync(player)
-                    else
-                        -- Send limited data
-                        net.Start("liaItemLimited")
-                        net.WriteUInt(item:getID(), 32)
-                        net.WriteString(item:getName())
-                        net.Send(player)
+                        else
+                            -- Send limited data
+                            net.Start("liaItemLimited")
+                            net.WriteUInt(item:getID(), 32)
+                            net.WriteString(item:getName())
+                            net.Send(player)
+                        end
                     end
                 end
-            end
-            syncItemToGroup(myItem, nearbyPlayers)
+                syncItemToGroup(myItem, nearbyPlayers)
             ```
     ]]
     function ITEM:sync(recipient)
@@ -1937,21 +2107,26 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sets item data and synchronizes changes to clients and database
+
         When Called:
             When item data needs to be updated and persisted
+
         Parameters:
             key - The data key to set
             value - The value to set
             receivers - Optional specific clients to notify
             noSave - Optional boolean to skip database saving
             noCheckEntity - Optional boolean to skip entity data sync
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -2033,19 +2208,24 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Adds to the item's quantity and synchronizes the change
+
         When Called:
             When increasing item stack size
+
         Parameters:
             quantity - Amount to add to the quantity
             receivers - Optional specific clients to notify
             noCheckEntity - Optional boolean to skip entity sync
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -2072,17 +2252,17 @@ if SERVER then
                         item1:setQuantity(combinedQuantity)
                         item2:remove()
                         return true, "Items combined successfully"
-                    else
-                        -- Fill first stack and adjust second
-                        local overflow = combinedQuantity - maxStack
-                        item1:setQuantity(maxStack)
-                        item2:setQuantity(overflow)
-                        return true, "Items partially combined"
+                        else
+                            -- Fill first stack and adjust second
+                            local overflow = combinedQuantity - maxStack
+                            item1:setQuantity(maxStack)
+                            item2:setQuantity(overflow)
+                            return true, "Items partially combined"
+                        end
                     end
+                    return false, "Items cannot be combined"
                 end
-                return false, "Items cannot be combined"
-            end
-            local success, message = combineStacks(stack1, stack2)
+                local success, message = combineStacks(stack1, stack2)
             ```
     ]]
     function ITEM:addQuantity(quantity, receivers, noCheckEntity)
@@ -2090,19 +2270,24 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sets the item's quantity and synchronizes the change
+
         When Called:
             When changing item stack size or count
+
         Parameters:
             quantity - New quantity value
             receivers - Optional specific clients to notify
             noCheckEntity - Optional boolean to skip entity sync
+
         Returns:
             Nothing
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -2170,20 +2355,25 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Handles player interaction with items (use, drop, etc.)
+
         When Called:
             When a player attempts to interact with an item
+
         Parameters:
             action - The interaction action (e.g., "use", "drop")
             client - The player performing the action
             entity - Optional entity involved in the interaction
             data - Optional additional data for the interaction
+
         Returns:
             Boolean indicating if the interaction was successful
+
         Realm:
             Server
-        Example Usage:
+    Example Usage:
 
             Low Complexity:
 
@@ -2302,14 +2492,19 @@ if SERVER then
 end
 
 --[[
+
     Purpose:
         Gets the localized category name for the item
+
     When Called:
         When displaying or organizing items by category
+
     Parameters:
         None
+
     Returns:
         String representing the localized category name
+
     Realm:
         Both
     Example Usage:
@@ -2342,9 +2537,9 @@ end
             local sortedCategories = {}
             for categoryName, categoryItems in pairs(categories) do
                 table.insert(sortedCategories, {
-                    name = categoryName,
-                    items = categoryItems,
-                    count = #categoryItems
+                name = categoryName,
+                items = categoryItems,
+                count = #categoryItems
                 })
             end
             table.sort(sortedCategories, function(a, b) return a.name < b.name end)

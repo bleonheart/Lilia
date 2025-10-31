@@ -17,10 +17,13 @@ local validClasses = {
 }
 
 --[[
+
     Purpose:
         Emits a sound from the entity, with support for web sounds and URL-based audio
+
     When Called:
         When an entity needs to play a sound effect or audio
+
     Parameters:
         - soundName (string): The sound file path, URL, or websound identifier
         - soundLevel (number, optional): Sound level/distance (default: 100)
@@ -29,8 +32,10 @@ local validClasses = {
         - channel (number, optional): Sound channel
         - flags (number, optional): Sound flags
         - dsp (number, optional): DSP effect
+
     Returns:
         boolean - True if sound was played successfully
+
     Realm:
         Shared
     Example Usage:
@@ -97,14 +102,19 @@ function entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, chann
 end
 
 --[[
+
     Purpose:
         Checks if the entity is a physics prop
+
     When Called:
         When you need to determine if an entity is a prop_physics object
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a prop_physics, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -142,14 +152,19 @@ function entityMeta:isProp()
 end
 
 --[[
+
     Purpose:
         Checks if the entity is a Lilia item entity
+
     When Called:
         When you need to determine if an entity is a lia_item object
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a lia_item, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -191,14 +206,19 @@ function entityMeta:isItem()
 end
 
 --[[
+
     Purpose:
         Checks if the entity is a Lilia money entity
+
     When Called:
         When you need to determine if an entity is a lia_money object
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a lia_money, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -243,14 +263,19 @@ function entityMeta:isMoney()
 end
 
 --[[
+
     Purpose:
         Checks if the entity is a Simfphys vehicle or LVS vehicle
+
     When Called:
         When you need to determine if an entity is a vehicle from Simfphys or LVS
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a supported vehicle, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -293,15 +318,20 @@ function entityMeta:isSimfphysCar()
 end
 
 --[[
+
     Purpose:
         Checks if a client has access to a door with the specified access level
+
     When Called:
         When you need to verify if a player can access a door
+
     Parameters:
         - client (Player): The player to check access for
         - access (number, optional): The required access level (default: DOOR_GUEST)
+
     Returns:
         boolean - True if the client has access, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -349,14 +379,19 @@ function entityMeta:checkDoorAccess(client, access)
 end
 
 --[[
+
     Purpose:
         Sets a client as the owner of a vehicle and updates ownership data
+
     When Called:
         When a player becomes the owner of a vehicle
+
     Parameters:
         - client (Player): The player to set as the owner
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -401,14 +436,19 @@ function entityMeta:keysOwn(client)
 end
 
 --[[
+
     Purpose:
         Locks a vehicle if it is a valid vehicle entity
+
     When Called:
         When a player wants to lock their vehicle
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -449,14 +489,19 @@ function entityMeta:keysLock()
 end
 
 --[[
+
     Purpose:
         Unlocks a vehicle if it is a valid vehicle entity
+
     When Called:
         When a player wants to unlock their vehicle
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -497,14 +542,19 @@ function entityMeta:keysUnLock()
 end
 
 --[[
+
     Purpose:
         Gets the owner of a door entity
+
     When Called:
         When you need to retrieve the owner of a door
+
     Parameters:
         None
+
     Returns:
         Player or nil - The door owner if it's a vehicle with CPPI, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -548,14 +598,19 @@ function entityMeta:getDoorOwner()
 end
 
 --[[
+
     Purpose:
         Checks if the entity is locked using network variables
+
     When Called:
         When you need to check if an entity is in a locked state
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is locked, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -597,14 +652,19 @@ function entityMeta:isLocked()
 end
 
 --[[
+
     Purpose:
         Checks if a door entity is locked using internal variables or custom properties
+
     When Called:
         When you need to check if a door is in a locked state
+
     Parameters:
         None
+
     Returns:
         boolean - True if the door is locked, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -646,14 +706,19 @@ function entityMeta:isDoorLocked()
 end
 
 --[[
+
     Purpose:
         Calculates the position and angle for dropping items from an entity
+
     When Called:
         When an entity needs to drop an item at a specific location
+
     Parameters:
         - offset (number, optional): Distance to trace forward from entity (default: 64)
+
     Returns:
         Vector, Angle - The drop position and angle
+
     Realm:
         Shared
     Example Usage:
@@ -706,14 +771,19 @@ function entityMeta:getEntItemDropPos(offset)
 end
 
 --[[
+
     Purpose:
         Checks if the entity's model represents a female character
+
     When Called:
         When you need to determine the gender of a character entity
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is female, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -746,8 +816,8 @@ end
             if char then
                 char:setData("gender", "female")
                 char:setData("pronouns", {"she", "her", "hers"})
-                end
             end
+        end
         ```
 ]]
 function entityMeta:isFemale()
@@ -756,15 +826,20 @@ function entityMeta:isFemale()
 end
 
 --[[
+
     Purpose:
         Checks if the entity is near another entity within a specified radius
+
     When Called:
         When you need to check proximity between entities
+
     Parameters:
         - radius (number, optional): Search radius in units (default: 96)
         - otherEntity (Entity, optional): Specific entity to check for proximity
+
     Returns:
         boolean - True if near another entity, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -811,14 +886,19 @@ function entityMeta:isNearEntity(radius, otherEntity)
 end
 
 --[[
+
     Purpose:
         Gets the partner door entity for double doors
+
     When Called:
         When you need to find the paired door in a double door setup
+
     Parameters:
         None
+
     Returns:
         Entity or nil - The partner door if found, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -876,15 +956,20 @@ end
 
 if SERVER then
     --[[
+
     Purpose:
         Sends a network variable to clients via network message
+
     When Called:
         When you need to synchronize entity data with clients
+
     Parameters:
         - key (string): The network variable key to send
         - receiver (Player, optional): Specific player to send to, or nil for all players
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -926,14 +1011,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Clears all network variables for the entity and notifies clients
+
     When Called:
         When you need to remove all network data from an entity
+
     Parameters:
         - receiver (Player, optional): Specific player to notify, or nil for all players
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -975,14 +1065,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Removes all door access data and notifies clients to close door menus
+
     When Called:
         When you need to clear all door access permissions and close related UIs
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server (can only be called on server)
     Example Usage:
@@ -1026,14 +1121,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets the locked state of an entity using network variables
+
     When Called:
         When you need to lock or unlock an entity
+
     Parameters:
         - state (boolean): True to lock, false to unlock
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1067,14 +1167,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets whether a vehicle can be owned or sold
+
     When Called:
         When you need to make a vehicle non-ownable or ownable
+
     Parameters:
         - state (boolean): True to make non-ownable, false to make ownable
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1108,14 +1213,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Checks if the entity is a door by examining its class name
+
     When Called:
         When you need to determine if an entity is a door
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a door, false otherwise
+
     Realm:
         Server
     Example Usage:
@@ -1160,16 +1270,21 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets a network variable for the entity and synchronizes it with clients
+
     When Called:
         When you need to store and sync data on an entity
+
     Parameters:
         - key (string): The network variable key
         - value (any): The value to store
         - receiver (Player, optional): Specific player to send to, or nil for all players
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1208,15 +1323,20 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Gets a network variable from the entity (server-side)
+
     When Called:
         When you need to retrieve synchronized data from an entity on the server
+
     Parameters:
         - key (string): The network variable key to retrieve
         - default (any, optional): Default value if the key doesn't exist
+
     Returns:
         any - The network variable value or default
+
     Realm:
         Server
     Example Usage:
@@ -1244,7 +1364,7 @@ if SERVER then
         local data = entity:getNetVar("data", {})
         if data.lastUpdate and CurTime() - data.lastUpdate > 300 then
             entity:setNetVar("data", {lastUpdate = CurTime()})
-            end
+        end
         ```
 ]]
     function entityMeta:getNetVar(key, default)
@@ -1254,14 +1374,19 @@ if SERVER then
     end
 else
     --[[
+
     Purpose:
         Checks if the entity is a door by examining its class name (client-side)
+
     When Called:
         When you need to determine if an entity is a door on the client
+
     Parameters:
         None
+
     Returns:
         boolean - True if the entity is a door, false otherwise
+
     Realm:
         Client (can only be called on client)
     Example Usage:
@@ -1300,15 +1425,20 @@ else
     end
 
     --[[
+
     Purpose:
         Gets a network variable from the entity (client-side)
+
     When Called:
         When you need to retrieve synchronized data from an entity on the client
+
     Parameters:
         - key (string): The network variable key to retrieve
         - default (any, optional): Default value if the key doesn't exist
+
     Returns:
         any - The network variable value or default
+
     Realm:
         Client (can only be called on client)
     Example Usage:
@@ -1346,10 +1476,13 @@ else
     end
 
     --[[
+
     Purpose:
         Plays a sound that follows the entity with 3D positioning and distance attenuation
+
     When Called:
         When you need to play a sound that moves with an entity
+
     Parameters:
         - soundPath (string): Path to the sound file or URL
         - volume (number, optional): Volume level (0-1, default: 1)
@@ -1360,8 +1493,10 @@ else
         - pitch (number, optional): Pitch multiplier (default: 1)
         - _ (any, optional): Unused parameter
         - dsp (number, optional): DSP effect ID (default: 0)
+
     Returns:
         None
+
     Realm:
         Client (can only be called on client)
     Example Usage:

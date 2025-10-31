@@ -12,14 +12,19 @@ characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
 --[[
+
     Purpose:
         Converts the character object to a string representation
+
     When Called:
         When displaying character information or debugging
+
     Parameters:
         None
+
     Returns:
         string - Formatted character string with ID
+
     Realm:
         Shared
     Example Usage:
@@ -54,14 +59,19 @@ function characterMeta:tostring()
 end
 
 --[[
+
     Purpose:
         Compares two character objects for equality based on their IDs
+
     When Called:
         When checking if two character references point to the same character
+
     Parameters:
         other (character) - The other character object to compare with
+
     Returns:
         boolean - True if both characters have the same ID, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -104,14 +114,19 @@ function characterMeta:eq(other)
 end
 
 --[[
+
     Purpose:
         Retrieves the unique ID of the character
+
     When Called:
         When you need to identify a specific character instance
+
     Parameters:
         None
+
     Returns:
         number - The character's unique ID
+
     Realm:
         Shared
     Example Usage:
@@ -147,14 +162,19 @@ function characterMeta:getID()
 end
 
 --[[
+
     Purpose:
         Retrieves the player entity associated with this character
+
     When Called:
         When you need to access the player who owns this character
+
     Parameters:
         None
+
     Returns:
         Player - The player entity, or nil if not found
+
     Realm:
         Shared
     Example Usage:
@@ -210,14 +230,19 @@ function characterMeta:getPlayer()
 end
 
 --[[
+
     Purpose:
         Gets the display name for a character based on recognition system
+
     When Called:
         When displaying character names to other players
+
     Parameters:
         client (Player) - The client who is viewing the character
+
     Returns:
         string - The name to display (real name, fake name, or "unknown")
+
     Realm:
         Shared
     Example Usage:
@@ -263,14 +288,19 @@ function characterMeta:getDisplayedName(client)
 end
 
 --[[
+
     Purpose:
         Checks if the character has enough money for a transaction
+
     When Called:
         Before processing purchases, payments, or money transfers
+
     Parameters:
         amount (number) - The amount of money to check for
+
     Returns:
         boolean - True if character has sufficient funds, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -316,14 +346,19 @@ function characterMeta:hasMoney(amount)
 end
 
 --[[
+
     Purpose:
         Checks if the character has any of the specified flags
+
     When Called:
         When checking permissions or access rights for a character
+
     Parameters:
         flagStr (string) - String containing flags to check for
+
     Returns:
         boolean - True if character has any of the specified flags, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -371,14 +406,19 @@ function characterMeta:hasFlags(flagStr)
 end
 
 --[[
+
     Purpose:
         Checks if the character has a weapon item equipped
+
     When Called:
         When validating weapon usage or checking equipped items
+
     Parameters:
         requireEquip (boolean) - Whether to check if item is equipped (default: true)
+
     Returns:
         boolean - True if character has the weapon item, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -430,16 +470,22 @@ function characterMeta:getItemWeapon(requireEquip)
 end
 
 --[[
+
     Purpose:
         Gets the value of a character attribute including boosts
+
     When Called:
         When checking character stats or calculating bonuses
+
     Parameters:
         key (string) - The attribute key to retrieve
+
     Parameters:
         default (number) - Default value if attribute doesn't exist (default: 0)
+
     Returns:
         number - The attribute value with boosts applied
+
     Realm:
         Shared
     Example Usage:
@@ -486,14 +532,19 @@ function characterMeta:getAttrib(key, default)
 end
 
 --[[
+
     Purpose:
         Gets the boost table for a specific attribute
+
     When Called:
         When checking or modifying attribute boosts
+
     Parameters:
         attribID (string) - The attribute ID to get boosts for
+
     Returns:
         table - Table containing boost values for the attribute
+
     Realm:
         Shared
     Example Usage:
@@ -536,14 +587,19 @@ function characterMeta:getBoost(attribID)
 end
 
 --[[
+
     Purpose:
         Checks if the character recognizes another character by ID
+
     When Called:
         When determining if one character knows another character's identity
+
     Parameters:
         id (number|character) - Character ID or character object to check recognition for
+
     Returns:
         boolean - True if character recognizes the other, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -589,14 +645,19 @@ function characterMeta:doesRecognize(id)
 end
 
 --[[
+
     Purpose:
         Checks if the character has fake recognition of another character
+
     When Called:
         When determining if character knows a fake name for another character
+
     Parameters:
         id (number|character) - Character ID or character object to check fake recognition for
+
     Returns:
         boolean - True if character has fake recognition, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -642,20 +703,28 @@ function characterMeta:doesFakeRecognize(id)
 end
 
 --[[
+
     Purpose:
         Sets character data and optionally syncs it to database and clients
+
     When Called:
         When storing character-specific data that needs persistence
+
     Parameters:
         k (string|table) - Key to set or table of key-value pairs
+
     Parameters:
         v (any) - Value to set (ignored if k is table)
+
     Parameters:
         noReplication (boolean) - Skip client replication (default: false)
+
     Parameters:
         receiver (Player) - Specific client to send to (default: character owner)
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -750,16 +819,22 @@ function characterMeta:setData(k, v, noReplication, receiver)
 end
 
 --[[
+
     Purpose:
         Retrieves character data by key or returns all data
+
     When Called:
         When accessing stored character-specific data
+
     Parameters:
         key (string) - The data key to retrieve (optional)
+
     Parameters:
         default (any) - Default value if key doesn't exist (optional)
+
     Returns:
         any - The data value, all data table, or default value
+
     Realm:
         Shared
     Example Usage:
@@ -801,14 +876,19 @@ function characterMeta:getData(key, default)
 end
 
 --[[
+
     Purpose:
         Checks if the character is currently banned
+
     When Called:
         When validating character access or checking ban status
+
     Parameters:
         None
+
     Returns:
         boolean - True if character is banned, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -852,16 +932,22 @@ end
 
 if SERVER then
     --[[
+
     Purpose:
         Makes the character recognize another character (with optional fake name)
+
     When Called:
         When establishing recognition between characters
+
     Parameters:
         character (number|character) - Character ID or character object to recognize
+
     Parameters:
         name (string) - Optional fake name to assign (default: nil)
+
     Returns:
         boolean - True if recognition was successful
+
     Realm:
         Server
     Example Usage:
@@ -915,16 +1001,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Makes the character join a specific class (faction job)
+
     When Called:
         When changing character class or job within their faction
+
     Parameters:
         class (string) - The class name to join
+
     Parameters:
         isForced (boolean) - Whether to force the class change (default: false)
+
     Returns:
         boolean - True if class change was successful, false otherwise
+
     Realm:
         Server
     Example Usage:
@@ -989,14 +1081,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Removes the character from their current class and assigns default class
+
     When Called:
         When removing character from their current job or class
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1050,16 +1147,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Updates a character attribute by adding to the current value
+
     When Called:
         When modifying character stats through gameplay or admin actions
+
     Parameters:
         key (string) - The attribute key to update
+
     Parameters:
         value (number) - The amount to add to the current attribute value
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1112,16 +1215,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets a character attribute to a specific value
+
     When Called:
         When setting character stats to exact values
+
     Parameters:
         key (string) - The attribute key to set
+
     Parameters:
         value (number) - The exact value to set the attribute to
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1173,18 +1282,25 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Adds a temporary boost to a character attribute
+
     When Called:
         When applying temporary stat bonuses from items, spells, or effects
+
     Parameters:
         boostID (string) - Unique identifier for this boost
+
     Parameters:
         attribID (string) - The attribute to boost
+
     Parameters:
         boostAmount (number) - The amount to boost the attribute by
+
     Returns:
         boolean - True if boost was added successfully
+
     Realm:
         Server
     Example Usage:
@@ -1227,16 +1343,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Removes a temporary boost from a character attribute
+
     When Called:
         When removing temporary stat bonuses from items, spells, or effects
+
     Parameters:
         boostID (string) - Unique identifier for the boost to remove
+
     Parameters:
         attribID (string) - The attribute the boost was applied to
+
     Returns:
         boolean - True if boost was removed successfully
+
     Realm:
         Server
     Example Usage:
@@ -1279,14 +1401,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets the character flags to a specific string
+
     When Called:
         When changing character permissions or access rights
+
     Parameters:
         flags (string) - The flags string to set
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1347,14 +1474,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Adds flags to the character without removing existing ones
+
     When Called:
         When granting additional permissions to a character
+
     Parameters:
         flags (string) - The flags to add to the character
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1405,14 +1537,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Removes flags from the character
+
     When Called:
         When revoking permissions or access rights from a character
+
     Parameters:
         flags (string) - The flags to remove from the character
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1464,14 +1601,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Saves the character data to the database
+
     When Called:
         When persisting character changes to the database
+
     Parameters:
         callback (function) - Optional callback function to execute after save
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1522,14 +1664,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Synchronizes character data with clients
+
     When Called:
         When updating character information on client side
+
     Parameters:
         receiver (Player) - Specific client to sync to (default: all players)
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1611,14 +1758,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets up the character for the player (model, team, inventory, etc.)
+
     When Called:
         When loading a character for a player
+
     Parameters:
         noNetworking (boolean) - Skip networking setup (default: false)
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1682,14 +1834,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Kicks the character from the server
+
     When Called:
         When removing a character from the game
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1745,14 +1902,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Bans the character for a specified time or permanently
+
     When Called:
         When applying a ban to a character
+
     Parameters:
         time (number) - Ban duration in seconds (nil for permanent ban)
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1798,14 +1960,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Deletes the character from the database
+
     When Called:
         When permanently removing a character
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1841,14 +2008,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Destroys the character object and removes it from memory
+
     When Called:
         When cleaning up character data from memory
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -1885,14 +2057,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Gives money to the character
+
     When Called:
         When adding money to a character's account
+
     Parameters:
         amount (number) - The amount of money to give
+
     Returns:
         boolean - True if money was given successfully
+
     Realm:
         Server
     Example Usage:
@@ -1930,14 +2107,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Takes money from the character
+
     When Called:
         When removing money from a character's account
+
     Parameters:
         amount (number) - The amount of money to take
+
     Returns:
         boolean - True if money was taken successfully
+
     Realm:
         Server
     Example Usage:

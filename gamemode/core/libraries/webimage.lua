@@ -66,17 +66,22 @@ local function validateURL(url)
 end
 
 --[[
+
     Purpose:
         Downloads an image from a URL and caches it locally for future use
+
     When Called:
         When you need to fetch an image from the internet and store it locally
+
     Parameters:
         - n (string): Name/identifier for the image
         - u (string, optional): URL to download from (uses stored URL if not provided)
         - cb (function, optional): Callback function called when download completes
         - flags (string, optional): Material flags for the downloaded image
+
     Returns:
         None (uses callback for results)
+
     Realm:
         Client
     Example Usage:
@@ -97,7 +102,7 @@ end
             else
                 print("Failed to download image")
             end
-            end, "noclamp smooth")
+        end, "noclamp smooth")
         ```
 
         High Complexity:
@@ -106,25 +111,25 @@ end
         -- High: Batch download with error handling and progress tracking
         local images = {
         {name = "banner", url = "https://example.com/banner.png"},
-            {name = "icon", url = "https://example.com/icon.jpg"},
-                {name = "background", url = "https://example.com/bg.png"}
-                }
+        {name = "icon", url = "https://example.com/icon.jpg"},
+        {name = "background", url = "https://example.com/bg.png"}
+        }
 
-                local completed = 0
-                for _, img in ipairs(images) do
-                    lia.webimage.download(img.name, img.url, function(material, fromCache, error)
-                    completed = completed + 1
-                    if material then
-                        print("Downloaded: " .. img.name)
-                        else
-                            print("Failed to download " .. img.name .. ": " .. (error or "unknown error"))
-                        end
-
-                        if completed == #images then
-                            print("All downloads completed")
-                        end
-                    end)
+        local completed = 0
+        for _, img in ipairs(images) do
+            lia.webimage.download(img.name, img.url, function(material, fromCache, error)
+            completed = completed + 1
+            if material then
+                print("Downloaded: " .. img.name)
+                else
+                    print("Failed to download " .. img.name .. ": " .. (error or "unknown error"))
                 end
+
+                if completed == #images then
+                    print("All downloads completed")
+                end
+            end)
+        end
         ```
 ]]
 function lia.webimage.download(n, u, cb, flags)
@@ -212,17 +217,22 @@ function lia.webimage.download(n, u, cb, flags)
 end
 
 --[[
+
     Purpose:
         Registers an image URL for future use and immediately downloads it
+
     When Called:
         When you want to store an image URL and download it for later use
+
     Parameters:
         - n (string): Name/identifier for the image
         - u (string): URL to download from
         - cb (function, optional): Callback function called when download completes
         - flags (string, optional): Material flags for the downloaded image
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -251,23 +261,23 @@ end
         -- High: Register multiple images with progress tracking
         local imageConfigs = {
         {name = "banner", url = "https://example.com/banner.png", flags = "noclamp"},
-            {name = "icon", url = "https://example.com/icon.jpg", flags = "smooth"},
-                {name = "background", url = "https://example.com/bg.png"}
-                }
+        {name = "icon", url = "https://example.com/icon.jpg", flags = "smooth"},
+        {name = "background", url = "https://example.com/bg.png"}
+        }
 
-                local registered = 0
-                for _, config in ipairs(imageConfigs) do
-                    lia.webimage.register(config.name, config.url, function(material)
-                    registered = registered + 1
-                    if material then
-                        print("Registered: " .. config.name)
-                    end
+        local registered = 0
+        for _, config in ipairs(imageConfigs) do
+            lia.webimage.register(config.name, config.url, function(material)
+            registered = registered + 1
+            if material then
+                print("Registered: " .. config.name)
+            end
 
-                    if registered == #imageConfigs then
-                        print("All images registered successfully")
-                    end
-                    end, config.flags)
-                end
+            if registered == #imageConfigs then
+                print("All images registered successfully")
+            end
+        end, config.flags)
+        end
         ```
 ]]
 function lia.webimage.register(n, u, cb, flags)
@@ -280,15 +290,20 @@ function lia.webimage.register(n, u, cb, flags)
 end
 
 --[[
+
     Purpose:
         Retrieves a cached material from a previously downloaded image
+
     When Called:
         When you need to get a material that has already been downloaded and cached
+
     Parameters:
         - n (string): Name/identifier of the image or URL
         - flags (string, optional): Material flags to apply to the material
+
     Returns:
         Material object if found, nil otherwise
+
     Realm:
         Client
     Example Usage:
@@ -430,14 +445,19 @@ function dimage:SetImage(src, backup)
 end
 
 --[[
+
     Purpose:
         Retrieves statistics about downloaded and stored web images
+
     When Called:
         When you need to monitor the library's performance or get usage statistics
+
     Parameters:
         None
+
     Returns:
         Table containing statistics (downloaded count, stored count, last reset time)
+
     Realm:
         Client
     Example Usage:

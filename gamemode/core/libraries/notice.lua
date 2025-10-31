@@ -10,16 +10,21 @@
 lia.notices = lia.notices or {}
 if SERVER then
     --[[
+
         Purpose:
             Sends a notification message to a specific client or all clients
+
         When Called:
             When server needs to display a notification to player(s)
+
         Parameters:
             - client (Player|nil): Target player to send notification to, or nil for all players
             - message (string): The notification message text to display
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -67,17 +72,22 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sends a localized notification message to a specific client or all clients
+
         When Called:
             When server needs to display a localized notification with parameter substitution
+
         Parameters:
             - client (Player|nil): Target player to send notification to, or nil for all players
             - key (string): Localization key for the message
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
             - ... (any): Variable arguments to substitute into the localized message
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -132,14 +142,19 @@ if SERVER then
     end
 else
     --[[
+
         Purpose:
             Receives and displays notification messages from the server
+
         When Called:
             Automatically called when server sends notification data via network
+
         Parameters:
             None (reads from network stream)
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -199,14 +214,19 @@ else
 
     net.Receive("liaNotificationData", lia.notices.receiveNotify)
     --[[
+
         Purpose:
             Receives and displays localized notification messages from the server
+
         When Called:
             Automatically called when server sends localized notification data via network
+
         Parameters:
             None (reads from network stream)
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -278,16 +298,21 @@ else
 
     net.Receive("liaNotifyLocal", lia.notices.receiveNotifyL)
     --[[
+
         Purpose:
             Creates and displays a notification message directly on the client
+
         When Called:
             When client needs to display a notification without server communication
+
         Parameters:
             - _ (any): Ignored parameter (for compatibility with server version)
             - message (string): The notification message text to display
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -335,17 +360,22 @@ else
     end
 
     --[[
+
         Purpose:
             Creates and displays a localized notification message directly on the client
+
         When Called:
             When client needs to display a localized notification without server communication
+
         Parameters:
             - client (any): Ignored parameter (for compatibility with server version)
             - key (string): Localization key for the message
             - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
             - ... (any): Variable arguments to substitute into the localized message
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -415,15 +445,20 @@ else
     end
 
     --[[
+
         Purpose:
             Provides compatibility with Garry's Mod's legacy notification system
+
         When Called:
             When legacy notification functions are used (e.g., notification.AddLegacy)
+
         Parameters:
             - text (string): The notification message text to display
             - typeId (number): Legacy notification type ID (0=info, 1=error, 2=success)
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -477,14 +512,19 @@ else
 end
 
 --[[
+
     Purpose:
         Organizes and positions notification panels on the screen
+
     When Called:
         Automatically called when new notifications are created
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:

@@ -251,16 +251,21 @@ for category, logTypes in pairs(logTypeData) do
 end
 
 --[[
+
     Purpose:
         Registers a new log type with a custom formatting function and category
+
     When Called:
         When modules or external systems need to add custom log types
+
     Parameters:
         - logType (string): Unique identifier for the log type
         - func (function): Function that formats the log message, receives client and additional parameters
         - category (string): Category name for organizing log entries
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:
@@ -281,7 +286,7 @@ end
     lia.log.addType("moduleEvent", function(client, moduleName, event, data)
     if not IsValid(client) then return "System: " .. moduleName .. " - " .. event end
         return L("logModuleEvent", client:Name(), moduleName, event, data or "")
-        end, "Modules")
+    end, "Modules")
     ```
 
     High Complexity:
@@ -305,17 +310,22 @@ function lia.log.addType(logType, func, category)
 end
 
 --[[
+
     Purpose:
         Generates a formatted log string from a log type and parameters
+
     When Called:
         Internally by lia.log.add() or when manually retrieving log messages
+
     Parameters:
         - client (Player): The player who triggered the log event (can be nil for system events)
         - logType (string): The log type identifier to format
         - ... (vararg): Additional parameters passed to the log type's formatting function
+
     Returns:
         - result (string): The formatted log message, or nil if log type doesn't exist or function fails
         - category (string): The category of the log type, or nil if log type doesn't exist
+
     Realm:
         Server
     Example Usage:
@@ -366,16 +376,21 @@ function lia.log.getString(client, logType, ...)
 end
 
 --[[
+
     Purpose:
         Adds a log entry to the database and displays it in the server console
+
     When Called:
         When any significant player action or system event occurs that needs logging
+
     Parameters:
         - client (Player): The player who triggered the log event (can be nil for system events)
         - logType (string): The log type identifier to use for formatting
         - ... (vararg): Additional parameters passed to the log type's formatting function
+
     Returns:
         None
+
     Realm:
         Server
     Example Usage:

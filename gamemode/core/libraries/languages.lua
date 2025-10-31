@@ -11,14 +11,19 @@ lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
 --[[
+
     Purpose:
         Loads language files from a specified directory and processes them into the language storage system
+
     When Called:
         During gamemode initialization or when manually loading language files
+
     Parameters:
         directory (string) - The directory path containing language files
+
     Returns:
         None
+
     Realm:
         Server/Client
     Example Usage:
@@ -85,14 +90,19 @@ function lia.lang.loadFromDir(directory)
 end
 
 --[[
+
     Purpose:
         Adds a custom language table to the language storage system
+
     When Called:
         When manually adding language strings or when modules need to register their own translations
+
     Parameters:
         name (string) - The language name/key, tbl (table) - Table containing key-value pairs of translations
+
     Returns:
         None
+
     Realm:
         Server/Client
     Example Usage:
@@ -102,9 +112,9 @@ end
     ```lua
     -- Simple: Add basic language strings
     lia.lang.addTable("english", {
-        hello = "Hello",
-        goodbye = "Goodbye"
-        })
+    hello = "Hello",
+    goodbye = "Goodbye"
+    })
     ```
 
     Medium Complexity:
@@ -125,15 +135,15 @@ end
     -- High: Add multiple language tables with validation
     local languages = {
     english = { title = "Title", desc = "Description" },
-        spanish = { title = "Título", desc = "Descripción" },
-            french = { title = "Titre", desc = "Description" }
-            }
+    spanish = { title = "Título", desc = "Descripción" },
+    french = { title = "Titre", desc = "Description" }
+    }
 
-            for lang, strings in pairs(languages) do
-                if type(strings) == "table" then
-                    lia.lang.addTable(lang, strings)
-                end
-            end
+    for lang, strings in pairs(languages) do
+        if type(strings) == "table" then
+            lia.lang.addTable(lang, strings)
+        end
+    end
     ```
 ]]
 function lia.lang.addTable(name, tbl)
@@ -145,14 +155,19 @@ function lia.lang.addTable(name, tbl)
 end
 
 --[[
+
     Purpose:
         Retrieves a sorted list of all available language names
+
     When Called:
         When building language selection menus or when checking available languages
+
     Parameters:
         None
+
     Returns:
         table - Sorted array of language names with proper capitalization
+
     Realm:
         Server/Client
     Example Usage:
@@ -214,14 +229,19 @@ function lia.lang.getLanguages()
 end
 
 --[[
+
     Purpose:
         Retrieves a localized string with parameter substitution and formatting
+
     When Called:
         When displaying text to users or when any localized string is needed
+
     Parameters:
         key (string) - The language key to look up, ... (variadic) - Parameters for string formatting
+
     Returns:
         string - The localized and formatted string, or the key if not found
+
     Realm:
         Server/Client
     Example Usage:
@@ -290,14 +310,19 @@ function lia.lang.getLocalizedString(key, ...)
 end
 
 --[[
+
     Purpose:
         Global alias for lia.lang.getLocalizedString for convenient access to localized strings
+
     When Called:
         Anywhere in the codebase when a localized string is needed
+
     Parameters:
         key (string) - The language key to look up, ... (variadic) - Parameters for string formatting
+
     Returns:
         string - The localized and formatted string, or the key if not found
+
     Realm:
         Server/Client
     Example Usage:

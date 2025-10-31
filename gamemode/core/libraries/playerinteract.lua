@@ -11,16 +11,21 @@ lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
 lia.playerinteract.categories = lia.playerinteract.categories or {}
 --[[
+
     Purpose:
         Checks if a client is within interaction range of an entity
+
     When Called:
         Called when determining if an interaction should be available to a player
+
     Parameters:
         - client (Player): The player attempting the interaction
         - entity (Entity): The target entity to check distance against
         - customRange (number, optional): Custom range override (defaults to 250 units)
+
     Returns:
         boolean - true if within range, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -63,14 +68,19 @@ function lia.playerinteract.isWithinRange(client, entity, customRange)
 end
 
 --[[
+
     Purpose:
         Retrieves all available interactions for a client based on their traced entity
+
     When Called:
         Called when opening interaction menu or checking available interactions
+
     Parameters:
         - client (Player, optional): The player to get interactions for (defaults to LocalPlayer())
+
     Returns:
         table - Dictionary of available interactions indexed by interaction name
+
     Realm:
         Client
     Example Usage:
@@ -130,14 +140,19 @@ function lia.playerinteract.getInteractions(client)
 end
 
 --[[
+
     Purpose:
         Retrieves all available personal actions for a client
+
     When Called:
         Called when opening personal actions menu or checking available actions
+
     Parameters:
         - client (Player, optional): The player to get actions for (defaults to LocalPlayer())
+
     Returns:
         table - Dictionary of available actions indexed by action name
+
     Realm:
         Client
     Example Usage:
@@ -191,14 +206,19 @@ function lia.playerinteract.getActions(client)
 end
 
 --[[
+
     Purpose:
         Prepares interaction/action options for UI display in a flat list
+
     When Called:
         Called when preparing options for display in the interaction menu
+
     Parameters:
         - options (table): Dictionary of options to prepare
+
     Returns:
         table - Array of options for flat display
+
     Realm:
         Shared
     Example Usage:
@@ -250,10 +270,13 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Registers a new player-to-player or player-to-entity interaction
+
         When Called:
             Called during module initialization or when registering custom interactions
+
         Parameters:
             - name (string): Unique identifier for the interaction
             - data (table): Interaction configuration table containing:
@@ -267,8 +290,10 @@ if SERVER then
                 - actionText (string, optional): Text shown to performing player during timed action
                 - targetActionText (string, optional): Text shown to target player during timed action
                 - categoryColor (Color, optional): Color for category display
+
         Returns:
             void
+
         Realm:
             Server
         Example Usage:
@@ -278,11 +303,11 @@ if SERVER then
         ```lua
         -- Simple: Add basic player interaction
         lia.playerinteract.addInteraction("giveMoney", {
-            shouldShow = function(client, target)
-            return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0
-            end,
-            onRun = function(client, target)
-            -- Give money logic here
+        shouldShow = function(client, target)
+        return IsValid(target) and target:IsPlayer() and client:getChar():getMoney() > 0
+        end,
+        onRun = function(client, target)
+        -- Give money logic here
         end
         })
         ```
@@ -292,17 +317,17 @@ if SERVER then
         ```lua
         -- Medium: Add timed interaction with progress indicators
         lia.playerinteract.addInteraction("healPlayer", {
-            category = "Medical",
-            range = 100,
-            timeToComplete = 5,
-            actionText = "Healing player...",
-            targetActionText = "Being healed...",
-            shouldShow = function(client, target)
-            return IsValid(target) and target:IsPlayer() and target:Health() < target:GetMaxHealth()
-            end,
-            onRun = function(client, target)
-            target:SetHealth(target:GetMaxHealth())
-            client:notify("Player healed successfully!")
+        category = "Medical",
+        range = 100,
+        timeToComplete = 5,
+        actionText = "Healing player...",
+        targetActionText = "Being healed...",
+        shouldShow = function(client, target)
+        return IsValid(target) and target:IsPlayer() and target:Health() < target:GetMaxHealth()
+        end,
+        onRun = function(client, target)
+        target:SetHealth(target:GetMaxHealth())
+        client:notify("Player healed successfully!")
         end
         })
         ```
@@ -312,32 +337,32 @@ if SERVER then
         ```lua
         -- High: Complex interaction with validation and server-side processing
         lia.playerinteract.addInteraction("arrestPlayer", {
-            serverOnly = true,
-            category = "Law Enforcement",
-            range = 150,
-            timeToComplete = 3,
-            actionText = "Arresting suspect...",
-            targetActionText = "Being arrested...",
-            shouldShow = function(client, target)
-            if not IsValid(target) or not target:IsPlayer() then return false end
-                if not client:getChar() or not target:getChar() then return false end
-                    return client:getChar():getFaction() == FACTION_POLICE and
-                    target:getChar():getFaction() ~= FACTION_POLICE
-                    end,
-                    onRun = function(client, target)
-                    -- Complex arrest logic with validation
-                    if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
-                        lia.log.add(client, "cheaterAction", "Attempted arrest while flagged as cheater")
-                        client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
-                        return
-                    end
+        serverOnly = true,
+        category = "Law Enforcement",
+        range = 150,
+        timeToComplete = 3,
+        actionText = "Arresting suspect...",
+        targetActionText = "Being arrested...",
+        shouldShow = function(client, target)
+        if not IsValid(target) or not target:IsPlayer() then return false end
+            if not client:getChar() or not target:getChar() then return false end
+                return client:getChar():getFaction() == FACTION_POLICE and
+                target:getChar():getFaction() ~= FACTION_POLICE
+            end,
+            onRun = function(client, target)
+            -- Complex arrest logic with validation
+            if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+                lia.log.add(client, "cheaterAction", "Attempted arrest while flagged as cheater")
+                client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
+                return
+            end
 
-                    target:getChar():setData("arrested", true)
-                    target:StripWeapons()
-                    client:notify("Suspect arrested!")
-                    target:notify("You have been arrested!")
-                end
-                })
+            target:getChar():setData("arrested", true)
+            target:StripWeapons()
+            client:notify("Suspect arrested!")
+            target:notify("You have been arrested!")
+        end
+        })
         ```
     ]]
     function lia.playerinteract.addInteraction(name, data)
@@ -368,10 +393,13 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Registers a new personal action that doesn't require a target entity
+
         When Called:
             Called during module initialization or when registering custom personal actions
+
         Parameters:
             - name (string): Unique identifier for the action
             - data (table): Action configuration table containing:
@@ -384,8 +412,10 @@ if SERVER then
                 - actionText (string, optional): Text shown to performing player during timed action
                 - targetActionText (string, optional): Text shown to target player during timed action
                 - categoryColor (Color, optional): Color for category display
+
         Returns:
             void
+
         Realm:
             Server
         Example Usage:
@@ -395,14 +425,14 @@ if SERVER then
         ```lua
         -- Simple: Add basic personal action
         lia.playerinteract.addAction("changeToWhisper", {
-            category = L("categoryVoice"),
-            shouldShow = function(client)
-            return client:getChar() and client:Alive() and
-            client:getNetVar("VoiceType") ~= L("whispering")
-            end,
-            onRun = function(client)
-            client:setNetVar("VoiceType", L("whispering"))
-            client:notifyInfoLocalized("voiceModeSet", L("whispering"))
+        category = L("categoryVoice"),
+        shouldShow = function(client)
+        return client:getChar() and client:Alive() and
+        client:getNetVar("VoiceType") ~= L("whispering")
+        end,
+        onRun = function(client)
+        client:setNetVar("VoiceType", L("whispering"))
+        client:notifyInfoLocalized("voiceModeSet", L("whispering"))
         end
         })
         ```
@@ -412,21 +442,21 @@ if SERVER then
         ```lua
         -- Medium: Add timed personal action with progress indicator
         lia.playerinteract.addAction("meditate", {
-            category = "Personal",
-            timeToComplete = 10,
-            actionText = "Meditating...",
-            shouldShow = function(client)
-            return client:getChar() and client:Alive() and
-            not client:getNetVar("meditating", false)
-            end,
-            onRun = function(client)
-            client:setNetVar("meditating", true)
-            client:SetHealth(math.min(client:Health() + 25, client:GetMaxHealth()))
-            client:notify("Meditation complete! Health restored.")
-            timer.Simple(1, function()
-            if IsValid(client) then
-                client:setNetVar("meditating", false)
-            end
+        category = "Personal",
+        timeToComplete = 10,
+        actionText = "Meditating...",
+        shouldShow = function(client)
+        return client:getChar() and client:Alive() and
+        not client:getNetVar("meditating", false)
+        end,
+        onRun = function(client)
+        client:setNetVar("meditating", true)
+        client:SetHealth(math.min(client:Health() + 25, client:GetMaxHealth()))
+        client:notify("Meditation complete! Health restored.")
+        timer.Simple(1, function()
+        if IsValid(client) then
+            client:setNetVar("meditating", false)
+        end
         end)
         end
         })
@@ -437,41 +467,41 @@ if SERVER then
         ```lua
         -- High: Complex personal action with multiple conditions and effects
         lia.playerinteract.addAction("emergencyCall", {
-            serverOnly = true,
-            category = "Emergency",
-            timeToComplete = 5,
-            actionText = "Calling emergency services...",
-            shouldShow = function(client)
-            if not client:getChar() or not client:Alive() then return false end
-                local char = client:getChar()
-                if char:getFaction() == FACTION_POLICE or char:getFaction() == FACTION_MEDIC then
-                    return false -- Emergency services don't need to call themselves
-                end
-                return not client:getNetVar("emergencyCooldown", false)
-                end,
-                onRun = function(client)
-                -- Set cooldown to prevent spam
-                client:setNetVar("emergencyCooldown", true)
-                timer.Simple(300, function() -- 5 minute cooldown
-                if IsValid(client) then
-                    client:setNetVar("emergencyCooldown", false)
-                end
-            end)
-
-            -- Notify emergency services
-            local emergencyMsg = string.format(
-            "Emergency call from %s at %s",
-            client:getChar():getDisplayedName(),
-            client:GetPos()
-            )
-
-            for _, ply in ipairs(player.GetAll()) do
-                if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
-                    ply:notify(emergencyMsg)
-                end
+        serverOnly = true,
+        category = "Emergency",
+        timeToComplete = 5,
+        actionText = "Calling emergency services...",
+        shouldShow = function(client)
+        if not client:getChar() or not client:Alive() then return false end
+            local char = client:getChar()
+            if char:getFaction() == FACTION_POLICE or char:getFaction() == FACTION_MEDIC then
+                return false -- Emergency services don't need to call themselves
             end
+            return not client:getNetVar("emergencyCooldown", false)
+        end,
+        onRun = function(client)
+        -- Set cooldown to prevent spam
+        client:setNetVar("emergencyCooldown", true)
+        timer.Simple(300, function() -- 5 minute cooldown
+        if IsValid(client) then
+            client:setNetVar("emergencyCooldown", false)
+        end
+        end)
 
-            client:notify("Emergency services have been notified!")
+        -- Notify emergency services
+        local emergencyMsg = string.format(
+        "Emergency call from %s at %s",
+        client:getChar():getDisplayedName(),
+        client:GetPos()
+        )
+
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
+                ply:notify(emergencyMsg)
+            end
+        end
+
+        client:notify("Emergency services have been notified!")
         end
         })
         ```
@@ -503,14 +533,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Synchronizes interaction and action data from server to clients
+
         When Called:
             Called when interactions/actions are added or when clients connect
+
         Parameters:
             - client (Player, optional): Specific client to sync to (if nil, syncs to all players)
+
         Returns:
             void
+
         Realm:
             Server
         Example Usage:
@@ -527,10 +562,10 @@ if SERVER then
         ```lua
         -- Medium: Sync to specific client after they connect
         hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
-            timer.Simple(2, function() -- Wait for client to fully load
-            if IsValid(client) then
-                lia.playerinteract.syncToClients(client)
-            end
+        timer.Simple(2, function() -- Wait for client to fully load
+        if IsValid(client) then
+            lia.playerinteract.syncToClients(client)
+        end
         end)
         end)
         ```
@@ -556,15 +591,15 @@ if SERVER then
                 -- Only sync non-admin interactions to regular players
                 if not data.adminOnly or client:IsAdmin() then
                     filteredData[name] = {
-                        type = data.type,
-                        serverOnly = data.serverOnly and true or false,
-                        name = name,
-                        range = data.range,
-                        category = data.category or L("categoryUnsorted"),
-                        target = data.target,
-                        timeToComplete = data.timeToComplete,
-                        actionText = data.actionText,
-                        targetActionText = data.targetActionText
+                    type = data.type,
+                    serverOnly = data.serverOnly and true or false,
+                    name = name,
+                    range = data.range,
+                    category = data.category or L("categoryUnsorted"),
+                    target = data.target,
+                    timeToComplete = data.timeToComplete,
+                    actionText = data.actionText,
+                    targetActionText = data.targetActionText
                     }
                 end
             end
@@ -685,10 +720,13 @@ if SERVER then
     })
 else
     --[[
+
         Purpose:
             Opens the interaction/action menu UI by delegating to lia.derma.optionsMenu
+
         When Called:
             Called when player presses interaction keybind or requests menu
+
         Parameters:
             - options (table): Dictionary of available options to display
             - isInteraction (boolean): Whether this is an interaction menu (true) or action menu (false)
@@ -696,8 +734,10 @@ else
             - closeKey (number): Key code that closes the menu when released
             - netMsg (string): Network message name for server-only interactions
             - preFiltered (boolean, optional): Whether options are already filtered (defaults to false)
+
         Returns:
             Panel - The created menu frame (returns from lia.derma.optionsMenu)
+
         Realm:
             Client
         Note: This function is now a thin wrapper around lia.derma.optionsMenu for backwards compatibility.

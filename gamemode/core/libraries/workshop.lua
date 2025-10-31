@@ -13,14 +13,19 @@ if SERVER then
     lia.workshop.known = lia.workshop.known or {}
     lia.workshop.cache = lia.workshop.cache or {}
     --[[
+
         Purpose:
             Adds a workshop addon ID to the server's required workshop content list
+
         When Called:
             Called when modules or addons need specific workshop content
+
         Parameters:
             id (string/number) - The Steam Workshop ID of the addon to add
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -70,14 +75,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Gathers all workshop IDs from mounted addons and module configurations
+
         When Called:
             Called during module initialization to collect all required workshop content
+
         Parameters:
             None
+
         Returns:
             table - Table containing all workshop IDs that need to be downloaded
+
         Realm:
             Server
         Example Usage:
@@ -139,14 +149,19 @@ if SERVER then
 
     hook.Add("InitializedModules", "liaWorkshopInitializedModules", function() lia.workshop.cache = lia.workshop.gather() end)
     --[[
+
         Purpose:
             Sends the cached workshop IDs to a specific player to initiate download
+
         When Called:
             Called when a player requests workshop content or during initial spawn
+
         Parameters:
             ply (Player) - The player to send workshop IDs to
+
         Returns:
             None
+
         Realm:
             Server
         Example Usage:
@@ -181,8 +196,8 @@ if SERVER then
                 end
 
                 hook.Add("PlayerInitialSpawn", "CustomWorkshopSend", function(ply)
-                    timer.Simple(5, function()
-                    sendToPlayer(ply)
+                timer.Simple(5, function()
+                sendToPlayer(ply)
                 end)
                 end)
                 ```
@@ -238,14 +253,19 @@ else
     end
 
     --[[
+
         Purpose:
             Checks if there are any workshop addons that need to be downloaded
+
         When Called:
             Called to determine if the client needs to download workshop content
+
         Parameters:
             None
+
         Returns:
             boolean - True if content needs to be downloaded, false otherwise
+
         Realm:
             Client
         Example Usage:
@@ -291,9 +311,9 @@ else
                 end
 
                 hook.Add("OnEntityCreated", "CheckWorkshopDownloads", function(ent)
-                    if ent == LocalPlayer() then
-                        timer.Simple(1, checkDownloads)
-                    end
+                if ent == LocalPlayer() then
+                    timer.Simple(1, checkDownloads)
+                end
                 end)
                 ```
     ]]
@@ -419,14 +439,19 @@ else
 
     net.Receive("liaWorkshopDownloaderInfo", function() refresh(net.ReadTable()) end)
     --[[
+
         Purpose:
             Initiates the mounting process for required workshop content with user confirmation
+
         When Called:
             Called when the client needs to download and mount workshop addons
+
         Parameters:
             None
+
         Returns:
             None
+
         Realm:
             Client
         Example Usage:
@@ -444,10 +469,10 @@ else
                 -- Medium: Mount content with custom callback
                 lia.workshop.mountContent()
                 hook.Add("Think", "CheckMountComplete", function()
-                    if not lia.workshop.hasContentToDownload() then
-                        print("All workshop content mounted successfully")
-                        hook.Remove("Think", "CheckMountComplete")
-                    end
+                if not lia.workshop.hasContentToDownload() then
+                    print("All workshop content mounted successfully")
+                    hook.Remove("Think", "CheckMountComplete")
+                end
                 end)
                 ```
 
@@ -486,9 +511,9 @@ else
                 end
 
                 hook.Add("PlayerInitialSpawn", "MountWorkshopContent", function(ply)
-                    if ply == LocalPlayer() then
-                        timer.Simple(3, mountWithProgress)
-                    end
+                if ply == LocalPlayer() then
+                    timer.Simple(3, mountWithProgress)
+                end
                 end)
                 ```
     ]]

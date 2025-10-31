@@ -13,14 +13,19 @@ do
     playerMeta.steamName = playerMeta.steamName or playerMeta.Name
     playerMeta.SteamName = playerMeta.steamName
     --[[
+
     Purpose:
         Retrieves the player's current character object
+
     When Called:
         When accessing the player's character data or performing character-related operations
+
     Parameters:
         None
+
     Returns:
         table|nil - The character object if player has a character, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -64,14 +69,19 @@ do
     end
 
     --[[
+
     Purpose:
         Retrieves the player's current character object
+
     When Called:
         When accessing the player's character data or performing character-related operations
+
     Parameters:
         None
+
     Returns:
         table|nil - The character object if player has a character, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -120,14 +130,19 @@ do
     end
 
     --[[
+
     Purpose:
         Converts the player to a string representation using character name or Steam name
+
     When Called:
         When converting player to string for display, logging, or comparison purposes
+
     Parameters:
         None
+
     Returns:
         string - The player's character name if available, otherwise their Steam name
+
     Realm:
         Shared
     Example Usage:
@@ -168,16 +183,21 @@ do
 end
 
 --[[
+
     Purpose:
         Makes the player perform a gesture animation and synchronizes it across clients
+
     When Called:
         When triggering player animations for roleplay, emotes, or visual effects
+
     Parameters:
-        a (number) - Gesture slot (0-15)
-        b (number) - Gesture weight (0-255)
-        c (boolean) - Whether to restart the gesture
+        - a (number): Gesture slot (0-15)
+        - b (number): Gesture weight (0-255)
+        - c (boolean): Whether to restart the gesture
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -222,14 +242,19 @@ function playerMeta:doGesture(a, b, c)
 end
 
 --[[
+
     Purpose:
         Checks if the player has a specific administrative privilege
+
     When Called:
         When validating player permissions for commands, features, or access control
+
     Parameters:
-        privilegeName (string) - The name of the privilege to check
+        - privilegeName (string): The name of the privilege to check
+
     Returns:
         boolean - True if player has the privilege, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -277,14 +302,19 @@ function playerMeta:hasPrivilege(privilegeName)
 end
 
 --[[
+
     Purpose:
         Removes the player's ragdoll entity and clears associated blur effect
+
     When Called:
         When cleaning up player ragdoll after respawn, revival, or state changes
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -324,14 +354,19 @@ function playerMeta:removeRagdoll()
 end
 
 --[[
+
     Purpose:
         Checks if the player is stuck inside a solid object or wall
+
     When Called:
         When detecting collision issues, implementing anti-stuck systems, or validating player position
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is stuck, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -376,15 +411,20 @@ function playerMeta:isStuck()
 end
 
 --[[
+
     Purpose:
         Checks if the player is within a specified radius of another entity
+
     When Called:
         When implementing proximity-based features, interaction systems, or distance validation
+
     Parameters:
-        radius (number) - The maximum distance to check
-        entity (Entity) - The entity to check distance against
+        - radius (number): The maximum distance to check
+        - entity (Entity): The entity to check distance against
+
     Returns:
         boolean - True if player is within radius, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -426,15 +466,20 @@ function playerMeta:isNearPlayer(radius, entity)
 end
 
 --[[
+
     Purpose:
         Gets all entities within a specified radius of the player
+
     When Called:
         When implementing area-of-effect systems, proximity detection, or entity scanning
+
     Parameters:
-        radius (number) - The radius to search within
-        playerOnly (boolean, optional) - If true, only returns player entities
+        - radius (number): The radius to search within
+        - playerOnly (boolean, optional): If true, only returns player entities
+
     Returns:
         table - Array of entities within the radius
+
     Realm:
         Shared
     Example Usage:
@@ -478,14 +523,19 @@ function playerMeta:entitiesNearPlayer(radius, playerOnly)
 end
 
 --[[
+
     Purpose:
         Gets the weapon entity and corresponding item data for the player's active weapon
+
     When Called:
         When accessing weapon properties, validating equipped items, or implementing weapon systems
+
     Parameters:
         None
+
     Returns:
         weapon (Entity|nil), item (table|nil) - The weapon entity and item data if found
+
     Realm:
         Shared
     Example Usage:
@@ -545,14 +595,19 @@ function playerMeta:getItemWeapon()
 end
 
 --[[
+
     Purpose:
         Checks if the player is currently running (moving faster than walk speed)
+
     When Called:
         When implementing movement-based features, stamina systems, or speed validation
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is running, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -594,14 +649,19 @@ function playerMeta:isRunning()
 end
 
 --[[
+
     Purpose:
         Checks if the player is using a family shared Steam account
+
     When Called:
         When implementing account validation, anti-cheat systems, or account restrictions
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is using family shared account, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -640,14 +700,19 @@ function playerMeta:isFamilySharedAccount()
 end
 
 --[[
+
     Purpose:
         Calculates the position where items should be dropped in front of the player
+
     When Called:
         When implementing item dropping, inventory management, or item placement systems
+
     Parameters:
         None
+
     Returns:
         Vector - The calculated drop position
+
     Realm:
         Shared
     Example Usage:
@@ -698,14 +763,19 @@ function playerMeta:getItemDropPos()
 end
 
 --[[
+
     Purpose:
         Gets all items from the player's character inventory
+
     When Called:
         When accessing player inventory, implementing item systems, or inventory management
+
     Parameters:
         None
+
     Returns:
         table|nil - Array of items in the player's inventory, nil if no character
+
     Realm:
         Shared
     Example Usage:
@@ -760,14 +830,19 @@ function playerMeta:getItems()
 end
 
 --[[
+
     Purpose:
         Gets the entity that the player is looking at within a specified distance
+
     When Called:
         When implementing interaction systems, targeting, or line-of-sight detection
+
     Parameters:
-        distance (number, optional) - Maximum trace distance (default: 96)
+        - distance (number, optional): Maximum trace distance (default: 96)
+
     Returns:
         Entity|nil - The traced entity if found, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -818,14 +893,19 @@ function playerMeta:getTracedEntity(distance)
 end
 
 --[[
+
     Purpose:
         Performs a hull trace from the player's position to detect collisions and surfaces
+
     When Called:
         When implementing collision detection, surface analysis, or spatial queries
+
     Parameters:
-        distance (number, optional) - Maximum trace distance (default: 200)
+        - distance (number, optional): Maximum trace distance (default: 200)
+
     Returns:
         table - Trace result containing hit information, position, and entity data
+
     Realm:
         Shared
     Example Usage:
@@ -882,14 +962,19 @@ function playerMeta:getTrace(distance)
 end
 
 --[[
+
     Purpose:
         Gets the entity that the player is looking at within a specified distance using eye trace
+
     When Called:
         When implementing precise targeting, interaction systems, or line-of-sight detection
+
     Parameters:
-        distance (number, optional) - Maximum distance to check (default: 150)
+        - distance (number, optional): Maximum distance to check (default: 150)
+
     Returns:
         Entity|nil - The entity if within distance, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -936,15 +1021,20 @@ function playerMeta:getEyeEnt(distance)
 end
 
 --[[
+
     Purpose:
         Sends a notification message to the player
+
     When Called:
         When displaying messages, alerts, or status updates to the player
+
     Parameters:
-        message (string) - The message to display
-        notifType (string, optional) - The type of notification (default: "default")
+        - message (string): The message to display
+        - notifType (string, optional): The type of notification (default: "default")
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -986,16 +1076,21 @@ function playerMeta:notify(message, notifType)
 end
 
 --[[
+
     Purpose:
         Sends a localized notification message to the player with string formatting
+
     When Called:
         When displaying translated messages, alerts, or status updates to the player
+
     Parameters:
-        message (string) - The localization key for the message
-        notifType (string, optional) - The type of notification (default: "default")
-        ... (vararg) - Arguments to format into the localized string
+        - message (string): The localization key for the message
+        - notifType (string, optional): The type of notification (default: "default")
+        - ... (vararg): Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1033,14 +1128,19 @@ function playerMeta:notifyLocalized(message, notifType, ...)
 end
 
 --[[
+
     Purpose:
         Sends an error notification message to the player
+
     When Called:
         When displaying error messages, failures, or critical alerts to the player
+
     Parameters:
-        message (string) - The error message to display
+        - message (string): The error message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1083,14 +1183,19 @@ function playerMeta:notifyError(message)
 end
 
 --[[
+
     Purpose:
         Sends a warning notification message to the player
+
     When Called:
         When displaying warning messages, cautions, or important alerts to the player
+
     Parameters:
-        message (string) - The warning message to display
+        - message (string): The warning message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1132,14 +1237,19 @@ function playerMeta:notifyWarning(message)
 end
 
 --[[
+
     Purpose:
         Sends an informational notification message to the player
+
     When Called:
         When displaying informational messages, tips, or general updates to the player
+
     Parameters:
         message (string) - The informational message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1178,14 +1288,19 @@ function playerMeta:notifyInfo(message)
 end
 
 --[[
+
     Purpose:
         Sends a success notification message to the player
+
     When Called:
         When displaying success messages, achievements, or positive feedback to the player
+
     Parameters:
         message (string) - The success message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1225,14 +1340,19 @@ function playerMeta:notifySuccess(message)
 end
 
 --[[
+
     Purpose:
         Sends a money-related notification message to the player
+
     When Called:
         When displaying financial transactions, currency changes, or economic updates to the player
+
     Parameters:
         message (string) - The money-related message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1273,14 +1393,19 @@ function playerMeta:notifyMoney(message)
 end
 
 --[[
+
     Purpose:
         Sends an admin notification message to the player
+
     When Called:
         When displaying administrative messages, system alerts, or admin-specific information to the player
+
     Parameters:
         message (string) - The admin message to display
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1318,15 +1443,20 @@ function playerMeta:notifyAdmin(message)
 end
 
 --[[
+
     Purpose:
         Sends a localized error notification message to the player with string formatting
+
     When Called:
         When displaying translated error messages, failures, or critical alerts to the player
+
     Parameters:
         key (string) - The localization key for the error message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1369,15 +1499,20 @@ function playerMeta:notifyErrorLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Sends a localized warning notification message to the player with string formatting
+
     When Called:
         When displaying translated warning messages, cautions, or important alerts to the player
+
     Parameters:
         key (string) - The localization key for the warning message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1420,15 +1555,20 @@ function playerMeta:notifyWarningLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Sends a localized informational notification message to the player with string formatting
+
     When Called:
         When displaying translated informational messages, tips, or general updates to the player
+
     Parameters:
         key (string) - The localization key for the informational message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1467,15 +1607,20 @@ function playerMeta:notifyInfoLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Sends a localized success notification message to the player with string formatting
+
     When Called:
         When displaying translated success messages, achievements, or positive feedback to the player
+
     Parameters:
         key (string) - The localization key for the success message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1515,15 +1660,20 @@ function playerMeta:notifySuccessLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Sends a localized money-related notification message to the player with string formatting
+
     When Called:
         When displaying translated financial transactions, currency changes, or economic updates to the player
+
     Parameters:
         key (string) - The localization key for the money-related message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1563,15 +1713,20 @@ function playerMeta:notifyMoneyLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Sends a localized admin notification message to the player with string formatting
+
     When Called:
         When displaying translated administrative messages, system alerts, or admin-specific information to the player
+
     Parameters:
         key (string) - The localization key for the admin message
         ... (vararg) - Arguments to format into the localized string
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1609,14 +1764,19 @@ function playerMeta:notifyAdminLocalized(key, ...)
 end
 
 --[[
+
     Purpose:
         Checks if the player can edit a specific vendor entity
+
     When Called:
         When validating vendor editing permissions, implementing vendor management systems, or access control
+
     Parameters:
         vendor (Entity) - The vendor entity to check edit permissions for
+
     Returns:
         boolean - True if player can edit the vendor, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1680,14 +1840,19 @@ local function groupHasType(groupName, t)
 end
 
 --[[
+
     Purpose:
         Checks if the player is a staff member based on their user group
+
     When Called:
         When validating staff permissions, implementing staff-only features, or access control systems
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is staff, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1732,14 +1897,19 @@ function playerMeta:isStaff()
 end
 
 --[[
+
     Purpose:
         Checks if the player is a VIP member based on their user group
+
     When Called:
         When validating VIP permissions, implementing VIP-only features, or access control systems
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is VIP, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1783,14 +1953,19 @@ function playerMeta:isVIP()
 end
 
 --[[
+
     Purpose:
         Checks if the player is currently on duty as staff (in staff faction)
+
     When Called:
         When validating active staff status, implementing duty-based features, or staff management systems
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is on duty as staff, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1833,14 +2008,19 @@ function playerMeta:isStaffOnDuty()
 end
 
 --[[
+
     Purpose:
         Checks if the player has whitelist access to a specific faction
+
     When Called:
         When validating faction access, implementing whitelist systems, or character creation restrictions
+
     Parameters:
         faction (string) - The faction unique ID to check whitelist for
+
     Returns:
         boolean - True if player has whitelist access, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1891,14 +2071,19 @@ function playerMeta:hasWhitelist(faction)
 end
 
 --[[
+
     Purpose:
         Gets the class data for the player's current character class
+
     When Called:
         When accessing character class information, implementing class-based features, or character management
+
     Parameters:
         None
+
     Returns:
         table|nil - The class data table if character has a class, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -1949,14 +2134,19 @@ function playerMeta:getClassData()
 end
 
 --[[
+
     Purpose:
         Gets DarkRP-compatible variable values for the player (currently only supports money)
+
     When Called:
         When implementing DarkRP compatibility, accessing player money, or legacy system integration
+
     Parameters:
         var (string) - The variable name to get (currently only "money" is supported)
+
     Returns:
         number|nil - The money amount if var is "money", nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2004,14 +2194,19 @@ function playerMeta:getDarkRPVar(var)
 end
 
 --[[
+
     Purpose:
         Gets the player's current money amount from their character
+
     When Called:
         When accessing player money, implementing economic systems, or financial transactions
+
     Parameters:
         None
+
     Returns:
         number - The player's money amount (0 if no character)
+
     Realm:
         Shared
     Example Usage:
@@ -2055,14 +2250,19 @@ function playerMeta:getMoney()
 end
 
 --[[
+
     Purpose:
         Checks if the player can afford a specific amount of money
+
     When Called:
         When validating purchases, implementing economic systems, or checking financial capacity
+
     Parameters:
         amount (number) - The amount of money to check if player can afford
+
     Returns:
         boolean - True if player can afford the amount, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2110,15 +2310,20 @@ function playerMeta:canAfford(amount)
 end
 
 --[[
+
     Purpose:
         Checks if the player has a specific skill level or higher
+
     When Called:
         When validating skill requirements, implementing skill-based features, or character progression systems
+
     Parameters:
         skill (string) - The skill name to check
         level (number) - The minimum skill level required
+
     Returns:
         boolean - True if player has the required skill level, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2148,18 +2353,18 @@ end
         -- High: Complex skill system with multiple requirements
         local requiredSkills = {
         {skill = "strength", level = 5},
-            {skill = "intelligence", level = 8}
-            }
-            local canUse = true
-            for _, req in ipairs(requiredSkills) do
-                if not player:hasSkillLevel(req.skill, req.level) then
-                    canUse = false
-                    player:notifyError("Need " .. req.skill .. " level " .. req.level)
-                end
+        {skill = "intelligence", level = 8}
+        }
+        local canUse = true
+        for _, req in ipairs(requiredSkills) do
+            if not player:hasSkillLevel(req.skill, req.level) then
+                canUse = false
+                player:notifyError("Need " .. req.skill .. " level " .. req.level)
             end
-            if canUse then
-                player:notifySuccess("All skill requirements met!")
-            end
+        end
+        if canUse then
+            player:notifySuccess("All skill requirements met!")
+        end
         ```
 ]]
 function playerMeta:hasSkillLevel(skill, level)
@@ -2168,14 +2373,19 @@ function playerMeta:hasSkillLevel(skill, level)
 end
 
 --[[
+
     Purpose:
         Checks if the player meets all required skill levels for a task or feature
+
     When Called:
         When validating complex skill requirements, implementing multi-skill features, or character progression systems
+
     Parameters:
         requiredSkillLevels (table) - Table of skill names and required levels {skill = level, ...}
+
     Returns:
         boolean - True if player meets all requirements, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2228,17 +2438,22 @@ function playerMeta:meetsRequiredSkills(requiredSkillLevels)
 end
 
 --[[
+
     Purpose:
         Forces the player to play a specific animation sequence with optional callback
+
     When Called:
         When implementing cutscenes, animations, or scripted sequences for the player
+
     Parameters:
         sequenceName (string) - The name of the animation sequence to play
         callback (function, optional) - Function to call when sequence completes
         time (number, optional) - Duration of the sequence (default: sequence duration)
         noFreeze (boolean, optional) - Whether to freeze the player during sequence
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2304,14 +2519,19 @@ function playerMeta:forceSequence(sequenceName, callback, time, noFreeze)
 end
 
 --[[
+
     Purpose:
         Makes the player leave their current animation sequence and restore normal movement
+
     When Called:
         When ending cutscenes, animations, or scripted sequences for the player
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2354,14 +2574,19 @@ function playerMeta:leaveSequence()
 end
 
 --[[
+
     Purpose:
         Gets the player's character flags string
+
     When Called:
         When accessing character flags, implementing flag-based features, or character management
+
     Parameters:
         None
+
     Returns:
         string - The character flags string (empty if no character)
+
     Realm:
         Shared
     Example Usage:
@@ -2402,14 +2627,19 @@ function playerMeta:getFlags()
 end
 
 --[[
+
     Purpose:
         Gives flags to the player's character
+
     When Called:
         When granting character flags, implementing flag-based permissions, or character management
+
     Parameters:
         flags (string) - The flags to give to the character
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2451,14 +2681,19 @@ function playerMeta:giveFlags(flags)
 end
 
 --[[
+
     Purpose:
         Takes flags from the player's character
+
     When Called:
         When removing character flags, implementing flag-based permissions, or character management
+
     Parameters:
         flags (string) - The flags to take from the character
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2500,15 +2735,20 @@ function playerMeta:takeFlags(flags)
 end
 
 --[[
+
     Purpose:
         Networks bone animation data to all clients for the player
+
     When Called:
         When implementing custom animations, bone manipulation, or visual effects for the player
+
     Parameters:
         active (boolean) - Whether the animation is active
         boneData (table) - Table of bone names and angles {boneName = angle, ...}
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2564,14 +2804,19 @@ function playerMeta:networkAnimation(active, boneData)
 end
 
 --[[
+
     Purpose:
         Gets all Lilia data for the player (server-side) or local data (client-side)
+
     When Called:
         When accessing player data storage, implementing data management, or debugging systems
+
     Parameters:
         None
+
     Returns:
         table - The player's Lilia data table
+
     Realm:
         Shared
     Example Usage:
@@ -2617,17 +2862,22 @@ function playerMeta:getAllLiliaData()
 end
 
 --[[
+
     Purpose:
         Sets a waypoint for the player to navigate to
+
     When Called:
         When implementing navigation systems, quest objectives, or location guidance for the player
+
     Parameters:
         name (string) - The name of the waypoint
         vector (Vector) - The position of the waypoint
         logo (string, optional) - The material path for the waypoint icon
         onReach (function, optional) - Function to call when waypoint is reached
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2740,15 +2990,20 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
 end
 
 --[[
+
     Purpose:
         Gets a specific Lilia data value for the player with optional default
+
     When Called:
         When accessing player data storage, implementing data management, or retrieving stored values
+
     Parameters:
         key (string) - The data key to retrieve
         default (any, optional) - The default value to return if key doesn't exist
+
     Returns:
         any - The data value or default if not found
+
     Realm:
         Shared
     Example Usage:
@@ -2800,14 +3055,19 @@ function playerMeta:getLiliaData(key, default)
 end
 
 --[[
+
     Purpose:
         Checks if the player has any of the specified flags
+
     When Called:
         When validating flag-based permissions, implementing access control, or character management
+
     Parameters:
         flags (string) - The flags to check for (any one flag will return true)
+
     Returns:
         boolean - True if player has any of the specified flags, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2856,14 +3116,19 @@ function playerMeta:hasFlags(flags)
 end
 
 --[[
+
     Purpose:
         Checks if the player's play time is greater than a specified amount
+
     When Called:
         When implementing time-based features, veteran rewards, or play time validation
+
     Parameters:
         time (number) - The minimum play time required in seconds
+
     Returns:
         boolean - True if player's play time is greater than the specified time, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -2907,18 +3172,23 @@ function playerMeta:playTimeGreaterThan(time)
 end
 
 --[[
+
     Purpose:
         Requests the player to select from a list of options via a UI dialog
+
     When Called:
         When implementing interactive menus, choice systems, or user input dialogs for the player
+
     Parameters:
         title (string) - The title of the options dialog
         subTitle (string) - The subtitle or description of the options
         options (table) - Array of option strings to choose from
         limit (number, optional) - Maximum number of options that can be selected (default: 1)
         callback (function, optional) - Function to call when player makes a selection
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -2982,17 +3252,22 @@ function playerMeta:requestOptions(title, subTitle, options, limit, callback)
 end
 
 --[[
+
     Purpose:
         Requests the player to input a string via a UI dialog
+
     When Called:
         When implementing text input systems, name entry, or string-based user input for the player
+
     Parameters:
         title (string) - The title of the string input dialog
         subTitle (string) - The subtitle or description of the input
         callback (function) - Function to call when player submits the string
         default (string, optional) - Default value to pre-fill in the input field
+
     Returns:
         deferred|nil - A deferred object if no callback provided, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -3059,16 +3334,21 @@ function playerMeta:requestString(title, subTitle, callback, default)
 end
 
 --[[
+
     Purpose:
         Requests the player to input multiple arguments via a UI dialog
+
     When Called:
         When implementing complex input systems, command interfaces, or multi-parameter user input for the player
+
     Parameters:
         title (string) - The title of the arguments input dialog
         argTypes (table) - Array of argument type specifications
         callback (function) - Function to call when player submits the arguments
+
     Returns:
         deferred|nil - A deferred object if no callback provided, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -3088,10 +3368,10 @@ end
         -- Medium: Request with validation
         local argTypes = {
         {type = "string", name = "Item Name", required = true},
-            {type = "number", name = "Quantity", min = 1, max = 100}
-            }
-            player:requestArguments("Create Item", argTypes, function(args)
-            player:notify("Created " .. args[2] .. "x " .. args[1])
+        {type = "number", name = "Quantity", min = 1, max = 100}
+        }
+        player:requestArguments("Create Item", argTypes, function(args)
+        player:notify("Created " .. args[2] .. "x " .. args[1])
         end)
         ```
 
@@ -3101,21 +3381,21 @@ end
         -- High: Complex argument system with multiple types
         local argTypes = {
         {type = "string", name = "Character Name", required = true},
-            {type = "number", name = "Level", min = 1, max = 100},
-                {type = "boolean", name = "Is VIP", default = false},
-                    {type = "string", name = "Faction", options = {"police", "citizen", "criminal"}}
-                    }
-                    local callback = function(args)
-                    local char = player:getChar()
-                    if char then
-                        char:setData("name", args[1])
-                        char:setData("level", args[2])
-                        char:setData("isVIP", args[3])
-                        char:setData("faction", args[4])
-                        player:notifySuccess("Character updated!")
-                    end
-                end
-                player:requestArguments("Character Setup", argTypes, callback)
+        {type = "number", name = "Level", min = 1, max = 100},
+        {type = "boolean", name = "Is VIP", default = false},
+        {type = "string", name = "Faction", options = {"police", "citizen", "criminal"}}
+        }
+        local callback = function(args)
+        local char = player:getChar()
+        if char then
+            char:setData("name", args[1])
+            char:setData("level", args[2])
+            char:setData("isVIP", args[3])
+            char:setData("faction", args[4])
+            player:notifySuccess("Character updated!")
+        end
+        end
+        player:requestArguments("Character Setup", argTypes, callback)
         ```
 ]]
 function playerMeta:requestArguments(title, argTypes, callback)
@@ -3145,18 +3425,23 @@ function playerMeta:requestArguments(title, argTypes, callback)
 end
 
 --[[
+
     Purpose:
         Presents a binary question to the player with two options
+
     When Called:
         When implementing yes/no dialogs, confirmation prompts, or binary choice systems for the player
+
     Parameters:
         question (string) - The question to ask the player
         option1 (string) - The first option (usually "Yes" or "Accept")
         option2 (string) - The second option (usually "No" or "Cancel")
         manualDismiss (boolean, optional) - Whether the player can manually dismiss the dialog
         callback (function, optional) - Function to call when player makes a choice
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -3218,15 +3503,20 @@ function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, ca
 end
 
 --[[
+
     Purpose:
         Presents a custom button dialog to the player with multiple action buttons
+
     When Called:
         When implementing custom action menus, button interfaces, or interactive dialogs for the player
+
     Parameters:
         title (string) - The title of the button dialog
         buttons (table) - Array of button data {text = "Button Text", callback = function() end} or {text, callback}
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -3236,9 +3526,9 @@ end
         -- Simple: Request basic buttons
         local buttons = {
         {text = "Option 1", callback = function() print("Option 1 selected") end},
-            {text = "Option 2", callback = function() print("Option 2 selected") end}
-            }
-            player:requestButtons("Choose Action", buttons)
+        {text = "Option 2", callback = function() print("Option 2 selected") end}
+        }
+        player:requestButtons("Choose Action", buttons)
         ```
 
         Medium Complexity:
@@ -3247,10 +3537,10 @@ end
         -- Medium: Request with different actions
         local buttons = {
         {text = "Heal", callback = function() player:SetHealth(100) end},
-            {text = "Give Money", callback = function() player:notify("Money given!") end},
-                {text = "Cancel", callback = function() player:notify("Cancelled") end}
-                }
-                player:requestButtons("Player Actions", buttons)
+        {text = "Give Money", callback = function() player:notify("Money given!") end},
+        {text = "Cancel", callback = function() player:notify("Cancelled") end}
+        }
+        player:requestButtons("Player Actions", buttons)
         ```
 
         High Complexity:
@@ -3260,22 +3550,22 @@ end
         local title = "Character Management"
         local buttons = {
         {text = "Reset Character", callback = function()
-            player:binaryQuestion("Reset character?", "Yes", "No", true, function(choice)
-            if choice == 1 then
-                local char = player:getChar()
-                if char then char:delete() end
-                end
-            end)
-            end},
-            {text = "Change Name", callback = function()
-                player:requestString("New Name", "Enter new character name:", function(name)
-                local char = player:getChar()
-                if char then char:setData("name", name) end
-                end)
-                end},
-                {text = "Cancel", callback = function() player:notify("Cancelled") end}
-                }
-                player:requestButtons(title, buttons)
+        player:binaryQuestion("Reset character?", "Yes", "No", true, function(choice)
+        if choice == 1 then
+            local char = player:getChar()
+            if char then char:delete() end
+            end
+        end)
+        end},
+        {text = "Change Name", callback = function()
+        player:requestString("New Name", "Enter new character name:", function(name)
+        local char = player:getChar()
+        if char then char:setData("name", name) end
+        end)
+        end},
+        {text = "Cancel", callback = function() player:notify("Cancelled") end}
+        }
+        player:requestButtons(title, buttons)
         ```
 ]]
 function playerMeta:requestButtons(title, buttons)
@@ -3304,17 +3594,22 @@ function playerMeta:requestButtons(title, buttons)
 end
 
 --[[
+
     Purpose:
         Presents a dropdown selection dialog to the player
+
     When Called:
         When implementing selection menus, choice systems, or dropdown interfaces for the player
+
     Parameters:
         title (string) - The title of the dropdown dialog
         subTitle (string) - The subtitle or description of the selection
         options (table) - Array of option strings to choose from
         callback (function, optional) - Function to call when player makes a selection
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -3381,14 +3676,19 @@ end
 
 --[[
     playerMeta:getParts()
+
     Purpose:
         Retrieves the player's current PAC (Player Accessory Control) parts
+
     When Called:
         When accessing player's PAC parts data
+
     Parameters:
         None
+
     Returns:
         table - Table of active PAC part IDs
+
     Realm:
         Shared
     Example Usage:
@@ -3442,62 +3742,69 @@ end
 
 if SERVER then
     --[[
-        playerMeta:syncParts()
-        Purpose:
-            Synchronizes the player's PAC parts with all clients
-        When Called:
-            When player's PAC parts need to be synchronized
-        Parameters:
-            None
-        Returns:
-            None
-        Realm:
-            Server
-        Example Usage:
-            ```lua
-            -- Low: Basic part synchronization
-            player:syncParts()
-            ```
 
-            Medium Complexity:
+    Purpose:
+        Synchronizes the player's PAC parts with all clients
 
-            ```lua
-            -- Medium: Sync parts after validation
-            local parts = player:getParts()
-            local validParts = {}
-            for partID, _ in pairs(parts) do
-                if lia.pac.isValidPart(partID) then
-                    validParts[partID] = true
+    When Called:
+        When player's PAC parts need to be synchronized
+
+    Parameters:
+        None
+
+    Returns:
+        None
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        -- Basic part synchronization
+        player:syncParts()
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        -- Sync parts after validation
+        local parts = player:getParts()
+        local validParts = {}
+        for partID, _ in pairs(parts) do
+            if lia.pac.isValidPart(partID) then
+                validParts[partID] = true
+            end
+        end
+        player:setNetVar("parts", validParts)
+        player:syncParts()
+        ```
+
+        High Complexity:
+
+        ```lua
+        -- Complex synchronization with logging and validation
+        local parts = player:getParts()
+        local syncCount = 0
+        local removedParts = {}
+
+        for partID, _ in pairs(parts) do
+            if not lia.pac.isValidPart(partID) then
+                table.insert(removedParts, partID)
+                parts[partID] = nil
+                else
+                    syncCount = syncCount + 1
                 end
             end
-            player:setNetVar("parts", validParts)
+
+            player:setNetVar("parts", parts)
             player:syncParts()
-            ```
 
-            High Complexity:
-
-            ```lua
-            -- High: Complex synchronization with logging and validation
-            local parts = player:getParts()
-            local syncCount = 0
-            local removedParts = {}
-
-            for partID, _ in pairs(parts) do
-                if not lia.pac.isValidPart(partID) then
-                    table.insert(removedParts, partID)
-                    parts[partID] = nil
-                    else
-                        syncCount = syncCount + 1
-                    end
-                end
-
-                player:setNetVar("parts", parts)
-                player:syncParts()
-
-                if #removedParts > 0 then
-                    lia.log.add("Player " .. player:Name() .. " had " .. #removedParts .. " invalid parts removed")
-                end
-            ```
+            if #removedParts > 0 then
+                lia.log.add("Player " .. player:Name() .. " had " .. #removedParts .. " invalid parts removed")
+            end
+        ```
     ]]
     function playerMeta:syncParts()
         net.Start("liaPacSync")
@@ -3505,69 +3812,76 @@ if SERVER then
     end
 
     --[[
-        playerMeta:addPart(partID)
-        Purpose:
-            Adds a PAC part to the player and synchronizes it with all clients
-        When Called:
-            When a player equips a new PAC accessory
-        Parameters:
-            - partID (string): The unique identifier of the PAC part to add
-        Returns:
-            None
-        Realm:
-            Server
-        Example Usage:
-            ```lua
-            -- Low: Basic part addition
-            player:addPart("hat_001")
-            ```
 
-            Medium Complexity:
+    Purpose:
+        Adds a PAC part to the player and synchronizes it with all clients
 
-            ```lua
-            -- Medium: Part addition with validation and limits
-            local parts = player:getParts()
-            local partCount = 0
-            for _, _ in pairs(parts) do
-                partCount = partCount + 1
+    When Called:
+        When a player equips a new PAC accessory
+
+    Parameters:
+        - partID (string): The unique identifier of the PAC part to add
+
+    Returns:
+        None
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        -- Basic part addition
+        player:addPart("hat_001")
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        -- Part addition with validation and limits
+        local parts = player:getParts()
+        local partCount = 0
+        for _, _ in pairs(parts) do
+            partCount = partCount + 1
+        end
+
+        if partCount < 10 and lia.pac.isValidPart(partID) then
+            player:addPart(partID)
+            player:notifySuccess("Part equipped: " .. partID)
+            else
+                player:notifyError("Cannot equip more parts or invalid part ID")
             end
+        ```
 
-            if partCount < 10 and lia.pac.isValidPart(partID) then
-                player:addPart(partID)
-                player:notifySuccess("Part equipped: " .. partID)
-                else
-                    player:notifyError("Cannot equip more parts or invalid part ID")
-                end
-            ```
+        High Complexity:
 
-            High Complexity:
+        ```lua
+        -- Complex part system with permissions and effects
+        local partID = "premium_hat_001"
+        local char = player:getChar()
 
-            ```lua
-            -- High: Complex part system with permissions and effects
-            local partID = "premium_hat_001"
-            local char = player:getChar()
+        if char and char:hasFlags("P") then
+            if lia.pac.isValidPart(partID) then
+                local parts = player:getParts()
+                if not parts[partID] then
+                    player:addPart(partID)
+                    player:notifySuccess("Premium part equipped!")
+                    lia.log.add("Player " .. player:Name() .. " equipped premium part: " .. partID)
 
-            if char and char:hasFlags("P") then
-                if lia.pac.isValidPart(partID) then
-                    local parts = player:getParts()
-                    if not parts[partID] then
-                        player:addPart(partID)
-                        player:notifySuccess("Premium part equipped!")
-                        lia.log.add("Player " .. player:Name() .. " equipped premium part: " .. partID)
-
-                        -- Apply special effects
-                        player:setData("premiumPartEquipped", true)
-                        player:notifyInfo("Premium effects activated!")
-                        else
-                            player:notifyWarning("Part already equipped")
-                        end
-                        else
-                            player:notifyError("Invalid part ID")
-                        end
-                        else
-                            player:notifyError("Insufficient permissions for this part")
-                        end
-            ```
+                    -- Apply special effects
+                    player:setData("premiumPartEquipped", true)
+                    player:notifyInfo("Premium effects activated!")
+                    else
+                        player:notifyWarning("Part already equipped")
+                    end
+                    else
+                        player:notifyError("Invalid part ID")
+                    end
+                    else
+                        player:notifyError("Insufficient permissions for this part")
+                    end
+        ```
     ]]
     function playerMeta:addPart(partID)
         if self:getParts()[partID] then return end
@@ -3581,74 +3895,81 @@ if SERVER then
     end
 
     --[[
-        playerMeta:removePart(partID)
-        Purpose:
-            Removes a PAC part from the player and synchronizes the change with all clients
-        When Called:
-            When a player unequips a PAC accessory
-        Parameters:
-            - partID (string): The unique identifier of the PAC part to remove
-        Returns:
-            None
-        Realm:
-            Server
-        Example Usage:
-            ```lua
-            -- Low: Basic part removal
-            player:removePart("hat_001")
-            ```
 
-            Medium Complexity:
+    Purpose:
+        Removes a PAC part from the player and synchronizes the change with all clients
 
-            ```lua
-            -- Medium: Part removal with validation and cleanup
-            local parts = player:getParts()
-            if parts[partID] then
-                player:removePart(partID)
-                player:notifySuccess("Part removed: " .. partID)
+    When Called:
+        When a player unequips a PAC accessory
 
-                -- Clean up related data
-                player:setData("part_" .. partID .. "_equipped", false)
-                else
-                    player:notifyWarning("Part not equipped")
+    Parameters:
+        - partID (string): The unique identifier of the PAC part to remove
+
+    Returns:
+        None
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        -- Basic part removal
+        player:removePart("hat_001")
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        -- Part removal with validation and cleanup
+        local parts = player:getParts()
+        if parts[partID] then
+            player:removePart(partID)
+            player:notifySuccess("Part removed: " .. partID)
+
+            -- Clean up related data
+            player:setData("part_" .. partID .. "_equipped", false)
+            else
+                player:notifyWarning("Part not equipped")
+            end
+        ```
+
+        High Complexity:
+
+        ```lua
+        -- Complex part removal with effects and logging
+        local partID = "premium_hat_001"
+        local parts = player:getParts()
+
+        if parts[partID] then
+            player:removePart(partID)
+
+            -- Remove special effects
+            if partID:find("premium_") then
+                player:setData("premiumPartEquipped", false)
+                player:notifyInfo("Premium effects deactivated")
+            end
+
+            -- Log the removal
+            lia.log.add("Player " .. player:Name() .. " removed part: " .. partID)
+
+            -- Check if any premium parts remain
+            local hasPremiumParts = false
+            for id, _ in pairs(parts) do
+                if id:find("premium_") then
+                    hasPremiumParts = true
+                    break
                 end
-            ```
+            end
 
-            High Complexity:
-
-            ```lua
-            -- High: Complex part removal with effects and logging
-            local partID = "premium_hat_001"
-            local parts = player:getParts()
-
-            if parts[partID] then
-                player:removePart(partID)
-
-                -- Remove special effects
-                if partID:find("premium_") then
-                    player:setData("premiumPartEquipped", false)
-                    player:notifyInfo("Premium effects deactivated")
-                end
-
-                -- Log the removal
-                lia.log.add("Player " .. player:Name() .. " removed part: " .. partID)
-
-                -- Check if any premium parts remain
-                local hasPremiumParts = false
-                for id, _ in pairs(parts) do
-                    if id:find("premium_") then
-                        hasPremiumParts = true
-                        break
-                    end
-                end
-
-                if not hasPremiumParts then
-                    player:notifyWarning("No premium parts remaining")
-                end
-                else
-                    player:notifyError("Part not found")
-                end
-            ```
+            if not hasPremiumParts then
+                player:notifyWarning("No premium parts remaining")
+            end
+            else
+                player:notifyError("Part not found")
+            end
+        ```
     ]]
     function playerMeta:removePart(partID)
         net.Start("liaPacPartRemove")
@@ -3661,80 +3982,87 @@ if SERVER then
     end
 
     --[[
-        playerMeta:resetParts()
-        Purpose:
-            Removes all PAC parts from the player and synchronizes the reset with all clients
-        When Called:
-            When a player wants to remove all accessories or during cleanup
-        Parameters:
-            None
-        Returns:
-            None
-        Realm:
-            Server
-        Example Usage:
-            ```lua
-            -- Low: Basic parts reset
+
+    Purpose:
+        Removes all PAC parts from the player and synchronizes the reset with all clients
+
+    When Called:
+        When a player wants to remove all accessories or during cleanup
+
+    Parameters:
+        None
+
+    Returns:
+        None
+
+    Realm:
+        Server
+    Example Usage:
+
+        Low Complexity:
+
+        ```lua
+        -- Basic parts reset
+        player:resetParts()
+        ```
+
+        Medium Complexity:
+
+        ```lua
+        -- Reset parts with validation and notification
+        local parts = player:getParts()
+        local partCount = 0
+        for _, _ in pairs(parts) do
+            partCount = partCount + 1
+        end
+
+        if partCount > 0 then
             player:resetParts()
-            ```
-
-            Medium Complexity:
-
-            ```lua
-            -- Medium: Reset parts with validation and notification
-            local parts = player:getParts()
-            local partCount = 0
-            for _, _ in pairs(parts) do
-                partCount = partCount + 1
+            player:notifySuccess("All parts removed (" .. partCount .. " parts)")
+            else
+                player:notifyInfo("No parts to remove")
             end
+        ```
 
-            if partCount > 0 then
-                player:resetParts()
-                player:notifySuccess("All parts removed (" .. partCount .. " parts)")
+        High Complexity:
+
+        ```lua
+        -- Complex parts reset with logging and cleanup
+        local parts = player:getParts()
+        local removedParts = {}
+        local premiumParts = 0
+
+        -- Count and categorize parts before removal
+        for partID, _ in pairs(parts) do
+            table.insert(removedParts, partID)
+            if partID:find("premium_") then
+                premiumParts = premiumParts + 1
+            end
+        end
+
+        if #removedParts > 0 then
+            player:resetParts()
+
+            -- Clean up related data
+            player:setData("premiumPartEquipped", false)
+            player:setData("lastPartReset", os.time())
+
+            -- Log the reset
+            lia.log.add("Player " .. player:Name() .. " reset " .. #removedParts .. " parts (Premium: " .. premiumParts .. ")")
+
+            -- Notify with details
+            if premiumParts > 0 then
+                player:notifyWarning("Reset " .. #removedParts .. " parts including " .. premiumParts .. " premium items")
                 else
-                    player:notifyInfo("No parts to remove")
+                    player:notifySuccess("Reset " .. #removedParts .. " parts")
                 end
-            ```
 
-            High Complexity:
-
-            ```lua
-            -- High: Complex parts reset with logging and cleanup
-            local parts = player:getParts()
-            local removedParts = {}
-            local premiumParts = 0
-
-            -- Count and categorize parts before removal
-            for partID, _ in pairs(parts) do
-                table.insert(removedParts, partID)
-                if partID:find("premium_") then
-                    premiumParts = premiumParts + 1
+                -- Trigger cleanup hooks
+                hook.Run("OnPlayerResetParts", player, removedParts)
+                else
+                    player:notifyInfo("No parts to reset")
                 end
-            end
-
-            if #removedParts > 0 then
-                player:resetParts()
-
-                -- Clean up related data
-                player:setData("premiumPartEquipped", false)
-                player:setData("lastPartReset", os.time())
-
-                -- Log the reset
-                lia.log.add("Player " .. player:Name() .. " reset " .. #removedParts .. " parts (Premium: " .. premiumParts .. ")")
-
-                -- Notify with details
-                if premiumParts > 0 then
-                    player:notifyWarning("Reset " .. #removedParts .. " parts including " .. premiumParts .. " premium items")
-                    else
-                        player:notifySuccess("Reset " .. #removedParts .. " parts")
-                    end
-
-                    -- Trigger cleanup hooks
-                    hook.Run("OnPlayerResetParts", player, removedParts)
-                    else
-                        player:notifyInfo("No parts to reset")
-                    end
-            ```
+        ```
     ]]
     function playerMeta:resetParts()
         net.Start("liaPacPartReset")
@@ -3744,14 +4072,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Restores stamina to the player's character
+
     When Called:
         When implementing stamina recovery, rest systems, or character healing for the player
+
     Parameters:
         amount (number) - The amount of stamina to restore
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -3800,14 +4133,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Consumes stamina from the player's character
+
     When Called:
         When implementing stamina usage, movement costs, or action requirements for the player
+
     Parameters:
         amount (number) - The amount of stamina to consume
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -3861,14 +4199,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Adds money to the player's character
+
     When Called:
         When implementing economic systems, rewards, or financial transactions for the player
+
     Parameters:
         amount (number) - The amount of money to add
+
     Returns:
         boolean - True if money was added successfully, false otherwise
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -3916,14 +4259,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Takes money from the player's character
+
     When Called:
         When implementing economic systems, penalties, or financial transactions for the player
+
     Parameters:
         amount (number) - The amount of money to take
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -3972,14 +4320,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Loads Lilia data for the player from the database
+
     When Called:
         When initializing player data, loading saved information, or database operations for the player
+
     Parameters:
         callback (function, optional) - Function to call when data is loaded
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4056,14 +4409,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Saves Lilia data for the player to the database
+
     When Called:
         When saving player data, updating database information, or data persistence for the player
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4117,17 +4475,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets a Lilia data value for the player with optional networking and saving control
+
     When Called:
         When storing player data, implementing data management, or updating player information
+
     Parameters:
         key (string) - The data key to set
         value (any) - The value to store
         noNetworking (boolean, optional) - Whether to skip networking the change
         noSave (boolean, optional) - Whether to skip saving to database
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4170,16 +4533,21 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Bans the player from the server with a reason and duration
+
     When Called:
         When implementing administrative actions, moderation systems, or player punishment for the player
+
     Parameters:
         reason (string, optional) - The reason for the ban (default: generic reason)
         duration (number, optional) - The duration of the ban in seconds (0 for permanent)
         banner (Player, optional) - The player who issued the ban
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4225,16 +4593,21 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets an action for the player with optional duration and callback
+
     When Called:
         When implementing player actions, progress bars, or timed activities for the player
+
     Parameters:
         text (string) - The action text to display
         time (number, optional) - The duration of the action in seconds
         callback (function, optional) - Function to call when action completes
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4292,18 +4665,23 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Makes the player perform an action by staring at an entity for a specified duration
+
     When Called:
         When implementing interaction systems, examination mechanics, or focused actions for the player
+
     Parameters:
         entity (Entity) - The entity to stare at
         callback (function) - Function to call when action completes
         time (number) - The duration to stare at the entity
         onCancel (function, optional) - Function to call if action is cancelled
         distance (number, optional) - Maximum distance to check (default: 96)
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4364,14 +4742,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Stops the player's current action and clears action timers
+
     When Called:
         When interrupting player actions, implementing action cancellation, or cleaning up player state
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4411,14 +4794,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Gets the player's total play time in seconds
+
     When Called:
         When calculating play time, implementing time-based features, or displaying player statistics
+
     Parameters:
         None
+
     Returns:
         number - The player's total play time in seconds
+
     Realm:
         Shared
     Example Usage:
@@ -4468,14 +4856,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Gets the player's current session time in seconds
+
     When Called:
         When calculating session duration, implementing session-based features, or displaying current session statistics
+
     Parameters:
         None
+
     Returns:
         number - The player's current session time in seconds
+
     Realm:
         Shared
     Example Usage:
@@ -4514,15 +4907,20 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Creates a ragdoll entity for the player with their current appearance and state
+
     When Called:
         When implementing death systems, ragdoll creation, or player state changes
+
     Parameters:
         freeze (boolean, optional) - Whether to freeze the ragdoll
         isDead (boolean, optional) - Whether the player is dead (affects ragdoll storage)
+
     Returns:
         Entity - The created ragdoll entity
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4598,17 +4996,22 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets the player's ragdoll state (knocked down or standing up)
+
     When Called:
         When implementing knockdown systems, unconsciousness, or player state management
+
     Parameters:
         state (boolean) - Whether to ragdoll the player (true) or stand them up (false)
         baseTime (number, optional) - Base time for ragdoll duration (default: 10)
         getUpGrace (number, optional) - Grace period for getting up
         getUpMessage (string, optional) - Message to display when getting up (default: "Waking up")
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4740,14 +5143,19 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Synchronizes network variables to the player client
+
     When Called:
         When initializing player connection, updating network state, or ensuring client-server synchronization
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
     Example Usage:
@@ -4806,15 +5214,20 @@ if SERVER then
     end
 
     --[[
+
     Purpose:
         Sets a network variable for the player that synchronizes to all clients
+
     When Called:
         When updating player state, implementing networked properties, or when other players need to see the change (like handcuff status)
+
     Parameters:
         key (string) - The network variable key
         value (any) - The value to set
+
     Returns:
         None
+
     Realm:
         Server (only called on server side)
         Notes: Broadcasts to all clients so other players can see the player's state changes
@@ -4867,14 +5280,19 @@ if SERVER then
     end
 else
     --[[
+
     Purpose:
         Checks if the player can override their view (third person mode)
+
     When Called:
         When implementing camera systems, view controls, or third person functionality for the player
+
     Parameters:
         None
+
     Returns:
         boolean - True if player can override view, false otherwise
+
     Realm:
         Client (only called on client side)
     Example Usage:
@@ -4923,14 +5341,19 @@ else
     end
 
     --[[
+
     Purpose:
         Checks if the player is currently in third person mode
+
     When Called:
         When implementing camera systems, view controls, or third person functionality for the player
+
     Parameters:
         None
+
     Returns:
         boolean - True if player is in third person mode, false otherwise
+
     Realm:
         Client (only called on client side)
     Example Usage:
@@ -4974,14 +5397,19 @@ else
     end
 
     --[[
+
     Purpose:
         Gets the player's total play time in seconds (client-side version)
+
     When Called:
         When calculating play time, implementing time-based features, or displaying player statistics
+
     Parameters:
         None
+
     Returns:
         number - The player's total play time in seconds
+
     Realm:
         Client (only called on client side)
     Example Usage:

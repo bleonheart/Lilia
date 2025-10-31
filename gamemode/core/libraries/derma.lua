@@ -15,14 +15,19 @@ local color_close = Color(210, 65, 65)
 local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
 --[[
+
     Purpose:
         Creates a context menu at the current mouse cursor position
+
     When Called:
         When right-clicking or when a context menu is needed
+
     Parameters:
         None
+
     Returns:
         Panel - The created context menu panel
+
     Realm:
         Client
     Example Usage:
@@ -81,10 +86,13 @@ local function liaDermaIsSequential(tbl)
 end
 
 --[[
+
     Purpose:
         Creates a generic options menu that can display interaction/action menus or arbitrary option lists
+
     When Called:
         When displaying a menu with selectable options (interactions, actions, or custom options)
+
     Parameters:
         - rawOptions (table): Options to display. Can be:
             * Dictionary table (keyed by option ID) for interaction/action menus
@@ -117,8 +125,10 @@ end
             - closeOnSelect (boolean, optional): Whether to close menu when option is selected (defaults to true)
             - timerName (string, optional): Name for auto-close timer
             - autoCloseDelay (number, optional): Seconds until auto-close (defaults to 30, 0 to disable)
+
     Returns:
         Panel - The created menu frame, or nil if no valid options or invalid client
+
     Realm:
         Client
     Example Usage:
@@ -128,9 +138,9 @@ end
     ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
-        {name = "Option 1", callback = function() print("Selected 1") end},
-            {name = "Option 2", callback = function() print("Selected 2") end}
-                })
+    {name = "Option 1", callback = function() print("Selected 1") end},
+    {name = "Option 2", callback = function() print("Selected 2") end}
+    })
     ```
 
     Medium Complexity:
@@ -138,28 +148,28 @@ end
     ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
-        {
-            name = "Save Game",
-            description = "Save your current progress",
-            callback = function() saveGame() end
-            },
-            {
-                name = "Load Game",
-                description = "Load a previously saved game",
-                callback = function() loadGame() end
-                },
-                {
-                    name = "Settings",
-                    description = "Open game settings",
-                    callback = function() openSettings() end
-                }
-                }, {
-                    title = "Main Menu",
-                    x = ScrW() / 2 - 225,
-                    y = ScrH() / 2 - 150,
-                    frameW = 450,
-                    closeOnSelect = false
-                    })
+    {
+    name = "Save Game",
+    description = "Save your current progress",
+    callback = function() saveGame() end
+    },
+    {
+    name = "Load Game",
+    description = "Load a previously saved game",
+    callback = function() loadGame() end
+    },
+    {
+    name = "Settings",
+    description = "Open game settings",
+    callback = function() openSettings() end
+    }
+    }, {
+    title = "Main Menu",
+    x = ScrW() / 2 - 225,
+    y = ScrH() / 2 - 150,
+    frameW = 450,
+    closeOnSelect = false
+    })
     ```
 
     High Complexity:
@@ -167,46 +177,46 @@ end
     ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
-        {
-            name = "Radio Preset 1",
-            description = "Switch to preset frequency 1",
-            callback = function(client, entity, entry, frame)
-            -- Custom callback with context
-            lia.radio.setFrequency(100.0)
-            client:notify("Switched to radio preset 1")
-            end,
-            passContext = true -- Pass client, entity, entry, frame to callback
-            },
-            {
-                name = "Radio Preset 2",
-                description = "Switch to preset frequency 2",
-                serverOnly = true,
-                netMessage = "liaRadioSetPreset",
-                networkID = "preset2"
-                },
-                {
-                    name = "Custom Frequency",
-                    description = "Enter a custom frequency",
-                    callback = function()
-                    -- Open frequency input dialog
-                    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-                    local numFreq = tonumber(freq)
-                    if numFreq and numFreq >= 80 and numFreq <= 200 then
-                        lia.radio.setFrequency(numFreq)
-                        client:notify("Frequency set to " .. freq .. " MHz")
-                        else
-                            client:notify("Invalid frequency range (80-200 MHz)")
-                        end
-                    end)
-                end
-            }
-            }, {
-                title = "Radio Presets",
-                mode = "custom",
-                closeKey = KEY_R,
-                fadeSpeed = 0.1,
-                autoCloseDelay = 60
-                })
+    {
+    name = "Radio Preset 1",
+    description = "Switch to preset frequency 1",
+    callback = function(client, entity, entry, frame)
+    -- Custom callback with context
+    lia.radio.setFrequency(100.0)
+    client:notify("Switched to radio preset 1")
+    end,
+    passContext = true -- Pass client, entity, entry, frame to callback
+    },
+    {
+    name = "Radio Preset 2",
+    description = "Switch to preset frequency 2",
+    serverOnly = true,
+    netMessage = "liaRadioSetPreset",
+    networkID = "preset2"
+    },
+    {
+    name = "Custom Frequency",
+    description = "Enter a custom frequency",
+    callback = function()
+    -- Open frequency input dialog
+    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+    local numFreq = tonumber(freq)
+    if numFreq and numFreq >= 80 and numFreq <= 200 then
+        lia.radio.setFrequency(numFreq)
+        client:notify("Frequency set to " .. freq .. " MHz")
+        else
+            client:notify("Invalid frequency range (80-200 MHz)")
+        end
+    end)
+    end
+    }
+    }, {
+    title = "Radio Presets",
+    mode = "custom",
+    closeKey = KEY_R,
+    fadeSpeed = 0.1,
+    autoCloseDelay = 60
+    })
     ```
 ]]
 function lia.derma.optionsMenu(rawOptions, config)
@@ -458,15 +468,20 @@ function lia.derma.optionsMenu(rawOptions, config)
 end
 
 --[[
+
     Purpose:
         Opens a color picker dialog for selecting colors
+
     When Called:
         When user needs to select a color from a visual picker interface
+
     Parameters:
         func (function) - Callback function called when color is selected
         color_standart (Color, optional) - Default color to display
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -668,10 +683,13 @@ function lia.derma.colorPicker(func, color_standart)
 end
 
 --[[
+
     Purpose:
         Creates a radial menu interface with circular option selection
+
     When Called:
         When user needs to select from multiple options in a circular menu format
+
     Parameters:
         options (table, optional) - Configuration table with the following optional fields:
             radius (number) - Outer radius of the radial menu (default: 280)
@@ -679,8 +697,10 @@ end
             disable_background (boolean) - Whether to disable the background overlay (default: false)
             hover_sound (string) - Sound file to play on hover (default: "ratio_button.wav")
             scale_animation (boolean) - Whether to enable scale animation on open (default: true)
+
     Returns:
         Panel - The created radial menu panel with methods for adding options
+
     Realm:
         Client
     Example Usage:
@@ -744,14 +764,19 @@ function lia.derma.radialMenu(options)
 end
 
 --[[
+
     Purpose:
         Opens a player selection dialog showing all connected players
+
     When Called:
         When user needs to select a player from a list
+
     Parameters:
         do_click (function) - Callback function called when player is selected
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -884,16 +909,21 @@ function lia.derma.playerSelector(do_click)
 end
 
 --[[
+
     Purpose:
         Opens a text input dialog for user text entry
+
     When Called:
         When user needs to input text through a dialog
+
     Parameters:
         title (string) - Title of the dialog window
         desc (string) - Description/placeholder text for the input field
         func (function) - Callback function called with the entered text
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -1178,10 +1208,13 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
 end
 
 --[[
+
     Purpose:
         Draws a rounded rectangle with specified parameters
+
     When Called:
         When rendering UI elements that need rounded corners
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1190,8 +1223,10 @@ end
         h (number) - Height
         col (Color, optional) - Color to draw with
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1226,10 +1261,13 @@ function lia.derma.draw(radius, x, y, w, h, col, flags)
 end
 
 --[[
+
     Purpose:
         Draws a rounded rectangle with an outline border
+
     When Called:
         When rendering UI elements that need outlined rounded corners
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1239,8 +1277,10 @@ end
         col (Color, optional) - Color to draw with
         thickness (number, optional) - Outline thickness (default: 1)
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1274,10 +1314,13 @@ function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
 end
 
 --[[
+
     Purpose:
         Draws a rounded rectangle with a texture applied
+
     When Called:
         When rendering UI elements that need textured rounded backgrounds
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1287,8 +1330,10 @@ end
         col (Color, optional) - Color tint to apply
         texture (ITexture) - Texture to draw
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1324,10 +1369,13 @@ function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
 end
 
 --[[
+
     Purpose:
         Draws a rounded rectangle with a material applied
+
     When Called:
         When rendering UI elements that need material-based rounded backgrounds
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1337,8 +1385,10 @@ end
         col (Color, optional) - Color tint to apply
         mat (IMaterial) - Material to draw
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status (if material has valid texture)
+
     Realm:
         Client
     Example Usage:
@@ -1381,18 +1431,23 @@ function lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)
 end
 
 --[[
+
     Purpose:
         Draws a filled circle with specified parameters
+
     When Called:
         When rendering circular UI elements like buttons or indicators
+
     Parameters:
         x (number) - Center X position
         y (number) - Center Y position
         radius (number) - Circle radius
         col (Color, optional) - Color to draw with
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1426,10 +1481,13 @@ function lia.derma.drawCircle(x, y, radius, col, flags)
 end
 
 --[[
+
     Purpose:
         Draws a circle with an outline border
+
     When Called:
         When rendering circular UI elements that need outlined borders
+
     Parameters:
         x (number) - Center X position
         y (number) - Center Y position
@@ -1437,8 +1495,10 @@ end
         col (Color, optional) - Color to draw with
         thickness (number, optional) - Outline thickness (default: 1)
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1472,10 +1532,13 @@ function lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)
 end
 
 --[[
+
     Purpose:
         Draws a circle with a texture applied
+
     When Called:
         When rendering circular UI elements that need textured backgrounds
+
     Parameters:
         x (number) - Center X position
         y (number) - Center Y position
@@ -1483,8 +1546,10 @@ end
         col (Color, optional) - Color tint to apply
         texture (ITexture) - Texture to draw
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status
+
     Realm:
         Client
     Example Usage:
@@ -1520,10 +1585,13 @@ function lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)
 end
 
 --[[
+
     Purpose:
         Draws a circle with a material applied
+
     When Called:
         When rendering circular UI elements that need material-based backgrounds
+
     Parameters:
         x (number) - Center X position
         y (number) - Center Y position
@@ -1531,8 +1599,10 @@ end
         col (Color, optional) - Color tint to apply
         mat (IMaterial) - Material to draw
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         boolean - Success status (if material has valid texture)
+
     Realm:
         Client
     Example Usage:
@@ -1592,10 +1662,13 @@ local function drawBlur()
 end
 
 --[[
+
     Purpose:
         Draws a blurred rounded rectangle using custom shaders
+
     When Called:
         When rendering UI elements that need blur effects
+
     Parameters:
         x (number) - X position
         y (number) - Y position
@@ -1607,8 +1680,10 @@ end
         bl (number, optional) - Bottom-left corner radius
         br (number, optional) - Bottom-right corner radius
         thickness (number, optional) - Outline thickness
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -1680,10 +1755,13 @@ local function drawShadows(r, g, b, a)
 end
 
 --[[
+
     Purpose:
         Draws shadows for rounded rectangles with extensive customization
+
     When Called:
         When rendering UI elements that need shadow effects
+
     Parameters:
         x (number) - X position
         y (number) - Y position
@@ -1698,8 +1776,10 @@ end
         spread (number, optional) - Shadow spread distance (default: 30)
         intensity (number, optional) - Shadow intensity (default: spread * 1.2)
         thickness (number, optional) - Outline thickness
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -1746,10 +1826,13 @@ function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread,
 end
 
 --[[
+
     Purpose:
         Draws shadows for rounded rectangles with uniform corner radius
+
     When Called:
         When rendering UI elements that need shadow effects with same corner radius
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1760,8 +1843,10 @@ end
         spread (number, optional) - Shadow spread distance (default: 30)
         intensity (number, optional) - Shadow intensity (default: spread * 1.2)
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -1795,10 +1880,13 @@ function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags
 end
 
 --[[
+
     Purpose:
         Draws outlined shadows for rounded rectangles with uniform corner radius
+
     When Called:
         When rendering UI elements that need outlined shadow effects
+
     Parameters:
         radius (number) - Corner radius for all corners
         x (number) - X position
@@ -1810,8 +1898,10 @@ end
         spread (number, optional) - Shadow spread distance (default: 30)
         intensity (number, optional) - Shadow intensity (default: spread * 1.2)
         flags (number, optional) - Drawing flags for customization
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2010,17 +2100,22 @@ lia.derma.Types = {
 }
 
 --[[
+
     Purpose:
         Creates a fluent rectangle drawing object for chained operations
+
     When Called:
         When creating complex UI elements with multiple drawing operations
+
     Parameters:
         x (number) - X position
         y (number) - Y position
         w (number) - Width
         h (number) - Height
+
     Returns:
         Table - Fluent drawing object with methods for chaining
+
     Realm:
         Client
     Example Usage:
@@ -2060,16 +2155,21 @@ function lia.derma.rect(x, y, w, h)
 end
 
 --[[
+
     Purpose:
         Creates a fluent circle drawing object for chained operations
+
     When Called:
         When creating complex circular UI elements with multiple drawing operations
+
     Parameters:
         x (number) - Center X position
         y (number) - Center Y position
         r (number) - Circle radius
+
     Returns:
         Table - Fluent drawing object with methods for chaining
+
     Realm:
         Client
     Example Usage:
@@ -2131,10 +2231,13 @@ function lia.derma.setDefaultShape(shape)
 end
 
 --[[
+
     Purpose:
         Draws text with a shadow effect for better readability
+
     When Called:
         When rendering text that needs to stand out against backgrounds
+
     Parameters:
         text (string) - Text to draw
         font (string) - Font to use
@@ -2145,8 +2248,10 @@ end
         dist (number) - Shadow distance/offset
         xalign (number, optional) - Horizontal text alignment
         yalign (number, optional) - Vertical text alignment
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2188,10 +2293,13 @@ function lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xa
 end
 
 --[[
+
     Purpose:
         Draws text with an outline border for better visibility
+
     When Called:
         When rendering text that needs to stand out with outline effects
+
     Parameters:
         text (string) - Text to draw
         font (string) - Font to use
@@ -2201,8 +2309,10 @@ end
         xalign (number, optional) - Horizontal text alignment
         outlinewidth (number) - Width of the outline
         outlinecolour (Color) - Color of the outline
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2242,10 +2352,13 @@ function lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewid
 end
 
 --[[
+
     Purpose:
         Draws a tooltip-style speech bubble with text
+
     When Called:
         When rendering tooltips or help text in speech bubble format
+
     Parameters:
         x (number) - X position
         y (number) - Y position
@@ -2255,8 +2368,10 @@ end
         font (string) - Font to use for the text
         textCol (Color) - Color of the text
         outlineCol (Color) - Color of the bubble outline
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2327,10 +2442,13 @@ function lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)
 end
 
 --[[
+
     Purpose:
         Draws text with automatic shadow effect for better readability
+
     When Called:
         When rendering text that needs consistent shadow styling
+
     Parameters:
         text (string) - Text to draw
         x (number) - X position
@@ -2340,8 +2458,10 @@ end
         alignY (number, optional) - Vertical text alignment
         font (string, optional) - Font to use (default: "LiliaFont.16")
         alpha (number, optional) - Alpha multiplier for shadow
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2487,17 +2607,22 @@ function lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)
 end
 
 --[[
+
     Purpose:
         Performs exponential interpolation between current and target values
+
     When Called:
         When smooth animation transitions are needed
+
     Parameters:
         current (number) - Current value
         target (number) - Target value to approach
         speed (number) - Animation speed multiplier
         dt (number) - Delta time (FrameTime())
+
     Returns:
         number - New interpolated value
+
     Realm:
         Client
     Example Usage:
@@ -2542,14 +2667,19 @@ function lia.derma.approachExp(current, target, speed, dt)
 end
 
 --[[
+
     Purpose:
         Applies cubic ease-out easing function to a normalized time value
+
     When Called:
         When smooth deceleration animations are needed
+
     Parameters:
         t (number) - Normalized time value (0 to 1)
+
     Returns:
         number - Eased value
+
     Realm:
         Client
     Example Usage:
@@ -2594,14 +2724,19 @@ function lia.derma.easeOutCubic(t)
 end
 
 --[[
+
     Purpose:
         Applies cubic ease-in-out easing function to a normalized time value
+
     When Called:
         When smooth acceleration and deceleration animations are needed
+
     Parameters:
         t (number) - Normalized time value (0 to 1)
+
     Returns:
         number - Eased value
+
     Realm:
         Client
     Example Usage:
@@ -2652,10 +2787,13 @@ function lia.derma.easeInOutCubic(t)
 end
 
 --[[
+
     Purpose:
         Animates panel appearance with scaling and fade effects
+
     When Called:
         When panels need smooth entrance animations
+
     Parameters:
         panel (Panel) - Panel to animate
         target_w (number) - Target width
@@ -2664,8 +2802,10 @@ end
         alpha_dur (number, optional) - Alpha animation duration (default: same as duration)
         callback (function, optional) - Callback function called when animation completes
         scale_factor (number, optional) - Initial scale factor (default: 0.8)
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2700,7 +2840,7 @@ end
         if IsValid(animPanel) then
             onAnimationComplete(animPanel)
         end
-        end, scaleFactor)
+    end, scaleFactor)
     end
     ```
 ]]
@@ -2803,17 +2943,22 @@ function lia.derma.wrapText(text, width, font)
 end
 
 --[[
+
     Purpose:
         Draws blur effect behind a panel using screen space effects
+
     When Called:
         When rendering panel backgrounds that need blur effects
+
     Parameters:
         panel (Panel) - Panel to draw blur behind
         amount (number, optional) - Blur intensity (default: 5)
         passes (number, optional) - Number of blur passes (default: 0.2)
         alpha (number, optional) - Blur alpha (default: 255)
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2883,10 +3028,13 @@ function lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
 end
 
 --[[
+
     Purpose:
         Draws blur effect at specific screen coordinates
+
     When Called:
         When rendering blur effects at specific screen positions
+
     Parameters:
         x (number) - X position on screen
         y (number) - Y position on screen
@@ -2895,8 +3043,10 @@ end
         amount (number, optional) - Blur intensity (default: 5)
         passes (number, optional) - Number of blur passes (default: 0.2)
         alpha (number, optional) - Blur alpha (default: 255)
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2943,17 +3093,22 @@ function lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)
 end
 
 --[[
+
     Purpose:
         Creates a dialog for requesting multiple arguments from the user
+
     When Called:
         When user input is needed for multiple fields with different types
+
     Parameters:
         title (string, optional) - Title of the dialog
         argTypes (table) - Table defining argument types and properties
         onSubmit (function) - Callback function called with results
         defaults (table, optional) - Default values for arguments
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -2980,11 +3135,11 @@ end
     -- Medium: Request with dropdown and defaults
     local argTypes = {
     {name = "player", type = "player"},
-        {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-            {name = "reason", type = "string"}
-            }
-            local defaults = {reason = "No reason provided"}
-            lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
+    {name = "action", type = "table", data = {"kick", "ban", "mute"}},
+    {name = "reason", type = "string"}
+    }
+    local defaults = {reason = "No reason provided"}
+    lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
     ```
 
     High Complexity:
@@ -2993,15 +3148,15 @@ end
     -- High: Complex argument validation with ordered fields
     local argTypes = {
     {name = "itemName", type = "string"},
-        {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-            {name = "quantity", type = "number"},
-                {name = "isStackable", type = "boolean"}
-                }
-                lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-                if success and validateItemData(results) then
-                    createItem(results)
-                end
-            end)
+    {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
+    {name = "quantity", type = "number"},
+    {name = "isStackable", type = "boolean"}
+    }
+    lia.derma.requestArguments("Create Item", argTypes, function(success, results)
+    if success and validateItemData(results) then
+        createItem(results)
+    end
+    end)
     ```
 ]]
 function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
@@ -3514,17 +3669,22 @@ end
 
 lia.derma.entsScales = lia.derma.entsScales or {}
 --[[
+
     Purpose:
         Draws text above entities in 3D space with distance-based scaling
+
     When Called:
         When rendering entity labels or information in 3D space
+
     Parameters:
         ent (Entity) - Entity to draw text above
         text (string) - Text to display
         posY (number, optional) - Y offset from entity center (default: 0)
         alphaOverride (number, optional) - Alpha override for the text
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -3614,17 +3774,22 @@ function lia.derma.drawEntText(ent, text, posY, alphaOverride)
 end
 
 --[[
+
     Purpose:
         Creates a dropdown selection dialog for user choice
+
     When Called:
         When user needs to select from a list of options
+
     Parameters:
         title (string, optional) - Title of the dialog
         options (table) - Array of options (strings or {text, data} tables)
         callback (function) - Callback function called with selected option
         defaultValue (string/table, optional) - Default selected value
+
     Returns:
         Panel - The created dialog frame
+
     Realm:
         Client
     Example Usage:
@@ -3645,12 +3810,12 @@ end
     -- Medium: Request with data values and default
     local options = {
     {"Kick Player", "kick"},
-        {"Ban Player", "ban"},
-            {"Mute Player", "mute"}
-            }
-            lia.derma.requestDropdown("Admin Action", options, function(text, data)
-            performAction(data)
-            end, "kick")
+    {"Ban Player", "ban"},
+    {"Mute Player", "mute"}
+    }
+    lia.derma.requestDropdown("Admin Action", options, function(text, data)
+    performAction(data)
+    end, "kick")
     ```
 
     High Complexity:
@@ -3661,12 +3826,12 @@ end
     for _, player in pairs(player.GetAll()) do
         if IsValid(player) then
             table.insert(options, {player:Name(), player:SteamID()})
-            end
         end
-        lia.derma.requestDropdown("Select Player", options, function(name, steamid)
-        if steamid and steamid ~= "" then
-            processPlayerSelection(steamid)
-        end
+    end
+    lia.derma.requestDropdown("Select Player", options, function(name, steamid)
+    if steamid and steamid ~= "" then
+        processPlayerSelection(steamid)
+    end
     end)
     ```
 ]]
@@ -3774,18 +3939,23 @@ function lia.derma.requestDropdown(title, options, callback, defaultValue)
 end
 
 --[[
+
     Purpose:
         Creates a text input dialog for user string entry
+
     When Called:
         When user needs to input text through a dialog
+
     Parameters:
         title (string, optional) - Title of the dialog
         description (string, optional) - Description text for the input
         callback (function) - Callback function called with entered text
         defaultValue (string, optional) - Default text value
         maxLength (number, optional) - Maximum text length
+
     Returns:
         Panel - The created dialog frame
+
     Realm:
         Client
     Example Usage:
@@ -3831,7 +4001,7 @@ end
         end
 
         createItem(cleanName)
-        end, "", 50)
+    end, "", 50)
     ```
 ]]
 function lia.derma.requestString(title, description, callback, defaultValue, maxLength)
@@ -3895,17 +4065,22 @@ function lia.derma.requestString(title, description, callback, defaultValue, max
 end
 
 --[[
+
     Purpose:
         Creates a multi-select dialog for choosing multiple options
+
     When Called:
         When user needs to select multiple options from a list
+
     Parameters:
         title (string, optional) - Title of the dialog
         options (table) - Array of options (strings or {text, data} tables)
         callback (function) - Callback function called with selected options array
         defaults (table, optional) - Array of default selected values
+
     Returns:
         Panel - The created dialog frame
+
     Realm:
         Client
     Example Usage:
@@ -3926,13 +4101,13 @@ end
     -- Medium: Request with data values and defaults
     local options = {
     {"Admin", "admin"},
-        {"Moderator", "moderator"},
-            {"VIP", "vip"}
-            }
-            local defaults = {"admin"}
-            lia.derma.requestOptions("Select Roles", options, function(selected)
-            assignRoles(selected)
-            end, defaults)
+    {"Moderator", "moderator"},
+    {"VIP", "vip"}
+    }
+    local defaults = {"admin"}
+    lia.derma.requestOptions("Select Roles", options, function(selected)
+    assignRoles(selected)
+    end, defaults)
     ```
 
     High Complexity:
@@ -3942,14 +4117,14 @@ end
     local options = {}
     for _, permission in pairs(availablePermissions) do
         table.insert(options, {permission.displayName, permission.id})
+    end
+    lia.derma.requestOptions("Select Permissions", options, function(selected)
+    if #selected > 0 then
+        validateAndAssignPermissions(selected)
+        else
+            notify("Please select at least one permission!")
         end
-        lia.derma.requestOptions("Select Permissions", options, function(selected)
-        if #selected > 0 then
-            validateAndAssignPermissions(selected)
-            else
-                notify("Please select at least one permission!")
-            end
-            end, userPermissions)
+    end, userPermissions)
     ```
 ]]
 function lia.derma.requestOptions(title, options, callback, defaults)
@@ -4029,18 +4204,23 @@ function lia.derma.requestOptions(title, options, callback, defaults)
 end
 
 --[[
+
     Purpose:
         Creates a yes/no confirmation dialog
+
     When Called:
         When user confirmation is needed for an action
+
     Parameters:
         title (string, optional) - Title of the dialog
         question (string, optional) - Question text to display
         callback (function) - Callback function called with boolean result
         yesText (string, optional) - Text for yes button
         noText (string, optional) - Text for no button
+
     Returns:
         Panel - The created dialog frame
+
     Realm:
         Client
     Example Usage:
@@ -4082,7 +4262,7 @@ end
                 notify("Invalid command!")
             end
         end
-        end, "Execute", "Cancel")
+    end, "Execute", "Cancel")
     ```
 ]]
 function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)
@@ -4132,17 +4312,22 @@ function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noT
 end
 
 --[[
+
     Purpose:
         Creates a dialog with multiple action buttons
+
     When Called:
         When user needs to choose from multiple actions
+
     Parameters:
         title (string, optional) - Title of the dialog
         buttons (table) - Array of button definitions (strings or {text, callback, icon} tables)
         callback (function, optional) - Default callback function
         description (string, optional) - Description text for the dialog
+
     Returns:
         Panel, Table - The created dialog frame and button panels array
+
     Realm:
         Client
     Example Usage:
@@ -4163,10 +4348,10 @@ end
     -- Medium: Request with custom callbacks and icons
     local buttons = {
     {text = "Edit", callback = function() editItem() end, icon = "icon16/pencil.png"},
-        {text = "Delete", callback = function() deleteItem() end, icon = "icon16/delete.png"},
-            {text = "Copy", callback = function() copyItem() end, icon = "icon16/copy.png"}
-            }
-            lia.derma.requestButtons("Item Actions", buttons, nil, "Choose an action for this item")
+    {text = "Delete", callback = function() deleteItem() end, icon = "icon16/delete.png"},
+    {text = "Copy", callback = function() copyItem() end, icon = "icon16/copy.png"}
+    }
+    lia.derma.requestButtons("Item Actions", buttons, nil, "Choose an action for this item")
     ```
 
     High Complexity:
@@ -4176,15 +4361,15 @@ end
     local buttons = {}
     if player:IsAdmin() then
         table.insert(buttons, {text = "Admin Panel", callback = function() openAdminPanel() end})
-        end
-        if item:CanEdit() then
-            table.insert(buttons, {text = "Edit", callback = function() editItem(item) end})
-            end
-            table.insert(buttons, {text = "View", callback = function() viewItem(item) end})
+    end
+    if item:CanEdit() then
+        table.insert(buttons, {text = "Edit", callback = function() editItem(item) end})
+    end
+    table.insert(buttons, {text = "View", callback = function() viewItem(item) end})
 
-                lia.derma.requestButtons("Item Options", buttons, function(index, text)
-                logAction("Button clicked: " .. text)
-                end, "Available actions for " .. item:GetName())
+    lia.derma.requestButtons("Item Options", buttons, function(index, text)
+    logAction("Button clicked: " .. text)
+    end, "Available actions for " .. item:GetName())
     ```
 ]]
 function lia.derma.requestButtons(title, buttons, callback, description)

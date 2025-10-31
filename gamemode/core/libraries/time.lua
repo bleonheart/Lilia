@@ -9,14 +9,19 @@
 ]]
 lia.time = lia.time or {}
 --[[
+
     Purpose:
         Calculate and return a human-readable string representing how long ago a given time was
+
     When Called:
         When displaying relative timestamps, such as "last seen" times, message timestamps, or activity logs
+
     Parameters:
         strTime (string|number) - Either a timestamp number or a date string in "YYYY-MM-DD" format
+
     Returns:
         string - Localized string indicating time elapsed (e.g., "5 minutes ago", "2 hours ago", "3 days ago")
+
     Realm:
         Shared (works on both client and server)
     Example Usage:
@@ -84,14 +89,19 @@ function lia.time.timeSince(strTime)
 end
 
 --[[
+
     Purpose:
         Parse a date/time string and convert it into a structured table with individual time components
+
     When Called:
         When converting date strings to structured data for further processing or validation
+
     Parameters:
         str (string, optional) - Date string in "YYYY-MM-DD HH:MM:SS" format, defaults to current time if nil
+
     Returns:
         table - Table containing year, month, day, hour, min, sec as numbers
+
     Realm:
         Shared (works on both client and server)
     Example Usage:
@@ -141,14 +151,19 @@ function lia.time.toNumber(str)
 end
 
 --[[
+
     Purpose:
         Get a formatted, localized string representation of the current date and time
+
     When Called:
         When displaying current date/time in UI elements, logs, or status displays
+
     Parameters:
         None
+
     Returns:
         string - Formatted date string with localized weekday and month names
+
     Realm:
         Shared (works on both client and server)
     Example Usage:
@@ -210,14 +225,19 @@ function lia.time.getDate()
 end
 
 --[[
+
     Purpose:
         Format a duration in seconds into a human-readable string showing days, hours, and minutes
+
     When Called:
         When displaying durations, cooldowns, or time remaining in UI elements
+
     Parameters:
         seconds (number, optional) - Duration in seconds to format, defaults to 0 if nil
+
     Returns:
         string - Localized string showing days, hours, and minutes (e.g., "2 days, 5 hours, 30 minutes")
+
     Realm:
         Shared (works on both client and server)
     Example Usage:
@@ -275,14 +295,19 @@ function lia.time.formatDHM(seconds)
 end
 
 --[[
+
     Purpose:
         Get the current hour in either 12-hour (AM/PM) or 24-hour format based on configuration
+
     When Called:
         When displaying current hour in UI elements, time-based events, or hour-specific functionality
+
     Parameters:
         None
+
     Returns:
         string|number - Current hour as string with AM/PM suffix (American format) or number (24-hour format)
+
     Realm:
         Shared (works on both client and server)
     Example Usage:

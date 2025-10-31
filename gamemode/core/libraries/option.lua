@@ -10,10 +10,13 @@
 lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 --[[
+
     Purpose:
         Registers a new configurable option in the Lilia framework with automatic type detection and UI generation
+
     When Called:
         During module initialization or when adding new user-configurable settings
+
     Parameters:
         - key (string): Unique identifier for the option
         - name (string): Display name for the option (can be localized)
@@ -21,8 +24,10 @@ lia.option.stored = lia.option.stored or {}
         - default (any): Default value for the option
         - callback (function, optional): Function called when option value changes (oldValue, newValue)
         - data (table): Configuration data containing type, category, min/max values, etc.
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -31,9 +36,9 @@ lia.option.stored = lia.option.stored or {}
         ```lua
         -- Simple: Add a boolean toggle option
         lia.option.add("showHUD", "Show HUD", "Toggle HUD visibility", true, nil, {
-            category = "categoryGeneral",
-            isQuick = true
-            })
+        category = "categoryGeneral",
+        isQuick = true
+        })
         ```
 
         Medium Complexity:
@@ -43,11 +48,11 @@ lia.option.stored = lia.option.stored or {}
         lia.option.add("volume", "Volume", "Master volume level", 0.8, function(oldVal, newVal)
         RunConsoleCommand("volume", tostring(newVal))
         end, {
-            category = "categoryAudio",
-            min = 0,
-            max = 1,
-            decimals = 2
-            })
+        category = "categoryAudio",
+        min = 0,
+        max = 1,
+        decimals = 2
+        })
         ```
 
         High Complexity:
@@ -55,12 +60,12 @@ lia.option.stored = lia.option.stored or {}
         ```lua
         -- High: Add a color picker with visibility condition and networking
         lia.option.add("espColor", "ESP Color", "Color for ESP display", Color(255, 0, 0), nil, {
-            category = "categoryESP",
-            visible = function()
-            return LocalPlayer():isStaffOnDuty()
-            end,
-            shouldNetwork = true,
-            type = "Color"
+        category = "categoryESP",
+        visible = function()
+        return LocalPlayer():isStaffOnDuty()
+        end,
+        shouldNetwork = true,
+        type = "Color"
         })
         ```
 ]]
@@ -105,14 +110,19 @@ function lia.option.add(key, name, desc, default, callback, data)
 end
 
 --[[
+
     Purpose:
         Retrieves the available options for a dropdown/selection type option, handling both static and dynamic option lists
+
     When Called:
         When rendering dropdown options in the UI or when modules need to access option choices
+
     Parameters:
         - key (string): The option key to get choices for
+
     Returns:
         table - Array of available option choices (localized strings)
+
     Realm:
         Shared
     Example Usage:
@@ -121,6 +131,7 @@ end
         ```lua
         -- Simple: Get static options for a dropdown
         local options = lia.option.getOptions("weaponSelectorPosition")
+
         -- Returns: {"Left", "Right", "Center"}
         ```
 
@@ -171,15 +182,20 @@ function lia.option.getOptions(key)
 end
 
 --[[
+
     Purpose:
         Sets the value of an option, triggers callbacks, saves to file, and optionally networks to clients
+
     When Called:
         When user changes an option value through UI or when programmatically updating option values
+
     Parameters:
         - key (string): The option key to set
         - value (any): The new value to set for the option
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -204,16 +220,16 @@ end
         -- High: Set multiple options with validation
         local optionsToSet = {
         {"showHUD", true},
-            {"volume", 0.8},
-                {"espColor", Color(255, 0, 0)}
-                }
+        {"volume", 0.8},
+        {"espColor", Color(255, 0, 0)}
+        }
 
-                for _, optionData in ipairs(optionsToSet) do
-                    local key, value = optionData[1], optionData[2]
-                    if lia.option.stored[key] then
-                        lia.option.set(key, value)
-                    end
-                end
+        for _, optionData in ipairs(optionsToSet) do
+            local key, value = optionData[1], optionData[2]
+            if lia.option.stored[key] then
+                lia.option.set(key, value)
+            end
+        end
         ```
 ]]
 function lia.option.set(key, value)
@@ -228,15 +244,20 @@ function lia.option.set(key, value)
 end
 
 --[[
+
     Purpose:
         Retrieves the current value of an option, falling back to default value or provided fallback if not set
+
     When Called:
         When modules need to read option values for configuration or when UI needs to display current values
+
     Parameters:
         - key (string): The option key to retrieve
         - default (any, optional): Fallback value if option doesn't exist or has no value
+
     Returns:
         any - The current option value, default value, or provided fallback
+
     Realm:
         Shared
     Example Usage:
@@ -288,14 +309,19 @@ function lia.option.get(key, default)
 end
 
 --[[
+
     Purpose:
         Saves all current option values to a JSON file for persistence across sessions
+
     When Called:
         Automatically called when options are changed, or manually when saving configuration
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -358,14 +384,19 @@ function lia.option.save()
 end
 
 --[[
+
     Purpose:
         Loads saved option values from JSON file and initializes options with defaults if no saved data exists
+
     When Called:
         During client initialization or when manually reloading option configuration
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:

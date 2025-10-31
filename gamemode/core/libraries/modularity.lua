@@ -99,17 +99,22 @@ local function loadExtras(path)
 end
 
 --[[
+
     Purpose:
         Loads a module from the specified path with the given unique identifier
+
     When Called:
         Called during module initialization, when loading modules from directories, or when manually loading specific modules
+
     Parameters:
         - uniqueID (string): Unique identifier for the module
         - path (string): File system path to the module directory
         - variable (string, optional): Global variable name to use (defaults to "MODULE")
         - skipSubmodules (boolean, optional): Whether to skip loading submodules
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -225,14 +230,19 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
 end
 
 --[[
+
     Purpose:
         Initializes the entire module system, loading schemas, preload modules, and regular modules in proper order
+
     When Called:
         Called during gamemode initialization to set up the complete module ecosystem
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -301,16 +311,21 @@ function lia.module.initialize()
 end
 
 --[[
+
     Purpose:
         Loads all modules from a specified directory
+
     When Called:
         Called during module initialization to load multiple modules from a directory, or when manually loading modules from a specific folder
+
     Parameters:
         - directory (string): Path to the directory containing modules
         - group (string): Type of module group ("module", "schema", etc.)
         - skip (table, optional): Table of module IDs to skip loading
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -346,14 +361,19 @@ function lia.module.loadFromDir(directory, group, skip)
 end
 
 --[[
+
     Purpose:
         Retrieves a loaded module by its unique identifier
+
     When Called:
         Called when you need to access a specific module's data or functions, or to check if a module is loaded
+
     Parameters:
         - identifier (string): Unique identifier of the module to retrieve
+
     Returns:
         Module table or nil if not found
+
     Realm:
         Shared
     Example Usage:

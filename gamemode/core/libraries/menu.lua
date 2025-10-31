@@ -50,16 +50,21 @@ local function buildItems(opts)
 end
 
 --[[
+
     Purpose:
         Creates and adds a new context menu to the menu system
+
     When Called:
         When you need to display a context menu with options for player interaction
+
     Parameters:
         - opts (table): Table of menu options where keys are display text and values are callback functions
         - pos (Vector|Entity, optional): World position or entity to attach menu to. If entity, menu attaches to entity's local position
         - onRemove (function, optional): Callback function called when menu is removed
+
     Returns:
         (number) Index of the created menu in the menu list
+
     Realm:
         Client
     Example Usage:
@@ -68,9 +73,9 @@ end
         ```lua
         -- Simple: Create a basic context menu
         lia.menu.add({
-            ["Use"] = function() print("Used item") end,
-            ["Drop"] = function() print("Dropped item") end
-            })
+        ["Use"] = function() print("Used item") end,
+        ["Drop"] = function() print("Dropped item") end
+        })
         ```
 
         Medium Complexity:
@@ -79,10 +84,10 @@ end
         -- Medium: Create menu attached to an entity
         local ent = Entity(1)
         lia.menu.add({
-            ["Open"] = function() ent:Use() end,
-            ["Examine"] = function() print("Examining entity") end,
-            ["Destroy"] = function() ent:Remove() end
-            }, ent)
+        ["Open"] = function() ent:Use() end,
+        ["Examine"] = function() print("Examining entity") end,
+        ["Destroy"] = function() ent:Remove() end
+        }, ent)
         ```
 
         High Complexity:
@@ -148,14 +153,19 @@ local function drawBackground(x, y, w, h, a)
 end
 
 --[[
+
     Purpose:
         Renders all active context menus with animations and interaction detection
+
     When Called:
         Called every frame from the HUD rendering system to draw all menus
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client
     Example Usage:
@@ -172,9 +182,9 @@ end
         ```lua
         -- Medium: Custom rendering with additional checks
         hook.Add("HUDPaint", "CustomMenuDraw", function()
-            if not LocalPlayer():Alive() then return end
-                lia.menu.drawAll()
-            end)
+        if not LocalPlayer():Alive() then return end
+            lia.menu.drawAll()
+        end)
         ```
 
         High Complexity:
@@ -183,14 +193,14 @@ end
         -- High: Conditional rendering with performance optimization
         local lastDrawTime = 0
         hook.Add("HUDPaint", "OptimizedMenuDraw", function()
-            local currentTime = RealTime()
-            if currentTime - lastDrawTime < 0.016 then return end -- Limit to ~60fps
+        local currentTime = RealTime()
+        if currentTime - lastDrawTime < 0.016 then return end -- Limit to ~60fps
 
-                if #lia.menu.list > 0 then
-                    lia.menu.drawAll()
-                    lastDrawTime = currentTime
-                end
-            end)
+            if #lia.menu.list > 0 then
+                lia.menu.drawAll()
+                lastDrawTime = currentTime
+            end
+        end)
         ```
 ]]
 function lia.menu.drawAll()
@@ -242,14 +252,19 @@ function lia.menu.drawAll()
 end
 
 --[[
+
     Purpose:
         Gets the currently active menu item that the player is hovering over
+
     When Called:
         When checking for menu interaction, typically from input handling systems
+
     Parameters:
         None
+
     Returns:
         (number, function|nil) Menu index and callback function if menu item is hovered, nil otherwise
+
     Realm:
         Client
     Example Usage:
@@ -268,13 +283,13 @@ end
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuInteraction", function(ply, button)
-            if button == MOUSE_LEFT then
-                local menuIndex, callback = lia.menu.getActiveMenu()
-                if callback then
-                    callback()
-                    print("Menu item activated")
-                end
+        if button == MOUSE_LEFT then
+            local menuIndex, callback = lia.menu.getActiveMenu()
+            if callback then
+                callback()
+                print("Menu item activated")
             end
+        end
         end)
         ```
 
@@ -284,20 +299,20 @@ end
         -- High: Advanced menu interaction with cooldown and logging
         local lastMenuTime = 0
         hook.Add("PlayerButtonDown", "AdvancedMenuInteraction", function(ply, button)
-            if button == MOUSE_LEFT then
-                local currentTime = RealTime()
-                if currentTime - lastMenuTime < 0.1 then return end -- Prevent spam
+        if button == MOUSE_LEFT then
+            local currentTime = RealTime()
+            if currentTime - lastMenuTime < 0.1 then return end -- Prevent spam
 
-                    local menuIndex, callback = lia.menu.getActiveMenu()
-                    if callback then
-                        lastMenuTime = currentTime
-                        callback()
+                local menuIndex, callback = lia.menu.getActiveMenu()
+                if callback then
+                    lastMenuTime = currentTime
+                    callback()
 
-                        -- Log the interaction
-                        print(string.format("Menu interaction at time %f, menu index %d", currentTime, menuIndex))
-                    end
+                    -- Log the interaction
+                    print(string.format("Menu interaction at time %f, menu index %d", currentTime, menuIndex))
                 end
-            end)
+            end
+        end)
         ```
 ]]
 function lia.menu.getActiveMenu()
@@ -325,15 +340,20 @@ function lia.menu.getActiveMenu()
 end
 
 --[[
+
     Purpose:
         Handles button press events for menu items and removes the menu
+
     When Called:
         When a menu item is clicked or activated by player input
+
     Parameters:
         - id (number): Index of the menu to remove from the menu list
         - cb (function, optional): Callback function to execute when button is pressed
+
     Returns:
         (boolean) True if callback was executed, false otherwise
+
     Realm:
         Client
     Example Usage:
@@ -352,15 +372,15 @@ end
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuButtonPress", function(ply, button)
-            if button == MOUSE_LEFT then
-                local menuIndex, callback = lia.menu.getActiveMenu()
-                if menuIndex and callback then
-                    local success = lia.menu.onButtonPressed(menuIndex, callback)
-                    if success then
-                        print("Menu interaction successful")
-                    end
+        if button == MOUSE_LEFT then
+            local menuIndex, callback = lia.menu.getActiveMenu()
+            if menuIndex and callback then
+                local success = lia.menu.onButtonPressed(menuIndex, callback)
+                if success then
+                    print("Menu interaction successful")
                 end
             end
+        end
         end)
         ```
 

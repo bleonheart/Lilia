@@ -15,16 +15,21 @@ lia.currency.symbol = lia.config.get("CurrencySymbol", "")
 lia.currency.singular = L(lia.config.get("CurrencySingularName", "currencySingular"))
 lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
 --[[
+
     Purpose:
         Formats a currency amount with the proper symbol, singular/plural form, and localization.
+
     When Called:
         When displaying currency amounts in UI, chat messages, or any text output.
+
     Parameters:
         amount (number)
             The numeric amount to format.
+
     Returns:
         string
             Formatted currency string with symbol and proper singular/plural form.
+
     Realm:
         Shared (works on both client and server)
     Example Usage:
@@ -68,10 +73,13 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Creates and spawns a physical money entity at the specified position with the given amount.
+
         When Called:
             When spawning money drops, creating money rewards, or placing currency in the world.
+
         Parameters:
             pos (Vector)
                 The position where the money entity should be spawned.
@@ -79,9 +87,11 @@ if SERVER then
                 The amount of money the entity should contain (will be rounded and made positive).
             angle (Angle, optional)
                 The rotation angle for the money entity (defaults to angle_zero).
+
         Returns:
             Entity
                 The created money entity if successful, nil if parameters are invalid.
+
         Realm:
             Server only
         Example Usage:
@@ -114,16 +124,16 @@ if SERVER then
                 -- High: Spawn multiple money entities with advanced positioning
                 local spawnPositions = {
                 {pos = Vector(100, 200, 50), amount = 500, angle = Angle(0, 45, 0)},
-                    {pos = Vector(-100, 200, 50), amount = 250, angle = Angle(0, 90, 0)},
-                        {pos = Vector(0, 0, 100), amount = 1000, angle = Angle(0, 180, 0)}
-                        }
+                {pos = Vector(-100, 200, 50), amount = 250, angle = Angle(0, 90, 0)},
+                {pos = Vector(0, 0, 100), amount = 1000, angle = Angle(0, 180, 0)}
+                }
 
-                        for _, data in ipairs(spawnPositions) do
-                            local money = lia.currency.spawn(data.pos, data.amount, data.angle)
-                            if money then
-                                money:SetVelocity(Vector(math.random(-50, 50), math.random(-50, 50), 100))
-                            end
-                        end
+                for _, data in ipairs(spawnPositions) do
+                    local money = lia.currency.spawn(data.pos, data.amount, data.angle)
+                    if money then
+                        money:SetVelocity(Vector(math.random(-50, 50), math.random(-50, 50), 100))
+                    end
+                end
                 ```
     ]]
     function lia.currency.spawn(pos, amount, angle)

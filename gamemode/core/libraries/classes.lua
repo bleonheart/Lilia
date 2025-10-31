@@ -10,15 +10,20 @@
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 --[[
+
     Purpose:
         Registers a new character class with the specified unique ID and data
+
     When Called:
         During gamemode initialization or when dynamically creating classes
+
     Parameters:
         - uniqueID (string): Unique identifier for the class
         - data (table): Table containing class properties (name, desc, limit, faction, etc.)
+
     Returns:
         The registered class table
+
     Realm:
         Shared
     Example Usage:
@@ -26,23 +31,23 @@ lia.class.list = lia.class.list or {}
 
         ```lua
         lia.class.register("citizen", {
-            name = "Citizen",
-            desc = "A regular citizen",
-            faction = FACTION_CITIZEN,
-            limit = 0
-            })
+        name = "Citizen",
+        desc = "A regular citizen",
+        faction = FACTION_CITIZEN,
+        limit = 0
+        })
         ```
 
         Medium Complexity:
 
         ```lua
         lia.class.register("police_officer", {
-            name = "Police Officer",
-            desc = "A law enforcement officer",
-            faction = FACTION_POLICE,
-            limit = 5,
-            OnCanBe = function(self, client)
-            return client:getChar():getAttrib("strength", 0) >= 10
+        name = "Police Officer",
+        desc = "A law enforcement officer",
+        faction = FACTION_POLICE,
+        limit = 5,
+        OnCanBe = function(self, client)
+        return client:getChar():getAttrib("strength", 0) >= 10
         end
         })
         ```
@@ -106,14 +111,19 @@ function lia.class.register(uniqueID, data)
 end
 
 --[[
+
     Purpose:
         Loads character classes from a directory containing class definition files
+
     When Called:
         During gamemode initialization to load classes from files
+
     Parameters:
         - directory (string): Path to directory containing class files
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -189,15 +199,20 @@ function lia.class.loadFromDir(directory)
 end
 
 --[[
+
     Purpose:
         Checks if a client can join a specific character class
+
     When Called:
         When a player attempts to join a class or when checking class availability
+
     Parameters:
         - client (Player): The player attempting to join the class
         - class (number): The class index to check
+
     Returns:
         boolean, string - Whether the player can join and reason if they cannot
+
     Realm:
         Shared
     Example Usage:
@@ -268,14 +283,19 @@ function lia.class.canBe(client, class)
 end
 
 --[[
+
     Purpose:
         Retrieves a character class by its identifier (index or uniqueID)
+
     When Called:
         When needing to access class information or properties
+
     Parameters:
         - identifier (number/string): Class index or uniqueID to retrieve
+
     Returns:
         table - The class data table or nil if not found
+
     Realm:
         Shared
     Example Usage:
@@ -302,7 +322,7 @@ end
             description = class.desc,
             limit = class.limit,
             faction = class.faction
-        }
+            }
         end
         ```
 
@@ -337,14 +357,19 @@ function lia.class.get(identifier)
 end
 
 --[[
+
     Purpose:
         Gets all players currently using a specific character class
+
     When Called:
         When needing to find players in a particular class or check class population
+
     Parameters:
         - class (number): The class index to get players for
+
     Returns:
         table - Array of player entities in the specified class
+
     Realm:
         Shared
     Example Usage:
@@ -383,28 +408,28 @@ end
             local stats = {
             count = #players,
             players = {},
-                onlineTime = 0,
-                averageLevel = 0
+            onlineTime = 0,
+            averageLevel = 0
             }
 
             for _, player in ipairs(players) do
                 local char = player:getChar()
                 if char then
                     table.insert(stats.players, {
-                        name = player:Name(),
-                        level = char:getLevel(),
-                        playtime = char:getPlayTime()
-                        })
-                        stats.onlineTime = stats.onlineTime + char:getPlayTime()
-                    end
+                    name = player:Name(),
+                    level = char:getLevel(),
+                    playtime = char:getPlayTime()
+                    })
+                    stats.onlineTime = stats.onlineTime + char:getPlayTime()
                 end
-
-                if stats.count > 0 then
-                    stats.averageLevel = stats.onlineTime / stats.count
-                end
-
-                return stats
             end
+
+            if stats.count > 0 then
+                stats.averageLevel = stats.onlineTime / stats.count
+            end
+
+            return stats
+        end
         ```
 ]]
 function lia.class.getPlayers(class)
@@ -418,14 +443,19 @@ function lia.class.getPlayers(class)
 end
 
 --[[
+
     Purpose:
         Gets the count of players currently using a specific character class
+
     When Called:
         When needing to check class population without retrieving player objects
+
     Parameters:
         - class (number): The class index to count players for
+
     Returns:
         number - Number of players in the specified class
+
     Realm:
         Shared
     Example Usage:
@@ -467,17 +497,17 @@ end
                 end
 
                 table.insert(report, {
-                    name = class.name,
-                    currentCount = count,
-                    limit = class.limit,
-                    percentage = percentage,
-                    isFull = class.limit > 0 and count >= class.limit,
-                    faction = class.faction
-                    })
-                end
-
-                return report
+                name = class.name,
+                currentCount = count,
+                limit = class.limit,
+                percentage = percentage,
+                isFull = class.limit > 0 and count >= class.limit,
+                faction = class.faction
+                })
             end
+
+            return report
+        end
         ```
 ]]
 function lia.class.getPlayerCount(class)
@@ -491,14 +521,19 @@ function lia.class.getPlayerCount(class)
 end
 
 --[[
+
     Purpose:
         Finds a class by matching its uniqueID or name with a search string
+
     When Called:
         When needing to find a class by name or partial identifier
+
     Parameters:
         - class (string): String to match against class uniqueID or name
+
     Returns:
         number - The class index if found, nil otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -538,15 +573,15 @@ end
 
                 if string.find(uniqueID, term) or string.find(name, term) then
                     table.insert(results, {
-                        index = i,
-                        class = class,
-                        matchType = string.find(uniqueID, term) and "uniqueID" or "name"
-                        })
-                    end
+                    index = i,
+                    class = class,
+                    matchType = string.find(uniqueID, term) and "uniqueID" or "name"
+                    })
                 end
-
-                return results
             end
+
+            return results
+        end
         ```
 ]]
 function lia.class.retrieveClass(class)
@@ -558,14 +593,19 @@ function lia.class.retrieveClass(class)
 end
 
 --[[
+
     Purpose:
         Checks if a character class has whitelist restrictions
+
     When Called:
         When checking if a class requires special permissions or whitelist access
+
     Parameters:
         - class (number): The class index to check for whitelist
+
     Returns:
         boolean - True if the class has whitelist restrictions, false otherwise
+
     Realm:
         Shared
     Example Usage:
@@ -607,25 +647,25 @@ end
             for i, class in ipairs(lia.class.list) do
                 if lia.class.hasWhitelist(i) then
                     table.insert(whitelistClasses, {
+                    index = i,
+                    class = class,
+                    requiredPermissions = class.requiredPermissions or {}
+                    })
+                    else
+                        table.insert(regularClasses, {
                         index = i,
-                        class = class,
-                        requiredPermissions = class.requiredPermissions or {}
-                            })
-                            else
-                                table.insert(regularClasses, {
-                                    index = i,
-                                    class = class
-                                    })
-                                end
-                            end
-
-                            return {
-                            whitelist = whitelistClasses,
-                            regular = regularClasses,
-                            totalWhitelist = #whitelistClasses,
-                            totalRegular = #regularClasses
-                        }
+                        class = class
+                        })
                     end
+                end
+
+                return {
+                whitelist = whitelistClasses,
+                regular = regularClasses,
+                totalWhitelist = #whitelistClasses,
+                totalRegular = #regularClasses
+                }
+            end
         ```
 ]]
 function lia.class.hasWhitelist(class)
@@ -637,14 +677,19 @@ function lia.class.hasWhitelist(class)
 end
 
 --[[
+
     Purpose:
         Retrieves all classes that a specific client can join
+
     When Called:
         When displaying available classes to a player or checking joinable options
+
     Parameters:
         - client (Player): The player to check joinable classes for (optional, defaults to LocalPlayer on client)
+
     Returns:
         table - Array of class tables that the client can join
+
     Realm:
         Shared
     Example Usage:
@@ -682,24 +727,24 @@ end
                 local isFull = class.limit > 0 and playerCount >= class.limit
 
                 table.insert(detailedClasses, {
-                    class = class,
-                    playerCount = playerCount,
-                    limit = class.limit,
-                    isFull = isFull,
-                    availability = isFull and "Full" or "Available",
-                    requiresWhitelist = lia.class.hasWhitelist(class.index)
-                    })
-                end
+                class = class,
+                playerCount = playerCount,
+                limit = class.limit,
+                isFull = isFull,
+                availability = isFull and "Full" or "Available",
+                requiresWhitelist = lia.class.hasWhitelist(class.index)
+                })
+            end
 
-                -- Sort by availability and name
-                table.sort(detailedClasses, function(a, b)
-                if a.isFull ~= b.isFull then
-                    return not a.isFull -- Available classes first
-                end
-                return a.class.name < b.class.name
-            end)
+            -- Sort by availability and name
+            table.sort(detailedClasses, function(a, b)
+            if a.isFull ~= b.isFull then
+                return not a.isFull -- Available classes first
+            end
+            return a.class.name < b.class.name
+        end)
 
-            return detailedClasses
+        return detailedClasses
         end
         ```
 ]]

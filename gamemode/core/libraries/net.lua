@@ -13,15 +13,20 @@ lia.net.globals = lia.net.globals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.registry = lia.net.registry or {}
 --[[
+
     Purpose:
         Registers a network message handler for receiving messages sent via lia.net.send
+
     When Called:
         During initialization or when setting up network message handlers
+
     Parameters:
         - name (string): The name identifier for the network message
         - callback (function): Function to call when this message is received
+
     Returns:
         boolean - true if registration successful, false if invalid arguments
+
     Realm:
         Shared (works on both server and client)
     Example Usage:
@@ -34,7 +39,8 @@ lia.net.registry = lia.net.registry or {}
         end)
         ```
 
-        Medium Complexity Example:
+        Medium Complexity:
+
         ```lua
         -- Medium: Register handler with validation
         lia.net.register("updateHealth", function(data)
@@ -44,7 +50,8 @@ lia.net.registry = lia.net.registry or {}
         end)
         ```
 
-        High Complexity Example:
+        High Complexity:
+
         ```lua
         -- High: Register handler with multiple data types and error handling
         lia.net.register("syncInventory", function(data)
@@ -72,16 +79,21 @@ function lia.net.register(name, callback)
 end
 
 --[[
+
     Purpose:
         Sends a network message to specified targets or broadcasts to all clients
+
     When Called:
         When you need to send data from server to client(s) or client to server
+
     Parameters:
         - name (string): The registered message name to send
         - target (Player/table/nil): Target player(s) - nil broadcasts to all, table sends to multiple players
         - ... (variadic): Additional arguments to send with the message
+
     Returns:
         boolean - true if message sent successfully, false if invalid name or target
+
     Realm:
         Shared (works on both server and client)
     Example Usage:
@@ -98,7 +110,7 @@ end
         local targetPlayer = player.GetByID(1)
         if targetPlayer then
             lia.net.send("updateHealth", targetPlayer, {health = 100})
-            end
+        end
         ```
 
         High Complexity Example:
@@ -112,10 +124,10 @@ end
         end
 
         lia.net.send("adminNotification", admins, {
-            type = "warning",
-            message = "Server restart in 5 minutes",
-            timestamp = os.time()
-            })
+        type = "warning",
+        message = "Server restart in 5 minutes",
+        timestamp = os.time()
+        })
         ```
 ]]
 function lia.net.send(name, target, ...)
@@ -151,15 +163,20 @@ function lia.net.send(name, target, ...)
 end
 
 --[[
+
     Purpose:
         Sets up a receiver for large table data that is sent in chunks via lia.net.writeBigTable
+
     When Called:
         During initialization to set up handlers for receiving large data transfers
+
     Parameters:
         - netStr (string): The network string identifier for the message
         - callback (function): Function to call when all chunks are received and data is reconstructed
+
     Returns:
         None
+
     Realm:
         Shared (works on both server and client)
     Example Usage:
@@ -331,17 +348,22 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sends large table data to clients in chunks to avoid network limits
+
         When Called:
             When you need to send large amounts of data that exceed normal network limits
+
         Parameters:
             - targets (Player/table/nil): Target player(s) - nil sends to all players
             - netStr (string): The network string identifier for the message
             - tbl (table): The table data to send
             - chunkSize (number, optional): Size of each chunk in bytes (default: 2048, 512 during reload)
+
         Returns:
             None
+
         Realm:
             Server only
         Example Usage:
@@ -353,8 +375,8 @@ if SERVER then
             local largeData = {}
             for i = 1, 1000 do
                 largeData[i] = {id = i, name = "Item " .. i}
-                end
-                lia.net.writeBigTable(nil, "largeData", largeData)
+            end
+            lia.net.writeBigTable(nil, "largeData", largeData)
             ```
 
             Medium Complexity Example:
@@ -363,9 +385,9 @@ if SERVER then
             local playerData = {}
             for _, ply in ipairs(player.GetAll()) do
                 playerData[ply:SteamID()] = {
-                    name = ply:Name(),
-                    health = ply:Health(),
-                    armor = ply:Armor()
+                name = ply:Name(),
+                health = ply:Health(),
+                armor = ply:Armor()
                 }
             end
 
@@ -391,30 +413,30 @@ if SERVER then
                         local inv = char:GetInventory()
                         if inv then
                             inventoryData[ply:SteamID()] = {
-                                items = {},
-                                    slots = inv:GetSlots(),
-                                    weight = inv:GetWeight()
-                                }
+                            items = {},
+                            slots = inv:GetSlots(),
+                            weight = inv:GetWeight()
+                            }
 
-                                for _, item in ipairs(inv:GetItems()) do
-                                    table.insert(inventoryData[ply:SteamID()].items, {
-                                        uniqueID = item.uniqueID,
-                                        id = item.id,
-                                        data = item.data
-                                        })
-                                    end
-                                end
+                            for _, item in ipairs(inv:GetItems()) do
+                                table.insert(inventoryData[ply:SteamID()].items, {
+                                uniqueID = item.uniqueID,
+                                id = item.id,
+                                data = item.data
+                                })
                             end
                         end
-
-                        if next(inventoryData) then
-                            lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
-                        end
                     end
+                end
 
-                    -- Send to specific players or all
-                    local targetPlayers = player.GetByID(1) -- Specific player
-                    sendInventoryData(targetPlayers)
+                if next(inventoryData) then
+                    lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
+                end
+            end
+
+            -- Send to specific players or all
+            local targetPlayers = player.GetByID(1) -- Specific player
+            sendInventoryData(targetPlayers)
             ```
     ]]
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
@@ -478,16 +500,21 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sets a global network variable value and synchronizes it to clients
+
         When Called:
             When you need to update a global variable that should be synchronized across the network
+
         Parameters:
             - key (string): The name/key of the global variable to set
             - value (any): The value to set for the global variable
             - receiver (Player, optional): Specific player to send the update to, nil broadcasts to all
+
         Returns:
             None
+
         Realm:
             Server only
         Example Usage:
@@ -536,40 +563,40 @@ if SERVER then
 
                     -- Set complex configuration object
                     setNetVar("serverConfig", {
-                        name = config.name or "Lilia Server",
-                        description = config.description or "A Lilia-based server",
-                        maxPlayers = config.maxPlayers or 32,
-                        gamemode = config.gamemode or "lilia",
-                        map = config.map or game.GetMap(),
-                        password = config.password or "",
-                        tags = config.tags or {"roleplay", "serious"},
-                            lastUpdated = os.time()
-                            })
+                    name = config.name or "Lilia Server",
+                    description = config.description or "A Lilia-based server",
+                    maxPlayers = config.maxPlayers or 32,
+                    gamemode = config.gamemode or "lilia",
+                    map = config.map or game.GetMap(),
+                    password = config.password or "",
+                    tags = config.tags or {"roleplay", "serious"},
+                    lastUpdated = os.time()
+                    })
 
-                            -- Notify specific admin players
-                            local admins = {}
-                            for _, ply in ipairs(player.GetAll()) do
-                                if ply:IsAdmin() then
-                                    table.insert(admins, ply)
-                                end
-                            end
+                    -- Notify specific admin players
+                    local admins = {}
+                    for _, ply in ipairs(player.GetAll()) do
+                        if ply:IsAdmin() then
+                            table.insert(admins, ply)
+                        end
+                    end
 
-                            if #admins > 0 then
-                                setNetVar("adminNotification", {
-                                    type = "configUpdate",
-                                    message = "Server configuration has been updated",
-                                    timestamp = os.time()
-                                    }, admins)
-                                end
-                            end
+                    if #admins > 0 then
+                        setNetVar("adminNotification", {
+                        type = "configUpdate",
+                        message = "Server configuration has been updated",
+                        timestamp = os.time()
+                        }, admins)
+                    end
+                end
 
-                            -- Usage
-                            updateServerConfig({
-                                name = "My Roleplay Server",
-                                maxPlayers = 50,
-                                description = "A serious roleplay server",
-                                tags = {"roleplay", "serious", "whitelist"}
-                                    })
+                -- Usage
+                updateServerConfig({
+                name = "My Roleplay Server",
+                maxPlayers = 50,
+                description = "A serious roleplay server",
+                tags = {"roleplay", "serious", "whitelist"}
+                })
             ```
     ]]
     function setNetVar(key, value, receiver)
@@ -592,15 +619,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Retrieves a global network variable value with optional default fallback
+
         When Called:
             When you need to access a global variable that is synchronized across the network
+
         Parameters:
             - key (string): The name/key of the global variable to retrieve
             - default (any, optional): Default value to return if the variable doesn't exist
+
         Returns:
             The value of the global variable or the default value if not found
+
         Realm:
             Server only (server-side version)
         Example Usage:
@@ -651,15 +683,20 @@ if SERVER then
     hook.Add("PlayerInitialSpawn", "liaNetworkingSync", function(client) client:syncVars() end)
 else
     --[[
+
         Purpose:
             Retrieves a global network variable value with optional default fallback (client-side)
+
         When Called:
             When you need to access a global variable that is synchronized from the server
+
         Parameters:
             - key (string): The name/key of the global variable to retrieve
             - default (any, optional): Default value to return if the variable doesn't exist
+
         Returns:
             The value of the global variable or the default value if not found
+
         Realm:
             Client only (client-side version)
         Example Usage:

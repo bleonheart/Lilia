@@ -378,8 +378,8 @@ end
     When Called:
         When setting up predefined door configurations for maps
     Parameters:
-        mapName (string) - The name of the map to apply the preset to
-        presetData (table) - Table containing door configuration data with the following structure:
+        - mapName (string): The name of the map to apply the preset to
+        - presetData (table): Table containing door configuration data with the following structure:
             [doorID] = {
                 name (string, optional) - Custom name for the door
                 price (number, optional) - Price to purchase the door
@@ -401,12 +401,12 @@ end
     ```lua
     -- Simple: Add basic door preset for a map
     lia.doors.addPreset("rp_downtown_v4c_v2", {
-        [123] = {
-            name = "Police Station Door",
-            price = 1000,
-            locked = true
-        }
-        })
+    [123] = {
+    name = "Police Station Door",
+    price = 1000,
+    locked = true
+    }
+    })
     ```
 
     Medium Complexity:
@@ -414,19 +414,19 @@ end
     ```lua
     -- Medium: Add preset with faction restrictions
     lia.doors.addPreset("rp_downtown_v4c_v2", {
-        [123] = {
-            name = "Police Station",
-            price = 5000,
-            locked = false,
-            factions = {"police", "mayor"}
-                },
-                [124] = {
-                    name = "Evidence Room",
-                    price = 0,
-                    locked = true,
-                    factions = {"police"}
-                    }
-                    })
+    [123] = {
+    name = "Police Station",
+    price = 5000,
+    locked = false,
+    factions = {"police", "mayor"}
+    },
+    [124] = {
+    name = "Evidence Room",
+    price = 0,
+    locked = true,
+    factions = {"police"}
+    }
+    })
     ```
 
     High Complexity:
@@ -435,27 +435,27 @@ end
     -- High: Complex preset with multiple doors and restrictions
     local policeDoors = {
     [123] = {
-        name = "Police Station Main",
-        price = 10000,
-        locked = false,
-        factions = {"police", "mayor", "chief"}
-            },
-            [124] = {
-                name = "Evidence Room",
-                price = 0,
-                locked = true,
-                factions = {"police"},
-                    classes = {"detective", "chief"}
-                        },
-                        [125] = {
-                            name = "Interrogation Room",
-                            price = 0,
-                            locked = true,
-                            factions = {"police"},
-                                classes = {"detective", "chief", "officer"}
-                                }
-                            }
-                            lia.doors.addPreset("rp_downtown_v4c_v2", policeDoors)
+    name = "Police Station Main",
+    price = 10000,
+    locked = false,
+    factions = {"police", "mayor", "chief"}
+    },
+    [124] = {
+    name = "Evidence Room",
+    price = 0,
+    locked = true,
+    factions = {"police"},
+    classes = {"detective", "chief"}
+    },
+    [125] = {
+    name = "Interrogation Room",
+    price = 0,
+    locked = true,
+    factions = {"police"},
+    classes = {"detective", "chief", "officer"}
+    }
+    }
+    lia.doors.addPreset("rp_downtown_v4c_v2", policeDoors)
     ```
 ]]
 function lia.doors.addPreset(mapName, presetData)
@@ -474,7 +474,7 @@ end
     When Called:
         When loading door data or checking for existing presets
     Parameters:
-        mapName (string) - The name of the map to get the preset for
+        - mapName (string): The name of the map to get the preset for
     Returns:
         Table or nil - The preset data table if found, nil otherwise
     Realm:
@@ -559,8 +559,8 @@ end
     ```lua
     -- Medium: Verify schema with custom handling
     hook.Add("InitPostEntity", "VerifyDoorSchema", function()
-        timer.Simple(5, function()
-        lia.doors.verifyDatabaseSchema()
+    timer.Simple(5, function()
+    lia.doors.verifyDatabaseSchema()
     end)
     end)
     ```
@@ -575,11 +575,11 @@ end
         -- Check for missing columns and add them
         local missingColumns = {
         door_group = "text"
-    }
+        }
 
-    for column, type in pairs(missingColumns) do
-        lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. column .. " " .. type)
-    end
+        for column, type in pairs(missingColumns) do
+            lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. column .. " " .. type)
+        end
     end
     ```
 ]]
@@ -683,8 +683,8 @@ end
     ```lua
     -- Medium: Schedule cleanup with delay
     hook.Add("InitPostEntity", "CleanupDoorData", function()
-        timer.Simple(2, function()
-        lia.doors.cleanupCorruptedData()
+    timer.Simple(2, function()
+    lia.doors.cleanupCorruptedData()
     end)
     end)
     ```

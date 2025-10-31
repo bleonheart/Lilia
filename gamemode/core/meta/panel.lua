@@ -9,14 +9,19 @@
 ]]
 local panelMeta = FindMetaTable("Panel")
 --[[
+
     Purpose:
         Sets up event listeners for inventory changes on a panel
+
     When Called:
         When a UI panel needs to respond to inventory modifications, typically during panel initialization
+
     Parameters:
         inventory - The inventory object to listen for changes on
+
     Returns:
         Nothing
+
     Realm:
         Client
     Example Usage:
@@ -87,14 +92,19 @@ function panelMeta:liaListenForInventoryChanges(inventory)
 end
 
 --[[
+
     Purpose:
         Removes inventory change event listeners from a panel
+
     When Called:
         When a panel no longer needs to listen to inventory changes, during cleanup, or when switching inventories
+
     Parameters:
         id (optional) - The specific inventory ID to remove hooks for, or nil to remove all hooks
+
     Returns:
         Nothing
+
     Realm:
         Client
     Example Usage:
@@ -150,15 +160,20 @@ function panelMeta:liaDeleteInventoryHooks(id)
 end
 
 --[[
+
     Purpose:
         Sets the position of a panel with automatic screen scaling
+
     When Called:
         When positioning UI elements that need to adapt to different screen resolutions
+
     Parameters:
         x - The horizontal position value to be scaled
         y - The vertical position value to be scaled
+
     Returns:
         Nothing
+
     Realm:
         Client
     Example Usage:
@@ -185,15 +200,15 @@ end
         local panels = {mainPanel, sidePanel, footerPanel}
         local positions = {
         {ScrW() * 0.1, ScrH() * 0.1},
-            {ScrW() * 0.7, ScrH() * 0.1},
-                {ScrW() * 0.1, ScrH() * 0.8}
-                }
+        {ScrW() * 0.7, ScrH() * 0.1},
+        {ScrW() * 0.1, ScrH() * 0.8}
+        }
 
-                for i, pnl in ipairs(panels) do
-                    if IsValid(pnl) then
-                        pnl:setScaledPos(positions[i][1], positions[i][2])
-                    end
-                end
+        for i, pnl in ipairs(panels) do
+            if IsValid(pnl) then
+                pnl:setScaledPos(positions[i][1], positions[i][2])
+            end
+        end
         ```
 ]]
 function panelMeta:setScaledPos(x, y)
@@ -207,15 +222,20 @@ function panelMeta:setScaledPos(x, y)
 end
 
 --[[
+
     Purpose:
         Sets the size of a panel with automatic screen scaling
+
     When Called:
         When sizing UI elements that need to adapt to different screen resolutions
+
     Parameters:
         w - The width value to be scaled
         h - The height value to be scaled
+
     Returns:
         Nothing
+
     Realm:
         Client
     Example Usage:
@@ -242,15 +262,15 @@ end
         local panels = {mainPanel, sidePanel, footerPanel}
         local sizes = {
         {ScrW() * 0.7, ScrH() * 0.6},
-            {ScrW() * 0.25, ScrH() * 0.6},
-                {ScrW() * 0.95, ScrH() * 0.1}
-                }
+        {ScrW() * 0.25, ScrH() * 0.6},
+        {ScrW() * 0.95, ScrH() * 0.1}
+        }
 
-                for i, pnl in ipairs(panels) do
-                    if IsValid(pnl) then
-                        pnl:setScaledSize(sizes[i][1], sizes[i][2])
-                    end
-                end
+        for i, pnl in ipairs(panels) do
+            if IsValid(pnl) then
+                pnl:setScaledSize(sizes[i][1], sizes[i][2])
+            end
+        end
         ```
 ]]
 function panelMeta:setScaledSize(w, h)

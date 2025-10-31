@@ -91,16 +91,21 @@ local function validateURL(url)
 end
 
 --[[
+
     Purpose:
         Downloads a sound file from a URL and caches it locally for future use
+
     When Called:
         When a sound needs to be downloaded from a web URL, either directly or through other websound functions
+
     Parameters:
         - name (string): The name/path for the sound file (will be normalized)
         - url (string, optional): The HTTP/HTTPS URL to download from (uses stored URL if not provided)
         - cb (function, optional): Callback function called with (path, fromCache, error) parameters
+
     Returns:
         None (uses callback for results)
+
     Realm:
         Client and Server
     Example Usage:
@@ -133,27 +138,27 @@ end
         -- High: Batch download with validation and error handling
         local sounds = {
         {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
-            {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
-                {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
-                }
+        {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
+        {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
+        }
 
-                local downloadCount = 0
-                local totalSounds = #sounds
+        local downloadCount = 0
+        local totalSounds = #sounds
 
-                for _, soundData in ipairs(sounds) do
-                    lia.websound.download(soundData.name, soundData.url, function(path, fromCache, error)
-                    downloadCount = downloadCount + 1
-                    if path then
-                        -- Downloaded sound
-                        else
-                            -- Failed to download sound
-                        end
-
-                        if downloadCount == totalSounds then
-                            -- All sounds processed
-                        end
-                    end)
+        for _, soundData in ipairs(sounds) do
+            lia.websound.download(soundData.name, soundData.url, function(path, fromCache, error)
+            downloadCount = downloadCount + 1
+            if path then
+                -- Downloaded sound
+                else
+                    -- Failed to download sound
                 end
+
+                if downloadCount == totalSounds then
+                    -- All sounds processed
+                end
+            end)
+        end
         ```
 ]]
 function lia.websound.download(name, url, cb)
@@ -237,16 +242,21 @@ function lia.websound.download(name, url, cb)
 end
 
 --[[
+
     Purpose:
         Registers a sound file URL for future use and immediately downloads it
+
     When Called:
         When registering a new sound file that should be available for playback
+
     Parameters:
         - name (string): The name/path for the sound file (will be normalized)
         - url (string): The HTTP/HTTPS URL to download from
         - cb (function, optional): Callback function called with (path, fromCache, error) parameters
+
     Returns:
         None (uses callback for results)
+
     Realm:
         Client and Server
     Example Usage:
@@ -277,38 +287,38 @@ end
         -- High: Register multiple sounds with validation and progress tracking
         local soundRegistry = {
         ui = {
-            {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
-                {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
-                    {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
-                        },
-                        ambient = {
-                            {name = "ambient/rain.mp3", url = "https://cdn.example.com/ambient/rain.mp3"},
-                                {name = "ambient/wind.mp3", url = "https://cdn.example.com/ambient/wind.mp3"}
-                                }
-                            }
+        {name = "ui/click.wav", url = "https://cdn.example.com/ui/click.wav"},
+        {name = "ui/hover.wav", url = "https://cdn.example.com/ui/hover.wav"},
+        {name = "ui/error.wav", url = "https://cdn.example.com/ui/error.wav"}
+        },
+        ambient = {
+        {name = "ambient/rain.mp3", url = "https://cdn.example.com/ambient/rain.mp3"},
+        {name = "ambient/wind.mp3", url = "https://cdn.example.com/ambient/wind.mp3"}
+        }
+        }
 
-                            local registeredCount = 0
-                            local totalSounds = 0
-                            for category, sounds in pairs(soundRegistry) do
-                                totalSounds = totalSounds + #sounds
-                            end
+        local registeredCount = 0
+        local totalSounds = 0
+        for category, sounds in pairs(soundRegistry) do
+            totalSounds = totalSounds + #sounds
+        end
 
-                            for category, sounds in pairs(soundRegistry) do
-                                for _, soundData in ipairs(sounds) do
-                                    lia.websound.register(soundData.name, soundData.url, function(path, fromCache, error)
-                                    registeredCount = registeredCount + 1
-                                    if path then
-                                        -- Registered sound
-                                        else
-                                            -- Failed to register sound
-                                        end
+        for category, sounds in pairs(soundRegistry) do
+            for _, soundData in ipairs(sounds) do
+                lia.websound.register(soundData.name, soundData.url, function(path, fromCache, error)
+                registeredCount = registeredCount + 1
+                if path then
+                    -- Registered sound
+                    else
+                        -- Failed to register sound
+                    end
 
-                                        if registeredCount == totalSounds then
-                                            -- All sounds registered successfully
-                                        end
-                                    end)
-                                end
-                            end
+                    if registeredCount == totalSounds then
+                        -- All sounds registered successfully
+                    end
+                end)
+            end
+        end
         ```
 ]]
 function lia.websound.register(name, url, cb)
@@ -318,14 +328,19 @@ function lia.websound.register(name, url, cb)
 end
 
 --[[
+
     Purpose:
         Retrieves the local file path of a cached sound file
+
     When Called:
         When checking if a sound file is available locally or getting its path for playback
+
     Parameters:
         - name (string): The name/path of the sound file to retrieve (will be normalized)
+
     Returns:
         string or nil - The local file path if found, nil if not cached
+
     Realm:
         Client and Server
     Example Usage:
@@ -623,14 +638,19 @@ function surface.PlaySound(soundPath, _, cb)
 end
 
 --[[
+
     Purpose:
         Retrieves statistics about downloaded and stored sound files
+
     When Called:
         When monitoring websound library performance or displaying usage statistics
+
     Parameters:
         None
+
     Returns:
         table - Contains downloaded count, stored count, and last reset timestamp
+
     Realm:
         Client and Server
     Example Usage:
@@ -676,26 +696,26 @@ end
             stored = stats.stored,
             timeSinceReset = timeSinceReset,
             downloadRate = timeSinceReset > 0 and (stats.downloaded / timeSinceReset) or 0
-        }
+            }
 
-        -- Save to file
-        file.Write("websound_stats.json", util.TableToJSON(logData, true))
+            -- Save to file
+            file.Write("websound_stats.json", util.TableToJSON(logData, true))
 
-        -- Display performance metrics
-        -- WebSound Performance Report
-        -- Downloads: stats.downloaded sounds
-        -- Storage: stats.stored registered sounds
-        -- Uptime: timeSinceReset seconds
-        -- Download rate: logData.downloadRate sounds/second
+            -- Display performance metrics
+            -- WebSound Performance Report
+            -- Downloads: stats.downloaded sounds
+            -- Storage: stats.stored registered sounds
+            -- Uptime: timeSinceReset seconds
+            -- Download rate: logData.downloadRate sounds/second
 
-        -- Performance warnings
-        if stats.downloaded > 100 then
-            -- WARNING: High download count detected!
-        end
+            -- Performance warnings
+            if stats.downloaded > 100 then
+                -- WARNING: High download count detected!
+            end
 
-        if timeSinceReset > 3600 and stats.downloaded == 0 then
-            -- INFO: No downloads in the last hour
-        end
+            if timeSinceReset > 3600 and stats.downloaded == 0 then
+                -- INFO: No downloads in the last hour
+            end
         end
 
         -- Run monitoring every 5 minutes
@@ -715,15 +735,20 @@ function lia.websound.getStats()
 end
 
 --[[
+
     Purpose:
         Plays a button click sound with automatic fallback to default button_click.wav
+
     When Called:
         When a button is clicked and needs to play a sound
+
     Parameters:
         - customSound (string, optional): Custom sound to play instead of default
         - callback (function, optional): Callback function called with (success) parameter
+
     Returns:
         None (uses callback for results)
+
     Realm:
         Client only
     Example Usage:

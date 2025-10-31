@@ -9,14 +9,19 @@
 ]]
 local toolGunMeta = lia.meta.tool or {}
 --[[
+
     Purpose:
         Creates a new instance of the tool gun object with default properties
+
     When Called:
         When initializing a new tool gun instance for a specific tool mode
+
     Parameters:
         None
+
     Returns:
         table - The newly created tool gun object
+
     Realm:
         Shared
     Example Usage:
@@ -43,11 +48,11 @@ local toolGunMeta = lia.meta.tool or {}
         local tool = toolGunMeta:create()
         tool.Mode = "advanced_builder"
         tool.ClientConVar = {
-            ["build_size"] = "1",
-            ["build_material"] = "wood"
+        ["build_size"] = "1",
+        ["build_material"] = "wood"
         }
         tool.Objects = {}
-            tool.Stage = 0
+        tool.Stage = 0
         ```
 ]]
 function toolGunMeta:create()
@@ -68,14 +73,19 @@ function toolGunMeta:create()
 end
 
 --[[
+
     Purpose:
         Creates console variables (ConVars) for the tool gun based on the current mode
+
     When Called:
         During tool initialization to set up configurable options for the tool
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (different behavior on client vs server)
     Example Usage:
@@ -93,7 +103,7 @@ end
         -- Medium: Set up tool with client-side options
         local tool = toolGunMeta:create()
         tool.ClientConVar = {["size"] = "1", ["material"] = "wood"}
-            tool:createConVars()
+        tool:createConVars()
         ```
 
         High Complexity:
@@ -103,9 +113,9 @@ end
         local tool = toolGunMeta:create()
         tool.Mode = "advanced_builder"
         tool.ClientConVar = {
-            ["build_size"] = "1",
-            ["build_material"] = "wood",
-            ["auto_align"] = "1"
+        ["build_size"] = "1",
+        ["build_material"] = "wood",
+        ["auto_align"] = "1"
         }
         tool:createConVars()
         ```
@@ -123,14 +133,19 @@ function toolGunMeta:createConVars()
 end
 
 --[[
+
     Purpose:
         Updates the tool's data and state information (placeholder for custom implementation)
+
     When Called:
         During tool operation to refresh data or synchronize with server/client state
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -171,14 +186,19 @@ function toolGunMeta:updateData()
 end
 
 --[[
+
     Purpose:
         Freezes player movement during tool operation (placeholder for custom implementation)
+
     When Called:
         When the tool needs to restrict player movement for precise operations
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client (affects local player movement)
     Example Usage:
@@ -227,14 +247,19 @@ function toolGunMeta:freezeMovement()
 end
 
 --[[
+
     Purpose:
         Draws HUD elements for the tool gun interface (placeholder for custom implementation)
+
     When Called:
         Every frame when the tool gun is active and HUD should be displayed
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Client (HUD rendering only occurs on client)
     Example Usage:
@@ -294,14 +319,19 @@ function toolGunMeta:drawHUD()
 end
 
 --[[
+
     Purpose:
         Retrieves server-side ConVar information for the current tool mode
+
     When Called:
         When the tool needs to access server configuration values
+
     Parameters:
-        property (string) - The name of the ConVar property to retrieve
+        - property (string): The name of the ConVar property to retrieve
+
     Returns:
         ConVar - The server ConVar object for the specified property
+
     Realm:
         Server (accesses server-side console variables)
     Example Usage:
@@ -345,14 +375,19 @@ function toolGunMeta:getServerInfo(property)
 end
 
 --[[
+
     Purpose:
         Builds a formatted list of ConVars for the current tool mode
+
     When Called:
         When the tool needs to provide a list of available ConVars for UI or configuration
+
     Parameters:
         None
+
     Returns:
         table - A table mapping ConVar names to their default values
+
     Realm:
         Shared (can be used on both client and server)
     Example Usage:
@@ -406,14 +441,19 @@ function toolGunMeta:buildConVarList()
 end
 
 --[[
+
     Purpose:
         Retrieves client-side ConVar information for the current tool mode
+
     When Called:
         When the tool needs to access client configuration values from the owner
+
     Parameters:
-        property (string) - The name of the ConVar property to retrieve
+        - property (string): The name of the ConVar property to retrieve
+
     Returns:
         string - The current value of the client's ConVar for the specified property
+
     Realm:
         Shared (accesses client-side data through the owner)
     Example Usage:
@@ -458,15 +498,20 @@ function toolGunMeta:getClientInfo(property)
 end
 
 --[[
+
     Purpose:
         Retrieves client-side ConVar information as a number for the current tool mode
+
     When Called:
         When the tool needs numeric client configuration values with fallback defaults
+
     Parameters:
-        property (string) - The name of the ConVar property to retrieve
-        default (number) - Default value if ConVar is not found or invalid
+        - property (string): The name of the ConVar property to retrieve
+        - default (number): Default value if ConVar is not found or invalid
+
     Returns:
         number - The numeric value of the client's ConVar or the default value
+
     Realm:
         Shared (accesses client-side data through the owner)
     Example Usage:
@@ -496,18 +541,18 @@ end
         -- High: Advanced numeric configuration with validation
         local numericConfig = {
         ["build_size"] = {default = 1, min = 0.1, max = 10},
-            ["build_speed"] = {default = 1, min = 0.1, max = 5},
-                ["max_objects"] = {default = 50, min = 1, max = 1000}
-                }
+        ["build_speed"] = {default = 1, min = 0.1, max = 5},
+        ["max_objects"] = {default = 50, min = 1, max = 1000}
+        }
 
-                local validatedNumbers = {}
-                for prop, config in pairs(numericConfig) do
-                    local value = tool:getClientNumber(prop, config.default)
-                    value = math.Clamp(value, config.min, config.max)
-                    validatedNumbers[prop] = value
-                end
+        local validatedNumbers = {}
+        for prop, config in pairs(numericConfig) do
+            local value = tool:getClientNumber(prop, config.default)
+            value = math.Clamp(value, config.min, config.max)
+            validatedNumbers[prop] = value
+        end
 
-                self:ApplyNumericConfiguration(validatedNumbers)
+        self:ApplyNumericConfiguration(validatedNumbers)
         ```
 ]]
 function toolGunMeta:getClientNumber(property, default)
@@ -515,14 +560,19 @@ function toolGunMeta:getClientNumber(property, default)
 end
 
 --[[
+
     Purpose:
         Checks if the tool is allowed to be used based on server configuration
+
     When Called:
         Before performing tool operations to verify permissions
+
     Parameters:
         None
+
     Returns:
         boolean - True if the tool is allowed, false otherwise
+
     Realm:
         Shared (client always returns true, server checks ConVar)
     Example Usage:
@@ -569,14 +619,19 @@ function toolGunMeta:allowed()
 end
 
 --[[
+
     Purpose:
         Initializes the tool gun instance (placeholder for custom implementation)
+
     When Called:
         When the tool gun is first created or deployed
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool initialization)
     Example Usage:
@@ -595,7 +650,7 @@ end
             self.Stage = 0
             self.LastUpdate = CurTime()
             self.Objects = {}
-            end
+        end
         ```
 
         High Complexity:
@@ -607,35 +662,40 @@ end
             self.Stage = 0
             self.Objects = {}
 
-                -- Set up networking if server
-                if SERVER then
-                    self:InitializeNetworkChannels()
-                end
-
-                -- Load saved data if available
-                if file.Exists(self.SavePath, "DATA") then
-                    self:LoadToolData()
-                end
-
-                -- Initialize ghost entity
-                self:CreateGhostEntity()
-
-                -- Tool " .. self:getMode() .. " initialized for " .. self:GetOwner():Name()
+            -- Set up networking if server
+            if SERVER then
+                self:InitializeNetworkChannels()
             end
+
+            -- Load saved data if available
+            if file.Exists(self.SavePath, "DATA") then
+                self:LoadToolData()
+            end
+
+            -- Initialize ghost entity
+            self:CreateGhostEntity()
+
+            print("Tool " .. self:getMode() .. " initialized for " .. self:GetOwner():Name())
+        end
         ```
 ]]
 function toolGunMeta:init()
 end
 
 --[[
+
     Purpose:
         Retrieves the current tool mode identifier
+
     When Called:
         When other methods need to know which tool mode is active
+
     Parameters:
         None
+
     Returns:
         string - The current tool mode name
+
     Realm:
         Shared
     Example Usage:
@@ -685,14 +745,19 @@ function toolGunMeta:getMode()
 end
 
 --[[
+
     Purpose:
         Retrieves the SWEP (Scripted Weapon) instance associated with this tool
+
     When Called:
         When the tool needs to access the underlying weapon entity
+
     Parameters:
         None
+
     Returns:
         Weapon - The SWEP entity instance
+
     Realm:
         Shared
     Example Usage:
@@ -746,14 +811,19 @@ function toolGunMeta:getSWEP()
 end
 
 --[[
+
     Purpose:
         Retrieves the player who owns/holds this tool gun
+
     When Called:
         When the tool needs to access the owning player for permissions, communication, or data
+
     Parameters:
         None
+
     Returns:
         Player - The player entity that owns this tool
+
     Realm:
         Shared
     Example Usage:
@@ -815,14 +885,19 @@ function toolGunMeta:GetOwner()
 end
 
 --[[
+
     Purpose:
         Retrieves the weapon entity associated with this tool gun
+
     When Called:
         When the tool needs to access the weapon entity for physics or rendering operations
+
     Parameters:
         None
+
     Returns:
         Weapon - The weapon entity instance
+
     Realm:
         Shared
     Example Usage:
@@ -885,14 +960,19 @@ function toolGunMeta:getWeapon()
 end
 
 --[[
+
     Purpose:
         Handles left mouse button click interactions (placeholder for custom implementation)
+
     When Called:
         When the player left-clicks while holding the tool gun
+
     Parameters:
         None
+
     Returns:
         boolean - True if the click was handled, false otherwise
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -921,8 +1001,8 @@ end
                     entity:Spawn()
 
                     table.insert(self.Objects, {Ent = entity, Time = CurTime()})
-                        return true
-                    end
+                    return true
+                end
         ```
 
         High Complexity:
@@ -977,14 +1057,19 @@ function toolGunMeta:leftClick()
 end
 
 --[[
+
     Purpose:
         Handles right mouse button click interactions (placeholder for custom implementation)
+
     When Called:
         When the player right-clicks while holding the tool gun
+
     Parameters:
         None
+
     Returns:
         boolean - True if the click was handled, false otherwise
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -1070,14 +1155,19 @@ function toolGunMeta:rightClick()
 end
 
 --[[
+
     Purpose:
         Handles reload key press to clear/reset tool objects and state
+
     When Called:
         When the player presses the reload key (default R) while holding the tool gun
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -1106,7 +1196,7 @@ end
             self.Message = string.format("Cleared %d objects", count)
 
             if SERVER then
-                -- Player " .. self:GetOwner():Name() .. " cleared " .. count .. " objects
+                print("Player " .. self:GetOwner():Name() .. " cleared " .. count .. " objects")
             end
         end
         ```
@@ -1165,14 +1255,19 @@ function toolGunMeta:reload()
 end
 
 --[[
+
     Purpose:
         Handles tool deployment when the weapon is drawn/equipped
+
     When Called:
         When the player switches to or initially equips the tool gun
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -1256,14 +1351,19 @@ function toolGunMeta:deploy()
 end
 
 --[[
+
     Purpose:
         Handles tool holstering when the weapon is put away/switched from
+
     When Called:
         When the player switches away from the tool gun or puts it away
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -1338,14 +1438,19 @@ function toolGunMeta:holster()
 end
 
 --[[
+
     Purpose:
         Main think function called every frame while the tool is active (placeholder for custom implementation)
+
     When Called:
         Every frame/tick while the tool gun is deployed and active
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared (can be overridden for specific tool behavior)
     Example Usage:
@@ -1433,14 +1538,19 @@ function toolGunMeta:think()
 end
 
 --[[
+
     Purpose:
         Validates and cleans up invalid objects in the tool's object list
+
     When Called:
         Periodically during tool operation to maintain object integrity
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1550,14 +1660,19 @@ function toolGunMeta:checkObjects()
 end
 
 --[[
+
     Purpose:
         Completely clears all objects from the tool's object list and performs cleanup
+
     When Called:
         When explicitly clearing all tool objects or during error recovery
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1575,8 +1690,8 @@ end
         function tool:clearObjects()
             local count = #self.Objects
             self.Objects = {}
-                self.Message = string.format("Cleared %d objects", count)
-            end
+            self.Message = string.format("Cleared %d objects", count)
+        end
         ```
 
         High Complexity:
@@ -1605,31 +1720,31 @@ end
                 -- Clear the objects table
                 self.Objects = {}
 
-                    -- Reset related state
-                    self.Stage = 0
-                    self.SelectedEntity = nil
+                -- Reset related state
+                self.Stage = 0
+                self.SelectedEntity = nil
 
-                    -- Update UI and notify
-                    self.Message = string.format("Cleared %d objects", clearedCount)
+                -- Update UI and notify
+                self.Message = string.format("Cleared %d objects", clearedCount)
 
-                    if SERVER then
-                        -- Network clear confirmation to client
-                        net.Start("tool_objects_cleared")
-                        net.WriteUInt(clearedCount, 16)
-                        net.Send(owner)
+                if SERVER then
+                    -- Network clear confirmation to client
+                    net.Start("tool_objects_cleared")
+                    net.WriteUInt(clearedCount, 16)
+                    net.Send(owner)
 
-                        -- Log the clearing action
-                        -- Player " .. owner:Name() .. " cleared all " .. clearedCount .. " tool objects
+                    -- Log the clearing action
+                    print("Player " .. owner:Name() .. " cleared all " .. clearedCount .. " tool objects")
 
-                        -- Save state after clearing
-                        self:SaveToolState()
-                    end
-
-                    -- Reset ghost entity if needed
-                    if IsValid(self.GhostEntity) then
-                        self:releaseGhostEntity()
-                    end
+                    -- Save state after clearing
+                    self:SaveToolState()
                 end
+
+                -- Reset ghost entity if needed
+                if IsValid(self.GhostEntity) then
+                    self:releaseGhostEntity()
+                end
+            end
         ```
 ]]
 function toolGunMeta:clearObjects()
@@ -1637,14 +1752,19 @@ function toolGunMeta:clearObjects()
 end
 
 --[[
+
     Purpose:
         Safely removes and cleans up the ghost entity used for preview/placement
+
     When Called:
         When switching tools, holstering, or when the ghost entity is no longer needed
+
     Parameters:
         None
+
     Returns:
         None
+
     Realm:
         Shared
     Example Usage:
@@ -1687,10 +1807,10 @@ end
                 -- Store ghost entity data before removal (if needed)
                 if self:getClientInfo("preserve_ghost_data") == "1" then
                     self.LastGhostData = {
-                        Model = self.GhostEntity:GetModel(),
-                        Pos = self.GhostEntity:GetPos(),
-                        Ang = self.GhostEntity:GetAngles(),
-                        Time = CurTime()
+                    Model = self.GhostEntity:GetModel(),
+                    Pos = self.GhostEntity:GetPos(),
+                    Ang = self.GhostEntity:GetAngles(),
+                    Time = CurTime()
                     }
                 end
 

@@ -14,15 +14,20 @@ Inventory.data = {}
 Inventory.items = {}
 Inventory.id = -1
 --[[
+
     Purpose:
         Retrieves data from the inventory's data table with optional default fallback
+
     When Called:
         Whenever inventory data needs to be accessed with a safe default value
+
     Parameters:
         key - The data key to retrieve
         default - Optional default value if key doesn't exist
+
     Returns:
         The data value or default value if key doesn't exist
+
     Realm:
         Both
     Example Usage:
@@ -61,14 +66,19 @@ function Inventory:getData(key, default)
 end
 
 --[[
+
     Purpose:
         Extends a class with the Inventory metatable functionality
+
     When Called:
         During inventory type registration to create specialized inventory types
+
     Parameters:
         className - The name of the class to extend
+
     Returns:
         The extended class with Inventory functionality
+
     Realm:
         Both
     Example Usage:
@@ -91,9 +101,9 @@ end
         local SecureInventory = Inventory:extend("BankVault")
         SecureInventory.accessLevel = "admin"
         SecureInventory.auditLog = {}
-            function SecureInventory:logAccess(player)
-                table.insert(self.auditLog, {player = player, time = os.time()})
-                end
+        function SecureInventory:logAccess(player)
+            table.insert(self.auditLog, {player = player, time = os.time()})
+        end
         ```
 ]]
 function Inventory:extend(className)
@@ -106,14 +116,19 @@ function Inventory:extend(className)
 end
 
 --[[
+
     Purpose:
         Configures the inventory type with default settings and rules
+
     When Called:
         During inventory type registration, allows customization of inventory behavior
+
     Parameters:
         None
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -130,8 +145,8 @@ end
         ```lua
         function PlayerInventory:configure()
             self.config.data["money"] = {default = 0}
-                self.config.data["level"] = {default = 1}
-                end
+            self.config.data["level"] = {default = 1}
+        end
         ```
 
         High Complexity:
@@ -139,26 +154,31 @@ end
         ```lua
         function AdvancedInventory:configure()
             self.config.data["permissions"] = {default = {}}
-                self.config.data["settings"] = {default = {}}
-                    self:addDataProxy("permissions", function(old, new)
-                    print("Permissions changed from", old, "to", new)
-                end)
-            end
+            self.config.data["settings"] = {default = {}}
+            self:addDataProxy("permissions", function(old, new)
+            print("Permissions changed from", old, "to", new)
+        end)
+        end
         ```
 ]]
 function Inventory:configure()
 end
 
 --[[
+
     Purpose:
         Adds a data proxy function that gets called when specific data changes
+
     When Called:
         During inventory configuration to set up data change callbacks
+
     Parameters:
         key - The data key to monitor for changes
         onChange - Function to call when the data changes (oldValue, newValue)
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -199,15 +219,20 @@ function Inventory:addDataProxy(key, onChange)
 end
 
 --[[
+
     Purpose:
         Retrieves all items with a specific uniqueID from the inventory
+
     When Called:
         When you need to find all instances of a particular item type
+
     Parameters:
         uniqueID - The uniqueID of the item type to find
         onlyMain - Optional boolean to only return items in main inventory slots
+
     Returns:
         Table of items matching the uniqueID
+
     Realm:
         Both
     Example Usage:
@@ -248,14 +273,19 @@ function Inventory:getItemsByUniqueID(uniqueID, onlyMain)
 end
 
 --[[
+
     Purpose:
         Registers this inventory type with the Lilia inventory system
+
     When Called:
         During inventory type definition to make it available for use
+
     Parameters:
         typeID - String identifier for this inventory type
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -302,14 +332,19 @@ function Inventory:register(typeID)
 end
 
 --[[
+
     Purpose:
         Creates a new instance of this inventory type
+
     When Called:
         When you need to create a new inventory of this type
+
     Parameters:
         None
+
     Returns:
         New inventory instance
+
     Realm:
         Both
     Example Usage:
@@ -340,14 +375,19 @@ function Inventory:new()
 end
 
 --[[
+
     Purpose:
         Returns a string representation of the inventory
+
     When Called:
         For debugging, logging, or display purposes
+
     Parameters:
         None
+
     Returns:
         String representation of the inventory
+
     Realm:
         Both
     Example Usage:
@@ -377,14 +417,19 @@ function Inventory:tostring()
 end
 
 --[[
+
     Purpose:
         Gets the inventory type configuration
+
     When Called:
         When you need to access type-specific settings or behavior
+
     Parameters:
         None
+
     Returns:
         The inventory type configuration table
+
     Realm:
         Both
     Example Usage:
@@ -417,16 +462,21 @@ function Inventory:getType()
 end
 
 --[[
+
     Purpose:
         Called when inventory data changes, triggers proxy functions
+
     When Called:
         Automatically when setData is called and data changes
+
     Parameters:
         key - The data key that changed
         oldValue - The previous value
         newValue - The new value
+
     Returns:
         Nothing
+
     Realm:
         Both
     Example Usage:
@@ -474,14 +524,19 @@ function Inventory:onDataChanged(key, oldValue, newValue)
 end
 
 --[[
+
     Purpose:
         Gets all items in the inventory
+
     When Called:
         When you need to iterate through all inventory items
+
     Parameters:
         None
+
     Returns:
         Table of all items in the inventory
+
     Realm:
         Both
     Example Usage:
@@ -520,14 +575,19 @@ function Inventory:getItems()
 end
 
 --[[
+
     Purpose:
         Gets all items of a specific type from the inventory
+
     When Called:
         When you need items of a particular type for processing
+
     Parameters:
         itemType - The uniqueID of the item type to find
+
     Returns:
         Table of items matching the specified type
+
     Realm:
         Both
     Example Usage:
@@ -568,14 +628,19 @@ function Inventory:getItemsOfType(itemType)
 end
 
 --[[
+
     Purpose:
         Gets the first item of a specific type from the inventory
+
     When Called:
         When you need any single item of a type (efficiency over getting all)
+
     Parameters:
         itemType - The uniqueID of the item type to find
+
     Returns:
         The first item found of the specified type, or nil if none found
+
     Realm:
         Both
     Example Usage:
@@ -617,14 +682,19 @@ function Inventory:getFirstItemOfType(itemType)
 end
 
 --[[
+
     Purpose:
         Checks if the inventory contains at least one item of a specific type
+
     When Called:
         For quick boolean checks before performing actions
+
     Parameters:
         itemType - The uniqueID of the item type to check for
+
     Returns:
         Boolean indicating if the item type exists in inventory
+
     Realm:
         Both
     Example Usage:
@@ -664,14 +734,19 @@ function Inventory:hasItem(itemType)
 end
 
 --[[
+
     Purpose:
         Counts total quantity of items of a specific type in the inventory
+
     When Called:
         When you need to know how many of a particular item type exist
+
     Parameters:
         itemType - Optional uniqueID of item type to count, nil for all items
+
     Returns:
         Number representing total quantity of specified item type
+
     Realm:
         Both
     Example Usage:
@@ -711,14 +786,19 @@ function Inventory:getItemCount(itemType)
 end
 
 --[[
+
     Purpose:
         Gets the unique ID of this inventory instance
+
     When Called:
         When you need to reference this specific inventory instance
+
     Parameters:
         None
+
     Returns:
         The inventory's unique ID number
+
     Realm:
         Both
     Example Usage:
@@ -754,15 +834,20 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Adds an item to the inventory with optional replication control
+
         When Called:
             When items need to be added to an inventory instance
+
         Parameters:
             item - The item instance to add
             noReplicate - Optional boolean to skip network synchronization
+
         Returns:
             The inventory instance for method chaining
+
         Realm:
             Server
         Example Usage:
@@ -809,14 +894,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Alias for addItem method for convenience
+
         When Called:
             Alternative method name for adding items
+
         Parameters:
             item - The item instance to add
+
         Returns:
             The inventory instance for method chaining
+
         Realm:
             Server
         Example Usage:
@@ -848,14 +938,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Synchronizes newly added items to appropriate clients
+
         When Called:
             Automatically called when items are added to inventory
+
         Parameters:
             item - The item that was added
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -901,14 +996,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Initializes inventory storage in the database
+
         When Called:
             When creating new persistent inventories
+
         Parameters:
             initialData - Initial data to store with the inventory
+
         Returns:
             Deferred object that resolves when storage is initialized
+
         Realm:
             Server
         Example Usage:
@@ -940,8 +1040,8 @@ if SERVER then
                 guildID = guildData.id,
                 accessLevel = "member",
                 maxSlots = guildData.tier * 50
-            }
-            return inventory:initializeStorage(initialData)
+                }
+                return inventory:initializeStorage(initialData)
             end
             local deferred = createGuildInventory(guildInfo)
             ```
@@ -973,14 +1073,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Placeholder for restoring inventory from storage
+
         When Called:
             When loading existing inventories from database
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1018,15 +1123,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Removes an item from the inventory with optional preservation
+
         When Called:
             When items need to be removed from inventory
+
         Parameters:
             itemID - The ID of the item to remove
             preserveItem - Optional boolean to preserve item data in database
+
         Returns:
             Deferred object that resolves when removal is complete
+
         Realm:
             Server
         Example Usage:
@@ -1084,14 +1194,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Alias for removeItem method for convenience
+
         When Called:
             Alternative method name for removing items
+
         Parameters:
             itemID - The ID of the item to remove
+
         Returns:
             Deferred object that resolves when removal is complete
+
         Realm:
             Server
         Example Usage:
@@ -1126,15 +1241,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sets data for the inventory and persists to database
+
         When Called:
             When inventory data needs to be updated
+
         Parameters:
             key - The data key to set
             value - The value to set for the key
+
         Returns:
             The inventory instance for method chaining
+
         Realm:
             Server
         Example Usage:
@@ -1190,15 +1310,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Checks if an action is allowed on this inventory
+
         When Called:
             Before performing actions that require access control
+
         Parameters:
             action - The action to check (e.g., "repl", "add", "remove")
             context - Optional context table with additional information
+
         Returns:
             Boolean indicating if action is allowed, and optional reason string
+
         Realm:
             Server
         Example Usage:
@@ -1226,12 +1351,12 @@ if SERVER then
                 itemType = "weapon",
                 quantity = 1,
                 time = os.time()
-            }
-            local allowed, reason = inv:canAccess(action, context)
-            if not allowed then
-                lia.log.add(player, "inventory_denied", action, reason)
-            end
-            return allowed, reason
+                }
+                local allowed, reason = inv:canAccess(action, context)
+                if not allowed then
+                    lia.log.add(player, "inventory_denied", action, reason)
+                end
+                return allowed, reason
             end
             local canTake, reason = checkInventoryPermissions(bankInv, robber, "remove")
             ```
@@ -1246,15 +1371,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Adds an access control rule to the inventory
+
         When Called:
             During inventory configuration to set up access control
+
         Parameters:
             rule - Function that takes (inventory, action, context) and returns bool, string
             priority - Optional priority number for rule evaluation order
+
         Returns:
             The inventory instance for method chaining
+
         Realm:
             Server
         Example Usage:
@@ -1315,14 +1445,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Removes an access control rule from the inventory
+
         When Called:
             When access rules need to be removed or updated
+
         Parameters:
             rule - The rule function to remove
+
         Returns:
             The inventory instance for method chaining
+
         Realm:
             Server
         Example Usage:
@@ -1369,14 +1504,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Gets list of clients that should receive inventory updates
+
         When Called:
             When synchronizing inventory changes to clients
+
         Parameters:
             None
+
         Returns:
             Table of client entities that can access this inventory
+
         Realm:
             Server
         Example Usage:
@@ -1421,14 +1561,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Called when inventory instance is created
+
         When Called:
             Automatically when inventory instances are created
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1459,34 +1604,39 @@ if SERVER then
                 -- Initialize security features
                 self.securityLevel = self:getData("securityLevel", 1)
                 self.accessLog = {}
-                    self.failedAttempts = 0
+                self.failedAttempts = 0
 
-                    -- Set up monitoring
-                    self:addAccessRule(function(inv, action, context)
-                    if action == "remove" and inv.securityLevel > 3 then
-                        table.insert(inv.accessLog, {
-                            client = context.client,
-                            action = action,
-                            time = os.time()
-                            })
-                        end
-                        return true
-                    end)
+                -- Set up monitoring
+                self:addAccessRule(function(inv, action, context)
+                if action == "remove" and inv.securityLevel > 3 then
+                    table.insert(inv.accessLog, {
+                    client = context.client,
+                    action = action,
+                    time = os.time()
+                    })
                 end
+                return true
+            end)
+            end
             ```
     ]]
     function Inventory:onInstanced()
     end
 
     --[[
+
         Purpose:
             Called when inventory is loaded from storage
+
         When Called:
             Automatically when persistent inventories are loaded
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1531,14 +1681,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Loads items from database storage
+
         When Called:
             When inventory needs to be populated from persistent storage
+
         Parameters:
             None
+
         Returns:
             Deferred object that resolves with loaded items
+
         Realm:
             Server
         Example Usage:
@@ -1622,14 +1777,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Called after items are loaded from storage
+
         When Called:
             Automatically after loadItems completes successfully
+
         Parameters:
             items - Table of loaded items
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1660,36 +1820,41 @@ if SERVER then
             function AdvancedInventory:onItemsLoaded(items)
                 -- Categorize items
                 self.itemCategories = {}
-                    for _, item in pairs(items) do
-                        local category = item.category or "misc"
-                        if not self.itemCategories[category] then
-                            self.itemCategories[category] = {}
-                            end
-                            table.insert(self.itemCategories[category], item)
-                        end
-
-                        -- Initialize item relationships
-                        for _, item in pairs(items) do
-                            item:onInventoryLoaded(self)
-                        end
-
-                        -- Validate inventory constraints
-                        self:validateInventoryConstraints()
+                for _, item in pairs(items) do
+                    local category = item.category or "misc"
+                    if not self.itemCategories[category] then
+                        self.itemCategories[category] = {}
                     end
+                    table.insert(self.itemCategories[category], item)
+                end
+
+                -- Initialize item relationships
+                for _, item in pairs(items) do
+                    item:onInventoryLoaded(self)
+                end
+
+                -- Validate inventory constraints
+                self:validateInventoryConstraints()
+            end
             ```
     ]]
     function Inventory:onItemsLoaded()
     end
 
     --[[
+
         Purpose:
             Creates a new instance of this inventory type with initial data
+
         When Called:
             When creating configured inventory instances
+
         Parameters:
             initialData - Initial data for the inventory instance
+
         Returns:
             New inventory instance
+
         Realm:
             Server
         Example Usage:
@@ -1744,15 +1909,20 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Synchronizes inventory data changes to clients
+
         When Called:
             When inventory data changes and needs to be replicated
+
         Parameters:
             key - The data key that changed
             recipients - Optional specific clients to send to, defaults to all recipients
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1796,14 +1966,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Synchronizes entire inventory state to clients
+
         When Called:
             When clients need full inventory state (initial load, resync)
+
         Parameters:
             recipients - Optional specific clients to send to, defaults to all recipients
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1868,14 +2043,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Deletes the inventory from the system
+
         When Called:
             When inventory should be permanently removed
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1909,10 +2089,10 @@ if SERVER then
                 -- Clear access rules
                 inv.config.accessRules = {}
 
-                    -- Finally delete
-                    inv:delete()
-                end
-                safelyDeleteInventory(oldInventory)
+                -- Finally delete
+                inv:delete()
+            end
+            safelyDeleteInventory(oldInventory)
             ```
     ]]
     function Inventory:delete()
@@ -1920,14 +2100,19 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Destroys the inventory and all its items
+
         When Called:
             When inventory and all contents should be completely removed
+
         Parameters:
             None
+
         Returns:
             Nothing
+
         Realm:
             Server
         Example Usage:
@@ -1984,14 +2169,19 @@ if SERVER then
     end
 else
     --[[
+
         Purpose:
             Shows the inventory panel to the player
+
         When Called:
             When player opens inventory interface
+
         Parameters:
             parent - Optional parent panel for the inventory UI
+
         Returns:
             The created inventory panel
+
         Realm:
             Client
         Example Usage:

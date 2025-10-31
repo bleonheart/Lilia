@@ -8,15 +8,20 @@
         The utility library provides comprehensive functionality for common operations and helper functions used throughout the Lilia framework. It contains a wide range of utilities for player management, string processing, entity handling, UI operations, and general purpose calculations. The library is divided into server-side functions for game logic and data management, and client-side functions for user interface, visual effects, and player interaction. These utilities simplify complex operations, provide consistent behavior across the framework, and offer reusable components for modules and plugins. The library handles everything from player identification and spatial queries to advanced UI animations and text processing, ensuring robust and efficient operations across both server and client environments.
 ]]
 --[[
+
     Purpose:
         Find all players within a specified 3D box area
+
     When Called:
         When you need to find players in a specific rectangular area for operations like area-of-effect abilities or zone management
+
     Parameters:
-        mins - Vector: The minimum corner coordinates of the box
-        maxs - Vector: The maximum corner coordinates of the box
+        - mins (Vector): The minimum corner coordinates of the box
+        - maxs (Vector): The maximum corner coordinates of the box
+
     Returns:
         Table of player entities found within the box area
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -28,7 +33,8 @@
     local players = lia.util.findPlayersInBox(Vector(-100, -100, -50), Vector(100, 100, 50))
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
     ```lua
     -- Medium: Find players in a zone and notify them
     local zonePlayers = lia.util.findPlayersInBox(zoneMin, zoneMax)
@@ -37,20 +43,21 @@
     end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
     ```lua
     -- High: Create a dynamic zone system with multiple areas
     local zones = {
     {mins = Vector(0, 0, 0), maxs = Vector(100, 100, 100), name = "Safe Zone"},
-        {mins = Vector(200, 200, 0), maxs = Vector(300, 300, 100), name = "Combat Zone"}
-        }
+    {mins = Vector(200, 200, 0), maxs = Vector(300, 300, 100), name = "Combat Zone"}
+    }
 
-        for _, zone in ipairs(zones) do
-            local players = lia.util.findPlayersInBox(zone.mins, zone.maxs)
-            for _, player in ipairs(players) do
-                player:notify("Entered: " .. zone.name)
-            end
+    for _, zone in ipairs(zones) do
+        local players = lia.util.findPlayersInBox(zone.mins, zone.maxs)
+        for _, player in ipairs(players) do
+            player:notify("Entered: " .. zone.name)
         end
+    end
     ```
 ]]
 function lia.util.findPlayersInBox(mins, maxs)
@@ -63,14 +70,19 @@ function lia.util.findPlayersInBox(mins, maxs)
 end
 
 --[[
+
     Purpose:
         Find a player by their Steam ID or Steam ID 64
+
     When Called:
         When you need to locate a specific player using their Steam identification for operations like bans, whitelists, or data retrieval
+
     Parameters:
-        steamID - String: The Steam ID (STEAM_0:0:123456) or Steam ID 64 to search for
+        - steamID (string): The Steam ID (STEAM_0:0:123456) or Steam ID 64 to search for
+
     Returns:
         Player entity if found with a valid character, nil otherwise
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -82,7 +94,8 @@ end
     local player = lia.util.getBySteamID("STEAM_0:0:12345678")
     ```
 
-    Medium Complexity Example:
+    Medium Complexity:
+
     ```lua
     -- Medium: Check if player is online before performing action
     local targetPlayer = lia.util.getBySteamID(playerSteamID)
@@ -93,7 +106,8 @@ end
         end
     ```
 
-    High Complexity Example:
+    High Complexity:
+
     ```lua
     -- High: Process multiple Steam IDs with validation
     local steamIDs = {"STEAM_0:0:123456", "STEAM_0:1:789012", "76561198012345678"}
@@ -103,9 +117,9 @@ end
         local player = lia.util.getBySteamID(steamID)
         if IsValid(player) then
             foundPlayers[#foundPlayers + 1] = {
-                steamID = steamID,
-                player = player,
-                charName = player:getChar():getName()
+            steamID = steamID,
+            player = player,
+            charName = player:getChar():getName()
             }
         end
     end
@@ -121,15 +135,20 @@ function lia.util.getBySteamID(steamID)
 end
 
 --[[
+
     Purpose:
         Find all players within a specified spherical radius from a center point
+
     When Called:
         When you need to find players in a circular area for proximity-based operations like damage, effects, or notifications
+
     Parameters:
-        origin - Vector: The center point of the sphere
-        radius - Number: The radius of the sphere in units
+        - origin (Vector): The center point of the sphere
+        - radius (number): The radius of the sphere in units
+
     Returns:
         Table of player entities found within the spherical area
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -158,24 +177,24 @@ end
     -- High: Create a zone system with multiple overlapping spheres
     local zones = {
     {center = Vector(0, 0, 0), radius = 200, type = "safe"},
-        {center = Vector(500, 0, 0), radius = 150, type = "danger"},
-            {center = Vector(250, 250, 0), radius = 100, type = "neutral"}
-            }
+    {center = Vector(500, 0, 0), radius = 150, type = "danger"},
+    {center = Vector(250, 250, 0), radius = 100, type = "neutral"}
+    }
 
-            for _, player in player.GetAll() do
-                local playerPos = player:GetPos()
-                local inZone = {}
+    for _, player in player.GetAll() do
+        local playerPos = player:GetPos()
+        local inZone = {}
 
-                for _, zone in ipairs(zones) do
-                    if playerPos:Distance(zone.center) <= zone.radius then
-                        inZone[zone.type] = true
-                    end
-                end
-
-                if inZone.danger and not inZone.safe then
-                    player:takeDamage(10)
-                end
+        for _, zone in ipairs(zones) do
+            if playerPos:Distance(zone.center) <= zone.radius then
+                inZone[zone.type] = true
             end
+        end
+
+        if inZone.danger and not inZone.safe then
+            player:takeDamage(10)
+        end
+    end
     ```
 ]]
 function lia.util.findPlayersInSphere(origin, radius)
@@ -188,15 +207,20 @@ function lia.util.findPlayersInSphere(origin, radius)
 end
 
 --[[
+
     Purpose:
         Find a player by various identifier types including Steam ID, Steam ID 64, name, or special selectors
+
     When Called:
         When you need to locate a specific player using flexible identification methods for commands, admin actions, or interactions
+
     Parameters:
         client - Player: The player requesting the search (for notifications and special selectors)
         identifier - String: The identifier to search for (Steam ID, Steam ID 64, player name, "^" for self, "@" for looked-at player)
+
     Returns:
         Player entity if found, nil otherwise with appropriate error notifications
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -289,14 +313,19 @@ function lia.util.findPlayer(client, identifier)
 end
 
 --[[
+
     Purpose:
         Find all items created by a specific player in the world
+
     When Called:
         When you need to locate dropped items or spawned entities created by a particular player for cleanup, tracking, or management
+
     Parameters:
         client - Player: The player whose created items should be found
+
     Returns:
         Table of item entities created by the specified player
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -344,15 +373,20 @@ function lia.util.findPlayerItems(client)
 end
 
 --[[
+
     Purpose:
         Find all items of a specific class created by a particular player
+
     When Called:
         When you need to locate specific types of items created by a player for targeted operations like weapon cleanup or resource management
+
     Parameters:
         client - Player: The player whose created items should be found
         class - String: The item class/type to filter by (e.g., "weapon_ar2", "item_healthkit")
+
     Returns:
         Table of item entities of the specified class created by the player
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -403,15 +437,20 @@ function lia.util.findPlayerItemsByClass(client, class)
 end
 
 --[[
+
     Purpose:
         Find all entities created by or associated with a specific player, optionally filtered by class
+
     When Called:
         When you need to locate entities spawned by a player for management, cleanup, or tracking purposes
+
     Parameters:
         client - Player: The player whose entities should be found
         class - String: Optional class name to filter entities (e.g., "prop_physics", "npc_zombie")
+
     Returns:
         Table of entities created by or associated with the specified player
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -465,15 +504,20 @@ function lia.util.findPlayerEntities(client, class)
 end
 
 --[[
+
     Purpose:
         Check if two strings match using flexible comparison methods including case-insensitive and partial matching
+
     When Called:
         When you need to compare strings with flexible matching for search functionality, name validation, or text processing
+
     Parameters:
         a - String: The first string to compare
         b - String: The second string to compare (the search pattern)
+
     Returns:
         Boolean indicating if the strings match using any of the comparison methods
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -502,9 +546,9 @@ end
         for _, term in ipairs(searchTerms) do
             if lia.util.stringMatches(text, term) then
                 results[#results + 1] = {
-                    text = text,
-                    matchedTerm = term,
-                    matchType = "partial"
+                text = text,
+                matchedTerm = term,
+                matchType = "partial"
                 }
             end
         end
@@ -528,14 +572,19 @@ function lia.util.stringMatches(a, b)
 end
 
 --[[
+
     Purpose:
         Get a list of all currently online administrators/staff members
+
     When Called:
         When you need to identify staff members for admin-only operations, notifications, or privilege checks
+
     Parameters:
         None
+
     Returns:
         Table of player entities that are currently staff members
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -566,10 +615,10 @@ end
         for _, admin in ipairs(admins) do
             if admin:isStaff() and admin:getChar() then
                 activeAdmins[#activeAdmins + 1] = {
-                    player = admin,
-                    steamID = admin:SteamID(),
-                    name = admin:Name(),
-                    lastSeen = CurTime()
+                player = admin,
+                steamID = admin:SteamID(),
+                name = admin:Name(),
+                lastSeen = CurTime()
                 }
             end
         end
@@ -591,14 +640,19 @@ function lia.util.getAdmins()
 end
 
 --[[
+
     Purpose:
         Find a player by their Steam ID 64, converting it to Steam ID format first
+
     When Called:
         When you need to locate a player using their Steam ID 64 for database operations or external integrations
+
     Parameters:
         SteamID64 - String: The Steam ID 64 to search for
+
     Returns:
         Player entity if found, nil otherwise
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -629,9 +683,9 @@ end
         local player = lia.util.findPlayerBySteamID64(steamID64)
         if IsValid(player) then
             onlinePlayers[#onlinePlayers + 1] = {
-                steamID64 = steamID64,
-                player = player,
-                character = player:getChar():getName()
+            steamID64 = steamID64,
+            player = player,
+            character = player:getChar():getName()
             }
         end
     end
@@ -644,14 +698,19 @@ function lia.util.findPlayerBySteamID64(SteamID64)
 end
 
 --[[
+
     Purpose:
         Find a player by their Steam ID
+
     When Called:
         When you need to locate a player using their Steam ID for admin actions, bans, or data retrieval
+
     Parameters:
         SteamID - String: The Steam ID to search for (STEAM_0:0:123456 format)
+
     Returns:
         Player entity if found, nil otherwise
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -685,14 +744,14 @@ end
             character = player:getChar():getName(),
             position = player:GetPos(),
             status = "online"
-        }
-        else
-            return {
-            steamID = steamID,
-            status = "offline"
-        }
-    end
-    end
+            }
+            else
+                return {
+                steamID = steamID,
+                status = "offline"
+                }
+            end
+        end
     ```
 ]]
 function lia.util.findPlayerBySteamID(SteamID)
@@ -703,17 +762,22 @@ function lia.util.findPlayerBySteamID(SteamID)
 end
 
 --[[
+
     Purpose:
         Check if an entity can fit at a specific position without colliding with solid objects
+
     When Called:
         When you need to validate if an entity can be placed at a location for spawning, teleportation, or collision detection
+
     Parameters:
         pos - Vector: The position to check for entity placement
         mins - Vector: Optional minimum bounding box coordinates (defaults to Vector(16, 16, 0))
         maxs - Vector: Optional maximum bounding box coordinates (defaults to mins value)
         filter - Entity/Table: Optional entity or table of entities to ignore in collision detection
+
     Returns:
         Boolean indicating if the position is clear (true) or obstructed (false)
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -776,15 +840,20 @@ function lia.util.canFit(pos, mins, maxs, filter)
 end
 
 --[[
+
     Purpose:
         Find all players within a specified radius from a center position
+
     When Called:
         When you need to find players in a circular area for proximity-based operations like damage, effects, or area management
+
     Parameters:
         pos - Vector: The center position to check from
         dist - Number: The radius distance to check within
+
     Returns:
         Table of player entities found within the specified radius
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -813,26 +882,26 @@ end
     -- High: Create a zone management system with multiple areas
     local zones = {
     {center = Vector(0, 0, 0), radius = 150, type = "safe"},
-        {center = Vector(400, 0, 0), radius = 100, type = "combat"},
-            {center = Vector(200, 200, 0), radius = 80, type = "neutral"}
-            }
+    {center = Vector(400, 0, 0), radius = 100, type = "combat"},
+    {center = Vector(200, 200, 0), radius = 80, type = "neutral"}
+    }
 
-            for _, player in player.GetAll() do
-                local playerPos = player:GetPos()
-                local zonesIn = {}
+    for _, player in player.GetAll() do
+        local playerPos = player:GetPos()
+        local zonesIn = {}
 
-                for _, zone in ipairs(zones) do
-                    if playerPos:Distance(zone.center) <= zone.radius then
-                        zonesIn[zone.type] = true
-                    end
-                end
+        for _, zone in ipairs(zones) do
+            if playerPos:Distance(zone.center) <= zone.radius then
+                zonesIn[zone.type] = true
+            end
+        end
 
-                if zonesIn.combat and not zonesIn.safe then
-                    player:setNetVar("inCombat", true)
-                    else
-                        player:setNetVar("inCombat", false)
-                    end
-                end
+        if zonesIn.combat and not zonesIn.safe then
+            player:setNetVar("inCombat", true)
+            else
+                player:setNetVar("inCombat", false)
+            end
+        end
     ```
 ]]
 function lia.util.playerInRadius(pos, dist)
@@ -845,15 +914,20 @@ function lia.util.playerInRadius(pos, dist)
 end
 
 --[[
+
     Purpose:
         Format a string using named placeholders with flexible argument handling
+
     When Called:
         When you need to format strings with named parameters for localization, templating, or dynamic text generation
+
     Parameters:
         format - String: The format string containing {placeholder} patterns
         ... - Mixed: Either a table with named keys or individual arguments to replace placeholders
+
     Returns:
         String with placeholders replaced by provided values
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -888,14 +962,14 @@ end
 
         for key, value in pairs(data) do
             formatted = formatted:gsub("{" .. key .. "}", tostring(value))
-            end
-
-            return formatted
         end
 
-        -- Usage with both methods
-        local message1 = lia.util.formatStringNamed(template, playerData)
-        local message2 = formatPlayerInfo(template, playerData)
+        return formatted
+    end
+
+    -- Usage with both methods
+    local message1 = lia.util.formatStringNamed(template, playerData)
+    local message2 = formatPlayerInfo(template, playerData)
     ```
 ]]
 function lia.util.formatStringNamed(format, ...)
@@ -918,15 +992,20 @@ function lia.util.formatStringNamed(format, ...)
 end
 
 --[[
+
     Purpose:
         Get a cached material object from a file path, creating it if it doesn't exist
+
     When Called:
         When you need to load and cache materials for rendering, UI elements, or visual effects to improve performance
+
     Parameters:
         materialPath - String: The file path to the material (e.g., "materials/effects/blur.vmt")
         materialParameters - String: Optional parameters for material creation
+
     Returns:
         IMaterial object for the specified material path
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -969,7 +1048,7 @@ end
 
     -- Usage
     preloadMaterials({"effects/water_warp01", "effects/bubble", "pp/blurscreen"})
-        drawMaterialEffect("effects/water_warp01", 100, 100, 200, 200, 150)
+    drawMaterialEffect("effects/water_warp01", 100, 100, 200, 200, 150)
     ```
 ]]
 function lia.util.getMaterial(materialPath, materialParameters)
@@ -979,15 +1058,20 @@ function lia.util.getMaterial(materialPath, materialParameters)
 end
 
 --[[
+
     Purpose:
         Find a faction by name or unique ID using flexible matching
+
     When Called:
         When you need to locate faction information for player assignment, permissions, or faction-based operations
+
     Parameters:
         client - Player: The player requesting the faction (for error notifications)
         name - String: The faction name or unique ID to search for
+
     Returns:
         Faction table if found, nil otherwise with error notification
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -1118,15 +1202,20 @@ if system.IsLinux() then
 end
 
 --[[
+
     Purpose:
         Generate a random full name by combining first and last names from provided or default lists
+
     When Called:
         When you need to create random character names for NPCs, testing, or procedural content generation
+
     Parameters:
         firstNames - Table: Optional table of first names to choose from
         lastNames - Table: Optional table of last names to choose from
+
     Returns:
         String containing a randomly generated full name (FirstName LastName)
+
     Realm:
         Both (Universal)
     Example Usage:
@@ -1151,26 +1240,26 @@ end
     -- High: Create a name generation system with cultural variations
     local nameCultures = {
     western = {
-        first = {"John", "Jane", "Michael", "Sarah"},
-            last = {"Smith", "Johnson", "Williams", "Brown"}
-                },
-                eastern = {
-                    first = {"Hiroshi", "Yuki", "Kenji", "Sakura"},
-                        last = {"Tanaka", "Suzuki", "Yamamoto", "Watanabe"}
-                        }
-                    }
+    first = {"John", "Jane", "Michael", "Sarah"},
+    last = {"Smith", "Johnson", "Williams", "Brown"}
+    },
+    eastern = {
+    first = {"Hiroshi", "Yuki", "Kenji", "Sakura"},
+    last = {"Tanaka", "Suzuki", "Yamamoto", "Watanabe"}
+    }
+    }
 
-                    local function generateCulturalName(culture)
-                        local cultureData = nameCultures[culture]
-                        if cultureData then
-                            return lia.util.generateRandomName(cultureData.first, cultureData.last)
-                        end
-                        return lia.util.generateRandomName() -- fallback to defaults
-                    end
+    local function generateCulturalName(culture)
+        local cultureData = nameCultures[culture]
+        if cultureData then
+            return lia.util.generateRandomName(cultureData.first, cultureData.last)
+        end
+        return lia.util.generateRandomName() -- fallback to defaults
+    end
 
-                    -- Usage
-                    local westernName = generateCulturalName("western")
-                    local easternName = generateCulturalName("eastern")
+    -- Usage
+    local westernName = generateCulturalName("western")
+    local easternName = generateCulturalName("eastern")
     ```
 ]]
 function lia.util.generateRandomName(firstNames, lastNames)
@@ -1187,10 +1276,13 @@ end
 
 if SERVER then
     --[[
+
         Purpose:
             Send a table-based user interface to a specific client for displaying data in a structured format
+
         When Called:
             When you need to display tabular data to a player, such as inventories, player lists, or administrative information
+
         Parameters:
             client - Player: The player to send the table UI to
             title - String: The title of the table window
@@ -1198,8 +1290,10 @@ if SERVER then
             data - Table: Array of row data to display in the table
             options - Table: Optional configuration options for the table UI
             characterID - Number: Optional character ID for character-specific data
+
         Returns:
             Nothing (sends network message to client)
+
         Realm:
             Server
         Example Usage:
@@ -1210,14 +1304,14 @@ if SERVER then
         -- Simple: Send basic player list
         local columns = {
         {name = "Name", width = 150},
-            {name = "Steam ID", width = 200}
-            }
-            local players = player.GetAll()
-            local data = {}
-            for _, ply in ipairs(players) do
-                data[#data + 1] = {ply:Name(), ply:SteamID()}
-                end
-                lia.util.sendTableUI(client, "Player List", columns, data)
+        {name = "Steam ID", width = 200}
+        }
+        local players = player.GetAll()
+        local data = {}
+        for _, ply in ipairs(players) do
+            data[#data + 1] = {ply:Name(), ply:SteamID()}
+        end
+        lia.util.sendTableUI(client, "Player List", columns, data)
         ```
 
         Medium Complexity Example:
@@ -1225,14 +1319,14 @@ if SERVER then
         -- Medium: Send inventory with action options
         local columns = {
         {name = "Item", width = 150},
-            {name = "Quantity", width = 80},
-                {name = "Value", width = 100}
-                }
-                local options = {
-                {name = "Drop", net = "liaDropItem"},
-                    {name = "Use", net = "liaUseItem"}
-                    }
-                    lia.util.sendTableUI(client, "Inventory", columns, inventoryData, options, characterID)
+        {name = "Quantity", width = 80},
+        {name = "Value", width = 100}
+        }
+        local options = {
+        {name = "Drop", net = "liaDropItem"},
+        {name = "Use", net = "liaUseItem"}
+        }
+        lia.util.sendTableUI(client, "Inventory", columns, inventoryData, options, characterID)
         ```
 
         High Complexity Example:
@@ -1241,28 +1335,28 @@ if SERVER then
         local function sendAdminPanel(admin, targetPlayer)
             local columns = {
             {name = "Property", width = 150},
-                {name = "Value", width = 200},
-                    {name = "Actions", width = 100}
-                    }
+            {name = "Value", width = 200},
+            {name = "Actions", width = 100}
+            }
 
-                    local playerData = {
-                    {"Name", targetPlayer:Name()},
-                        {"Steam ID", targetPlayer:SteamID()},
-                            {"Health", targetPlayer:Health()},
-                                {"Armor", targetPlayer:Armor()},
-                                    {"Money", targetPlayer:getMoney()},
-                                        {"Faction", targetPlayer:getFaction()},
-                                        }
+            local playerData = {
+            {"Name", targetPlayer:Name()},
+            {"Steam ID", targetPlayer:SteamID()},
+            {"Health", targetPlayer:Health()},
+            {"Armor", targetPlayer:Armor()},
+            {"Money", targetPlayer:getMoney()},
+            {"Faction", targetPlayer:getFaction()},
+            }
 
-                                        local options = {
-                                        {name = "Kick", net = "liaKickPlayer"},
-                                            {name = "Ban", net = "liaBanPlayer"},
-                                                {name = "Teleport", net = "liaTeleportPlayer"}
-                                                }
+            local options = {
+            {name = "Kick", net = "liaKickPlayer"},
+            {name = "Ban", net = "liaBanPlayer"},
+            {name = "Teleport", net = "liaTeleportPlayer"}
+            }
 
-                                                lia.util.sendTableUI(admin, "Player Info: " .. targetPlayer:Name(),
-                                                columns, playerData, options, targetPlayer:getChar() and targetPlayer:getChar():getID())
-                                            end
+            lia.util.sendTableUI(admin, "Player Info: " .. targetPlayer:Name(),
+            columns, playerData, options, targetPlayer:getChar() and targetPlayer:getChar():getID())
+        end
         ```
     ]]
     function lia.util.sendTableUI(client, title, columns, data, options, characterID)
@@ -1286,10 +1380,13 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Find empty spaces around an entity for spawning or placement purposes
+
         When Called:
             When you need to find valid locations to spawn entities, NPCs, or items around a central position
+
         Parameters:
             entity - Entity: The central entity to search around
             filter - Entity/Table: Optional entity or table of entities to ignore in collision detection
@@ -1297,8 +1394,10 @@ if SERVER then
             size - Number: Grid size to search in (default: 3, meaning -3 to +3 in both x and y)
             height - Number: Height of the area to check for collisions (default: 36)
             tolerance - Number: Additional clearance above ground (default: 5)
+
         Returns:
             Table of valid Vector positions sorted by distance from the entity
+
         Realm:
             Server
         Example Usage:
@@ -1393,10 +1492,13 @@ else
     lia.util.easeOutCubic = lia.derma.easeOutCubic
     lia.util.easeInOutCubic = lia.derma.easeInOutCubic
     --[[
+
         Purpose:
             Animate a panel's appearance with scaling, positioning, and alpha transitions
+
         When Called:
             When you need to create smooth entrance animations for UI panels, menus, or dialog boxes
+
         Parameters:
             panel - Panel: The DPanel to animate
             target_w - Number: Target width for the animation
@@ -1405,8 +1507,10 @@ else
             alpha_dur - Number: Duration of alpha animation in seconds (default: same as duration)
             callback - Function: Optional callback function to execute when animation completes
             scale_factor - Number: Scale factor for initial size (default: 0.8)
+
         Returns:
             Nothing (modifies panel directly)
+
         Realm:
             Client
         Example Usage:
@@ -1510,14 +1614,19 @@ else
     end
 
     --[[
+
         Purpose:
             Clamp a panel's position to stay within screen boundaries while avoiding UI overlap
+
         When Called:
             When you need to ensure menus and panels stay visible and don't overlap with important UI elements like logos
+
         Parameters:
             panel - Panel: The DPanel whose position should be clamped
+
         Returns:
             Nothing (modifies panel position directly)
+
         Realm:
             Client
         Example Usage:
@@ -1638,10 +1747,13 @@ else
     end
 
     --[[
+
         Purpose:
             Draw a gradient background using predefined gradient materials
+
         When Called:
             When you need to create gradient backgrounds for UI elements, panels, or visual effects
+
         Parameters:
             _x - Number: X position to draw the gradient
             _y - Number: Y position to draw the gradient
@@ -1651,8 +1763,10 @@ else
             color_shadow - Color: Color for the gradient shadow effect
             radius - Number: Corner radius for rounded gradients (default: 0)
             flags - Number: Material flags for rendering
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -1678,27 +1792,27 @@ else
         -- High: Create animated gradient backgrounds
         local gradients = {
         {dir = 1, color = Color(255, 100, 100, 150)},
-            {dir = 2, color = Color(100, 255, 100, 150)},
-                {dir = 3, color = Color(100, 100, 255, 150)},
-                    {dir = 4, color = Color(255, 255, 100, 150)}
-                    }
+        {dir = 2, color = Color(100, 255, 100, 150)},
+        {dir = 3, color = Color(100, 100, 255, 150)},
+        {dir = 4, color = Color(255, 255, 100, 150)}
+        }
 
-                    local currentGradient = 1
-                    local function drawAnimatedGradient(x, y, w, h)
-                        local gradient = gradients[currentGradient]
-                        lia.util.drawGradient(x, y, w, h, gradient.dir, gradient.color, 12)
+        local currentGradient = 1
+        local function drawAnimatedGradient(x, y, w, h)
+            local gradient = gradients[currentGradient]
+            lia.util.drawGradient(x, y, w, h, gradient.dir, gradient.color, 12)
 
-                        -- Cycle through gradients
-                        if math.sin(CurTime() * 2) > 0.9 then
-                            currentGradient = currentGradient % #gradients + 1
-                        end
-                    end
+            -- Cycle through gradients
+            if math.sin(CurTime() * 2) > 0.9 then
+                currentGradient = currentGradient % #gradients + 1
+            end
+        end
 
-                    -- Usage in panel
-                    local panel = vgui.Create("DPanel")
-                    panel.Paint = function(self, w, h)
-                    drawAnimatedGradient(0, 0, w, h)
-                end
+        -- Usage in panel
+        local panel = vgui.Create("DPanel")
+        panel.Paint = function(self, w, h)
+        drawAnimatedGradient(0, 0, w, h)
+        end
         ```
     ]]
     function lia.util.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius, flags)
@@ -1708,16 +1822,21 @@ else
     end
 
     --[[
+
         Purpose:
             Wrap text to fit within a specified width, breaking it into multiple lines
+
         When Called:
             When you need to display text that might be too long for a UI element, ensuring it wraps properly
+
         Parameters:
             text - String: The text to wrap
             width - Number: Maximum width in pixels for the text
             font - String: Font to use for text measurement (default: "LiliaFont.16")
+
         Returns:
             Table of wrapped text lines, Number: Maximum width of any line
+
         Realm:
             Client
         Example Usage:
@@ -1814,17 +1933,22 @@ else
     end
 
     --[[
+
         Purpose:
             Draw a blur effect behind a panel using screen-space blurring
+
         When Called:
             When you need to create a blurred background effect for UI elements like menus or dialogs
+
         Parameters:
             panel - Panel: The panel to draw blur behind
             amount - Number: Intensity of the blur effect (default: 5)
             _ - Any: Unused parameter (legacy)
             alpha - Number: Alpha transparency of the blur effect (default: 255)
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -1910,18 +2034,23 @@ else
     end
 
     --[[
+
         Purpose:
             Draw a black blur effect with enhanced darkness behind a panel
+
         When Called:
             When you need to create a darker, more opaque blurred background effect for UI elements
+
         Parameters:
             panel - Panel: The panel to draw blur behind
             amount - Number: Intensity of the blur effect (default: 6)
             passes - Number: Number of blur passes for quality (default: 5, minimum: 1)
             alpha - Number: Alpha transparency of the blur effect (default: 255)
             darkAlpha - Number: Alpha transparency of the dark overlay (default: 220)
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -1954,32 +2083,32 @@ else
         local function drawContextualBlur(panel, context)
             local settings = {
             menu = {amount = 6, passes = 5, alpha = 255, darkAlpha = 220},
-                dialog = {amount = 8, passes = 7, alpha = 255, darkAlpha = 240},
-                    overlay = {amount = 4, passes = 3, alpha = 200, darkAlpha = 180}
-                    }
+            dialog = {amount = 8, passes = 7, alpha = 255, darkAlpha = 240},
+            overlay = {amount = 4, passes = 3, alpha = 200, darkAlpha = 180}
+            }
 
-                    local config = settings[context] or settings.menu
-                    lia.util.drawBlackBlur(panel, config.amount, config.passes, config.alpha, config.darkAlpha)
-                end
+            local config = settings[context] or settings.menu
+            lia.util.drawBlackBlur(panel, config.amount, config.passes, config.alpha, config.darkAlpha)
+        end
 
-                local function createContextualUI(context, title)
-                    local frame = vgui.Create("DFrame")
-                    frame:SetTitle(title)
-                    frame:SetSize(400, 250)
-                    frame:Center()
+        local function createContextualUI(context, title)
+            local frame = vgui.Create("DFrame")
+            frame:SetTitle(title)
+            frame:SetSize(400, 250)
+            frame:Center()
 
-                    frame.Paint = function(self, w, h)
-                    drawContextualBlur(self, context)
-                    draw.RoundedBox(8, 0, 0, w, h, Color(10, 10, 10, 200))
-                end
+            frame.Paint = function(self, w, h)
+            drawContextualBlur(self, context)
+            draw.RoundedBox(8, 0, 0, w, h, Color(10, 10, 10, 200))
+        end
 
-                return frame
-            end
+        return frame
+        end
 
-            -- Usage for different contexts
-            local menuUI = createContextualUI("menu", "Main Menu")
-            local dialogUI = createContextualUI("dialog", "Important Dialog")
-            local overlayUI = createContextualUI("overlay", "HUD Overlay")
+        -- Usage for different contexts
+        local menuUI = createContextualUI("menu", "Main Menu")
+        local dialogUI = createContextualUI("dialog", "Important Dialog")
+        local overlayUI = createContextualUI("overlay", "HUD Overlay")
         ```
     ]]
     function lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
@@ -2008,10 +2137,13 @@ else
     end
 
     --[[
+
         Purpose:
             Draw a blur effect at specific screen coordinates
+
         When Called:
             When you need to apply blur effects to specific screen areas for HUD elements or overlays
+
         Parameters:
             x - Number: X position to draw the blur
             y - Number: Y position to draw the blur
@@ -2020,8 +2152,10 @@ else
             amount - Number: Intensity of the blur effect (default: 5)
             passes - Number: Number of blur passes (default: 0.2)
             alpha - Number: Alpha transparency of the blur effect (default: 255)
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -2080,18 +2214,23 @@ else
 
     lia.util.requestArguments = lia.derma.requestArguments
     --[[
+
         Purpose:
             Create a complete table-based UI window for displaying data with interactive features
+
         When Called:
             When you need to display tabular data with sorting, actions, and interactive options
+
         Parameters:
             title - String: Title for the table window
             columns - Table: Array of column definitions
             data - Table: Array of row data to display
             options - Table: Optional action buttons and configurations
             charID - Number: Character ID for character-specific data
+
         Returns:
             Frame, ListView: The created frame and list view objects
+
         Realm:
             Client
         Example Usage:
@@ -2108,9 +2247,9 @@ else
         -- Medium: Create table with action options
         local options = {
         {name = "Teleport", net = "liaTeleportTo"},
-            {name = "Kick", net = "liaKickPlayer"}
-            }
-            local frame, listView = lia.util.createTableUI("Admin Panel", columns, data, options, charID)
+        {name = "Kick", net = "liaKickPlayer"}
+        }
+        local frame, listView = lia.util.createTableUI("Admin Panel", columns, data, options, charID)
         ```
 
         High Complexity Example:
@@ -2119,18 +2258,18 @@ else
         local function createDataManager(dataType)
             local columns = {
             {name = "ID", field = "id", width = 80},
-                {name = "Name", field = "name", width = 200},
-                    {name = "Status", field = "status", width = 120}
-                    }
+            {name = "Name", field = "name", width = 200},
+            {name = "Status", field = "status", width = 120}
+            }
 
-                    local options = {
-                    {name = "Edit", net = "liaEdit" .. dataType},
-                        {name = "Delete", net = "liaDelete" .. dataType},
-                            {name = "View Details", net = "liaView" .. dataType}
-                            }
+            local options = {
+            {name = "Edit", net = "liaEdit" .. dataType},
+            {name = "Delete", net = "liaDelete" .. dataType},
+            {name = "View Details", net = "liaView" .. dataType}
+            }
 
-                            return lia.util.createTableUI(dataType .. " Management", columns, getData(dataType), options)
-                        end
+            return lia.util.createTableUI(dataType .. " Management", columns, getData(dataType), options)
+        end
         ```
     ]]
     function lia.util.createTableUI(title, columns, data, options, charID)
@@ -2287,15 +2426,20 @@ else
     end
 
     --[[
+
         Purpose:
             Create and display an options menu with interactive buttons
+
         When Called:
             When you need to present a list of options or actions to the user in a popup menu
+
         Parameters:
             title - String: Title for the options menu
             options - Table: Array of option objects or key-value pairs with name and callback properties
+
         Returns:
             Frame: The created options menu frame
+
         Realm:
             Client
         Example Usage:
@@ -2306,8 +2450,8 @@ else
         -- Simple: Create basic options menu
         local frame = lia.util.openOptionsMenu("Choose Action", {
         {name = "Option 1", callback = function() print("Option 1 selected") end},
-            {name = "Option 2", callback = function() print("Option 2 selected") end}
-                })
+        {name = "Option 2", callback = function() print("Option 2 selected") end}
+        })
         ```
 
         Medium Complexity Example:
@@ -2330,9 +2474,9 @@ else
             for categoryName, categoryOptions in pairs(categories) do
                 -- Add category header (disabled button)
                 allOptions[#allOptions + 1] = {
-                    name = categoryName,
-                    callback = function() end, -- No action for headers
-                    disabled = true
+                name = categoryName,
+                callback = function() end, -- No action for headers
+                disabled = true
                 }
 
                 -- Add category options
@@ -2342,9 +2486,9 @@ else
 
                 -- Add spacer
                 allOptions[#allOptions + 1] = {
-                    name = "",
-                    callback = function() end,
-                    separator = true
+                name = "",
+                callback = function() end,
+                separator = true
                 }
             end
 
@@ -2460,17 +2604,22 @@ else
 
     lia.util.entsScales = lia.util.entsScales or {}
     --[[
+
         Purpose:
             Draw floating text above an entity with distance-based fade effects
+
         When Called:
             When you need to display information or labels above entities in the 3D world
+
         Parameters:
             ent - Entity: The entity to draw text above
             text - String: The text to display
             posY - Number: Vertical offset for text positioning (default: 0)
             alphaOverride - Number: Optional alpha override for manual control
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -2586,17 +2735,22 @@ else
     end
 
     --[[
+
         Purpose:
             Draw floating text at the player's look position with distance-based fade effects
+
         When Called:
             When you need to display contextual information at the location the player is looking at
+
         Parameters:
             text - String: The text to display
             posY - Number: Vertical offset for text positioning (default: 0)
             alphaOverride - Number: Optional alpha override for manual control
             maxDist - Number: Maximum distance to display text (default: 380)
+
         Returns:
             Nothing (draws directly to screen)
+
         Realm:
             Client
         Example Usage:
@@ -2624,34 +2778,34 @@ else
         local function drawContextualWorldInfo()
             local trace = util.TraceLine({
             start = EyePos(),
-            endpos = EyePos() + EyeAngles():Forward() * 200,
-            filter = LocalPlayer()
-            })
+        endpos = EyePos() + EyeAngles():Forward() * 200,
+        filter = LocalPlayer()
+        })
 
-            if trace.Hit and trace.HitPos:Distance(EyePos()) <= 200 then
-                local hitPos = trace.HitPos
-                local hitEntity = trace.Entity
+        if trace.Hit and trace.HitPos:Distance(EyePos()) <= 200 then
+            local hitPos = trace.HitPos
+            local hitEntity = trace.Entity
 
-                if IsValid(hitEntity) then
-                    if hitEntity:IsPlayer() then
-                        lia.util.drawLookText("Player: " .. hitEntity:Name(), 30)
-                        elseif hitEntity:isItem() then
-                            local itemName = hitEntity:getNetVar("id", "Unknown Item")
-                            lia.util.drawLookText("Item: " .. itemName, 25)
-                            else
-                                lia.util.drawLookText("Entity: " .. hitEntity:GetClass(), 20)
-                            end
-                            else
-                                -- Show world position information
-                                local posText = string.format("X: %d, Y: %d, Z: %d",
-                                math.Round(hitPos.x), math.Round(hitPos.y), math.Round(hitPos.z))
-                                lia.util.drawLookText("Position: " .. posText, 15)
-                            end
+            if IsValid(hitEntity) then
+                if hitEntity:IsPlayer() then
+                    lia.util.drawLookText("Player: " .. hitEntity:Name(), 30)
+                    elseif hitEntity:isItem() then
+                        local itemName = hitEntity:getNetVar("id", "Unknown Item")
+                        lia.util.drawLookText("Item: " .. itemName, 25)
+                        else
+                            lia.util.drawLookText("Entity: " .. hitEntity:GetClass(), 20)
+                        end
+                        else
+                            -- Show world position information
+                            local posText = string.format("X: %d, Y: %d, Z: %d",
+                            math.Round(hitPos.x), math.Round(hitPos.y), math.Round(hitPos.z))
+                            lia.util.drawLookText("Position: " .. posText, 15)
                         end
                     end
+                end
 
-                    -- Call in HUDPaint hook
-                    hook.Add("HUDPaint", "DrawWorldInfo", drawContextualWorldInfo)
+                -- Call in HUDPaint hook
+                hook.Add("HUDPaint", "DrawWorldInfo", drawContextualWorldInfo)
         ```
     ]]
     function lia.util.drawLookText(text, posY, alphaOverride, maxDist)

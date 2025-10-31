@@ -16,6 +16,7 @@ RPExtraTeams = RPExtraTeams or {}
 DarkRP.disabledDefaults = DarkRP.disabledDefaults or {}
 if SERVER then
     --[[
+
         Purpose:
             Checks if a given position is empty and suitable for spawning entities or players
 
@@ -90,6 +91,7 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Finds the nearest empty position to a starting position within specified parameters
 
@@ -170,6 +172,7 @@ if SERVER then
     end
 
     --[[
+
         Purpose:
             Sends a localized notification to a client (DarkRP compatibility function)
 
@@ -236,6 +239,7 @@ else
     end
 
     --[[
+
         Purpose:
             Wraps text to fit within a specified maximum line width using font metrics
 
@@ -331,6 +335,7 @@ else
 end
 
 --[[
+
     Purpose:
         Formats a numeric amount as currency using the Lilia currency system
 
@@ -386,6 +391,7 @@ function lia.darkrp.formatMoney(amount)
 end
 
 --[[
+
     Purpose:
         Creates a DarkRP-compatible entity item in the Lilia item system
 
@@ -415,9 +421,9 @@ end
     ```lua
     -- Simple: Create a basic entity
     lia.darkrp.createEntity("Chair", {
-        model = "models/props_c17/FurnitureChair001a.mdl",
-        price = 50
-        })
+    model = "models/props_c17/FurnitureChair001a.mdl",
+    price = 50
+    })
     ```
 
     Medium Complexity:
@@ -425,13 +431,13 @@ end
     ```lua
     -- Medium: Create entity with full configuration
     lia.darkrp.createEntity("Advanced Computer", {
-        cmd = "computer",
-        model = "models/props_lab/monitor01b.mdl",
-        desc = "A high-tech computer for advanced operations",
-        category = "Electronics",
-        ent = "prop_physics",
-        price = 200
-        })
+    cmd = "computer",
+    model = "models/props_lab/monitor01b.mdl",
+    desc = "A high-tech computer for advanced operations",
+    category = "Electronics",
+    ent = "prop_physics",
+    price = 200
+    })
     ```
 
     High Complexity:
@@ -440,25 +446,25 @@ end
     -- High: Create multiple entities from configuration table
     local entities = {
     {
-        name = "Office Desk",
-        data = {
-            cmd = "desk",
-            model = "models/props_c17/FurnitureTable002a.mdl",
-            desc = "A sturdy office desk",
-            category = "Furniture",
-            price = 100
-        }
-        },
-        {
-            name = "Filing Cabinet",
-            data = {
-                cmd = "cabinet",
-                model = "models/props_c17/FurnitureDrawer001a.mdl",
-                desc = "Store important documents",
-                category = "Furniture",
-                price = 75
-            }
-        }
+    name = "Office Desk",
+    data = {
+    cmd = "desk",
+    model = "models/props_c17/FurnitureTable002a.mdl",
+    desc = "A sturdy office desk",
+    category = "Furniture",
+    price = 100
+    }
+    },
+    {
+    name = "Filing Cabinet",
+    data = {
+    cmd = "cabinet",
+    model = "models/props_c17/FurnitureDrawer001a.mdl",
+    desc = "Store important documents",
+    category = "Furniture",
+    price = 75
+    }
+    }
     }
 
     for _, entity in ipairs(entities) do
@@ -479,6 +485,7 @@ function lia.darkrp.createEntity(name, data)
 end
 
 --[[
+
     Purpose:
         Creates a DarkRP-compatible category (placeholder function for compatibility)
 
