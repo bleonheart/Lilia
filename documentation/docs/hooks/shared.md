@@ -36,14 +36,14 @@ end)
 hook.Add("AdjustStaminaOffset", "AttributeStamina", function(client, offset)
     local char = client:getChar()
     if not char then return end
-        local con = char:getAttrib("con", 0) -- Constitution attribute
-        if offset > 0 then -- Regeneration
-            return offset * (1 + con * 0.1) -- 10% bonus per constitution point
-            else -- Drain
-                return offset * (1 - con * 0.05) -- 5% less drain per constitution point
-            end
-        end)
 
+    local con = char:getAttrib("con", 0) -- Constitution attribute
+    if offset > 0 then -- Regeneration
+        return offset * (1 + con * 0.1) -- 10% bonus per constitution point
+    else -- Drain
+        return offset * (1 - con * 0.05) -- 5% less drain per constitution point
+    end
+end)
 ```
 
 **High Complexity:**
@@ -52,40 +52,44 @@ hook.Add("AdjustStaminaOffset", "AttributeStamina", function(client, offset)
 hook.Add("AdjustStaminaOffset", "AdvancedStamina", function(client, offset)
     local char = client:getChar()
     if not char then return end
-        local modifiers = {
+
+    local modifiers = {
         regeneration = 1.0,
         drain = 1.0
     }
+
     -- Constitution bonus
     local con = char:getAttrib("con", 0)
     modifiers.regeneration = modifiers.regeneration + (con * 0.1)
     modifiers.drain = modifiers.drain - (con * 0.05)
+
     -- Faction bonuses
     local faction = char:getFaction()
     if faction == "athlete" then
         modifiers.regeneration = modifiers.regeneration + 0.3
         modifiers.drain = modifiers.drain - 0.2
-        elseif faction == "elderly" then
-            modifiers.regeneration = modifiers.regeneration - 0.2
+    elseif faction == "elderly" then
+        modifiers.regeneration = modifiers.regeneration - 0.2
+        modifiers.drain = modifiers.drain + 0.3
+    end
+
+    -- Equipment bonuses
+    local items = char:getInv():getItems()
+    for _, item in pairs(items) do
+        if item.uniqueID == "stamina_boost" then
+            modifiers.regeneration = modifiers.regeneration + 0.5
+        elseif item.uniqueID == "heavy_armor" then
             modifiers.drain = modifiers.drain + 0.3
         end
-        -- Equipment bonuses
-        local items = char:getInv()
-        for _, item in pairs(items) do
-            if item.uniqueID == "stamina_boost" then
-                modifiers.regeneration = modifiers.regeneration + 0.5
-                elseif item.uniqueID == "heavy_armor" then
-                    modifiers.drain = modifiers.drain + 0.3
-                end
-            end
-            -- Apply modifiers
-            if offset > 0 then
-                return offset * modifiers.regeneration
-                else
-                    return offset * modifiers.drain
-                end
-            end)
+    end
 
+    -- Apply modifiers
+    if offset > 0 then
+        return offset * modifiers.regeneration
+    else
+        return offset * modifiers.drain
+    end
+end)
 ```
 
 ---
@@ -113,15 +117,17 @@ end)
 hook.Add("CanOutfitChangeModel", "OutfitModelCheck", function(self)
     local client = self.player
     if not client then return false end
-        local char = client:getChar()
-        if not char then return false end
-            local allowedFactions = self.allowedFactions
-            if allowedFactions and not table.HasValue(allowedFactions, char:getFaction()) then
-                return false
-            end
-            return true
-        end)
 
+    local char = client:getChar()
+    if not char then return false end
+
+    local allowedFactions = self.allowedFactions
+    if allowedFactions and not table.HasValue(allowedFactions, char:getFaction()) then
+        return false
+    end
+
+    return true
+end)
 ```
 
 **High Complexity:**
@@ -130,28 +136,31 @@ hook.Add("CanOutfitChangeModel", "OutfitModelCheck", function(self)
 hook.Add("CanOutfitChangeModel", "AdvancedOutfitModel", function(self)
     local client = self.player
     if not client then return false end
-        local char = client:getChar()
-        if not char then return false end
-            -- Check faction restrictions
-            local allowedFactions = self.allowedFactions
-            if allowedFactions and not table.HasValue(allowedFactions, char:getFaction()) then
-                if SERVER then
-                    client:ChatPrint("Your faction cannot wear this outfit")
-                end
-                return false
-            end
-            -- Check level requirements
-            local requiredLevel = self.requiredLevel or 0
-            local charLevel = char:getData("level", 1)
-            if charLevel < requiredLevel then
-                if SERVER then
-                    client:ChatPrint("You need to be level " .. requiredLevel .. " to wear this outfit")
-                end
-                return false
-            end
-            return true
-        end)
 
+    local char = client:getChar()
+    if not char then return false end
+
+    -- Check faction restrictions
+    local allowedFactions = self.allowedFactions
+    if allowedFactions and not table.HasValue(allowedFactions, char:getFaction()) then
+        if SERVER then
+            client:ChatPrint("Your faction cannot wear this outfit")
+        end
+        return false
+    end
+
+    -- Check level requirements
+    local requiredLevel = self.requiredLevel or 0
+    local charLevel = char:getData("level", 1)
+    if charLevel < requiredLevel then
+        if SERVER then
+            client:ChatPrint("You need to be level " .. requiredLevel .. " to wear this outfit")
+        end
+        return false
+    end
+
+    return true
+end)
 ```
 
 ---
@@ -1990,7 +1999,7 @@ hook.Add("OverrideFactionName", "LocalizeFactionNames", function(uniqueID, name)
     local localizedNames = {
     citizen = "Citoyen",
     police = "Police",
-    medic = "Médecin"
+    medic = "M?decin"
 }
 return localizedNames[uniqueID] or name
 end)
