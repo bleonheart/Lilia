@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Client-Side Hooks
 
     Client-side hook system for the Lilia framework.
@@ -59,14 +59,14 @@
         local attr = lia.attribs.list[attrId]
         if attr then
             hook.Run("AddBarField", "attributes", attrId, attr.name,
-            function() return attr.min or 0 end,
-            function() return hook.Run("GetAttributeMax", LocalPlayer(), attrId) or attr.max or 100 end,
-            function()
-            local char = LocalPlayer():getChar()
-            return char and char:getAttrib(attrId) or 0
-            end)
-            end
+                function() return attr.min or 0 end,
+                function() return hook.Run("GetAttributeMax", LocalPlayer(), attrId) or attr.max or 100 end,
+                function()
+                    local char = LocalPlayer():getChar()
+                    return char and char:getAttrib(attrId) or 0
+                end)
         end
+    end
     ```
 ]]
 function AddBarField(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)

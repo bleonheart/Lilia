@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Server-Side Hooks
 
     Server-side hook system for the Lilia framework.
@@ -57,8 +57,8 @@
     for _, admin in ipairs(player.GetAll()) do
         if admin:IsAdmin() then
             admin:ChatPrint(string.format("[WARNING] %s warned %s: %s", warner, warned, message))
-            end
         end
+    end
 
     -- Check for warning limits
     local warnings = hook.Run("GetWarnings", charID)
@@ -67,8 +67,8 @@
         local target = player.GetBySteamID(warnedSteamID)
         if IsValid(target) then
             target:Kick("Too many warnings")
-            end
         end
+    end
     end)
     ```
 ]]
@@ -112,7 +112,7 @@ end
         data.desc = data.desc .. "\n\n[Police Officer]"
     elseif data.faction == "citizen" then
         data.money = data.money + 200 -- Citizens get small bonus
-        end
+    end
     end)
     ```
 
@@ -123,7 +123,7 @@ end
     -- Validate character name
     if string.len(data.name) < 3 then
         data.name = data.name .. " Jr."
-        end
+    end
 
     -- Add faction-specific bonuses
     local factionBonuses = {
@@ -138,8 +138,8 @@ end
         data.startingItems = data.startingItems or {}
         for _, item in ipairs(bonus.items) do
             table.insert(data.startingItems, item)
-            end
         end
+    end
 
     -- Add creation timestamp
     data.creationTime = os.time()

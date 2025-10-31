@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Weapons Item Definition
 
     Weapon item system for the Lilia framework.
@@ -272,6 +272,3 @@ ITEM.width = 2                                    -- Inventory width (2 slots)
 ITEM.height = 2                                   -- Inventory height (2 slots)
 ```
 ]]
-
-
-

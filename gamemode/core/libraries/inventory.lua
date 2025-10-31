@@ -1150,33 +1150,32 @@ if SERVER then
             end
 
             local trunkInfo = {
-            vehicleClass = vehicleClass,
-            name = trunkData.name,
-            type = trunkData.invType,
-            width = trunkData.invData.w,
-            height = trunkData.invData.h,
-            maxWeight = trunkData.invData.maxWeight,
-            restricted = trunkData.invData.restricted or false
+                vehicleClass = vehicleClass,
+                name = trunkData.name,
+                type = trunkData.invType,
+                width = trunkData.invData.w,
+                height = trunkData.invData.h,
+                maxWeight = trunkData.invData.maxWeight,
+                restricted = trunkData.invData.restricted or false
             }
 
             -- Categorize based on vehicle class
-            if string.find(vehicleClass:lower(), "police") or string.find(vehicleClass:lower(), "ambulance") then
+            local lowerClass = vehicleClass:lower()
+            if string.find(lowerClass, "police") or string.find(lowerClass, "ambulance") then
                 table.insert(categorized.emergency, trunkInfo)
-                elseif string.find(vehicleClass:lower(), "military") or string.find(vehicleClass:lower(), "tank") then
-                    table.insert(categorized.military, trunkInfo)
-                    elseif string.find(vehicleClass:lower(), "civilian") or string.find(vehicleClass:lower(), "jeep") then
-                        table.insert(categorized.civilian, trunkInfo)
-                        else
-                            table.insert(categorized.other, trunkInfo)
-                        end
+            elseif string.find(lowerClass, "military") or string.find(lowerClass, "tank") then
+                table.insert(categorized.military, trunkInfo)
+            elseif string.find(lowerClass, "civilian") or string.find(lowerClass, "jeep") then
+                table.insert(categorized.civilian, trunkInfo)
+            else
+                table.insert(categorized.other, trunkInfo)
+            end
 
-                        ::continue::
-                    end
+            ::continue::
+        end
 
-                    return categorized
-                end
-    ```
-    ]]
+        return categorized
+    end
     function lia.inventory.getAllTrunks()
         local trunks = {}
         for key, data in pairs(lia.inventory.storage) do
