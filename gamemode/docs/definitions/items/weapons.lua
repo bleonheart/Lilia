@@ -18,143 +18,143 @@
     - Weapons drop on death if ITEM.DropOnDeath is true
 ]]
 --[[
-    Purpose:
+Purpose:
         Sets the display name of the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.name = "Pistol"
         ```
 ]]
 ITEM.name = "weaponsName"
 --[[
-    Purpose:
+Purpose:
         Sets the description of the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.desc = "A standard issue pistol"
         ```
 ]]
 ITEM.desc = "weaponsDesc"
 --[[
-    Purpose:
+Purpose:
         Sets the category for the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.category = "weapons"
         ```
 ]]
 ITEM.category = "weapons"
 --[[
-    Purpose:
+Purpose:
         Sets the 3D model for the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.model = "models/weapons/w_pistol.mdl"
         ```
 ]]
 ITEM.model = "models/weapons/w_pistol.mdl"
 --[[
-    Purpose:
+Purpose:
         Sets the weapon class name
 
-    When Called:
+When Called:
         During item definition (used in equip/unequip functions)
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.class = "weapon_pistol"
         ```
 ]]
 ITEM.class = "weapon_pistol"
 --[[
-    Purpose:
+Purpose:
         Sets the inventory width of the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.width = 2  -- Takes 2 slot width
         ```
 ]]
 ITEM.width = 2
 --[[
-    Purpose:
+Purpose:
         Sets the inventory height of the weapon item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.height = 2  -- Takes 2 slot height
         ```
 ]]
 ITEM.height = 2
 --[[
-    Purpose:
+Purpose:
         Marks the item as a weapon
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.isWeapon = true
         ```
 ]]
 ITEM.isWeapon = true
 --[[
-    Purpose:
+Purpose:
         Sets required skill levels for the weapon
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.RequiredSkillLevels = {}  -- No skill requirements
         ```
 ]]
 ITEM.RequiredSkillLevels = {}
 --[[
-    Purpose:
+Purpose:
         Sets whether the weapon drops when player dies
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.DropOnDeath = true  -- Drops on death
         ```
 ]]
 ITEM.DropOnDeath = true
 --[[
-    Purpose:
+Purpose:
         Post-hook for weapon dropping
 
-    When Called:
+When Called:
         After weapon is dropped
 
-    Example Usage:
+Example Usage:
         ```lua
         function ITEM.postHooks:drop()
             local client = self.player
@@ -167,13 +167,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-    Purpose:
+Purpose:
         Handles weapon dropping with ragdoll and equip checks
 
-    When Called:
+When Called:
         When weapon is dropped
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM:hook("drop", function(item)
         local client = item.player
@@ -187,13 +187,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-    Purpose:
+Purpose:
         Prevents transfer of equipped weapons
 
-    When Called:
+When Called:
         When attempting to transfer the weapon
 
-    Example Usage:
+Example Usage:
         ```lua
         function ITEM:OnCanBeTransfered(_, newInventory)
             if newInventory and self:getData("equip") then return false end
@@ -202,13 +202,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-    Purpose:
+Purpose:
         Handles weapon loading on player spawn
 
-    When Called:
+When Called:
         When player spawns with equipped weapon
 
-    Example Usage:
+Example Usage:
         ```lua
         function ITEM:onLoadout()
             if self:getData("equip") then
@@ -226,13 +226,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-    Purpose:
+Purpose:
         Saves weapon ammo data
 
-    When Called:
+When Called:
         When saving the weapon item
 
-    Example Usage:
+Example Usage:
         ```lua
         function ITEM:OnSave()
             local client = self.player
@@ -243,13 +243,13 @@ ITEM.DropOnDeath = true
         ```
 ]]
 --[[
-    Purpose:
+Purpose:
         Custom name function for weapons (CLIENT only)
 
-    When Called:
+When Called:
         When displaying weapon name
 
-    Example Usage:
+Example Usage:
         ```lua
         function ITEM:getName()
             local weapon = weapons.GetStored(self.class)

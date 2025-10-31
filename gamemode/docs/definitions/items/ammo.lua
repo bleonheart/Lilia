@@ -18,65 +18,65 @@
     - Items are removed from inventory after use
 ]]
 --[[
-    Purpose:
+Purpose:
         Sets the display name of the ammo item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.name = "Pistol Ammo"
         ```
 ]]
 ITEM.name = "ammoName"
 --[[
-    Purpose:
+Purpose:
         Sets the 3D model for the ammo item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.model = "models/props_c17/SuitCase001a.mdl"
         ```
 ]]
 ITEM.model = "models/props_c17/SuitCase001a.mdl"
 --[[
-    Purpose:
+Purpose:
         Sets the inventory width of the ammo item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.width = 1  -- Takes 1 slot width
         ```
 ]]
 ITEM.width = 1
 --[[
-    Purpose:
+Purpose:
         Sets the inventory height of the ammo item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.height = 1  -- Takes 1 slot height
         ```
 ]]
 ITEM.height = 1
 --[[
-    Purpose:
+Purpose:
         Sets the ammo type for the item
 
-    When Called:
+When Called:
         During item definition (used in use functions)
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.ammo = "pistol"  -- Pistol ammunition type
         ITEM.ammo = "smg1"    -- SMG ammunition type
@@ -84,13 +84,13 @@ ITEM.height = 1
 ]]
 ITEM.ammo = "pistol"
 --[[
-    Purpose:
+Purpose:
         Sets the category for the ammo item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.category = "itemCatAmmunition"
         ```

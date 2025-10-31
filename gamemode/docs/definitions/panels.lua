@@ -30,7 +30,7 @@
     This file contains detailed documentation for every panel in the Lilia framework. Each panel entry includes its purpose, explanation, usage scenarios, and available methods. This serves as a complete reference for developers working with Lilia's UI system, providing comprehensive information about panel functionality and parameters. The panels are organized into logical categories including character panels, attribute panels, basic UI panels, input/form panels, layout/container panels, specialized panels, inventory panels, and vendor panels. Each category groups related functionality together for easier navigation and understanding. Note: All panels documented below are actually implemented in the Lilia framework. A total of 60+ panels are available for use in UI development.
 ]]
 --[[
-    Purpose:
+Purpose:
         Displays character biography information
         A panel that shows and allows editing of character biography text
     When Used:
@@ -38,7 +38,7 @@
 ]]
 liaCharacterBiography
 --[[
-    Purpose:
+Purpose:
         Displays and manages character faction selection
         A panel for selecting and displaying character factions
     When Used:
@@ -46,7 +46,7 @@ liaCharacterBiography
 ]]
 liaCharacterFaction
 --[[
-    Purpose:
+Purpose:
         Displays character model with customization options
         A model panel specifically designed for character model display and customization
     When Used:
@@ -54,7 +54,7 @@ liaCharacterFaction
 ]]
 liaCharacterModel
 --[[
-    Purpose:
+Purpose:
         Manages character background music selection
         A panel for selecting and previewing background music for characters
     When Used:
@@ -62,7 +62,7 @@ liaCharacterModel
 ]]
 liaCharBGMusic
 --[[
-    Purpose:
+Purpose:
         Main character display and management panel
         The primary panel for character information display and basic management
     When Used:
@@ -70,7 +70,7 @@ liaCharBGMusic
 ]]
 liaCharacter
 --[[
-    Purpose:
+Purpose:
         Character confirmation dialog
         A confirmation panel for character-related actions
     When Used:
@@ -78,7 +78,7 @@ liaCharacter
 ]]
 liaCharacterConfirm
 --[[
-    Purpose:
+Purpose:
         Character creation interface
         The main panel for creating new characters
     When Used:
@@ -86,7 +86,7 @@ liaCharacterConfirm
 ]]
 liaCharacterCreation
 --[[
-    Purpose:
+Purpose:
         Individual character creation step
         A panel representing a single step in character creation
     When Used:
@@ -94,7 +94,7 @@ liaCharacterCreation
 ]]
 liaCharacterCreateStep
 --[[
-    Purpose:
+Purpose:
         Displays attribute progress bar
         A progress bar specifically designed for displaying attribute values
     When Used:
@@ -102,7 +102,7 @@ liaCharacterCreateStep
 ]]
 liaAttribBar
 --[[
-    Purpose:
+Purpose:
         Character attributes management panel
         A panel for managing and displaying character attributes
     When Used:
@@ -110,7 +110,7 @@ liaAttribBar
 ]]
 liaCharacterAttribs
 --[[
-    Purpose:
+Purpose:
         Individual attribute row in attributes panel
         A single row representing one attribute with controls
     When Used:
@@ -118,7 +118,7 @@ liaCharacterAttribs
 ]]
 liaCharacterAttribsRow
 --[[
-    Purpose:
+Purpose:
         Styled button with Lilia theming
         A custom button panel with Lilia's visual styling and effects
     When Used:
@@ -126,7 +126,7 @@ liaCharacterAttribsRow
 ]]
 liaButton
 --[[
-    Purpose:
+Purpose:
         Button with custom font support
         A button panel that defaults to liaSmallFont but allows custom font specification while maintaining Lilia styling
     When Used:
@@ -134,7 +134,7 @@ liaButton
 ]]
 liaCustomFontButton
 --[[
-    Purpose:
+Purpose:
         Category header for organizing UI elements
         A collapsible category header for grouping related UI elements
     When Used:
@@ -142,7 +142,7 @@ liaCustomFontButton
 ]]
 liaCategory
 --[[
-    Purpose:
+Purpose:
         Main chat interface
         The primary chat system interface with message display and input
     When Used:
@@ -150,7 +150,7 @@ liaCategory
 ]]
 liaChatBox
 --[[
-    Purpose:
+Purpose:
         Custom checkbox with Lilia styling
         A toggle checkbox with custom visual design
     When Used:
@@ -158,7 +158,7 @@ liaChatBox
 ]]
 liaCheckbox
 --[[
-    Purpose:
+Purpose:
         Simple checkbox variant
         A simplified checkbox without complex styling
     When Used:
@@ -166,7 +166,7 @@ liaCheckbox
 ]]
 liaSimpleCheckbox
 --[[
-    Purpose:
+Purpose:
         Character information display
         A panel for displaying detailed character information
     When Used:
@@ -174,7 +174,7 @@ liaSimpleCheckbox
 ]]
 liaCharInfo
 --[[
-    Purpose:
+Purpose:
         Menu container panel
         A container panel designed for menu layouts
     When Used:
@@ -182,7 +182,7 @@ liaCharInfo
 ]]
 liaMenu
 --[[
-    Purpose:
+Purpose:
         Character class selection
         A panel for selecting character classes or jobs
     When Used:
@@ -190,7 +190,7 @@ liaMenu
 ]]
 liaClasses
 --[[
-    Purpose:
+Purpose:
         Dropdown combo box
         A dropdown selection box with custom styling
     When Used:
@@ -198,7 +198,7 @@ liaClasses
 ]]
 liaComboBox
 --[[
-    Purpose:
+Purpose:
         Custom context menu
         A styled context menu for right-click actions
     When Used:
@@ -206,7 +206,7 @@ liaComboBox
 ]]
 liaDermaMenu
 --[[
-    Purpose:
+Purpose:
         Custom list view
         A styled list view with custom theming
     When Used:
@@ -214,7 +214,7 @@ liaDermaMenu
 ]]
 liaDListView
 --[[
-    Purpose:
+Purpose:
         Door interaction menu
         A specialized menu for door interactions
     When Used:
@@ -222,7 +222,7 @@ liaDListView
 ]]
 liaDoorMenu
 --[[
-    Purpose:
+Purpose:
         Progress bar with custom styling
         A progress bar with Lilia theming and animations
     When Used:
@@ -230,7 +230,7 @@ liaDoorMenu
 ]]
 liaDProgressBar
 --[[
-    Purpose:
+Purpose:
         Text input entry field
         A styled text input field with custom theming
     When Used:
@@ -238,7 +238,7 @@ liaDProgressBar
 ]]
 liaEntry
 --[[
-    Purpose:
+Purpose:
         Main frame container
         The primary frame panel with title bar, close button, and theming
     When Used:
@@ -246,7 +246,7 @@ liaEntry
 ]]
 liaFrame
 --[[
-    Purpose:
+Purpose:
         Item list display
         A panel for displaying lists of items with icons and information
     When Used:
@@ -254,7 +254,7 @@ liaFrame
 ]]
 liaItemList
 --[[
-    Purpose:
+Purpose:
         Item selection interface
         A specialized panel for selecting items from a list
     When Used:
@@ -262,7 +262,7 @@ liaItemList
 ]]
 liaItemSelector
 --[[
-    Purpose:
+Purpose:
         Horizontal scroll container
         A container that provides horizontal scrolling
     When Used:
@@ -270,7 +270,7 @@ liaItemSelector
 ]]
 liaHorizontalScroll
 --[[
-    Purpose:
+Purpose:
         Horizontal scroll bar
         A horizontal scroll bar control
     When Used:
@@ -278,7 +278,7 @@ liaHorizontalScroll
 ]]
 liaHorizontalScrollBar
 --[[
-    Purpose:
+Purpose:
         Item icon display
         A panel for displaying item icons with tooltips
     When Used:
@@ -286,7 +286,7 @@ liaHorizontalScrollBar
 ]]
 liaItemIcon
 --[[
-    Purpose:
+Purpose:
         Tab button for tabbed interfaces
         A button designed for tab navigation
     When Used:
@@ -294,7 +294,7 @@ liaItemIcon
 ]]
 liaTabButton
 --[[
-    Purpose:
+Purpose:
         Loading failure display
         A panel shown when loading fails
     When Used:
@@ -302,7 +302,7 @@ liaTabButton
 ]]
 liaLoadingFailure
 --[[
-    Purpose:
+Purpose:
         3D model display panel
         A panel for displaying 3D models with camera controls
     When Used:
@@ -310,7 +310,7 @@ liaLoadingFailure
 ]]
 liaModelPanel
 --[[
-    Purpose:
+Purpose:
         Facing model panel for character display
         A specialized model panel that faces the camera
     When Used:
@@ -318,7 +318,7 @@ liaModelPanel
 ]]
 liaFacingModelPanel
 --[[
-    Purpose:
+Purpose:
         Notification display
         A panel for displaying notifications or alerts
     When Used:
@@ -326,7 +326,7 @@ liaFacingModelPanel
 ]]
 liaNotice
 --[[
-    Purpose:
+Purpose:
         Notice panel container
         A container for multiple notice panels
     When Used:
@@ -334,7 +334,7 @@ liaNotice
 ]]
 liaNoticePanel
 --[[
-    Purpose:
+Purpose:
         Numeric slider control
         A slider for numeric value input
     When Used:
@@ -342,7 +342,7 @@ liaNoticePanel
 ]]
 liaNumSlider
 --[[
-    Purpose:
+Purpose:
         Blurred frame background
         A frame with blurred background effect
     When Used:
@@ -350,7 +350,7 @@ liaNumSlider
 ]]
 liaBlurredDFrame
 --[[
-    Purpose:
+Purpose:
         Semi-transparent frame
         A frame with semi-transparent background
     When Used:
@@ -358,7 +358,7 @@ liaBlurredDFrame
 ]]
 liaSemiTransparentDFrame
 --[[
-    Purpose:
+Purpose:
         Semi-transparent panel
         A panel with semi-transparent background
     When Used:
@@ -366,7 +366,7 @@ liaSemiTransparentDFrame
 ]]
 liaSemiTransparentDPanel
 --[[
-    Purpose:
+Purpose:
         Quick settings panel
         A panel for quick access to settings and options
     When Used:
@@ -374,7 +374,7 @@ liaSemiTransparentDPanel
 ]]
 liaQuick
 --[[
-    Purpose:
+Purpose:
         Privilege row display
         A row displaying privilege information
     When Used:
@@ -382,7 +382,7 @@ liaQuick
 ]]
 liaPrivilegeRow
 --[[
-    Purpose:
+Purpose:
         Radial panel for circular layouts
         A panel that arranges children in a radial pattern
     When Used:
@@ -390,7 +390,7 @@ liaPrivilegeRow
 ]]
 liaRadialPanel
 --[[
-    Purpose:
+Purpose:
         Player scoreboard
         A panel displaying player scores and information
     When Used:
@@ -398,7 +398,7 @@ liaRadialPanel
 ]]
 liaScoreboard
 --[[
-    Purpose:
+Purpose:
         Scrollable panel container
         A panel that provides vertical scrolling for content
     When Used:
@@ -406,7 +406,7 @@ liaScoreboard
 ]]
 liaScrollPanel
 --[[
-    Purpose:
+Purpose:
         Tabbed sheet container
         A container that manages multiple tabbed panels
     When Used:
@@ -414,7 +414,7 @@ liaScrollPanel
 ]]
 liaSheet
 --[[
-    Purpose:
+Purpose:
         Sliding box container
         A container that slides content in and out
     When Used:
@@ -422,7 +422,7 @@ liaSheet
 ]]
 liaSlideBox
 --[[
-    Purpose:
+Purpose:
         Spawn icon display
         A panel for displaying spawn icons with tooltips
     When Used:
@@ -430,7 +430,7 @@ liaSlideBox
 ]]
 liaSpawnIcon
 --[[
-    Purpose:
+Purpose:
         Data table display
         A panel for displaying tabular data
     When Used:
@@ -438,7 +438,7 @@ liaSpawnIcon
 ]]
 liaTable
 --[[
-    Purpose:
+Purpose:
         Tab navigation container
         A container that manages tab navigation
     When Used:
@@ -446,7 +446,7 @@ liaTable
 ]]
 liaTabs
 --[[
-    Purpose:
+Purpose:
         User group button
         A button representing a user group
     When Used:
@@ -454,7 +454,7 @@ liaTabs
 ]]
 liaUserGroupButton
 --[[
-    Purpose:
+Purpose:
         User group list
         A list displaying user groups
     When Used:
@@ -462,7 +462,7 @@ liaUserGroupButton
 ]]
 liaUserGroupList
 --[[
-    Purpose:
+Purpose:
         Voice panel for voice chat
         A panel for voice chat controls and indicators
     When Used:
@@ -470,7 +470,7 @@ liaUserGroupList
 ]]
 liaVoicePanel
 --[[
-    Purpose:
+Purpose:
         Markup text display panel
         A panel for displaying formatted markup text
     When Used:
@@ -478,7 +478,7 @@ liaVoicePanel
 ]]
 liaMarkupPanel
 --[[
-    Purpose:
+Purpose:
         Grid inventory item
         A single item in a grid-based inventory
     When Used:
@@ -486,7 +486,7 @@ liaMarkupPanel
 ]]
 liaGridInvItem
 --[[
-    Purpose:
+Purpose:
         Grid inventory panel
         A panel displaying inventory in grid format
     When Used:
@@ -494,7 +494,7 @@ liaGridInvItem
 ]]
 liaGridInventoryPanel
 --[[
-    Purpose:
+Purpose:
         Main inventory interface
         The primary inventory management interface
     When Used:
@@ -502,7 +502,7 @@ liaGridInventoryPanel
 ]]
 liaInventory
 --[[
-    Purpose:
+Purpose:
         Grid inventory container
         A container for grid-based inventory systems
     When Used:
@@ -510,7 +510,7 @@ liaInventory
 ]]
 liaGridInventory
 --[[
-    Purpose:
+Purpose:
         Vendor interface
         A panel for vendor interactions and trading
     When Used:
@@ -518,7 +518,7 @@ liaGridInventory
 ]]
 liaVendor
 --[[
-    Purpose:
+Purpose:
         Vendor item display
         A panel for displaying individual vendor items
     When Used:
@@ -526,7 +526,7 @@ liaVendor
 ]]
 liaVendorItem
 --[[
-    Purpose:
+Purpose:
         Vendor editor interface
         A panel for editing vendor settings and items
     When Used:
@@ -534,7 +534,7 @@ liaVendorItem
 ]]
 liaVendorEditor
 --[[
-    Purpose:
+Purpose:
         Vendor faction editor
         A panel for editing vendor faction restrictions
     When Used:
@@ -542,7 +542,7 @@ liaVendorEditor
 ]]
 liaVendorFactionEditor
 --[[
-    Purpose:
+Purpose:
         Vendor bodygroup editor
         A panel for editing vendor bodygroup settings
     When Used:

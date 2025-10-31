@@ -18,52 +18,52 @@
     - Can be used multiple times
 ]]
 --[[
-    Purpose:
+Purpose:
         Sets the display name of the URL item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.name = "Website Link"
         ```
 ]]
 ITEM.name = "urlName"
 --[[
-    Purpose:
+Purpose:
         Sets the description of the URL item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.desc = "A link to an external website"
         ```
 ]]
 ITEM.desc = "urlDesc"
 --[[
-    Purpose:
+Purpose:
         Sets the 3D model for the URL item
 
-    When Called:
+When Called:
         During item definition
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.model = "models/props_interiors/pot01a.mdl"
         ```
 ]]
 ITEM.model = "models/props_interiors/pot01a.mdl"
 --[[
-    Purpose:
+Purpose:
         Sets the URL to open when the item is used
 
-    When Called:
+When Called:
         During item definition (used in use function)
 
-    Example Usage:
+Example Usage:
         ```lua
         ITEM.url = "https://example.com"
         ```
