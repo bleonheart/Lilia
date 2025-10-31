@@ -2015,132 +2015,6 @@ end
 
 --[[
     Purpose:
-        Called when a module table is created
-    When Called:
-        When a new module table is registered in the framework
-    Parameters:
-        moduleName (string) - The name of the module
-        moduleTable (table) - The module table that was created
-    Returns:
-        None
-    Realm:
-        Shared
-    Example Usage:
-
-    Low Complexity:
-
-    ```lua
-    -- Simple: Log module creation
-    hook.Add("OnModuleTableCreated", "MyAddon", function(moduleName, moduleTable)
-        print("Module created: " .. moduleName)
-    end)
-    ```
-
-    Medium Complexity:
-
-    ```lua
-    -- Medium: Track module creation
-    hook.Add("OnModuleTableCreated", "TrackModules", function(moduleName, moduleTable)
-        MyAddon.modules = MyAddon.modules or {}
-            MyAddon.modules[moduleName] = {
-                name = moduleName,
-                created = os.time(),
-                enabled = moduleTable.enabled or false
-            }
-        end)
-    ```
-
-    High Complexity:
-
-    ```lua
-    -- High: Complex module management
-    hook.Add("OnModuleTableCreated", "AdvancedModuleManagement", function(moduleName, moduleTable)
-        -- Register module dependencies
-        if moduleTable.dependencies then
-            for _, dep in ipairs(moduleTable.dependencies) do
-                if not lia.module.list[dep] then
-                    print("Warning: Module " .. moduleName .. " requires " .. dep)
-                end
-            end
-        end
-
-        -- Initialize module data
-        if SERVER then
-            lia.data.get("module_" .. moduleName, {}, function(data)
-                moduleTable.data = data
-            end)
-        end
-    end)
-    ```
-]]
-function OnModuleTableCreated(moduleName, moduleTable)
-end
-
---[[
-    Purpose:
-        Called when a module table is removed
-    When Called:
-        When a module is unregistered from the framework
-    Parameters:
-        moduleName (string) - The name of the module being removed
-    Returns:
-        None
-    Realm:
-        Shared
-    Example Usage:
-
-    Low Complexity:
-
-    ```lua
-    -- Simple: Log module removal
-    hook.Add("OnModuleTableRemoved", "MyAddon", function(moduleName)
-        print("Module removed: " .. moduleName)
-    end)
-    ```
-
-    Medium Complexity:
-
-    ```lua
-    -- Medium: Clean up module data
-    hook.Add("OnModuleTableRemoved", "CleanupModule", function(moduleName)
-        if MyAddon.modules and MyAddon.modules[moduleName] then
-            MyAddon.modules[moduleName] = nil
-            print("Cleaned up data for module: " .. moduleName)
-        end
-    end)
-    ```
-
-    High Complexity:
-
-    ```lua
-    -- High: Complex module cleanup
-    hook.Add("OnModuleTableRemoved", "AdvancedModuleCleanup", function(moduleName)
-        -- Remove module hooks
-        for hookName, hookTable in pairs(hook.GetTable()) do
-            if hookTable[moduleName] then
-                hook.Remove(hookName, moduleName)
-            end
-        end
-
-        -- Clean up module data
-        if SERVER then
-            lia.data.delete("module_" .. moduleName)
-        end
-
-        -- Notify admins
-        for _, ply in ipairs(player.GetAll()) do
-            if ply:IsAdmin() then
-                ply:ChatPrint("Module " .. moduleName .. " has been removed")
-            end
-        end
-    end)
-    ```
-]]
-function OnModuleTableRemoved(moduleName)
-end
-
---[[
-    Purpose:
         Called when a new privilege is registered
     When Called:
         When a privilege is added to the system
@@ -2270,11 +2144,12 @@ end
 
 --[[
     Purpose:
-        Called when a quest item is loaded
+        Called when an option is added to the options system
     When Called:
-        When a quest-related item is loaded into the game
+        When a new option is registered
     Parameters:
-        item (Item) - The quest item that was loaded
+        key (string) - The option key that was added
+        option (table) - The option data table containing all option properties
     Returns:
         None
     Realm:
@@ -2284,53 +2159,61 @@ end
     Low Complexity:
 
     ```lua
-    -- Simple: Log quest item loading
-    hook.Add("OnQuestItemLoaded", "MyAddon", function(item)
-        print("Quest item loaded: " .. item.name)
+    -- Simple: Log when options are added
+    hook.Add("OptionAdded", "MyAddon", function(key, option)
+        print("Option " .. key .. " was added")
     end)
     ```
 
     Medium Complexity:
 
     ```lua
-    -- Medium: Track quest items
-    hook.Add("OnQuestItemLoaded", "TrackQuestItems", function(item)
-        MyAddon.questItems = MyAddon.questItems or {}
-            table.insert(MyAddon.questItems, {
-                uniqueID = item.uniqueID,
-                name = item.name,
-                loaded = os.time()
-                })
-            end)
+    -- Medium: Track added options
+    hook.Add("OptionAdded", "TrackOptions", function(key, option)
+        MyAddon.addedOptions = MyAddon.addedOptions or {}
+        MyAddon.addedOptions[key] = option
+    end)
     ```
 
     High Complexity:
 
     ```lua
-    -- High: Complex quest item management
-    hook.Add("OnQuestItemLoaded", "AdvancedQuestItemManagement", function(item)
-        -- Register quest item in quest system
-        if item.questID then
-            MyAddon.quests = MyAddon.quests or {}
-                MyAddon.quests[item.questID] = MyAddon.quests[item.questID] or {items = {}}
-                    table.insert(MyAddon.quests[item.questID].items, item.uniqueID)
-                end
+    -- High: Advanced option handling
+    hook.Add("OptionAdded", "AdvancedOptionHandler", function(key, option)
+        -- Log option addition
+        lia.log.write("option_added", {
+            key = key,
+            type = option.type,
+            default = option.default,
+            timestamp = os.time()
+        })
 
-                -- Setup quest item tracking
-                if SERVER then
-                    lia.data.get("questItems", {}, function(data)
-                        data[item.uniqueID] = {
-                            name = item.name,
-                            questID = item.questID,
-                            loaded = os.time()
-                        }
-                        lia.data.set("questItems", data)
-                    end)
-                end
-            end)
+        -- Handle special option types
+        if option.type == "boolean" then
+            -- Initialize boolean option handling
+            MyAddon.booleanOptions = MyAddon.booleanOptions or {}
+            MyAddon.booleanOptions[key] = option.default or false
+        elseif option.type == "number" then
+            -- Initialize number option handling
+            MyAddon.numberOptions = MyAddon.numberOptions or {}
+            MyAddon.numberOptions[key] = {
+                value = option.default or 0,
+                min = option.min or 0,
+                max = option.max or 100
+            }
+        end
+
+        -- Notify clients if needed
+        if SERVER and option.shouldNetwork then
+            net.Start("liaOptionAdded")
+            net.WriteString(key)
+            net.WriteTable(option)
+            net.Broadcast()
+        end
+    end)
     ```
 ]]
-function OnQuestItemLoaded(item)
+function OptionAdded(key, option)
 end
 
 --[[
@@ -2599,77 +2482,6 @@ end
     ```
 ]]
 function OverrideFactionName(uniqueID, name)
-end
-
---[[
-    Purpose:
-        Called when player stamina is depleted
-    When Called:
-        When a player runs out of stamina
-    Parameters:
-        player (Player) - The player whose stamina depleted
-    Returns:
-        None
-    Realm:
-        Shared
-    Example Usage:
-
-    Low Complexity:
-
-    ```lua
-    -- Simple: Log stamina depletion
-    hook.Add("PlayerStaminaDepleted", "MyAddon", function(player)
-        print(player:Name() .. " ran out of stamina")
-    end)
-    ```
-
-    Medium Complexity:
-
-    ```lua
-    -- Medium: Apply exhaustion effect
-    hook.Add("PlayerStaminaDepleted", "ExhaustionEffect", function(player)
-        if SERVER then
-            player:SetRunSpeed(150)
-            player:SetWalkSpeed(75)
-        end
-    end)
-    ```
-
-    High Complexity:
-
-    ```lua
-    -- High: Complex stamina depletion system
-    hook.Add("PlayerStaminaDepleted", "AdvancedStaminaDepletion", function(player)
-        if SERVER then
-            local char = player:getChar()
-            if not char then return end
-
-                -- Apply exhaustion effect
-                player:SetRunSpeed(150)
-                player:SetWalkSpeed(75)
-
-                -- Track depletion count
-                local depletionCount = char:getData("staminaDepletions", 0)
-                char:setData("staminaDepletions", depletionCount + 1)
-
-                -- Apply damage if depleted too many times
-                if depletionCount >= 5 then
-                    player:TakeDamage(5)
-                    player:ChatPrint("You are exhausted!")
-                end
-
-                -- Restore speed after cooldown
-                timer.Simple(5, function()
-                if IsValid(player) then
-                    player:SetRunSpeed(250)
-                    player:SetWalkSpeed(100)
-                end
-            end)
-        end
-    end)
-    ```
-]]
-function PlayerStaminaDepleted(player)
 end
 
 --[[

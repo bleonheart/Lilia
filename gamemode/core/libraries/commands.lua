@@ -1942,7 +1942,7 @@ lia.command.add("demorequests", {
                                                             text = L("exitDemo"),
                                                             icon = "icon16/door.png"
                                                         }
-                                                    }, function(_, buttonText) client:notifySuccessLocalized("demoCompleted", buttonText) end, L("chooseNextAction"))
+                                                    }, function(_, buttonText) client:notify(L("demoCompleted") .. " " .. buttonText, "success") end, L("chooseNextAction"))
                                                 else
                                                     client:notifyWarningLocalized("argumentsDemoCancelled")
                                                 end

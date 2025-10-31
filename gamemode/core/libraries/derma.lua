@@ -319,11 +319,11 @@ function lia.derma.optionsMenu(rawOptions, config)
     local titleText = config.title
     if not titleText then
         if mode == "interaction" then
-            titleText =  L("interactionMenu") 
+            titleText = L("interactionMenu")
         elseif mode == "action" then
-            titleText =  L("personalActions") 
+            titleText = L("personalActions")
         else
-            titleText =  L("options") 
+            titleText = L("options")
         end
     end
 
