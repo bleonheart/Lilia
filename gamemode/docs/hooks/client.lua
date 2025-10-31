@@ -11,12 +11,15 @@
 --[[
 
     Purpose:
+
         Adds a bar field to a character information section in the F1 menu
 
     When Called:
+
         When you want to add a progress bar field to display character statistics
 
     Parameters:
+
         - sectionName (string): The name of the section to add the field to
         - fieldName (string): Unique identifier for the field
         - labelText (string): Display text for the field label
@@ -25,13 +28,15 @@
         - valueFunc (function): Function that returns the current value for the bar
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a health bar field
@@ -79,25 +84,30 @@ end
 --[[
 
     Purpose:
+
         Adds a new section to the character information panel in the F1 menu
 
     When Called:
+
         When you want to create a new section for displaying character information
 
     Parameters:
+
         - sectionName (string): The name of the section to create
         - color (Color): The color for the section header (optional)
         - priority (number): Display priority, lower numbers appear first (optional)
         - location (number): Location of the section in the panel (optional)
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a basic section
@@ -132,25 +142,30 @@ end
 --[[
 
     Purpose:
+
         Adds a text field to a character information section in the F1 menu
 
     When Called:
+
         When you want to add a text field to display character information
 
     Parameters:
+
         - sectionName (string): The name of the section to add the field to
         - fieldName (string): Unique identifier for the field
         - labelText (string): Display text for the field label
         - valueFunc (function): Function that returns the current value to display
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a character name field
@@ -196,24 +211,29 @@ end
 --[[
 
     Purpose:
+
         Adds information to the admin stick HUD display when looking at entities
 
     When Called:
+
         When an admin uses the admin stick and looks at an entity
 
     Parameters:
+
         - client (Player): The admin player using the admin stick
         - target (Entity): The entity being looked at
         - information (table): Table to add information strings to
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic entity information
@@ -279,24 +299,29 @@ end
 --[[
 
     Purpose:
+
         Allows modification of PAC3 part data before it's applied to a player
 
     When Called:
+
         When PAC3 parts are being attached to a player, allowing customization
 
     Parameters:
+
         - wearer (Player): The player who will wear the PAC3 part
         - id (string): The identifier of the PAC3 part
         - data (table): The PAC3 part data to be modified
 
     Returns:
+
         table|nil - Modified part data, or nil to use original data
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Modify part color
@@ -380,23 +405,28 @@ end
 --[[
 
     Purpose:
+
         Attaches a PAC3 part to a player
 
     When Called:
+
         When a PAC3 part needs to be attached to a player
 
     Parameters:
+
         - client (Player): The player to attach the part to
         - id (string): The identifier of the PAC3 part to attach
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Attach a hat to a player
@@ -471,22 +501,27 @@ end
 --[[
 
     Purpose:
+
         Determines if character information should be displayed for a given name
 
     When Called:
+
         When displaying character information in UI elements
 
     Parameters:
+
         - name (string): The character name to check
 
     Returns:
+
         boolean - True if info should be displayed, false otherwise
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Display all character info
@@ -546,22 +581,27 @@ end
 --[[
 
     Purpose:
+
         Determines if a bag item's inventory panel can be opened
 
     When Called:
+
         When a player attempts to open a bag's inventory
 
     Parameters:
+
         - item (Item): The bag item being opened
 
     Returns:
+
         boolean - True if panel can be opened, false otherwise
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Allow all bag panels to open
@@ -633,22 +673,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a bag panel can be opened
 
     When Called:
+
         When attempting to open a bag's inventory panel
 
     Parameters:
+
         - item (Item): The bag item being opened
 
     Returns:
+
         boolean - True to allow, false to deny
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always allow
@@ -704,22 +749,27 @@ end
 --[[
 
     Purpose:
+
         Called to modify character list columns
 
     When Called:
+
         When building the character list display
 
     Parameters:
+
         - columns (table): The columns to display in the character list
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add custom column
@@ -788,23 +838,28 @@ end
 --[[
 
     Purpose:
+
         Called to modify character list entries
 
     When Called:
+
         When building each character list entry
 
     Parameters:
+
         - entry (table): The character data for this entry
         - row (Panel): The row panel being created
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add custom data to entry
@@ -878,24 +933,29 @@ end
 --[[
 
     Purpose:
+
         Called to add extra details to character list entries
 
     When Called:
+
         When building character list entries with additional information
 
     Parameters:
+
         - client (Player): The client viewing the character list
         - entry (table): The character data for this entry
         - stored (table): The stored character data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic extra details
@@ -971,22 +1031,27 @@ end
 --[[
 
     Purpose:
+
         Called when character list is loaded
 
     When Called:
+
         When the character list data is successfully loaded
 
     Parameters:
+
         - newCharList (table): The loaded character list data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log character list loading
@@ -1070,23 +1135,28 @@ end
 --[[
 
     Purpose:
+
         Called when character list is updated
 
     When Called:
+
         When the character list data is modified
 
     Parameters:
+
         - oldCharList (table): The previous character list data
         - newCharList (table): The updated character list data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log character list updates
@@ -1190,22 +1260,26 @@ end
 --[[
 
     Purpose:
+
         Called when the character menu is closed
 
     When Called:
+
         When the character selection menu is closed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log menu closing
@@ -1250,22 +1324,27 @@ end
 --[[
 
     Purpose:
+
         Called when the character menu is opened
 
     When Called:
+
         When the character selection menu is opened
 
     Parameters:
+
         - self (Panel): The character menu panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log menu opening
@@ -1315,23 +1394,28 @@ end
 --[[
 
     Purpose:
+
         Called to add text to the chat
 
     When Called:
+
         When text is being added to the chatbox
 
     Parameters:
+
         - markup (table): The markup table containing text formatting
         ... (vararg) - Additional arguments for the text
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log chat text
@@ -1388,22 +1472,27 @@ end
 --[[
 
     Purpose:
+
         Called when the chatbox panel is created
 
     When Called:
+
         When the chatbox UI panel is initialized
 
     Parameters:
+
         - panel (Panel): The chatbox panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log panel creation
@@ -1452,22 +1541,26 @@ end
 --[[
 
     Purpose:
+
         Called when text is added to the chatbox
 
     When Called:
+
         When new text is displayed in the chatbox
 
-    Parameters:
+    Parameters: 
         ... (vararg) - Variable arguments containing the text data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log chatbox text
@@ -1521,22 +1614,27 @@ end
 --[[
 
     Purpose:
+
         Called when a character is chosen
 
     When Called:
+
         When a player selects a character to play
 
     Parameters:
+
         - id (number): The ID of the character being chosen
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log character choice
@@ -1584,22 +1682,27 @@ end
 --[[
 
     Purpose:
+
         Called to configure character creation steps
 
     When Called:
+
         When setting up the character creation process
 
     Parameters:
+
         - self (Panel): The character creation panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log creation step configuration
@@ -1666,22 +1769,26 @@ end
 --[[
 
     Purpose:
+
         Called to create the chat interface
 
     When Called:
+
         When the chat UI is being initialized
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log chat creation
@@ -1727,22 +1834,27 @@ end
 --[[
 
     Purpose:
+
         Called to create information buttons in the F1 menu
 
     When Called:
+
         When building the information panel buttons
 
     Parameters:
+
         - pages (table): The pages table to add buttons to
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a basic information button
@@ -1813,23 +1925,28 @@ end
 --[[
 
     Purpose:
+
         Called to create an inventory panel
 
     When Called:
+
         When an inventory UI panel needs to be created
 
     Parameters:
+
         - inventory (Inventory): The inventory to create a panel for
         - parent (Panel): The parent panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log inventory panel creation
@@ -1882,22 +1999,27 @@ end
 --[[
 
     Purpose:
+
         Called to create menu buttons
 
     When Called:
+
         When building the main menu button tabs
 
     Parameters:
+
         - tabs (table): The tabs table to add buttons to
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a basic menu button
@@ -1967,22 +2089,27 @@ end
 --[[
 
     Purpose:
+
         Called when derma skin is changed
 
     When Called:
+
         When the UI skin is changed
 
     Parameters:
+
         - newSkin (string): The new skin name
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log skin change
@@ -2034,24 +2161,29 @@ end
 --[[
 
     Purpose:
+
         Called to draw character information
 
     When Called:
+
         When character information needs to be rendered
 
     Parameters:
+
         - client (Player): The player whose character info is being drawn
         - character (Character): The character being displayed
         - info (table): The information table to populate
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic character info
@@ -2106,24 +2238,29 @@ end
 --[[
 
     Purpose:
+
         Called to draw door information box
 
     When Called:
+
         When rendering door information UI
 
     Parameters:
+
         - entity (Entity): The door entity
         - infoTexts (table): The information texts to display
         - alphaOverride (number): Alpha override value for transparency
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic door info
@@ -2187,24 +2324,29 @@ end
 --[[
 
     Purpose:
+
         Called to draw entity information
 
     When Called:
+
         When rendering entity information UI
 
     Parameters:
+
         - entity (Entity): The entity to draw information for
         - alpha (number): The alpha/transparency value
         - position (Vector): The position to draw at
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic entity info
@@ -2265,23 +2407,28 @@ end
 --[[
 
     Purpose:
+
         Called to draw Lilia model view
 
     When Called:
+
         When rendering a model view panel
 
     Parameters:
+
         - self (Panel): The model view panel
         - ent (Entity): The entity being displayed
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log model view drawing
@@ -2330,22 +2477,27 @@ end
 --[[
 
     Purpose:
+
         Called to draw a player's ragdoll
 
     When Called:
+
         When rendering a player ragdoll entity
 
     Parameters:
+
         - entity (Entity): The ragdoll entity
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log ragdoll drawing
@@ -2415,22 +2567,26 @@ end
 --[[
 
     Purpose:
+
         Called when exiting storage
 
     When Called:
+
         When a player closes a storage container
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log storage exit
@@ -2488,22 +2644,26 @@ end
 --[[
 
     Purpose:
+
         Called when the F1 menu is closed
 
     When Called:
+
         When the F1 character information menu is closed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log F1 menu closing
@@ -2554,22 +2714,27 @@ end
 --[[
 
     Purpose:
+
         Called when the F1 menu is opened
 
     When Called:
+
         When the F1 character information menu is opened
 
     Parameters:
+
         - self (Panel): The F1 menu panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log F1 menu opening
@@ -2627,22 +2792,27 @@ end
 --[[
 
     Purpose:
+
         Called to filter character models
 
     When Called:
+
         When character models need to be filtered or restricted
 
     Parameters:
+
         - models (table): The table of available models to filter
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log model filtering
@@ -2719,24 +2889,29 @@ end
 --[[
 
     Purpose:
+
         Called to filter door information
 
     When Called:
+
         When door information is being displayed
 
     Parameters:
+
         - entity (Entity): The door entity
         - doorData (table): The door data
         - doorInfo (table): The door information to filter
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log door info filtering
@@ -2806,23 +2981,28 @@ end
 --[[
 
     Purpose:
+
         Called to get adjusted PAC part data
 
     When Called:
+
         When retrieving PAC part data with adjustments applied
 
     Parameters:
+
         - wearer (Player): The player wearing the part
         - id (string): The part ID
 
     Returns:
+
         table - The adjusted part data
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return basic part data
@@ -2901,23 +3081,28 @@ end
 --[[
 
     Purpose:
+
         Called to get door information for admin stick
 
     When Called:
+
         When displaying door information in the admin stick HUD
 
     Parameters:
+
         - target (Entity): The door entity
         - extraInfo (table): Additional information to add
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic door info
@@ -2995,22 +3180,27 @@ end
 --[[
 
     Purpose:
+
         Called to get injured text
 
     When Called:
+
         When displaying injury status text
 
     Parameters:
+
         - c (Character): The character to get injury text for
 
     Returns:
+
         string - The injury text to display
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return basic injury text
@@ -3091,24 +3281,29 @@ end
 --[[
 
     Purpose:
+
         Allows modification of the voice indicator text displayed when a player is speaking
 
     When Called:
+
         When the voice indicator is being drawn during voice chat
 
     Parameters:
+
         - client (Player): The LocalPlayer() who is currently speaking
         - voiceText (string): The current voice indicator text (e.g., "You are talking - 3 people can hear you")
         - voiceType (string): The voice type string (e.g., "talking", "whispering", "yelling")
 
     Returns:
+
         string|nil - Return a string to replace the voice text, or return nil/false to keep the original text
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add emojis to voice indicator
@@ -3192,22 +3387,27 @@ end
 --[[
 
     Purpose:
+
         Called to get main menu position
 
     When Called:
+
         When positioning the main menu UI
 
     Parameters:
+
         - character (Character): The character to position menu for
 
     Returns:
+
         table - Position data for the menu
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return default position
@@ -3277,22 +3477,27 @@ end
 --[[
 
     Purpose:
+
         Called to get weapon name
 
     When Called:
+
         When displaying the name of a weapon
 
     Parameters:
+
         - weapon (Weapon): The weapon entity
 
     Returns:
+
         string - The display name of the weapon
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return weapon class name
@@ -3364,23 +3569,28 @@ end
 --[[
 
     Purpose:
+
         Called to display player HUD information, primarily for admin tools
 
     When Called:
+
         Every frame during HUD rendering to allow modules to add custom HUD information
 
     Parameters:
+
         - client (Player): The local player
         - hudInfos (table): Array of HUD information objects to display, each containing text, position, color, and font properties
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic player health info
@@ -3469,22 +3679,26 @@ end
 --[[
 
     Purpose:
+
         Called when keybinds are initialized
 
     When Called:
+
         When the keybind system has finished loading
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log keybind initialization
@@ -3552,22 +3766,26 @@ end
 --[[
 
     Purpose:
+
         Called when options are initialized
 
     When Called:
+
         When the option system has finished loading
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log option initialization
@@ -3642,22 +3860,26 @@ end
 --[[
 
     Purpose:
+
         Called when the interaction menu is closed
 
     When Called:
+
         When the interaction menu UI is closed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log menu closing
@@ -3711,22 +3933,27 @@ end
 --[[
 
     Purpose:
+
         Called when the interaction menu is opened
 
     When Called:
+
         When the interaction menu UI is opened
 
     Parameters:
+
         - frame (Panel): The interaction menu frame
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log menu opening
@@ -3787,24 +4014,29 @@ end
 --[[
 
     Purpose:
+
         Called when an item icon is clicked
 
     When Called:
+
         When a player clicks on an item icon in inventory
 
     Parameters:
+
         - self (Panel): The inventory panel
         - itemIcon (Panel): The item icon that was clicked
         - keyCode (number): The mouse button code
 
     Returns:
+
         boolean - True to intercept, false to allow
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log item clicks
@@ -3893,23 +4125,28 @@ end
 --[[
 
     Purpose:
+
         Called when an inventory is closed
 
     When Called:
+
         When a player closes an inventory panel
 
     Parameters:
+
         - self (Panel): The inventory panel
         - inventory (Inventory): The inventory that was closed
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log inventory close
@@ -3971,24 +4208,29 @@ end
 --[[
 
     Purpose:
+
         Called when an inventory item icon is created
 
     When Called:
+
         When building the visual icon for an item in inventory
 
     Parameters:
+
         - icon (Panel): The icon panel being created
         - item (Item): The item the icon represents
         - self (Panel): The inventory panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log icon creation
@@ -4075,23 +4317,28 @@ end
 --[[
 
     Purpose:
+
         Called when an inventory is opened
 
     When Called:
+
         When a player opens an inventory panel
 
     Parameters:
+
         - panel (Panel): The inventory panel
         - inventory (Inventory): The inventory being opened
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log inventory open
@@ -4154,24 +4401,29 @@ end
 --[[
 
     Purpose:
+
         Called when an inventory panel is created
 
     When Called:
+
         When building an inventory UI panel
 
     Parameters:
+
         - panel (Panel): The inventory panel being created
         - inventory (Inventory): The inventory the panel represents
         - parent (Panel): The parent panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log panel creation
@@ -4272,25 +4524,30 @@ end
 --[[
 
     Purpose:
+
         Called to paint over an item icon
 
     When Called:
+
         When rendering additional graphics on an item icon
 
     Parameters:
+
         - self (Panel): The item icon panel
         - itemTable (table): The item data table
         - w (number): The width of the icon
         - h (number): The height of the icon
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Draw item name
@@ -4373,22 +4630,27 @@ end
 --[[
 
     Purpose:
+
         Called to show entity menu for an item
 
     When Called:
+
         When displaying the interaction menu for an item entity
 
     Parameters:
+
         - entity (Entity): The item entity
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log entity menu display
@@ -4466,23 +4728,28 @@ end
 --[[
 
     Purpose:
+
         Called when a player is kicked from a character
 
     When Called:
+
         When a player is forcibly removed from their character
 
     Parameters:
+
         - id (number): The character ID
         - isCurrentChar (boolean): Whether this is the current character
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log character kick
@@ -4548,22 +4815,26 @@ end
 --[[
 
     Purpose:
+
         Called to load character information
 
     When Called:
+
         When character data needs to be loaded
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log character info load
@@ -4615,23 +4886,28 @@ end
 --[[
 
     Purpose:
+
         Called to load main menu information
 
     When Called:
+
         When building the main menu character information
 
     Parameters:
+
         - info (table): The information table to populate
         - character (Character): The character being displayed
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic info
@@ -4686,23 +4962,28 @@ end
 --[[
 
     Purpose:
+
         Called to modify a player's model on the scoreboard
 
     When Called:
+
         When rendering a player's model in the scoreboard
 
     Parameters:
+
         - client (Player): The viewing player
         - ply (Player): The player whose model is being displayed
 
     Returns:
+
         string - The modified model path
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return player model
@@ -4752,22 +5033,26 @@ end
 --[[
 
     Purpose:
+
         Called when admin stick menu is closed
 
     When Called:
+
         When the admin stick context menu is closed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log menu close
@@ -4814,25 +5099,30 @@ end
 --[[
 
     Purpose:
+
         Called when a chat message is received
 
     When Called:
+
         When a player receives a chat message
 
     Parameters:
+
         - client (Player): The player receiving the message
         - chatType (string): The type of chat message
         - text (string): The message text
         - anonymous (boolean): Whether the message is anonymous
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log received messages
@@ -4923,25 +5213,30 @@ end
 --[[
 
     Purpose:
+
         Called when a chat message is received
 
     When Called:
+
         When a player receives a chat message
 
     Parameters:
+
         - client (Player): The player receiving the message
         - chatType (string): The type of chat message
         - text (string): The message text
         - anonymous (boolean): Whether the message is anonymous
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log received messages
@@ -5035,24 +5330,29 @@ end
 --[[
 
     Purpose:
+
         Called when creating an item interaction menu
 
     When Called:
+
         When building the context menu for an item
 
     Parameters:
+
         - self (Item): The item instance
         - menu (Menu): The menu being created
         - itemTable (table): The item table data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic menu option
@@ -5152,24 +5452,29 @@ end
 --[[
 
     Purpose:
+
         Called when creating a storage panel
 
     When Called:
+
         When building the storage UI panel
 
     Parameters:
+
         - localInvPanel (Panel): The local inventory panel
         - storageInvPanel (Panel): The storage inventory panel
         - storage (Entity): The storage entity
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log storage panel creation
@@ -5251,23 +5556,28 @@ end
 --[[
 
     Purpose:
+
         Called when a death sound is played
 
     When Called:
+
         When a player death sound is triggered
 
     Parameters:
+
         - client (Player): The player who died
         - deathSound (string): The sound file that was played
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log death sounds
@@ -5324,23 +5634,28 @@ end
 --[[
 
     Purpose:
+
         Called when a vendor menu is opened
 
     When Called:
+
         When a player opens a vendor's trading interface
 
     Parameters:
+
         - self (Entity): The vendor entity
         - vendor (table): The vendor data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log vendor menu opening
@@ -5431,23 +5746,28 @@ end
 --[[
 
     Purpose:
+
         Called when a pain sound is played
 
     When Called:
+
         When a player pain sound is triggered
 
     Parameters:
+
         - client (Player): The player who is in pain
         - painSound (string): The sound file that was played
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log pain sounds
@@ -5504,23 +5824,28 @@ end
 --[[
 
     Purpose:
+
         Called when the UI theme is changed
 
     When Called:
+
         When the active theme is switched
 
     Parameters:
+
         - themeName (string): The name of the new theme
         - themeData (table): The theme configuration data
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log theme changes
@@ -5572,22 +5897,27 @@ end
 --[[
 
     Purpose:
+
         Called when the admin stick UI is opened
 
     When Called:
+
         When an admin opens the admin stick interface
 
     Parameters:
+
         - tgt (Entity): The target entity being examined
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log admin stick usage
@@ -5647,22 +5977,27 @@ end
 --[[
 
     Purpose:
+
         Called to paint/render an item
 
     When Called:
+
         When an item needs custom rendering
 
     Parameters:
+
         - item (Item): The item being painted
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Draw item name
@@ -5729,24 +6064,29 @@ end
 --[[
 
     Purpose:
+
         Called to populate the admin stick menu
 
     When Called:
+
         When building the admin stick context menu
 
     Parameters:
+
         - tempMenu (Menu): The menu being populated
         - tgt (Entity): The target entity
         - stores (table): A table containing references to existing submenu categories
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic option
@@ -5829,19 +6169,24 @@ end
 --[[
 
     Purpose:
+
         Called to add custom list options to the admin stick menu
 
     When Called:
+
         When building the admin stick context menu, before it's populated
 
     Parameters:
+
         - tgt (Entity): The target entity
         - lists (table): The table to populate with list data
 
     Returns:
+
         None (modified by reference)
 
     Realm:
+
         Client
     List Data Structure:
         Each entry in lists should be a table with:
@@ -5856,7 +6201,7 @@ end
         - icon (string, optional) - Icon path to display
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a list of custom options
@@ -5946,18 +6291,23 @@ end
 --[[
 
     Purpose:
+
         Called to register custom subcategories for admin stick menu categories
 
     When Called:
+
         During admin stick menu generation, before menu population
 
     Parameters:
+
         - categories (table): The categories table to modify by reference
 
     Returns:
+
         None (modified by reference)
 
     Realm:
+
         Client
     Category Structure:
         categories[categoryKey] should be a table with:
@@ -5970,7 +6320,7 @@ end
         - icon (string) - Icon path for the subcategory
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add a single subcategory to an existing category
@@ -6050,22 +6400,27 @@ end
 --[[
 
     Purpose:
+
         Called to populate admin tabs
 
     When Called:
+
         When building the admin panel tabs
 
     Parameters:
+
         - adminPages (table): The admin pages table
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic tab
@@ -6148,22 +6503,27 @@ end
 --[[
 
     Purpose:
+
         Called to populate configuration buttons
 
     When Called:
+
         When building the configuration menu
 
     Parameters:
+
         - pages (table): The configuration pages table
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic config page
@@ -6250,23 +6610,28 @@ end
 --[[
 
     Purpose:
+
         Called to populate inventory items
 
     When Called:
+
         When building the inventory item list
 
     Parameters:
+
         - pnlContent (Panel): The content panel
         - tree (Panel): The tree view panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic category
@@ -6342,23 +6707,28 @@ end
 --[[
 
     Purpose:
+
         Called after drawing the inventory
 
     When Called:
+
         After the inventory UI has been rendered
 
     Parameters:
+
         - mainPanel (Panel): The main inventory panel
         - parentPanel (Panel): The parent panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log inventory draw
@@ -6410,23 +6780,28 @@ end
 --[[
 
     Purpose:
+
         Called after fonts are loaded
 
     When Called:
+
         After the font system has been initialized
 
     Parameters:
+
         - mainFont (string): The main font name
         - configuredFont (string): The configured font name
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log font load
@@ -6484,22 +6859,26 @@ end
 --[[
 
     Purpose:
+
         Called before drawing the physgun beam
 
     When Called:
+
         Before the physgun beam is rendered
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log physgun beam
@@ -6561,22 +6940,26 @@ end
 --[[
 
     Purpose:
+
         Called to refresh fonts
 
     When Called:
+
         When the font system needs to be refreshed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log font refresh
@@ -6633,23 +7016,28 @@ end
 --[[
 
     Purpose:
+
         Called when a PAC3 part is removed
 
     When Called:
+
         When a PAC3 part is detached from a player
 
     Parameters:
+
         - client (Player): The player losing the part
         - id (string): The part ID
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log part removal
@@ -6704,22 +7092,26 @@ end
 --[[
 
     Purpose:
+
         Called to reset the character panel
 
     When Called:
+
         When the character panel needs to be refreshed
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log panel reset
@@ -6767,22 +7159,27 @@ end
 --[[
 
     Purpose:
+
         Called when the scoreboard is closed
 
     When Called:
+
         When the scoreboard UI is closed
 
     Parameters:
+
         - self (Panel): The scoreboard panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log scoreboard close
@@ -6828,22 +7225,27 @@ end
 --[[
 
     Purpose:
+
         Called when the scoreboard is opened
 
     When Called:
+
         When the scoreboard UI is displayed
 
     Parameters:
+
         - self (Panel): The scoreboard panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log scoreboard open
@@ -6898,23 +7300,28 @@ end
 --[[
 
     Purpose:
+
         Called when a scoreboard row is created
 
     When Called:
+
         When a player row is added to the scoreboard
 
     Parameters:
+
         - slot (Panel): The row panel
         - ply (Player): The player for the row
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log row creation
@@ -6971,23 +7378,28 @@ end
 --[[
 
     Purpose:
+
         Called when a scoreboard row is removed
 
     When Called:
+
         When a player row is removed from the scoreboard
 
     Parameters:
+
         - self (Panel): The scoreboard panel
         - ply (Player): The player whose row was removed
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log row removal
@@ -7030,22 +7442,26 @@ end
 --[[
 
     Purpose:
+
         Called to set up PAC3 data from items
 
     When Called:
+
         When configuring PAC3 data based on equipped items
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log PAC3 setup
@@ -7119,22 +7535,26 @@ end
 --[[
 
     Purpose:
+
         Called to determine if the quick menu should be shown when the context menu opens
 
     When Called:
+
         When the context menu (right-click menu) is opened
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         boolean - Return false to prevent the quick menu from opening, return nil or true to allow it
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Disable quick menu completely
@@ -7176,22 +7596,27 @@ end
 --[[
 
     Purpose:
+
         Called to set up the quick menu
 
     When Called:
+
         When initializing the quick access menu
 
     Parameters:
+
         - self (Panel): The quick menu panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log quick menu setup
@@ -7256,23 +7681,28 @@ end
 --[[
 
     Purpose:
+
         Called to check if scoreboard override should be allowed
 
     When Called:
+
         When determining if a player can override scoreboard behavior
 
     Parameters:
+
         - ply (Player): The player
         - override (string): The override type
 
     Returns:
+
         boolean - True to allow, false to deny
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Allow all overrides
@@ -7315,22 +7745,27 @@ end
 --[[
 
     Purpose:
+
         Determines if a bar should be drawn on the HUD
 
     When Called:
+
         When the bar system is rendering bars
 
     Parameters:
+
         - bar (table): The bar object to check
 
     Returns:
+
         boolean - True if the bar should be drawn, false otherwise
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Draw all bars
@@ -7419,22 +7854,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a bar should be drawn
 
     When Called:
+
         When determining if a UI bar should be rendered
 
     Parameters:
+
         - bar (table): The bar data
 
     Returns:
+
         boolean - True to draw, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always draw bars
@@ -7489,22 +7929,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if thirdperson should be disabled
 
     When Called:
+
         When determining if thirdperson view should be blocked
 
     Parameters:
+
         - self (Player): The player
 
     Returns:
+
         boolean - True to disable, false to allow
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Never disable thirdperson
@@ -7576,22 +8021,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if ammo should be drawn
 
     When Called:
+
         When determining if weapon ammo should be displayed
 
     Parameters:
+
         - wpn (Weapon): The weapon
 
     Returns:
+
         boolean - True to draw, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always draw ammo
@@ -7654,22 +8104,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if entity info should be drawn
 
     When Called:
+
         When determining if entity information should be displayed
 
     Parameters:
+
         - e (Entity): The entity
 
     Returns:
+
         boolean - True to draw, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always draw entity info
@@ -7743,22 +8198,27 @@ end
 --[[
 
     Purpose:
+
         Determines if player information should be drawn
 
     When Called:
+
         When deciding whether to draw player info above a player
 
     Parameters:
+
         - e (Entity): The entity to check
 
     Returns:
+
         boolean - True if player info should be drawn, false otherwise
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Draw all player info
@@ -7859,22 +8319,27 @@ end
 --[[
 
     Purpose:
+
         Called to determine if weapon selection should be drawn
 
     When Called:
+
         When the system checks if weapon selection UI should be displayed
 
     Parameters:
+
         - client (Player): The player to check for
 
     Returns:
+
         boolean - Whether to draw weapon selection (true) or not (false)
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always show weapon selection
@@ -7937,22 +8402,26 @@ end
 --[[
 
     Purpose:
+
         Determines if all bars should be hidden
 
     When Called:
+
         When the bar system is about to render
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         boolean - True if bars should be hidden, false otherwise
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Never hide bars
@@ -8052,22 +8521,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a menu button should be shown
 
     When Called:
+
         When displaying menu buttons
 
     Parameters:
+
         - button (string): The button identifier
 
     Returns:
+
         boolean - True to show, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Show all buttons
@@ -8128,23 +8602,28 @@ end
 --[[
 
     Purpose:
+
         Called to check if a death sound should be played
 
     When Called:
+
         When a player dies
 
     Parameters:
+
         - client (Player): The player who died
         - deathSound (string): The death sound to play
 
     Returns:
+
         boolean - True to play, false to suppress
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Play all death sounds
@@ -8209,23 +8688,28 @@ end
 --[[
 
     Purpose:
+
         Called to check if a pain sound should be played
 
     When Called:
+
         When a player takes damage
 
     Parameters:
+
         - client (Player): The player taking damage
         - painSound (string): The pain sound to play
 
     Returns:
+
         boolean - True to play, false to suppress
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Play all pain sounds
@@ -8299,22 +8783,26 @@ end
 --[[
 
     Purpose:
+
         Called to check if the respawn screen should appear
 
     When Called:
+
         When a player dies
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         boolean - True to show respawn screen, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Always show respawn screen
@@ -8387,22 +8875,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a class should be shown on the scoreboard
 
     When Called:
+
         When displaying the scoreboard
 
     Parameters:
+
         - clsData (table): The class data
 
     Returns:
+
         boolean - True to show, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Show all classes
@@ -8468,22 +8961,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a faction should be shown on the scoreboard
 
     When Called:
+
         When displaying the scoreboard
 
     Parameters:
+
         - ply (Player): The player whose faction is being checked
 
     Returns:
+
         boolean - True to show, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Show all factions
@@ -8560,22 +9058,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a player should be shown on the scoreboard
 
     When Called:
+
         When displaying the scoreboard
 
     Parameters:
+
         - ply (Player): The player to check
 
     Returns:
+
         boolean - True to show, false to hide
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Show all players
@@ -8658,22 +9161,27 @@ end
 --[[
 
     Purpose:
+
         Called to check if a client ragdoll should be spawned
 
     When Called:
+
         When a player dies
 
     Parameters:
+
         - client (Player): The player who died
 
     Returns:
+
         boolean - True to spawn, false to suppress
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Spawn all ragdolls
@@ -8758,23 +9266,28 @@ end
 --[[
 
     Purpose:
+
         Called to show player options menu
 
     When Called:
+
         When displaying player options
 
     Parameters:
+
         - ply (Player): The player to show options for
         - initialOpts (table): Initial options table
 
     Returns:
+
         table - Modified options table
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Add basic options
@@ -8873,22 +9386,27 @@ end
 --[[
 
     Purpose:
+
         Called when storage unlock prompt is shown
 
     When Called:
+
         When a player attempts to unlock a locked storage
 
     Parameters:
+
         - entity (Entity): The storage entity being unlocked
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log unlock prompt
@@ -8969,22 +9487,27 @@ end
 --[[
 
     Purpose:
+
         Called when third person is toggled
 
     When Called:
+
         When third person view is enabled or disabled
 
     Parameters:
+
         - newValue (boolean): The new third person state
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log third person toggle
@@ -9048,24 +9571,29 @@ end
 --[[
 
     Purpose:
+
         Called to create a ticket frame
 
     When Called:
+
         When displaying a support ticket
 
     Parameters:
+
         - requester (Player): The player who requested the ticket
         - message (string): The ticket message
         - claimed (boolean): Whether the ticket is claimed
 
     Returns:
+
         Panel - The ticket frame panel
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Create basic ticket frame
@@ -9167,23 +9695,28 @@ end
 --[[
 
     Purpose:
+
         Called to initialize a tooltip
 
     When Called:
+
         When a tooltip is being created
 
     Parameters:
+
         - self (Panel): The tooltip panel
         - panel (Panel): The parent panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Set basic tooltip properties
@@ -9253,22 +9786,27 @@ end
 --[[
 
     Purpose:
+
         Called to layout a tooltip
 
     When Called:
+
         When a tooltip needs to be laid out
 
     Parameters:
+
         - self (Panel): The tooltip panel
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Set basic layout
@@ -9349,24 +9887,29 @@ end
 --[[
 
     Purpose:
+
         Called to paint a tooltip
 
     When Called:
+
         When a tooltip is being painted
 
     Parameters:
+
         - self (Panel): The tooltip panel
         - w (number): The width of the tooltip
         - h (number): The height of the tooltip
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Draw basic background
@@ -9441,22 +9984,27 @@ end
 --[[
 
     Purpose:
+
         Called to try to view a model
 
     When Called:
+
         When attempting to view an entity model
 
     Parameters:
+
         - entity (Entity): The entity to view
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log model view attempt
@@ -9562,22 +10110,26 @@ end
 --[[
 
     Purpose:
+
         Called when a vendor is exited
 
     When Called:
+
         When a player closes a vendor
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log vendor exit
@@ -9644,22 +10196,27 @@ end
 --[[
 
     Purpose:
+
         Called when a vendor is synchronized
 
     When Called:
+
         When vendor data is synced between client and server
 
     Parameters:
+
         - vendor (Entity): The vendor entity
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log vendor sync
@@ -9716,22 +10273,27 @@ end
 --[[
 
     Purpose:
+
         Called when voice chat is toggled
 
     When Called:
+
         When voice chat is enabled or disabled
 
     Parameters:
+
         - enabled (boolean): Whether voice chat is enabled
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log voice toggle
@@ -9784,22 +10346,26 @@ end
 --[[
 
     Purpose:
+
         Called to get the weapon cycle sound
 
     When Called:
+
         When cycling through weapons
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         string - The sound path
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return default sound
@@ -9853,22 +10419,26 @@ end
 --[[
 
     Purpose:
+
         Called to get the weapon select sound
 
     When Called:
+
         When selecting a weapon
 
-    Parameters:
+    Parameters: 
         None
 
     Returns:
+
         string - The sound path
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Return default sound
@@ -9922,23 +10492,28 @@ end
 --[[
 
     Purpose:
+
         Called when a web image is downloaded
 
     When Called:
+
         When an image from a URL is successfully downloaded
 
     Parameters:
+
         - url (string): The URL of the image
         - material (Material): The downloaded material
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log image download
@@ -9994,23 +10569,28 @@ end
 --[[
 
     Purpose:
+
         Called when a web sound is downloaded
 
     When Called:
+
         When a sound from a URL is successfully downloaded
 
     Parameters:
+
         - name (string): The name of the sound
         - path (string): The path to the downloaded sound
 
     Returns:
+
         None
 
     Realm:
+
         Client
     Example Usage:
 
-    Low Complexity:
+        Low Complexity:
 
     ```lua
     -- Simple: Log sound download

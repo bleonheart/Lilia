@@ -11,10 +11,12 @@
 --[[
 
     Purpose:
-        Allows modification of stamina regeneration/drain offset for a player
+
+                Allows modification of stamina regeneration/drain offset for a player
 
     When Called:
-        During stamina calculation, allowing custom stamina modifiers
+
+                During stamina calculation, allowing custom stamina modifiers
 
     Parameters:
         client (Player) - The player whose stamina is being calculated
@@ -109,10 +111,12 @@ end
 --[[
 
     Purpose:
-        Called to check if an outfit can change model
+
+                Called to check if an outfit can change model
 
     When Called:
-        When attempting to change a player's model via outfit
+
+                When attempting to change a player's model via outfit
 
     Parameters:
         self (Item) - The outfit item
@@ -193,10 +197,12 @@ end
 --[[
 
     Purpose:
-        Called when a command is added
+
+                Called when a command is added
 
     When Called:
-        When a new command is registered to the framework
+
+                When a new command is registered to the framework
 
     Parameters:
         command (string) - The command name
@@ -256,10 +262,12 @@ end
 --[[
 
     Purpose:
-        Called when doing module includes
+
+                Called when doing module includes
 
     When Called:
-        When a module is being loaded and files are being included
+
+                When a module is being loaded and files are being included
 
     Parameters:
         path (string) - The path being included
@@ -329,10 +337,12 @@ end
 --[[
 
     Purpose:
-        Called to get displayed description
+
+                Called to get displayed description
 
     When Called:
-        When showing a player's description
+
+                When showing a player's description
 
     Parameters:
         ply (Player) - The player being described
@@ -403,10 +413,12 @@ end
 --[[
 
     Purpose:
-        Called to get displayed name in chat
+
+                Called to get displayed name in chat
 
     When Called:
-        When showing a player's name in chat
+
+                When showing a player's name in chat
 
     Parameters:
         speaker (Player) - The player speaking
@@ -485,10 +497,12 @@ end
 --[[
 
     Purpose:
-        Called to get door information
+
+                Called to get door information
 
     When Called:
-        When retrieving door data
+
+                When retrieving door data
 
     Parameters:
         entity (Entity) - The door entity
@@ -559,10 +573,12 @@ end
 --[[
 
     Purpose:
-        Called to get model gender
+
+                Called to get model gender
 
     When Called:
-        When determining a model's gender
+
+                When determining a model's gender
 
     Parameters:
         model (string) - The model path
@@ -629,10 +645,12 @@ end
 --[[
 
     Purpose:
-        Called when configuration is initialized
+
+                Called when configuration is initialized
 
     When Called:
-        When the configuration system has finished loading
+
+                When the configuration system has finished loading
 
     Parameters:
         None
@@ -701,10 +719,12 @@ end
 --[[
 
     Purpose:
-        Called when items are initialized
+
+                Called when items are initialized
 
     When Called:
-        When the item system has finished loading
+
+                When the item system has finished loading
 
     Parameters:
         None
@@ -797,10 +817,12 @@ end
 --[[
 
     Purpose:
-        Called when modules are initialized
+
+                Called when modules are initialized
 
     When Called:
-        When the module system has finished loading
+
+                When the module system has finished loading
 
     Parameters:
         None
@@ -889,10 +911,12 @@ end
 --[[
 
     Purpose:
-        Called when schema is initialized
+
+                Called when schema is initialized
 
     When Called:
-        When the schema system has finished loading
+
+                When the schema system has finished loading
 
     Parameters:
         None
@@ -971,10 +995,12 @@ end
 --[[
 
     Purpose:
-        Called when inventory data changes
+
+                Called when inventory data changes
 
     When Called:
-        When an inventory's data is modified
+
+                When an inventory's data is modified
 
     Parameters:
         instance (Inventory) - The inventory instance
@@ -1050,10 +1076,12 @@ end
 --[[
 
     Purpose:
-        Called when an inventory is initialized
+
+                Called when an inventory is initialized
 
     When Called:
-        When an inventory is first created and set up
+
+                When an inventory is first created and set up
 
     Parameters:
         instance (Inventory) - The inventory being initialized
@@ -1137,10 +1165,12 @@ end
 --[[
 
     Purpose:
-        Called when an item's data changes in an inventory
+
+                Called when an item's data changes in an inventory
 
     When Called:
-        When an item's data is modified while in an inventory
+
+                When an item's data is modified while in an inventory
 
     Parameters:
         item (Item) - The item whose data changed
@@ -1231,10 +1261,12 @@ end
 --[[
 
     Purpose:
-        Called to check if a character is fake recognized
+
+                Called to check if a character is fake recognized
 
     When Called:
-        When checking if a character appears recognized but isn't truly
+
+                When checking if a character appears recognized but isn't truly
 
     Parameters:
         self (Character) - The character checking recognition
@@ -1296,10 +1328,12 @@ end
 --[[
 
     Purpose:
-        Called to check if a character is recognized
+
+                Called to check if a character is recognized
 
     When Called:
-        When checking if one character recognizes another
+
+                When checking if one character recognizes another
 
     Parameters:
         self (Character) - The character checking recognition
@@ -1387,10 +1421,12 @@ end
 --[[
 
     Purpose:
-        Called to check if a chat type requires recognition
+
+                Called to check if a chat type requires recognition
 
     When Called:
-        When determining if players need to be recognized to see names in chat
+
+                When determining if players need to be recognized to see names in chat
 
     Parameters:
         chatType (string) - The chat type being checked
@@ -1454,10 +1490,12 @@ end
 --[[
 
     Purpose:
-        Called to validate an entity
+
+                Called to validate an entity
 
     When Called:
-        When checking if an entity reference is valid
+
+                When checking if an entity reference is valid
 
     Parameters:
         None
@@ -1507,10 +1545,12 @@ end
 --[[
 
     Purpose:
-        Called when an item's data changes
+
+                Called when an item's data changes
 
     When Called:
-        When an item's data is modified
+
+                When an item's data is modified
 
     Parameters:
         item (Item) - The item whose data changed
@@ -1607,10 +1647,12 @@ end
 --[[
 
     Purpose:
-        Called to get default functions for an item
+
+                Called to get default functions for an item
 
     When Called:
-        When building the default interaction functions for an item
+
+                When building the default interaction functions for an item
 
     Parameters:
         item (Item) - The item to get functions for
@@ -1697,10 +1739,12 @@ end
 --[[
 
     Purpose:
-        Called when an item is initialized
+
+                Called when an item is initialized
 
     When Called:
-        When an item is first created and set up
+
+                When an item is first created and set up
 
     Parameters:
         item (Item) - The item being initialized
@@ -1776,10 +1820,12 @@ end
 --[[
 
     Purpose:
-        Called when an item's quantity changes
+
+                Called when an item's quantity changes
 
     When Called:
-        When the stack size of an item is modified
+
+                When the stack size of an item is modified
 
     Parameters:
         item (Item) - The item whose quantity changed
@@ -1865,10 +1911,12 @@ end
 --[[
 
     Purpose:
-        Called when Lilia framework is fully loaded
+
+                Called when Lilia framework is fully loaded
 
     When Called:
-        After all Lilia systems are initialized
+
+                After all Lilia systems are initialized
 
     Parameters:
         None
@@ -1932,10 +1980,12 @@ end
 --[[
 
     Purpose:
-        Called when a network variable changes
+
+                Called when a network variable changes
 
     When Called:
-        When an entity's netvar is modified
+
+                When an entity's netvar is modified
 
     Parameters:
         entity (Entity) - The entity whose netvar changed
@@ -2007,10 +2057,12 @@ end
 --[[
 
     Purpose:
-        Called when an item is registered
+
+                Called when an item is registered
 
     When Called:
-        When a new item is added to the item system
+
+                When a new item is added to the item system
 
     Parameters:
         ITEM (table) - The item table being registered
@@ -2084,10 +2136,12 @@ end
 --[[
 
     Purpose:
-        Called when the framework has finished loading
+
+                Called when the framework has finished loading
 
     When Called:
-        After all framework components have been initialized
+
+                After all framework components have been initialized
 
     Parameters:
         None
@@ -2152,10 +2206,12 @@ end
 --[[
 
     Purpose:
-        Called when a new privilege is registered
+
+                Called when a new privilege is registered
 
     When Called:
-        When a privilege is added to the system
+
+                When a privilege is added to the system
 
     Parameters:
         privilege (string) - The privilege identifier
@@ -2226,10 +2282,12 @@ end
 --[[
 
     Purpose:
-        Called when a privilege is unregistered
+
+                Called when a privilege is unregistered
 
     When Called:
-        When a privilege is removed from the system
+
+                When a privilege is removed from the system
 
     Parameters:
         privilege (string) - The privilege identifier
@@ -2291,10 +2349,12 @@ end
 --[[
 
     Purpose:
-        Called when an option is added to the options system
+
+                Called when an option is added to the options system
 
     When Called:
-        When a new option is registered
+
+                When a new option is registered
 
     Parameters:
         key (string) - The option key that was added
@@ -2370,10 +2430,12 @@ end
 --[[
 
     Purpose:
-        Called when a configuration option is changed
+
+                Called when a configuration option is changed
 
     When Called:
-        When a configuration value is modified
+
+                When a configuration value is modified
 
     Parameters:
         key (string) - The option key that was changed
@@ -2447,10 +2509,12 @@ end
 --[[
 
     Purpose:
-        Called to override a faction's description
+
+                Called to override a faction's description
 
     When Called:
-        When a faction description needs to be modified
+
+                When a faction description needs to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2510,10 +2574,12 @@ end
 --[[
 
     Purpose:
-        Called to override a faction's models
+
+                Called to override a faction's models
 
     When Called:
-        When a faction's available models need to be modified
+
+                When a faction's available models need to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2585,10 +2651,12 @@ end
 --[[
 
     Purpose:
-        Called to override a faction's name
+
+                Called to override a faction's name
 
     When Called:
-        When a faction name needs to be modified
+
+                When a faction name needs to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2658,10 +2726,12 @@ end
 --[[
 
     Purpose:
-        Called when player gains stamina
+
+                Called when player gains stamina
 
     When Called:
-        When a player's stamina increases
+
+                When a player's stamina increases
 
     Parameters:
         self (Player) - The player gaining stamina
@@ -2727,10 +2797,12 @@ end
 --[[
 
     Purpose:
-        Called when player loses stamina
+
+                Called when player loses stamina
 
     When Called:
-        When a player's stamina decreases
+
+                When a player's stamina decreases
 
     Parameters:
         self (Player) - The player losing stamina
@@ -2794,10 +2866,12 @@ end
 --[[
 
     Purpose:
-        Called before Lilia framework is loaded
+
+                Called before Lilia framework is loaded
 
     When Called:
-        Before Lilia systems are initialized
+
+                Before Lilia systems are initialized
 
     Parameters:
         None
@@ -2854,10 +2928,12 @@ end
 --[[
 
     Purpose:
-        Called to calculate stamina change
+
+                Called to calculate stamina change
 
     When Called:
-        When calculating how much stamina should change
+
+                When calculating how much stamina should change
 
     Parameters:
         client (Player) - The player whose stamina is changing
@@ -2948,10 +3024,12 @@ end
 --[[
 
     Purpose:
-        Called to get persistent data
+
+                Called to get persistent data
 
     When Called:
-        When retrieving stored data
+
+                When retrieving stored data
 
     Parameters:
         default (any) - The default value if data doesn't exist

@@ -27,6 +27,7 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -43,6 +44,7 @@ if not pac then return end
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -59,6 +61,7 @@ ITEM.name = "pacoutfitName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -75,6 +78,7 @@ ITEM.desc = "pacoutfitDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -91,6 +95,7 @@ ITEM.category = "outfit"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -107,6 +112,7 @@ ITEM.model = "models/Gibs/HGIBS.mdl"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -123,6 +129,7 @@ ITEM.width = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -139,6 +146,7 @@ ITEM.height = 1
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
@@ -155,6 +163,7 @@ ITEM.outfitCategory = "hat"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua

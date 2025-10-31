@@ -26,11 +26,13 @@
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
         ITEM.name = "Website Link"
         ```
+
 ]]
 ITEM.name = "urlName"
 --[[
@@ -42,11 +44,13 @@ ITEM.name = "urlName"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
         ITEM.desc = "A link to an external website"
         ```
+
 ]]
 ITEM.desc = "urlDesc"
 --[[
@@ -58,11 +62,13 @@ ITEM.desc = "urlDesc"
     When Called:
 
         During item definition
+
     Example Usage:
 
         ```lua
         ITEM.model = "models/props_interiors/pot01a.mdl"
         ```
+
 ]]
 ITEM.model = "models/props_interiors/pot01a.mdl"
 --[[
@@ -74,11 +80,13 @@ ITEM.model = "models/props_interiors/pot01a.mdl"
     When Called:
 
         During item definition (used in use function)
+
     Example Usage:
 
         ```lua
         ITEM.url = "https://example.com"
         ```
+
 ]]
 ITEM.url = ""
 --[[
