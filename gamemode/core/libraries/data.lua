@@ -26,6 +26,7 @@ lia.data.stored = lia.data.stored or {}
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Encode a vector
@@ -228,6 +229,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Decode a vector from encoded format
@@ -280,6 +282,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Serialize a basic table
@@ -337,6 +340,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Deserialize a JSON string
@@ -400,6 +404,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Decode vector from array format
@@ -462,6 +467,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Decode angle from array format
@@ -530,6 +536,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Store basic data for current gamemode and map
@@ -600,6 +607,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Delete data for current gamemode and map
@@ -664,6 +672,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load all data tables
@@ -755,6 +764,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load persistence schema
@@ -806,6 +816,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Save basic entity data
@@ -916,6 +927,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load persistence data
@@ -999,6 +1011,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get basic data
@@ -1058,6 +1071,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get persistence data

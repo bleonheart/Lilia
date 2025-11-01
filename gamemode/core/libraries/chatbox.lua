@@ -26,6 +26,7 @@ lia.chat.classes = lia.chat.classes or {}
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get timestamp for IC message
@@ -77,6 +78,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register basic IC chat
@@ -214,6 +216,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Parse a basic IC message
@@ -316,6 +319,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Send IC message to all nearby players

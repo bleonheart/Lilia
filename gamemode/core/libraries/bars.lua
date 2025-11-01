@@ -36,6 +36,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get a bar by identifier
@@ -64,10 +65,10 @@ end
         if bar then
             bar.lifeTime = CurTime() + 10
             print("Extended lifetime for " .. id .. " bar")
-            else
-                print("Bar " .. id .. " not found")
-            end
+        else
+            print("Bar " .. id .. " not found")
         end
+    end
     ```
 ]]
 function lia.bar.get(identifier)
@@ -96,6 +97,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Add a basic health bar
@@ -120,8 +122,8 @@ end
     local function createConditionalBar(condition, getValue, color, priority, id)
         if condition then
             return lia.bar.add(function()
-            local ply = LocalPlayer()
-            if not IsValid(ply) then return 0 end
+                local ply = LocalPlayer()
+                if not IsValid(ply) then return 0 end
                 return getValue(ply)
             end, color, priority, id)
         end
@@ -129,12 +131,12 @@ end
     end
 
     createConditionalBar(
-    true,
-    function(ply) return ply:Armor() / ply:GetMaxArmor() end,
+        true,
+        function(ply) return ply:Armor() / ply:GetMaxArmor() end,
         Color(0, 0, 255),
         3,
         "armor"
-        )
+    )
     ```
 ]]
 function lia.bar.add(getValue, color, priority, identifier)
@@ -173,6 +175,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Remove a bar by identifier
@@ -235,6 +238,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Draw a basic progress bar
@@ -290,6 +294,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Show reload progress
@@ -310,18 +315,18 @@ end
         local text = ""
         if actionType == "heal" then
             text = "Healing for " .. (data.amount or 25) .. " HP"
-            elseif actionType == "repair" then
-                text = "Repairing " .. (data.item or "item")
-                elseif actionType == "craft" then
-                    text = "Crafting " .. (data.item or "item")
-                end
+        elseif actionType == "repair" then
+            text = "Repairing " .. (data.item or "item")
+        elseif actionType == "craft" then
+            text = "Crafting " .. (data.item or "item")
+        end
 
-                if text ~= "" then
-                    lia.bar.drawAction(text, duration)
-                end
-            end
+        if text ~= "" then
+            lia.bar.drawAction(text, duration)
+        end
+    end
 
-            showActionProgress("heal", 2.5, {amount = 75})
+    showActionProgress("heal", 2.5, {amount = 75})
     ```
 ]]
 function lia.bar.drawAction(text, duration)
@@ -366,6 +371,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Manually trigger bar rendering
@@ -388,12 +394,12 @@ end
     local function customDrawAll()
         if hook.Run("ShouldHideBars") then return end
 
-            -- Custom positioning logic
-            local baseX, baseY = 10, 10
-            local barSpacing = 18
+        -- Custom positioning logic
+        local baseX, baseY = 10, 10
+        local barSpacing = 18
 
-            -- Sort bars by priority
-            table.sort(lia.bar.list, function(a, b)
+        -- Sort bars by priority
+        table.sort(lia.bar.list, function(a, b)
             if a.priority == b.priority then
                 return (a.order or 0) < (b.order or 0)
             end

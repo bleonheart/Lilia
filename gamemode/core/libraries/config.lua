@@ -31,7 +31,8 @@ lia.config.stored = lia.config.stored or {}
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add a basic boolean configuration
         lia.config.add("EnableFeature", "Enable Feature", true, nil, {
@@ -131,7 +132,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get static options for a configuration
         local options = lia.config.getOptions("DermaSkin")
@@ -202,7 +204,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Update default value for a configuration
         lia.config.setDefault("MaxCharacters", 10)
@@ -254,7 +257,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Force set a configuration value
         lia.config.forceSet("WalkSpeed", 150)
@@ -310,7 +314,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Set a configuration value
         lia.config.set("WalkSpeed", 150)
@@ -384,7 +389,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get a configuration value
         local walkSpeed = lia.config.get("WalkSpeed")
@@ -457,7 +463,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load configurations during initialization
         lia.config.load()
@@ -554,7 +561,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Get all changed values
             local changed = lia.config.getChangedValues()
@@ -622,7 +629,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Send configurations to all clients
             lia.config.send()
@@ -736,7 +743,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Save all configurations
             lia.config.save()
@@ -810,7 +817,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Reset all configurations to defaults
             lia.config.reset()

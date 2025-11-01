@@ -29,7 +29,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Add a single workshop addon
                 lia.workshop.addWorkshop("1234567890")
@@ -87,7 +87,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Gather workshop IDs
                 local workshopIds = lia.workshop.gather()
@@ -157,7 +157,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Send workshop IDs to a player
                 lia.workshop.send(player.GetByID(1))
@@ -257,7 +257,7 @@ else
             Client
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Check if downloads are needed
                 if lia.workshop.hasContentToDownload() then
@@ -439,7 +439,7 @@ else
             Client
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Mount workshop content
                 lia.workshop.mountContent()

@@ -269,6 +269,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Add a basic custom log type
@@ -325,6 +326,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get a basic log string
@@ -386,6 +388,7 @@ end
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Log a basic player action

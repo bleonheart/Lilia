@@ -1,4 +1,4 @@
---[[
+﻿--[[
     WebSound Library
 
     Web-based audio content downloading, caching, and playback system for the Lilia framework.
@@ -106,9 +106,10 @@ end
         None (uses callback for results)
 
     Realm:
-        Client and Server
+        Shared
 
     Example Usage:
+    
         Low Complexity:
         ```lua
         -- Simple: Download a sound file
@@ -254,10 +255,11 @@ end
         None (uses callback for results)
 
     Realm:
-        Client and Server
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Register a sound file
         lia.websound.register("button_click.wav", "https://example.com/click.wav")
@@ -335,10 +337,11 @@ end
         string or nil - The local file path if found, nil if not cached
 
     Realm:
-        Client and Server
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if a sound is cached
         local soundPath = lia.websound.get("button_click.wav")
@@ -642,10 +645,11 @@ end
         table - Contains downloaded count, stored count, and last reset timestamp
 
     Realm:
-        Client and Server
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get basic statistics
         local stats = lia.websound.getStats()
@@ -737,10 +741,11 @@ end
         None (uses callback for results)
 
     Realm:
-        Client only
+        Client
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Play default button sound
         lia.websound.playButtonSound()

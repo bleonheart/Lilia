@@ -27,10 +27,11 @@ lia.net.registry = lia.net.registry or {}
         boolean - true if registration successful, false if invalid arguments
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Register a basic message handler
         lia.net.register("playerMessage", function(data)
@@ -91,10 +92,11 @@ end
         boolean - true if message sent successfully, false if invalid name or target
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Send message to all clients
         lia.net.send("playerMessage", nil, "Hello everyone!")
@@ -173,10 +175,11 @@ end
         None
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Set up receiver for large data
         lia.net.readBigTable("largeData", function(data)
@@ -359,10 +362,10 @@ if SERVER then
             None
 
         Realm:
-            Server only
+            Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Send large table to all players
             local largeData = {}

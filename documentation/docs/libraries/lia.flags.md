@@ -4,7 +4,7 @@ Character permission and access control system for the Lilia framework.
 
 ---
 
-## Overview
+Overview
 
 The flags library provides a comprehensive permission system for managing character abilities and access rights in the Lilia framework. It allows administrators to assign specific flags to characters that grant or restrict various gameplay features and tools. The library operates on both server and client sides, with the server handling flag assignment and callback execution during character spawning, while the client provides user interface elements for viewing and managing flags. Flags can have associated callbacks that execute when granted or removed, enabling dynamic behavior changes based on permission levels. The system includes built-in flags for common administrative tools like physgun, toolgun, and various spawn permissions. The library ensures proper flag validation and prevents duplicate flag assignments.
 
@@ -47,8 +47,8 @@ lia.flag.add("A", "flagAdmin")
 ```lua
 -- Medium: Add flag with callback for weapon management
 lia.flag.add("w", "flagWeapon", function(client, isGiven)
-    if isGiven then
-        client:Give("weapon_pistol")
+if isGiven then
+    client:Give("weapon_pistol")
     else
         client:StripWeapon("weapon_pistol")
     end
@@ -60,10 +60,10 @@ end)
 ```lua
 -- High: Add flag with complex callback and validation
 lia.flag.add("M", "flagModerator", function(client, isGiven)
-    if isGiven then
-        client:SetNWBool("isModerator", true)
-        client:ChatPrint("Moderator privileges granted!")
-        -- Additional setup logic here
+if isGiven then
+    client:SetNWBool("isModerator", true)
+    client:ChatPrint("Moderator privileges granted!")
+    -- Additional setup logic here
     else
         client:SetNWBool("isModerator", false)
         client:ChatPrint("Moderator privileges revoked!")
@@ -120,11 +120,11 @@ end
 ```lua
 -- High: Custom spawn handling with flag validation
 hook.Add("PlayerSpawn", "CustomFlagHandler", function(client)
-    if client:getChar() then
-        -- Custom pre-spawn logic
-        lia.flag.onSpawn(client)
-        -- Custom post-spawn logic
-    end
+if client:getChar() then
+    -- Custom pre-spawn logic
+    lia.flag.onSpawn(client)
+    -- Custom post-spawn logic
+end
 end)
 
 ```

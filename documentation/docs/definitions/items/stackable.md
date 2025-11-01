@@ -6,6 +6,14 @@ Stackable item system for the Lilia framework.
 
 ### name
 
+**Purpose**
+
+Sets the display name of the stackable item
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -16,6 +24,14 @@ ITEM.name = "Ammo Box"
 ---
 
 ### model
+
+**Purpose**
+
+Sets the 3D model for the stackable item
+
+**When Called**
+
+During item definition
 
 **Example Usage**
 
@@ -28,6 +44,14 @@ ITEM.model = "models/props_junk/cardboard_box001a.mdl"
 
 ### width
 
+**Purpose**
+
+Sets the inventory width of the stackable item
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -38,6 +62,14 @@ ITEM.width = 1  -- Takes 1 slot width
 ---
 
 ### height
+
+**Purpose**
+
+Sets the inventory height of the stackable item
+
+**When Called**
+
+During item definition
 
 **Example Usage**
 
@@ -50,6 +82,14 @@ ITEM.height = 1  -- Takes 1 slot height
 
 ### isStackable
 
+**Purpose**
+
+Marks the item as stackable
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -60,6 +100,14 @@ ITEM.isStackable = true
 ---
 
 ### maxQuantity
+
+**Purpose**
+
+Sets the maximum quantity for the stackable item
+
+**When Called**
+
+During item definition
 
 **Example Usage**
 
@@ -72,6 +120,14 @@ ITEM.maxQuantity = 10  -- Maximum 10 items per stack
 
 ### canSplit
 
+**Purpose**
+
+Sets whether the item can be split
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -81,62 +137,29 @@ ITEM.canSplit = true  -- Allows splitting the stack
 
 ---
 
-### ITEM:getDesc()
+## Complete Examples
 
-**Example Usage**
+The following examples demonstrate how to use all the properties and methods together to create complete definitions.
 
-```lua
-function ITEM:getDesc()
-    return L("stackableDesc", self:getQuantity())
-end
+### Complete Item Example
 
-```
-
----
-
-### ITEM:paintOver(item)
-
-**Example Usage**
+Below is a comprehensive example showing how to define a complete item with all available properties and methods.
 
 ```lua
-function ITEM:paintOver(item)
-    local quantity = item:getQuantity()
-    lia.util.drawText(quantity, 8, 5, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, "LiliaFont.16")
-end
+        ITEM.name = "Ammo Box"
 
-```
+        ITEM.model = "models/props_junk/cardboard_box001a.mdl"
 
----
+        ITEM.width = 1  -- Takes 1 slot width
 
-### ITEM:onCombine(other)
+        ITEM.height = 1  -- Takes 1 slot height
 
-**Example Usage**
+        ITEM.isStackable = true
 
-```lua
-function ITEM:onCombine(other)
-    if other.uniqueID ~= self.uniqueID then return end
-        local combined = self:getQuantity() + other:getQuantity()
-        if combined <= self.maxQuantity then
-            self:setQuantity(combined)
-            other:remove()
-            else
-                self:setQuantity(self.maxQuantity)
-                other:setQuantity(combined - self.maxQuantity)
-            end
-            return true
-        end
-    end
-end
+        ITEM.maxQuantity = 10  -- Maximum 10 items per stack
 
-```
+        ITEM.canSplit = true  -- Allows splitting the stack
 
----
-
-### Example Item:
-
-**Example Usage**
-
-```lua
 -- Basic item identification
 ITEM.name = "Ammo Box"                                    -- Display name shown to players
 ITEM.model = "models/props_junk/cardboard_box001a.mdl"   -- 3D model for the item

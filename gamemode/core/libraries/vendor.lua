@@ -150,6 +150,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Add a basic rarity
@@ -202,6 +203,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Add a basic weapon vendor preset
@@ -263,6 +265,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get a preset and apply it to a vendor

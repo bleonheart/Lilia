@@ -31,7 +31,8 @@ lia.option.stored = lia.option.stored or {}
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add a boolean toggle option
         lia.option.add("showHUD", "Show HUD", "Toggle HUD visibility", true, nil, {
@@ -123,7 +124,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get static options for a dropdown
         local options = lia.option.getOptions("weaponSelectorPosition")
@@ -193,7 +195,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Set a boolean option
         lia.option.set("showHUD", true)
@@ -252,7 +255,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get a boolean option
         local showHUD = lia.option.get("showHUD")
@@ -313,7 +317,8 @@ end
         Client
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Save options after changes
         lia.option.set("showHUD", true)
@@ -385,7 +390,8 @@ end
         Client
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load options at startup
         lia.option.load()

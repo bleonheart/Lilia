@@ -4,7 +4,7 @@ Panel management system for the Lilia framework.
 
 ---
 
-## Overview
+Overview
 
 The panel meta table provides comprehensive functionality for managing VGUI panels, UI interactions, and panel operations in the Lilia framework. It handles panel event listening, inventory synchronization, UI updates, and panel-specific operations. The meta table operates primarily on the client side, with the server providing data that panels can listen to and display. It includes integration with the inventory system for inventory change notifications, character system for character data display, network system for data synchronization, and UI system for panel management. The meta table ensures proper panel event handling, inventory synchronization, UI updates, and comprehensive panel lifecycle management from creation to destruction.
 
@@ -168,9 +168,9 @@ panel:setScaledPos(x, y)
 -- High: Position multiple panels with responsive layout
 local panels = {mainPanel, sidePanel, footerPanel}
 local positions = {
-    {ScrW() * 0.1, ScrH() * 0.1},
-    {ScrW() * 0.7, ScrH() * 0.1},
-    {ScrW() * 0.1, ScrH() * 0.8}
+{ScrW() * 0.1, ScrH() * 0.1},
+{ScrW() * 0.7, ScrH() * 0.1},
+{ScrW() * 0.1, ScrH() * 0.8}
 }
 for i, pnl in ipairs(panels) do
     if IsValid(pnl) then
@@ -230,9 +230,9 @@ panel:setScaledSize(w, h)
 -- High: Set sizes for multiple panels with responsive layout
 local panels = {mainPanel, sidePanel, footerPanel}
 local sizes = {
-    {ScrW() * 0.7, ScrH() * 0.6},
-    {ScrW() * 0.25, ScrH() * 0.6},
-    {ScrW() * 0.95, ScrH() * 0.1}
+{ScrW() * 0.7, ScrH() * 0.6},
+{ScrW() * 0.25, ScrH() * 0.6},
+{ScrW() * 0.95, ScrH() * 0.1}
 }
 for i, pnl in ipairs(panels) do
     if IsValid(pnl) then

@@ -65,7 +65,7 @@
 
         local modifiers = {
             regeneration = 1.0,
-            drain = 1.0
+            drain       = 1.0
         }
 
         -- Constitution bonus
@@ -601,7 +601,7 @@ end
     -- High: Complex gender detection
     hook.Add("GetModelGender", "AdvancedGenderDetection", function(model)
         -- Check for female keywords
-        local femaleKeywords = {"female", "woman", "girl", "alyx"}
+        local femaleKeywords = {"female", "woman", "girl", "alyx" }
         for _, keyword in ipairs(femaleKeywords) do
             if string.find(string.lower(model), keyword) then
                 return "female"
@@ -610,8 +610,8 @@ end
 
         -- Check specific models
         local femaleModels = {
-            ["models/player/alyx.mdl"] = true,
-            ["models/player/mossman.mdl"] = true
+            ["models/player/alyx.mdl"]    = true,
+            ["models/player/mossman.mdl"]  = true
         }
 
         if femaleModels[model] then
@@ -669,10 +669,10 @@ end
     hook.Add("InitializedConfig", "AdvancedConfigInit", function()
         -- Add custom configuration options
         local configOptions = {
-            {key = "myAddonEnabled", default = true, description = "Enable My Addon", type = "boolean"},
-            {key = "myAddonValue", default = 100, description = "My Addon Value", type = "number"},
-            {key = "myAddonString", default = "default", description = "My Addon String", type = "string"},
-            {key = "myAddonColor", default = Color(255, 255, 255), description = "My Addon Color", type = "color"}
+            {key = "myAddonEnabled", default = true,              description = "Enable My Addon", type = "boolean"},
+            {key = "myAddonValue",   default = 100,               description = "My Addon Value",  type = "number" },
+            {key = "myAddonString",  default = "default",         description = "My Addon String", type = "string" },
+            {key = "myAddonColor",   default = Color(255, 255, 255), description = "My Addon Color", type = "color" }
         }
 
         for _, option in ipairs(configOptions) do
@@ -758,22 +758,22 @@ end
         -- Register custom items
         local customItems = {
             {
-                uniqueID = "my_weapon",
-                name = "My Weapon",
-                model = "models/weapons/w_pistol.mdl",
+                uniqueID  = "my_weapon",
+                name      = "My Weapon",
+                model     = "models/weapons/w_pistol.mdl",
                 description = "A custom weapon",
-                category = "weapons",
-                weight = 2,
-                price = 100
+                category  = "weapons",
+                weight    = 2,
+                price     = 100
             },
             {
-                uniqueID = "my_medkit",
-                name = "My Medkit",
-                model = "models/items/medkit.mdl",
+                uniqueID  = "my_medkit",
+                name      = "My Medkit",
+                model     = "models/items/medkit.mdl",
                 description = "A custom medkit",
-                category = "medical",
-                weight = 1,
-                price = 50
+                category  = "medical",
+                weight    = 1,
+                price     = 50
             }
         }
 
@@ -842,19 +842,19 @@ end
         -- Register custom modules
         local modules = {
             {
-                uniqueID = "my_module",
-                name = "My Module",
+                uniqueID    = "my_module",
+                name        = "My Module",
                 description = "A custom module",
-                author = "Me",
-                version = "1.0.0",
+                author      = "Me",
+                version     = "1.0.0",
                 dependencies = {"base"}
             },
             {
-                uniqueID = "my_other_module",
-                name = "My Other Module",
+                uniqueID    = "my_other_module",
+                name        = "My Other Module",
                 description = "Another custom module",
-                author = "Me",
-                version = "1.0.0",
+                author      = "Me",
+                version     = "1.0.0",
                 dependencies = {"my_module"}
             }
         }
@@ -929,15 +929,15 @@ end
     hook.Add("InitializedSchema", "AdvancedSchemaInit", function()
         -- Set up custom schema data
         local schemaData = {
-            version = "1.0.0",
-            name = "My Custom Schema",
+            version     = "1.0.0",
+            name        = "My Custom Schema",
             description = "A custom schema for my addon",
-            author = "Me",
-            enabled = true,
-            settings = {
-                maxPlayers = 32,
+            author      = "Me",
+            enabled     = true,
+            settings    = {
+                maxPlayers  = 32,
                 respawnTime = 5,
-                roundTime = 600
+                roundTime   = 600
             }
         }
 
@@ -1048,10 +1048,10 @@ end
 
 --[[
     Purpose:
-                Called when an inventory is initialized
+        Called when an inventory is initialized
 
     When Called:
-                When an inventory is first created and set up
+        When an inventory is first created and set up
 
     Parameters:
         instance (Inventory) - The inventory being initialized
@@ -1135,10 +1135,10 @@ end
 
 --[[
     Purpose:
-                Called when an item's data changes in an inventory
+        Called when an item's data changes in an inventory
 
     When Called:
-                When an item's data is modified while in an inventory
+        When an item's data is modified while in an inventory
 
     Parameters:
         item (Item) - The item whose data changed
@@ -1229,10 +1229,10 @@ end
 
 --[[
     Purpose:
-                Called to check if a character is fake recognized
+        Called to check if a character is fake recognized
 
     When Called:
-                When checking if a character appears recognized but isn't truly
+        When checking if a character appears recognized but isn't truly
 
     Parameters:
         self (Character) - The character checking recognition
@@ -1294,10 +1294,10 @@ end
 
 --[[
     Purpose:
-                Called to check if a character is recognized
+        Called to check if a character is recognized
 
     When Called:
-                When checking if one character recognizes another
+        When checking if one character recognizes another
 
     Parameters:
         self (Character) - The character checking recognition
@@ -1385,10 +1385,10 @@ end
 
 --[[
     Purpose:
-                Called to check if a chat type requires recognition
+        Called to check if a chat type requires recognition
 
     When Called:
-                When determining if players need to be recognized to see names in chat
+        When determining if players need to be recognized to see names in chat
 
     Parameters:
         chatType (string) - The chat type being checked
@@ -1415,7 +1415,7 @@ end
     ```lua
     -- Medium: Multiple chat types require recognition
     hook.Add("IsRecognizedChatType", "RecognizedChatTypes", function(chatType)
-        local recognizedTypes = {"ic", "w", "y"}
+        local recognizedTypes = {"ic", "w", "y" }
         return table.HasValue(recognizedTypes, chatType)
     end)
     ```
@@ -1426,13 +1426,13 @@ end
     -- High: Complex recognition requirements
     hook.Add("IsRecognizedChatType", "AdvancedChatRecognition", function(chatType)
         -- OOC and admin chats never require recognition
-        local noRecognitionTypes = {"ooc", "looc", "admin"}
+        local noRecognitionTypes = {"ooc", "looc", "admin" }
         if table.HasValue(noRecognitionTypes, chatType) then
             return false
         end
 
         -- IC and whisper chats require recognition
-        local recognitionTypes = {"ic", "w", "y", "me", "it"}
+        local recognitionTypes = {"ic", "w", "y", "me", "it" }
         if table.HasValue(recognitionTypes, chatType) then
             return true
         end
@@ -1452,10 +1452,10 @@ end
 
 --[[
     Purpose:
-                Called to validate an entity
+        Called to validate an entity
 
     When Called:
-                When checking if an entity reference is valid
+        When checking if an entity reference is valid
 
     Parameters:
         None
@@ -1505,10 +1505,10 @@ end
 
 --[[
     Purpose:
-                Called when an item's data changes
+        Called when an item's data changes
 
     When Called:
-                When an item's data is modified
+        When an item's data is modified
 
     Parameters:
         item (Item) - The item whose data changed
@@ -1605,10 +1605,10 @@ end
 
 --[[
     Purpose:
-                Called to get default functions for an item
+        Called to get default functions for an item
 
     When Called:
-                When building the default interaction functions for an item
+        When building the default interaction functions for an item
 
     Parameters:
         item (Item) - The item to get functions for
@@ -1627,8 +1627,8 @@ end
     -- Simple: Return basic functions
     hook.Add("ItemDefaultFunctions", "MyAddon", function(item)
         return {
-            use = {name = "Use", icon = "icon16/accept.png"},
-            drop = {name = "Drop", icon = "icon16/bin.png"}
+            use  = {name = "Use",  icon = "icon16/accept.png"},
+            drop = {name = "Drop", icon = "icon16/bin.png" }
         }
     end)
     ```
@@ -1639,8 +1639,8 @@ end
     -- Medium: Conditional functions
     hook.Add("ItemDefaultFunctions", "ConditionalItemFunctions", function(item)
         local functions = {
-            use = {name = "Use", icon = "icon16/accept.png"},
-            drop = {name = "Drop", icon = "icon16/bin.png"}
+            use  = {name = "Use",  icon = "icon16/accept.png"},
+            drop = {name = "Drop", icon = "icon16/bin.png" }
         }
 
         if not item:getData("equipped", false) then
@@ -1695,10 +1695,10 @@ end
 
 --[[
     Purpose:
-                Called when an item is initialized
+        Called when an item is initialized
 
     When Called:
-                When an item is first created and set up
+        When an item is first created and set up
 
     Parameters:
         item (Item) - The item being initialized
@@ -1774,10 +1774,10 @@ end
 
 --[[
     Purpose:
-                Called when an item's quantity changes
+        Called when an item's quantity changes
 
     When Called:
-                When the stack size of an item is modified
+        When the stack size of an item is modified
 
     Parameters:
         item (Item) - The item whose quantity changed
@@ -1863,10 +1863,10 @@ end
 
 --[[
     Purpose:
-                Called when Lilia framework is fully loaded
+        Called when Lilia framework is fully loaded
 
     When Called:
-                After all Lilia systems are initialized
+        After all Lilia systems are initialized
 
     Parameters:
         None
@@ -1878,11 +1878,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log framework load
     hook.Add("LiliaLoaded", "MyAddon", function()
-    print("Lilia framework loaded")
+        print("Lilia framework loaded")
     end)
     ```
 
@@ -1890,8 +1892,8 @@ end
     ```lua
     -- Medium: Initialize addon systems
     hook.Add("LiliaLoaded", "InitializeAddon", function()
-    MyAddon.Initialize()
-    print("MyAddon initialized")
+        MyAddon.Initialize()
+        print("MyAddon initialized")
     end)
     ```
 
@@ -1906,7 +1908,7 @@ end
         -- Register custom chat commands
         lia.command.add("mycmd", {
             description = "My custom command",
-            onRun = function(client, arguments)
+            onRun       = function(client, arguments)
                 client:ChatPrint("Command executed!")
             end
         })
@@ -1927,10 +1929,10 @@ end
 
 --[[
     Purpose:
-                Called when a network variable changes
+        Called when a network variable changes
 
     When Called:
-                When an entity's netvar is modified
+        When an entity's netvar is modified
 
     Parameters:
         entity (Entity) - The entity whose netvar changed
@@ -1945,11 +1947,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log netvar changes
     hook.Add("NetVarChanged", "MyAddon", function(entity, key, oldValue, value)
-    print("NetVar changed: " .. key .. " = " .. tostring(value))
+        print("NetVar changed: " .. key .. " = " .. tostring(value))
     end)
     ```
 
@@ -2000,10 +2004,10 @@ end
 
 --[[
     Purpose:
-                Called when an item is registered
+        Called when an item is registered
 
     When Called:
-                When a new item is added to the item system
+        When a new item is added to the item system
 
     Parameters:
         ITEM (table) - The item table being registered
@@ -2015,11 +2019,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log item registration
     hook.Add("OnItemRegistered", "MyAddon", function(ITEM)
-    print("Item registered: " .. ITEM.name)
+        print("Item registered: " .. ITEM.name)
     end)
     ```
 
@@ -2027,12 +2033,12 @@ end
     ```lua
     -- Medium: Track registered items
     hook.Add("OnItemRegistered", "TrackItems", function(ITEM)
-    MyAddon.registeredItems = MyAddon.registeredItems or {}
-    MyAddon.registeredItems[ITEM.uniqueID] = {
-    name = ITEM.name,
-    model = ITEM.model,
-    registered = os.time()
-    }
+        MyAddon.registeredItems = MyAddon.registeredItems or {}
+        MyAddon.registeredItems[ITEM.uniqueID] = {
+            name       = ITEM.name,
+            model      = ITEM.model,
+            registered = os.time()
+        }
     end)
     ```
 
@@ -2043,9 +2049,9 @@ end
     hook.Add("OnItemRegistered", "AdvancedItemRegistration", function(ITEM)
         -- Log item registration
         lia.log.write("item_registered", {
-            uniqueID = ITEM.uniqueID,
-            name = ITEM.name,
-            model = ITEM.model,
+            uniqueID  = ITEM.uniqueID,
+            name      = ITEM.name,
+            model     = ITEM.model,
             timestamp = os.time()
         })
 
@@ -2074,10 +2080,10 @@ end
 
 --[[
     Purpose:
-                Called when the framework has finished loading
+        Called when the framework has finished loading
 
     When Called:
-                After all framework components have been initialized
+        After all framework components have been initialized
 
     Parameters:
         None
@@ -2089,11 +2095,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log framework loaded
     hook.Add("OnLoaded", "MyAddon", function()
-    print("Lilia framework has finished loading")
+        print("Lilia framework has finished loading")
     end)
     ```
 
@@ -2140,10 +2148,10 @@ end
 
 --[[
     Purpose:
-                Called when a new privilege is registered
+        Called when a new privilege is registered
 
     When Called:
-                When a privilege is added to the system
+        When a privilege is added to the system
 
     Parameters:
         privilege (string) - The privilege identifier
@@ -2158,11 +2166,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log privilege registration
     hook.Add("OnPrivilegeRegistered", "MyAddon", function(privilege, name, access, category)
-    print("Privilege registered: " .. name)
+        print("Privilege registered: " .. name)
     end)
     ```
 
@@ -2170,12 +2180,12 @@ end
     ```lua
     -- Medium: Track privileges
     hook.Add("OnPrivilegeRegistered", "TrackPrivileges", function(privilege, name, access, category)
-    MyAddon.privileges = MyAddon.privileges or {}
-    MyAddon.privileges[privilege] = {
-    name = name,
-    access = access,
-    category = category
-    }
+        MyAddon.privileges = MyAddon.privileges or {}
+        MyAddon.privileges[privilege] = {
+            name     = name,
+            access   = access,
+            category = category
+        }
     end)
     ```
 
@@ -2188,9 +2198,9 @@ end
         if SERVER then
             lia.data.get("privileges", {}, function(data)
                 data[privilege] = {
-                    name = name,
-                    access = access,
-                    category = category,
+                    name       = name,
+                    access     = access,
+                    category   = category,
                     registered = os.time()
                 }
                 lia.data.set("privileges", data)
@@ -2211,10 +2221,10 @@ end
 
 --[[
     Purpose:
-                Called when a privilege is unregistered
+        Called when a privilege is unregistered
 
     When Called:
-                When a privilege is removed from the system
+        When a privilege is removed from the system
 
     Parameters:
         privilege (string) - The privilege identifier
@@ -2227,11 +2237,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log privilege removal
     hook.Add("OnPrivilegeUnregistered", "MyAddon", function(privilege, name)
-    print("Privilege unregistered: " .. name)
+        print("Privilege unregistered: " .. name)
     end)
     ```
 
@@ -2274,10 +2286,10 @@ end
 
 --[[
     Purpose:
-                Called when an option is added to the options system
+        Called when an option is added to the options system
 
     When Called:
-                When a new option is registered
+        When a new option is registered
 
     Parameters:
         key (string) - The option key that was added
@@ -2290,11 +2302,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log when options are added
     hook.Add("OptionAdded", "MyAddon", function(key, option)
-    print("Option " .. key .. " was added")
+        print("Option " .. key .. " was added")
     end)
     ```
 
@@ -2302,8 +2316,8 @@ end
     ```lua
     -- Medium: Track added options
     hook.Add("OptionAdded", "TrackOptions", function(key, option)
-    MyAddon.addedOptions = MyAddon.addedOptions or {}
-    MyAddon.addedOptions[key] = option
+        MyAddon.addedOptions = MyAddon.addedOptions or {}
+        MyAddon.addedOptions[key] = option
     end)
     ```
 
@@ -2314,9 +2328,9 @@ end
     hook.Add("OptionAdded", "AdvancedOptionHandler", function(key, option)
         -- Log option addition
         lia.log.write("option_added", {
-            key = key,
-            type = option.type,
-            default = option.default,
+            key       = key,
+            type      = option.type,
+            default   = option.default,
             timestamp = os.time()
         })
 
@@ -2330,8 +2344,8 @@ end
             MyAddon.numberOptions = MyAddon.numberOptions or {}
             MyAddon.numberOptions[key] = {
                 value = option.default or 0,
-                min = option.min or 0,
-                max = option.max or 100
+                min   = option.min or 0,
+                max   = option.max or 100
             }
         end
 
@@ -2350,10 +2364,10 @@ end
 
 --[[
     Purpose:
-                Called when a configuration option is changed
+        Called when a configuration option is changed
 
     When Called:
-                When a configuration value is modified
+        When a configuration value is modified
 
     Parameters:
         key (string) - The option key that was changed
@@ -2367,11 +2381,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log option changes
     hook.Add("OptionChanged", "MyAddon", function(key, old, value)
-    print("Option " .. key .. " changed from " .. tostring(old) .. " to " .. tostring(value))
+        print("Option " .. key .. " changed from " .. tostring(old) .. " to " .. tostring(value))
     end)
     ```
 
@@ -2379,13 +2395,13 @@ end
     ```lua
     -- Medium: Track option changes
     hook.Add("OptionChanged", "TrackOptions", function(key, old, value)
-    MyAddon.optionHistory = MyAddon.optionHistory or {}
-    table.insert(MyAddon.optionHistory, {
-    key = key,
-    old = old,
-    new = value,
-    time = os.time()
-    })
+        MyAddon.optionHistory = MyAddon.optionHistory or {}
+        table.insert(MyAddon.optionHistory, {
+            key  = key,
+            old  = old,
+            new  = value,
+            time = os.time()
+        })
     end)
     ```
 
@@ -2396,9 +2412,9 @@ end
     hook.Add("OptionChanged", "AdvancedOptionChange", function(key, old, value)
         -- Log option change
         lia.log.write("option_changed", {
-            key = key,
-            old = tostring(old),
-            new = tostring(value),
+            key       = key,
+            old       = tostring(old),
+            new       = tostring(value),
             timestamp = os.time()
         })
 
@@ -2424,10 +2440,10 @@ end
 
 --[[
     Purpose:
-                Called to override a faction's description
+        Called to override a faction's description
 
     When Called:
-                When a faction description needs to be modified
+        When a faction description needs to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2440,11 +2456,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Add prefix to description
     hook.Add("OverrideFactionDesc", "MyAddon", function(uniqueID, description)
-    return "[FACTION] " .. description
+        return "[FACTION] " .. description
     end)
     ```
 
@@ -2485,10 +2503,10 @@ end
 
 --[[
     Purpose:
-                Called to override a faction's models
+        Called to override a faction's models
 
     When Called:
-                When a faction's available models need to be modified
+        When a faction's available models need to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2501,6 +2519,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
 
     ```lua
@@ -2559,10 +2578,10 @@ end
 
 --[[
     Purpose:
-                Called to override a faction's name
+        Called to override a faction's name
 
     When Called:
-                When a faction name needs to be modified
+        When a faction name needs to be modified
 
     Parameters:
         uniqueID (string) - The faction's unique ID
@@ -2575,11 +2594,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Add prefix to name
     hook.Add("OverrideFactionName", "MyAddon", function(uniqueID, name)
-    return "[" .. uniqueID:upper() .. "] " .. name
+        return "[" .. uniqueID:upper() .. "] " .. name
     end)
     ```
 
@@ -2587,13 +2608,13 @@ end
     ```lua
     -- Medium: Localize faction names
     hook.Add("OverrideFactionName", "LocalizeFactionNames", function(uniqueID, name)
-    local localizedNames = {
-    citizen = "Citoyen",
-    police = "Police",
-    medic = "Médecin"
-    }
+        local localizedNames = {
+            citizen = "Citoyen",
+            police  = "Police",
+            medic   = "Médecin"
+        }
 
-    return localizedNames[uniqueID] or name
+        return localizedNames[uniqueID] or name
     end)
     ```
 
@@ -2629,10 +2650,10 @@ end
 
 --[[
     Purpose:
-                Called when player gains stamina
+        Called when player gains stamina
 
     When Called:
-                When a player's stamina increases
+        When a player's stamina increases
 
     Parameters:
         self (Player) - The player gaining stamina
@@ -2644,11 +2665,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log stamina gain
     hook.Add("PlayerStaminaGained", "MyAddon", function(self)
-    print(self:Name() .. " gained stamina")
+        print(self:Name() .. " gained stamina")
     end)
     ```
 
@@ -2696,10 +2719,10 @@ end
 
 --[[
     Purpose:
-                Called when player loses stamina
+        Called when player loses stamina
 
     When Called:
-                When a player's stamina decreases
+        When a player's stamina decreases
 
     Parameters:
         self (Player) - The player losing stamina
@@ -2711,11 +2734,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log stamina loss
     hook.Add("PlayerStaminaLost", "MyAddon", function(self)
-    print(self:Name() .. " lost stamina")
+        print(self:Name() .. " lost stamina")
     end)
     ```
 
@@ -2761,10 +2786,10 @@ end
 
 --[[
     Purpose:
-                Called before Lilia framework is loaded
+        Called before Lilia framework is loaded
 
     When Called:
-                Before Lilia systems are initialized
+        Before Lilia systems are initialized
 
     Parameters:
         None
@@ -2776,11 +2801,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Log pre-load
     hook.Add("PreLiliaLoaded", "MyAddon", function()
-    print("Lilia is about to load")
+        print("Lilia is about to load")
     end)
     ```
 
@@ -2788,8 +2815,8 @@ end
     ```lua
     -- Medium: Initialize addon systems
     hook.Add("PreLiliaLoaded", "InitializeAddon", function()
-    MyAddon.PreInitialize()
-    print("Addon pre-initialized")
+        MyAddon.PreInitialize()
+        print("Addon pre-initialized")
     end)
     ```
 
@@ -2804,7 +2831,7 @@ end
         -- Set up configuration
         MyAddon.config = MyAddon.config or {}
         MyAddon.config.enabled = true
-        MyAddon.config.debug = false
+        MyAddon.config.debug  = false
 
         -- Register custom hooks
         hook.Add("PlayerInitialSpawn", "MyAddonSpawn", MyAddon.OnPlayerSpawn)
@@ -2818,10 +2845,10 @@ end
 
 --[[
     Purpose:
-                Called to calculate stamina change
+        Called to calculate stamina change
 
     When Called:
-                When calculating how much stamina should change
+        When calculating how much stamina should change
 
     Parameters:
         client (Player) - The player whose stamina is changing
@@ -2833,11 +2860,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Return default stamina change
     hook.Add("calcStaminaChange", "MyAddon", function(client)
-    return 1
+        return 1
     end)
     ```
 
@@ -2910,10 +2939,10 @@ end
 
 --[[
     Purpose:
-                Called to get persistent data
+        Called to get persistent data
 
     When Called:
-                When retrieving stored data
+        When retrieving stored data
 
     Parameters:
         default (any) - The default value if data doesn't exist
@@ -2925,11 +2954,13 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
+
     ```lua
     -- Simple: Get data with default
     hook.Add("getData", "MyAddon", function(default)
-    return default
+        return default
     end)
     ```
 
@@ -2970,7 +3001,7 @@ end
 
         -- Cache the result
         cache[key] = {
-            value = data,
+            value  = data,
             expiry = CurTime() + 60
         }
         lia.data.cache = cache

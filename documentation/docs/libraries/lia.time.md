@@ -4,7 +4,7 @@ Time manipulation, formatting, and calculation system for the Lilia framework.
 
 ---
 
-## Overview
+Overview
 
 The time library provides comprehensive functionality for time manipulation, formatting, and calculation within the Lilia framework. It handles time parsing, formatting, relative time calculations, and date/time display with support for both 24-hour and 12-hour (American) time formats. The library operates on both server and client sides, providing consistent time handling across the gamemode. It includes functions for calculating time differences, formatting durations, parsing date strings, and generating localized time displays. The library ensures proper time zone handling and supports configurable time format preferences.
 
@@ -19,6 +19,10 @@ Calculate and return a human-readable string representing how long ago a given t
 **When Called**
 
 When displaying relative timestamps, such as "last seen" times, message timestamps, or activity logs
+
+**Parameters**
+
+* `strTime` (*string|number*): Either a timestamp number or a date string in "YYYY-MM-DD" format
 
 **Returns**
 
@@ -72,6 +76,10 @@ Parse a date/time string and convert it into a structured table with individual 
 **When Called**
 
 When converting date strings to structured data for further processing or validation
+
+**Parameters**
+
+* `str` (*string, optional*): Date string in "YYYY-MM-DD HH:MM:SS" format, defaults to current time if nil
 
 **Returns**
 
@@ -188,6 +196,10 @@ Format a duration in seconds into a human-readable string showing days, hours, a
 
 When displaying durations, cooldowns, or time remaining in UI elements
 
+**Parameters**
+
+* `seconds` (*number, optional*): Duration in seconds to format, defaults to 0 if nil
+
 **Returns**
 
 * string - Localized string showing days, hours, and minutes (e.g., "2 days, 5 hours, 30 minutes")
@@ -231,9 +243,9 @@ local function formatMultipleDurations(durations)
     return table.concat(results, ", ")
 end
 local durations = {
-    cooldown = 3600,
-    banTime = 86400,
-    muteTime = 1800
+cooldown = 3600,
+banTime = 86400,
+muteTime = 1800
 }
 print(formatMultipleDurations(durations))
 
@@ -279,21 +291,21 @@ if lia.config.get("AmericanTimeStamps", false) then
     local hourNum = tonumber(hour:match("%d+"))
     if hourNum >= 6 and hourNum < 12 then
         greeting = "Good morning!"
-    elseif hourNum >= 12 and hourNum < 18 then
-        greeting = "Good afternoon!"
-    else
-        greeting = "Good evening!"
-    end
-else
-    -- 24-hour format returns number
-    if hour >= 6 and hour < 12 then
-        greeting = "Good morning!"
-    elseif hour >= 12 and hour < 18 then
-        greeting = "Good afternoon!"
-    else
-        greeting = "Good evening!"
-    end
-end
+        elseif hourNum >= 12 and hourNum < 18 then
+            greeting = "Good afternoon!"
+            else
+                greeting = "Good evening!"
+            end
+            else
+                -- 24-hour format returns number
+                if hour >= 6 and hour < 12 then
+                    greeting = "Good morning!"
+                    elseif hour >= 12 and hour < 18 then
+                        greeting = "Good afternoon!"
+                        else
+                            greeting = "Good evening!"
+                        end
+                    end
 
 ```
 
@@ -310,24 +322,24 @@ local function getServerEvents()
         local isPM = hour:find("pm")
         if isPM and hourNum ~= 12 then
             hourNum = hourNum + 12
-        elseif not isPM and hourNum == 12 then
-            hourNum = 0
-        end
-    else
-        hourNum = hour
-    end
-    -- Schedule events based on hour
-    if hourNum >= 0 and hourNum < 6 then
-        table.insert(events, "Night shift bonus active")
-    elseif hourNum >= 6 and hourNum < 12 then
-        table.insert(events, "Morning rush hour")
-    elseif hourNum >= 12 and hourNum < 18 then
-        table.insert(events, "Afternoon activities")
-    else
-        table.insert(events, "Evening events")
-    end
-    return events
-end
+            elseif not isPM and hourNum == 12 then
+                hourNum = 0
+            end
+            else
+                hourNum = hour
+            end
+            -- Schedule events based on hour
+            if hourNum >= 0 and hourNum < 6 then
+                table.insert(events, "Night shift bonus active")
+                elseif hourNum >= 6 and hourNum < 12 then
+                    table.insert(events, "Morning rush hour")
+                    elseif hourNum >= 12 and hourNum < 18 then
+                        table.insert(events, "Afternoon activities")
+                        else
+                            table.insert(events, "Evening events")
+                        end
+                        return events
+                    end
 
 ```
 

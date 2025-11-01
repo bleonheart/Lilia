@@ -1,5 +1,155 @@
 # Changelog
 
+## Version 6.935 (November 01, 2025)
+
+### Changes
+
+- Update gettingstarted.md
+- Successfully updated workshop Lilia to 6.933
+- Yeah More Docs lmfao
+- Successfully updated workshop Lilia to 6.931
+- More Docs
+- Successfully updated workshop Lilia to 6.929
+- Docs
+- Successfully updated workshop Lilia to 6.927
+- Update item.lua
+- docs
+- Successfully updated workshop Lilia to 6.924
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+
+## Version 6.933 (November 01, 2025)
+
+### Changes
+
+- Yeah More Docs lmfao
+- Successfully updated workshop Lilia to 6.931
+- More Docs
+- Successfully updated workshop Lilia to 6.929
+- Docs
+- Successfully updated workshop Lilia to 6.927
+- Update item.lua
+- docs
+- Successfully updated workshop Lilia to 6.924
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+- Successfully updated workshop Lilia to 6.914
+- Way too many changes lel
+
+## Version 6.931 (November 01, 2025)
+
+### Changes
+
+- More Docs
+- Successfully updated workshop Lilia to 6.929
+- Docs
+- Successfully updated workshop Lilia to 6.927
+- Update item.lua
+- docs
+- Successfully updated workshop Lilia to 6.924
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+- Successfully updated workshop Lilia to 6.914
+- Way too many changes lel
+- Spacing
+- Successfully updated workshop Lilia to 6.911
+
+## Version 6.929 (November 01, 2025)
+
+### Changes
+
+- Docs
+- Successfully updated workshop Lilia to 6.927
+- Update item.lua
+- docs
+- Successfully updated workshop Lilia to 6.924
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+- Successfully updated workshop Lilia to 6.914
+- Way too many changes lel
+- Spacing
+- Successfully updated workshop Lilia to 6.911
+- Update client.lua
+- Update buttons.lua
+
+## Version 6.927 (November 01, 2025)
+
+### Changes
+
+- Update item.lua
+- docs
+- Successfully updated workshop Lilia to 6.924
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+- Successfully updated workshop Lilia to 6.914
+- Way too many changes lel
+- Spacing
+- Successfully updated workshop Lilia to 6.911
+- Update client.lua
+- Update buttons.lua
+- Successfully updated workshop Lilia to 6.98
+- Update shared.lua
+
+## Version 6.924 (November 01, 2025)
+
+### Changes
+
+- liaTable and liaTabs  automatically adjust sizing
+- Successfully updated workshop Lilia to 6.922
+- Update net.lua
+- Docs Overhaul
+- Successfully updated workshop Lilia to 6.919
+- Documented Item Meta
+- Optimizations
+- Successfully updated workshop Lilia to 6.916
+- New Docs Format
+- Successfully updated workshop Lilia to 6.914
+- Way too many changes lel
+- Spacing
+- Successfully updated workshop Lilia to 6.911
+- Update client.lua
+- Update buttons.lua
+- Successfully updated workshop Lilia to 6.98
+- Update shared.lua
+- Fixes
+- Successfully updated workshop Lilia to 6.95
+- Revert "Spacing"
+
 ## Version 6.919 (October 30, 2025)
 
 ### Changes

@@ -30,6 +30,7 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic faction
@@ -131,6 +132,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Cache basic string models
@@ -191,6 +193,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load factions from a basic directory
@@ -291,6 +294,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get faction by unique ID
@@ -351,6 +355,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get faction index
@@ -411,6 +416,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all classes for a faction
@@ -486,6 +492,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all players in a faction
@@ -560,6 +567,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get player count for a faction
@@ -628,6 +636,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if faction is in a category
@@ -704,6 +713,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Generate a basic faction
@@ -819,6 +829,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Format all faction model data
@@ -895,6 +906,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get categories for a faction
@@ -971,6 +983,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get models from a category
@@ -1049,6 +1062,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get default class for a faction
@@ -1143,6 +1157,7 @@ FACTION_STAFF = lia.faction.register("staff", {
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if faction has whitelist
@@ -1220,6 +1235,7 @@ if CLIENT then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if faction has whitelist

@@ -297,7 +297,8 @@ local ConditionalFiles = {
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Include a shared library file
     lia.loader.include("lilia/gamemode/core/libraries/util.lua")
@@ -376,7 +377,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Include all files in a directory
     lia.loader.includeDir("lilia/gamemode/core/libraries")
@@ -436,7 +438,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Include files with automatic realm detection
     lia.loader.includeGroupedDir("lilia/gamemode/core/libraries")
@@ -547,7 +550,8 @@ local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Check for updates during server startup
     lia.loader.checkForUpdates()
@@ -715,7 +719,8 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Display a basic error message
     lia.error("Failed to load module")
@@ -773,7 +778,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Display a basic warning message
     lia.warning("Module version mismatch detected")
@@ -830,7 +836,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Display a basic information message
     lia.information("Framework initialized successfully")
@@ -884,7 +891,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Display a basic bootstrap message
     lia.bootstrap("Database", "Connection established")
@@ -936,7 +944,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Send a basic Discord message
     lia.relaydiscordMessage({
@@ -1048,7 +1057,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
     ```lua
     -- Simple: Include entities from the default gamemode path
     lia.loader.includeEntities("lilia/gamemode/entities")

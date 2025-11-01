@@ -53,6 +53,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic inventory type
@@ -126,6 +127,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Create a basic player inventory
@@ -183,6 +185,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load inventory by ID
@@ -258,6 +261,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load inventory from default storage
@@ -350,6 +354,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Create a new inventory instance
@@ -427,6 +432,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load all inventories for a character
@@ -507,6 +513,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Delete an inventory by ID
@@ -588,6 +595,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Clean up character inventories
@@ -663,6 +671,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check for overflow after inventory resize
@@ -746,6 +755,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic storage container
@@ -831,6 +841,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get storage data for a model
@@ -917,6 +928,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic vehicle trunk
@@ -1015,6 +1027,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get trunk data for a vehicle
@@ -1103,6 +1116,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all trunks
@@ -1201,6 +1215,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all storage (including trunks)
@@ -1305,6 +1320,7 @@ else
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Show inventory panel

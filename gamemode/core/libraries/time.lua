@@ -22,9 +22,10 @@ lia.time = lia.time or {}
         string - Localized string indicating time elapsed (e.g., "5 minutes ago", "2 hours ago", "3 days ago")
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get time since a timestamp
@@ -98,9 +99,10 @@ end
         table - Table containing year, month, day, hour, min, sec as numbers
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Parse current time
@@ -156,9 +158,10 @@ end
         string - Formatted date string with localized weekday and month names
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Display current date
@@ -226,9 +229,10 @@ end
         string - Localized string showing days, hours, and minutes (e.g., "2 days, 5 hours, 30 minutes")
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Format a duration
@@ -292,9 +296,10 @@ end
         string|number - Current hour as string with AM/PM suffix (American format) or number (24-hour format)
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get current hour

@@ -28,7 +28,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Send basic notification to all players
         lia.notices.notify(nil, "Server restarting in 5 minutes!")
@@ -87,7 +88,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Send localized notification to all players
         lia.notices.notifyInfoLocalized(nil, "server.restart")
@@ -150,7 +152,8 @@ else
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Function is called automatically when server sends notification
         -- No direct usage needed - handled by network receiver
@@ -218,7 +221,8 @@ else
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Function is called automatically when server sends localized notification
         -- No direct usage needed - handled by network receiver
@@ -300,7 +304,8 @@ else
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Display basic notification
         lia.notices.notify(nil, "Settings saved!", "success")
@@ -359,7 +364,8 @@ else
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Display localized notification
         lia.notices.notifySuccessLocalized(nil, "ui.settings.saved")
@@ -438,7 +444,8 @@ else
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Use legacy notification system
         notification.AddLegacy("Server restarting!", 0)
@@ -500,6 +507,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Function is called automatically when notifications are created

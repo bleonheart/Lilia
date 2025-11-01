@@ -29,6 +29,7 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if player is within default range of an entity
@@ -80,6 +81,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all available interactions for local player
@@ -148,6 +150,7 @@ end
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all available personal actions
@@ -210,6 +213,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get options for display
@@ -281,7 +285,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add basic player interaction
         lia.playerinteract.addInteraction("giveMoney", {
@@ -399,7 +404,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add basic personal action
         lia.playerinteract.addAction("changeToWhisper", {
@@ -525,7 +531,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Sync all interactions to all clients
         lia.playerinteract.syncToClients()
@@ -714,7 +721,8 @@ else
         Note: This function is now a thin wrapper around lia.derma.optionsMenu for backwards compatibility.
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Open basic interaction menu
         local interactions = lia.playerinteract.getInteractions()

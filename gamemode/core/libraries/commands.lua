@@ -26,6 +26,7 @@ lia.command.list = lia.command.list or {}
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Generate syntax for basic arguments
@@ -102,6 +103,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic command
@@ -274,6 +276,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check basic command access
@@ -363,6 +366,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Extract basic arguments
@@ -468,6 +472,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Execute a basic command
@@ -534,6 +539,7 @@ if SERVER then
         Server
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Parse basic command from chat
@@ -637,6 +643,7 @@ else
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Open prompt for single missing argument
@@ -903,6 +910,7 @@ else
         Client
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Send basic command
@@ -1010,6 +1018,7 @@ end)
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Find player by exact name

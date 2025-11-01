@@ -87,10 +87,10 @@ Example Item:
 
 ```lua
 -- Basic item identification
-ITEM.name = "Medical Journal"                                    -- Display name shown to players
-ITEM.desc = "A medical journal containing important information" -- Description text
-ITEM.category = "itemCatLiterature"                              -- Category for inventory sorting
-ITEM.model = "models/props_lab/bindergraylabel01b.mdl"           -- 3D model for the book
-ITEM.contents = "<h1>Chapter 1: Basic Medicine</h1><p>This journal contains essential medical knowledge...</p>"  -- HTML content displayed when reading
+    ITEM.name = "Medical Journal"                                    -- Display name shown to players
+    ITEM.desc = "A medical journal containing important information" -- Description text
+    ITEM.category = "itemCatLiterature"                              -- Category for inventory sorting
+    ITEM.model = "models/props_lab/bindergraylabel01b.mdl"           -- 3D model for the book
+    ITEM.contents = "<h1>Chapter 1: Basic Medicine</h1><p>This journal contains essential medical knowledge...</p>"  -- HTML content displayed when reading
 ```
 ]]

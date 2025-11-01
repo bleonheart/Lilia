@@ -29,7 +29,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Register a basic color
         lia.color.register("myred", {255, 0, 0})
@@ -79,7 +80,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Brighten a color
         local brightRed = lia.color.adjust(Color(100, 0, 0), 50, 0, 0)
@@ -129,7 +131,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Darken a color slightly
         local darkBlue = lia.color.darken(Color(0, 0, 255))
@@ -174,7 +177,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check current theme
         local currentTheme = lia.color.getCurrentTheme()
@@ -223,7 +227,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Display theme name
         local themeName = lia.color.getCurrentThemeName()
@@ -276,7 +281,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get main theme color
         local mainColor = lia.color.getMainColor()
@@ -333,7 +339,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Apply theme without transition
         lia.color.applyTheme("dark")
@@ -410,7 +417,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if transition is running
         if lia.color.isTransitionActive() then
@@ -471,7 +479,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Test theme transition
         lia.color.testThemeTransition("dark")
@@ -534,7 +543,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Start theme transition
         lia.color.startThemeTransition("dark")
@@ -654,7 +664,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if value is color
         if lia.color.isColor(someValue) then
@@ -715,7 +726,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get theme colors
         local colors = lia.color.returnMainAdjustedColors()
@@ -798,7 +810,8 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Lerp between colors
         local blendedColor = lia.color.lerp(5, Color(255, 0, 0), Color(0, 255, 0))
@@ -909,6 +922,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic theme
@@ -974,6 +988,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get all themes

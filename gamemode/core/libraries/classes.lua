@@ -27,7 +27,8 @@ lia.class.list = lia.class.list or {}
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         lia.class.register("citizen", {
         name = "Citizen",
@@ -124,7 +125,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         lia.class.loadFromDir("gamemodes/lilia/classes")
         ```
@@ -210,7 +212,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local canJoin, reason = lia.class.canBe(client, 1)
         if canJoin then
@@ -290,7 +293,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local class = lia.class.get(1)
         if class then
@@ -361,7 +365,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local players = lia.class.getPlayers(1)
         print("Players in class 1: " .. #players)
@@ -444,7 +449,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local count = lia.class.getPlayerCount(1)
         print("Players in class: " .. count)
@@ -519,7 +525,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local classIndex = lia.class.retrieveClass("citizen")
         if classIndex then
@@ -588,7 +595,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local hasWhitelist = lia.class.hasWhitelist(1)
         if hasWhitelist then
@@ -669,7 +677,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         local joinableClasses = lia.class.retrieveJoinable(client)
         print("Player can join " .. #joinableClasses .. " classes")

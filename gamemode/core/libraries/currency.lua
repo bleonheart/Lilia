@@ -30,10 +30,11 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
             Formatted currency string with symbol and proper singular/plural form.
 
     Realm:
-        Shared (works on both client and server)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
             ```lua
             -- Simple: Format a basic currency amount
             local formatted = lia.currency.get(100)
@@ -88,10 +89,10 @@ if SERVER then
                 The created money entity if successful, nil if parameters are invalid.
 
         Realm:
-            Server only
+            Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
                 ```lua
                 -- Simple: Spawn money at player's position
                 local pos = player:GetPos()

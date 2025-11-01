@@ -6,6 +6,14 @@ Entity placement item system for the Lilia framework.
 
 ### name
 
+**Purpose**
+
+Sets the display name of the entity item
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -16,6 +24,14 @@ ITEM.name = "Chair"
 ---
 
 ### model
+
+**Purpose**
+
+Sets the 3D model for the entity item
+
+**When Called**
+
+During item definition
 
 **Example Usage**
 
@@ -28,6 +44,14 @@ ITEM.model = "models/props_c17/FurnitureChair001a.mdl"
 
 ### desc
 
+**Purpose**
+
+Sets the description of the entity item
+
+**When Called**
+
+During item definition
+
 **Example Usage**
 
 ```lua
@@ -38,6 +62,14 @@ ITEM.desc = "A comfortable chair for sitting"
 ---
 
 ### category
+
+**Purpose**
+
+Sets the category for the entity item
+
+**When Called**
+
+During item definition
 
 **Example Usage**
 
@@ -50,6 +82,14 @@ ITEM.category = "entities"
 
 ### entityid
 
+**Purpose**
+
+Sets the entity class name to spawn
+
+**When Called**
+
+During item definition (used in Place function)
+
 **Example Usage**
 
 ```lua
@@ -59,11 +99,25 @@ ITEM.entityid = "prop_physics"
 
 ---
 
-### Example Item:
+## Complete Examples
 
-**Example Usage**
+The following examples demonstrate how to use all the properties and methods together to create complete definitions.
+
+### Complete Item Example
+
+Below is a comprehensive example showing how to define a complete item with all available properties and methods.
 
 ```lua
+        ITEM.name = "Chair"
+
+        ITEM.model = "models/props_c17/FurnitureChair001a.mdl"
+
+        ITEM.desc = "A comfortable chair for sitting"
+
+        ITEM.category = "entities"
+
+        ITEM.entityid = "prop_physics"
+
 -- Basic item identification
 ITEM.name = "Chair"                                          -- Display name shown to players
 ITEM.model = "models/props_c17/FurnitureChair001a.mdl"       -- 3D model for the item

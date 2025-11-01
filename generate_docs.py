@@ -77,6 +77,25 @@ def parse_comment_block(comment_text):
     current_section = None
     current_example = None
     example_complexity = None
+    section_content = []
+
+    def finalize_current_section():
+        """Finalize the current section by joining accumulated content."""
+        if current_section and section_content:
+            content = '\n'.join(section_content).strip()
+            if current_section == 'purpose':
+                parsed['purpose'] = content
+            elif current_section == 'when_called':
+                parsed['when_called'] = content
+            elif current_section == 'when_used':
+                parsed['when_used'] = content
+            elif current_section == 'explanation':
+                parsed['explanation'] = content
+            elif current_section == 'returns':
+                parsed['returns'] = content
+            elif current_section == 'realm':
+                parsed['realm'] = content
+        section_content.clear()
 
     for line in lines:
         original_line = line
@@ -88,16 +107,26 @@ def parse_comment_block(comment_text):
 
         # Check for section headers
         if line.startswith('Purpose:'):
+            finalize_current_section()
             current_section = 'purpose'
-            parsed['purpose'] = line[8:].strip()
+            inline_content = line[8:].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('When Called:'):
+            finalize_current_section()
             current_section = 'when_called'
-            parsed['when_called'] = line[12:].strip()
+            inline_content = line[12:].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('When Used:'):
             # Alias used in panels/definitions
+            finalize_current_section()
             current_section = 'when_used'
-            parsed['when_used'] = line[10:].strip()
+            inline_content = line[10:].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('Parameters:'):
+            finalize_current_section()
             current_section = 'parameters'
             # Handle inline parameter on same line (e.g., "Parameters: name (Type): Description")
             inline = line[len('Parameters:'):].strip()
@@ -118,11 +147,17 @@ def parse_comment_block(comment_text):
             if line.strip() and not line.startswith('--'):
                 # First check if this is a new section header (even if indented)
                 if line.startswith('Returns:'):
+                    finalize_current_section()
                     current_section = 'returns'
-                    parsed['returns'] = line[8:].strip()
+                    inline_content = line[8:].strip()
+                    if inline_content:
+                        section_content.append(inline_content)
                 elif line.startswith('Realm:'):
+                    finalize_current_section()
                     current_section = 'realm'
-                    parsed['realm'] = line[6:].strip()
+                    inline_content = line[6:].strip()
+                    if inline_content:
+                        section_content.append(inline_content)
                 elif line.startswith('Example Usage:'):
                     current_section = 'examples'
                 # Check if this line is indented (parameter) or a new section header
@@ -141,11 +176,17 @@ def parse_comment_block(comment_text):
                     current_section = None
                     # Continue processing this line as a potential new section
                     if line.startswith('Returns:'):
+                        finalize_current_section()
                         current_section = 'returns'
-                        parsed['returns'] = line[8:].strip()
+                        inline_content = line[8:].strip()
+                        if inline_content:
+                            section_content.append(inline_content)
                     elif line.startswith('Realm:'):
+                        finalize_current_section()
                         current_section = 'realm'
-                        parsed['realm'] = line[6:].strip()
+                        inline_content = line[6:].strip()
+                        if inline_content:
+                            section_content.append(inline_content)
                     elif line.startswith('Example Usage:'):
                         current_section = 'examples'
                 # If still in parameters section, try other formats
@@ -175,21 +216,33 @@ def parse_comment_block(comment_text):
                                     if m:
                                         parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
         elif line.startswith('Returns:'):
+            finalize_current_section()
             current_section = 'returns'
-            # Extract returns info (format varies)
-            returns_text = line[8:].strip()
-            if returns_text:
-                parsed['returns'] = returns_text
+            inline_content = line[8:].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('Realm:'):
+            finalize_current_section()
             current_section = 'realm'
-            parsed['realm'] = line[6:].strip()
+            inline_content = line[6:].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('Explanation of Panel:'):
+            finalize_current_section()
             current_section = 'explanation'
-            parsed['explanation'] = line[len('Explanation of Panel:'):].strip()
+            inline_content = line[len('Explanation of Panel:'):].strip()
+            if inline_content:
+                section_content.append(inline_content)
         elif line.startswith('Example Usage:'):
+            finalize_current_section()
             current_section = 'examples'
         elif line.startswith('Example Item:'):
+            finalize_current_section()
             current_section = 'examples'
+        elif current_section in ['purpose', 'when_called', 'when_used', 'returns', 'realm', 'explanation']:
+            # Accumulate content for multi-line sections
+            if line.strip():
+                section_content.append(line)
         elif current_section == 'examples':
             # Handle example sections - but only if we're not inside a code block
             complexity_match = None
@@ -238,6 +291,9 @@ def parse_comment_block(comment_text):
                 # but preserve the relative indentation within the code block
                 # Strip only trailing whitespace, keep leading indentation
                 current_example['code'].append(original_line.rstrip())
+
+    # Finalize any remaining section
+    finalize_current_section()
 
     # Add final example if exists
     if current_example:
@@ -579,7 +635,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False):
 
         # Add Overview section with overview content if available
         if overview_section:
-            f.write('## Overview\n\n')
+            f.write('Overview\n\n')
             # Parse the overview section (remove "Overview:" and format)
             overview_content = parse_overview_section(overview_section)
             f.write(overview_content)
@@ -608,32 +664,69 @@ def parse_definition_property_blocks(file_path: Path, entity_prefixes: Tuple[str
 
     Returns list of entries with keys: name, parsed_comment
     """
-    comment_blocks, _, overview_section = find_comment_blocks_in_file(file_path)
+    text = _read_file_text(file_path)
+    if not text:
+        return []
+
     entries: List[Dict[str, object]] = []
 
-    for block in comment_blocks:
-        # Clean block markers and pull first meaningful line
-        inner = re.sub(r'^\s*--\[\[', '', block.strip())
-        inner = re.sub(r'\]\]\s*$', '', inner)
-        first_line = ''
-        for raw in inner.split('\n'):
-            s = re.sub(r'^\s*--\s*', '', raw).strip()
-            if s:
-                first_line = s
+    # Find all comment blocks with their positions
+    for match in re.finditer(r'--\[\[.*?\]\]', text, re.DOTALL):
+        block_text = match.group(0)
+        # Only process structured comment blocks
+        if not any(header in block_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:', 'Example Item:']):
+            continue
+
+        # Find the property name from the line immediately following this comment block
+        tail = text[match.end():]
+        prop_name = None
+        for ln in tail.splitlines():
+            s = ln.strip()
+            if not s:
+                continue
+            if s.startswith('--'):
+                continue
+            # Extract property name from patterns like CLASS.name, ITEM.name, etc.
+            # Also handle function definitions like function CLASS:OnCanBe
+            for prefix in entity_prefixes:
+                # Check for property assignments: CLASS.name =
+                m = re.match(rf'{prefix}\.([A-Za-z_][\w]*)', s)
+                if m:
+                    prop_name = m.group(1)  # Only the property name (suffix)
+                    break
+                # Check for function definitions: function CLASS:FunctionName
+                m = re.match(rf'function\s+{prefix}:([A-Za-z_][\w]*)', s)
+                if m:
+                    prop_name = m.group(1)  # Only the function name (suffix)
+                    break
+            if prop_name:
                 break
 
-        prop_name = ''
-        for prefix in entity_prefixes:
-            m = re.match(rf'{prefix}\.([A-Za-z_][\w]*)', first_line)
-            if m:
-                prop_name = m.group(1)  # Only the property name (suffix)
-                break
+        if prop_name:
+            parsed = parse_comment_block(block_text)
+            entries.append({'name': prop_name, 'parsed': parsed})
 
-        parsed = parse_comment_block(block)
-        if not prop_name:
-            prop_name = first_line or 'Unnamed'
+    # Also extract comprehensive example sections (Example Class, Example Faction, Example Item)
+    example_patterns = [
+        ('Example Class:', 'example_class'),
+        ('Example Faction:', 'example_faction'),
+        ('Example Item:', 'example_item')
+    ]
 
-        entries.append({'name': prop_name, 'parsed': parsed})
+    for pattern, entry_name in example_patterns:
+        # Find the comprehensive example section
+        example_match = re.search(rf'--\[\[.*?\b{re.escape(pattern)}.*?\]\]', text, re.DOTALL)
+        if example_match:
+            example_block = example_match.group(0)
+            # Parse the example block to extract the code
+            parsed_example = parse_comment_block(example_block)
+            if parsed_example.get('examples'):
+                # Create a special entry for the comprehensive example
+                entries.append({
+                    'name': entry_name,
+                    'parsed': parsed_example,
+                    'is_comprehensive_example': True
+                })
 
     return entries
 
@@ -646,11 +739,22 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
     md_parts.append('---\n\n')
 
     if overview_section:
-        md_parts.append('## Overview\n\n')
+        md_parts.append('Overview\n\n')
         md_parts.append(parse_overview_section(overview_section) + '\n\n')
         md_parts.append('---\n\n')
 
+    # Separate regular entries from comprehensive examples
+    regular_entries = []
+    comprehensive_examples = []
+
     for entry in entries:
+        if entry.get('is_comprehensive_example', False):
+            comprehensive_examples.append(entry)
+        else:
+            regular_entries.append(entry)
+
+    # Process regular entries
+    for entry in regular_entries:
         name = entry['name']
         parsed = entry['parsed']
         # Use existing function section generator for consistent field rendering
@@ -692,6 +796,45 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
                     md_parts.append('\n'.join(formatted_code))
                     md_parts.append('\n```\n\n')
         md_parts.append('---\n\n')
+
+    # Add comprehensive examples at the end
+    if comprehensive_examples:
+        md_parts.append('## Complete Examples\n\n')
+        md_parts.append('The following examples demonstrate how to use all the properties and methods together to create complete definitions.\n\n')
+
+        for example_entry in comprehensive_examples:
+            parsed = example_entry['parsed']
+            entry_name = example_entry['name']
+
+            # Set appropriate title based on entry type
+            if entry_name == 'example_class':
+                example_title = "Complete Class Example"
+                description = "Below is a comprehensive example showing how to define a complete class with all available properties and methods. This example creates a \"Police Officer\" class that demonstrates typical usage of the class system."
+            elif entry_name == 'example_faction':
+                example_title = "Complete Faction Example"
+                description = "Below is a comprehensive example showing how to define a complete faction with all available properties and methods."
+            elif entry_name == 'example_item':
+                example_title = "Complete Item Example"
+                description = "Below is a comprehensive example showing how to define a complete item with all available properties and methods."
+            else:
+                example_title = "Complete Example"
+                description = parsed.get('purpose', '')
+
+            md_parts.append(f'### {example_title}\n\n')
+
+            # Add description
+            if description:
+                md_parts.append(f'{description}\n\n')
+
+            # Add the example code
+            if parsed.get('examples'):
+                for example in parsed['examples']:
+                    md_parts.append('```lua\n')
+                    formatted_code = format_lua_code(example.get('code', []))
+                    md_parts.append('\n'.join(formatted_code))
+                    md_parts.append('\n```\n\n')
+
+            md_parts.append('---\n\n')
 
     return ''.join(md_parts)
 
@@ -779,6 +922,9 @@ def generate_documentation_for_definitions_file(file_path: Path, output_dir: Pat
     if file_path.parent.name == 'items':
         # This is an item definition file
         entity_prefixes: Tuple[str, ...] = ('ITEM',)
+    elif name == 'attributes':
+        # Attributes file uses ATTRIBUTE prefix
+        entity_prefixes: Tuple[str, ...] = ('ATTRIBUTE',)
     else:
         # Generic CLASS/FACTION/MODULE definitions
         entity_prefixes: Tuple[str, ...] = ('CLASS', 'FACTION', 'MODULE')
@@ -837,7 +983,7 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path) -> 
         f.write(subtitle + '\n\n')
         f.write('---\n\n')
         if overview_section:
-            f.write('## Overview\n\n')
+            f.write('Overview\n\n')
             f.write(parse_overview_section(overview_section) + '\n\n')
             f.write('---\n\n')
         for section in sections:
@@ -904,7 +1050,7 @@ def main():
                             files_to_process.extend(list(module_lib_dir.glob('*.lua')))
         elif args.type == 'definitions':
             # Specific known definition files
-            for name in ('panels.lua', 'faction.lua', 'module.lua', 'items.lua', 'class.lua'):
+            for name in ('panels.lua', 'faction.lua', 'module.lua', 'items.lua', 'class.lua', 'attributes.lua'):
                 p = input_dir / name
                 if p.exists():
                     files_to_process.append(str(p))

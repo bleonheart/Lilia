@@ -70,7 +70,8 @@ lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueu
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Connect to database with callback
         lia.db.connect(function()
@@ -139,7 +140,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Wipe all tables with confirmation
         lia.db.wipeTables(function()
@@ -219,7 +221,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load tables after connection
         lia.db.connect(function()
@@ -446,7 +449,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Wait for tables to load before proceeding
         lia.db.waitForTablesToLoad():next(function()
@@ -560,7 +564,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Convert basic data types
         local sqlString = lia.db.convertDataType("Hello World")
@@ -646,7 +651,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Insert a new character
         lia.db.insertTable({
@@ -728,7 +734,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Update character money
         lia.db.updateTable({
@@ -808,7 +815,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Select all characters
         lia.db.select("*", "characters"):next(function(results)
@@ -891,7 +899,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Select with basic condition
         lia.db.selectWithCondition("*", "characters", {
@@ -1004,7 +1013,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Count all characters
         lia.db.count("characters"):next(function(count)
@@ -1073,7 +1083,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add fields after table creation
         lia.db.loadTables() -- This automatically calls addDatabaseFields()
@@ -1146,7 +1157,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if player exists
         lia.db.exists("players", {steamID = "STEAM_0:1:12345678"}):next(function(exists)
@@ -1216,7 +1228,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get character by ID
         lia.db.selectOne("*", "characters", {id = 1}):next(function(char)
@@ -1299,7 +1312,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Insert multiple items
         local items = {
@@ -1410,7 +1424,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Upsert configuration data
         local configs = {
@@ -1524,7 +1539,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Insert configuration without duplicates
         lia.db.insertOrIgnore({
@@ -1614,7 +1630,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if table exists
         lia.db.tableExists("lia_characters"):next(function(exists)
@@ -1696,7 +1713,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if field exists
         lia.db.fieldExists("lia_characters", "money"):next(function(exists)
@@ -1778,7 +1796,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get all Lilia tables
         lia.db.getTables():next(function(tables)
@@ -1870,7 +1889,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Transfer money between characters
         lia.db.transaction({
@@ -1973,7 +1993,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Escape a column name
         local escapedColumn = lia.db.escapeIdentifier("user_name")
@@ -2035,7 +2056,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Upsert configuration
         lia.db.upsert({
@@ -2124,7 +2146,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Delete character by ID
         lia.db.delete("characters", {id = 1}):next(function(results, lastID)
@@ -2207,7 +2230,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create a basic table
         lia.db.createTable("custom_data", "id", {
@@ -2325,7 +2349,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add a new column
         lia.db.createColumn("characters", "level", "INTEGER", 1):next(function(success)
@@ -2430,7 +2455,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Remove a table
         lia.db.removeTable("old_data"):next(function(success)
@@ -2521,7 +2547,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Remove a column
         lia.db.removeColumn("characters", "old_field"):next(function(success)
@@ -2652,7 +2679,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get character table columns
         lia.db.getCharacterTable(function(columns)
@@ -2774,7 +2802,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create a snapshot
         lia.db.createSnapshot("characters"):next(function(snapshot)
@@ -2891,7 +2920,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load a snapshot
         lia.db.loadSnapshot("snapshot_characters_1234567890.json"):next(function(result)

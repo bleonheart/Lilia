@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Character Library
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
@@ -28,10 +28,11 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
         Character object if found/loaded, nil otherwise
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get a character by ID
         local character = lia.char.getCharacter(123)
@@ -109,10 +110,11 @@ end
         Table with Player objects as keys and their Character objects as values
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get all characters and count them
         local allChars = lia.char.getAll()
@@ -175,10 +177,11 @@ end
         Boolean - true if character is loaded, false otherwise
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if character is loaded
         if lia.char.isLoaded(123) then
@@ -211,12 +214,12 @@ end
         for _, charID in ipairs(charIDs) do
             if lia.char.isLoaded(charID) then
                 loadedChars[charID] = lia.char.getCharacter(charID)
-                else
-                    table.insert(unloadedChars, charID)
-                end
+            else
+                table.insert(unloadedChars, charID)
             end
+        end
 
-            print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
+        print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
         ```
 ]]
 function lia.char.isLoaded(charID)
@@ -238,10 +241,11 @@ end
         None
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Add a character to cache
         local character = lia.char.new(charData, 123, client)
@@ -303,10 +307,11 @@ end
         None
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Remove character from cache
         lia.char.removeCharacter(123)
@@ -369,10 +374,11 @@ end
         Character object with proper metatable and initialized variables
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create a basic character
         local charData = {
@@ -472,10 +478,11 @@ end
         None
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Hook a variable change
         lia.char.hookVar("money", "onMoneyChange", function(character, oldValue, newValue)
@@ -511,9 +518,9 @@ end
             local difference = newValue - oldValue
             if difference > 0 then
                 client:notify("Gained $" .. difference)
-                elseif difference < 0 then
-                    client:notify("Lost $" .. math.abs(difference))
-                end
+            elseif difference < 0 then
+                client:notify("Lost $" .. math.abs(difference))
+            end
 
                 -- Update HUD if it exists
                 if client.liaHUD then
@@ -525,9 +532,9 @@ end
         health = function(character, oldValue, newValue)
         if newValue <= 0 and oldValue > 0 then
             hook.Run("OnCharacterDeath", character)
-            elseif newValue > 0 and oldValue <= 0 then
-                hook.Run("OnCharacterRevive", character)
-            end
+        elseif newValue > 0 and oldValue <= 0 then
+            hook.Run("OnCharacterRevive", character)
+        end
         end
         }
 
@@ -556,10 +563,11 @@ end
         None
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Register a basic character variable
         lia.char.registerVar("level", {
@@ -1090,10 +1098,11 @@ lia.char.registerVar("banned", {
         Table of character data or specific value if key provided
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get all character data
         local charData = lia.char.getCharData(123)
@@ -1164,10 +1173,11 @@ end
         Raw decoded data or specific value if key provided
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get raw character data
         local rawData = lia.char.getCharDataRaw(123)
@@ -1199,15 +1209,14 @@ end
                 -- Custom processing based on key type
                 if key:find("^skill_") then
                     processedData[key] = tonumber(value) or 0
-                    elseif key:find("^item_") then
-                        processedData[key] = istable(value) and value or {}
-                        else
-                            processedData[key] = value
-                        end
-                    end
+                elseif key:find("^item_") then
+                    processedData[key] = istable(value) and value or {}
+                else
+                    processedData[key] = value
                 end
+            end
 
-                return processedData
+            return processedData
         ```
 ]]
 function lia.char.getCharDataRaw(charID, key)
@@ -1245,10 +1254,11 @@ end
         Player object if found, nil otherwise
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Find character owner
         local owner = lia.char.getOwnerByID(123)
@@ -1313,10 +1323,11 @@ end
         Character object if found, nil otherwise
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Find character by Steam ID
         local character = lia.char.getBySteamID("STEAM_0:1:123456")
@@ -1384,10 +1395,11 @@ end
         Color object representing the team/class color
 
     Realm:
-        Shared (works on both server and client)
+        Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Get player team color
         local color = lia.char.getTeamColor(client)
@@ -1454,10 +1466,11 @@ if SERVER then
         None (uses callback for result)
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create a basic character
         local charData = {
@@ -1600,10 +1613,11 @@ if SERVER then
         None (uses callback for result)
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Restore all characters for player
         lia.char.restore(client, function(characters)
@@ -1793,10 +1807,11 @@ if SERVER then
         None
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Clean up player characters
         lia.char.cleanUpForPlayer(client)
@@ -1885,10 +1900,11 @@ if SERVER then
         None
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Delete a character
         lia.char.delete(123)
@@ -2014,10 +2030,11 @@ if SERVER then
         Number representing ban timestamp (0 if not banned)
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if character is banned
         local banTime = lia.char.getCharBanned(123)
@@ -2090,10 +2107,11 @@ if SERVER then
         Boolean indicating success
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Set character data
         local success = lia.char.setCharDatabase(123, "money", 1000)
@@ -2267,10 +2285,11 @@ if SERVER then
         Boolean indicating success
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Unload a character
         local success = lia.char.unloadCharacter(123)
@@ -2379,10 +2398,11 @@ if SERVER then
         Number of characters unloaded
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Unload unused characters
         local unloadedCount = lia.char.unloadUnusedCharacters(client, 123)
@@ -2460,10 +2480,11 @@ if SERVER then
         None (uses callback for result)
 
     Realm:
-        Server only
+        Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load a single character
         lia.char.loadSingleCharacter(123, client, function(character)

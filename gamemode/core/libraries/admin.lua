@@ -8,7 +8,7 @@
         The administrator library provides comprehensive functionality for managing user groups, privileges, and administrative permissions in the Lilia framework. It handles the creation, modification, and deletion of user groups with inheritance-based privilege systems. The library operates on both server and client sides, with the server managing privilege storage and validation while the client provides user interface elements for administrative management. It includes integration with CAMI (Comprehensive Administration Management Interface) for compatibility with other administrative systems. The library ensures proper privilege inheritance, automatic privilege registration for tools and properties, and comprehensive logging of administrative actions. It supports both console-based and GUI-based administrative command execution with proper permission checking and validation.
 
     Setting Superadmin:
-        To set yourself as superadmin in the console, use: plysetgroup <your_steam_name> superadmin
+        To set yourself as superadmin in the console, use: plysetgroup [NAME] superadmin
         The system has three default user groups with inheritance levels: user (level 1), admin (level 2), and superadmin (level 3).
         Superadmin automatically has all privileges and cannot be restricted by any permission checks.
 ]]
@@ -282,7 +282,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Kick a player for cheating
         lia.administrator.applyPunishment(player, "Cheating detected", true, false)
@@ -334,7 +335,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Check if player can use admin tools
         if lia.administrator.hasAccess(player, "tool_adminstick") then
@@ -446,7 +448,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Save administrator data
         lia.administrator.save()
@@ -467,13 +470,13 @@ end
         -- High: Batch save with error handling
         local function safeSave(noNetwork)
             local success, err = pcall(function()
-            lia.administrator.save(noNetwork)
-        end)
-        if not success then
-            lia.log.add(nil, "adminSaveError", err)
-            return false
-        end
-        return true
+                lia.administrator.save(noNetwork)
+            end)
+            if not success then
+                lia.log.add(nil, "adminSaveError", err)
+                return false
+            end
+            return true
         end
 
         if safeSave(true) then
@@ -536,13 +539,14 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Register a basic privilege
         lia.administrator.registerPrivilege({
-        ID = "accessAdminPanel",
-        Name = "Access Admin Panel",
-        MinAccess = "admin"
+            ID = "accessAdminPanel",
+            Name = "Access Admin Panel",
+            MinAccess = "admin"
         })
         ```
 
@@ -550,10 +554,10 @@ end
         ```lua
         -- Medium: Register privilege with category
         lia.administrator.registerPrivilege({
-        ID = "managePlayers",
-        Name = "Manage Players",
-        MinAccess = "moderator",
-        Category = "Player Management"
+            ID = "managePlayers",
+            Name = "Manage Players",
+            MinAccess = "moderator",
+            Category = "Player Management"
         })
         ```
 
@@ -621,7 +625,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Remove a privilege
         lia.administrator.unregisterPrivilege("oldPrivilege")
@@ -686,7 +691,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Apply inheritance to a group
         lia.administrator.applyInheritance("moderator")
@@ -755,7 +761,8 @@ end
         Server
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load administrator data
         lia.administrator.load()
@@ -775,26 +782,26 @@ end
         -- High: Load with error handling and validation
         local function safeLoad()
             local success, err = pcall(function()
-            lia.administrator.load()
-        end)
-        if not success then
-            lia.log.add(nil, "adminLoadError", err)
-            -- Fallback to default groups
-            lia.administrator.groups = {
-            user = {_info = {inheritance = "user", types = {}}},
-            admin = {_info = {inheritance = "admin", types = {"Staff"}}},
-            superadmin = {_info = {inheritance = "superadmin", types = {"Staff"}}}
-            }
-            return false
-        end
-        return true
+                lia.administrator.load()
+            end)
+            if not success then
+                lia.log.add(nil, "adminLoadError", err)
+                -- Fallback to default groups
+                lia.administrator.groups = {
+                    user = {_info = {inheritance = "user", types = {}}},
+                    admin = {_info = {inheritance = "admin", types = {"Staff"}}},
+                    superadmin = {_info = {inheritance = "superadmin", types = {"Staff"}}}
+                }
+                return false
+            end
+            return true
         end
 
         if safeLoad() then
             print("Administrator system loaded successfully")
-            else
-                print("Failed to load administrator system, using defaults")
-            end
+        else
+            print("Failed to load administrator system, using defaults")
+        end
         ```
 ]]
 function lia.administrator.load()
@@ -866,7 +873,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create a basic group
         lia.administrator.createGroup("moderator")
@@ -894,10 +902,10 @@ end
 
         for _, config in ipairs(groupConfigs) do
             lia.administrator.createGroup(config.name, {
-            _info = {
-            inheritance = config.inherit,
-            types = config.types
-            }
+                _info = {
+                    inheritance = config.inherit,
+                    types = config.types
+                }
             })
         end
         ```
@@ -939,7 +947,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Remove a group
         lia.administrator.removeGroup("oldGroup")
@@ -963,10 +972,10 @@ end
             if lia.administrator.groups[groupName] and not lia.administrator.DefaultGroups[groupName] then
                 lia.administrator.removeGroup(groupName)
                 lia.log.add(nil, "groupRemoved", groupName)
-                else
-                    print("Cannot remove group: " .. groupName)
-                end
+            else
+                print("Cannot remove group: " .. groupName)
             end
+        end
         ```
 ]]
 function lia.administrator.removeGroup(groupName)
@@ -1004,7 +1013,8 @@ end
         Shared
 
     Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Rename a group
         lia.administrator.renameGroup("oldModerator", "moderator")
@@ -1033,10 +1043,10 @@ end
             if lia.administrator.groups[operation.old] and not lia.administrator.groups[operation.new] then
                 lia.administrator.renameGroup(operation.old, operation.new)
                 lia.log.add(nil, "groupRenamed", operation.old, operation.new)
-                else
-                    print("Cannot rename " .. operation.old .. " to " .. operation.new)
-                end
+            else
+                print("Cannot rename " .. operation.old .. " to " .. operation.new)
             end
+        end
         ```
 ]]
 function lia.administrator.renameGroup(oldName, newName)
@@ -1085,7 +1095,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Notify admins about an event
             lia.administrator.notifyAdmin({
@@ -1143,7 +1153,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Add permission to group
             lia.administrator.addPermission("moderator", "kickPlayers")
@@ -1201,7 +1211,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Remove permission from group
             lia.administrator.removePermission("moderator", "banPlayers")
@@ -1257,7 +1267,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Sync with all clients
             lia.administrator.sync()
@@ -1279,8 +1289,8 @@ if SERVER then
                 end
 
                 local success, err = pcall(function()
-                lia.administrator.sync(client)
-            end)
+                    lia.administrator.sync(client)
+                end)
 
             if not success then
                 lia.log.add(nil, "syncError", err)
@@ -1354,7 +1364,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Change player's group
             lia.administrator.setPlayerUsergroup(player, "moderator")
@@ -1411,7 +1421,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Change Steam ID's group
             lia.administrator.setSteamIDUsergroup("STEAM_0:1:123456789", "moderator")
@@ -1471,7 +1481,7 @@ if SERVER then
             Server
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Kick a player
             lia.administrator.serverExecCommand("kick", player, nil, "Cheating", admin)
@@ -1487,9 +1497,9 @@ if SERVER then
             ```lua
             -- High: Execute multiple commands with validation
             local commands = {
-            {cmd = "kick", target = player1, reason = "Cheating"},
-            {cmd = "ban", target = player2, duration = 30, reason = "RDM"},
-            {cmd = "mute", target = player3, duration = 10, reason = "Spam"}
+                {cmd = "kick", target = player1, reason = "Cheating"},
+                {cmd = "ban", target = player2, duration = 30, reason = "RDM"},
+                {cmd = "mute", target = player3, duration = 10, reason = "Spam"}
             }
 
             for _, command in ipairs(commands) do
@@ -1769,7 +1779,7 @@ else
             Client
 
         Example Usage:
-            Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Kick a player
             lia.administrator.execCommand("kick", player, nil, "Cheating")
@@ -1785,9 +1795,9 @@ else
             ```lua
             -- High: Execute multiple commands with validation
             local commands = {
-            {cmd = "kick", target = player1, reason = "Cheating"},
-            {cmd = "ban", target = player2, duration = 30, reason = "RDM"},
-            {cmd = "mute", target = player3, duration = 10, reason = "Spam"}
+                {cmd = "kick", target = player1, reason = "Cheating"},
+                {cmd = "ban", target = player2, duration = 30, reason = "RDM"},
+                {cmd = "mute", target = player3, duration = 10, reason = "Spam"}
             }
 
             for _, command in ipairs(commands) do
@@ -1807,13 +1817,13 @@ else
             ```lua
             -- Custom admin system hook
             hook.Add("RunAdminSystemCommand", "MyAdminSystem", function(cmd, victim, dur, reason)
-            if cmd == "kick" then
-                MyAdminSystem:KickPlayer(victim, reason)
-                return true, function()
-                print("Player kicked via MyAdminSystem")
-            end
-            end
-            return false -- Don't handle other commands
+                if cmd == "kick" then
+                    MyAdminSystem:KickPlayer(victim, reason)
+                    return true, function()
+                        print("Player kicked via MyAdminSystem")
+                    end
+                end
+                return false -- Don't handle other commands
             end)
             ```
     ]]

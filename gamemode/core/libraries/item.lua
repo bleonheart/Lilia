@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Item Library
 
     Comprehensive item registration, instantiation, and management system for the Lilia framework.
@@ -165,6 +165,7 @@ lia.meta.item.height = 1
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get a basic item definition
@@ -211,6 +212,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get item with location
@@ -284,6 +286,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get item instance
@@ -346,6 +349,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get item data
@@ -414,6 +418,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load a basic item file
@@ -463,6 +468,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Check if object is an item
@@ -519,6 +525,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Get inventory by ID
@@ -567,6 +574,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic item
@@ -684,6 +692,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Load items from default directory
@@ -751,6 +760,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Create a new item instance
@@ -818,6 +828,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Register a basic inventory type
@@ -877,6 +888,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Create inventory for player
@@ -937,6 +949,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Create basic inventory
@@ -1059,6 +1072,7 @@ lia.item.holdTypeSizeMapping = {
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Override weapon name
@@ -1126,6 +1140,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Blacklist a single weapon
@@ -1177,6 +1192,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Generate all weapons
@@ -1260,6 +1276,7 @@ end
         Shared
 
     Example Usage:
+
     Low Complexity:
     ```lua
     -- Simple: Generate all ammunition items
@@ -1346,7 +1363,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Set item data
         lia.item.setItemDataByID(123, "customProperty", "value")
@@ -1405,7 +1423,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Create item in inventory
         lia.item.instance(invID, "weapon_pistol")
@@ -1504,7 +1523,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Delete an item
         lia.item.deleteByID(123)
@@ -1561,7 +1581,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Load a single item
         lia.item.loadItemByID(123)
@@ -1642,7 +1663,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Spawn item at position
         lia.item.spawn("weapon_pistol", Vector(0, 0, 0))
@@ -1723,7 +1745,8 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
         ```lua
         -- Simple: Restore inventory
         lia.item.restoreInv(123, 5, 4)
