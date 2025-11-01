@@ -165,12 +165,12 @@ end
             if SERVER then
                 -- Server-side data update
                 self:SyncDataToClients()
-                else
-                    -- Client-side data refresh
-                    self:RequestServerUpdate()
-                end
-                self.LastUpdate = CurTime()
+            else
+                -- Client-side data refresh
+                self:RequestServerUpdate()
             end
+            self.LastUpdate = CurTime()
+        end
         ```
 ]]
 function toolGunMeta:updateData()
