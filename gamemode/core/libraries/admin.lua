@@ -289,19 +289,19 @@ end
         lia.administrator.applyPunishment(player, "Cheating detected", true, false)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Ban a player for 60 minutes with custom message
         lia.administrator.applyPunishment(player, "RDM", false, true, 60, "kickedForRDM", "bannedForRDM")
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Apply punishment based on infraction severity
         local punishments = {
-        ["RDM"] = {kick = true, ban = false, time = 0},
-        ["Cheating"] = {kick = true, ban = true, time = 0},
-        ["Spam"] = {kick = true, ban = false, time = 30}
+            ["RDM"]     = {kick = true, ban = false, time = 0},
+            ["Cheating"] = {kick = true, ban = true, time = 0},
+            ["Spam"]    = {kick = true, ban = false, time = 30}
         }
         local punishment = punishments[infractionType]
         if punishment then
@@ -344,7 +344,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Check access for different user groups
         local groups = {"admin", "moderator", "user"}
@@ -355,7 +355,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Complex permission checking with fallback
         local function checkMultiplePrivileges(player, privileges)
@@ -455,7 +455,7 @@ end
         lia.administrator.save()
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Save without network sync during bulk operations
         for i = 1, 10 do
@@ -465,7 +465,7 @@ end
         lia.administrator.save() -- Final save with sync
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch save with error handling
         local function safeSave(noNetwork)
@@ -550,24 +550,24 @@ end
         })
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Register privilege with category
         lia.administrator.registerPrivilege({
-            ID = "managePlayers",
-            Name = "Manage Players",
+            ID        = "managePlayers",
+            Name      = "Manage Players",
             MinAccess = "moderator",
-            Category = "Player Management"
+            Category  = "Player Management"
         })
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Register multiple privileges from module
         local modulePrivileges = {
-        {ID = "module_feature1", Name = "Feature 1", MinAccess = "user", Category = "Module"},
-        {ID = "module_feature2", Name = "Feature 2", MinAccess = "admin", Category = "Module"},
-        {ID = "module_feature3", Name = "Feature 3", MinAccess = "superadmin", Category = "Module"}
+            {ID = "module_feature1", Name = "Feature 1", MinAccess = "user", Category = "Module"},
+            {ID = "module_feature2", Name = "Feature 2", MinAccess = "admin", Category = "Module"},
+            {ID = "module_feature3", Name = "Feature 3", MinAccess = "superadmin", Category = "Module"}
         }
 
         for _, privilege in ipairs(modulePrivileges) do
@@ -632,7 +632,7 @@ end
         lia.administrator.unregisterPrivilege("oldPrivilege")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Remove privilege with validation
         local privilegeToRemove = "deprecatedFeature"
@@ -642,7 +642,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Remove multiple privileges with cleanup
         local privilegesToRemove = {"old_feature1", "old_feature2", "deprecated_tool"}
@@ -698,14 +698,14 @@ end
         lia.administrator.applyInheritance("moderator")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Apply inheritance after group modification
         lia.administrator.groups["moderator"]._info.inheritance = "admin"
         lia.administrator.applyInheritance("moderator")
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Apply inheritance to multiple groups with validation
         local groupsToUpdate = {"moderator", "helper", "vip"}
@@ -768,16 +768,16 @@ end
         lia.administrator.load()
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Load with callback handling
         lia.administrator.load()
         hook.Add("OnAdminSystemLoaded", "MyModule", function(groups, privileges)
-        print("Admin system loaded with " .. table.Count(groups) .. " groups")
+            print("Admin system loaded with " .. table.Count(groups) .. " groups")
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Load with error handling and validation
         local function safeLoad()
@@ -788,8 +788,8 @@ end
                 lia.log.add(nil, "adminLoadError", err)
                 -- Fallback to default groups
                 lia.administrator.groups = {
-                    user = {_info = {inheritance = "user", types = {}}},
-                    admin = {_info = {inheritance = "admin", types = {"Staff"}}},
+                    user       = {_info = {inheritance = "user", types = {}}},
+                    admin      = {_info = {inheritance = "admin", types = {"Staff"}}},
                     superadmin = {_info = {inheritance = "superadmin", types = {"Staff"}}}
                 }
                 return false
@@ -880,31 +880,31 @@ end
         lia.administrator.createGroup("moderator")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Create group with inheritance
         lia.administrator.createGroup("helper", {
-        _info = {
-        inheritance = "user",
-        types = {"Staff"}
-        }
+            _info = {
+                inheritance = "user",
+                types       = {"Staff"}
+            }
         })
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Create multiple groups with different configurations
         local groupConfigs = {
-        {name = "moderator", inherit = "admin", types = {"Staff"}},
-        {name = "helper", inherit = "user", types = {"Staff"}},
-        {name = "vip", inherit = "user", types = {"VIP"}}
+            {name = "moderator", inherit = "admin", types = {"Staff"}},
+            {name = "helper", inherit = "user", types = {"Staff"}},
+            {name = "vip", inherit = "user", types = {"VIP"}}
         }
 
         for _, config in ipairs(groupConfigs) do
             lia.administrator.createGroup(config.name, {
                 _info = {
                     inheritance = config.inherit,
-                    types = config.types
+                    types       = config.types
                 }
             })
         end
@@ -954,7 +954,7 @@ end
         lia.administrator.removeGroup("oldGroup")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Remove group with validation
         local groupToRemove = "deprecatedGroup"
@@ -964,7 +964,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Remove multiple groups with safety checks
         local groupsToRemove = {"tempGroup1", "tempGroup2", "oldModerator"}

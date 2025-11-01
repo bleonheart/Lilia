@@ -39,7 +39,7 @@ lia.net.registry = lia.net.registry or {}
         end)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Register handler with validation
         lia.net.register("updateHealth", function(data)
@@ -49,7 +49,7 @@ lia.net.registry = lia.net.registry or {}
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Register handler with multiple data types and error handling
         lia.net.register("syncInventory", function(data)
@@ -102,7 +102,7 @@ end
         lia.net.send("playerMessage", nil, "Hello everyone!")
         ```
 
-        Medium Complexity Example:
+    Medium Complexity:
         ```lua
         -- Medium: Send message to specific player
         local targetPlayer = player.GetByID(1)
@@ -111,7 +111,7 @@ end
         end
         ```
 
-        High Complexity Example:
+    High Complexity:
         ```lua
         -- High: Send message to multiple players with complex data
         local admins = {}
@@ -122,9 +122,9 @@ end
         end
 
         lia.net.send("adminNotification", admins, {
-        type = "warning",
-        message = "Server restart in 5 minutes",
-        timestamp = os.time()
+            type      = "warning",
+            message   = "Server restart in 5 minutes",
+            timestamp = os.time()
         })
         ```
 ]]
@@ -187,7 +187,7 @@ end
         end)
         ```
 
-        Medium Complexity Example:
+    Medium Complexity:
         ```lua
         -- Medium: Set up receiver with validation
         lia.net.readBigTable("playerData", function(data)
@@ -201,7 +201,7 @@ end
         end)
         ```
 
-        High Complexity Example:
+    High Complexity:
         ```lua
         -- High: Set up receiver with error handling and processing
         lia.net.readBigTable("inventorySync", function(data)
@@ -365,75 +365,75 @@ if SERVER then
             Server
 
         Example Usage:
-        Low Complexity:
-            ```lua
-            -- Simple: Send large table to all players
-            local largeData = {}
-            for i = 1, 1000 do
-                largeData[i] = { id = i, name = "Item " .. i }
-            end
-            lia.net.writeBigTable(nil, "largeData", largeData)
-            ```
+    Low Complexity:
+        ```lua
+        -- Simple: Send large table to all players
+        local largeData = {}
+        for i = 1, 1000 do
+            largeData[i] = {id = i, name = "Item " .. i}
+        end
+        lia.net.writeBigTable(nil, "largeData", largeData)
+        ```
 
-            Medium Complexity Example:
-            ```lua
-            -- Medium: Send to specific players with custom chunk size
-            local playerData = {}
+    Medium Complexity:
+        ```lua
+        -- Medium: Send to specific players with custom chunk size
+        local playerData = {}
+        for _, ply in ipairs(player.GetAll()) do
+            playerData[ply:SteamID()] = {
+                name  = ply:Name(),
+                health = ply:Health(),
+                armor = ply:Armor()
+            }
+        end
+
+        local admins = {}
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:IsAdmin() then
+                table.insert(admins, ply)
+            end
+        end
+
+        lia.net.writeBigTable(admins, "adminPlayerData", playerData, 1024)
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Send complex inventory data with validation and error handling
+        local function sendInventoryData(targets)
+            local inventoryData = {}
+
             for _, ply in ipairs(player.GetAll()) do
-                playerData[ply:SteamID()] = {
-                    name = ply:Name(),
-                    health = ply:Health(),
-                    armor = ply:Armor()
-                }
-            end
+                local char = ply:GetCharacter()
+                if char then
+                    local inv = char:GetInventory()
+                    if inv then
+                        inventoryData[ply:SteamID()] = {
+                            items  = {},
+                            slots  = inv:GetSlots(),
+                            weight = inv:GetWeight()
+                        }
 
-            local admins = {}
-            for _, ply in ipairs(player.GetAll()) do
-                if ply:IsAdmin() then
-                    table.insert(admins, ply)
-                end
-            end
-
-            lia.net.writeBigTable(admins, "adminPlayerData", playerData, 1024)
-            ```
-
-            High Complexity Example:
-            ```lua
-            -- High: Send complex inventory data with validation and error handling
-            local function sendInventoryData(targets)
-                local inventoryData = {}
-
-                for _, ply in ipairs(player.GetAll()) do
-                    local char = ply:GetCharacter()
-                    if char then
-                        local inv = char:GetInventory()
-                        if inv then
-                            inventoryData[ply:SteamID()] = {
-                                items = {},
-                                slots = inv:GetSlots(),
-                                weight = inv:GetWeight()
-                            }
-
-                            for _, item in ipairs(inv:GetItems()) do
-                                table.insert(inventoryData[ply:SteamID()].items, {
-                                    uniqueID = item.uniqueID,
-                                    id = item.id,
-                                    data = item.data
-                                })
-                            end
+                        for _, item in ipairs(inv:GetItems()) do
+                            table.insert(inventoryData[ply:SteamID()].items, {
+                                uniqueID = item.uniqueID,
+                                id       = item.id,
+                                data     = item.data
+                            })
                         end
                     end
                 end
-
-                if next(inventoryData) then
-                    lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
-                end
             end
 
-            -- Send to specific players or all
-            local targetPlayers = player.GetByID(1) -- Specific player
-            sendInventoryData(targetPlayers)
-            ```
+            if next(inventoryData) then
+                lia.net.writeBigTable(targets, "inventorySync", inventoryData, 1536)
+            end
+        end
+
+        -- Send to specific players or all
+        local targetPlayers = player.GetByID(1) -- Specific player
+        sendInventoryData(targetPlayers)
+        ```
     ]]
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
         if not istable(tbl) then return end

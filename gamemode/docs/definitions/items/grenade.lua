@@ -110,6 +110,25 @@ ITEM.width = 1
 ITEM.height = 1
 --[[
     Purpose:
+        Sets the health value for the item when it's dropped as an entity in the world
+        
+    When Called:
+        During item definition (used when item is spawned as entity)
+        
+    Notes:
+        - Defaults to 100 if not specified
+        - When the item entity takes damage, its health decreases
+        - Item is destroyed when health reaches 0
+        - Only applies if ITEM.CanBeDestroyed is true (controlled by config)
+        
+    Example Usage:
+        ```lua
+        ITEM.health = 250  -- Item can take 250 damage before being destroyed
+        ```
+]]
+ITEM.health = 100
+--[[
+    Purpose:
         Sets whether the grenade drops when player dies
 
     When Called:
@@ -133,6 +152,7 @@ Example Item:
     ITEM.class = "weapon_frag"                             -- Weapon class to give when used
     ITEM.width = 1                                         -- Inventory width (1 slot)
     ITEM.height = 1                                        -- Inventory height (1 slot)
+    ITEM.health = 100                                      -- Health when dropped (default: 100)
     ITEM.DropOnDeath = true                                -- Drops on death
 ```
 ]]

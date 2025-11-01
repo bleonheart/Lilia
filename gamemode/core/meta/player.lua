@@ -1125,8 +1125,8 @@ end
         ```lua
         -- High: Complex error handling with logging
         local success, err = pcall(function()
-        -- Some risky operation
-        player:SetHealth(100)
+            -- Some risky operation
+            player:SetHealth(100)
         end)
         if not success then
             player:notifyError("Failed to heal player: " .. tostring(err))
@@ -1429,13 +1429,13 @@ end
         local char = player:getChar()
         if not char then
             player:notifyErrorLocalized("error_no_character")
-            else
-                local money = char:getData("money", 0)
-                local required = 1000
-                if money < required then
-                    player:notifyErrorLocalized("error_insufficient_funds")
-                end
+        else
+            local money = char:getData("money", 0)
+            local required = 1000
+            if money < required then
+                player:notifyErrorLocalized("error_insufficient_funds")
             end
+        end
         ```
 ]]
 function playerMeta:notifyErrorLocalized(key, ...)
@@ -1732,9 +1732,9 @@ end
         -- Medium: Conditional vendor editing with feedback
         if player:canEditVendor(vendor) then
             player:notify("You can edit this vendor")
-            else
-                player:notifyError("You don't have permission to edit this vendor")
-            end
+        else
+            player:notifyError("You don't have permission to edit this vendor")
+        end
         ```
 
     High Complexity:
@@ -1745,10 +1745,10 @@ end
             if vendorData.owner == player:SteamID() or player:hasPrivilege("admin") then
                 -- Allow editing
                 player:notifySuccess("Vendor edit access granted")
-                else
-                    player:notifyError("You don't own this vendor")
-                end
+            else
+                player:notifyError("You don't own this vendor")
             end
+        end
         ```
 ]]
 function playerMeta:canEditVendor(vendor)
@@ -1806,9 +1806,9 @@ end
         -- Medium: Staff-only feature access
         if player:isStaff() then
             player:notify("Welcome, staff member!")
-            else
-                player:notifyError("This feature is for staff only")
-            end
+        else
+            player:notifyError("This feature is for staff only")
+        end
         ```
 
     High Complexity:
@@ -1861,9 +1861,9 @@ end
         -- Medium: VIP-only feature access
         if player:isVIP() then
             player:notify("Welcome, VIP member!")
-            else
-                player:notifyError("This feature is for VIP members only")
-            end
+        else
+            player:notifyError("This feature is for VIP members only")
+        end
         ```
 
     High Complexity:
@@ -1915,9 +1915,9 @@ end
         -- Medium: Duty-based feature access
         if player:isStaffOnDuty() then
             player:notify("Staff tools available")
-            else
-                player:notifyError("You must be on duty to use this")
-            end
+        else
+            player:notifyError("You must be on duty to use this")
+        end
         ```
 
     High Complexity:
@@ -1928,9 +1928,9 @@ end
             local currentTime = os.time()
             local dutyDuration = currentTime - dutyTime
             player:notifyInfo("On duty for " .. math.floor(dutyDuration / 60) .. " minutes")
-            else
-                player:notify("You are not currently on duty")
-            end
+        else
+            player:notify("You are not currently on duty")
+        end
         ```
 ]]
 function playerMeta:isStaffOnDuty()
@@ -1968,9 +1968,9 @@ end
         -- Medium: Faction selection with whitelist check
         if player:hasWhitelist("police") then
             player:notify("You can join the police faction")
-            else
-                player:notifyError("You don't have whitelist for police faction")
-            end
+        else
+            player:notifyError("You don't have whitelist for police faction")
+        end
         ```
 
     High Complexity:
@@ -1982,9 +1982,9 @@ end
             if factionData and not factionData.isDefault then
                 player:notifySuccess("Whitelist access granted for " .. factionData.name)
             end
-            else
-                player:notifyError("Whitelist required for " .. faction)
-            end
+        else
+            player:notifyError("Whitelist required for " .. faction)
+        end
         ```
 ]]
 function playerMeta:hasWhitelist(faction)
@@ -2149,9 +2149,9 @@ end
         local money = player:getMoney()
         if money >= cost then
             player:notify("You can afford this purchase!")
-            else
-                player:notifyError("You need $" .. (cost - money) .. " more")
-            end
+        else
+            player:notifyError("You need $" .. (cost - money) .. " more")
+        end
         ```
 
     High Complexity:
@@ -2203,9 +2203,9 @@ end
         local cost = 500
         if player:canAfford(cost) then
             player:notify("You can afford this purchase!")
-            else
-                player:notifyError("You need $" .. (cost - player:getMoney()) .. " more")
-            end
+        else
+            player:notifyError("You need $" .. (cost - player:getMoney()) .. " more")
+        end
         ```
 
     High Complexity:
@@ -2219,9 +2219,9 @@ end
                 local remaining = currentMoney - cost
                 player:notifySuccess("Purchase successful! Remaining: $" .. remaining)
             end
-            else
-                player:notifyError("Insufficient funds for this purchase")
-            end
+        else
+            player:notifyError("Insufficient funds for this purchase")
+        end
         ```
 ]]
 function playerMeta:canAfford(amount)
@@ -2261,9 +2261,9 @@ end
         -- Medium: Skill-based feature access
         if player:hasSkillLevel("engineering", 10) then
             player:notify("You can use advanced engineering tools")
-            else
-                player:notifyError("You need engineering level 10 for this")
-            end
+        else
+            player:notifyError("You need engineering level 10 for this")
+        end
         ```
 
     High Complexity:
@@ -2384,7 +2384,7 @@ end
         ```lua
         -- Medium: Play sequence with callback
         player:forceSequence("wave", function()
-        player:notify("Animation completed!")
+            player:notify("Animation completed!")
         end)
         ```
 
@@ -2394,8 +2394,8 @@ end
         local sequenceName = "salute"
         local duration = 3.0
         local callback = function()
-        player:notifySuccess("Salute completed!")
-        player:setData("lastSalute", os.time())
+            player:notifySuccess("Salute completed!")
+            player:setData("lastSalute", os.time())
         end
         player:forceSequence(sequenceName, callback, duration, false)
         ```
@@ -2670,8 +2670,8 @@ end
         ```lua
         -- Medium: Network animation with multiple bones
         local boneData = {
-        ValveBiped.Bip01_Head1 = Angle(0, 0, 0),
-        ValveBiped.Bip01_Spine2 = Angle(0, 0, 0)
+            ValveBiped.Bip01_Head1 = Angle(0, 0, 0),
+            ValveBiped.Bip01_Spine2 = Angle(0, 0, 0)
         }
         player:networkAnimation(true, boneData)
         ```
@@ -2680,15 +2680,15 @@ end
         ```lua
         -- High: Complex animation system with timing
         local boneData = {
-        ValveBiped.Bip01_Head1 = Angle(0, 0, 0),
-        ValveBiped.Bip01_Spine2 = Angle(0, 0, 0),
-        ValveBiped.Bip01_L_Hand = Angle(0, 0, 0)
+            ValveBiped.Bip01_Head1 = Angle(0, 0, 0),
+            ValveBiped.Bip01_Spine2 = Angle(0, 0, 0),
+            ValveBiped.Bip01_L_Hand = Angle(0, 0, 0)
         }
         player:networkAnimation(true, boneData)
         timer.Simple(5, function()
-        if IsValid(player) then
-            player:networkAnimation(false, boneData)
-        end
+            if IsValid(player) then
+                player:networkAnimation(false, boneData)
+            end
         end)
         ```
 ]]
@@ -2803,8 +2803,8 @@ end
         local waypointPos = Vector(1000, 2000, 100)
         local waypointIcon = "icon16/flag.png"
         local onReach = function()
-        player:notifySuccess("Objective reached!")
-        player:setData("missionComplete", true)
+            player:notifySuccess("Objective reached!")
+            player:setData("missionComplete", true)
         end
         player:setWaypoint(waypointName, waypointPos, waypointIcon, onReach)
         ```
@@ -3248,7 +3248,7 @@ end
         -- Simple: Request basic arguments
         local argTypes = {{type = "string", name = "Name"}, {type = "number", name = "Age"}}
         player:requestArguments("Enter Info", argTypes, function(args)
-        print("Name:", args[1], "Age:", args[2])
+            print("Name:", args[1], "Age:", args[2])
         end)
         ```
 
@@ -3257,10 +3257,10 @@ end
         -- Medium: Request with validation
         local argTypes = {
             {type = "string", name = "Item Name", required = true},
-            {type = "number", name = "Quantity",   min = 1,      max = 100}
+            {type = "number", name = "Quantity",  min = 1,      max = 100}
         }
         player:requestArguments("Create Item", argTypes, function(args)
-        player:notify("Created " .. args[2] .. "x " .. args[1])
+            player:notify("Created " .. args[2] .. "x " .. args[1])
         end)
         ```
 
@@ -3270,18 +3270,18 @@ end
         local argTypes = {
             {type = "string",  name = "Character Name", required = true},
             {type = "number",  name = "Level",          min = 1,          max = 100},
-            {type = "boolean", name = "Is VIP",         default = false},
+            {type = "boolean", name = "Is VIP",          default = false},
             {type = "string",  name = "Faction",         options = {"police", "citizen", "criminal"}}
         }
         local callback = function(args)
-        local char = player:getChar()
-        if char then
-            char:setData("name", args[1])
-            char:setData("level", args[2])
-            char:setData("isVIP", args[3])
-            char:setData("faction", args[4])
-            player:notifySuccess("Character updated!")
-        end
+            local char = player:getChar()
+            if char then
+                char:setData("name", args[1])
+                char:setData("level", args[2])
+                char:setData("isVIP", args[3])
+                char:setData("faction", args[4])
+                player:notifySuccess("Character updated!")
+            end
         end
         player:requestArguments("Character Setup", argTypes, callback)
         ```

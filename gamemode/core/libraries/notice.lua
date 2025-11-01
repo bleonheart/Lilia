@@ -35,7 +35,7 @@ if SERVER then
         lia.notices.notify(nil, "Server restarting in 5 minutes!")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Send error notification to specific player
         local player = Player(1)
@@ -44,17 +44,17 @@ if SERVER then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Send notifications to multiple players with different types
         local players = player.GetAll()
         for _, ply in ipairs(players) do
             if ply:IsAdmin() then
                 lia.notices.notify(ply, "Admin panel updated", "info")
-                else
-                    lia.notices.notify(ply, "Welcome to the server!", "success")
-                end
+            else
+                lia.notices.notify(ply, "Welcome to the server!", "success")
             end
+        end
         ```
     ]]
     function lia.notices.notify(client, message, notifType)
@@ -95,7 +95,7 @@ if SERVER then
         lia.notices.notifyInfoLocalized(nil, "server.restart")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Send localized notification with one parameter
         local player = Player(1)

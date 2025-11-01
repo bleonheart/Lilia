@@ -36,42 +36,42 @@ lia.config.stored = lia.config.stored or {}
         ```lua
         -- Simple: Add a basic boolean configuration
         lia.config.add("EnableFeature", "Enable Feature", true, nil, {
-        desc = "Enable or disable this feature",
-        category = "general",
-        type = "Boolean"
+            desc      = "Enable or disable this feature",
+            category  = "general",
+            type      = "Boolean"
         })
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Add configuration with callback and constraints
         lia.config.add("WalkSpeed", "Walk Speed", 130, function(_, newValue)
-        for _, client in player.Iterator() do
-            client:SetWalkSpeed(newValue)
-        end
+            for _, client in player.Iterator() do
+                client:SetWalkSpeed(newValue)
+            end
         end, {
-        desc = "Player walking speed",
-        category = "character",
-        type = "Int",
-        min = 50,
-        max = 300
+            desc      = "Player walking speed",
+            category  = "character",
+            type      = "Int",
+            min       = 50,
+            max       = 300
         })
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Add configuration with dynamic options and complex validation
         lia.config.add("Language", "Language", "English", nil, {
-        desc = "Select your preferred language",
-        category = "general",
-        type = "Table",
-        options = function()
-        local languages = {}
-        for code, data in pairs(lia.lang.getLanguages()) do
-            languages[data.name] = code
-        end
-        return languages
-        end
+            desc      = "Select your preferred language",
+            category  = "general",
+            type      = "Table",
+            options   = function()
+                local languages = {}
+                for code, data in pairs(lia.lang.getLanguages()) do
+                    languages[data.name] = code
+                end
+                return languages
+            end
         })
         ```
 ]]
@@ -142,7 +142,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Use options in UI creation
         local combo = vgui.Create("liaComboBox")
@@ -152,7 +152,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic options with validation and filtering
         local function createDynamicOptions()
@@ -211,21 +211,21 @@ end
         lia.config.setDefault("MaxCharacters", 10)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Update default based on server conditions
         local maxChars = SERVER and 5 or 3
         lia.config.setDefault("MaxCharacters", maxChars)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Update multiple defaults based on module availability
         local function updateModuleDefaults()
             local defaults = {
-            MaxCharacters = lia.module.get("characters") and 5 or 1,
-            AllowPMs = lia.module.get("chatbox") and true or false,
-            WalkSpeed = lia.module.get("attributes") and 130 or 100
+                MaxCharacters = lia.module.get("characters") and 5 or 1,
+                AllowPMs      = lia.module.get("chatbox") and true or false,
+                WalkSpeed     = lia.module.get("attributes") and 130 or 100
             }
             for key, value in pairs(defaults) do
                 lia.config.setDefault(key, value)
@@ -321,19 +321,19 @@ end
         lia.config.set("WalkSpeed", 150)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Set configuration with validation
         local function setConfigWithValidation(key, value, min, max)
             if type(value) == "number" and value >= min and value <= max then
                 lia.config.set(key, value)
-                else
-                    print("Invalid value for " .. key)
-                end
+            else
+                print("Invalid value for " .. key)
             end
+        end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch configuration updates with rollback
         local function batchConfigUpdate(updates)
@@ -344,10 +344,10 @@ end
             end
 
             return function()
-            for key, value in pairs(originalValues) do
-                lia.config.set(key, value)
+                for key, value in pairs(originalValues) do
+                    lia.config.set(key, value)
+                end
             end
-        end
         end
         ```
 ]]
@@ -397,28 +397,28 @@ end
         player:SetWalkSpeed(walkSpeed)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Get configuration with validation and fallback
         local function getConfigValue(key, expectedType, fallback)
             local value = lia.config.get(key, fallback)
             if type(value) == expectedType then
                 return value
-                else
-                    return fallback
-                end
+            else
+                return fallback
             end
+        end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Get multiple configurations with type checking and validation
         local function getPlayerSettings()
             local settings = {}
             local configs = {
-            walkSpeed = {"WalkSpeed", "number", 130},
-            runSpeed = {"RunSpeed", "number", 275},
-            maxChars = {"MaxCharacters", "number", 5}
+                walkSpeed = {"WalkSpeed", "number", 130},
+                runSpeed  = {"RunSpeed", "number", 275},
+                maxChars  = {"MaxCharacters", "number", 5}
             }
 
             for setting, data in pairs(configs) do
@@ -470,17 +470,17 @@ end
         lia.config.load()
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Load configurations with callback
         lia.config.load()
         hook.Add("InitializedConfig", "MyModule", function()
-        print("Configurations loaded successfully")
-        -- Initialize module with loaded configs
+            print("Configurations loaded successfully")
+            -- Initialize module with loaded configs
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Load configurations with error handling and fallback
         local function loadConfigWithFallback()
@@ -568,7 +568,7 @@ if SERVER then
             print("Changed configurations:", table.Count(changed))
             ```
 
-            Medium Complexity:
+        Medium Complexity:
             ```lua
             -- Medium: Send only changed configurations to specific client
             local function sendConfigToClient(client)
@@ -581,7 +581,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+        High Complexity:
             ```lua
             -- High: Export changed configurations with filtering and validation
             local function exportChangedConfigs(filterFunc)
@@ -592,10 +592,10 @@ if SERVER then
                     local config = lia.config.stored[key]
                     if config and (not filterFunc or filterFunc(key, value, config)) then
                         filtered[key] = {
-                        value = value,
-                        name = config.name,
-                        category = config.category,
-                        type = config.data.type
+                            value    = value,
+                            name     = config.name,
+                            category = config.category,
+                            type     = config.data.type
                         }
                     end
                 end
@@ -635,19 +635,19 @@ if SERVER then
             lia.config.send()
             ```
 
-            Medium Complexity:
+        Medium Complexity:
             ```lua
             -- Medium: Send configurations to specific client on connect
             hook.Add("PlayerInitialSpawn", "SendConfigs", function(client)
-            timer.Simple(1, function()
-            if IsValid(client) then
-                lia.config.send(client)
-            end
-            end)
+                timer.Simple(1, function()
+                    if IsValid(client) then
+                        lia.config.send(client)
+                    end
+                end)
             end)
             ```
 
-            High Complexity:
+        High Complexity:
             ```lua
             -- High: Send configurations with priority and filtering
             local function sendConfigsWithPriority(priority, filterFunc)
@@ -749,7 +749,7 @@ if SERVER then
             lia.config.save()
             ```
 
-            Medium Complexity:
+        Medium Complexity:
             ```lua
             -- Medium: Save configurations with error handling
             local function saveConfigsSafely()
@@ -761,24 +761,24 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+        High Complexity:
             ```lua
             -- High: Save configurations with backup and validation
             local function saveConfigsWithBackup()
                 local changed = lia.config.getChangedValues()
                 if table.Count(changed) == 0 then return end
 
-                    -- Create backup
-                    local backup = util.TableToJSON(changed)
-                    file.Write("config_backup_" .. os.time() .. ".json", backup)
+                -- Create backup
+                local backup = util.TableToJSON(changed)
+                file.Write("config_backup_" .. os.time() .. ".json", backup)
 
-                    -- Save with validation
-                    local success, err = pcall(lia.config.save)
-                    if not success then
-                        print("Save failed, restoring from backup")
-                        -- Restore from backup logic
-                    end
+                -- Save with validation
+                local success, err = pcall(lia.config.save)
+                if not success then
+                    print("Save failed, restoring from backup")
+                    -- Restore from backup logic
                 end
+            end
             ```
     ]]
     function lia.config.save()
@@ -823,7 +823,7 @@ if SERVER then
             lia.config.reset()
             ```
 
-            Medium Complexity:
+        Medium Complexity:
             ```lua
             -- Medium: Reset configurations with confirmation
             local function resetConfigsWithConfirmation()
@@ -833,7 +833,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+        High Complexity:
             ```lua
             -- High: Reset configurations with selective restoration and logging
             local function resetConfigsSelectively(keepConfigs)
@@ -1105,6 +1105,12 @@ lia.config.add("AutoWeaponItemGeneration", "autoWeaponItemGeneration", true, nil
 
 lia.config.add("AutoAmmoItemGeneration", "autoAmmoItemGeneration", true, nil, {
     desc = "autoAmmoItemGenerationDesc",
+    category = "categoryGeneral",
+    type = "Boolean",
+})
+
+lia.config.add("ItemsCanBeDestroyed", "itemsCanBeDestroyed", true, nil, {
+    desc = "itemsCanBeDestroyedDesc",
     category = "categoryGeneral",
     type = "Boolean",
 })
