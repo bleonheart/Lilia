@@ -40,16 +40,10 @@ end
 
 function PANEL:AddItem(...)
     local args = {...}
-    if #args ~= #self.columns then
-        print("[liaTable] AddItem failed: got " .. #args .. " args but expected " .. #self.columns .. " columns")
-        return
-    end
-    print("[liaTable] AddItem called with " .. #args .. " args, table has " .. #self.columns .. " columns")
+    if #args ~= #self.columns then return end
     table.insert(self.rows, args)
     local rowIndex = #self.rows
-    print("[liaTable] Added row " .. rowIndex .. ", now have " .. #self.rows .. " total rows")
     self:RebuildRows()
-    print("[liaTable] RebuildRows called")
     local proxy = {}
     local rowData = self.rows[rowIndex]
     setmetatable(proxy, {
@@ -220,7 +214,6 @@ function PANEL:CalculateColumnWidths()
 end
 
 function PANEL:RebuildRows()
-    print("[liaTable] RebuildRows called, have " .. #self.rows .. " rows to build")
     self:CalculateColumnWidths()
     self.content:Clear()
     self:CreateHeader()
@@ -230,10 +223,8 @@ function PANEL:RebuildRows()
     end
 
     for rowIndex, rowData in ipairs(self.rows) do
-        print("[liaTable] Creating row " .. rowIndex .. " with data: " .. tostring(rowData[1]) .. ", " .. tostring(rowData[2]) .. ", " .. tostring(rowData[3]))
         self:CreateRow(rowIndex, rowData)
     end
-    print("[liaTable] RebuildRows finished creating " .. #self.rows .. " rows")
 
     local panelWidth = self:GetWide()
     self.content:SetSize(math.max(totalWidth, panelWidth), #self.rows * (self.rowHeight + 1))

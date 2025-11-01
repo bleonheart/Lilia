@@ -121,57 +121,49 @@ end
     Low Complexity:
     ```lua
     -- Simple: Add default money to new characters
-    hook.Add("AdjustCreationData", "DefaultMoney", function(client, data, newData, originalData)
-        newData.money = 500
-        return newData
+    hook.Add("AdjustCreationData", "MyAddon", function(client, data, newData, originalData)
+    data.money = data.money + 1000 -- Give extra starting money
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: Apply faction-based bonuses
+    -- Medium: Modify character based on faction
     hook.Add("AdjustCreationData", "FactionBonuses", function(client, data, newData, originalData)
-        local faction = lia.faction.indices[data.faction]
-        if faction then
-            -- Apply faction-specific starting attributes
-            if faction.startingAttributes then
-                newData.attributes = newData.attributes or {}
-                for attr, value in pairs(faction.startingAttributes) do
-                    newData.attributes[attr] = (newData.attributes[attr] or 0) + value
-                end
-            end
-        end
-        return newData
+    if data.faction == "police" then
+        data.money = data.money + 500 -- Police get extra money
+        data.desc = data.desc .. "\n\n[Police Officer]"
+    elseif data.faction == "citizen" then
+        data.money = data.money + 200 -- Citizens get small bonus
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Complex character creation with validation and bonuses
+    -- High: Complex character creation system with validation
     hook.Add("AdjustCreationData", "AdvancedCreation", function(client, data, newData, originalData)
-        -- Validate character name uniqueness per player
-        lia.db.selectOne({"id"}, "characters", string.format("name = %s AND steamID = %s",
-            lia.db.convertDataType(data.name), lia.db.convertDataType(client:SteamID()))):next(function(existing)
-            if existing then
-                client:notifyErrorLocalized("nameTaken")
-                return false -- Cancel character creation
-            end
-        end)
-
-        -- Apply premium bonuses for donors
-        if client:getLiliaData("donator") then
-            newData.money = (newData.money or 0) + 1000
-            newData.attributes = newData.attributes or {}
-            newData.attributes["str"] = (newData.attributes["str"] or 0) + 5
-            newData.attributes["end"] = (newData.attributes["end"] or 0) + 5
+    -- Validate character name
+    if string.len(data.name) < 3 then
+        data.name = data.name .. " Jr."
+    end
+    -- Add faction-specific bonuses
+    local factionBonuses = {
+    ["police"] = {money = 1000, items = {"weapon_pistol"}},
+    ["medic"] = {money = 800, items = {"medkit"}},
+    ["citizen"] = {money = 200, items = {}}
+    }
+    local bonus = factionBonuses[data.faction]
+    if bonus then
+        data.money = data.money + bonus.money
+        data.startingItems = data.startingItems or {}
+        for _, item in ipairs(bonus.items) do
+            table.insert(data.startingItems, item)
         end
-
-        -- Apply server-wide bonuses for special events
-        if lia.config.get("EventMode") then
-            newData.money = (newData.money or 0) * 1.5
-        end
-
-        return newData
+    end
+    -- Add creation timestamp
+    data.creationTime = os.time()
+    data.creationIP = client:IPAddress()
     end)
     ```
 ]]
@@ -199,63 +191,61 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Add default items to bags
-    hook.Add("BagInventoryReady", "DefaultBagItems", function(self, inventory)
-        if self.uniqueID == "backpack" then
-            inventory:add("water")
-        end
+    -- Simple: Log when bag inventory is ready
+    hook.Add("BagInventoryReady", "MyAddon", function(self, inventory)
+    print("Bag inventory ready for item: " .. self.uniqueID)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: Initialize bag with faction-specific items
-    hook.Add("BagInventoryReady", "FactionBagItems", function(self, inventory)
-        local client = self.player
-        if not client then return end
-
-        local char = client:getChar()
-        if not char then return end
-
-        local faction = char:getFaction()
-        if faction == FACTION_POLICE then
-            inventory:add("handcuffs")
-            inventory:add("radio")
-        elseif faction == FACTION_MEDIC then
-            inventory:add("medkit")
-            inventory:add("bandage", 3)
+    -- Medium: Add special items to bag inventory
+    hook.Add("BagInventoryReady", "SpecialBags", function(self, inventory)
+    if self.uniqueID == "magic_bag" then
+        -- Add a magic item to the bag
+        local magicItem = lia.item.instance("magic_crystal")
+        if magicItem then
+            inventory:add(magicItem)
+            end
         end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced bag initialization with size and weight limits
-    hook.Add("BagInventoryReady", "AdvancedBagSetup", function(self, inventory)
-        local client = self.player
-        if not client then return end
-
-        local char = client:getChar()
-        if not char then return end
-
-        -- Set custom inventory size based on character attributes
-        local strength = char:getAttrib("str", 0)
-        local bagSize = math.floor(10 + strength * 2) -- Base 10 slots + 2 per strength
-        inventory:setSize(bagSize)
-
-        -- Add random loot based on character level
-        local level = char:getAttrib("level", 1)
-        if level >= 5 then
-            local lootTable = {"food", "water", "bandage", "ammo_pistol"}
-            local itemCount = math.random(1, 3)
-            for i = 1, itemCount do
-                local randomItem = lootTable[math.random(#lootTable)]
-                inventory:add(randomItem)
+    -- High: Complex bag inventory system with validation
+    hook.Add("BagInventoryReady", "AdvancedBags", function(self, inventory)
+    local char = self:getOwner()
+    if not char then return end
+        -- Set up faction-specific bag contents
+        local faction = char:getFaction()
+        local bagContents = {
+        ["police"] = {
+        {item = "handcuffs", quantity = 1},
+        {item = "police_badge", quantity = 1},
+        {item = "radio", quantity = 1}
+        },
+        ["medic"] = {
+        {item = "medkit", quantity = 2},
+        {item = "bandage", quantity = 5},
+        {item = "stethoscope", quantity = 1}
+        },
+        ["citizen"] = {
+        {item = "wallet", quantity = 1},
+        {item = "phone", quantity = 1}
+        }
+        }
+        local contents = bagContents[faction]
+        if contents then
+            for _, content in ipairs(contents) do
+                local item = lia.item.instance(content.item)
+                if item then
+                    item:setData("quantity", content.quantity)
+                    inventory:add(item)
+                    end
+                end
             end
         end
-
-        -- Log bag creation for analytics
-        lia.log.add(client, "bag_created", self.uniqueID, bagSize)
     end)
     ```
 ]]
@@ -368,64 +358,63 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Prevent transfers to specific faction
-    hook.Add("CanCharBeTransfered", "NoTransferToStaff", function(targetChar, faction, client)
-        if faction.uniqueID == "staff" then
-            return false
-        end
+    -- Simple: Use same logic as CanBeTransfered
+    hook.Add("CanCharBeTransfered", "MyAddon", function(targetChar, faction, client)
+    return hook.Run("CanBeTransfered", targetChar, faction, client)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: Level-based transfer restrictions
-    hook.Add("CanCharBeTransfered", "LevelRequirements", function(targetChar, faction, client)
-        local level = targetChar:getAttrib("level", 1)
-        local requiredLevel = faction.minLevel or 0
-
-        if level < requiredLevel then
-            client:notify("You need to be level " .. requiredLevel .. " to transfer to this faction!")
-            return false
+    -- Medium: Add additional character-specific checks
+    hook.Add("CanCharBeTransfered", "CharChecks", function(targetChar, faction, client)
+    -- Check if character is banned
+    if targetChar:isBanned() then
+        return false
         end
-
-        return true
+    -- Check character age
+    local charAge = targetChar:getData("age", 18)
+    if faction == "police" and charAge < 21 then
+        return false -- Must be 21+ to be police
+        end
+    return hook.Run("CanBeTransfered", targetChar, faction, client)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Complex transfer validation with cooldowns and restrictions
-    hook.Add("CanCharBeTransfered", "AdvancedTransfer", function(targetChar, faction, client)
-        -- Check transfer cooldown
-        local lastTransfer = targetChar:getData("lastFactionTransfer", 0)
-        local cooldown = 86400 -- 24 hours
-        if os.time() - lastTransfer < cooldown then
-            local remaining = cooldown - (os.time() - lastTransfer)
-            client:notify("You must wait " .. math.floor(remaining / 3600) .. " hours before transferring again!")
-            return false
+    -- High: Advanced character transfer system
+    hook.Add("CanCharBeTransfered", "AdvancedCharTransfers", function(targetChar, faction, client)
+    local charData = targetChar:getData()
+    -- Check character reputation
+    local reputation = charData.reputation or 0
+    if faction == "police" and reputation < 50 then
+        client:ChatPrint("You need a good reputation to join the police")
+        return false
         end
-
-        -- Check faction capacity
-        local factionCount = lia.db.selectOne({"COUNT(*) as count"}, "characters", "faction = " .. lia.db.convertDataType(faction.index))
-        if factionCount and factionCount.count >= (faction.maxMembers or 999) then
-            client:notify("This faction is at maximum capacity!")
-            return false
+    -- Check for outstanding warrants
+    if charData.warrants and #charData.warrants > 0 then
+        client:ChatPrint("You have outstanding warrants and cannot transfer")
+        return false
         end
-
-        -- Check if player has required flags
-        if faction.requiredFlags and not client:hasFlags(faction.requiredFlags) then
-            client:notify("You don't have the required permissions for this faction!")
-            return false
+    -- Check faction capacity
+    local factionCount = 0
+    for _, char in pairs(lia.char.getCharacters()) do
+        if char:getFaction() == faction then
+            factionCount = factionCount + 1
+            end
         end
-
-        -- Check for blacklist
-        local steamID = client:SteamID()
-        if faction.blacklist and table.HasValue(faction.blacklist, steamID) then
-            client:notify("You are blacklisted from this faction!")
-            return false
+    local maxFactionMembers = {
+    ["police"] = 10,
+    ["medic"] = 5,
+    ["mayor"] = 1
+    }
+    local maxMembers = maxFactionMembers[faction]
+    if maxMembers and factionCount >= maxMembers then
+        client:ChatPrint("That faction is full")
+        return false
         end
-
-        return true
+    return hook.Run("CanBeTransfered", targetChar, faction, client)
     end)
     ```
 ]]
@@ -453,72 +442,57 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Prevent deleting characters above a certain level
-    hook.Add("CanDeleteChar", "LevelRestriction", function(client, character)
-        local level = character:getAttrib("level", 1)
-        if level > 10 then
-            return false
-        end
+    -- Simple: Allow all character deletions
+    hook.Add("CanDeleteChar", "MyAddon", function(client, character)
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: Cooldown-based deletion prevention
-    hook.Add("CanDeleteChar", "DeletionCooldown", function(client, character)
-        local lastDelete = client:getLiliaData("lastCharDelete", 0)
-        local cooldown = 86400 -- 24 hours
-
-        if os.time() - lastDelete < cooldown then
-            client:notify("You must wait before deleting another character!")
-            return false
+    -- Medium: Prevent deletion of high-level characters
+    hook.Add("CanDeleteChar", "LevelRestrictions", function(client, character)
+    local charLevel = character:getData("level", 1)
+    if charLevel > 10 then
+        client:ChatPrint("You cannot delete characters above level 10")
+        return false
         end
-
-        return true
+    return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Comprehensive deletion validation
+    -- High: Complex deletion validation system
     hook.Add("CanDeleteChar", "AdvancedDeletion", function(client, character)
-        -- Prevent deletion if character has valuable items
-        local inventory = character:getInv()
-        if inventory then
-            local hasValuable = false
-            for _, item in pairs(inventory:getItems()) do
-                if item:getData("valuable", false) or (item:getData("price", 0) or 0) > 1000 then
-                    hasValuable = true
-                    break
-                end
-            end
-
-            if hasValuable then
-                client:notify("You must remove valuable items before deleting this character!")
-                return false
+    local charMoney = character:getMoney()
+    local charLevel = character:getData("level", 1)
+    -- Check if character has valuable items
+    local hasValuables = false
+    local charInv = character:getInv()
+    for _, item in pairs(charInv:getItems()) do
+        if item.uniqueID == "gold_bar" or item.uniqueID == "diamond" then
+            hasValuables = true
+            break
             end
         end
-
-        -- Check if character is in active roleplay
-        if character:getData("inRoleplay", false) then
-            client:notify("You cannot delete a character that is currently in roleplay!")
-            return false
+    if hasValuables then
+        client:ChatPrint("You must remove all valuable items before deleting this character")
+        return false
         end
-
-        -- Admin override check
-        if client:IsAdmin() and client:getLiliaData("adminOverrideDelete", false) then
-            return true
+    -- Check if character is in a faction
+    local faction = character:getFaction()
+    if faction ~= "citizen" then
+        client:ChatPrint("You must leave your faction before deleting this character")
+        return false
         end
-
-        -- Prevent deletion of characters with significant playtime
-        local playtime = character:getPlayTime() or 0
-        if playtime > 360000 then -- More than 100 hours
-            client:notify("Characters with significant playtime cannot be deleted!")
-            return false
+    -- Check cooldown
+    local lastDeletion = client:getData("lastCharDeletion", 0)
+    if os.time() - lastDeletion < 86400 then -- 24 hour cooldown
+        client:ChatPrint("You must wait 24 hours before deleting another character")
+        return false
         end
-
-        return true
-    end)
+    return true
     ```
 ]]
 function CanDeleteChar(client, character)
@@ -545,25 +519,57 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all character deletions
     hook.Add("CanDeleteChar", "MyAddon", function(client, character)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanDeleteChar", "MyAddon", function(client, character)
-        -- Add your code here
+    -- Medium: Prevent deletion of high-level characters
+    hook.Add("CanDeleteChar", "LevelRestrictions", function(client, character)
+    local charLevel = character:getData("level", 1)
+    if charLevel > 10 then
+        client:ChatPrint("You cannot delete characters above level 10")
+        return false
+        end
+    return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanDeleteChar", "MyAddon", function(client, character)
-        -- Add your code here
+    -- High: Complex deletion validation system
+    hook.Add("CanDeleteChar", "AdvancedDeletion", function(client, character)
+    local charMoney = character:getMoney()
+    local charLevel = character:getData("level", 1)
+    -- Check if character has valuable items
+    local hasValuables = false
+    local charInv = character:getInv()
+    for _, item in pairs(charInv:getItems()) do
+        if item.uniqueID == "gold_bar" or item.uniqueID == "diamond" then
+            hasValuables = true
+            break
+            end
+        end
+    if hasValuables then
+        client:ChatPrint("You must remove all valuable items before deleting this character")
+        return false
+        end
+    -- Check if character is in a faction
+    local faction = character:getFaction()
+    if faction ~= "citizen" then
+        client:ChatPrint("You must leave your faction before deleting this character")
+        return false
+        end
+    -- Check cooldown
+    local lastDeletion = client:getData("lastCharDeletion", 0)
+    if os.time() - lastDeletion < 86400 then -- 24 hour cooldown
+        client:ChatPrint("You must wait 24 hours before deleting another character")
+        return false
+        end
+    return true
     end)
     ```
 ]]
@@ -591,27 +597,49 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow admins only
     hook.Add("CanInviteToClass", "MyAddon", function(client, target)
-        -- Add your code here
+    return client:IsAdmin()
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanInviteToClass", "MyAddon", function(client, target)
-        -- Add your code here
-    end)
+    -- Medium: Check faction and rank
+    hook.Add("CanInviteToClass", "ClassInviteCheck", function(client, target)
+    local char = client:getChar()
+    if not char then return false end
+        local rank = char:getData("rank", 0)
+        return rank >= 3
+        end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanInviteToClass", "MyAddon", function(client, target)
-        -- Add your code here
-    end)
-    ```
+    -- High: Complex class invitation system
+    hook.Add("CanInviteToClass", "AdvancedClassInvite", function(client, target)
+    local char = client:getChar()
+    local targetChar = target:getChar()
+    if not char or not targetChar then return false end
+        -- Check if client has permission
+        local rank = char:getData("rank", 0)
+        if rank < 3 then
+            client:ChatPrint("You need rank 3 or higher to invite players")
+            return false
+            end
+        -- Check if target is in same faction
+        if char:getFaction() ~= targetChar:getFaction() then
+            client:ChatPrint("Target must be in your faction")
+            return false
+            end
+        -- Check cooldown
+        local lastInvite = char:getData("lastClassInvite", 0)
+        if os.time() - lastInvite < 60 then
+            client:ChatPrint("Please wait before inviting again")
+            return false
+            end
+        return true
+        end)
 ]]
 function CanInviteToFaction(client, target)
 end
@@ -637,26 +665,50 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow admins only
     hook.Add("CanInviteToFaction", "MyAddon", function(client, target)
-        -- Add your code here
+    return client:IsAdmin()
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanInviteToFaction", "MyAddon", function(client, target)
-        -- Add your code here
-    end)
+    -- Medium: Check faction leader status
+    hook.Add("CanInviteToFaction", "FactionInviteCheck", function(client, target)
+    local char = client:getChar()
+    if not char then return false end
+        return char:getData("factionLeader", false)
+        end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanInviteToFaction", "MyAddon", function(client, target)
-        -- Add your code here
-    end)
+    -- High: Complex faction invitation system
+    hook.Add("CanInviteToFaction", "AdvancedFactionInvite", function(client, target)
+    local char = client:getChar()
+    local targetChar = target:getChar()
+    if not char or not targetChar then return false end
+        -- Check if client is faction leader
+        if not char:getData("factionLeader", false) then
+            client:ChatPrint("Only faction leaders can invite players")
+            return false
+            end
+        -- Check faction member limit
+        local faction = char:getFaction()
+        local memberCount = 0
+        for _, ply in ipairs(player.GetAll()) do
+            local plyChar = ply:getChar()
+            if plyChar and plyChar:getFaction() == faction then
+                memberCount = memberCount + 1
+                end
+            end
+        local maxMembers = 20
+        if memberCount >= maxMembers then
+            client:ChatPrint("Faction is at maximum capacity")
+            return false
+            end
+        return true
+        end)
     ```
 ]]
 function CanItemBeTransfered(item, fromInventory, toInventory, client)
@@ -685,26 +737,54 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all transfers
     hook.Add("CanItemBeTransfered", "MyAddon", function(item, fromInventory, toInventory, client)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanItemBeTransfered", "MyAddon", function(item, fromInventory, toInventory, client)
-        -- Add your code here
+    -- Medium: Check inventory types
+    hook.Add("CanItemBeTransfered", "InventoryTypeCheck", function(item, fromInventory, toInventory, client)
+    -- Prevent transferring to vendor inventories
+    if toInventory.isVendor then
+        return false
+        end
+    -- Check if item is transferable
+    if item:getData("noTransfer", false) then
+        return false
+        end
+    return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanItemBeTransfered", "MyAddon", function(item, fromInventory, toInventory, client)
-        -- Add your code here
-    end)
+    -- High: Complex transfer validation system
+    hook.Add("CanItemBeTransfered", "AdvancedTransferValidation", function(item, fromInventory, toInventory, client)
+    local char = client:getChar()
+    if not char then return false end
+        -- Check if item is transferable
+        if item:getData("noTransfer", false) then
+            client:ChatPrint("This item cannot be transferred")
+            return false
+            end
+        -- Check inventory types
+        if toInventory.isVendor then
+            client:ChatPrint("Cannot transfer items to vendor inventories")
+            return false
+            end
+        -- Check weight limits
+        local itemWeight = item:getWeight()
+        local currentWeight = toInventory:getWeight()
+        local maxWeight = toInventory:getMaxWeight()
+        if currentWeight + itemWeight > maxWeight then
+            client:ChatPrint("Not enough space in destination inventory")
+            return false
+            end
+        return true
+        end)
     ```
 ]]
 function CanPerformVendorEdit(self, vendor)
@@ -731,26 +811,51 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow admins only
     hook.Add("CanPerformVendorEdit", "MyAddon", function(self, vendor)
-        -- Add your code here
+    local client = self.activator
+    return client and client:IsAdmin()
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPerformVendorEdit", "MyAddon", function(self, vendor)
-        -- Add your code here
-    end)
+    -- Medium: Check vendor ownership
+    hook.Add("CanPerformVendorEdit", "VendorEditCheck", function(self, vendor)
+    local client = self.activator
+    if not client then return false end
+        local char = client:getChar()
+        if not char then return false end
+            local owner = vendor.owner
+            return owner == char:getID() or client:IsAdmin()
+            end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPerformVendorEdit", "MyAddon", function(self, vendor)
-        -- Add your code here
-    end)
+    -- High: Complex vendor editing system
+    hook.Add("CanPerformVendorEdit", "AdvancedVendorEdit", function(self, vendor)
+    local client = self.activator
+    if not client then return false end
+        local char = client:getChar()
+        if not char then return false end
+            -- Admins can always edit
+            if client:IsAdmin() then return true end
+                -- Check vendor ownership
+                local owner = vendor.owner
+                if owner ~= char:getID() then
+                    client:ChatPrint("You don't own this vendor")
+                    return false
+                    end
+                -- Check edit cooldown
+                local lastEdit = char:getData("lastVendorEdit", 0)
+                if os.time() - lastEdit < 30 then
+                    client:ChatPrint("Please wait before editing again")
+                    return false
+                    end
+                char:setData("lastVendorEdit", os.time())
+                return true
+                end)
     ```
 ]]
 function CanPersistEntity(entity)
@@ -776,26 +881,51 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Persist all props
     hook.Add("CanPersistEntity", "MyAddon", function(entity)
-        -- Add your code here
+    return entity:GetClass() == "prop_physics"
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPersistEntity", "MyAddon", function(entity)
-        -- Add your code here
+    -- Medium: Persist specific entities
+    hook.Add("CanPersistEntity", "EntityPersistCheck", function(entity)
+    local persistClasses = {
+    ["prop_physics"] = true,
+    ["prop_dynamic"] = true,
+    ["lia_item"] = true
+    }
+    return persistClasses[entity:GetClass()] or false
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPersistEntity", "MyAddon", function(entity)
-        -- Add your code here
-    end)
+    -- High: Complex entity persistence system
+    hook.Add("CanPersistEntity", "AdvancedEntityPersist", function(entity)
+    if not IsValid(entity) then return false end
+        -- Check entity class
+        local persistClasses = {
+        ["prop_physics"] = true,
+        ["prop_dynamic"] = true,
+        ["lia_item"] = true,
+        ["lia_vendor"] = true
+        }
+        if not persistClasses[entity:GetClass()] then
+            return false
+            end
+        -- Check if entity is marked as temporary
+        if entity:getNetVar("temporary", false) then
+            return false
+            end
+        -- Check entity age
+        local spawnTime = entity:getNetVar("spawnTime", 0)
+        if os.time() - spawnTime < 60 then
+            return false
+            end
+        return true
+        end)
     ```
 ]]
 function CanPickupMoney(activator, self)
@@ -822,26 +952,54 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all money pickup
     hook.Add("CanPickupMoney", "MyAddon", function(activator, self)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPickupMoney", "MyAddon", function(activator, self)
-        -- Add your code here
+    -- Medium: Check distance and amount
+    hook.Add("CanPickupMoney", "CheckMoneyPickup", function(activator, self)
+    local distance = activator:GetPos():Distance(self:GetPos())
+    if distance > 100 then
+        return false
+        end
+    local amount = self:getNetVar("amount", 0)
+    if amount <= 0 then
+        return false
+        end
+    return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPickupMoney", "MyAddon", function(activator, self)
-        -- Add your code here
-    end)
+    -- High: Complex money pickup system
+    hook.Add("CanPickupMoney", "AdvancedMoneyPickup", function(activator, self)
+    if not IsValid(activator) or not IsValid(self) then return false end
+        local char = activator:getChar()
+        if not char then return false end
+            -- Check distance
+            local distance = activator:GetPos():Distance(self:GetPos())
+            if distance > 100 then
+                activator:ChatPrint("You are too far away to pick up the money")
+                return false
+                end
+            -- Check amount
+            local amount = self:getNetVar("amount", 0)
+            if amount <= 0 then
+                return false
+                end
+            -- Check if money is owned
+            local owner = self:getNetVar("owner")
+            if owner and owner ~= char:getID() then
+                activator:ChatPrint("This money belongs to someone else")
+                return false
+                end
+            return true
+            end)
     ```
 ]]
 function CanPlayerAccessDoor(client, self, access)
@@ -869,26 +1027,46 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all players
     hook.Add("CanPlayerAccessDoor", "MyAddon", function(client, self, access)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPlayerAccessDoor", "MyAddon", function(client, self, access)
-        -- Add your code here
-    end)
+    -- Medium: Check door ownership
+    hook.Add("CanPlayerAccessDoor", "DoorAccessCheck", function(client, self, access)
+    local char = client:getChar()
+    if not char then return false end
+        local owner = self:getNetVar("owner")
+        return owner == char:getID()
+        end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPlayerAccessDoor", "MyAddon", function(client, self, access)
-        -- Add your code here
-    end)
+    -- High: Complex door access system
+    hook.Add("CanPlayerAccessDoor", "AdvancedDoorAccess", function(client, self, access)
+    local char = client:getChar()
+    if not char then return false end
+        -- Admins can access all doors
+        if client:IsAdmin() then return true end
+            -- Check door ownership
+            local owner = self:getNetVar("owner")
+            if owner == char:getID() then return true end
+                -- Check faction access
+                local allowedFactions = self:getNetVar("allowedFactions", {})
+                if table.HasValue(allowedFactions, char:getFaction()) then
+                    return true
+                    end
+                -- Check if player has key
+                local doorID = self:getNetVar("doorID")
+                if doorID and char:getInv():hasItem("door_key_" .. doorID) then
+                    return true
+                    end
+                return false
+                end)
     ```
 ]]
 function CanPlayerAccessVendor(activator, self)
@@ -915,26 +1093,47 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all players
     hook.Add("CanPlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
-    end)
+    -- Medium: Check faction restrictions
+    hook.Add("CanPlayerAccessVendor", "VendorAccessCheck", function(activator, self)
+    local char = activator:getChar()
+    if not char then return false end
+        local allowedFactions = self:getNetVar("allowedFactions", {})
+        if #allowedFactions > 0 and not table.HasValue(allowedFactions, char:getFaction()) then
+            return false
+            end
+        return true
+        end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
-    end)
+    -- High: Complex vendor access system
+    hook.Add("CanPlayerAccessVendor", "AdvancedVendorAccess", function(activator, self)
+    local char = activator:getChar()
+    if not char then return false end
+        -- Check faction restrictions
+        local allowedFactions = self:getNetVar("allowedFactions", {})
+        if #allowedFactions > 0 and not table.HasValue(allowedFactions, char:getFaction()) then
+            activator:ChatPrint("Your faction cannot access this vendor")
+            return false
+            end
+        -- Check level requirements
+        local requiredLevel = self:getNetVar("requiredLevel", 0)
+        local charLevel = char:getData("level", 1)
+        if charLevel < requiredLevel then
+            activator:ChatPrint("You need to be level " .. requiredLevel .. " to access this vendor")
+            return false
+            end
+        return true
+        end)
     ```
 ]]
 function CanPlayerChooseWeapon(weapon)
@@ -960,26 +1159,47 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all weapons
     hook.Add("CanPlayerChooseWeapon", "MyAddon", function(weapon)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPlayerChooseWeapon", "MyAddon", function(weapon)
-        -- Add your code here
+    -- Medium: Restrict specific weapons
+    hook.Add("CanPlayerChooseWeapon", "RestrictWeapons", function(weapon)
+    local restrictedWeapons = {"weapon_crowbar", "weapon_stunstick"}
+    return not table.HasValue(restrictedWeapons, weapon:GetClass())
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPlayerChooseWeapon", "MyAddon", function(weapon)
-        -- Add your code here
-    end)
+    -- High: Complex weapon selection system
+    hook.Add("CanPlayerChooseWeapon", "AdvancedWeaponSelection", function(weapon)
+    local client = weapon:GetOwner()
+    if not IsValid(client) then return false end
+        local char = client:getChar()
+        if not char then return false end
+            -- Check faction restrictions
+            local faction = char:getFaction()
+            local weaponClass = weapon:GetClass()
+            if faction == "police" then
+                local policeWeapons = {"weapon_pistol", "weapon_stunstick"}
+                return table.HasValue(policeWeapons, weaponClass)
+            elseif faction == "medic" then
+                local medicWeapons = {"weapon_medkit", "weapon_stunstick"}
+                return table.HasValue(medicWeapons, weaponClass)
+                end
+            -- Check level requirements
+            local requiredLevel = weapon:getData("requiredLevel", 1)
+            local charLevel = char:getData("level", 1)
+            if charLevel < requiredLevel then
+                return false
+                end
+            return true
+            end)
     ```
 ]]
 function CanPlayerCreateChar(client, data)
@@ -1006,25 +1226,54 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all character creation
     hook.Add("CanPlayerCreateChar", "MyAddon", function(client, data)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CanPlayerCreateChar", "MyAddon", function(client, data)
-        -- Add your code here
+    -- Medium: Check character limit
+    hook.Add("CanPlayerCreateChar", "CharLimit", function(client, data)
+    local charCount = #client.liaCharList or 0
+    local maxChars = hook.Run("GetMaxPlayerChar", client) or 5
+    if charCount >= maxChars then
+        client:ChatPrint("You have reached the maximum number of characters")
+        return false
+        end
+    return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CanPlayerCreateChar", "MyAddon", function(client, data)
-        -- Add your code here
+    -- High: Complex character creation validation
+    hook.Add("CanPlayerCreateChar", "AdvancedCreation", function(client, data)
+    -- Check if player is banned
+    if client:IsBanned() then
+        client:ChatPrint("You are banned and cannot create characters")
+        return false
+        end
+    -- Check character name validity
+    local name = data.name or ""
+    if string.len(name) < 3 then
+        client:ChatPrint("Character name must be at least 3 characters long")
+        return false
+        end
+    if string.len(name) > 32 then
+        client:ChatPrint("Character name must be less than 32 characters")
+        return false
+        end
+    -- Check for inappropriate names
+    local bannedWords = {"admin", "moderator", "staff", "test"}
+    for _, word in ipairs(bannedWords) do
+        if string.find(string.lower(name), string.lower(word)) then
+            client:ChatPrint("That name is not allowed")
+            return false
+            end
+        end
+    return true
     end)
     ```
 ]]
@@ -3576,26 +3825,51 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log forced recognition
     hook.Add("CharForceRecognized", "MyAddon", function(ply, range)
-        -- Add your code here
+    print(ply:Name() .. " was force recognized")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CharForceRecognized", "MyAddon", function(ply, range)
-        -- Add your code here
+    -- Medium: Handle forced recognition effects
+    hook.Add("CharForceRecognized", "ForceRecognitionEffects", function(ply, range)
+    local char = ply:getChar()
+    if char then
+        -- Set recognition data
+        char:setData("forceRecognized", true)
+        char:setData("recognitionTime", os.time())
+        -- Notify player
+        ply:ChatPrint("You have been force recognized")
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CharForceRecognized", "MyAddon", function(ply, range)
-        -- Add your code here
-    end)
+    -- High: Complex force recognition system
+    hook.Add("CharForceRecognized", "AdvancedForceRecognition", function(ply, range)
+    local char = ply:getChar()
+    if not char then return end
+        -- Set recognition data
+        char:setData("forceRecognized", true)
+        char:setData("recognitionTime", os.time())
+        char:setData("recognitionRange", range)
+        -- Check for faction-specific effects
+        local faction = char:getFaction()
+        if faction == "police" then
+            -- Police force recognition
+            for _, target in ipairs(player.GetAll()) do
+                if target ~= ply then
+                    local targetChar = target:getChar()
+                    if targetChar and targetChar:getFaction() == "police" then
+                        target:ChatPrint("[POLICE] " .. char:getName() .. " was force recognized")
+                        end
+                    end
+                end
+            end
+        end)
     ```
 ]]
 function CharHasFlags(self, flags)
@@ -3622,25 +3896,55 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow all flag checks
     hook.Add("CharHasFlags", "MyAddon", function(self, flags)
-        -- Add your code here
+    return true
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("CharHasFlags", "MyAddon", function(self, flags)
-        -- Add your code here
+    -- Medium: Check specific flags
+    hook.Add("CharHasFlags", "FlagChecker", function(self, flags)
+    if type(flags) == "string" then
+        return self:getChar():hasFlags(flags)
+    elseif type(flags) == "table" then
+        for _, flag in ipairs(flags) do
+            if not self:getChar():hasFlags(flag) then
+                return false
+            end
+        end
+        return true
+    end
+    return false
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("CharHasFlags", "MyAddon", function(self, flags)
-        -- Add your code here
+    -- High: Advanced flag checking with permissions
+    hook.Add("CharHasFlags", "AdvancedFlagCheck", function(self, flags)
+    local char = self:getChar()
+    if not char then return false end
+
+    -- Admin override
+    if self:IsAdmin() then return true end
+
+    -- Check flag requirements
+    if type(flags) == "string" then
+        return char:hasFlags(flags)
+    elseif type(flags) == "table" then
+        local hasAllFlags = true
+        for _, flag in ipairs(flags) do
+            if not char:hasFlags(flag) then
+                hasAllFlags = false
+                break
+            end
+        end
+        return hasAllFlags
+    end
+
+    return false
     end)
     ```
 ]]
@@ -10566,25 +10870,37 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log tables loaded
     hook.Add("LiliaTablesLoaded", "MyAddon", function()
-        -- Add your code here
+    print("Lilia tables loaded")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("LiliaTablesLoaded", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Create custom tables
+    hook.Add("LiliaTablesLoaded", "CreateCustomTables", function()
+    lia.db.query("CREATE TABLE IF NOT EXISTS my_table (id INTEGER PRIMARY KEY, data TEXT)")
+    print("Custom tables created")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("LiliaTablesLoaded", "MyAddon", function()
-        -- Add your code here
+    -- High: Complex database initialization
+    hook.Add("LiliaTablesLoaded", "AdvancedDatabaseInit", function()
+    -- Create custom tables
+    local tables = {
+    "CREATE TABLE IF NOT EXISTS my_table (id INTEGER PRIMARY KEY, data TEXT)",
+    "CREATE TABLE IF NOT EXISTS my_stats (charid INTEGER, stat TEXT, value INTEGER)",
+    "CREATE TABLE IF NOT EXISTS my_logs (timestamp INTEGER, message TEXT)"
+    }
+    for _, query in ipairs(tables) do
+        lia.db.query(query)
+        end
+    -- Create indexes
+    lia.db.query("CREATE INDEX IF NOT EXISTS idx_my_stats_charid ON my_stats(charid)")
+    print("Custom database tables and indexes created")
     end)
     ```
 ]]
@@ -12534,114 +12850,75 @@ end
     Low Complexity:
     ```lua
     -- Simple: Log variable changes
-    hook.Add("OnCharVarChanged", "LogChanges", function(character, varName, oldVar, newVar)
-        print(string.format("Character %s: %s changed from %s to %s", 
-            character:getName(), varName, tostring(oldVar), tostring(newVar)))
+    hook.Add("OnCharVarChanged", "MyAddon", function(character, varName, oldVar, newVar)
+    print(character:getName() .. " var changed: " .. varName .. " = " .. tostring(newVar))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: Validate and handle specific variables
-    hook.Add("OnCharVarChanged", "ValidateChanges", function(character, varName, oldVar, newVar)
-        -- Handle reputation changes
-        if varName == "reputation" then
-            local client = character:getPlayer()
-            if IsValid(client) then
-                local diff = (newVar or 0) - (oldVar or 0)
-                if diff > 0 then
-                    client:notifyInfo(string.format("Your reputation increased by %d!", diff))
-                elseif diff < 0 then
-                    client:notifyWarning(string.format("Your reputation decreased by %d", math.abs(diff)))
+    -- Medium: Track specific variable changes
+    hook.Add("OnCharVarChanged", "VarTracking", function(character, varName, oldVar, newVar)
+    if varName == "level" then
+        local client = character:getPlayer()
+        if client then
+            client:ChatPrint("Level changed from " .. oldVar .. " to " .. newVar)
+            end
+    elseif varName == "money" then
+        local client = character:getPlayer()
+        if client then
+            local difference = newVar - oldVar
+            if difference > 0 then
+                client:ChatPrint("You gained $" .. difference)
+            elseif difference < 0 then
+                client:ChatPrint("You lost $" .. math.abs(difference))
                 end
             end
-
-            -- Clamp reputation
-            newVar = math.Clamp(newVar or 0, -1000, 1000)
-            character.vars[varName] = newVar
         end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced variable change system
-    hook.Add("OnCharVarChanged", "AdvancedChanges", function(character, varName, oldVar, newVar)
-        local charID = character:getID()
-        local client = character:getPlayer()
-
-        -- Track change history for important variables
-        local trackedVars = {"reputation", "karma", "level", "experience"}
-        if table.HasValue(trackedVars, varName) then
-            local changeHistory = character:getData("varChangeHistory", {})
-            if not changeHistory[varName] then
-                changeHistory[varName] = {}
+    -- High: Complex variable change system
+    hook.Add("OnCharVarChanged", "AdvancedVarChange", function(character, varName, oldVar, newVar)
+    local client = character:getPlayer()
+    if not client then return end
+        -- Track variable change history
+        local changeHistory = character:getData("varHistory", {})
+        changeHistory[varName] = changeHistory[varName] or {}
+        table.insert(changeHistory[varName], {
+        oldValue = oldVar,
+        newValue = newVar,
+        timestamp = os.time()
+        })
+        -- Keep only last 20 changes per variable
+        if #changeHistory[varName] > 20 then
+            table.remove(changeHistory[varName], 1)
             end
-            table.insert(changeHistory[varName], {
-                oldValue = oldVar,
-                newValue = newVar,
-                timestamp = os.time(),
-                changedBy = IsValid(client) and client:SteamID64() or "System"
-            })
-            -- Keep only last 100 changes
-            if #changeHistory[varName] > 100 then
-                table.remove(changeHistory[varName], 1)
-            end
-            character:setData("varChangeHistory", changeHistory)
-        end
-
-        -- Variable-specific handlers
-        if varName == "reputation" then
-            -- Reputation bonuses/penalties
-            if newVar > 500 and oldVar <= 500 then
-                if IsValid(client) then
-                    client:notifyInfo("You've achieved Hero status!")
-                    character:setData("isHero", true)
-                end
-            elseif newVar < -500 and oldVar >= -500 then
-                if IsValid(client) then
-                    client:notifyWarning("You've been marked as a Villain!")
-                    character:setData("isVillain", true)
-                end
-            end
-        elseif varName == "level" then
-            -- Level up bonuses
+        character:setData("varHistory", changeHistory)
+        -- Handle specific variable changes
+        if varName == "level" then
+            -- Level change effects
             if newVar > oldVar then
-                local levelsGained = newVar - oldVar
-                if IsValid(client) then
-                    client:notifyInfo(string.format("Level Up! You are now level %d!", newVar))
+                hook.Run("OnPlayerLevelUp", client, oldVar, newVar)
                 end
-                -- Give attribute points per level
-                local unspentPoints = character:getData("unspentAttributePoints", 0)
-                character:setData("unspentAttributePoints", unspentPoints + (levelsGained * 2))
-            end
-        end
-
-        -- Notify client of significant changes
-        if IsValid(client) then
-            if isnumber(oldVar) and isnumber(newVar) then
-                local diff = newVar - oldVar
-                if math.abs(diff) > 10 then
-                    client:notifyInfo(string.format("%s changed by %d (now: %d)", varName, diff, newVar))
+        elseif varName == "money" then
+            -- Money change effects
+            local difference = newVar - oldVar
+            if difference > 0 then
+                client:ChatPrint("You gained $" .. difference)
+            elseif difference < 0 then
+                client:ChatPrint("You lost $" .. math.abs(difference))
+                end
+            -- Check for money milestones
+            if newVar >= 10000 and oldVar < 10000 then
+                client:ChatPrint("Congratulations! You've reached $10,000!")
+            elseif newVar >= 100000 and oldVar < 100000 then
+                client:ChatPrint("Congratulations! You've reached $100,000!")
                 end
             end
-        end
-
-        -- Log significant changes
-        if varName ~= "lastUpdate" then
-            lia.log.add(client, "charVarChanged", varName, oldVar, newVar, charID)
-        end
-
-        -- Analytics tracking
-        if lia.analytics then
-            lia.analytics.track("character_variable_changed", {
-                char_id = charID,
-                variable = varName,
-                old_value = oldVar,
-                new_value = newVar
-            })
-        end
-    end)
+        end)
     ```
 ]]
 function OnCheaterCaught(client)
