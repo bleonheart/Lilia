@@ -3806,14 +3806,14 @@ end
 
 --[[
     Purpose:
-        Hook for charforcerecognized
+        React when a player forces recognition on all nearby players.
 
     When Called:
-        When charforcerecognized is triggered
+        Called from the recognition module's `ForceRecognizeRange` function after all nearby players have been recognized and the network message is sent.
 
     Parameters:
-        - ply: Description
-        - range: Description
+        - ply (Player): Player who initiated the forced recognition.
+        - range (string): Recognition range used ("whisper", "normal", "talk", or "yell").
 
     Returns:
         None
@@ -3877,17 +3877,17 @@ end
 
 --[[
     Purpose:
-        Hook for charhasflags
+        Override or extend flag checking for a player's character.
 
     When Called:
-        When charhasflags is triggered
+        Queried from `player:hasFlags()` when checking if the character has specific flags. This allows custom flag systems or additional flag validation.
 
     Parameters:
-        - self: Description
-        - flags: Description
+        - self (Player): Player whose character flags are being checked.
+        - flags (string): Flag string being validated (e.g., "a" for admin, "c" for citizen).
 
     Returns:
-        None
+        boolean|nil - Return true if the character has the flag, false if not, or nil to use default behavior.
 
     Realm:
         Server
@@ -10852,10 +10852,10 @@ end
 
 --[[
     Purpose:
-        Hook for liliatablesloaded
+        Signal that all Lilia database tables have finished loading.
 
     When Called:
-        When liliatablesloaded is triggered
+        Called from `lia.db.loadTables()` after all database tables are created and `addDatabaseFields` completes.
 
     Parameters:
         None
@@ -11018,25 +11018,56 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Allow default model
     hook.Add("ModifyCharacterModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- No modification needed
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("ModifyCharacterModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- Medium: Apply faction-specific models
+    hook.Add("ModifyCharacterModel", "FactionModels", function(client, character)
+    local faction = character:getFaction()
+    if faction == "police" then
+        character.model = "models/player/police.mdl"
+    elseif faction == "medic" then
+        character.model = "models/player/kleiner.mdl"
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("ModifyCharacterModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- High: Complex model modification system
+    hook.Add("ModifyCharacterModel", "AdvancedModelSystem", function(client, character)
+    -- Check for custom model data
+    local customModel = character:getData("customModel")
+    if customModel then
+        character.model = customModel
+        return
+    end
+
+    -- Apply faction and rank-based models
+    local faction = character:getFaction()
+    local rank = character:getData("rank", 1)
+
+    local modelTable = {
+        police = {
+            [1] = "models/player/police.mdl",
+            [2] = "models/player/police_fem.mdl",
+            [3] = "models/player/combine_soldier.mdl"
+        },
+        medic = {
+            [1] = "models/player/kleiner.mdl",
+            [2] = "models/player/alyx.mdl",
+            [3] = "models/player/mossman.mdl"
+        }
+    }
+
+    if modelTable[faction] and modelTable[faction][rank] then
+        character.model = modelTable[faction][rank]
+    end
     end)
     ```
 ]]
@@ -11064,25 +11095,64 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log admin system load
     hook.Add("OnAdminSystemLoaded", "MyAddon", function(groups, privileges)
-        -- Add your code here
+    print("Admin system loaded with " .. #groups .. " groups and " .. #privileges .. " privileges")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnAdminSystemLoaded", "MyAddon", function(groups, privileges)
-        -- Add your code here
+    -- Medium: Register custom privileges
+    hook.Add("OnAdminSystemLoaded", "CustomPrivileges", function(groups, privileges)
+    -- Add custom privilege if it doesn't exist
+    if not privileges["canUseAdminTools"] then
+        privileges["canUseAdminTools"] = {
+            name = "Can Use Admin Tools",
+            description = "Allows access to custom admin tools"
+        }
+    end
+    print("Custom privileges registered")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnAdminSystemLoaded", "MyAddon", function(groups, privileges)
-        -- Add your code here
+    -- High: Setup admin permissions and logging
+    hook.Add("OnAdminSystemLoaded", "AdminSetup", function(groups, privileges)
+    -- Create admin command permissions
+    local adminCommands = {
+        "kick", "ban", "mute", "teleport", "god", "freeze"
+    }
+
+    -- Ensure all commands have corresponding privileges
+    for _, cmd in ipairs(adminCommands) do
+        local privName = "cmd_" .. cmd
+        if not privileges[privName] then
+            privileges[privName] = {
+                name = "Command: " .. cmd,
+                description = "Allows use of /" .. cmd .. " command"
+            }
+        end
+    end
+
+    -- Setup admin group hierarchy
+    for groupName, groupData in pairs(groups) do
+        if groupData.inheritance then
+            -- Ensure inheritance is properly set up
+            local parentGroup = groups[groupData.inheritance]
+            if parentGroup then
+                -- Copy parent permissions if not already present
+                for privName, privData in pairs(parentGroup.privileges or {}) do
+                    if not groupData.privileges[privName] then
+                        groupData.privileges[privName] = privData
+                    end
+                end
+            end
+        end
+    end
+
+    print("Admin system fully configured with " .. #adminCommands .. " command permissions")
     end)
     ```
 ]]
@@ -11109,25 +11179,70 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log attribute boost
     hook.Add("OnCharAttribBoosted", "MyAddon", function(character)
-        -- Add your code here
+    print(character:getName() .. " received an attribute boost")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnCharAttribBoosted", "MyAddon", function(character)
-        -- Add your code here
+    -- Medium: Update character data after boost
+    hook.Add("OnCharAttribBoosted", "BoostTracker", function(character)
+    local boostCount = character:getData("boostCount", 0) + 1
+    character:setData("boostCount", boostCount)
+    character:setData("lastBoostTime", os.time())
+
+    -- Notify player
+    local client = character:getPlayer()
+    if IsValid(client) then
+        client:ChatPrint("Your attributes have been boosted! (Total boosts: " .. boostCount .. ")")
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnCharAttribBoosted", "MyAddon", function(character)
-        -- Add your code here
+    -- High: Advanced boost effects and achievements
+    hook.Add("OnCharAttribBoosted", "AdvancedBoostSystem", function(character)
+    local client = character:getPlayer()
+    if not IsValid(client) then return end
+
+    -- Track boost history
+    local boostHistory = character:getData("boostHistory", {})
+    table.insert(boostHistory, {
+        timestamp = os.time(),
+        level = character:getData("level", 1),
+        boostCount = #boostHistory + 1
+    })
+
+    -- Keep only last 10 boosts
+    if #boostHistory > 10 then
+        table.remove(boostHistory, 1)
+    end
+
+    character:setData("boostHistory", boostHistory)
+
+    -- Check for boost achievements
+    local totalBoosts = #boostHistory
+    if totalBoosts >= 5 and not character:getData("achievement_boost5") then
+        character:setData("achievement_boost5", true)
+        client:ChatPrint("Achievement Unlocked: Boosted 5 times!")
+    elseif totalBoosts >= 10 and not character:getData("achievement_boost10") then
+        character:setData("achievement_boost10", true)
+        client:ChatPrint("Achievement Unlocked: Boosted 10 times!")
+    end
+
+    -- Apply temporary effects
+    character:setData("boostActive", true)
+    timer.Create("BoostExpire_" .. character:getID(), 3600, 1, function()
+        if character and character:isValid() then
+            character:setData("boostActive", false)
+            if IsValid(client) then
+                client:ChatPrint("Your attribute boost has expired")
+            end
+        end
+    end)
     end)
     ```
 ]]
@@ -11157,25 +11272,87 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log attribute updates
     hook.Add("OnCharAttribUpdated", "MyAddon", function(client, character, key, newValue)
-        -- Add your code here
+    print(character:getName() .. " attribute '" .. key .. "' updated to " .. tostring(newValue))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnCharAttribUpdated", "MyAddon", function(client, character, key, newValue)
-        -- Add your code here
+    -- Medium: Track important attribute changes
+    hook.Add("OnCharAttribUpdated", "AttributeTracker", function(client, character, key, newValue)
+    local importantAttrs = {"strength", "agility", "intelligence", "level"}
+    if table.HasValue(importantAttrs, key) then
+        -- Store change history
+        local history = character:getData("attrHistory", {})
+        history[key] = history[key] or {}
+        table.insert(history[key], {
+            value = newValue,
+            time = os.time()
+        })
+        character:setData("attrHistory", history)
+
+        -- Notify client of major changes
+        if newValue >= 50 and not character:getData("milestone_" .. key) then
+            character:setData("milestone_" .. key, true)
+            client:ChatPrint("Milestone reached: " .. key .. " is now " .. newValue .. "!")
+        end
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnCharAttribUpdated", "MyAddon", function(client, character, key, newValue)
-        -- Add your code here
+    -- High: Advanced attribute management system
+    hook.Add("OnCharAttribUpdated", "AdvancedAttributeSystem", function(client, character, key, newValue)
+    -- Handle special attribute interactions
+    if key == "strength" then
+        -- Strength affects carrying capacity
+        local carryBonus = math.floor(newValue / 10)
+        character:setData("carryCapacityBonus", carryBonus)
+    elseif key == "agility" then
+        -- Agility affects movement speed
+        local speedBonus = newValue * 0.01
+        character:setData("speedBonus", speedBonus)
+        -- Update player speed if online
+        if IsValid(client) then
+            local baseSpeed = 250
+            client:SetRunSpeed(baseSpeed + (baseSpeed * speedBonus))
+            client:SetWalkSpeed((baseSpeed * 0.5) + ((baseSpeed * 0.5) * speedBonus))
+        end
+    elseif key == "intelligence" then
+        -- Intelligence affects skill learning
+        local skillBonus = newValue * 0.02
+        character:setData("skillLearnBonus", skillBonus)
+    elseif key == "level" then
+        -- Level up effects
+        local oldLevel = character:getData("previousLevel", 1)
+        if newValue > oldLevel then
+            -- Grant level rewards
+            local rewardXP = newValue * 100
+            local currentXP = character:getData("experience", 0)
+            character:setData("experience", currentXP + rewardXP)
+
+            -- Notify player
+            client:ChatPrint("Level up! You are now level " .. newValue)
+            client:ChatPrint("Bonus XP granted: " .. rewardXP)
+        end
+        character:setData("previousLevel", newValue)
+    end
+
+    -- Update attribute totals for achievements
+    local totalAttrs = 0
+    for attrKey, attrValue in pairs(character:getAttribs()) do
+        totalAttrs = totalAttrs + attrValue
+    end
+    character:setData("totalAttributePoints", totalAttrs)
+
+    -- Achievement check
+    if totalAttrs >= 200 and not character:getData("achievement_attr200") then
+        character:setData("achievement_attr200", true)
+        client:ChatPrint("Achievement Unlocked: 200 Total Attribute Points!")
+    end
     end)
     ```
 ]]
@@ -13457,25 +13634,95 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log database load
     hook.Add("OnDatabaseLoaded", "MyAddon", function()
-        -- Add your code here
+    print("Database has been loaded successfully")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnDatabaseLoaded", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Initialize custom data after database load
+    hook.Add("OnDatabaseLoaded", "DatabaseInit", function()
+    -- Check for required tables
+    lia.db.query("CREATE TABLE IF NOT EXISTS custom_logs (id INTEGER PRIMARY KEY, timestamp INTEGER, message TEXT)")
+    lia.db.query("CREATE TABLE IF NOT EXISTS player_stats (steamid TEXT PRIMARY KEY, playtime INTEGER, joins INTEGER)")
+
+    -- Load server configuration
+    local serverConfig = lia.data.get("serverConfig", nil, false, "global")
+    if not serverConfig then
+        -- Create default config
+        lia.data.set("serverConfig", {
+            maxPlayers = 32,
+            serverName = "Lilia Server",
+            welcomeMessage = "Welcome to our server!"
+        }, false, "global")
+    end
+
+    print("Database initialization complete")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnDatabaseLoaded", "MyAddon", function()
-        -- Add your code here
+    -- High: Comprehensive database setup and validation
+    hook.Add("OnDatabaseLoaded", "AdvancedDatabaseSetup", function()
+    -- Validate critical tables exist
+    local requiredTables = {
+        "characters",
+        "players",
+        "items",
+        "inventories"
+    }
+
+    for _, tableName in ipairs(requiredTables) do
+        lia.db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='" .. tableName .. "'", function(result)
+            if not result or #result == 0 then
+                print("WARNING: Required table '" .. tableName .. "' is missing!")
+                -- Attempt to recreate basic structure
+                if tableName == "characters" then
+                    lia.db.query([[
+                        CREATE TABLE characters (
+                            id INTEGER PRIMARY KEY,
+                            steamID TEXT,
+                            name TEXT,
+                            model TEXT,
+                            faction TEXT,
+                            money INTEGER DEFAULT 0,
+                            data TEXT
+                        )
+                    ]])
+                end
+            end
+        end)
+    end
+
+    -- Setup database maintenance
+    timer.Create("DatabaseMaintenance", 3600, 0, function()
+        -- Clean up old temporary data
+        lia.db.query("DELETE FROM items WHERE data LIKE '%\"temp\":true%' AND created < " .. (os.time() - 86400))
+        -- Optimize database
+        lia.db.query("VACUUM")
+        print("Database maintenance completed")
+    end)
+
+    -- Initialize server statistics
+    local serverStats = lia.data.get("serverStats", nil, false, "global")
+    if not serverStats then
+        serverStats = {
+            totalPlayers = 0,
+            totalCharacters = 0,
+            serverStartTime = os.time(),
+            version = lia.version or "unknown"
+        }
+        lia.data.set("serverStats", serverStats, false, "global")
+    end
+
+    -- Update server uptime
+    serverStats.lastLoadTime = os.time()
+    lia.data.set("serverStats", serverStats, false, "global")
+
+    print("Advanced database setup and validation complete")
     end)
     ```
 ]]
@@ -13503,25 +13750,118 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log entity loading
     hook.Add("OnEntityLoaded", "MyAddon", function(createdEnt, data)
-        -- Add your code here
+    print("Entity loaded: " .. tostring(createdEnt) .. " with data: " .. tostring(data))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnEntityLoaded", "MyAddon", function(createdEnt, data)
-        -- Add your code here
+    -- Medium: Apply entity modifications after loading
+    hook.Add("OnEntityLoaded", "EntitySetup", function(createdEnt, data)
+    if IsValid(createdEnt) then
+        -- Restore custom properties
+        if data.customColor then
+            createdEnt:SetColor(data.customColor)
+        end
+
+        if data.customMaterial then
+            createdEnt:SetMaterial(data.customMaterial)
+        end
+
+        -- Apply physics settings
+        if data.frozen then
+            local phys = createdEnt:GetPhysicsObject()
+            if IsValid(phys) then
+                phys:EnableMotion(false)
+            end
+        end
+
+        -- Mark as loaded
+        createdEnt:setNetVar("loaded", true)
+        createdEnt:setNetVar("loadTime", os.time())
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnEntityLoaded", "MyAddon", function(createdEnt, data)
-        -- Add your code here
+    -- High: Advanced entity restoration and validation
+    hook.Add("OnEntityLoaded", "AdvancedEntityLoading", function(createdEnt, data)
+    if not IsValid(createdEnt) then return end
+
+    -- Validate entity data integrity
+    if not data or not istable(data) then
+        print("WARNING: Entity " .. tostring(createdEnt) .. " loaded with invalid data")
+        return
+    end
+
+    -- Restore complex properties
+    if data.customProperties then
+        for key, value in pairs(data.customProperties) do
+            if key == "color" then
+                createdEnt:SetColor(value)
+            elseif key == "material" then
+                createdEnt:SetMaterial(value)
+            elseif key == "model" then
+                createdEnt:SetModel(value)
+            elseif key == "skin" then
+                createdEnt:SetSkin(value)
+            elseif key == "bodygroups" and istable(value) then
+                for bgID, bgValue in pairs(value) do
+                    createdEnt:SetBodygroup(bgID, bgValue)
+                end
+            end
+        end
+    end
+
+    -- Restore physics and movement properties
+    if data.physics then
+        local phys = createdEnt:GetPhysicsObject()
+        if IsValid(phys) then
+            if data.physics.motion ~= nil then
+                phys:EnableMotion(data.physics.motion)
+            end
+            if data.physics.gravity ~= nil then
+                phys:EnableGravity(data.physics.gravity)
+            end
+            if data.physics.drag ~= nil then
+                phys:SetDragCoefficient(data.physics.drag)
+            end
+        end
+    end
+
+    -- Restore entity relationships
+    if data.owner then
+        createdEnt:setNetVar("owner", data.owner)
+    end
+
+    if data.creator then
+        createdEnt:setNetVar("creator", data.creator)
+        createdEnt:setNetVar("creationTime", data.creationTime or os.time())
+    end
+
+    -- Apply security measures
+    if data.trustedPlayers and istable(data.trustedPlayers) then
+        createdEnt:setNetVar("trustedPlayers", data.trustedPlayers)
+    end
+
+    -- Setup entity monitoring
+    timer.Simple(1, function()
+        if IsValid(createdEnt) then
+            -- Log successful loading
+            lia.log.add(nil, "entityLoaded", createdEnt:GetClass(), createdEnt:GetPos())
+
+            -- Broadcast entity loaded event
+            net.Start("liaEntityLoaded")
+            net.WriteEntity(createdEnt)
+            net.WriteTable(data)
+            net.Broadcast()
+        end
+    end)
+
+    print("Entity " .. createdEnt:GetClass() .. " fully loaded and configured")
     end)
     ```
 ]]
@@ -13549,25 +13889,95 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log persistence updates
     hook.Add("OnEntityPersistUpdated", "MyAddon", function(ent, data)
-        -- Add your code here
+    print("Entity " .. tostring(ent) .. " persistence updated")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnEntityPersistUpdated", "MyAddon", function(ent, data)
-        -- Add your code here
+    -- Medium: Validate persistence data
+    hook.Add("OnEntityPersistUpdated", "PersistenceValidation", function(ent, data)
+    if not IsValid(ent) then return end
+
+    -- Ensure critical data exists
+    if not data.position then
+        data.position = ent:GetPos()
+    end
+
+    if not data.angles then
+        data.angles = ent:GetAngles()
+    end
+
+    -- Update last modified timestamp
+    data.lastModified = os.time()
+
+    -- Log important updates
+    if data.owner and data.owner ~= ent:getNetVar("owner") then
+        lia.log.add(nil, "entityOwnerChanged", ent:GetClass(), data.owner, ent:getNetVar("owner"))
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnEntityPersistUpdated", "MyAddon", function(ent, data)
-        -- Add your code here
+    -- High: Advanced persistence management
+    hook.Add("OnEntityPersistUpdated", "AdvancedPersistence", function(ent, data)
+    if not IsValid(ent) then return end
+
+    -- Create persistence history
+    if not data.persistenceHistory then
+        data.persistenceHistory = {}
+    end
+
+    table.insert(data.persistenceHistory, {
+        timestamp = os.time(),
+        position = ent:GetPos(),
+        health = ent:Health(),
+        owner = ent:getNetVar("owner")
+    })
+
+    -- Keep only last 20 entries
+    if #data.persistenceHistory > 20 then
+        table.remove(data.persistenceHistory, 1)
+    end
+
+    -- Validate and sanitize data
+    if data.customData then
+        for key, value in pairs(data.customData) do
+            -- Remove potentially problematic data
+            if type(value) == "function" or type(value) == "userdata" then
+                data.customData[key] = nil
+                print("WARNING: Removed invalid data type from persistence: " .. key)
+            end
+        end
+    end
+
+    -- Update entity statistics
+    local persistCount = (data.persistCount or 0) + 1
+    data.persistCount = persistCount
+    data.lastPersistTime = os.time()
+
+    -- Check for persistence limits
+    if persistCount > 100 then
+        print("WARNING: Entity " .. ent:GetClass() .. " has been persisted " .. persistCount .. " times")
+    end
+
+    -- Broadcast persistence update to relevant clients
+    local owner = ent:getNetVar("owner")
+    if owner then
+        local ownerPlayer = player.GetBySteamID(owner)
+        if IsValid(ownerPlayer) then
+            net.Start("liaEntityPersistenceUpdated")
+            net.WriteEntity(ent)
+            net.WriteTable(data)
+            net.Send(ownerPlayer)
+        end
+    end
+
+    -- Trigger persistence events
+    hook.Run("OnEntityPersistenceSaved", ent, data)
     end)
     ```
 ]]
@@ -13595,25 +14005,99 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log entity persistence
     hook.Add("OnEntityPersisted", "MyAddon", function(ent, entData)
-        -- Add your code here
+    print("Entity " .. tostring(ent) .. " has been persisted")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnEntityPersisted", "MyAddon", function(ent, entData)
-        -- Add your code here
+    -- Medium: Update persistence statistics
+    hook.Add("OnEntityPersisted", "PersistenceStats", function(ent, entData)
+    if not IsValid(ent) then return end
+
+    -- Update server persistence stats
+    local persistStats = lia.data.get("persistenceStats", {}, false, "global")
+    persistStats.totalPersisted = (persistStats.totalPersisted or 0) + 1
+    persistStats[ent:GetClass()] = (persistStats[ent:GetClass()] or 0) + 1
+    lia.data.set("persistenceStats", persistStats, false, "global")
+
+    -- Mark entity as persisted
+    ent:setNetVar("persisted", true)
+    ent:setNetVar("persistTime", os.time())
+
+    -- Log persistence
+    lia.log.add(nil, "entityPersisted", ent:GetClass(), ent:GetPos())
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnEntityPersisted", "MyAddon", function(ent, entData)
-        -- Add your code here
+    -- High: Advanced persistence tracking and validation
+    hook.Add("OnEntityPersisted", "AdvancedPersistenceTracking", function(ent, entData)
+    if not IsValid(ent) then return end
+
+    -- Validate persistence data
+    if not entData or not istable(entData) then
+        print("WARNING: Invalid persistence data for entity " .. tostring(ent))
+        return
+    end
+
+    -- Update global persistence statistics
+    local stats = lia.data.get("advancedPersistenceStats", {
+        totalEntities = 0,
+        entitiesByType = {},
+        entitiesByOwner = {},
+        persistenceFrequency = {},
+        lastPersistenceTime = 0
+    }, false, "global")
+
+    stats.totalEntities = stats.totalEntities + 1
+    stats.lastPersistenceTime = os.time()
+
+    -- Track by entity type
+    local entType = ent:GetClass()
+    stats.entitiesByType[entType] = (stats.entitiesByType[entType] or 0) + 1
+
+    -- Track by owner
+    local owner = ent:getNetVar("owner") or "unknown"
+    stats.entitiesByOwner[owner] = (stats.entitiesByOwner[owner] or 0) + 1
+
+    -- Track persistence frequency (per hour)
+    local currentHour = math.floor(os.time() / 3600)
+    stats.persistenceFrequency[tostring(currentHour)] = (stats.persistenceFrequency[tostring(currentHour)] or 0) + 1
+
+    lia.data.set("advancedPersistenceStats", stats, false, "global")
+
+    -- Clean up old frequency data (keep last 24 hours)
+    for hourStr, count in pairs(stats.persistenceFrequency) do
+        local hour = tonumber(hourStr)
+        if hour and (currentHour - hour) > 24 then
+            stats.persistenceFrequency[hourStr] = nil
+        end
+    end
+
+    -- Update entity-specific data
+    entData.persistenceCount = (entData.persistenceCount or 0) + 1
+    entData.lastPersisted = os.time()
+
+    -- Check for persistence abuse
+    if entData.persistenceCount > 50 then
+        print("WARNING: Entity " .. ent:GetClass() .. " has been persisted " .. entData.persistenceCount .. " times")
+        lia.log.add(nil, "excessivePersistence", ent:GetClass(), entData.persistenceCount, ent:GetPos())
+    end
+
+    -- Notify owner if online
+    local ownerPlayer = owner ~= "unknown" and player.GetBySteamID(owner)
+    if IsValid(ownerPlayer) then
+        ownerPlayer:ChatPrint("Your " .. ent:GetClass() .. " has been saved to the database.")
+    end
+
+    -- Trigger custom persistence events
+    hook.Run("OnEntityPersistenceComplete", ent, entData)
+
+    print("Entity " .. ent:GetClass() .. " successfully persisted (total: " .. stats.totalEntities .. ")")
     end)
     ```
 ]]
@@ -13641,25 +14125,99 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
+    -- Simple: Log item addition
     hook.Add("OnItemAdded", "MyAddon", function(owner, item)
-        -- Add your code here
+    print("Item " .. item.uniqueID .. " added to " .. tostring(owner))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnItemAdded", "MyAddon", function(owner, item)
-        -- Add your code here
+    -- Medium: Track item statistics
+    hook.Add("OnItemAdded", "ItemStats", function(owner, item)
+    -- Update item statistics
+    local itemStats = lia.data.get("itemStats", {}, false, "global")
+    itemStats.totalItems = (itemStats.totalItems or 0) + 1
+    itemStats[item.uniqueID] = (itemStats[item.uniqueID] or 0) + 1
+    lia.data.set("itemStats", itemStats, false, "global")
+
+    -- Log valuable item additions
+    if item:getData("value", 0) > 1000 then
+        lia.log.add(owner, "valuableItemAdded", item.uniqueID, item:getData("value"))
+    end
+
+    -- Notify owner if they're a player
+    if IsValid(owner) and owner:IsPlayer() then
+        local char = owner:getChar()
+        if char then
+            char:setData("itemsReceived", (char:getData("itemsReceived", 0) + 1))
+        end
+    end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnItemAdded", "MyAddon", function(owner, item)
-        -- Add your code here
+    -- High: Advanced item management and validation
+    hook.Add("OnItemAdded", "AdvancedItemManagement", function(owner, item)
+    -- Validate item integrity
+    if not item or not item.uniqueID then
+        print("WARNING: Invalid item added to " .. tostring(owner))
+        return
+    end
+
+    -- Track item ownership history
+    if not item:getData("ownershipHistory") then
+        item:setData("ownershipHistory", {})
+    end
+
+    table.insert(item:getData("ownershipHistory"), {
+        owner = IsValid(owner) and owner:IsPlayer() and owner:SteamID() or tostring(owner),
+        timestamp = os.time(),
+        action = "added"
+    })
+
+    -- Keep only last 10 ownership changes
+    local history = item:getData("ownershipHistory")
+    if #history > 10 then
+        table.remove(history, 1)
+        item:setData("ownershipHistory", history)
+    end
+
+    -- Update global item tracking
+    local globalItems = lia.data.get("globalItemTracking", {}, false, "global")
+    globalItems[item.uniqueID] = (globalItems[item.uniqueID] or 0) + 1
+    lia.data.set("globalItemTracking", globalItems, false, "global")
+
+    -- Check for item limits
+    if IsValid(owner) and owner:IsPlayer() then
+        local char = owner:getChar()
+        if char then
+            local inventory = char:getInv()
+            if inventory then
+                local itemCount = inventory:getItemCount(item.uniqueID)
+                local maxItems = item.maxItems or 10
+
+                if itemCount > maxItems then
+                    owner:ChatPrint("Warning: You have " .. itemCount .. " of item '" .. item.name .. "' (max: " .. maxItems .. ")")
+                end
+            end
+        end
+    end
+
+    -- Trigger item-specific events
+    hook.Run("OnSpecificItemAdded", owner, item)
+
+    -- Log comprehensive item data
+    lia.log.add(owner, "itemAdded", {
+        itemID = item.uniqueID,
+        itemName = item.name,
+        value = item:getData("value", 0),
+        quantity = item:getData("quantity", 1),
+        timestamp = os.time()
+    })
+
+    print("Item " .. item.uniqueID .. " added to inventory of " .. tostring(owner))
     end)
     ```
 ]]
@@ -17466,20 +18024,17 @@ end
     end)
     ```
 ]]
-function OptionReceived(client, key, value)
-end
-
 --[[
     Purpose:
-        Hook for optionreceived
+        Allows modules to react when a networked option value is applied on the server
 
     When Called:
-        When optionreceived is triggered
+        Called inside lia.option.set after the option value is stored and OptionChanged has fired for definitions that set shouldNetwork = true
 
     Parameters:
-        - client: Description
-        - key: Description
-        - value: Description
+        - client (Player|nil): Player who initiated the change when known; nil for server-driven updates
+        - key (string): Identifier of the option being updated
+        - value (any): New value assigned to the option
 
     Returns:
         None
@@ -17491,25 +18046,113 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OptionReceived", "MyAddon", function(client, key, value)
-        -- Add your code here
+    -- Simple: Log networked option changes
+    hook.Add("OptionReceived", "LogNetworkedOptions", function(client, key, value)
+        if client then
+            print(client:Name() .. " changed networked option " .. key .. " to " .. tostring(value))
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OptionReceived", "MyAddon", function(client, key, value)
-        -- Add your code here
+    -- Medium: Validate and apply server-side restrictions
+    hook.Add("OptionReceived", "ValidateNetworkedOptions", function(client, key, value)
+        if key == "admin_esp" and client and not client:IsAdmin() then
+            return -- Block non-admins from enabling admin ESP
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OptionReceived", "MyAddon", function(client, key, value)
-        -- Add your code here
+    -- High: Track option changes and apply server-side effects
+    hook.Add("OptionReceived", "AdvancedOptionHandling", function(client, key, value)
+        lia.log.write("option_networked", {
+            player = client and client:SteamID() or "server",
+            key = key,
+            value = tostring(value),
+            timestamp = os.time()
+        })
+        if key == "volume" and client then
+            -- Sync volume to client's audio settings
+            net.Start("liaSyncVolume")
+            net.WriteFloat(value)
+            net.Send(client)
+        end
+    end)
+    ```
+]]
+function OptionReceived(client, key, value)
+end
+
+--[[
+    Purpose:
+        Override or adjust the respawn delay applied to a player
+
+    When Called:
+        Queried from GM:PlayerDeathThink before allowing respawn and from the respawn HUD countdown on the client
+
+    Parameters:
+        - client (Player): Player waiting to respawn
+        - respawnTime (number): Current respawn delay in seconds from configuration
+
+    Returns:
+        number or nil - Return a number to replace the respawn delay or nil to use the existing value
+
+    Realm:
+        Shared
+
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Reduce respawn time
+    hook.Add("OverrideSpawnTime", "ReduceRespawnTime", function(client, respawnTime)
+        return respawnTime * 0.5
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Faction-based respawn times
+    hook.Add("OverrideSpawnTime", "FactionRespawnTime", function(client, respawnTime)
+        local char = client:getChar()
+        if not char then return end
+        local faction = char:getFaction()
+        if faction == FACTION_POLICE then
+            return 30
+        elseif faction == FACTION_MEDIC then
+            return 20
+        end
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Dynamic respawn time system
+    hook.Add("OverrideSpawnTime", "DynamicRespawnTime", function(client, respawnTime)
+        local char = client:getChar()
+        if not char then return end
+        -- Check for respawn time reduction items
+        local inventory = char:getInv()
+        if inventory then
+            for _, item in pairs(inventory:getItems()) do
+                if item.reduceRespawnTime then
+                    respawnTime = respawnTime * 0.75
+                end
+            end
+        end
+        -- Check for VIP status
+        if client:IsUserGroup("vip") then
+            respawnTime = respawnTime * 0.5
+        end
+        -- Check death count
+        local deaths = char:getData("deaths", 0)
+        if deaths > 5 then
+            respawnTime = respawnTime + (deaths * 2)
+        end
+        return math.max(respawnTime, 5)
     end)
     ```
 ]]
@@ -17518,14 +18161,14 @@ end
 
 --[[
     Purpose:
-        Hook for overridespawntime
+        React when a player passes access checks and opens a vendor
 
     When Called:
-        When overridespawntime is triggered
+        Triggered in the vendor entity after CanPlayerAccessVendor returns true and before the vendor UI is sent
 
     Parameters:
-        - client: Description
-        - respawnTime: Description
+        - activator (Player): Player who activated the vendor
+        - self (Entity): Vendor entity being opened
 
     Returns:
         None
@@ -17537,25 +18180,40 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OverrideSpawnTime", "MyAddon", function(client, respawnTime)
-        -- Add your code here
+    -- Simple: Log vendor access
+    hook.Add("PlayerAccessVendor", "LogVendorAccess", function(activator, self)
+        print(activator:Name() .. " accessed vendor: " .. self:getNetVar("name", "Unknown"))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OverrideSpawnTime", "MyAddon", function(client, respawnTime)
-        -- Add your code here
+    -- Medium: Track vendor usage
+    hook.Add("PlayerAccessVendor", "TrackVendorUsage", function(activator, self)
+        local char = activator:getChar()
+        if char then
+            local vendorUses = char:getData("vendorUses", 0)
+            char:setData("vendorUses", vendorUses + 1)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OverrideSpawnTime", "MyAddon", function(client, respawnTime)
-        -- Add your code here
+    -- High: Complex vendor access system
+    hook.Add("PlayerAccessVendor", "AdvancedVendorAccess", function(activator, self)
+        local char = activator:getChar()
+        if not char then return end
+        -- Log to database
+        lia.db.insertTable({
+            charID = char:getID(),
+            vendorID = self:MapCreationID(),
+            timestamp = os.time()
+        }, nil, "vendor_access_log")
+        -- Check for special vendor bonuses
+        if self:getNetVar("specialVendor") and char:getData("vipStatus") then
+            activator:notify("VIP discount applied!")
+        end
     end)
     ```
 ]]
@@ -17564,17 +18222,16 @@ end
 
 --[[
     Purpose:
-        Hook for playeraccessvendor
+        Hook point for handling cheat detections before automatic punishment is applied
 
     When Called:
-        When playeraccessvendor is triggered
+        Called when the anti-cheat routines detect tampering via liaCheckHack or when the cheat verification timer expires
 
     Parameters:
-        - activator: Description
-        - self: Description
+        - client (Player): Player flagged for potential cheating
 
     Returns:
-        None
+        true to suppress the built-in punishment, or any other value to allow default handling
 
     Realm:
         Server
@@ -17583,25 +18240,48 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
+    -- Simple: Log cheat detections
+    hook.Add("PlayerCheatDetected", "LogCheatDetection", function(client)
+        print("Cheat detected for player: " .. client:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
+    -- Medium: Custom punishment system
+    hook.Add("PlayerCheatDetected", "CustomPunishment", function(client)
+        -- Send to admin channel
+        for _, admin in ipairs(player.GetAll()) do
+            if admin:IsAdmin() then
+                admin:ChatPrint("[CHEAT DETECTED] " .. client:Name() .. " - " .. client:SteamID())
+            end
+        end
+        -- Allow default punishment to continue
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerAccessVendor", "MyAddon", function(activator, self)
-        -- Add your code here
+    -- High: Advanced cheat handling with escalation
+    hook.Add("PlayerCheatDetected", "AdvancedCheatDetection", function(client)
+        local steamID = client:SteamID()
+        local detectionCount = client:getLiliaData("cheatDetections", 0) + 1
+        client:setLiliaData("cheatDetections", detectionCount)
+        
+        -- First offense: warning only
+        if detectionCount == 1 then
+            client:ChatPrint("Warning: Cheat detection triggered. Further violations will result in a ban.")
+            return true -- Suppress default punishment
+        end
+        
+        -- Log to external system
+        lia.log.write("cheat_detected", {
+            player = steamID,
+            count = detectionCount,
+            timestamp = os.time()
+        })
+        
+        -- Allow default punishment for repeat offenders
     end)
     ```
 ]]
@@ -17610,13 +18290,13 @@ end
 
 --[[
     Purpose:
-        Hook for playercheatdetected
+        Cleanup and bookkeeping when a player leaves the server
 
     When Called:
-        When playercheatdetected is triggered
+        Runs during GM:PlayerDisconnected after Lilia saves per-player data and unloads their character
 
     Parameters:
-        - client: Description
+        - client (Player): Player who disconnected
 
     Returns:
         None
@@ -17628,40 +18308,49 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerCheatDetected", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log disconnect
+    hook.Add("PlayerDisconnected", "LogDisconnect", function(client)
+        lia.log.add(client, "playerDisconnected")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerCheatDetected", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Clear pending tickets
+    hook.Add("PlayerDisconnected", "ClearPendingTickets", function(client)
+        ActiveTickets = ActiveTickets or {}
+        ActiveTickets[client:SteamID()] = nil
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerCheatDetected", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Persist session metrics
+    hook.Add("PlayerDisconnected", "PersistSessionMetrics", function(client)
+        local char = client:getChar()
+        if not char then return end
+        lia.db.insertTable({
+            steamID = client:SteamID(),
+            charID = char:getID(),
+            playTime = char:getPlayTime(),
+            leftAt = os.time()
+        }, nil, "session_metrics")
     end)
     ```
 ]]
-function PlayerDisconnect(client)
+function PlayerDisconnected(client)
 end
 
 --[[
     Purpose:
-        Hook for playerdisconnect
+        Notification point after an administrator gags a player (disables typed chat)
 
     When Called:
-        When playerdisconnect is triggered
+        Called from the admin library when the gag command succeeds
 
     Parameters:
-        - client: Description
+        - target (Player): Player who was gagged
+        - admin (Player): Staff member who issued the gag
 
     Returns:
         None
@@ -17673,25 +18362,41 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerDisconnect", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log gag actions
+    hook.Add("PlayerGagged", "LogGag", function(target, admin)
+        print(admin:Name() .. " gagged " .. target:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerDisconnect", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Track gag history
+    hook.Add("PlayerGagged", "TrackGagHistory", function(target, admin)
+        local gagHistory = target:getLiliaData("gagHistory", {})
+        table.insert(gagHistory, {
+            admin = admin:SteamID(),
+            timestamp = os.time()
+        })
+        target:setLiliaData("gagHistory", gagHistory)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerDisconnect", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced gag management
+    hook.Add("PlayerGagged", "AdvancedGagManagement", function(target, admin)
+        lia.db.insertTable({
+            targetSteamID = target:SteamID(),
+            adminSteamID = admin:SteamID(),
+            action = "gag",
+            timestamp = os.time()
+        }, nil, "admin_actions")
+        -- Notify staff
+        for _, staff in ipairs(player.GetAll()) do
+            if staff:IsAdmin() then
+                staff:ChatPrint("[GAG] " .. admin:Name() .. " gagged " .. target:Name())
+            end
+        end
     end)
     ```
 ]]
@@ -17700,14 +18405,13 @@ end
 
 --[[
     Purpose:
-        Hook for playergagged
+        Signal that a player's persistent Lilia data has finished loading
 
     When Called:
-        When playergagged is triggered
+        Fired in GM:PlayerInitialSpawn after data is sent to the client and before the character selection UI opens
 
     Parameters:
-        - target: Description
-        - admin: Description
+        - client (Player): Player whose data finished loading
 
     Returns:
         None
@@ -17719,25 +18423,48 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerGagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Simple: Welcome message
+    hook.Add("PlayerLiliaDataLoaded", "WelcomeMessage", function(client)
+        timer.Simple(1, function()
+            if IsValid(client) then
+                client:ChatPrint("Welcome to the server!")
+            end
+        end)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerGagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Medium: Restore player settings
+    hook.Add("PlayerLiliaDataLoaded", "RestoreSettings", function(client)
+        local settings = client:getLiliaData("settings", {})
+        if settings.uiTheme then
+            net.Start("liaSetTheme")
+            net.WriteString(settings.uiTheme)
+            net.Send(client)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerGagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- High: Complex initialization
+    hook.Add("PlayerLiliaDataLoaded", "AdvancedInit", function(client)
+        -- Check for returning player
+        local lastSeen = client:getLiliaData("lastSeen", 0)
+        local daysSince = math.floor((os.time() - lastSeen) / 86400)
+        if daysSince > 30 then
+            client:ChatPrint("Welcome back! You've been away for " .. daysSince .. " days.")
+        end
+        -- Apply saved preferences
+        local prefs = client:getLiliaData("preferences", {})
+        if prefs.defaultChar then
+            timer.Simple(2, function()
+                if IsValid(client) then
+                    lia.char.loadSingleCharacter(prefs.defaultChar, client)
+                end
+            end)
+        end
     end)
     ```
 ]]
@@ -17746,13 +18473,15 @@ end
 
 --[[
     Purpose:
-        Hook for playerliliadataloaded
+        Handle logic right after a character has been set up for a player
 
     When Called:
-        When playerliliadataloaded is triggered
+        Triggered in the character selection flow once character:setup() completes, before the success response is sent
 
     Parameters:
-        - client: Description
+        - client (Player): Player that loaded the character
+        - character (Character): Character object that was loaded
+        - currentChar (Character|nil): Previously active character if this was a switch, otherwise nil
 
     Returns:
         None
@@ -17764,72 +18493,47 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerLiliaDataLoaded", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Welcome back message
+    hook.Add("PlayerLoadedChar", "WelcomeBack", function(client, character, currentChar)
+        if not currentChar then
+            client:ChatPrint("Welcome, " .. character:getName() .. "!")
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerLiliaDataLoaded", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Character switching logic
+    hook.Add("PlayerLoadedChar", "CharSwitching", function(client, character, currentChar)
+        if currentChar then
+            -- Save previous character's position
+            if IsValid(client) and client:Alive() then
+                currentChar:setLastPos({
+                    pos = client:GetPos(),
+                    ang = client:EyeAngles(),
+                    map = game.GetMap()
+                })
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerLiliaDataLoaded", "MyAddon", function(client)
-        -- Add your code here
-    end)
-    ```
-]]
-function PlayerLoadedChar(client, character, currentChar)
-end
-
---[[
-    Purpose:
-        Hook for playerloadedchar
-
-    When Called:
-        When playerloadedchar is triggered
-
-    Parameters:
-        - client: Description
-        - character: Description
-        - currentChar: Description
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-    ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
-    end)
-    ```
-
-    Medium Complexity:
-    ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
-    end)
-    ```
-
-    High Complexity:
-    ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
+    -- High: Advanced character loading
+    hook.Add("PlayerLoadedChar", "AdvancedCharLoading", function(client, character, currentChar)
+        -- Restore character-specific settings
+        local charSettings = character:getData("settings", {})
+        if charSettings.spawnItems then
+            for _, itemID in ipairs(charSettings.spawnItems) do
+                character:getInv():add(itemID)
+            end
+        end
+        -- Apply faction bonuses
+        local faction = lia.faction.indices[character:getFaction()]
+        if faction and faction.onLoadChar then
+            faction:onLoadChar(client, character)
+        end
     end)
     ```
 ]]
@@ -17838,20 +18542,20 @@ end
 
 --[[
     Purpose:
-        Hook for playermessagesend
+        Allows modules to mutate chat text before it is broadcast to recipients
 
     When Called:
-        When playermessagesend is triggered
+        Invoked from lia.chat.parse and lia.chat.send immediately before messages are distributed
 
     Parameters:
-        - speaker: Description
-        - chatType: Description
-        - text: Description
-        - anonymous: Description
-        - receivers: Description
+        - speaker (Player): Player sending the message
+        - chatType (string): Chat class being used (ic/ooc/etc)
+        - text (string): Message content about to be sent
+        - anonymous (boolean): Whether the message hides the speaker by default
+        - receivers (table|nil): Optional list of players that will receive the message during final send
 
     Returns:
-        None
+        string or nil - Return a replacement message string or nil to keep the original
 
     Realm:
         Server
@@ -17860,25 +18564,46 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerMessageSend", "MyAddon", function(speaker, chatType, text, anonymous, receivers)
-        -- Add your code here
+    -- Simple: Add prefix to IC chat
+    hook.Add("PlayerMessageSend", "AddPrefix", function(speaker, chatType, text, anonymous, receivers)
+        if chatType == "ic" then
+            return "[IC] " .. text
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerMessageSend", "MyAddon", function(speaker, chatType, text, anonymous, receivers)
-        -- Add your code here
+    -- Medium: Filter profanity
+    hook.Add("PlayerMessageSend", "FilterMessages", function(speaker, chatType, text, anonymous, receivers)
+        local filtered = text:gsub("badword", "****")
+        if filtered ~= text then
+            speaker:notify("Your message contained inappropriate language")
+            return filtered
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerMessageSend", "MyAddon", function(speaker, chatType, text, anonymous, receivers)
-        -- Add your code here
+    -- High: Advanced message handling
+    hook.Add("PlayerMessageSend", "AdvancedMessageHandling", function(speaker, chatType, text, anonymous, receivers)
+        -- Log all messages
+        lia.log.write("chat_message", {
+            speaker = speaker:SteamID(),
+            chatType = chatType,
+            message = text,
+            timestamp = os.time()
+        })
+        -- Apply custom formatting based on faction
+        if chatType == "ic" and speaker:getChar() then
+            local faction = speaker:getChar():getFaction()
+            if faction == FACTION_POLICE then
+                return "[POLICE] " .. text
+            elseif faction == FACTION_MEDIC then
+                return "[MEDIC] " .. text
+            end
+        end
     end)
     ```
 ]]
@@ -17887,14 +18612,14 @@ end
 
 --[[
     Purpose:
-        Hook for playermodelchanged
+        React when a character's model variable changes
 
     When Called:
-        When playermodelchanged is triggered
+        Called from the character model setter after the new model is applied and networked
 
     Parameters:
-        - client: Description
-        - value: Description
+        - client (Player|nil): Owning player if they are online; nil when the character is unloaded
+        - value (string): New model path assigned to the character
 
     Returns:
         None
@@ -17906,25 +18631,46 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerModelChanged", "MyAddon", function(client, value)
-        -- Add your code here
+    -- Simple: Log model changes
+    hook.Add("PlayerModelChanged", "LogModelChange", function(client, value)
+        if client then
+            print(client:Name() .. " changed model to " .. value)
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerModelChanged", "MyAddon", function(client, value)
-        -- Add your code here
+    -- Medium: Track model changes
+    hook.Add("PlayerModelChanged", "TrackModelChanges", function(client, value)
+        if client and client:getChar() then
+            local changes = client:getChar():getData("modelChanges", {})
+            table.insert(changes, {model = value, time = os.time()})
+            client:getChar():setData("modelChanges", changes)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerModelChanged", "MyAddon", function(client, value)
-        -- Add your code here
+    -- High: Advanced model tracking
+    hook.Add("PlayerModelChanged", "AdvancedModelTracking", function(client, value)
+        if not client then return end
+        local char = client:getChar()
+        if not char then return end
+        -- Log to database
+        lia.db.insertTable({
+            charID = char:getID(),
+            oldModel = char:getModel(),
+            newModel = value,
+            timestamp = os.time()
+        }, nil, "model_changes")
+        -- Check for restricted models
+        local restrictedModels = {"models/restricted.mdl", "models/banned.mdl"}
+        if table.HasValue(restrictedModels, value) then
+            client:ChatPrint("This model is restricted!")
+            char:setModel("models/player/phoenix.mdl")
+        end
     end)
     ```
 ]]
@@ -17933,14 +18679,14 @@ end
 
 --[[
     Purpose:
-        Hook for playermuted
+        Notification after an administrator voice-mutes a player
 
     When Called:
-        When playermuted is triggered
+        Called in the admin library when the mute command succeeds
 
     Parameters:
-        - target: Description
-        - admin: Description
+        - target (Player): Player who was muted
+        - admin (Player): Staff member who issued the mute
 
     Returns:
         None
@@ -17952,25 +18698,95 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerMuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Simple: Log mute actions
+    hook.Add("PlayerMuted", "LogMute", function(target, admin)
+        print(admin:Name() .. " muted " .. target:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerMuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Medium: Track mute history
+    hook.Add("PlayerMuted", "TrackMuteHistory", function(target, admin)
+        local muteHistory = target:getLiliaData("muteHistory", {})
+        table.insert(muteHistory, {
+            admin = admin:SteamID(),
+            timestamp = os.time()
+        })
+        target:setLiliaData("muteHistory", muteHistory)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerMuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- High: Advanced mute management
+    hook.Add("PlayerMuted", "AdvancedMuteManagement", function(target, admin)
+        lia.db.insertTable({
+            targetSteamID = target:SteamID(),
+            adminSteamID = admin:SteamID(),
+            action = "mute",
+            timestamp = os.time()
+        }, nil, "admin_actions")
+        -- Notify staff channel
+        for _, staff in ipairs(player.GetAll()) do
+            if staff:IsAdmin() then
+                staff:ChatPrint("[MUTE] " .. admin:Name() .. " muted " .. target:Name())
+            end
+        end
+    end)
+    ```
+]]
+--[[
+    Purpose:
+        Let modules control whether the acts system is enabled
+
+    When Called:
+        Queried by modules implementing the acts system to determine if acts should be active
+
+    Parameters:
+        None
+
+    Returns:
+        boolean - Return true to enable acts, false or nil to disable
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+    ```lua
+    -- Simple: Enable acts
+    hook.Add("PlayerShouldAct", "EnableActs", function()
+        return lia.config.get("ActsActive", false)
+    end)
+    ```
+
+    Medium Complexity:
+    ```lua
+    -- Medium: Conditionally enable acts
+    hook.Add("PlayerShouldAct", "CheckPlayerState", function()
+        -- Only enable acts during certain times
+        local hour = tonumber(os.date("%H"))
+        if hour >= 18 or hour < 6 then
+            return true -- Night time acts allowed
+        end
+        return false
+    end)
+    ```
+
+    High Complexity:
+    ```lua
+    -- High: Advanced act validation
+    hook.Add("PlayerShouldAct", "AdvancedActionValidation", function()
+        -- Check server population
+        local playerCount = #player.GetAll()
+        if playerCount < 5 then return false end
+        -- Check for event mode
+        if lia.eventManager and lia.eventManager:isRunning() then
+            return lia.eventManager:allowsActs()
+        end
+        return lia.config.get("ActsActive", false)
     end)
     ```
 ]]
@@ -17979,16 +18795,18 @@ end
 
 --[[
     Purpose:
-        Hook for playershouldact
+        Determine whether a character death should result in a permanent kill
 
     When Called:
-        When playershouldact is triggered
+        Called from GM:PlayerDeath when PK-related configuration would allow a permanent ban
 
     Parameters:
-        None
+        - client (Player): Player who died
+        - inflictor (Entity): Damage inflictor reported by the game
+        - attacker (Entity): Entity credited with the kill
 
     Returns:
-        None
+        boolean - Return true to permakill the character, false or nil to skip
 
     Realm:
         Server
@@ -17997,25 +18815,39 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerShouldAct", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Always permakill on player kills
+    hook.Add("PlayerShouldPermaKill", "AlwaysPermakill", function(client, inflictor, attacker)
+        if IsValid(attacker) and attacker:IsPlayer() then
+            return true
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerShouldAct", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Admin permakill override
+    hook.Add("PlayerShouldPermaKill", "AdminPermakill", function(client, inflictor, attacker)
+        if IsValid(attacker) and attacker:IsPlayer() and attacker:IsAdmin() then
+            return false -- Admins can't permakill
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerShouldAct", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced permakill logic
+    hook.Add("PlayerShouldPermaKill", "AdvancedPermakill", function(client, inflictor, attacker)
+        local char = client:getChar()
+        if not char then return false end
+        -- Check for protected status
+        if char:getData("protected", false) then return false end
+        -- Check death count
+        local deaths = char:getData("deaths", 0)
+        if deaths >= 3 and IsValid(attacker) and attacker:IsPlayer() then
+            return true
+        end
+        -- Check for marked for death
+        return char:getMarkedForDeath()
     end)
     ```
 ]]
@@ -18024,15 +18856,15 @@ end
 
 --[[
     Purpose:
-        Hook for playershouldpermakill
+        Receive the spawn position and angle chosen for a respawning player
 
     When Called:
-        When playershouldpermakill is triggered
+        Executed by the spawns module after it resolves faction or saved spawn data for a player
 
     Parameters:
-        - client: Description
-        - inflictor: Description
-        - attacker: Description
+        - client (Player): Player being positioned
+        - pos (Vector): World position that was selected (already offset above the ground)
+        - ang (Angle): Eye angles that will be applied to the player
 
     Returns:
         None
@@ -18044,42 +18876,63 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerShouldPermaKill", "MyAddon", function(client, inflictor, attacker)
-        -- Add your code here
+    -- Simple: Log spawn locations
+    hook.Add("PlayerSpawnPointSelected", "LogSpawns", function(client, pos, ang)
+        print(client:Name() .. " spawned at " .. tostring(pos))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerShouldPermaKill", "MyAddon", function(client, inflictor, attacker)
-        -- Add your code here
+    -- Medium: Track spawn locations
+    hook.Add("PlayerSpawnPointSelected", "TrackSpawnLocations", function(client, pos, ang)
+        local char = client:getChar()
+        if char then
+            local spawnHistory = char:getData("spawnHistory", {})
+            table.insert(spawnHistory, {
+                pos = pos,
+                ang = ang,
+                timestamp = os.time()
+            })
+            char:setData("spawnHistory", spawnHistory)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerShouldPermaKill", "MyAddon", function(client, inflictor, attacker)
-        -- Add your code here
+    -- High: Advanced spawn tracking
+    hook.Add("PlayerSpawnPointSelected", "AdvancedSpawnTracking", function(client, pos, ang)
+        local char = client:getChar()
+        if not char then return end
+        -- Log to database
+        lia.db.insertTable({
+            charID = char:getID(),
+            map = game.GetMap(),
+            posX = pos.x,
+            posY = pos.y,
+            posZ = pos.z,
+            timestamp = os.time()
+        }, nil, "spawn_logs")
+        -- Check for spawn restrictions
+        if char:getData("spawnRestricted", false) then
+            client:SetPos(lia.module.get("spawns"):GetDefaultSpawn())
+        end
     end)
     ```
 ]]
 function PlayerSpawnPointSelected(client, pos, ang)
 end
-
 --[[
     Purpose:
-        Hook for playerspawnpointselected
+        Called after the fists weapon performs its contact trace
 
     When Called:
-        When playerspawnpointselected is triggered
+        Triggered in the hands weapon shortly after a punch trace completes, regardless of whether damage was applied
 
     Parameters:
-        - client: Description
-        - pos: Description
-        - ang: Description
+        - client (Player): Player who threw the punch
+        - trace (TraceResult): Trace data describing what the punch hit
 
     Returns:
         None
@@ -18091,40 +18944,51 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerSpawnPointSelected", "MyAddon", function(client, pos, ang)
-        -- Add your code here
+    -- Simple: Punch announcement
+    hook.Add("PlayerThrowPunch", "PunchAnnouncement", function(client, trace)
+        if trace.Hit then
+            client:ChatPrint("You hit something!")
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerSpawnPointSelected", "MyAddon", function(client, pos, ang)
-        -- Add your code here
+    -- Medium: Apply shock gloves effect
+    hook.Add("PlayerThrowPunch", "ApplyShockGloves", function(client, trace)
+        if trace.Hit and IsValid(trace.Entity) and trace.Entity:IsPlayer() and client:getNetVar("shockGloves") then
+            trace.Entity:TakeDamage(5, client, client)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerSpawnPointSelected", "MyAddon", function(client, pos, ang)
-        -- Add your code here
+    -- High: Record punch statistics
+    hook.Add("PlayerThrowPunch", "RecordPunchStats", function(client, trace)
+        if not trace.Hit then return end
+        local stats = client:getLiliaData("punchStats", {total = 0, hits = 0})
+        stats.total = stats.total + 1
+        stats.hits = stats.hits + 1
+        if IsValid(trace.Entity) and trace.Entity:IsPlayer() then
+            stats.playerHits = (stats.playerHits or 0) + 1
+        end
+        client:setLiliaData("punchStats", stats)
     end)
     ```
 ]]
-function PlayerThrowPunch(client)
+function PlayerThrowPunch(client, trace)
 end
-
 --[[
     Purpose:
-        Hook for playerthrowpunch
+        Notification after an administrator removes a gag from a player
 
     When Called:
-        When playerthrowpunch is triggered
+        Called in the admin library when the ungag command succeeds
 
     Parameters:
-        - client: Description
+        - target (Player): Player who was ungagged
+        - admin (Player): Staff member who lifted the gag
 
     Returns:
         None
@@ -18136,25 +19000,42 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerThrowPunch", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log ungag actions
+    hook.Add("PlayerUngagged", "LogUngag", function(target, admin)
+        print(admin:Name() .. " ungagged " .. target:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerThrowPunch", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Track ungag actions
+    hook.Add("PlayerUngagged", "TrackUngag", function(target, admin)
+        lia.db.insertTable({
+            targetSteamID = target:SteamID(),
+            adminSteamID = admin:SteamID(),
+            action = "ungag",
+            timestamp = os.time()
+        }, nil, "admin_actions")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerThrowPunch", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced ungag handling
+    hook.Add("PlayerUngagged", "AdvancedUngag", function(target, admin)
+        -- Notify staff
+        for _, staff in ipairs(player.GetAll()) do
+            if staff:IsAdmin() then
+                staff:ChatPrint("[UNGAG] " .. admin:Name() .. " ungagged " .. target:Name())
+            end
+        end
+        -- Update gag history
+        local gagHistory = target:getLiliaData("gagHistory", {})
+        if #gagHistory > 0 then
+            gagHistory[#gagHistory].ungaggedBy = admin:SteamID()
+            gagHistory[#gagHistory].ungaggedAt = os.time()
+            target:setLiliaData("gagHistory", gagHistory)
+        end
     end)
     ```
 ]]
@@ -18163,14 +19044,14 @@ end
 
 --[[
     Purpose:
-        Hook for playerungagged
+        Notification after an administrator removes a voice mute from a player
 
     When Called:
-        When playerungagged is triggered
+        Called in the admin library when the unmute command succeeds
 
     Parameters:
-        - target: Description
-        - admin: Description
+        - target (Player): Player who was unmuted
+        - admin (Player): Staff member who lifted the mute
 
     Returns:
         None
@@ -18182,25 +19063,42 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerUngagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Simple: Log unmute actions
+    hook.Add("PlayerUnmuted", "LogUnmute", function(target, admin)
+        print(admin:Name() .. " unmuted " .. target:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerUngagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Medium: Track unmute actions
+    hook.Add("PlayerUnmuted", "TrackUnmute", function(target, admin)
+        lia.db.insertTable({
+            targetSteamID = target:SteamID(),
+            adminSteamID = admin:SteamID(),
+            action = "unmute",
+            timestamp = os.time()
+        }, nil, "admin_actions")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerUngagged", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- High: Advanced unmute handling
+    hook.Add("PlayerUnmuted", "AdvancedUnmute", function(target, admin)
+        -- Notify staff
+        for _, staff in ipairs(player.GetAll()) do
+            if staff:IsAdmin() then
+                staff:ChatPrint("[UNMUTE] " .. admin:Name() .. " unmuted " .. target:Name())
+            end
+        end
+        -- Clear mute history entry
+        local muteHistory = target:getLiliaData("muteHistory", {})
+        if #muteHistory > 0 then
+            muteHistory[#muteHistory].unmutedBy = admin:SteamID()
+            muteHistory[#muteHistory].unmutedAt = os.time()
+            target:setLiliaData("muteHistory", muteHistory)
+        end
     end)
     ```
 ]]
@@ -18209,17 +19107,17 @@ end
 
 --[[
     Purpose:
-        Hook for playerunmuted
+        Customize behaviour when a player uses a door entity
 
     When Called:
-        When playerunmuted is triggered
+        Invoked by the doors module for doors and vehicles after CanPlayerUseDoor passes
 
     Parameters:
-        - target: Description
-        - admin: Description
+        - client (Player): Player who activated the door
+        - door (Entity): Door or vehicle entity being used
 
     Returns:
-        None
+        boolean|nil - Return false to block use, true to force allow, or nil to continue default handling
 
     Realm:
         Server
@@ -18228,44 +19126,63 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerUnmuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Simple: Log door usage
+    hook.Add("PlayerUseDoor", "LogDoorUsage", function(client, door)
+        print(client:Name() .. " used door at " .. tostring(door:GetPos()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerUnmuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- Medium: Track door usage
+    hook.Add("PlayerUseDoor", "TrackDoorUsage", function(client, door)
+        local char = client:getChar()
+        if char then
+            local doorUses = char:getData("doorUses", 0)
+            char:setData("doorUses", doorUses + 1)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerUnmuted", "MyAddon", function(target, admin)
-        -- Add your code here
+    -- High: Advanced door usage system
+    hook.Add("PlayerUseDoor", "AdvancedDoorUsage", function(client, door)
+        local char = client:getChar()
+        if not char then return false end
+        -- Log to database
+        lia.db.insertTable({
+            charID = char:getID(),
+            doorID = door:MapCreationID(),
+            timestamp = os.time()
+        }, nil, "door_usage_log")
+        -- Check for door restrictions
+        local doorData = door:getNetVar("doorData", {})
+        if doorData.requiresKey then
+            local hasKey = char:getInv():hasItem("door_key_" .. door:MapCreationID())
+            if not hasKey then
+                client:notify("This door requires a key!")
+                return false
+            end
+        end
     end)
     ```
 ]]
 function PlayerUseDoor(client, door)
 end
-
 --[[
     Purpose:
-        Hook for playerusedoor
+        Adjust door metadata after it is read from storage
 
     When Called:
-        When playerusedoor is triggered
+        Called by the doors module for each door that receives persisted or preset data during load
 
     Parameters:
-        - client: Description
-        - door: Description
+        - ent (Entity): Door entity being initialised
+        - doorData (table): Table of attributes about to be applied to the entity
 
     Returns:
-        None
+        table|nil - Return a modified data table to replace the original values or nil to leave them unchanged
 
     Realm:
         Server
@@ -18274,25 +19191,45 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PlayerUseDoor", "MyAddon", function(client, door)
-        -- Add your code here
+    -- Simple: Add default door name
+    hook.Add("PostDoorDataLoad", "AddDefaultName", function(ent, doorData)
+        if not doorData.name or doorData.name == "" then
+            doorData.name = "Door #" .. ent:MapCreationID()
+        end
+        return doorData
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PlayerUseDoor", "MyAddon", function(client, door)
-        -- Add your code here
+    -- Medium: Custom door settings
+    hook.Add("PostDoorDataLoad", "CustomDoorSettings", function(ent, doorData)
+        -- Apply faction-specific settings
+        if doorData.factions and table.HasValue(doorData.factions, "police") then
+            doorData.price = doorData.price or 1000
+            doorData.locked = true
+        end
+        return doorData
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PlayerUseDoor", "MyAddon", function(client, door)
-        -- Add your code here
+    -- High: Advanced door data processing
+    hook.Add("PostDoorDataLoad", "AdvancedDoorDataProcessing", function(ent, doorData)
+        -- Validate door data
+        if doorData.price and doorData.price < 0 then
+            doorData.price = 0
+        end
+        -- Apply map-specific presets
+        local mapPresets = lia.data.get("doorPresets", {})
+        local mapID = ent:MapCreationID()
+        if mapPresets[game.GetMap()] and mapPresets[game.GetMap()][mapID] then
+            for k, v in pairs(mapPresets[game.GetMap()][mapID]) do
+                doorData[k] = v
+            end
+        end
+        return doorData
     end)
     ```
 ]]
@@ -18301,14 +19238,13 @@ end
 
 --[[
     Purpose:
-        Called after doordataload happens
+        Hook point after all persistence has been loaded during startup
 
     When Called:
-        After doordataload has been completed
+        Executed at the end of GM:LoadData and GM:LiliaTablesLoaded after map entities, config, and door data are processed
 
     Parameters:
-        - ent: Description
-        - doorData: Description
+        None
 
     Returns:
         None
@@ -18320,25 +19256,43 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostDoorDataLoad", "MyAddon", function(ent, doorData)
-        -- Add your code here
+    -- Simple: Initialize systems after load
+    hook.Add("PostLoadData", "InitializeSystems", function()
+        print("All data loaded successfully!")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostDoorDataLoad", "MyAddon", function(ent, doorData)
-        -- Add your code here
+    -- Medium: Post-load initialization
+    hook.Add("PostLoadData", "PostLoadInit", function()
+        -- Start background timers
+        timer.Create("liaMaintenance", 300, 0, function()
+            -- Maintenance tasks
+        end)
+        -- Sync data to clients
+        for _, ply in ipairs(player.GetAll()) do
+            lia.module.get("mainmenu"):SyncCharList(ply)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostDoorDataLoad", "MyAddon", function(ent, doorData)
-        -- Add your code here
+    -- High: Advanced post-load initialization
+    hook.Add("PostLoadData", "AdvancedPostLoadInit", function()
+        -- Verify loaded data integrity
+        local doorCount = 0
+        for _, door in ents.Iterator() do
+            if door:isDoor() then doorCount = doorCount + 1 end
+        end
+        lia.information("Loaded " .. doorCount .. " doors")
+        -- Initialize event systems
+        if lia.eventManager then
+            lia.eventManager:initialize()
+        end
+        -- Start scheduled tasks
+        lia.scheduler.start()
     end)
     ```
 ]]
@@ -18347,13 +19301,13 @@ end
 
 --[[
     Purpose:
-        Called after loaddata happens
+        Run logic after a player completes the initial spawn setup sequence
 
     When Called:
-        After loaddata has been completed
+        Called from GM:PlayerInitialSpawn once persistence is loaded, data is sent, and before the character menu opens
 
     Parameters:
-        None
+        - client (Player): Player that just spawned for the first time this session
 
     Returns:
         None
@@ -18365,25 +19319,43 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostLoadData", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Welcome message
+    hook.Add("PostPlayerInitialSpawn", "WelcomeMessage", function(client)
+        timer.Simple(2, function()
+            if IsValid(client) then
+                client:ChatPrint("Welcome to the server!")
+            end
+        end)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostLoadData", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Initialize player data
+    hook.Add("PostPlayerInitialSpawn", "InitPlayerData", function(client)
+        -- Set default preferences
+        local prefs = client:getLiliaData("preferences", {})
+        if not prefs.uiScale then
+            prefs.uiScale = 1.0
+            client:setLiliaData("preferences", prefs)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostLoadData", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced player initialization
+    hook.Add("PostPlayerInitialSpawn", "AdvancedPlayerInit", function(client)
+        -- Check for returning player
+        local lastSeen = client:getLiliaData("lastSeen", 0)
+        if lastSeen > 0 then
+            local daysSince = math.floor((os.time() - lastSeen) / 86400)
+            if daysSince > 7 then
+                client:ChatPrint("Welcome back! You've been away for " .. daysSince .. " days.")
+            end
+        end
+        -- Load player-specific settings
+        lia.module.get("customization"):loadPlayerSettings(client)
     end)
     ```
 ]]
@@ -18392,13 +19364,15 @@ end
 
 --[[
     Purpose:
-        Called after playerinitialspawn happens
+        React after a character has been fully loaded and acknowledged by the client
 
     When Called:
-        After playerinitialspawn has been completed
+        Triggered after PlayerLoadedChar and the choose-character net message completes
 
     Parameters:
-        - client: Description
+        - client (Player): Player whose character finished loading
+        - character (Character): Character that is now active
+        - currentChar (Character|nil): Previously active character prior to the switch
 
     Returns:
         None
@@ -18410,25 +19384,46 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostPlayerInitialSpawn", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Welcome message
+    hook.Add("PostPlayerLoadedChar", "WelcomeMessage", function(client, character, currentChar)
+        client:ChatPrint("Welcome, " .. character:getName() .. "!")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostPlayerInitialSpawn", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Restore character state
+    hook.Add("PostPlayerLoadedChar", "RestoreCharState", function(client, character, currentChar)
+        -- Restore saved position if switching
+        if currentChar then
+            local savedPos = character:getData("savedPos")
+            if savedPos and savedPos.pos then
+                client:SetPos(savedPos.pos)
+                if savedPos.ang then
+                    client:SetEyeAngles(savedPos.ang)
+                end
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostPlayerInitialSpawn", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced character load
+    hook.Add("PostPlayerLoadedChar", "AdvancedCharLoad", function(client, character, currentChar)
+        -- Apply character-specific modifications
+        local charData = character:getData("customData", {})
+        if charData.spawnItems then
+            for _, itemID in ipairs(charData.spawnItems) do
+                character:getInv():add(itemID)
+            end
+        end
+        -- Check for special events
+        if lia.eventManager and lia.eventManager:isActive() then
+            lia.eventManager:onPlayerJoin(client, character)
+        end
+        -- Sync with external systems
+        lia.module.get("discord"):syncCharacter(character)
     end)
     ```
 ]]
@@ -18437,15 +19432,13 @@ end
 
 --[[
     Purpose:
-        Called after playerloadedchar happens
+        Extend loadout handling after Lilia equips its default gear
 
     When Called:
-        After playerloadedchar has been completed
+        Executed at the end of GM:PlayerLoadout after the character has been set up and default weapons assigned
 
     Parameters:
-        - client: Description
-        - character: Description
-        - currentChar: Description
+        - client (Player): Player who just received their loadout
 
     Returns:
         None
@@ -18457,25 +19450,55 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostPlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
+    -- Simple: Give starter items
+    hook.Add("PostPlayerLoadout", "GiveStarterItems", function(client)
+        local char = client:getChar()
+        if char then
+            char:getInv():add("weapon_pistol")
+            char:getInv():add("weapon_radio")
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostPlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
+    -- Medium: Faction-based loadout
+    hook.Add("PostPlayerLoadout", "FactionLoadout", function(client)
+        local char = client:getChar()
+        if not char then return end
+        local faction = lia.faction.indices[char:getFaction()]
+        if faction.loadout then
+            for _, itemID in ipairs(faction.loadout) do
+                char:getInv():add(itemID)
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostPlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
+    -- High: Advanced loadout system
+    hook.Add("PostPlayerLoadout", "AdvancedLoadout", function(client)
+        local char = client:getChar()
+        if not char then return end
+        -- Apply class-specific items
+        local class = lia.class.list[char:getClass()]
+        if class and class.loadout then
+            for _, itemData in ipairs(class.loadout) do
+                local item = char:getInv():add(itemData.item)
+                if item and itemData.data then
+                    for k, v in pairs(itemData.data) do
+                        item:setData(k, v)
+                    end
+                end
+            end
+        end
+        -- Set health based on attributes
+        if lia.module.get("attributes") then
+            local health = lia.module.get("attributes"):getHealth(char)
+            client:SetMaxHealth(health)
+            client:SetHealth(health)
+        end
     end)
     ```
 ]]
@@ -18484,13 +19507,16 @@ end
 
 --[[
     Purpose:
-        Called after playerloadout happens
+        Perform actions after a chat message has been processed and sent
 
     When Called:
-        After playerloadout has been completed
+        Runs from GM:PlayerSay after the message is logged and broadcast
 
     Parameters:
-        - client: Description
+        - client (Player): Player who sent the chat message
+        - message (string): Text that was actually sent
+        - chatType (string): Chat class used for the message
+        - anonymous (boolean): Whether anonymity was applied
 
     Returns:
         None
@@ -18502,25 +19528,41 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostPlayerLoadout", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log all messages
+    hook.Add("PostPlayerSay", "LogMessages", function(client, message, chatType, anonymous)
+        print(client:Name() .. " [" .. chatType .. "]: " .. message)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostPlayerLoadout", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Track chat statistics
+    hook.Add("PostPlayerSay", "TrackChatStats", function(client, message, chatType, anonymous)
+        local char = client:getChar()
+        if char then
+            local stats = char:getData("chatStats", {})
+            stats[chatType] = (stats[chatType] or 0) + 1
+            char:setData("chatStats", stats)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostPlayerLoadout", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced chat tracking
+    hook.Add("PostPlayerSay", "AdvancedChatTracking", function(client, message, chatType, anonymous)
+        -- Log to database
+        lia.db.insertTable({
+            charID = client:getChar() and client:getChar():getID() or 0,
+            steamID = client:SteamID(),
+            chatType = chatType,
+            message = message,
+            timestamp = os.time()
+        }, nil, "chat_logs")
+        -- Analyze for commands
+        if message:StartWith("!") then
+            -- Track command usage
+        end
     end)
     ```
 ]]
@@ -18529,16 +19571,15 @@ end
 
 --[[
     Purpose:
-        Called after playersay happens
+        Observe the final damage scale applied by the realistic damage system
 
     When Called:
-        After playersay has been completed
+        Called by the realistic damage module after ScalePlayerDamage calculates and applies the damage multiplier
 
     Parameters:
-        - client: Description
-        - message: Description
-        - chatType: Description
-        - anonymous: Description
+        - hitgroup (number): Hitgroup the player was struck in
+        - dmgInfo (CTakeDamageInfo): Damage information object being applied
+        - damageScale (number): Multiplier that was used for this hit
 
     Returns:
         None
@@ -18550,25 +19591,49 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostPlayerSay", "MyAddon", function(client, message, chatType, anonymous)
-        -- Add your code here
+    -- Simple: Log damage scaling
+    hook.Add("PostScaleDamage", "LogDamageScale", function(hitgroup, dmgInfo, damageScale)
+        print("Damage scaled: " .. damageScale .. "x for hitgroup " .. hitgroup)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostPlayerSay", "MyAddon", function(client, message, chatType, anonymous)
-        -- Add your code here
+    -- Medium: Apply damage effects
+    hook.Add("PostScaleDamage", "ApplyDamageEffects", function(hitgroup, dmgInfo, damageScale)
+        local victim = dmgInfo:GetAttacker()
+        if IsValid(victim) and victim:IsPlayer() then
+            if hitgroup == HITGROUP_HEAD and damageScale > 1.5 then
+                victim:setNetVar("concussed", true)
+                timer.Simple(5, function()
+                    if IsValid(victim) then
+                        victim:setNetVar("concussed", nil)
+                    end
+                end)
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostPlayerSay", "MyAddon", function(client, message, chatType, anonymous)
-        -- Add your code here
+    -- High: Advanced damage tracking
+    hook.Add("PostScaleDamage", "AdvancedDamageTracking", function(hitgroup, dmgInfo, damageScale)
+        local victim = dmgInfo:GetAttacker()
+        local attacker = dmgInfo:GetAttacker()
+        if IsValid(victim) and victim:IsPlayer() and victim:getChar() then
+            -- Track damage taken
+            local damageStats = victim:getChar():getData("damageStats", {})
+            damageStats.total = (damageStats.total or 0) + dmgInfo:GetDamage()
+            damageStats[hitgroup] = (damageStats[hitgroup] or 0) + dmgInfo:GetDamage()
+            victim:getChar():setData("damageStats", damageStats)
+            -- Apply bleeding for limb hits
+            if table.HasValue({HITGROUP_LEFTARM, HITGROUP_RIGHTARM, HITGROUP_LEFTLEG, HITGROUP_RIGHTLEG}, hitgroup) then
+                if lia.module.get("injuries") then
+                    lia.module.get("injuries"):addBleeding(victim, damageScale * 10)
+                end
+            end
+        end
     end)
     ```
 ]]
@@ -18577,15 +19642,13 @@ end
 
 --[[
     Purpose:
-        Called after scaledamage happens
+        Chance to react before a character record is removed from the database
 
     When Called:
-        After scaledamage has been completed
+        Invoked by lia.char.delete immediately before the character and associated data are deleted
 
     Parameters:
-        - hitgroup: Description
-        - dmgInfo: Description
-        - damageScale: Description
+        - id (number): Identifier of the character that is about to be removed
 
     Returns:
         None
@@ -18597,25 +19660,49 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PostScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- Simple: Log character deletion
+    hook.Add("PreCharDelete", "LogDeletion", function(id)
+        print("Character " .. id .. " is being deleted")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PostScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- Medium: Backup character data
+    hook.Add("PreCharDelete", "BackupCharData", function(id)
+        local char = lia.char.getCharacter(id)
+        if char then
+            -- Save backup to separate table
+            lia.db.insertTable({
+                charID = id,
+                name = char:getName(),
+                data = char:getData(),
+                deletedAt = os.time()
+            }, nil, "deleted_characters_backup")
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PostScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- High: Advanced character delete prep
+    hook.Add("PreCharDelete", "AdvancedCharDeletePrep", function(id)
+        local char = lia.char.getCharacter(id)
+        if not char then return end
+        -- Archive all character data
+        lia.db.insertTable({
+            charID = id,
+            owner = char:getPlayer() and char:getPlayer():SteamID() or "unknown",
+            name = char:getName(),
+            faction = char:getFaction(),
+            inventory = char:getInv():getItems(),
+            money = char:getMoney(),
+            deletedAt = os.time()
+        }, nil, "char_archive")
+        -- Notify external systems
+        if lia.module.get("discord") then
+            lia.module.get("discord"):logCharacterDeletion(char)
+        end
     end)
     ```
 ]]
@@ -18624,16 +19711,17 @@ end
 
 --[[
     Purpose:
-        Called before chardelete happens
+        Modify door metadata before it is written back to persistent storage
 
     When Called:
-        Before chardelete is executed
+        Called by the doors module while iterating map doors during SaveData
 
     Parameters:
-        - id: Description
+        - door (Entity): Door entity whose data is being saved
+        - doorData (table): Metadata collected for the door
 
     Returns:
-        None
+        table|nil - Return a table to replace the saved data or nil to keep the existing values
 
     Realm:
         Server
@@ -18642,41 +19730,69 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PreCharDelete", "MyAddon", function(id)
-        -- Add your code here
+    -- Simple: Clean door data
+    hook.Add("PreDoorDataSave", "CleanDoorData", function(door, doorData)
+        -- Remove empty values
+        for k, v in pairs(doorData) do
+            if v == "" or v == nil then
+                doorData[k] = nil
+            end
+        end
+        return doorData
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PreCharDelete", "MyAddon", function(id)
-        -- Add your code here
+    -- Medium: Validate door data
+    hook.Add("PreDoorDataSave", "ValidateDoorData", function(door, doorData)
+        -- Ensure price is valid
+        if doorData.price and (doorData.price < 0 or doorData.price > 999999999) then
+            doorData.price = 0
+        end
+        -- Validate name length
+        if doorData.name and #doorData.name > 255 then
+            doorData.name = doorData.name:sub(1, 255)
+        end
+        return doorData
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PreCharDelete", "MyAddon", function(id)
-        -- Add your code here
+    -- High: Advanced door data validation
+    hook.Add("PreDoorDataSave", "AdvancedDoorDataValidation", function(door, doorData)
+        -- Comprehensive validation
+        if doorData.factions and not istable(doorData.factions) then
+            doorData.factions = {}
+        end
+        if doorData.classes and not istable(doorData.classes) then
+            doorData.classes = {}
+        end
+        -- Apply server-wide door settings
+        local serverSettings = lia.data.get("doorServerSettings", {})
+        if serverSettings[door:MapCreationID()] then
+            for k, v in pairs(serverSettings[door:MapCreationID()]) do
+                doorData[k] = v
+            end
+        end
+        return doorData
     end)
     ```
 ]]
 function PreDoorDataSave(door, doorData)
 end
-
 --[[
     Purpose:
-        Called before doordatasave happens
+        Hook point before an item interaction handler is executed
 
     When Called:
-        Before doordatasave is executed
+        Fired inside ITEM:interact after validation passes but before the action callback runs
 
     Parameters:
-        - door: Description
-        - doorData: Description
+        - client (Player): Player performing the action
+        - action (string): Name of the interaction being executed
+        - self (Item): Item instance being acted upon
 
     Returns:
         None
@@ -18688,42 +19804,72 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PreDoorDataSave", "MyAddon", function(door, doorData)
-        -- Add your code here
+    -- Simple: Log item interactions
+    hook.Add("PrePlayerInteractItem", "LogInteractions", function(client, action, self)
+        print(client:Name() .. " used " .. action .. " on " .. self:getName())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PreDoorDataSave", "MyAddon", function(door, doorData)
-        -- Add your code here
+    -- Medium: Check cooldown
+    hook.Add("PrePlayerInteractItem", "CheckCooldown", function(client, action, self)
+        local cooldownKey = "item_" .. self:getID() .. "_" .. action
+        local lastUse = client:getLiliaData(cooldownKey, 0)
+        if CurTime() - lastUse < 5 then
+            client:notify("Please wait before using this item again")
+            return
+        end
+        client:setLiliaData(cooldownKey, CurTime())
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PreDoorDataSave", "MyAddon", function(door, doorData)
-        -- Add your code here
+    -- High: Advanced item interaction
+    hook.Add("PrePlayerInteractItem", "AdvancedItemInteraction", function(client, action, self)
+        local char = client:getChar()
+        if not char then return end
+        -- Check for required permissions
+        if self:getData("requiresPermission") then
+            local perm = self:getData("requiresPermission")
+            if not client:hasPrivilege(perm) then
+                client:notify("You don't have permission to use this item")
+                return false
+            end
+        end
+        -- Apply stamina cost
+        if self:getData("staminaCost") and lia.module.get("attributes") then
+            local cost = self:getData("staminaCost")
+            if client:getLocalVar("stamina", 100) < cost then
+                client:notify("You're too tired to use this")
+                return false
+            end
+            client:consumeStamina(cost)
+        end
+        -- Log interaction
+        lia.db.insertTable({
+            charID = char:getID(),
+            itemID = self:getID(),
+            action = action,
+            timestamp = os.time()
+        }, nil, "item_interactions")
     end)
     ```
 ]]
 function PrePlayerInteractItem(client, action, self)
 end
-
 --[[
     Purpose:
-        Called before playerinteractitem happens
+        React before a character is set up and loaded for a player
 
     When Called:
-        Before playerinteractitem is executed
+        Triggered in the character selection flow immediately before character:setup() is called
 
     Parameters:
-        - client: Description
-        - action: Description
-        - self: Description
+        - client (Player): Player that is loading the character
+        - character (Character): Character object that will be loaded
+        - currentChar (Character|nil): Previously active character if this is a switch, otherwise nil
 
     Returns:
         None
@@ -18735,75 +19881,55 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PrePlayerInteractItem", "MyAddon", function(client, action, self)
-        -- Add your code here
+    -- Simple: Log character loading
+    hook.Add("PrePlayerLoadedChar", "LogCharLoad", function(client, character, currentChar)
+        print(client:Name() .. " is loading character: " .. character:getName())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PrePlayerInteractItem", "MyAddon", function(client, action, self)
-        -- Add your code here
+    -- Medium: Save current character state
+    hook.Add("PrePlayerLoadedChar", "SaveCurrentChar", function(client, character, currentChar)
+        if currentChar and IsValid(client) and client:Alive() then
+            -- Save position before switching
+            currentChar:setData("lastPos", {
+                pos = client:GetPos(),
+                ang = client:EyeAngles(),
+                map = game.GetMap()
+            })
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PrePlayerInteractItem", "MyAddon", function(client, action, self)
-        -- Add your code here
+    -- High: Advanced character load prep
+    hook.Add("PrePlayerLoadedChar", "AdvancedCharLoadPrep", function(client, character, currentChar)
+        -- Validate character can be loaded
+        if character:getData("banned", false) then
+            client:notify("This character is banned")
+            return
+        end
+        -- Save current character inventory snapshot
+        if currentChar then
+            local snapshot = {}
+            for _, item in pairs(currentChar:getInv():getItems()) do
+                table.insert(snapshot, {
+                    id = item:getID(),
+                    uniqueID = item.uniqueID,
+                    data = item.data
+                })
+            end
+            currentChar:setData("inventorySnapshot", snapshot)
+        end
+        -- Preload character-specific data
+        lia.module.get("customization"):preloadCharacterData(character)
     end)
     ```
 ]]
 function PrePlayerLoadedChar(client, character, currentChar)
 end
-
---[[
-    Purpose:
-        Called before playerloadedchar happens
-
-    When Called:
-        Before playerloadedchar is executed
-
-    Parameters:
-        - client: Description
-        - character: Description
-        - currentChar: Description
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-    ```lua
-    -- Simple: Basic usage
-    hook.Add("PrePlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
-    end)
-    ```
-
-    Medium Complexity:
-    ```lua
-    -- Medium: More complex usage
-    hook.Add("PrePlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
-    end)
-    ```
-
-    High Complexity:
-    ```lua
-    -- High: Advanced usage
-    hook.Add("PrePlayerLoadedChar", "MyAddon", function(client, character, currentChar)
-        -- Add your code here
-    end)
-    ```
-]]
 function PreSalaryGive(client, char, pay, faction, class)
 end
 
@@ -18905,10 +20031,10 @@ end
 
 --[[
     Purpose:
-        Hook for registerpreparedstatements
+        Allow modules to register custom prepared database statements.
 
     When Called:
-        When registerpreparedstatements is triggered
+        Called from `GM:RegisterPreparedStatements` during database initialization. Note: This is a GM function override point, not a hook that is run. To hook into this, override `GM:RegisterPreparedStatements`.
 
     Parameters:
         None
@@ -18950,14 +20076,14 @@ end
 
 --[[
     Purpose:
-        Hook for removewarning
+        React when a warning is removed from a character's record.
 
     When Called:
-        When removewarning is triggered
+        Called from the administration module's `RemoveWarning` function after a warning is successfully deleted from the database. Note: This appears to be a module function, not a hook. The actual hook that fires is `WarningRemoved`.
 
     Parameters:
-        - charID: Description
-        - index: Description
+        - charID (number): Character ID whose warning was removed.
+        - index (number): Index of the warning that was removed.
 
     Returns:
         None
@@ -18996,20 +20122,19 @@ end
 
 --[[
     Purpose:
-        Hook for runadminsystemcommand
+        Override or intercept admin system command execution.
 
     When Called:
-        When runadminsystemcommand is triggered
+        Called from `lia.administrator.execCommand` before the command is executed, allowing custom command handling.
 
     Parameters:
-        - cmd: Description
-        - admin: Description
-        - victim: Description
-        - dur: Description
-        - reason: Description
+        - cmd (string): Command being executed (e.g., "ban", "kick", "warn").
+        - victim (Player|string): Target player or Steam ID.
+        - dur (number|nil): Duration for timed commands, or nil for permanent.
+        - reason (string): Reason for the command.
 
     Returns:
-        None
+        boolean, function - Return true and a callback function to override the command, or nil to use default handling.
 
     Realm:
         Server
@@ -19145,14 +20270,14 @@ end
 
 --[[
     Purpose:
-        Hook for sendpopup
+        React when a ticket system popup is sent to staff members.
 
     When Called:
-        When sendpopup is triggered
+        Called from the administration module's `SendPopup` function after the popup network message is sent to all staff members. Note: This appears to be a module function, not a hook. The actual hook that fires is `TicketSystemCreated`.
 
     Parameters:
-        - noob: Description
-        - message: Description
+        - noob (Player): Player who created the ticket.
+        - message (string): Ticket message content.
 
     Returns:
         None
@@ -19191,13 +20316,13 @@ end
 
 --[[
     Purpose:
-        Hook for setupbaginventoryaccessrules
+        Configure access rules for a bag item's inventory.
 
     When Called:
-        When setupbaginventoryaccessrules is triggered
+        Called from bag item initialization when a bag inventory is created or restored, allowing modules to set custom access rules.
 
     Parameters:
-        - inventory: Description
+        - inventory (Inventory): Inventory instance for the bag item.
 
     Returns:
         None
@@ -19236,13 +20361,13 @@ end
 
 --[[
     Purpose:
-        Hook for setupbotplayer
+        Configure a bot player during initial spawn.
 
     When Called:
-        When setupbotplayer is triggered
+        Called from `GM:PlayerInitialSpawn` when a bot player connects, before normal player setup.
 
     Parameters:
-        - client: Description
+        - client (Player): Bot player that just spawned.
 
     Returns:
         None
@@ -19281,10 +20406,10 @@ end
 
 --[[
     Purpose:
-        Hook for setupdatabase
+        Configure database connection settings before connection is established.
 
     When Called:
-        When setupdatabase is triggered
+        Called from the loader during server initialization, before the database connection is made.
 
     Parameters:
         None
@@ -19326,14 +20451,14 @@ end
 
 --[[
     Purpose:
-        Hook for setupplayermodel
+        Configure a player's model setup after character model is applied.
 
     When Called:
-        When setupplayermodel is triggered
+        Called from character setup after the player's model and skin are set, allowing additional model configuration.
 
     Parameters:
-        - client: Description
-        - character: Description
+        - client (Player): Player whose model is being set up.
+        - character (Character): Character object that was loaded.
 
     Returns:
         None
@@ -19372,16 +20497,16 @@ end
 
 --[[
     Purpose:
-        Hook for shoulddatabesaved
+        Control whether server data should be saved during shutdown.
 
     When Called:
-        When shoulddatabesaved is triggered
+        Queried from `GM:ShutDown` before saving persistent data, config, and player data.
 
     Parameters:
         None
 
     Returns:
-        None
+        boolean|nil - Return false to prevent data saving, nil or any other value to allow saving.
 
     Realm:
         Server
@@ -19417,16 +20542,16 @@ end
 
 --[[
     Purpose:
-        Hook for shoulddeletesaveditems
+        Control whether saved items should be deleted when their owner's character data is missing.
 
     When Called:
-        When shoulddeletesaveditems is triggered
+        Queried from `GM:LoadData` when processing item persistence and orphaned items are detected.
 
     Parameters:
         None
 
     Returns:
-        None
+        boolean|nil - Return true to delete orphaned items, nil or false to keep them.
 
     Realm:
         Server
@@ -19462,18 +20587,18 @@ end
 
 --[[
     Purpose:
-        Hook for storagecantransferitem
+        Control whether a player can transfer an item from storage.
 
     When Called:
-        When storagecantransferitem is triggered
+        Queried from the storage netcall handler when a player attempts to transfer an item from storage inventory.
 
     Parameters:
-        - client: Description
-        - storage: Description
-        - item: Description
+        - client (Player): Player attempting the transfer.
+        - storage (Entity): Storage entity containing the item.
+        - item (Item): Item object being transferred.
 
     Returns:
-        None
+        boolean|nil - Return false to block the transfer, nil or true to allow.
 
     Realm:
         Server
@@ -19509,14 +20634,14 @@ end
 
 --[[
     Purpose:
-        Hook for storageentityremoved
+        React when a storage entity is removed and its inventory is deleted.
 
     When Called:
-        When storageentityremoved is triggered
+        Called from the storage entity's `deleteInventory` method after the inventory is deleted, unless `liaForceDelete` is set.
 
     Parameters:
-        - self: Description
-        - inventory: Description
+        - self (Entity): Storage entity that was removed.
+        - inventory (Inventory): Inventory instance that was deleted.
 
     Returns:
         None
@@ -19555,15 +20680,15 @@ end
 
 --[[
     Purpose:
-        Hook for storageinventoryset
+        React when an inventory is assigned to a storage entity.
 
     When Called:
-        When storageinventoryset is triggered
+        Called from storage initialization functions after an inventory instance is created and assigned to the entity, or from the storage entity's `setInventory` method.
 
     Parameters:
-        - entity: Description
-        - inventory: Description
-        - isCar: Description
+        - entity (Entity): Storage entity receiving the inventory.
+        - inventory (Inventory): Inventory instance being assigned.
+        - isCar (boolean): Whether the entity is a vehicle.
 
     Returns:
         None
@@ -19602,10 +20727,10 @@ end
 
 --[[
     Purpose:
-        Hook for storageitemremoved
+        React when an item is removed from storage and the storage data needs to be saved.
 
     When Called:
-        When storageitemremoved is triggered
+        Called from the storage module's `StorageItemRemoved` method after an item is removed. Note: This appears to be a module function, not a hook that is run.
 
     Parameters:
         None
@@ -19647,20 +20772,20 @@ end
 
 --[[
     Purpose:
-        Hook for storageopen
+        React when a player opens a storage inventory.
 
     When Called:
-        When storageopen is triggered
+        Called from the storage netcall handler on the client when a player opens storage (including vehicle trunks).
 
     Parameters:
-        - storage: Description
-        - isCar: Description
+        - storage (Entity|Inventory): Storage entity or inventory instance being opened.
+        - isCar (boolean): Whether the storage is a vehicle trunk.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -19693,14 +20818,14 @@ end
 
 --[[
     Purpose:
-        Hook for storagerestored
+        React when a storage entity's inventory is restored from persistence.
 
     When Called:
-        When storagerestored is triggered
+        Called from the storage module after an inventory is loaded by ID and assigned to a storage entity during map load.
 
     Parameters:
-        - ent: Description
-        - inventory: Description
+        - ent (Entity): Storage entity that received the inventory.
+        - inventory (Inventory): Inventory instance that was restored.
 
     Returns:
         None
@@ -19739,13 +20864,13 @@ end
 
 --[[
     Purpose:
-        Hook for storespawns
+        React when spawn points are stored to persistence.
 
     When Called:
-        When storespawns is triggered
+        Called from the spawns module's `StoreSpawns` method after spawn data is saved. Note: This appears to be a module function, not a hook that is run.
 
     Parameters:
-        - spawns: Description
+        - spawns (table): Table containing faction spawn data.
 
     Returns:
         None
@@ -19784,13 +20909,13 @@ end
 
 --[[
     Purpose:
-        Hook for synccharlist
+        React when a player's character list is synchronized to the client.
 
     When Called:
-        When synccharlist is triggered
+        Called from the mainmenu module's `SyncCharList` method after the character list network message is sent. Note: This appears to be a module function, not a hook that is run.
 
     Parameters:
-        - client: Description
+        - client (Player): Player whose character list was synchronized.
 
     Returns:
         None
@@ -19829,15 +20954,15 @@ end
 
 --[[
     Purpose:
-        Hook for ticketsystemclaim
+        React when a staff member claims a ticket.
 
     When Called:
-        When ticketsystemclaim is triggered
+        Called from the ticket system netcall handler after a staff member successfully claims a ticket and before `OnTicketClaimed` fires.
 
     Parameters:
-        - client: Description
-        - requester: Description
-        - ticketMessage: Description
+        - client (Player): Staff member who claimed the ticket.
+        - requester (Player): Player who created the ticket.
+        - ticketMessage (string): Original ticket message.
 
     Returns:
         None
@@ -19876,15 +21001,15 @@ end
 
 --[[
     Purpose:
-        Hook for ticketsystemclose
+        React when a ticket is closed by a staff member.
 
     When Called:
-        When ticketsystemclose is triggered
+        Called from the ticket system netcall handler after a ticket is closed and before `OnTicketClosed` fires.
 
     Parameters:
-        - client: Description
-        - requester: Description
-        - ticketMessage: Description
+        - client (Player): Staff member who closed the ticket.
+        - requester (Player): Player who created the ticket.
+        - ticketMessage (string): Original ticket message.
 
     Returns:
         None
@@ -19923,14 +21048,14 @@ end
 
 --[[
     Purpose:
-        Hook for ticketsystemcreated
+        React when a new ticket is created by a player.
 
     When Called:
-        When ticketsystemcreated is triggered
+        Called from the administration module's `SendPopup` function after the ticket popup is sent to staff and before `OnTicketCreated` fires.
 
     Parameters:
-        - noob: Description
-        - message: Description
+        - noob (Player): Player who created the ticket.
+        - message (string): Ticket message content.
 
     Returns:
         None
@@ -19969,15 +21094,15 @@ end
 
 --[[
     Purpose:
-        Hook for togglelock
+        React when a door or vehicle lock state is toggled.
 
     When Called:
-        When togglelock is triggered
+        Called from the doors module's `ToggleLock` method after the lock state is changed. Note: This appears to be a module function, not a hook that is run. The actual hook that fires is `DoorLockToggled`.
 
     Parameters:
-        - client: Description
-        - door: Description
-        - state: Description
+        - client (Player): Player who toggled the lock.
+        - door (Entity): Door or vehicle entity.
+        - state (boolean): New lock state (true = locked, false = unlocked).
 
     Returns:
         None
@@ -20016,19 +21141,19 @@ end
 
 --[[
     Purpose:
-        Hook for transferitem
+        React when an item is transferred between inventories.
 
     When Called:
-        When transferitem is triggered
+        Called from the storage module's `TransferItem` method on the client after an item transfer is initiated. Note: This appears to be a module function, not a hook that is run.
 
     Parameters:
-        - itemID: Description
+        - itemID (number): Item ID being transferred.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20061,13 +21186,13 @@ end
 
 --[[
     Purpose:
-        Hook for updateentitypersistence
+        Signal that an entity's persistence data should be updated.
 
     When Called:
-        When updateentitypersistence is triggered
+        Called from vendor and storage modules when entity data changes and needs to be saved to the database.
 
     Parameters:
-        - ent: Description
+        - ent (Entity): Entity whose persistence data should be updated.
 
     Returns:
         None
@@ -20106,21 +21231,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendorclassupdated
+        React when a vendor's class access is updated.
 
     When Called:
-        When vendorclassupdated is triggered
+        Called from the vendor netcall handler on the client when a class is allowed or denied access to the vendor.
 
     Parameters:
-        - vendor: Description
-        - id: Description
-        - allowed: Description
+        - vendor (Entity): Vendor entity being edited.
+        - id (number): Class ID that was updated.
+        - allowed (boolean): Whether the class is now allowed access.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20153,20 +21278,20 @@ end
 
 --[[
     Purpose:
-        Hook for vendoredited
+        React when a vendor property is edited.
 
     When Called:
-        When vendoredited is triggered
+        Called from the vendor netcall handler on the client when a vendor property is changed (name, description, etc).
 
     Parameters:
-        - liaVendorEnt: Description
-        - key: Description
+        - liaVendorEnt (Entity): Vendor entity being edited.
+        - key (string): Property key that was modified.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20199,21 +21324,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendorfactionupdated
+        React when a vendor's faction access is updated.
 
     When Called:
-        When vendorfactionupdated is triggered
+        Called from the vendor netcall handler on the client when a faction is allowed or denied access to the vendor.
 
     Parameters:
-        - vendor: Description
-        - id: Description
-        - allowed: Description
+        - vendor (Entity): Vendor entity being edited.
+        - id (number): Faction ID that was updated.
+        - allowed (boolean): Whether the faction is now allowed access.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20246,21 +21371,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendoritemmaxstockupdated
+        React when a vendor item's maximum stock is updated.
 
     When Called:
-        When vendoritemmaxstockupdated is triggered
+        Called from the vendor netcall handler on the client when an item's maximum stock value is changed.
 
     Parameters:
-        - vendor: Description
-        - itemType: Description
-        - value: Description
+        - vendor (Entity): Vendor entity being edited.
+        - itemType (string): Item unique ID whose max stock was updated.
+        - value (number|nil): New maximum stock value, or nil if unlimited.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20293,21 +21418,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendoritemmodeupdated
+        React when a vendor item's mode is updated.
 
     When Called:
-        When vendoritemmodeupdated is triggered
+        Called from the vendor netcall handler on the client when an item's vendor mode is changed (buy/sell/both).
 
     Parameters:
-        - vendor: Description
-        - itemType: Description
-        - value: Description
+        - vendor (Entity): Vendor entity being edited.
+        - itemType (string): Item unique ID whose mode was updated.
+        - value (number|nil): New vendor mode value.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20340,21 +21465,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendoritempriceupdated
+        React when a vendor item's price is updated.
 
     When Called:
-        When vendoritempriceupdated is triggered
+        Called from the vendor netcall handler on the client when an item's price is changed.
 
     Parameters:
-        - vendor: Description
-        - itemType: Description
-        - value: Description
+        - vendor (Entity): Vendor entity being edited.
+        - itemType (string): Item unique ID whose price was updated.
+        - value (number|nil): New price value, or nil for default.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20387,21 +21512,21 @@ end
 
 --[[
     Purpose:
-        Hook for vendoritemstockupdated
+        React when a vendor item's stock is updated.
 
     When Called:
-        When vendoritemstockupdated is triggered
+        Called from the vendor netcall handler on the client when an item's stock count is changed.
 
     Parameters:
-        - vendor: Description
-        - itemType: Description
-        - value: Description
+        - vendor (Entity): Vendor entity being edited.
+        - itemType (string): Item unique ID whose stock was updated.
+        - value (number): New stock value.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20434,19 +21559,19 @@ end
 
 --[[
     Purpose:
-        Hook for vendoropened
+        React when a vendor menu is opened.
 
     When Called:
-        When vendoropened is triggered
+        Called from the vendor netcall handler on the client when a player opens a vendor's menu.
 
     Parameters:
-        - vendor: Description
+        - vendor (Entity): Vendor entity that was opened.
 
     Returns:
         None
 
     Realm:
-        Server
+        Client
 
     Example Usage:
 
@@ -20479,16 +21604,16 @@ end
 
 --[[
     Purpose:
-        Hook for vendortradeevent
+        React when a player initiates a trade with a vendor.
 
     When Called:
-        When vendortradeevent is triggered
+        Called from the vendor netcall handler on the server when a player attempts to buy or sell an item from/to a vendor, after access checks pass.
 
     Parameters:
-        - client: Description
-        - vendor: Description
-        - itemType: Description
-        - isSellingToVendor: Description
+        - client (Player): Player attempting the trade.
+        - vendor (Entity): Vendor entity being traded with.
+        - itemType (string): Item unique ID being traded.
+        - isSellingToVendor (boolean): Whether the player is selling to the vendor (true) or buying (false).
 
     Returns:
         None
@@ -20527,18 +21652,18 @@ end
 
 --[[
     Purpose:
-        Hook for warningissued
+        React when a warning is issued to a player.
 
     When Called:
-        When warningissued is triggered
+        Called from the warning command handlers after a warning is successfully added to the database.
 
     Parameters:
-        - client: Description
-        - target: Description
-        - reason: Description
-        - count: Description
-        - warnerSteamID: Description
-        - warnerName: Description
+        - client (Player): Administrator who issued the warning.
+        - target (Player): Player who received the warning.
+        - reason (string): Warning reason message.
+        - count (number): Total number of warnings the target now has.
+        - warnerSteamID (string): Steam ID of the administrator who issued the warning.
+        - targetSteamID (string): Steam ID of the player who received the warning.
 
     Returns:
         None
@@ -20577,18 +21702,16 @@ end
 
 --[[
     Purpose:
-        Hook for warningremoved
+        React when a warning is removed from a player's record.
 
     When Called:
-        When warningremoved is triggered
+        Called from the warning removal netcall handler after a warning is successfully deleted from the database.
 
     Parameters:
-        - client: Description
-        - targetClient: Description
-        - reason: Description
-        - count: Description
-        - warnerSteamID: Description
-        - warnerName: Description
+        - client (Player): Administrator who removed the warning.
+        - targetClient (Player): Player whose warning was removed.
+        - warnData (table): Table containing warning information (reason, admin, adminSteamID, targetSteamID).
+        - warnIndex (number): Index of the warning that was removed.
 
     Returns:
         None
