@@ -14245,25 +14245,104 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnItemCreated", "MyAddon", function(itemTable, self)
-        -- Add your code here
+    -- Simple: Log item creation
+    hook.Add("OnItemCreated", "ItemCreationLogger", function(itemTable, self)
+        print("Item created: " .. itemTable.name .. " (" .. itemTable.uniqueID .. ")")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnItemCreated", "MyAddon", function(itemTable, self)
-        -- Add your code here
+    -- Medium: Initialize item properties based on type
+    hook.Add("OnItemCreated", "ItemInitializer", function(itemTable, self)
+        -- Set default properties for different item types
+        if itemTable.category == "weapons" then
+            -- Initialize weapon durability
+            itemTable:setData("durability", 100)
+            itemTable:setData("maxDurability", 100)
+        elseif itemTable.category == "food" then
+            -- Set expiration time for food items
+            itemTable:setData("created", os.time())
+            itemTable:setData("expires", os.time() + (24 * 60 * 60)) -- 24 hours
+        elseif itemTable.category == "containers" then
+            -- Initialize container inventory
+            itemTable:setData("inventory", {})
+            itemTable:setData("maxWeight", itemTable.maxWeight or 10)
+        end
+
+        -- Log creation for tracking
+        lia.log.add(nil, "item_created", itemTable.name, itemTable.uniqueID)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnItemCreated", "MyAddon", function(itemTable, self)
-        -- Add your code here
+    -- High: Advanced item creation with validation and custom logic
+    hook.Add("OnItemCreated", "AdvancedItemSystem", function(itemTable, self)
+        -- Validate item data
+        if not itemTable.uniqueID or not itemTable.name then
+            ErrorNoHalt("Invalid item created: missing uniqueID or name\n")
+            return
+        end
+
+        -- Apply rarity-based modifiers
+        local rarityMultipliers = {
+            common = 1.0,
+            uncommon = 1.2,
+            rare = 1.5,
+            epic = 2.0,
+            legendary = 3.0
+        }
+
+        local rarity = itemTable:getData("rarity", "common")
+        if rarityMultipliers[rarity] then
+            -- Modify price based on rarity
+            if itemTable.price then
+                itemTable.price = math.floor(itemTable.price * rarityMultipliers[rarity])
+            end
+
+            -- Add special properties for rare items
+            if rarity == "legendary" then
+                itemTable:setData("soulbound", true)
+                itemTable:setData("untradable", true)
+            end
+        end
+
+        -- Check for unique item limits
+        if itemTable.unique then
+            lia.db.selectOne({"COUNT(*) as count"}, "lia_items", "uniqueID = " .. lia.db.convertDataType(itemTable.uniqueID)):next(function(result)
+                local count = result and result.count or 0
+                if count >= (itemTable.maxUnique or 1) then
+                    -- Destroy excess unique items
+                    itemTable:remove()
+                    lia.log.add(nil, "unique_item_limit_exceeded", itemTable.name, itemTable.uniqueID)
+                end
+            end)
+        end
+
+        -- Apply faction-specific modifications
+        local owner = itemTable:getOwner()
+        if owner and owner:getChar() then
+            local faction = owner:getChar():getFaction()
+            if faction == FACTION_CITIZEN then
+                -- Citizens get slightly better prices
+                itemTable.price = math.floor(itemTable.price * 1.1)
+            elseif faction == FACTION_ADMIN then
+                -- Admins get admin-only items
+                if itemTable.adminOnly then
+                    itemTable:setData("adminSpawned", true)
+                end
+            end
+        end
+
+        -- Track item creation statistics
+        local stats = lia.data.get("itemStats", {})
+        stats.totalCreated = (stats.totalCreated or 0) + 1
+        stats.byType = stats.byType or {}
+        stats.byType[itemTable.category or "misc"] = (stats.byType[itemTable.category or "misc"] or 0) + 1
+        lia.data.set("itemStats", stats)
+
+        lia.log.add(nil, "item_created_advanced", itemTable.name, itemTable.uniqueID, rarity, itemTable.price)
     end)
     ```
 ]]
@@ -16732,25 +16811,131 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnSavedItemLoaded", "MyAddon", function(loadedItems)
-        -- Add your code here
+    -- Simple: Log loaded items
+    hook.Add("OnSavedItemLoaded", "ItemLoadLogger", function(loadedItems)
+        print("Loaded " .. table.Count(loadedItems) .. " saved items")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnSavedItemLoaded", "MyAddon", function(loadedItems)
-        -- Add your code here
+    -- Medium: Validate and initialize loaded items
+    hook.Add("OnSavedItemLoaded", "ItemValidator", function(loadedItems)
+        local validCount = 0
+        local invalidCount = 0
+
+        for id, itemData in pairs(loadedItems) do
+            -- Validate item data
+            if itemData.uniqueID and lia.item.list[itemData.uniqueID] then
+                validCount = validCount + 1
+
+                -- Set default values for missing properties
+                if not itemData.data then
+                    itemData.data = {}
+                end
+
+                -- Initialize durability for weapons
+                if itemData.category == "weapons" and not itemData.data.durability then
+                    itemData.data.durability = 100
+                    itemData.data.maxDurability = 100
+                end
+
+                -- Set expiration for food items
+                if itemData.category == "food" and not itemData.data.expires then
+                    itemData.data.created = os.time()
+                    itemData.data.expires = os.time() + (24 * 60 * 60) -- 24 hours
+                end
+            else
+                invalidCount = invalidCount + 1
+                lia.log.add(nil, "invalid_item_loaded", id, itemData.uniqueID or "unknown")
+            end
+        end
+
+        print("Item loading complete: " .. validCount .. " valid, " .. invalidCount .. " invalid")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnSavedItemLoaded", "MyAddon", function(loadedItems)
-        -- Add your code here
+    -- High: Advanced item loading with integrity checks and statistics
+    hook.Add("OnSavedItemLoaded", "AdvancedItemLoader", function(loadedItems)
+        local stats = {
+            total = table.Count(loadedItems),
+            valid = 0,
+            invalid = 0,
+            byCategory = {},
+            byRarity = {},
+            corrupted = 0,
+            repaired = 0
+        }
+
+        -- Track loading performance
+        local startTime = SysTime()
+
+        for id, itemData in pairs(loadedItems) do
+            -- Integrity checks
+            if not itemData.uniqueID then
+                stats.corrupted = stats.corrupted + 1
+                lia.log.add(nil, "corrupted_item_data", "missing uniqueID", id)
+                goto continue
+            end
+
+            local itemDef = lia.item.list[itemData.uniqueID]
+            if not itemDef then
+                stats.invalid = stats.invalid + 1
+                lia.log.add(nil, "unknown_item_type", itemData.uniqueID, id)
+                goto continue
+            end
+
+            stats.valid = stats.valid + 1
+
+            -- Category statistics
+            local category = itemDef.category or "misc"
+            stats.byCategory[category] = (stats.byCategory[category] or 0) + 1
+
+            -- Rarity statistics
+            local rarity = itemData.data and itemData.data.rarity or "common"
+            stats.byRarity[rarity] = (stats.byRarity[rarity] or 0) + 1
+
+            -- Auto-repair common issues
+            if itemDef.category == "weapons" then
+                if not itemData.data then itemData.data = {} end
+                if not itemData.data.durability then
+                    itemData.data.durability = itemDef.durability or 100
+                    itemData.data.maxDurability = itemDef.durability or 100
+                    stats.repaired = stats.repaired + 1
+                end
+            end
+
+            -- Validate item properties against definition
+            if itemData.price and itemDef.price and math.abs(itemData.price - itemDef.price) > itemDef.price * 0.5 then
+                lia.log.add(nil, "suspicious_item_price", itemData.uniqueID, itemData.price, itemDef.price)
+            end
+
+            ::continue::
+        end
+
+        local loadTime = SysTime() - startTime
+
+        -- Log comprehensive statistics
+        lia.log.add(nil, "item_loading_complete",
+            "total:" .. stats.total,
+            "valid:" .. stats.valid,
+            "invalid:" .. stats.invalid,
+            "corrupted:" .. stats.corrupted,
+            "repaired:" .. stats.repaired,
+            "time:" .. string.format("%.3f", loadTime) .. "s"
+        )
+
+        -- Store loading statistics for monitoring
+        local globalStats = lia.data.get("itemLoadingStats", {})
+        globalStats.totalLoads = (globalStats.totalLoads or 0) + 1
+        globalStats.totalItemsLoaded = (globalStats.totalItemsLoaded or 0) + stats.valid
+        globalStats.averageLoadTime = ((globalStats.averageLoadTime or 0) * (globalStats.totalLoads - 1) + loadTime) / globalStats.totalLoads
+        lia.data.set("itemLoadingStats", globalStats)
+
+        print(string.format("Advanced item loading: %d valid, %d invalid, %d corrupted, %.3fs",
+            stats.valid, stats.invalid, stats.corrupted, loadTime))
     end)
     ```
 ]]
@@ -17546,25 +17731,157 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnUsergroupCreated", "MyAddon", function(groupName, groupData)
-        -- Add your code here
+    -- Simple: Log usergroup creation
+    hook.Add("OnUsergroupCreated", "UsergroupLogger", function(groupName, groupData)
+        print("New usergroup created: " .. groupName)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnUsergroupCreated", "MyAddon", function(groupName, groupData)
-        -- Add your code here
+    -- Medium: Set up default permissions and validate group data
+    hook.Add("OnUsergroupCreated", "UsergroupInitializer", function(groupName, groupData)
+        -- Validate group data
+        if not groupData then
+            groupData = {}
+        end
+
+        -- Set default permissions if not specified
+        if not groupData.permissions then
+            groupData.permissions = {
+                "basic_commands",
+                "chat",
+                "use_doors"
+            }
+        end
+
+        -- Set default properties
+        groupData.created = os.time()
+        groupData.memberCount = 0
+        groupData.color = groupData.color or Color(255, 255, 255)
+
+        -- Add basic flags
+        if not groupData.flags then
+            groupData.flags = "u" -- Basic user flag
+        end
+
+        -- Log creation
+        lia.log.add(nil, "usergroup_created", groupName, table.concat(groupData.permissions or {}, ", "))
+
+        -- Notify administrators
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("manageGroups") then
+                ply:notify("New usergroup created: " .. groupName)
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnUsergroupCreated", "MyAddon", function(groupName, groupData)
-        -- Add your code here
+    -- High: Advanced usergroup setup with inheritance and permission management
+    hook.Add("OnUsergroupCreated", "AdvancedUsergroupManager", function(groupName, groupData)
+        if not groupData then
+            lia.log.add(nil, "usergroup_creation_failed", "missing_groupData", groupName)
+            return
+        end
+
+        -- Handle permission inheritance
+        if groupData.inherits then
+            local parentGroup = lia.usergroups.get(groupData.inherits)
+            if parentGroup then
+                -- Inherit permissions
+                groupData.permissions = groupData.permissions or {}
+                for _, perm in ipairs(parentGroup.permissions or {}) do
+                    if not table.HasValue(groupData.permissions, perm) then
+                        table.insert(groupData.permissions, perm)
+                    end
+                end
+
+                -- Inherit other properties if not specified
+                groupData.color = groupData.color or parentGroup.color
+                groupData.flags = groupData.flags or parentGroup.flags
+                groupData.immunity = groupData.immunity or (parentGroup.immunity and parentGroup.immunity + 1) or 1
+            else
+                lia.log.add(nil, "usergroup_inheritance_failed", "parent_not_found", groupData.inherits)
+            end
+        end
+
+        -- Set up group metadata
+        groupData.created = os.time()
+        groupData.createdBy = "system" -- Could be set to current admin
+        groupData.version = 1
+        groupData.memberCount = 0
+
+        -- Validate permissions exist
+        local validPermissions = {}
+        local invalidPermissions = {}
+        for _, perm in ipairs(groupData.permissions or {}) do
+            if lia.permissions.get(perm) then
+                table.insert(validPermissions, perm)
+            else
+                table.insert(invalidPermissions, perm)
+            end
+        end
+
+        groupData.permissions = validPermissions
+
+        -- Log invalid permissions
+        if #invalidPermissions > 0 then
+            lia.log.add(nil, "usergroup_invalid_permissions", groupName, table.concat(invalidPermissions, ", "))
+        end
+
+        -- Set up group hierarchy and restrictions
+        if groupData.maxMembers then
+            groupData.isLimited = true
+        end
+
+        -- Create default channels for group communication
+        if groupData.canCreateChannels then
+            groupData.channels = groupData.channels or {}
+            table.insert(groupData.channels, groupName .. "_general")
+        end
+
+        -- Set up automatic promotion/demotion rules
+        if groupData.autoPromote then
+            groupData.promotionRules = {
+                timeInGroup = groupData.autoPromote.time or (30 * 24 * 60 * 60), -- 30 days
+                promoteTo = groupData.autoPromote.group,
+                conditions = groupData.autoPromote.conditions or {}
+            }
+        end
+
+        -- Store group statistics tracking
+        groupData.stats = {
+            totalMembers = 0,
+            peakMembers = 0,
+            createdMembers = 0,
+            removedMembers = 0,
+            lastActivity = os.time()
+        }
+
+        -- Register group with permission system
+        lia.usergroups.register(groupName, groupData)
+
+        -- Create audit trail
+        lia.db.insertTable({
+            action = "create",
+            groupName = groupName,
+            groupData = util.TableToJSON(groupData),
+            timestamp = os.time(),
+            admin = "system"
+        }, "usergroup_audit")
+
+        -- Broadcast to administrators
+        net.Start("liaUsergroupCreated")
+            net.WriteString(groupName)
+            net.WriteTable(groupData)
+        net.Send(lia.util.getAdmins())
+
+        lia.log.add(nil, "usergroup_created_advanced", groupName,
+            "permissions:" .. #validPermissions,
+            "inherited:" .. (groupData.inherits and "yes" or "no"),
+            "limited:" .. (groupData.isLimited and "yes" or "no"))
     end)
     ```
 ]]
@@ -17592,25 +17909,158 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnUsergroupPermissionsChanged", "MyAddon", function(groupName, permissions)
-        -- Add your code here
+    -- Simple: Log permission changes
+    hook.Add("OnUsergroupPermissionsChanged", "PermissionLogger", function(groupName, permissions)
+        print("Permissions changed for group: " .. groupName)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnUsergroupPermissionsChanged", "MyAddon", function(groupName, permissions)
-        -- Add your code here
+    -- Medium: Validate permissions and notify affected users
+    hook.Add("OnUsergroupPermissionsChanged", "PermissionValidator", function(groupName, permissions)
+        -- Validate all permissions exist
+        local validPerms = {}
+        local invalidPerms = {}
+
+        for _, perm in ipairs(permissions) do
+            if lia.permissions.get(perm) then
+                table.insert(validPerms, perm)
+            else
+                table.insert(invalidPerms, perm)
+            end
+        end
+
+        -- Log invalid permissions
+        if #invalidPerms > 0 then
+            lia.log.add(nil, "invalid_permissions_granted", groupName, table.concat(invalidPerms, ", "))
+        end
+
+        -- Notify online members of the group
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == groupName then
+                ply:notify("Your group permissions have been updated")
+                -- Force permission refresh
+                ply:loadPermissions()
+            end
+        end
+
+        -- Log the change
+        lia.log.add(nil, "usergroup_permissions_changed", groupName, #validPerms .. " permissions")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnUsergroupPermissionsChanged", "MyAddon", function(groupName, permissions)
-        -- Add your code here
+    -- High: Advanced permission management with cascading updates and audit trails
+    hook.Add("OnUsergroupPermissionsChanged", "AdvancedPermissionManager", function(groupName, permissions)
+        local groupData = lia.usergroups.get(groupName)
+        if not groupData then
+            lia.log.add(nil, "permission_change_failed", "group_not_found", groupName)
+            return
+        end
+
+        -- Store old permissions for comparison
+        local oldPermissions = groupData.permissions or {}
+        local addedPerms = {}
+        local removedPerms = {}
+
+        -- Find added permissions
+        for _, perm in ipairs(permissions) do
+            if not table.HasValue(oldPermissions, perm) then
+                table.insert(addedPerms, perm)
+            end
+        end
+
+        -- Find removed permissions
+        for _, perm in ipairs(oldPermissions) do
+            if not table.HasValue(permissions, perm) then
+                table.insert(removedPerms, perm)
+            end
+        end
+
+        -- Validate permissions
+        local validPerms = {}
+        local invalidPerms = {}
+        for _, perm in ipairs(permissions) do
+            if lia.permissions.get(perm) then
+                table.insert(validPerms, perm)
+            else
+                table.insert(invalidPerms, perm)
+            end
+        end
+
+        -- Handle child groups (inheritance)
+        if groupData.children then
+            for _, childGroup in ipairs(groupData.children) do
+                local childData = lia.usergroups.get(childGroup)
+                if childData and childData.inherits == groupName then
+                    -- Update child group permissions
+                    childData.permissions = childData.permissions or {}
+                    -- Add new permissions to children
+                    for _, added in ipairs(addedPerms) do
+                        if not table.HasValue(childData.permissions, added) then
+                            table.insert(childData.permissions, added)
+                        end
+                    end
+                    -- Remove permissions from children if they don't have explicit override
+                    for _, removed in ipairs(removedPerms) do
+                        if table.HasValue(childData.permissions, removed) and not childData.permissionOverrides then
+                            table.remove(childData.permissions, table.KeyFromValue(childData.permissions, removed))
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Update group data
+        groupData.permissions = validPerms
+        groupData.lastPermissionUpdate = os.time()
+
+        -- Create audit entry
+        lia.db.insertTable({
+            groupName = groupName,
+            oldPermissions = util.TableToJSON(oldPermissions),
+            newPermissions = util.TableToJSON(validPerms),
+            addedPermissions = table.concat(addedPerms, ", "),
+            removedPermissions = table.concat(removedPerms, ", "),
+            invalidPermissions = table.concat(invalidPerms, ", "),
+            changedBy = "system", -- Could be current admin
+            timestamp = os.time()
+        }, "permission_audit")
+
+        -- Notify online administrators
+        net.Start("liaPermissionChange")
+            net.WriteString(groupName)
+            net.WriteTable(addedPerms)
+            net.WriteTable(removedPerms)
+        net.Send(lia.util.getAdmins())
+
+        -- Refresh permissions for all online players in this group
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == groupName then
+                ply:loadPermissions()
+                ply:notify("Your permissions have been updated by an administrator")
+            end
+        end
+
+        -- Handle special permission changes
+        if table.HasValue(addedPerms, "admin") then
+            lia.log.add(nil, "admin_permission_granted", groupName)
+        elseif table.HasValue(removedPerms, "admin") then
+            lia.log.add(nil, "admin_permission_revoked", groupName)
+        end
+
+        -- Update permission statistics
+        local stats = lia.data.get("permissionStats", {})
+        stats.totalChanges = (stats.totalChanges or 0) + 1
+        stats.permissionsAdded = (stats.permissionsAdded or 0) + #addedPerms
+        stats.permissionsRemoved = (stats.permissionsRemoved or 0) + #removedPerms
+        stats.invalidPermissions = (stats.invalidPermissions or 0) + #invalidPerms
+        lia.data.set("permissionStats", stats)
+
+        lia.log.add(nil, "usergroup_permissions_changed_advanced", groupName,
+            "added:" .. #addedPerms, "removed:" .. #removedPerms, "invalid:" .. #invalidPerms)
     end)
     ```
 ]]
@@ -17637,25 +18087,125 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnUsergroupRemoved", "MyAddon", function(groupName)
-        -- Add your code here
+    -- Simple: Log usergroup removal
+    hook.Add("OnUsergroupRemoved", "UsergroupRemovalLogger", function(groupName)
+        print("Usergroup removed: " .. groupName)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnUsergroupRemoved", "MyAddon", function(groupName)
-        -- Add your code here
+    -- Medium: Reassign members and clean up references
+    hook.Add("OnUsergroupRemoved", "UsergroupCleanup", function(groupName)
+        -- Find all online players in this group and reassign them
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == groupName then
+                -- Reassign to default group
+                ply:SetUserGroup("user")
+                ply:notify("Your usergroup '" .. groupName .. "' was removed. You have been reassigned to 'user'.")
+                ply:loadPermissions()
+            end
+        end
+
+        -- Clean up any references in other systems
+        lia.log.add(nil, "usergroup_removed", groupName, "Members reassigned to default group")
+
+        -- Notify administrators
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("manageGroups") then
+                ply:notify("Usergroup '" .. groupName .. "' has been removed")
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnUsergroupRemoved", "MyAddon", function(groupName)
-        -- Add your code here
+    -- High: Advanced usergroup removal with data archiving and member migration
+    hook.Add("OnUsergroupRemoved", "AdvancedUsergroupRemoval", function(groupName)
+        local groupData = lia.usergroups.get(groupName)
+        if not groupData then
+            lia.log.add(nil, "usergroup_removal_failed", "group_not_found", groupName)
+            return
+        end
+
+        -- Archive group data before removal
+        lia.db.insertTable({
+            groupName = groupName,
+            groupData = util.TableToJSON(groupData),
+            removedAt = os.time(),
+            removedBy = "system", -- Could be current admin
+            memberCount = groupData.memberCount or 0
+        }, "archived_usergroups")
+
+        -- Handle member reassignment with smart migration
+        local membersReassigned = 0
+        local defaultGroup = "user"
+
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == groupName then
+                -- Try to find the best replacement group
+                local replacementGroup = defaultGroup
+
+                -- If they were an admin, keep admin privileges but move to a different admin group
+                if groupData.permissions and table.HasValue(groupData.permissions, "admin") then
+                    replacementGroup = "admin" -- Assume there's an admin group
+                end
+
+                ply:SetUserGroup(replacementGroup)
+                ply:notify("Your usergroup '" .. groupName .. "' was removed. You have been moved to '" .. replacementGroup .. "'.")
+                ply:loadPermissions()
+                membersReassigned = membersReassigned + 1
+            end
+        end
+
+        -- Handle offline members (database update)
+        -- This would require querying the database for users with this group
+        -- For now, we'll log that offline members need manual handling
+        if membersReassigned < (groupData.memberCount or 0) then
+            lia.log.add(nil, "usergroup_removal_offline_members",
+                groupName, "Some offline members may need manual reassignment")
+        end
+
+        -- Clean up inheritance references
+        for groupNameIter, groupInfo in pairs(lia.usergroups.list) do
+            if groupInfo.inherits == groupName then
+                -- Remove inheritance
+                groupInfo.inherits = nil
+                lia.log.add(nil, "inheritance_broken", groupNameIter, "Parent group '" .. groupName .. "' removed")
+            end
+        end
+
+        -- Remove group from permission cache
+        lia.usergroups.list[groupName] = nil
+
+        -- Clean up any scheduled promotions/demotions for this group
+        -- This would involve checking any promotion timers or scheduled tasks
+
+        -- Update group statistics
+        local stats = lia.data.get("groupStats", {})
+        stats.totalRemovals = (stats.totalRemovals or 0) + 1
+        stats.membersReassigned = (stats.membersReassigned or 0) + membersReassigned
+        lia.data.set("groupStats", stats)
+
+        -- Create audit trail
+        lia.db.insertTable({
+            action = "remove",
+            groupName = groupName,
+            membersReassigned = membersReassigned,
+            archived = true,
+            timestamp = os.time(),
+            admin = "system"
+        }, "usergroup_audit")
+
+        -- Notify all administrators
+        net.Start("liaUsergroupRemoved")
+            net.WriteString(groupName)
+            net.WriteUInt(membersReassigned, 16)
+        net.Send(lia.util.getAdmins())
+
+        lia.log.add(nil, "usergroup_removed_advanced", groupName,
+            "members_reassigned:" .. membersReassigned, "archived:true")
     end)
     ```
 ]]
@@ -17683,25 +18233,142 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("OnUsergroupRenamed", "MyAddon", function(oldName, newName)
-        -- Add your code here
+    -- Simple: Log usergroup renaming
+    hook.Add("OnUsergroupRenamed", "UsergroupRenameLogger", function(oldName, newName)
+        print("Usergroup renamed: " .. oldName .. " -> " .. newName)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("OnUsergroupRenamed", "MyAddon", function(oldName, newName)
-        -- Add your code here
+    -- Medium: Update references and notify members
+    hook.Add("OnUsergroupRenamed", "UsergroupRenameHandler", function(oldName, newName)
+        -- Update group data key
+        local groupData = lia.usergroups.list[oldName]
+        if groupData then
+            lia.usergroups.list[oldName] = nil
+            lia.usergroups.list[newName] = groupData
+            groupData.name = newName
+        end
+
+        -- Notify online members of the rename
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == oldName then
+                ply:notify("Your usergroup has been renamed from '" .. oldName .. "' to '" .. newName .. "'.")
+            end
+        end
+
+        -- Log the rename
+        lia.log.add(nil, "usergroup_renamed", oldName, newName)
+
+        -- Notify administrators
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("manageGroups") then
+                ply:notify("Usergroup renamed: '" .. oldName .. "' → '" .. newName .. "'")
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("OnUsergroupRenamed", "MyAddon", function(oldName, newName)
-        -- Add your code here
+    -- High: Advanced usergroup renaming with comprehensive reference updates
+    hook.Add("OnUsergroupRenamed", "AdvancedUsergroupRenamer", function(oldName, newName)
+        -- Validate the rename
+        if not lia.usergroups.list[oldName] then
+            lia.log.add(nil, "usergroup_rename_failed", "group_not_found", oldName)
+            return
+        end
+
+        if lia.usergroups.list[newName] then
+            lia.log.add(nil, "usergroup_rename_failed", "name_conflict", newName)
+            return
+        end
+
+        local groupData = lia.usergroups.list[oldName]
+
+        -- Create audit trail before making changes
+        lia.db.insertTable({
+            action = "rename",
+            oldName = oldName,
+            newName = newName,
+            groupData = util.TableToJSON(groupData),
+            timestamp = os.time(),
+            admin = "system"
+        }, "usergroup_audit")
+
+        -- Update internal references
+        lia.usergroups.list[oldName] = nil
+        lia.usergroups.list[newName] = groupData
+        groupData.name = newName
+        groupData.lastRenamed = os.time()
+
+        -- Update inheritance references
+        for groupNameIter, groupInfo in pairs(lia.usergroups.list) do
+            if groupInfo.inherits == oldName then
+                groupInfo.inherits = newName
+                lia.log.add(nil, "inheritance_updated", groupNameIter, oldName .. "->" .. newName)
+            end
+        end
+
+        -- Update child group references
+        if groupData.children then
+            for i, childName in ipairs(groupData.children) do
+                local childData = lia.usergroups.list[childName]
+                if childData and childData.parent == oldName then
+                    childData.parent = newName
+                end
+            end
+        end
+
+        -- Handle online member updates
+        local membersUpdated = 0
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUserGroup() == oldName then
+                -- Update their group (this might require a custom method)
+                ply:SetUserGroup(newName)
+                ply:notify("Your usergroup has been renamed from '" .. oldName .. "' to '" .. newName .. "'.")
+                ply:loadPermissions()
+                membersUpdated = membersUpdated + 1
+            end
+        end
+
+        -- Database updates for offline members
+        -- This would require updating any database tables that reference usergroups by name
+        -- For example: player data, logs, etc.
+
+        -- Update any scheduled tasks or timers that reference the old name
+        -- This might include promotion timers, group-specific events, etc.
+
+        -- Update external integrations (Discord roles, etc.)
+        if lia.module.get("discord") then
+            lia.module.get("discord"):updateGroupRole(oldName, newName)
+        end
+
+        -- Update group statistics
+        local stats = lia.data.get("groupStats", {})
+        stats.totalRenames = (stats.totalRenames or 0) + 1
+        stats.membersUpdated = (stats.membersUpdated or 0) + membersUpdated
+        lia.data.set("groupStats", stats)
+
+        -- Broadcast to all administrators
+        net.Start("liaUsergroupRenamed")
+            net.WriteString(oldName)
+            net.WriteString(newName)
+            net.WriteUInt(membersUpdated, 16)
+        net.Send(lia.util.getAdmins())
+
+        -- Handle any custom group data that might reference the name
+        if groupData.customData then
+            for key, value in pairs(groupData.customData) do
+                if type(value) == "string" and string.find(value, oldName) then
+                    groupData.customData[key] = string.gsub(value, oldName, newName)
+                end
+            end
+        end
+
+        lia.log.add(nil, "usergroup_renamed_advanced", oldName .. "->" .. newName,
+            "members_updated:" .. membersUpdated, "inheritance_updated:true")
     end)
     ```
 ]]
@@ -19957,25 +20624,166 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PreSalaryGive", "MyAddon", function(client, char, pay, faction, class)
-        -- Add your code here
+    -- Simple: Log salary payments
+    hook.Add("PreSalaryGive", "SalaryLogger", function(client, char, pay, faction, class)
+        print(string.format("Preparing salary payment: %s gets $%d (%s %s)",
+            client:Name(), pay, faction, class))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PreSalaryGive", "MyAddon", function(client, char, pay, faction, class)
-        -- Add your code here
+    -- Medium: Apply salary validation and basic modifications
+    hook.Add("PreSalaryGive", "SalaryValidator", function(client, char, pay, faction, class)
+        -- Validate salary amount
+        if pay <= 0 then
+            lia.log.add(client, "invalid_salary", "Non-positive salary amount: " .. pay)
+            return false -- Cancel salary
+        end
+
+        -- Check for maximum salary caps
+        local maxSalary = lia.config.get("MaxSalary", 10000)
+        if pay > maxSalary then
+            lia.log.add(client, "salary_capped", "Salary reduced from $" .. pay .. " to $" .. maxSalary)
+            pay = maxSalary
+            char:giveMoney(pay)
+            return false -- We've already given the money, cancel normal processing
+        end
+
+        -- Apply basic faction bonuses
+        if faction == "Government" then
+            local bonus = math.floor(pay * 0.1) -- 10% bonus
+            pay = pay + bonus
+            client:notifyInfo("Government bonus: +$" .. bonus)
+        end
+
+        -- Log the validated salary
+        lia.log.add(client, "salary_validated", pay, faction, class)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PreSalaryGive", "MyAddon", function(client, char, pay, faction, class)
-        -- Add your code here
+    -- High: Advanced salary processing with tax system and economy simulation
+    hook.Add("PreSalaryGive", "AdvancedSalaryProcessor", function(client, char, pay, faction, class)
+        if not char or pay <= 0 then return false end
+
+        local steamID = client:SteamID64()
+        local originalPay = pay
+
+        -- Apply progressive tax system
+        local taxRate = 0
+        local taxBrackets = {
+            {threshold = 100, rate = 0.05},   -- 5% on first $100
+            {threshold = 500, rate = 0.10},   -- 10% on $100-$500
+            {threshold = 1000, rate = 0.15},  -- 15% on $500-$1000
+            {threshold = math.huge, rate = 0.20} -- 20% on everything above $1000
+        }
+
+        local taxableAmount = pay
+        local totalTax = 0
+        local taxBreakdown = {}
+
+        for _, bracket in ipairs(taxBrackets) do
+            if taxableAmount > 0 then
+                local bracketAmount = math.min(taxableAmount, bracket.threshold)
+                local bracketTax = bracketAmount * bracket.rate
+                totalTax = totalTax + bracketTax
+                table.insert(taxBreakdown, string.format("$%.2f @ %.0f%%", bracketAmount, bracket.rate * 100))
+                taxableAmount = taxableAmount - bracketAmount
+            end
+        end
+
+        pay = pay - totalTax
+
+        -- Apply economic modifiers based on server economy
+        local economyState = lia.data.get("economyState", "normal")
+        local economyModifiers = {
+            booming = 1.15,
+            normal = 1.0,
+            recession = 0.85,
+            depression = 0.7
+        }
+
+        pay = pay * (economyModifiers[economyState] or 1.0)
+
+        -- Apply character-specific modifiers
+        local performanceBonus = char:getData("performanceBonus", 0)
+        if performanceBonus > 0 then
+            local bonus = math.floor(pay * (performanceBonus / 100))
+            pay = pay + bonus
+            client:notifyInfo("Performance bonus: +$" .. bonus)
+            char:setData("performanceBonus", 0) -- Reset after use
+        end
+
+        -- Apply faction and class bonuses
+        local factionData = lia.faction.indices[char:getFaction()]
+        if factionData and factionData.salaryMultiplier then
+            pay = pay * factionData.salaryMultiplier
+        end
+
+        local classData = lia.class.list[char:getClass()]
+        if classData and classData.salaryBonus then
+            pay = pay + classData.salaryBonus
+        end
+
+        -- Handle debt and loans
+        local debt = char:getData("debt", 0)
+        if debt > 0 then
+            local deduction = math.min(pay * 0.3, debt) -- Max 30% of salary towards debt
+            pay = pay - deduction
+            debt = debt - deduction
+            char:setData("debt", debt)
+            client:notifyInfo("Debt payment: -$" .. deduction)
+        end
+
+        -- Ensure minimum wage
+        local minimumWage = lia.config.get("MinimumWage", 50)
+        if pay < minimumWage then
+            lia.log.add(client, "minimum_wage_applied", "Salary increased from $" .. pay .. " to $" .. minimumWage)
+            pay = minimumWage
+        end
+
+        -- Update salary statistics
+        local stats = char:getData("salaryStats", {})
+        stats.totalEarned = (stats.totalEarned or 0) + pay
+        stats.totalTaxed = (stats.totalTaxed or 0) + totalTax
+        stats.lastSalary = {
+            amount = pay,
+            tax = totalTax,
+            net = pay,
+            timestamp = os.time()
+        }
+        char:setData("salaryStats", stats)
+
+        -- Create detailed salary record
+        lia.db.insertTable({
+            steamID = steamID,
+            charID = char:getID(),
+            grossPay = originalPay,
+            taxAmount = totalTax,
+            netPay = pay,
+            taxBreakdown = table.concat(taxBreakdown, ", "),
+            faction = faction,
+            class = class,
+            economyState = economyState,
+            timestamp = os.time()
+        }, "salary_records")
+
+        -- Update economy data
+        local economyData = lia.data.get("economyData", {})
+        economyData.totalSalaries = (economyData.totalSalaries or 0) + pay
+        economyData.totalTaxes = (economyData.totalTaxes or 0) + totalTax
+        economyData.salaryCount = (economyData.salaryCount or 0) + 1
+        lia.data.set("economyData", economyData)
+
+        -- Send detailed salary notification
+        client:notifyInfo(string.format("Salary: $%d (Tax: $%.2f, Net: $%d)",
+            originalPay, totalTax, pay))
+
+        -- We've handled the salary payment manually
+        char:giveMoney(pay)
+        return false -- Cancel the default salary processing
     end)
     ```
 ]]
@@ -20004,25 +20812,199 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("PreScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- Simple: Log damage events
+    hook.Add("PreScaleDamage", "DamageLogger", function(hitgroup, dmgInfo, damageScale)
+        local attacker = dmgInfo:GetAttacker()
+        local victim = dmgInfo:GetVictim()
+        print(string.format("Damage: %s -> %s (%s), Scale: %.2f",
+            IsValid(attacker) and attacker:Name() or "World",
+            IsValid(victim) and victim:Name() or "Unknown",
+            hitgroup, damageScale))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("PreScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- Medium: Apply hitgroup-based damage modifiers
+    hook.Add("PreScaleDamage", "HitgroupModifiers", function(hitgroup, dmgInfo, damageScale)
+        local victim = dmgInfo:GetVictim()
+        if not IsValid(victim) or not victim:IsPlayer() then return end
+
+        -- Apply hitgroup damage multipliers
+        local hitgroupMultipliers = {
+            [HITGROUP_HEAD] = 2.5,      -- Headshots do 2.5x damage
+            [HITGROUP_CHEST] = 1.0,     -- Chest is normal
+            [HITGROUP_STOMACH] = 1.2,   -- Stomach is slightly more vulnerable
+            [HITGROUP_LEFTARM] = 0.8,   -- Arms are less vulnerable
+            [HITGROUP_RIGHTARM] = 0.8,
+            [HITGROUP_LEFTLEG] = 0.7,   -- Legs are much less vulnerable
+            [HITGROUP_RIGHTLEG] = 0.7,
+            [HITGROUP_GEAR] = 0.5       -- Gear takes minimal damage
+        }
+
+        local multiplier = hitgroupMultipliers[hitgroup] or 1.0
+        dmgInfo:ScaleDamage(multiplier)
+
+        -- Log significant damage
+        local finalDamage = dmgInfo:GetDamage()
+        if finalDamage > 50 then
+            lia.log.add(nil, "significant_damage", hitgroup, finalDamage, multiplier)
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("PreScaleDamage", "MyAddon", function(hitgroup, dmgInfo, damageScale)
-        -- Add your code here
+    -- High: Advanced damage system with armor, resistances, and special effects
+    hook.Add("PreScaleDamage", "AdvancedDamageSystem", function(hitgroup, dmgInfo, damageScale)
+        local victim = dmgInfo:GetVictim()
+        local attacker = dmgInfo:GetAttacker()
+        local damage = dmgInfo:GetDamage()
+        local damageType = dmgInfo:GetDamageType()
+
+        if not IsValid(victim) then return end
+
+        -- Initialize damage tracking if needed
+        if not victim.damageTracker then
+            victim.damageTracker = {
+                lastDamage = 0,
+                damageStreak = 0,
+                lastAttacker = nil,
+                resistanceBuildup = {}
+            }
+        end
+
+        -- Apply armor calculations
+        if victim:IsPlayer() then
+            local char = victim:getChar()
+            if char then
+                local armorValue = char:getData("armor", 0)
+                local armorEffectiveness = 0.3 -- 30% damage reduction per armor point
+
+                if armorValue > 0 then
+                    local reduction = math.min(armorValue * armorEffectiveness, damage * 0.8) -- Max 80% reduction
+                    damage = damage - reduction
+
+                    -- Degrade armor
+                    local armorDamage = reduction / armorEffectiveness
+                    armorValue = math.max(0, armorValue - armorDamage)
+                    char:setData("armor", armorValue)
+
+                    dmgInfo:SetDamage(damage)
+                    victim:notifyInfo(string.format("Armor absorbed %.1f damage", reduction))
+                end
+            end
+        end
+
+        -- Apply damage type resistances
+        local resistances = victim:getData("damageResistances", {})
+        if resistances[damageType] then
+            local resistance = resistances[damageType]
+            damage = damage * (1 - resistance)
+            dmgInfo:SetDamage(damage)
+        end
+
+        -- Handle critical hits
+        if IsValid(attacker) and attacker:IsPlayer() then
+            local critChance = attacker:getData("critChance", 0.05) -- 5% base crit chance
+            local critMultiplier = attacker:getData("critMultiplier", 1.5) -- 50% bonus damage
+
+            if math.random() < critChance then
+                damage = damage * critMultiplier
+                dmgInfo:SetDamage(damage)
+
+                -- Visual effect for critical hit
+                net.Start("liaCriticalHit")
+                    net.WriteEntity(victim)
+                    net.WriteFloat(damage)
+                net.Send(attacker)
+
+                attacker:notifyInfo("Critical hit!")
+                victim:notifyWarning("Critical hit received!")
+            end
+        end
+
+        -- Apply faction-based damage modifiers
+        if IsValid(attacker) and attacker:IsPlayer() and victim:IsPlayer() then
+            local attackerChar = attacker:getChar()
+            local victimChar = victim:getChar()
+
+            if attackerChar and victimChar then
+                local attackerFaction = attackerChar:getFaction()
+                local victimFaction = victimChar:getFaction()
+
+                -- Check for faction alliances/reputations
+                local factionRelations = lia.data.get("factionRelations", {})
+                local relationKey = attackerFaction .. "_" .. victimFaction
+                local relation = factionRelations[relationKey]
+
+                if relation == "allied" then
+                    damage = damage * 0.7 -- 30% damage reduction against allies
+                    dmgInfo:SetDamage(damage)
+                elseif relation == "hostile" then
+                    damage = damage * 1.3 -- 30% damage bonus against hostiles
+                    dmgInfo:SetDamage(damage)
+                end
+            end
+        end
+
+        -- Environmental damage modifiers
+        if damageType == DMG_FALL then
+            local fallDistance = victim:GetVelocity():Length() / 100 -- Rough fall distance
+            if fallDistance > 5 then
+                -- Apply fall damage scaling based on surface
+                local trace = util.TraceLine({
+                    start = victim:GetPos(),
+                    endpos = victim:GetPos() - Vector(0, 0, 10),
+                    filter = victim
+                })
+
+                if trace.Hit then
+                    local surface = trace.MatType
+                    local surfaceMultipliers = {
+                        [MAT_CONCRETE] = 1.2,
+                        [MAT_DIRT] = 0.8,
+                        [MAT_GRASS] = 0.6,
+                        [MAT_SAND] = 0.7,
+                        [MAT_WOOD] = 0.9
+                    }
+
+                    local multiplier = surfaceMultipliers[surface] or 1.0
+                    damage = damage * multiplier
+                    dmgInfo:SetDamage(damage)
+                end
+            end
+        end
+
+        -- Track damage streaks for achievements
+        if IsValid(attacker) and attacker:IsPlayer() then
+            if victim.damageTracker.lastAttacker == attacker then
+                victim.damageTracker.damageStreak = victim.damageTracker.damageStreak + 1
+            else
+                victim.damageTracker.damageStreak = 1
+                victim.damageTracker.lastAttacker = attacker
+            end
+
+            -- Achievement check
+            if victim.damageTracker.damageStreak >= 10 then
+                attacker:notifyInfo("Achievement: Damage Streak!")
+                local char = attacker:getChar()
+                if char then
+                    char:setData("achievement_damageStreak", true)
+                end
+            end
+        end
+
+        -- Update damage statistics
+        local damageStats = lia.data.get("damageStats", {})
+        damageStats.totalDamage = (damageStats.totalDamage or 0) + damage
+        damageStats[damageType] = (damageStats[damageType] or 0) + damage
+        lia.data.set("damageStats", damageStats)
+
+        -- Log significant damage events
+        if damage > 100 then
+            lia.log.add(attacker, "high_damage", damage, hitgroup, damageType)
+        end
     end)
     ```
 ]]
@@ -20049,25 +21031,144 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("RegisterPreparedStatements", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Register a basic prepared statement
+    hook.Add("RegisterPreparedStatements", "BasicStatements", function()
+        lia.db.prepare("getPlayerData", "SELECT * FROM lia_players WHERE steamID = ?")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("RegisterPreparedStatements", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Register multiple prepared statements with validation
+    hook.Add("RegisterPreparedStatements", "ModuleStatements", function()
+        -- Character-related statements
+        lia.db.prepare("getCharacterByID", "SELECT * FROM lia_characters WHERE id = ?")
+        lia.db.prepare("getCharactersByPlayer", "SELECT * FROM lia_characters WHERE steamID = ?")
+        lia.db.prepare("updateCharacterMoney", "UPDATE lia_characters SET money = ? WHERE id = ?")
+
+        -- Item-related statements
+        lia.db.prepare("getItemByID", "SELECT * FROM lia_items WHERE id = ?")
+        lia.db.prepare("getItemsByInventory", "SELECT * FROM lia_items WHERE inventoryID = ?")
+        lia.db.prepare("deleteItem", "DELETE FROM lia_items WHERE id = ?")
+
+        -- Log the registration
+        lia.log.add(nil, "prepared_statements_registered", "ModuleStatements", 6)
+
+        print("Registered 6 prepared statements for module functionality")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("RegisterPreparedStatements", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced prepared statement management with optimization
+    hook.Add("RegisterPreparedStatements", "AdvancedStatementManager", function()
+        local statements = {
+            -- Player management
+            {
+                name = "getPlayerProfile",
+                query = "SELECT p.*, c.name as active_char FROM lia_players p LEFT JOIN lia_characters c ON p.lastChar = c.id WHERE p.steamID = ?",
+                description = "Get complete player profile with active character"
+            },
+            {
+                name = "getPlayerStats",
+                query = "SELECT COUNT(*) as chars, SUM(money) as total_money, AVG(money) as avg_money FROM lia_characters WHERE steamID = ?",
+                description = "Get player statistics across all characters"
+            },
+
+            -- Inventory management
+            {
+                name = "getInventoryContents",
+                query = [[
+                    SELECT i.*, it.name, it.model, it.category
+                    FROM lia_items i
+                    INNER JOIN lia_itemdef it ON i.uniqueID = it.uniqueID
+                    WHERE i.inventoryID = ?
+                    ORDER BY i.slot
+                ]],
+                description = "Get complete inventory with item details"
+            },
+            {
+                name = "transferItems",
+                query = "UPDATE lia_items SET inventoryID = ?, slot = ? WHERE id = ?",
+                description = "Transfer item between inventories"
+            },
+
+            -- Economic tracking
+            {
+                name = "getEconomyStats",
+                query = [[
+                    SELECT
+                        COUNT(*) as total_transactions,
+                        SUM(amount) as total_volume,
+                        AVG(amount) as avg_transaction,
+                        MAX(amount) as largest_transaction
+                    FROM lia_transactions
+                    WHERE timestamp > ?
+                ]],
+                description = "Get economy statistics for period"
+            },
+
+            -- Audit and logging
+            {
+                name = "getAuditTrail",
+                query = [[
+                    SELECT a.*, p.name as player_name, c.name as char_name
+                    FROM lia_audit a
+                    LEFT JOIN lia_players p ON a.playerID = p.steamID
+                    LEFT JOIN lia_characters c ON a.charID = c.id
+                    WHERE a.timestamp > ? AND a.action = ?
+                    ORDER BY a.timestamp DESC
+                    LIMIT ?
+                ]],
+                description = "Get detailed audit trail with player/character info"
+            }
+        }
+
+        local registered = 0
+        local failed = 0
+
+        -- Register all statements with error handling
+        for _, stmt in ipairs(statements) do
+            local success = lia.db.prepare(stmt.name, stmt.query)
+            if success then
+                registered = registered + 1
+                print(string.format("✓ Registered: %s (%s)", stmt.name, stmt.description))
+            else
+                failed = failed + 1
+                lia.log.add(nil, "prepared_statement_failed", stmt.name, stmt.query:sub(1, 50) .. "...")
+                print(string.format("✗ Failed to register: %s", stmt.name))
+            end
+        end
+
+        -- Performance optimization statements
+        if lia.db.getType() == "sqlite" then
+            -- SQLite-specific optimizations
+            lia.db.prepare("optimizeDatabase", "PRAGMA optimize")
+            lia.db.prepare("analyzeTables", "ANALYZE")
+            print("✓ Registered SQLite-specific optimization statements")
+        end
+
+        -- Cache prepared statement metadata
+        local statementMetadata = {}
+        for _, stmt in ipairs(statements) do
+            statementMetadata[stmt.name] = {
+                description = stmt.description,
+                queryLength = #stmt.query,
+                registeredAt = os.time()
+            }
+        }
+
+        lia.data.set("preparedStatementMetadata", statementMetadata)
+
+        -- Update server statistics
+        local stats = lia.data.get("databaseStats", {})
+        stats.preparedStatements = (stats.preparedStatements or 0) + registered
+        stats.lastStatementRegistration = os.time()
+        lia.data.set("databaseStats", stats)
+
+        lia.log.add(nil, "prepared_statements_batch_registered", registered, failed)
+
+        print(string.format("Advanced statement registration complete: %d registered, %d failed", registered, failed))
     end)
     ```
 ]]
@@ -20095,25 +21196,154 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("RemoveWarning", "MyAddon", function(charID, index)
-        -- Add your code here
+    -- Simple: Log warning removal
+    hook.Add("RemoveWarning", "WarningRemovalLogger", function(charID, index)
+        print("Warning " .. index .. " removed from character " .. charID)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("RemoveWarning", "MyAddon", function(charID, index)
-        -- Add your code here
+    -- Medium: Notify affected players and update reputation
+    hook.Add("RemoveWarning", "WarningRemovalHandler", function(charID, index)
+        -- Find the character and their player
+        local char = lia.char.getCharacter(charID)
+        if char then
+            local client = char:getPlayer()
+            if IsValid(client) then
+                client:notifyInfo("A warning has been removed from your record.")
+            end
+
+            -- Update character reputation/trust score
+            local reputation = char:getData("reputation", 0)
+            char:setData("reputation", math.min(reputation + 5, 100)) -- Cap at 100
+
+            -- Log the removal with context
+            lia.log.add(nil, "warning_removed", char:getName(), index)
+
+            -- Notify staff about the removal
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewWarnings") then
+                    ply:notify("Warning removed from " .. char:getName())
+                end
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("RemoveWarning", "MyAddon", function(charID, index)
-        -- Add your code here
+    -- High: Advanced warning management with rehabilitation tracking
+    hook.Add("RemoveWarning", "AdvancedWarningManager", function(charID, index)
+        local char = lia.char.getCharacter(charID)
+        if not char then
+            lia.log.add(nil, "warning_removal_failed", "character_not_found", charID)
+            return
+        end
+
+        local client = char:getPlayer()
+        local charName = char:getName()
+        local steamID = client and client:SteamID64()
+
+        -- Get warning history for analysis
+        local warningHistory = char:getData("warningHistory", {})
+        local removedWarning = warningHistory[index]
+
+        if not removedWarning then
+            lia.log.add(nil, "warning_removal_failed", "warning_not_found", charID, index)
+            return
+        end
+
+        -- Create detailed removal record
+        local removalRecord = {
+            warningIndex = index,
+            originalWarning = removedWarning,
+            removedAt = os.time(),
+            removedBy = "system", -- Could be current admin
+            reason = "appeal_granted", -- Could be passed as parameter
+            rehabilitationStatus = "in_progress"
+        }
+
+        -- Update warning history
+        warningHistory[index] = nil -- Remove the warning
+        char:setData("warningHistory", warningHistory)
+
+        -- Update rehabilitation progress
+        local rehabData = char:getData("rehabilitation", {})
+        rehabData.warningsRemoved = (rehabData.warningsRemoved or 0) + 1
+        rehabData.lastRehabAction = os.time()
+        rehabData.rehabScore = (rehabData.rehabScore or 0) + 10 -- Points for good behavior
+
+        -- Check for rehabilitation milestones
+        if rehabData.warningsRemoved >= 3 then
+            rehabData.status = "reformed"
+            if IsValid(client) then
+                client:notifyInfo("Congratulations! You have completed your rehabilitation program.")
+                -- Grant small reward
+                char:giveMoney(500)
+                client:notifyInfo("Received $500 rehabilitation completion bonus.")
+            end
+        elseif rehabData.warningsRemoved >= 1 then
+            rehabData.status = "improving"
+        end
+
+        char:setData("rehabilitation", rehabData)
+
+        -- Update trust/reputation system
+        local trustScore = char:getData("trustScore", 50) -- Default neutral
+        trustScore = math.min(trustScore + 15, 100) -- Increase trust, cap at 100
+        char:setData("trustScore", trustScore)
+
+        -- Update server-wide warning statistics
+        local serverStats = lia.data.get("warningStats", {})
+        serverStats.totalRemoved = (serverStats.totalRemoved or 0) + 1
+        serverStats.activeWarnings = (serverStats.activeWarnings or 0) - 1
+        lia.data.set("warningStats", serverStats)
+
+        -- Create audit trail
+        lia.db.insertTable({
+            action = "remove_warning",
+            charID = charID,
+            charName = charName,
+            steamID = steamID,
+            warningIndex = index,
+            warningData = util.TableToJSON(removedWarning),
+            removalReason = "administrative_decision",
+            admin = "system",
+            timestamp = os.time(),
+            rehabStatus = rehabData.status
+        }, "warning_audit")
+
+        -- Notify relevant parties
+        if IsValid(client) then
+            client:notifyInfo("Warning successfully removed from your record.")
+            client:notifyInfo("Current rehabilitation status: " .. (rehabData.status or "monitoring"))
+        end
+
+        -- Notify staff with detailed information
+        net.Start("liaWarningRemoved")
+            net.WriteUInt(charID, 32)
+            net.WriteUInt(index, 8)
+            net.WriteString(charName)
+            net.WriteString(rehabData.status or "unknown")
+        net.Send(lia.util.getAdmins())
+
+        -- Handle faction/police record updates
+        local faction = lia.faction.indices[char:getFaction()]
+        if faction and faction.name == "Civil Protection" then
+            -- Update police record
+            local policeRecord = char:getData("policeRecord", {})
+            policeRecord.warnings = (policeRecord.warnings or 0) - 1
+            policeRecord.lastAction = "warning_removed"
+            char:setData("policeRecord", policeRecord)
+        end
+
+        -- Log comprehensive removal details
+        lia.log.add(nil, "warning_removed_advanced",
+            charName, index, rehabData.status, trustScore)
+
+        print(string.format("[WARNING REMOVAL] %s - Warning %d removed. Rehab: %s, Trust: %d",
+            charName, index, rehabData.status or "unknown", trustScore))
     end)
     ```
 ]]
@@ -20143,25 +21373,210 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("RunAdminSystemCommand", "MyAddon", function(cmd, admin, victim, dur, reason)
-        -- Add your code here
+    -- Simple: Log admin commands
+    hook.Add("RunAdminSystemCommand", "AdminCommandLogger", function(cmd, admin, victim, dur, reason)
+        local victimName = IsValid(victim) and victim:Name() or tostring(victim)
+        print(string.format("Admin command: %s used %s on %s", admin:Name(), cmd, victimName))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("RunAdminSystemCommand", "MyAddon", function(cmd, admin, victim, dur, reason)
-        -- Add your code here
+    -- Medium: Validate commands and add notifications
+    hook.Add("RunAdminSystemCommand", "AdminCommandValidator", function(cmd, admin, victim, dur, reason)
+        -- Validate admin permissions
+        if not admin:hasPrivilege("adminCommands") then
+            admin:notifyError("You don't have permission to use admin commands.")
+            return true, function() end -- Override with no-op
+        end
+
+        -- Validate victim exists
+        if cmd ~= "announce" and not IsValid(victim) then
+            admin:notifyError("Target player not found.")
+            return true, function() end -- Override with no-op
+        end
+
+        -- Add reason requirement for severe commands
+        local severeCommands = {"ban", "kick", "warn"}
+        if table.HasValue(severeCommands, cmd) and (not reason or reason == "") then
+            admin:notifyError("You must provide a reason for this command.")
+            return true, function() end -- Override with no-op
+        end
+
+        -- Log the command execution
+        local victimName = IsValid(victim) and victim:Name() or tostring(victim)
+        lia.log.add(admin, "admin_command", cmd, victimName, dur or "permanent", reason or "none")
+
+        -- Notify other admins
+        for _, ply in ipairs(player.GetAll()) do
+            if ply ~= admin and ply:hasPrivilege("seeAdminActions") then
+                ply:notify(string.format("%s used %s on %s", admin:Name(), cmd, victimName))
+            end
+        end
+
+        -- Don't override the command, just validate and log
+        return false
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("RunAdminSystemCommand", "MyAddon", function(cmd, admin, victim, dur, reason)
-        -- Add your code here
+    -- High: Advanced command processing with custom logic and escalation
+    hook.Add("RunAdminSystemCommand", "AdvancedAdminSystem", function(cmd, admin, victim, dur, reason)
+        local adminName = admin:Name()
+        local adminSteamID = admin:SteamID()
+        local victimSteamID = IsValid(victim) and victim:SteamID() or tostring(victim)
+        local victimName = IsValid(victim) and victim:Name() or tostring(victim)
+
+        -- Command escalation system
+        local commandWeights = {
+            announce = 1,
+            warn = 2,
+            kick = 3,
+            ban = 4,
+            freeze = 2,
+            slay = 3,
+            strip = 2
+        }
+
+        local commandWeight = commandWeights[cmd] or 1
+
+        -- Check admin command limits/rate limiting
+        local adminStats = admin:getData("adminStats", {})
+        adminStats.commandsExecuted = (adminStats.commandsExecuted or 0) + 1
+        adminStats.lastCommandTime = os.time()
+        adminStats.commandWeight = (adminStats.commandWeight or 0) + commandWeight
+
+        -- Check for command abuse patterns
+        if adminStats.commandsExecuted > 50 and (os.time() - (adminStats.firstCommandTime or os.time())) < 3600 then
+            lia.log.add(admin, "admin_command_abuse", adminStats.commandsExecuted .. " commands in 1 hour")
+            admin:notifyWarning("High command usage detected. Please review your actions.")
+        end
+
+        admin:setData("adminStats", adminStats)
+
+        -- Custom command logic
+        if cmd == "ban" then
+            -- Enhanced ban system
+            local banData = {
+                steamID = victimSteamID,
+                name = victimName,
+                duration = dur,
+                reason = reason,
+                bannedBy = adminSteamID,
+                bannedAt = os.time(),
+                banExpires = dur and (os.time() + dur) or nil,
+                weight = commandWeight
+            }
+
+            -- Check for ban evasion attempts
+            local previousBans = lia.data.get("banHistory_" .. victimSteamID, {})
+            if #previousBans > 2 then
+                banData.evasionRisk = true
+                lia.log.add(admin, "ban_evasion_risk", victimName, #previousBans .. " previous bans")
+            end
+
+            table.insert(previousBans, banData)
+            lia.data.set("banHistory_" .. victimSteamID, previousBans)
+
+            -- Automatic escalation for repeat offenders
+            if #previousBans >= 3 then
+                banData.duration = banData.duration and (banData.duration * 2) or 604800 -- Double duration or 1 week
+                lia.log.add(admin, "ban_escalation", victimName, "Duration doubled due to repeat offenses")
+            end
+
+            -- Override the ban command with enhanced logic
+            return true, function()
+                lia.command.run(admin, "ban", {victim, tostring(banData.duration), banData.reason})
+
+                -- Additional ban actions
+                if IsValid(victim) then
+                    victim:Kick(string.format("Banned by %s for: %s", adminName, reason))
+                end
+
+                -- Update server ban statistics
+                local banStats = lia.data.get("banStats", {})
+                banStats.totalBans = (banStats.totalBans or 0) + 1
+                banStats.bansByAdmin = banStats.bansByAdmin or {}
+                banStats.bansByAdmin[adminSteamID] = (banStats.bansByAdmin[adminSteamID] or 0) + 1
+                lia.data.set("banStats", banStats)
+            end
+
+        elseif cmd == "warn" then
+            -- Enhanced warning system
+            local warningData = {
+                target = victimSteamID,
+                targetName = victimName,
+                reason = reason,
+                warnedBy = adminSteamID,
+                warnedAt = os.time(),
+                weight = commandWeight
+            }
+
+            -- Check warning history for escalation
+            local warningHistory = lia.data.get("warningHistory_" .. victimSteamID, {})
+            table.insert(warningHistory, warningData)
+
+            -- Automatic actions based on warning count
+            local warningCount = #warningHistory
+            if warningCount >= 3 then
+                -- Third warning: automatic kick
+                lia.command.run(admin, "kick", {victim, "Multiple warnings - please review server rules"})
+                lia.log.add(admin, "warning_escalation", victimName, "Auto-kicked after 3 warnings")
+            elseif warningCount >= 5 then
+                -- Fifth warning: automatic ban
+                lia.command.run(admin, "ban", {victim, "86400", "Multiple warnings - extended ban"})
+                lia.log.add(admin, "warning_escalation", victimName, "Auto-banned after 5 warnings")
+            end
+
+            lia.data.set("warningHistory_" .. victimSteamID, warningHistory)
+
+            -- Override with enhanced warning
+            return true, function()
+                lia.command.run(admin, "warn", {victim, reason})
+
+                -- Update warning statistics
+                local warnStats = lia.data.get("warningStats", {})
+                warnStats.totalWarnings = (warnStats.totalWarnings or 0) + 1
+                warnStats.warningsByAdmin = warnStats.warningsByAdmin or {}
+                warnStats.warningsByAdmin[adminSteamID] = (warnStats.warningsByAdmin[adminSteamID] or 0) + 1
+                lia.data.set("warningStats", warnStats)
+            end
+
+        elseif cmd == "announce" then
+            -- Custom announcement system
+            local announcement = reason or "No message provided"
+
+            -- Check for announcement spam
+            local lastAnnounce = admin:getData("lastAnnouncement", 0)
+            if os.time() - lastAnnounce < 30 then -- 30 second cooldown
+                admin:notifyError("Please wait before making another announcement.")
+                return true, function() end -- Override with no-op
+            end
+
+            admin:setData("lastAnnouncement", os.time())
+
+            -- Override with enhanced announcement
+            return true, function()
+                -- Broadcast to all players
+                net.Start("liaAnnouncement")
+                    net.WriteString(announcement)
+                    net.WriteString(adminName)
+                net.Broadcast()
+
+                -- Log announcement
+                lia.log.add(admin, "announcement", announcement)
+
+                -- Update announcement statistics
+                local announceStats = lia.data.get("announcementStats", {})
+                announceStats.totalAnnouncements = (announceStats.totalAnnouncements or 0) + 1
+                lia.data.set("announcementStats", announceStats)
+            end
+        end
+
+        -- Default: Allow command but log it
+        lia.log.add(admin, "admin_command_executed", cmd, victimName, dur or "N/A", reason or "N/A")
+        return false -- Don't override
     end)
     ```
 ]]
@@ -20289,25 +21704,263 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SendPopup", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- Simple: Log ticket creation
+    hook.Add("SendPopup", "TicketLogger", function(noob, message)
+        print(string.format("Ticket created by %s: %s", noob:Name(), message:sub(1, 50) .. (message:len() > 50 and "..." or "")))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SendPopup", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- Medium: Categorize tickets and notify appropriate staff
+    hook.Add("SendPopup", "TicketCategorizer", function(noob, message)
+        -- Categorize the ticket based on content
+        local category = "general"
+        local priority = "normal"
+
+        message = message:lower()
+
+        -- Bug reports
+        if message:find("bug") or message:find("error") or message:find("crash") then
+            category = "bug"
+            priority = "high"
+        -- Player reports
+        elseif message:find("report") or message:find("grief") or message:find("hack") then
+            category = "report"
+            priority = "high"
+        -- Help requests
+        elseif message:find("help") or message:find("stuck") or message:find("can't") then
+            category = "help"
+            priority = "normal"
+        -- Feature requests
+        elseif message:find("suggest") or message:find("feature") or message:find("idea") then
+            category = "feature"
+            priority = "low"
+        end
+
+        -- Store ticket data
+        local ticketData = {
+            id = os.time() .. "_" .. noob:SteamID64(),
+            player = noob:SteamID64(),
+            playerName = noob:Name(),
+            message = message,
+            category = category,
+            priority = priority,
+            created = os.time(),
+            status = "open"
+        }
+
+        lia.data.set("ticket_" .. ticketData.id, ticketData)
+
+        -- Notify staff based on category
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("viewTickets") then
+                if category == "bug" and ply:hasPrivilege("handleBugs") then
+                    ply:notify(string.format("[BUG] New ticket from %s", noob:Name()))
+                elseif category == "report" and ply:hasPrivilege("handleReports") then
+                    ply:notify(string.format("[REPORT] New ticket from %s", noob:Name()))
+                elseif priority == "high" then
+                    ply:notify(string.format("[URGENT] New %s ticket from %s", category, noob:Name()))
+                end
+            end
+        end
+
+        -- Log ticket creation
+        lia.log.add(noob, "ticket_created", category, priority, message:sub(1, 100))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SendPopup", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- High: Advanced ticket system with escalation, analytics, and smart routing
+    hook.Add("SendPopup", "AdvancedTicketSystem", function(noob, message)
+        local steamID = noob:SteamID64()
+        local playerName = noob:Name()
+
+        -- Analyze ticket content with AI-like categorization
+        local analysis = {
+            category = "general",
+            priority = "normal",
+            urgency = 1,
+            complexity = 1,
+            keywords = {},
+            sentiment = "neutral"
+        }
+
+        message = message:lower()
+
+        -- Advanced keyword analysis
+        local keywords = {
+            bug = {"bug", "error", "crash", "broken", "not working", "glitch"},
+            report = {"report", "griefing", "hacking", "cheating", "exploiting", "abuse"},
+            help = {"help", "stuck", "can't", "unable", "confused", "lost"},
+            feature = {"suggest", "feature", "idea", "add", "implement", "would like"},
+            admin = {"admin", "moderator", "staff", "complaint", "unfair"},
+            technical = {"lag", "fps", "performance", "connection", "server", "database"}
+        }
+
+        local keywordMatches = {}
+        for category, words in pairs(keywords) do
+            keywordMatches[category] = 0
+            for _, word in ipairs(words) do
+                if message:find(word) then
+                    keywordMatches[category] = keywordMatches[category] + 1
+                    table.insert(analysis.keywords, word)
+                end
+            end
+        end
+
+        -- Determine primary category
+        local maxMatches = 0
+        for category, matches in pairs(keywordMatches) do
+            if matches > maxMatches then
+                maxMatches = matches
+                analysis.category = category
+            end
+        end
+
+        -- Calculate priority based on multiple factors
+        if analysis.category == "bug" or analysis.category == "report" then
+            analysis.priority = "high"
+            analysis.urgency = 3
+        elseif message:find("urgent") or message:find("emergency") or message:find("immediately") then
+            analysis.priority = "high"
+            analysis.urgency = 4
+        elseif message:len() > 200 then
+            analysis.complexity = 2 -- Longer messages might be more complex
+        end
+
+        -- Check player history
+        local playerHistory = lia.data.get("ticketHistory_" .. steamID, {})
+        if #playerHistory > 5 then
+            analysis.priority = "low" -- Frequent ticket creators get lower priority
+            analysis.urgency = analysis.urgency - 0.5
+        end
+
+        -- Sentiment analysis (basic)
+        if message:find("please") or message:find("thank") then
+            analysis.sentiment = "polite"
+        elseif message:find("fuck") or message:find("shit") or message:find("damn") then
+            analysis.sentiment = "angry"
+            analysis.urgency = analysis.urgency + 0.5
+        end
+
+        -- Create comprehensive ticket record
+        local ticketID = os.time() .. "_" .. steamID .. "_" .. math.random(1000, 9999)
+        local ticketData = {
+            id = ticketID,
+            player = steamID,
+            playerName = playerName,
+            message = message,
+            analysis = analysis,
+            created = os.time(),
+            status = "open",
+            assignedTo = nil,
+            responses = {},
+            tags = {},
+            metadata = {
+                playerLevel = noob:getChar() and noob:getChar():getLevel() or 1,
+                playtime = noob:GetUTimeTotalTime() or 0,
+                faction = noob:getChar() and noob:getChar():getFaction() or "none",
+                previousTickets = #playerHistory
+            }
+        }
+
+        -- Smart staff routing
+        local availableStaff = {}
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("handleTickets") then
+                local staffData = {
+                    player = ply,
+                    workload = ply:getData("currentTickets", 0),
+                    expertise = ply:getData("ticketExpertise", {}),
+                    lastActive = ply:getData("lastTicketActivity", 0)
+                }
+                table.insert(availableStaff, staffData)
+            end
+        end
+
+        -- Sort staff by workload and expertise
+        table.sort(availableStaff, function(a, b)
+            local aScore = a.workload * -2 + (a.expertise[analysis.category] or 0) * 3
+            local bScore = b.workload * -2 + (b.expertise[analysis.category] or 0) * 3
+            return aScore > bScore
+        end)
+
+        -- Assign to best available staff
+        if #availableStaff > 0 then
+            local assignedStaff = availableStaff[1].player
+            ticketData.assignedTo = assignedStaff:SteamID64()
+
+            -- Update staff workload
+            assignedStaff:setData("currentTickets", assignedStaff:getData("currentTickets", 0) + 1)
+
+            -- Notify assigned staff
+            assignedStaff:notify(string.format("[TICKET ASSIGNED] %s priority %s ticket from %s",
+                analysis.priority:upper(), analysis.category, playerName))
+        end
+
+        -- Store ticket
+        lia.data.set("ticket_" .. ticketID, ticketData)
+
+        -- Update player history
+        table.insert(playerHistory, {
+            ticketID = ticketID,
+            category = analysis.category,
+            priority = analysis.priority,
+            created = os.time()
+        })
+        lia.data.set("ticketHistory_" .. steamID, playerHistory)
+
+        -- Update server statistics
+        local stats = lia.data.get("ticketStats", {})
+        stats.totalTickets = (stats.totalTickets or 0) + 1
+        stats.categoryStats = stats.categoryStats or {}
+        stats.categoryStats[analysis.category] = (stats.categoryStats[analysis.category] or 0) + 1
+        stats.priorityStats = stats.priorityStats or {}
+        stats.priorityStats[analysis.priority] = (stats.priorityStats[analysis.priority] or 0) + 1
+        lia.data.set("ticketStats", stats)
+
+        -- Create audit trail
+        lia.db.insertTable({
+            ticketID = ticketID,
+            action = "created",
+            player = steamID,
+            category = analysis.category,
+            priority = analysis.priority,
+            urgency = analysis.urgency,
+            assignedTo = ticketData.assignedTo,
+            timestamp = os.time(),
+            analysis = util.TableToJSON(analysis)
+        }, "ticket_audit")
+
+        -- Broadcast to ticket system
+        net.Start("liaTicketCreated")
+            net.WriteString(ticketID)
+            net.WriteString(playerName)
+            net.WriteString(analysis.category)
+            net.WriteString(analysis.priority)
+            net.WriteUInt(analysis.urgency, 8)
+        net.Send(lia.util.getStaff())
+
+        -- Auto-escalation for urgent tickets
+        if analysis.urgency >= 4 then
+            timer.Simple(300, function() -- 5 minutes
+                local ticket = lia.data.get("ticket_" .. ticketID)
+                if ticket and ticket.status == "open" then
+                    -- Escalate to higher priority staff
+                    lia.log.add(nil, "ticket_escalation", ticketID, "Not responded to in 5 minutes")
+                    -- Additional escalation logic here
+                end
+            end)
+        end
+
+        -- Log comprehensive ticket creation
+        lia.log.add(noob, "ticket_created_advanced", ticketID, analysis.category, analysis.priority,
+            string.format("urgency:%d, keywords:%s", analysis.urgency, table.concat(analysis.keywords, ",")))
+
+        print(string.format("[TICKET SYSTEM] New %s priority %s ticket from %s (ID: %s)",
+            analysis.priority, analysis.category, playerName, ticketID))
     end)
     ```
 ]]
@@ -20334,25 +21987,294 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SetupBagInventoryAccessRules", "MyAddon", function(inventory)
-        -- Add your code here
+    -- Simple: Log bag access setup
+    hook.Add("SetupBagInventoryAccessRules", "BagAccessLogger", function(inventory)
+        print("Setting up access rules for bag inventory: " .. tostring(inventory:getID()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SetupBagInventoryAccessRules", "MyAddon", function(inventory)
-        -- Add your code here
+    -- Medium: Set faction-based access rules
+    hook.Add("SetupBagInventoryAccessRules", "FactionBagAccess", function(inventory)
+        -- Get the bag item that owns this inventory
+        local bagItem = inventory:getOwner()
+        if not bagItem then return end
+
+        local owner = bagItem:getOwner()
+        if not owner or not owner:IsPlayer() then return end
+
+        local char = owner:getChar()
+        if not char then return end
+
+        local faction = char:getFaction()
+        local factionData = lia.faction.indices[faction]
+
+        -- Set access rules based on faction
+        if factionData then
+            -- Allow faction members to access
+            inventory:addAccessRule(function(client)
+                local clientChar = client:getChar()
+                return clientChar and clientChar:getFaction() == faction
+            end, "Faction Access")
+
+            -- Special rules for certain factions
+            if factionData.name == "Police" then
+                -- Police can search bags during investigations
+                inventory:addAccessRule(function(client)
+                    return client:hasPrivilege("searchBags")
+                end, "Police Search")
+            elseif factionData.name == "Thieves Guild" then
+                -- Thieves get bonus access to certain bag types
+                if bagItem.uniqueID == "thief_satchel" then
+                    inventory:addAccessRule(function(client)
+                        local clientChar = client:getChar()
+                        return clientChar and clientChar:getFaction() == faction
+                    end, "Guild Satchel Access")
+                end
+            end
+        end
+
+        -- Log access rule setup
+        lia.log.add(owner, "bag_access_setup", faction, inventory:getID())
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SetupBagInventoryAccessRules", "MyAddon", function(inventory)
-        -- Add your code here
+    -- High: Advanced bag access control with ownership verification and permission inheritance
+    hook.Add("SetupBagInventoryAccessRules", "AdvancedBagAccessControl", function(inventory)
+        local bagItem = inventory:getOwner()
+        if not bagItem then return end
+
+        local owner = bagItem:getOwner()
+        if not owner or not owner:IsPlayer() then return end
+
+        local char = owner:getChar()
+        if not char then return end
+
+        local steamID = owner:SteamID64()
+        local charID = char:getID()
+        local faction = char:getFaction()
+        local userGroup = owner:GetUserGroup()
+
+        -- Create comprehensive access rule system
+        local accessRules = {}
+
+        -- 1. Owner always has access (unless bag is locked/stolen)
+        table.insert(accessRules, {
+            name = "Owner Access",
+            priority = 100,
+            check = function(client)
+                if client == owner then
+                    -- Check if bag is locked
+                    local lockStatus = bagItem:getData("locked", false)
+                    if lockStatus then
+                        -- Allow access if client has the key
+                        local hasKey = client:getChar():getInv():hasItem(bagItem:getData("keyID"))
+                        return hasKey
+                    end
+                    return true
+                end
+                return false
+            end
+        })
+
+        -- 2. Trusted players (friends list)
+        local trustedPlayers = bagItem:getData("trustedPlayers", {})
+        if #trustedPlayers > 0 then
+            table.insert(accessRules, {
+                name = "Trusted Players",
+                priority = 90,
+                check = function(client)
+                    return table.HasValue(trustedPlayers, client:SteamID64())
+                end
+            })
+        end
+
+        -- 3. Faction/family access
+        local factionData = lia.faction.indices[faction]
+        if factionData then
+            table.insert(accessRules, {
+                name = "Faction Access",
+                priority = 80,
+                check = function(client)
+                    local clientChar = client:getChar()
+                    if not clientChar then return false end
+
+                    -- Direct faction match
+                    if clientChar:getFaction() == faction then
+                        return true
+                    end
+
+                    -- Allied faction access
+                    if factionData.allies then
+                        for _, allyFaction in ipairs(factionData.allies) do
+                            if clientChar:getFaction() == allyFaction then
+                                return true
+                            end
+                        end
+                    end
+
+                    return false
+                end
+            })
+        end
+
+        -- 4. Administrative access
+        table.insert(accessRules, {
+            name = "Administrative Access",
+            priority = 95,
+            check = function(client)
+                return client:hasPrivilege("accessAllBags") or
+                       (userGroup == "admin" and client:hasPrivilege("adminBagAccess"))
+            end
+        })
+
+        -- 5. Emergency access (police, medics in emergencies)
+        table.insert(accessRules, {
+            name = "Emergency Access",
+            priority = 85,
+            check = function(client)
+                local clientChar = client:getChar()
+                if not clientChar then return false end
+
+                local clientFaction = clientChar:getFaction()
+                local clientFactionData = lia.faction.indices[clientFaction]
+
+                -- Police can access bags during investigations
+                if clientFactionData and clientFactionData.name == "Police" then
+                    return client:hasPrivilege("investigateBags")
+                end
+
+                -- Medics can access bags in medical emergencies
+                if clientFactionData and clientFactionData.name == "Medic" then
+                    local emergencyStatus = bagItem:getData("emergency", false)
+                    return emergencyStatus and client:hasPrivilege("emergencyAccess")
+                end
+
+                return false
+            end
+        })
+
+        -- 6. Guild/clan access for special bags
+        if bagItem.uniqueID == "guild_vault" or bagItem.uniqueID == "clan_treasury" then
+            local guildID = bagItem:getData("guildID")
+            if guildID then
+                table.insert(accessRules, {
+                    name = "Guild Access",
+                    priority = 75,
+                    check = function(client)
+                        local clientChar = client:getChar()
+                        return clientChar and clientChar:getData("guildID") == guildID
+                    end
+                })
+            end
+        end
+
+        -- Sort rules by priority (highest first)
+        table.sort(accessRules, function(a, b) return a.priority > b.priority end)
+
+        -- Apply all access rules to the inventory
+        for _, rule in ipairs(accessRules) do
+            inventory:addAccessRule(rule.check, rule.name)
+        end
+
+        -- Set up access logging
+        inventory:addAccessRule(function(client, action)
+            -- This is called whenever someone tries to access
+            local clientChar = client:getChar()
+            local logData = {
+                bagID = inventory:getID(),
+                bagType = bagItem.uniqueID,
+                action = action or "access",
+                accessor = client:SteamID64(),
+                accessorName = client:Name(),
+                owner = steamID,
+                timestamp = os.time()
+            }
+
+            lia.db.insertTable(logData, "bag_access_log")
+
+            -- Notify owner of suspicious access
+            if client ~= owner then
+                local suspicionLevel = 0
+
+                -- Check if accessor is from rival faction
+                if clientChar then
+                    local accessorFaction = clientChar:getFaction()
+                    if factionData and factionData.enemies then
+                        for _, enemyFaction in ipairs(factionData.enemies) do
+                            if accessorFaction == enemyFaction then
+                                suspicionLevel = suspicionLevel + 2
+                                break
+                            end
+                        end
+                    end
+                end
+
+                -- Check access frequency
+                local recentAccesses = lia.data.get("bagAccessHistory_" .. steamID, {})
+                local recentCount = 0
+                local cutoff = os.time() - 3600 -- Last hour
+
+                for _, access in ipairs(recentAccesses) do
+                    if access.timestamp > cutoff and access.accessor == client:SteamID64() then
+                        recentCount = recentCount + 1
+                    end
+                end
+
+                if recentCount > 3 then
+                    suspicionLevel = suspicionLevel + 1
+                end
+
+                if suspicionLevel >= 2 then
+                    owner:notifyWarning("Suspicious access attempt on your " .. bagItem.name .. " by " .. client:Name())
+                    lia.log.add(client, "suspicious_bag_access", bagItem.uniqueID, suspicionLevel)
+                end
+
+                -- Record access
+                table.insert(recentAccesses, {
+                    accessor = client:SteamID64(),
+                    action = action or "access",
+                    timestamp = os.time(),
+                    suspicionLevel = suspicionLevel
+                })
+
+                -- Keep only last 50 accesses
+                while #recentAccesses > 50 do
+                    table.remove(recentAccesses, 1)
+                end
+
+                lia.data.set("bagAccessHistory_" .. steamID, recentAccesses)
+            end
+
+            return true -- Allow logging but don't block access
+        end, "Access Logging")
+
+        -- Create access summary
+        local accessSummary = {
+            bagID = inventory:getID(),
+            owner = steamID,
+            rulesCount = #accessRules,
+            specialRules = {},
+            created = os.time()
+        }
+
+        for _, rule in ipairs(accessRules) do
+            if rule.priority >= 90 then
+                table.insert(accessSummary.specialRules, rule.name)
+            end
+        end
+
+        lia.data.set("bagAccessSummary_" .. inventory:getID(), accessSummary)
+
+        -- Log comprehensive access setup
+        lia.log.add(owner, "bag_access_rules_setup",
+            bagItem.uniqueID, #accessRules, table.concat(accessSummary.specialRules, ", "))
+
+        print(string.format("[BAG ACCESS] Set up %d access rules for %s's %s",
+            #accessRules, owner:Name(), bagItem.name))
     end)
     ```
 ]]
@@ -20379,25 +22301,236 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SetupBotPlayer", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log bot spawn
+    hook.Add("SetupBotPlayer", "BotLogger", function(client)
+        print("Bot player spawned: " .. client:Name())
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SetupBotPlayer", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Set up bot with basic role and equipment
+    hook.Add("SetupBotPlayer", "BotSetup", function(client)
+        -- Assign a random role to the bot
+        local roles = {"citizen", "police", "medic", "criminal"}
+        local assignedRole = roles[math.random(#roles)]
+
+        -- Create a character for the bot
+        local charData = {
+            name = client:Name(),
+            faction = FACTION_CITIZEN,
+            model = "models/player/group01/male_01.mdl",
+            money = 500
+        }
+
+        local character = lia.char.new(charData, client:SteamID64(), client)
+        character:setFaction(FACTION_CITIZEN)
+        character:setClass(1) -- Default class
+
+        -- Set bot metadata
+        client:setData("botRole", assignedRole)
+        client:setData("botDifficulty", "normal")
+
+        -- Give basic equipment based on role
+        if assignedRole == "police" then
+            -- Give police equipment
+            character:getInv():add("weapon_stunstick")
+            client:notifyInfo("You are a police bot - maintain order!")
+        elseif assignedRole == "medic" then
+            -- Give medical equipment
+            character:getInv():add("medical_kit")
+            client:notifyInfo("You are a medic bot - heal the wounded!")
+        elseif assignedRole == "criminal" then
+            -- Give criminal tools
+            character:getInv():add("lockpick")
+            client:notifyInfo("You are a criminal bot - cause chaos!")
+        else
+            -- Basic citizen setup
+            client:notifyInfo("You are a citizen bot - enjoy the city!")
+        end
+
+        -- Log bot setup
+        lia.log.add(client, "bot_setup", assignedRole)
+
+        print(string.format("Bot %s assigned role: %s", client:Name(), assignedRole))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SetupBotPlayer", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced bot AI configuration with personality and behavior systems
+    hook.Add("SetupBotPlayer", "AdvancedBotSystem", function(client)
+        -- Generate unique bot ID
+        local botID = "bot_" .. os.time() .. "_" .. math.random(10000, 99999)
+
+        -- AI Personality System
+        local personalities = {
+            {
+                name = "aggressive",
+                traits = {combativeness = 0.8, curiosity = 0.3, helpfulness = 0.2},
+                behaviors = {"seeks_conflict", "territorial", "intimidating"}
+            },
+            {
+                name = "passive",
+                traits = {combativeness = 0.1, curiosity = 0.6, helpfulness = 0.9},
+                behaviors = {"avoids_conflict", "observant", "cooperative"}
+            },
+            {
+                name = "curious",
+                traits = {combativeness = 0.4, curiosity = 0.9, helpfulness = 0.6},
+                behaviors = {"exploratory", "inquisitive", "social"}
+            },
+            {
+                name = "mysterious",
+                traits = {combativeness = 0.3, curiosity = 0.7, helpfulness = 0.4},
+                behaviors = {"elusive", "enigmatic", "independent"}
+            }
+        }
+
+        local personality = personalities[math.random(#personalities)]
+
+        -- Role Assignment with Faction Integration
+        local availableRoles = {
+            citizen = {
+                factions = {FACTION_CITIZEN},
+                spawnItems = {"wallet", "phone"},
+                behaviorTraits = {"social", "economic"}
+            },
+            police = {
+                factions = {FACTION_POLICE},
+                spawnItems = {"weapon_stunstick", "handcuffs", "radio"},
+                behaviorTraits = {"lawful", "protective", "authoritative"}
+            },
+            medic = {
+                factions = {FACTION_MEDIC},
+                spawnItems = {"medical_kit", "defibrillator", "syringe"},
+                behaviorTraits = {"helpful", "urgent", "caring"}
+            },
+            criminal = {
+                factions = {FACTION_CRIMINAL},
+                spawnItems = {"lockpick", "crowbar", "mask"},
+                behaviorTraits = {"sneaky", "opportunistic", "daring"}
+            },
+            merchant = {
+                factions = {FACTION_CITIZEN},
+                spawnItems = {"cash_register", "merchant_goods"},
+                behaviorTraits = {"commercial", "persuasive", "greedy"}
+            }
+        }
+
+        local roleName, roleData = table.Random(availableRoles)
+        local assignedFaction = roleData.factions[math.random(#roleData.factions)]
+
+        -- Create advanced character
+        local charData = {
+            name = client:Name(),
+            faction = assignedFaction,
+            model = table.Random({
+                "models/player/group01/male_01.mdl",
+                "models/player/group01/female_01.mdl",
+                "models/player/group02/male_01.mdl",
+                "models/player/group02/female_01.mdl"
+            }),
+            money = math.random(100, 2000),
+            description = string.format("An AI-controlled %s with %s personality.", roleName, personality.name)
+        }
+
+        local character = lia.char.new(charData, botID, client)
+        character:setFaction(assignedFaction)
+
+        -- Assign appropriate class
+        local factionClasses = lia.faction.indices[assignedFaction].classes or {1}
+        character:setClass(factionClasses[math.random(#factionClasses)])
+
+        -- Advanced Bot Data
+        local botData = {
+            id = botID,
+            personality = personality,
+            role = roleName,
+            difficulty = "adaptive", -- Will adjust based on player interactions
+            spawnTime = os.time(),
+            behaviorState = "idle",
+            interactionHistory = {},
+            skillLevels = {
+                combat = math.random(1, 10),
+                social = math.random(1, 10),
+                technical = math.random(1, 10),
+                stealth = math.random(1, 10)
+            },
+            relationships = {}, -- Will track interactions with players
+            goals = {}, -- Dynamic goal system
+            memory = {} -- Short-term memory system
+        }
+
+        client:setData("botAI", botData)
+
+        -- Equipment Setup
+        local inventory = character:getInv()
+        for _, itemID in ipairs(roleData.spawnItems) do
+            if lia.item.list[itemID] then
+                inventory:add(itemID)
+            end
+        end
+
+        -- Personality-based starting equipment
+        if personality.traits.helpfulness > 0.7 then
+            inventory:add("first_aid_kit")
+        elseif personality.traits.combativeness > 0.6 then
+            inventory:add("baseball_bat")
+        elseif personality.traits.curiosity > 0.8 then
+            inventory:add("camera")
+        end
+
+        -- AI Behavior Initialization
+        client:setData("currentGoal", "explore")
+        client:setData("homeLocation", client:GetPos())
+        client:setData("patrolRoute", {}) -- Will be populated by pathfinding system
+
+        -- Social Integration
+        client:setData("reputation", math.random(-50, 50)) -- Start with neutral to mixed reputation
+        client:setData("knownPlayers", {}) -- Will learn about players through interactions
+
+        -- Economic Setup
+        if roleName == "merchant" then
+            client:setData("shopInventory", {
+                items = {"water", "bread", "canned_food"},
+                prices = {water = 10, bread = 15, canned_food = 25},
+                markup = personality.traits.helpfulness < 0.5 and 1.5 or 1.2 -- Greedy merchants overcharge
+            })
+        end
+
+        -- Register bot with AI system
+        lia.data.set("activeBot_" .. botID, botData)
+
+        -- Update bot statistics
+        local botStats = lia.data.get("botStats", {})
+        botStats.totalBots = (botStats.totalBots or 0) + 1
+        botStats.byRole = botStats.byRole or {}
+        botStats.byRole[roleName] = (botStats.byRole[roleName] or 0) + 1
+        botStats.byPersonality = botStats.byPersonality or {}
+        botStats.byPersonality[personality.name] = (botStats.byPersonality[personality.name] or 0) + 1
+        lia.data.set("botStats", botStats)
+
+        -- Notify nearby players
+        for _, ply in ipairs(ents.FindInSphere(client:GetPos(), 500)) do
+            if ply:IsPlayer() and ply ~= client then
+                ply:notifyInfo(string.format("A new %s bot has arrived: %s", roleName, client:Name()))
+            end
+        end
+
+        -- Welcome message for the bot
+        client:notifyInfo(string.format("You are a %s %s bot with %s personality. Your goal: %s",
+            personality.name, roleName, botData.currentGoal))
+
+        -- Comprehensive logging
+        lia.log.add(client, "bot_advanced_setup",
+            string.format("role:%s, personality:%s, skills:%s-%s-%s-%s",
+                roleName, personality.name,
+                botData.skillLevels.combat, botData.skillLevels.social,
+                botData.skillLevels.technical, botData.skillLevels.stealth))
+
+        print(string.format("[BOT AI] Advanced bot %s created - %s %s (ID: %s)",
+            client:Name(), personality.name, roleName, botID))
     end)
     ```
 ]]
@@ -20424,25 +22557,291 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SetupDatabase", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Log database setup
+    hook.Add("SetupDatabase", "DatabaseLogger", function()
+        print("Database setup initiated")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SetupDatabase", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Configure database settings and validate connection
+    hook.Add("SetupDatabase", "DatabaseConfigurator", function()
+        -- Configure database connection settings
+        lia.db.config = lia.db.config or {}
+
+        -- Set connection pool settings
+        lia.db.config.pool = {
+            min = 2,
+            max = 10,
+            idleTimeout = 300,
+            acquireTimeout = 60000
+        }
+
+        -- Set query timeout
+        lia.db.config.queryTimeout = 30000
+
+        -- Enable query logging in development
+        if lia.config.get("DevelopmentMode", false) then
+            lia.db.config.logQueries = true
+            lia.db.config.logSlowQueries = 5000 -- Log queries taking longer than 5 seconds
+        end
+
+        -- Configure backup settings
+        lia.db.config.backup = {
+            enabled = true,
+            interval = 3600, -- Hourly backups
+            retention = 7 * 24 * 3600, -- Keep 7 days of backups
+            compress = true
+        }
+
+        -- Validate database configuration
+        local dbType = lia.config.get("DatabaseType", "sqlite")
+        if dbType == "mysql" then
+            -- Validate MySQL settings
+            local required = {"DatabaseHost", "DatabaseUsername", "DatabasePassword", "DatabaseName"}
+            for _, setting in ipairs(required) do
+                if not lia.config.get(setting) then
+                    ErrorNoHalt(string.format("Missing required database setting: %s\n", setting))
+                end
+            end
+        end
+
+        -- Set up database health monitoring
+        lia.db.config.healthCheck = {
+            enabled = true,
+            interval = 60, -- Check every minute
+            timeout = 5000 -- 5 second timeout
+        }
+
+        print("Database configuration completed - Type: " .. dbType)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SetupDatabase", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced database setup with connection pooling, optimization, and monitoring
+    hook.Add("SetupDatabase", "AdvancedDatabaseSetup", function()
+        local dbType = lia.config.get("DatabaseType", "sqlite")
+        local serverStartTime = os.time()
+
+        -- Advanced Connection Pool Configuration
+        lia.db.config = {
+            -- Connection pooling
+            pool = {
+                min = dbType == "sqlite" and 1 or 5,
+                max = dbType == "sqlite" and 1 or 20,
+                idleTimeout = 600, -- 10 minutes
+                acquireTimeout = 30000, -- 30 seconds
+                validateOnCheckout = true,
+                validateOnIdle = true
+            },
+
+            -- Performance settings
+            queryTimeout = 45000, -- 45 seconds
+            maxRetries = 3,
+            retryDelay = 1000, -- 1 second between retries
+
+            -- Caching configuration
+            cache = {
+                enabled = true,
+                maxSize = 1000, -- Cache up to 1000 queries
+                ttl = 300, -- 5 minute cache lifetime
+                compression = true
+            },
+
+            -- Logging and monitoring
+            logging = {
+                enabled = true,
+                logQueries = lia.config.get("DevelopmentMode", false),
+                logSlowQueries = 5000,
+                logErrors = true,
+                logConnections = false
+            },
+
+            -- Backup and recovery
+            backup = {
+                enabled = true,
+                automatic = true,
+                interval = 3600, -- Hourly
+                retention = 7 * 24 * 3600, -- 7 days
+                compress = true,
+                encrypt = true,
+                location = "garrysmod/data/backups/"
+            },
+
+            -- Health monitoring
+            health = {
+                enabled = true,
+                interval = 60,
+                timeout = 5000,
+                failureThreshold = 3,
+                autoRecovery = true
+            },
+
+            -- Security settings
+            security = {
+                maxQueryLength = 1000000, -- 1MB max query size
+                allowMultipleStatements = false,
+                sanitizeInputs = true,
+                rateLimit = {
+                    enabled = true,
+                    maxQueriesPerMinute = 1000,
+                    banDuration = 300 -- 5 minutes
+                }
+            }
+        }
+
+        -- Database-specific optimizations
+        if dbType == "sqlite" then
+            -- SQLite optimizations
+            lia.db.config.sqlite = {
+                journalMode = "WAL",
+                synchronous = "NORMAL",
+                cacheSize = 1000000, -- 1MB cache
+                tempStore = "MEMORY",
+                mmapSize = 268435456 -- 256MB memory map
+            }
+
+            -- Set SQLite pragmas
+            lia.db.query("PRAGMA journal_mode = WAL")
+            lia.db.query("PRAGMA synchronous = NORMAL")
+            lia.db.query("PRAGMA cache_size = 1000000")
+            lia.db.query("PRAGMA temp_store = MEMORY")
+
+        elseif dbType == "mysql" then
+            -- MySQL optimizations
+            lia.db.config.mysql = {
+                charset = "utf8mb4",
+                collation = "utf8mb4_unicode_ci",
+                timezone = "+00:00",
+                autocommit = true,
+                maxAllowedPacket = 67108864, -- 64MB
+                innodbBufferPoolSize = 134217728 -- 128MB
+            }
+
+            -- Configure MySQL connection
+            lia.db.query("SET NAMES utf8mb4")
+            lia.db.query("SET CHARACTER SET utf8mb4")
+            lia.db.query("SET time_zone = '+00:00'")
+        end
+
+        -- Initialize database statistics tracking
+        local dbStats = {
+            connectionsCreated = 0,
+            connectionsDestroyed = 0,
+            queriesExecuted = 0,
+            queriesFailed = 0,
+            totalQueryTime = 0,
+            slowQueries = 0,
+            cacheHits = 0,
+            cacheMisses = 0,
+            backupsCreated = 0,
+            lastHealthCheck = serverStartTime,
+            startTime = serverStartTime
+        }
+        lia.data.set("databaseStats", dbStats)
+
+        -- Set up database event handlers
+        lia.db.onConnected = function()
+            lia.log.add(nil, "database_connected", dbType, "Connection established successfully")
+            print("[DATABASE] Connected to " .. dbType .. " database")
+        end
+
+        lia.db.onDisconnected = function(reason)
+            lia.log.add(nil, "database_disconnected", reason or "Unknown reason")
+            ErrorNoHalt("[DATABASE] Lost connection to database: " .. (reason or "Unknown reason") .. "\n")
+        end
+
+        lia.db.onQueryExecuted = function(query, executionTime, success)
+            local stats = lia.data.get("databaseStats", {})
+            stats.queriesExecuted = stats.queriesExecuted + 1
+
+            if success then
+                stats.totalQueryTime = stats.totalQueryTime + executionTime
+                if executionTime > 5000 then -- 5 seconds
+                    stats.slowQueries = stats.slowQueries + 1
+                    lia.log.add(nil, "slow_query", executionTime .. "ms", query:sub(1, 100) .. "...")
+                end
+            else
+                stats.queriesFailed = stats.queriesFailed + 1
+                lia.log.add(nil, "query_failed", query:sub(1, 100) .. "...")
+            end
+
+            lia.data.set("databaseStats", stats)
+        end
+
+        -- Initialize connection pool
+        lia.db.initializePool()
+
+        -- Run database health check
+        timer.Create("DatabaseHealthCheck", 60, 0, function()
+            lia.db.healthCheck(function(healthy, latency)
+                local stats = lia.data.get("databaseStats", {})
+                stats.lastHealthCheck = os.time()
+                stats.lastLatency = latency
+                lia.data.set("databaseStats", stats)
+
+                if not healthy then
+                    lia.log.add(nil, "database_health_failed", "Health check failed")
+                    -- Attempt auto-recovery
+                    lia.db.recoverConnection()
+                end
+            end)
+        end)
+
+        -- Set up automatic backups
+        if lia.db.config.backup.enabled then
+            timer.Create("DatabaseBackup", lia.db.config.backup.interval, 0, function()
+                lia.db.createBackup(function(success, backupPath)
+                    if success then
+                        local stats = lia.data.get("databaseStats", {})
+                        stats.backupsCreated = stats.backupsCreated + 1
+                        lia.data.set("databaseStats", stats)
+                        lia.log.add(nil, "database_backup_created", backupPath)
+                    else
+                        lia.log.add(nil, "database_backup_failed")
+                    end
+                end)
+            end)
+        end
+
+        -- Performance monitoring
+        lia.db.performanceMonitor = {
+            enabled = true,
+            sampleRate = 0.1, -- Sample 10% of queries
+            alertThreshold = 10000, -- Alert on queries > 10 seconds
+            statsWindow = 3600 -- 1 hour rolling window
+        }
+
+        -- Register database metrics with monitoring system
+        if lia.monitoring then
+            lia.monitoring.registerMetric("database_connections", function()
+                return lia.db.getActiveConnections()
+            end)
+
+            lia.monitoring.registerMetric("database_query_rate", function()
+                local stats = lia.data.get("databaseStats", {})
+                local timeDiff = os.time() - stats.startTime
+                return timeDiff > 0 and (stats.queriesExecuted / timeDiff) or 0
+            end)
+
+            lia.monitoring.registerMetric("database_cache_hit_ratio", function()
+                local stats = lia.data.get("databaseStats", {})
+                local total = stats.cacheHits + stats.cacheMisses
+                return total > 0 and (stats.cacheHits / total) or 0
+            end)
+        end
+
+        lia.log.add(nil, "database_advanced_setup",
+            string.format("type:%s, pool:%d-%d, cache:%s, backups:%s",
+                dbType,
+                lia.db.config.pool.min, lia.db.config.pool.max,
+                lia.db.config.cache.enabled and "enabled" or "disabled",
+                lia.db.config.backup.enabled and "enabled" or "disabled"))
+
+        print(string.format("[DATABASE] Advanced setup complete - %s database with connection pool (%d-%d)",
+            dbType, lia.db.config.pool.min, lia.db.config.pool.max))
     end)
     ```
 ]]
@@ -20470,25 +22869,258 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SetupPlayerModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- Simple: Log model setup
+    hook.Add("SetupPlayerModel", "ModelLogger", function(client, character)
+        print(string.format("Model set up for %s: %s", client:Name(), client:GetModel()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SetupPlayerModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- Medium: Apply character-based model customizations
+    hook.Add("SetupPlayerModel", "ModelCustomizer", function(client, character)
+        local faction = character:getFaction()
+        local class = character:getClass()
+
+        -- Apply faction-specific bodygroups
+        if faction == FACTION_CITIZEN then
+            -- Random citizen variations
+            client:SetBodygroup(math.random(0, 3), math.random(0, 1))
+        elseif faction == FACTION_POLICE then
+            -- Police uniform variations
+            client:SetBodygroup(0, 1) -- Police hat
+            client:SetBodygroup(1, 0) -- Police vest
+        end
+
+        -- Apply class-specific customizations
+        local classData = lia.class.list[class]
+        if classData then
+            -- Set skin based on class
+            if classData.skin then
+                client:SetSkin(classData.skin)
+            end
+
+            -- Apply bodygroup overrides
+            if classData.bodygroups then
+                for bodygroup, value in pairs(classData.bodygroups) do
+                    client:SetBodygroup(bodygroup, value)
+                end
+            end
+        end
+
+        -- Apply character-specific customizations
+        local customizations = character:getData("modelCustomizations", {})
+        if customizations.skin then
+            client:SetSkin(customizations.skin)
+        end
+
+        if customizations.bodygroups then
+            for bgID, bgValue in pairs(customizations.bodygroups) do
+                client:SetBodygroup(bgID, bgValue)
+            end
+        end
+
+        -- Handle gender-specific adjustments
+        local gender = character:getData("gender", "male")
+        if gender == "female" and client:GetModel():find("female") then
+            -- Apply female-specific bodygroups
+            client:SetBodygroup(2, 1) -- Female hair
+        end
+
+        -- Update player color based on faction
+        local factionData = lia.faction.indices[faction]
+        if factionData and factionData.color then
+            client:SetPlayerColor(factionData.color:ToVector())
+        end
+
+        lia.log.add(client, "model_setup", client:GetModel(), faction, class)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SetupPlayerModel", "MyAddon", function(client, character)
-        -- Add your code here
+    -- High: Advanced model system with animations, effects, and dynamic customization
+    hook.Add("SetupPlayerModel", "AdvancedModelSystem", function(client, character)
+        if not IsValid(client) or not character then return end
+
+        local steamID = client:SteamID64()
+        local faction = character:getFaction()
+        local class = character:getClass()
+        local level = character:getLevel() or 1
+
+        -- Advanced Bodygroup System
+        local bodygroups = character:getData("advancedBodygroups", {})
+        local modelInfo = client:GetModelInfo()
+
+        -- Apply progressive bodygroup unlocks based on level
+        if level >= 5 then
+            -- Unlock advanced customization at level 5
+            for bgID = 0, client:GetNumBodyGroups() - 1 do
+                if bodygroups[bgID] then
+                    client:SetBodygroup(bgID, bodygroups[bgID])
+                elseif level >= 10 then
+                    -- Random variations for high-level players
+                    client:SetBodygroup(bgID, math.random(0, client:GetBodygroupCount(bgID) - 1))
+                end
+            end
+        end
+
+        -- Dynamic Skin System
+        local skinData = character:getData("skinData", {})
+        local baseSkin = character:getData("skin", 0)
+
+        -- Apply skin modifications based on character state
+        if character:getData("injured") then
+            client:SetSkin(math.min(baseSkin + 1, client:GetNumSkins() - 1)) -- Injured appearance
+        elseif character:getData("radiation") then
+            client:SetSkin(math.min(baseSkin + 2, client:GetNumSkins() - 1)) -- Irradiated appearance
+        else
+            client:SetSkin(baseSkin)
+        end
+
+        -- Material Override System
+        local materialOverrides = character:getData("materialOverrides", {})
+        for materialName, overridePath in pairs(materialOverrides) do
+            client:SetSubMaterial(client:FindBodygroupByName(materialName) or 0, overridePath)
+        end
+
+        -- Scale and Size Modifications
+        local scale = character:getData("modelScale", 1.0)
+        if scale ~= 1.0 then
+            client:SetModelScale(scale, 0)
+            -- Adjust step size for scaled models
+            client:SetStepSize(client:GetStepSize() * scale)
+        end
+
+        -- Color and Effect System
+        local playerColor = character:getData("playerColor", Vector(1, 1, 1))
+        client:SetPlayerColor(playerColor)
+
+        -- Faction-based glow effects
+        local factionData = lia.faction.indices[faction]
+        if factionData and factionData.glowColor then
+            if level >= 15 then -- High-level faction members get glow
+                client:SetGlowColor(factionData.glowColor)
+                client:SetGlowSize(64)
+            end
+        end
+
+        -- Seasonal/Holiday Effects
+        local currentTime = os.time()
+        local currentMonth = tonumber(os.date("%m", currentTime))
+
+        if currentMonth == 10 then -- Halloween
+            if math.random() < 0.1 then -- 10% chance
+                client:SetGlowColor(Color(255, 128, 0)) -- Orange glow for "special" players
+            end
+        elseif currentMonth == 12 then -- Christmas
+            if character:getData("niceList") then
+                client:SetGlowColor(Color(0, 255, 0)) -- Green glow for nice players
+            elseif character:getData("naughtyList") then
+                client:SetGlowColor(Color(255, 0, 0)) -- Red glow for naughty players
+            end
+        end
+
+        -- Animation Override System
+        local animOverrides = character:getData("animationOverrides", {})
+        if animOverrides.idle then
+            client:SetSequence(client:LookupSequence(animOverrides.idle))
+        end
+
+        -- Weapon-specific model adjustments
+        local activeWeapon = client:GetActiveWeapon()
+        if IsValid(activeWeapon) then
+            local weaponClass = activeWeapon:GetClass()
+
+            -- Apply weapon-specific poses or effects
+            if weaponClass:find("rifle") then
+                -- Military stance adjustments
+                client:SetPoseParameter("aim_yaw", 0)
+                client:SetPoseParameter("body_yaw", 0)
+            elseif weaponClass:find("pistol") then
+                -- Civilian stance
+                client:SetPoseParameter("move_yaw", 0)
+            end
+        end
+
+        -- Status Effect Visuals
+        local statusEffects = character:getData("statusEffects", {})
+
+        for effect, data in pairs(statusEffects) do
+            if effect == "poisoned" and data.active then
+                client:SetGlowColor(Color(0, 255, 0)) -- Green tint for poison
+            elseif effect == "frozen" and data.active then
+                client:SetColor(Color(100, 100, 255, 200)) -- Blue tint for frozen
+            elseif effect == "burning" and data.active then
+                client:SetGlowColor(Color(255, 100, 0)) -- Orange glow for burning
+            end
+        end
+
+        -- Accessory System
+        local accessories = character:getData("accessories", {})
+        for _, accessory in ipairs(accessories) do
+            if accessory.model and accessory.attachPoint then
+                -- Create and attach accessory entity
+                local accessoryEnt = ents.Create("prop_dynamic")
+                accessoryEnt:SetModel(accessory.model)
+                accessoryEnt:SetParent(client)
+                accessoryEnt:AddEffects(EF_BONEMERGE)
+                accessoryEnt:SetLocalPos(accessory.position or Vector(0, 0, 0))
+                accessoryEnt:SetLocalAngles(accessory.angles or Angle(0, 0, 0))
+                accessoryEnt:Spawn()
+
+                -- Store reference for cleanup
+                client:SetNWEntity("accessory_" .. _, accessoryEnt)
+            end
+        end
+
+        -- Performance Optimization
+        if client:GetNumBodyGroups() > 10 then
+            -- Reduce bodygroup calculations for performance
+            client:SetRenderMode(RENDERMODE_TRANSALPHA)
+        end
+
+        -- Physics Optimization for scaled models
+        if scale ~= 1.0 then
+            local phys = client:GetPhysicsObject()
+            if IsValid(phys) then
+                phys:SetMass(phys:GetMass() * scale)
+            end
+        end
+
+        -- Update player statistics
+        local modelStats = lia.data.get("modelStats", {})
+        modelStats.totalSetups = (modelStats.totalSetups or 0) + 1
+        modelStats.byFaction = modelStats.byFaction or {}
+        modelStats.byFaction[faction] = (modelStats.byFaction[faction] or 0) + 1
+        lia.data.set("modelStats", modelStats)
+
+        -- Create model setup audit trail
+        lia.db.insertTable({
+            steamID = steamID,
+            charID = character:getID(),
+            model = client:GetModel(),
+            faction = faction,
+            class = class,
+            level = level,
+            customizations = #bodygroups,
+            timestamp = os.time()
+        }, "model_setup_audit")
+
+        -- Broadcast model change to other players (for caching)
+        net.Start("liaPlayerModelChanged")
+            net.WriteEntity(client)
+            net.WriteString(client:GetModel())
+            net.WriteVector(playerColor)
+            net.WriteFloat(scale)
+        net.Broadcast()
+
+        lia.log.add(client, "advanced_model_setup",
+            string.format("model:%s, faction:%s, level:%d, scale:%.2f",
+                client:GetModel(), faction, level, scale))
+
+        print(string.format("[MODEL] Advanced setup complete for %s - %s %s (Level %d)",
+            client:Name(), faction, class, level))
     end)
     ```
 ]]
@@ -20515,25 +23147,236 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("ShouldDataBeSaved", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Prevent data saving during maintenance
+    hook.Add("ShouldDataBeSaved", "MaintenanceMode", function()
+        if GetGlobalBool("MaintenanceMode", false) then
+            return false -- Don't save during maintenance
+        end
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("ShouldDataBeSaved", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Conditional saving based on server state and performance
+    hook.Add("ShouldDataBeSaved", "SmartSaveController", function()
+        -- Check server uptime - don't save if server just started
+        local uptime = SysTime()
+        if uptime < 300 then -- Less than 5 minutes
+            lia.log.add(nil, "save_skipped", "Server uptime too short: " .. uptime .. " seconds")
+            return false
+        end
+
+        -- Check for active emergencies
+        if GetGlobalBool("EmergencyShutdown", false) then
+            lia.log.add(nil, "save_skipped", "Emergency shutdown - data preservation disabled")
+            return false
+        end
+
+        -- Check server performance
+        local avgFPS = 1 / FrameTime()
+        if avgFPS < 10 then -- Server is lagging badly
+            lia.log.add(nil, "save_skipped", "Server performance too low: " .. avgFPS .. " FPS")
+            return false
+        end
+
+        -- Check for database issues
+        if lia.db and lia.db.getStatus then
+            local dbStatus = lia.db.getStatus()
+            if not dbStatus.healthy then
+                lia.log.add(nil, "save_skipped", "Database unhealthy: " .. dbStatus.error)
+                return false
+            end
+        end
+
+        -- Check player count - don't save empty servers
+        local playerCount = player.GetCount()
+        if playerCount == 0 and uptime > 3600 then -- Empty for more than an hour
+            lia.log.add(nil, "save_skipped", "Server empty for extended period")
+            return false
+        end
+
+        -- Check for ongoing critical events
+        if GetGlobalBool("CriticalEventActive", false) then
+            local eventType = GetGlobalString("CriticalEventType", "unknown")
+            lia.log.add(nil, "save_skipped", "Critical event active: " .. eventType)
+            return false
+        end
+
+        return true -- Allow saving
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("ShouldDataBeSaved", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced save management with data integrity checks and emergency protocols
+    hook.Add("ShouldDataBeSaved", "AdvancedSaveManager", function()
+        local serverStartTime = lia.data.get("serverStartTime", os.time())
+        local currentTime = os.time()
+        local serverUptime = currentTime - serverStartTime
+
+        -- Initialize save statistics if needed
+        local saveStats = lia.data.get("saveStatistics", {
+            totalSaveAttempts = 0,
+            successfulSaves = 0,
+            failedSaves = 0,
+            lastSaveTime = 0,
+            averageSaveTime = 0
+        })
+
+        saveStats.totalSaveAttempts = saveStats.totalSaveAttempts + 1
+
+        -- Emergency save prevention protocols
+        local emergencyFlags = {
+            "EmergencyShutdown",
+            "CriticalSystemFailure",
+            "DataCorruptionDetected",
+            "AdminOverride_SaveDisabled",
+            "ServerInstability_DisableSaves"
+        }
+
+        for _, flag in ipairs(emergencyFlags) do
+            if GetGlobalBool(flag, false) then
+                lia.log.add(nil, "save_blocked_emergency", flag)
+                saveStats.failedSaves = saveStats.failedSaves + 1
+                lia.data.set("saveStatistics", saveStats)
+                return false
+            end
+        end
+
+        -- Data integrity checks
+        local integrityChecks = {
+            function() -- Check for critical data corruption
+                local criticalData = {"lia_characters", "lia_players", "lia_items"}
+                for _, tableName in ipairs(criticalData) do
+                    if lia.db.query("SELECT COUNT(*) FROM " .. tableName) == false then
+                        return false, "Critical table corruption: " .. tableName
+                    end
+                end
+                return true
+            end,
+
+            function() -- Check server performance metrics
+                local fps = 1 / FrameTime()
+                local ping = GetGlobalFloat("ServerPing", 0)
+                local memoryUsage = collectgarbage("count") / 1024 -- MB
+
+                if fps < 5 then
+                    return false, "Server FPS critically low: " .. fps
+                end
+
+                if memoryUsage > 512 then -- 512MB limit
+                    return false, "Memory usage too high: " .. memoryUsage .. "MB"
+                end
+
+                return true
+            end,
+
+            function() -- Check for active critical processes
+                if GetGlobalBool("BackupInProgress", false) then
+                    return false, "Backup operation in progress"
+                end
+
+                if GetGlobalBool("DatabaseMigration", false) then
+                    return false, "Database migration in progress"
+                end
+
+                return true
+            end,
+
+            function() -- Validate recent data changes
+                local lastDataChange = lia.data.get("lastDataModification", 0)
+                local timeSinceChange = currentTime - lastDataChange
+
+                if timeSinceChange < 60 then -- Less than 1 minute since last change
+                    return false, "Recent data modifications detected - waiting for stabilization"
+                end
+
+                return true
+            end
+        }
+
+        -- Run all integrity checks
+        for _, checkFunc in ipairs(integrityChecks) do
+            local passed, reason = checkFunc()
+            if not passed then
+                lia.log.add(nil, "save_blocked_integrity", reason)
+                saveStats.failedSaves = saveStats.failedSaves + 1
+                lia.data.set("saveStatistics", saveStats)
+                return false
+            end
+        end
+
+        -- Smart save scheduling based on server activity
+        local playerCount = player.GetCount()
+        local activePlayers = 0
+
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:GetUTimeTotalTime() > 300 then -- Active in last 5 minutes
+                activePlayers = activePlayers + 1
+            end
+        end
+
+        local activityRatio = activePlayers / math.max(playerCount, 1)
+
+        -- Adjust save frequency based on activity
+        local saveCooldown = 1800 -- 30 minutes default
+        if activityRatio > 0.8 then -- High activity
+            saveCooldown = 900 -- 15 minutes
+        elseif activityRatio < 0.2 then -- Low activity
+            saveCooldown = 3600 -- 1 hour
+        end
+
+        local timeSinceLastSave = currentTime - saveStats.lastSaveTime
+        if timeSinceLastSave < saveCooldown then
+            lia.log.add(nil, "save_skipped_cooldown",
+                string.format("Cooldown: %d/%d seconds", timeSinceLastSave, saveCooldown))
+            return false
+        end
+
+        -- Check for data consistency
+        local dataConsistency = lia.data.get("dataConsistencyCheck", {})
+        if dataConsistency.lastCheck and (currentTime - dataConsistency.lastCheck) > 3600 then -- Check every hour
+            if not lia.db.checkDataConsistency() then
+                lia.log.add(nil, "save_blocked_consistency", "Data consistency check failed")
+                dataConsistency.failures = (dataConsistency.failures or 0) + 1
+                dataConsistency.lastFailure = currentTime
+                lia.data.set("dataConsistencyCheck", dataConsistency)
+                return false
+            end
+
+            dataConsistency.lastCheck = currentTime
+            dataConsistency.successes = (dataConsistency.successes or 0) + 1
+            lia.data.set("dataConsistencyCheck", dataConsistency)
+        end
+
+        -- Pre-save preparations
+        lia.data.set("lastSaveAttempt", currentTime)
+
+        -- Create save audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            serverUptime = serverUptime,
+            playerCount = playerCount,
+            activePlayers = activePlayers,
+            activityRatio = activityRatio,
+            reason = "scheduled_save"
+        }, "save_audit")
+
+        -- Set save start marker for performance tracking
+        lia.data.set("saveStartTime", SysTime())
+
+        -- Broadcast save warning to players
+        if playerCount > 0 then
+            net.Start("liaSaveWarning")
+                net.WriteFloat(10) -- 10 second warning
+            net.Broadcast()
+        end
+
+        lia.log.add(nil, "save_approved",
+            string.format("Players:%d/%d, Activity:%.2f, Uptime:%ds",
+                activePlayers, playerCount, activityRatio, serverUptime))
+
+        return true -- Proceed with save
     end)
     ```
 ]]
@@ -20560,25 +23403,261 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("ShouldDeleteSavedItems", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Always delete orphaned items
+    hook.Add("ShouldDeleteSavedItems", "CleanupOrphans", function()
+        return true -- Delete all orphaned items
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("ShouldDeleteSavedItems", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Smart cleanup based on item value and server settings
+    hook.Add("ShouldDeleteSavedItems", "SmartItemCleanup", function()
+        -- Get server cleanup settings
+        local cleanupMode = lia.config.get("OrphanItemCleanup", "smart")
+        local maxOrphanAge = lia.config.get("MaxOrphanAge", 30) * 24 * 60 * 60 -- 30 days in seconds
+        local currentTime = os.time()
+
+        -- Check each orphaned item individually
+        local orphanedItems = lia.data.get("orphanedItems", {})
+
+        for itemID, itemData in pairs(orphanedItems) do
+            local shouldDelete = false
+
+            -- Age-based cleanup
+            if (currentTime - itemData.lastSeen) > maxOrphanAge then
+                shouldDelete = true
+            end
+
+            -- Value-based decisions
+            local itemValue = itemData.price or 0
+            if cleanupMode == "valuable_only" then
+                -- Only delete cheap items
+                shouldDelete = itemValue < 100
+            elseif cleanupMode == "expensive_only" then
+                -- Only keep expensive items
+                shouldDelete = itemValue >= 1000
+            end
+
+            -- Special item handling
+            if itemData.category == "quest_items" then
+                shouldDelete = false -- Never delete quest items
+            elseif itemData.category == "unique" then
+                shouldDelete = false -- Keep unique items for potential recovery
+            end
+
+            if shouldDelete then
+                -- Mark for deletion
+                itemData.markedForDeletion = true
+                itemData.deletionReason = "cleanup_policy"
+                lia.log.add(nil, "orphan_item_deleted", itemData.name, itemValue)
+            else
+                -- Keep but flag for admin review
+                itemData.needsReview = true
+                itemData.reviewReason = "valuable_orphan"
+            end
+        end
+
+        lia.data.set("orphanedItems", orphanedItems)
+
+        -- Return true to proceed with cleanup of marked items
+        return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("ShouldDeleteSavedItems", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced orphan management with recovery options, analytics, and player notification
+    hook.Add("ShouldDeleteSavedItems", "AdvancedOrphanManager", function()
+        local currentTime = os.time()
+        local orphanedItems = lia.data.get("orphanedItems", {})
+        local serverStats = lia.data.get("orphanStats", {
+            totalOrphans = 0,
+            recoveredItems = 0,
+            deletedItems = 0,
+            valuableOrphans = 0,
+            lastCleanup = 0
+        })
+
+        -- Initialize cleanup session
+        local cleanupSession = {
+            sessionID = "cleanup_" .. currentTime .. "_" .. math.random(10000, 99999),
+            startTime = currentTime,
+            itemsProcessed = 0,
+            itemsDeleted = 0,
+            itemsRecovered = 0,
+            totalValueDeleted = 0,
+            totalValueRecovered = 0
+        }
+
+        -- Analyze each orphaned item
+        for itemID, itemData in pairs(orphanedItems) do
+            cleanupSession.itemsProcessed = cleanupSession.itemsProcessed + 1
+
+            -- Calculate item value metrics
+            local baseValue = itemData.price or 0
+            local rarityMultiplier = itemData.rarity == "legendary" and 5 or
+                                   itemData.rarity == "epic" and 3 or
+                                   itemData.rarity == "rare" and 2 or 1
+            local adjustedValue = baseValue * rarityMultiplier
+
+            -- Time-based decay (items lose value over time)
+            local ageInDays = (currentTime - itemData.lastSeen) / (24 * 60 * 60)
+            local decayFactor = math.max(0.1, 1 - (ageInDays / 365)) -- Max 90% decay over a year
+            local currentValue = adjustedValue * decayFactor
+
+            -- Recovery potential assessment
+            local recoveryPotential = 0
+
+            -- Check if owner might return
+            if itemData.ownerLastOnline then
+                local daysSinceLastOnline = (currentTime - itemData.ownerLastOnline) / (24 * 60 * 60)
+                if daysSinceLastOnline < 30 then
+                    recoveryPotential = recoveryPotential + 3 -- Recent activity
+                elseif daysSinceLastOnline < 90 then
+                    recoveryPotential = recoveryPotential + 2 -- Moderately recent
+                elseif daysSinceLastOnline < 365 then
+                    recoveryPotential = recoveryPotential + 1 -- Old but possible
+                end
+            end
+
+            -- Check item uniqueness and importance
+            if itemData.unique or itemData.questItem then
+                recoveryPotential = recoveryPotential + 2
+            end
+
+            if itemData.category == "weapons" or itemData.category == "armor" then
+                recoveryPotential = recoveryPotential + 1 -- Useful items
+            end
+
+            -- Economic factors
+            if currentValue > 500 then
+                recoveryPotential = recoveryPotential + 2 -- Valuable items
+            elseif currentValue > 100 then
+                recoveryPotential = recoveryPotential + 1 -- Moderately valuable
+            end
+
+            -- Community factors
+            if itemData.sentimentalValue then
+                recoveryPotential = recoveryPotential + 1 -- Emotional attachment
+            end
+
+            -- Decision making
+            local shouldDelete = false
+            local decisionReason = ""
+
+            if recoveryPotential >= 5 then
+                -- High recovery potential - keep for recovery
+                shouldDelete = false
+                decisionReason = "high_recovery_potential"
+                cleanupSession.itemsRecovered = cleanupSession.itemsRecovered + 1
+                cleanupSession.totalValueRecovered = cleanupSession.totalValueRecovered + currentValue
+
+                -- Create recovery record
+                local recoveryRecord = {
+                    itemID = itemID,
+                    itemData = itemData,
+                    recoveryPotential = recoveryPotential,
+                    estimatedValue = currentValue,
+                    created = currentTime,
+                    expires = currentTime + (90 * 24 * 60 * 60) -- 90 days recovery period
+                }
+                lia.data.set("recovery_item_" .. itemID, recoveryRecord)
+
+                -- Notify relevant players if possible
+                if itemData.ownerSteamID then
+                    -- Store notification for when they return
+                    local notifications = lia.data.get("pendingNotifications_" .. itemData.ownerSteamID, {})
+                    table.insert(notifications, {
+                        type = "item_recovery_available",
+                        itemName = itemData.name,
+                        itemID = itemID,
+                        timestamp = currentTime
+                    })
+                    lia.data.set("pendingNotifications_" .. itemData.ownerSteamID, notifications)
+                end
+
+            elseif ageInDays > 90 and currentValue < 50 then
+                -- Very old and worthless - delete
+                shouldDelete = true
+                decisionReason = "aged_out_worthless"
+                cleanupSession.itemsDeleted = cleanupSession.itemsDeleted + 1
+                cleanupSession.totalValueDeleted = cleanupSession.totalValueDeleted + currentValue
+
+            elseif recoveryPotential <= 1 and ageInDays > 30 then
+                -- Low recovery potential and moderately old - delete
+                shouldDelete = true
+                decisionReason = "low_recovery_old"
+                cleanupSession.itemsDeleted = cleanupSession.itemsDeleted + 1
+                cleanupSession.totalValueDeleted = cleanupSession.totalValueDeleted + currentValue
+
+            else
+                -- Keep for now but flag for review
+                shouldDelete = false
+                decisionReason = "requires_review"
+                itemData.needsReview = true
+                itemData.reviewReason = "moderate_recovery_potential"
+            end
+
+            -- Update item record
+            itemData.lastCleanupCheck = currentTime
+            itemData.recoveryPotential = recoveryPotential
+            itemData.currentValue = currentValue
+            itemData.decision = shouldDelete and "delete" or "keep"
+            itemData.decisionReason = decisionReason
+
+            -- Mark for deletion if decided
+            if shouldDelete then
+                itemData.markedForDeletion = true
+                itemData.deletionTime = currentTime
+                itemData.deletionSession = cleanupSession.sessionID
+            end
+        end
+
+        -- Update statistics
+        serverStats.totalOrphans = serverStats.totalOrphans + cleanupSession.itemsProcessed
+        serverStats.deletedItems = serverStats.deletedItems + cleanupSession.itemsDeleted
+        serverStats.recoveredItems = serverStats.recoveredItems + cleanupSession.itemsRecovered
+        serverStats.lastCleanup = currentTime
+
+        if cleanupSession.itemsProcessed > 0 then
+            serverStats.averageRecoveryRate = (serverStats.recoveredItems / serverStats.totalOrphans) * 100
+        end
+
+        lia.data.set("orphanStats", serverStats)
+        lia.data.set("orphanedItems", orphanedItems)
+
+        -- Create cleanup session record
+        cleanupSession.endTime = os.time()
+        cleanupSession.duration = cleanupSession.endTime - cleanupSession.startTime
+        lia.data.set("cleanup_session_" .. cleanupSession.sessionID, cleanupSession)
+
+        -- Log comprehensive cleanup results
+        lia.db.insertTable({
+            sessionID = cleanupSession.sessionID,
+            startTime = cleanupSession.startTime,
+            endTime = cleanupSession.endTime,
+            duration = cleanupSession.duration,
+            itemsProcessed = cleanupSession.itemsProcessed,
+            itemsDeleted = cleanupSession.itemsDeleted,
+            itemsRecovered = cleanupSession.itemsRecovered,
+            valueDeleted = cleanupSession.totalValueDeleted,
+            valueRecovered = cleanupSession.totalValueRecovered,
+            serverStats = util.TableToJSON(serverStats)
+        }, "orphan_cleanup_sessions")
+
+        lia.log.add(nil, "orphan_cleanup_completed",
+            string.format("Processed:%d, Deleted:%d ($%.2f), Recovered:%d ($%.2f), Duration:%.1fs",
+                cleanupSession.itemsProcessed, cleanupSession.itemsDeleted,
+                cleanupSession.totalValueDeleted, cleanupSession.itemsRecovered,
+                cleanupSession.totalValueRecovered, cleanupSession.duration))
+
+        -- Send admin notification
+        net.Start("liaOrphanCleanupComplete")
+            net.WriteTable(cleanupSession)
+        net.Send(lia.util.getAdmins())
+
+        return cleanupSession.itemsDeleted > 0 -- Return true if any items should be deleted
     end)
     ```
 ]]
@@ -20607,25 +23686,259 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageCanTransferItem", "MyAddon", function(client, storage, item)
-        -- Add your code here
+    -- Simple: Allow all transfers
+    hook.Add("StorageCanTransferItem", "AllowAllTransfers", function(client, storage, item)
+        return true -- Allow all item transfers
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageCanTransferItem", "MyAddon", function(client, storage, item)
-        -- Add your code here
+    -- Medium: Basic permission and ownership checks
+    hook.Add("StorageCanTransferItem", "BasicTransferValidation", function(client, storage, item)
+        -- Check if player has permission to access storage
+        if storage:getData("owner") and storage:getData("owner") ~= client:SteamID64() then
+            if not client:hasPrivilege("accessAllStorages") then
+                client:notifyError("You don't have permission to access this storage!")
+                return false
+            end
+        end
+
+        -- Check item ownership
+        if item:getData("owner") and item:getData("owner") ~= client:SteamID64() then
+            if not client:hasPrivilege("transferAnyItem") then
+                client:notifyError("You don't own this item!")
+                return false
+            end
+        end
+
+        -- Check if item is locked or restricted
+        if item:getData("locked") then
+            client:notifyError("This item is locked and cannot be transferred!")
+            return false
+        end
+
+        -- Check storage capacity (basic)
+        local storageInv = storage:getInv()
+        if storageInv and storageInv:getWeight() > (storage:getData("maxWeight") or 100) then
+            client:notifyError("Storage is over capacity!")
+            return false
+        end
+
+        -- Log the transfer attempt
+        lia.log.add(client, "storage_transfer_attempt", item.name, storage:EntIndex())
+
+        return true
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageCanTransferItem", "MyAddon", function(client, storage, item)
-        -- Add your code here
+    -- High: Advanced transfer validation with security, logging, and business rules
+    hook.Add("StorageCanTransferItem", "AdvancedTransferSecurity", function(client, storage, item)
+        if not IsValid(client) or not IsValid(storage) or not item then
+            return false
+        end
+
+        local clientSteamID = client:SteamID64()
+        local storageID = storage:EntIndex()
+        local itemID = item:getID()
+        local currentTime = os.time()
+
+        -- Initialize transfer tracking if needed
+        if not client.transferStats then
+            client.transferStats = {
+                totalTransfers = 0,
+                lastTransferTime = 0,
+                suspiciousActivity = 0,
+                flaggedItems = {}
+            }
+        end
+
+        -- Rate limiting check
+        local timeSinceLastTransfer = currentTime - client.transferStats.lastTransferTime
+        if timeSinceLastTransfer < 1 then -- Less than 1 second
+            client.transferStats.suspiciousActivity = client.transferStats.suspiciousActivity + 1
+            if client.transferStats.suspiciousActivity > 5 then
+                lia.log.add(client, "transfer_rate_limit_exceeded", client.transferStats.suspiciousActivity)
+                client:notifyError("Transfer rate limit exceeded. Please slow down.")
+                return false
+            end
+        end
+
+        -- Storage ownership and access validation
+        local storageOwner = storage:getData("owner")
+        local storageAccessList = storage:getData("accessList", {})
+        local hasStorageAccess = false
+
+        if storageOwner == clientSteamID then
+            hasStorageAccess = true -- Owner always has access
+        elseif storageAccessList[clientSteamID] then
+            hasStorageAccess = true -- Explicitly granted access
+        elseif storage:getData("publicAccess") then
+            hasStorageAccess = true -- Public storage
+        elseif client:hasPrivilege("storageAdmin") then
+            hasStorageAccess = true -- Admin override
+        end
+
+        if not hasStorageAccess then
+            lia.log.add(client, "storage_access_denied", storageID)
+            client:notifyError("You don't have permission to access this storage!")
+            return false
+        end
+
+        -- Item ownership and transfer restrictions
+        local itemOwner = item:getData("owner")
+        local canTransferItem = false
+
+        if itemOwner == clientSteamID then
+            canTransferItem = true -- Own item
+        elseif item:getData("transferable") == false then
+            client:notifyError("This item cannot be transferred!")
+            return false
+        elseif item:getData("soulbound") then
+            client:notifyError("This item is soulbound and cannot be transferred!")
+            return false
+        elseif client:hasPrivilege("transferAnyItem") then
+            canTransferItem = true -- Admin override
+        elseif item:getData("guildItem") and client:getData("guildID") == item:getData("guildID") then
+            canTransferItem = true -- Guild item transfer
+        end
+
+        if not canTransferItem then
+            lia.log.add(client, "item_transfer_denied", item.name, itemID)
+            client:notifyError("You cannot transfer this item!")
+            return false
+        end
+
+        -- Business rule validation
+        local itemValue = item:getData("value") or item.price or 0
+        local clientLevel = client:getChar():getLevel() or 1
+
+        -- Level restrictions for valuable items
+        if itemValue > 1000 and clientLevel < 10 then
+            client:notifyError("You need to be level 10 or higher to transfer valuable items!")
+            return false
+        end
+
+        -- Faction restrictions
+        local itemFaction = item:getData("factionRestricted")
+        if itemFaction then
+            local clientFaction = client:getChar():getFaction()
+            if clientFaction ~= itemFaction and not client:hasPrivilege("ignoreFactionRestrictions") then
+                client:notifyError("This item is restricted to " .. itemFaction .. " faction!")
+                return false
+            end
+        end
+
+        -- Storage capacity and weight validation
+        local targetInventory = client:getChar():getInv()
+        if targetInventory then
+            local currentWeight = targetInventory:getWeight()
+            local maxWeight = targetInventory:getMaxWeight()
+            local itemWeight = item:getData("weight") or 1
+
+            if currentWeight + itemWeight > maxWeight then
+                client:notifyError("Not enough space in your inventory!")
+                return false
+            end
+
+            -- Slot validation for specific item types
+            if item.category == "weapons" then
+                local weaponSlots = targetInventory:getWeaponSlots()
+                if weaponSlots.used >= weaponSlots.max then
+                    client:notifyError("No available weapon slots!")
+                    return false
+                end
+            end
+        end
+
+        -- Economic validation (taxes, fees, etc.)
+        local transferFee = item:getData("transferFee") or 0
+        if transferFee > 0 then
+            local clientMoney = client:getChar():getMoney()
+            if clientMoney < transferFee then
+                client:notifyError(string.format("Transfer fee is $%d, you only have $%d!", transferFee, clientMoney))
+                return false
+            end
+            -- Fee will be deducted in the actual transfer
+        end
+
+        -- Security checks
+        local suspiciousPatterns = {
+            highValueRapidTransfers = itemValue > 5000 and timeSinceLastTransfer < 10,
+            unusualItemType = item.category == "admin" and not client:hasPrivilege("adminItems"),
+            blacklistedItem = item:getData("blacklisted")
+        }
+
+        local securityFlags = 0
+        for checkName, isSuspicious in pairs(suspiciousPatterns) do
+            if isSuspicious then
+                securityFlags = securityFlags + 1
+                lia.log.add(client, "suspicious_transfer_pattern", checkName, item.name)
+            end
+        end
+
+        if securityFlags > 0 then
+            -- Create security alert
+            lia.db.insertTable({
+                steamID = clientSteamID,
+                itemID = itemID,
+                itemName = item.name,
+                storageID = storageID,
+                securityFlags = securityFlags,
+                timestamp = currentTime
+            }, "transfer_security_alerts")
+
+            -- Notify security staff if highly suspicious
+            if securityFlags >= 2 then
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("securityAlerts") then
+                        ply:notifyWarning(string.format("Suspicious transfer attempt by %s: %s", client:Name(), item.name))
+                    end
+                end
+            end
+        end
+
+        -- Update transfer statistics
+        client.transferStats.totalTransfers = client.transferStats.totalTransfers + 1
+        client.transferStats.lastTransferTime = currentTime
+
+        -- Track flagged items
+        if securityFlags > 0 then
+            client.transferStats.flaggedItems[itemID] = currentTime
+        end
+
+        -- Clean old flagged items (keep last 24 hours)
+        for flaggedID, flagTime in pairs(client.transferStats.flaggedItems) do
+            if currentTime - flagTime > 86400 then
+                client.transferStats.flaggedItems[flaggedID] = nil
+            end
+        end
+
+        -- Create comprehensive audit trail
+        lia.db.insertTable({
+            steamID = clientSteamID,
+            itemID = itemID,
+            itemName = item.name,
+            itemValue = itemValue,
+            storageID = storageID,
+            transferFee = transferFee,
+            securityFlags = securityFlags,
+            timestamp = currentTime
+        }, "item_transfer_audit")
+
+        -- Update global transfer statistics
+        local globalStats = lia.data.get("transferStats", {})
+        globalStats.totalTransfers = (globalStats.totalTransfers or 0) + 1
+        globalStats.totalValueTransferred = (globalStats.totalValueTransferred or 0) + itemValue
+        globalStats.lastTransferTime = currentTime
+        lia.data.set("transferStats", globalStats)
+
+        lia.log.add(client, "item_transfer_approved",
+            string.format("%s ($%d) from storage %d", item.name, itemValue, storageID))
+
+        return true -- Allow the transfer
     end)
     ```
 ]]
@@ -20653,25 +23966,278 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageEntityRemoved", "MyAddon", function(self, inventory)
-        -- Add your code here
+    -- Simple: Log storage removal
+    hook.Add("StorageEntityRemoved", "StorageRemovalLogger", function(self, inventory)
+        print(string.format("Storage entity removed: %s (Inventory ID: %s)", self:GetClass(), inventory:getID()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageEntityRemoved", "MyAddon", function(self, inventory)
-        -- Add your code here
+    -- Medium: Preserve valuable items and notify owners
+    hook.Add("StorageEntityRemoved", "StorageCleanupHandler", function(self, inventory)
+        local inventoryID = inventory:getID()
+        local storageOwner = self:getData("owner")
+
+        -- Archive inventory contents before deletion
+        local archivedItems = {}
+        local totalValue = 0
+
+        for _, item in pairs(inventory:getItems()) do
+            table.insert(archivedItems, {
+                uniqueID = item.uniqueID,
+                name = item.name,
+                quantity = item:getQuantity(),
+                data = item:getData(),
+                value = item:getData("value") or item.price or 0
+            })
+            totalValue = totalValue + (item:getData("value") or item.price or 0)
+        end
+
+        -- Store archive for potential recovery
+        if #archivedItems > 0 then
+            lia.data.set("archived_inventory_" .. inventoryID, {
+                items = archivedItems,
+                totalValue = totalValue,
+                archivedAt = os.time(),
+                storageType = self:GetClass(),
+                owner = storageOwner,
+                location = self:GetPos()
+            })
+
+            -- Notify owner if online
+            if storageOwner then
+                local ownerPlayer = player.GetBySteamID64(storageOwner)
+                if IsValid(ownerPlayer) then
+                    ownerPlayer:notifyWarning(string.format("Your storage was removed! %d items worth $%d were archived.",
+                        #archivedItems, totalValue))
+                end
+            end
+        end
+
+        -- Update storage statistics
+        local storageStats = lia.data.get("storageStats", {})
+        storageStats.totalRemoved = (storageStats.totalRemoved or 0) + 1
+        storageStats.itemsArchived = (storageStats.itemsArchived or 0) + #archivedItems
+        storageStats.valueArchived = (storageStats.valueArchived or 0) + totalValue
+        lia.data.set("storageStats", storageStats)
+
+        lia.log.add(nil, "storage_removed", self:GetClass(), inventoryID, #archivedItems, totalValue)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageEntityRemoved", "MyAddon", function(self, inventory)
-        -- Add your code here
+    -- High: Advanced storage removal with comprehensive archival, analytics, and recovery systems
+    hook.Add("StorageEntityRemoved", "AdvancedStorageRemoval", function(self, inventory)
+        if not IsValid(self) or not inventory then return end
+
+        local inventoryID = inventory:getID()
+        local storageClass = self:GetClass()
+        local storagePos = self:GetPos()
+        local storageOwner = self:getData("owner")
+        local currentTime = os.time()
+
+        -- Create comprehensive inventory snapshot
+        local inventorySnapshot = {
+            metadata = {
+                inventoryID = inventoryID,
+                storageClass = storageClass,
+                storageModel = self:GetModel(),
+                position = storagePos,
+                owner = storageOwner,
+                createdAt = self:getData("createdAt") or 0,
+                lastAccessed = self:getData("lastAccessed") or 0,
+                totalAccesses = self:getData("totalAccesses") or 0,
+                maxWeight = inventory:getMaxWeight(),
+                removalReason = self:getData("removalReason") or "unknown"
+            },
+            items = {},
+            statistics = {
+                totalItems = 0,
+                totalValue = 0,
+                totalWeight = 0,
+                categories = {},
+                rarities = {}
+            },
+            removal = {
+                timestamp = currentTime,
+                serverUptime = SysTime(),
+                playerCount = player.GetCount(),
+                removalMethod = self:getData("removalMethod") or "entity_removal"
+            }
+        }
+
+        -- Analyze and archive each item
+        for _, item in pairs(inventory:getItems()) do
+            local itemData = {
+                uniqueID = item.uniqueID,
+                name = item.name,
+                description = item.description or "",
+                category = item.category or "misc",
+                model = item.model,
+                quantity = item:getQuantity(),
+                weight = item.weight or 1,
+                price = item.price or 0,
+                value = item:getData("value") or item.price or 0,
+                rarity = item:getData("rarity") or "common",
+                data = table.Copy(item:getData()), -- Full item data
+                created = item:getData("created") or currentTime,
+                lastUsed = item:getData("lastUsed") or 0,
+                durability = item:getData("durability"),
+                maxDurability = item:getData("maxDurability")
+            }
+
+            table.insert(inventorySnapshot.items, itemData)
+
+            -- Update statistics
+            inventorySnapshot.statistics.totalItems = inventorySnapshot.statistics.totalItems + itemData.quantity
+            inventorySnapshot.statistics.totalValue = inventorySnapshot.statistics.totalValue + (itemData.value * itemData.quantity)
+            inventorySnapshot.statistics.totalWeight = inventorySnapshot.statistics.totalWeight + (itemData.weight * itemData.quantity)
+
+            -- Category breakdown
+            inventorySnapshot.statistics.categories[itemData.category] =
+                (inventorySnapshot.statistics.categories[itemData.category] or 0) + itemData.quantity
+
+            -- Rarity breakdown
+            inventorySnapshot.statistics.rarities[itemData.rarity] =
+                (inventorySnapshot.statistics.rarities[itemData.rarity] or 0) + itemData.quantity
+        end
+
+        -- Generate recovery options based on item value and rarity
+        local recoveryOptions = {}
+        local highValueThreshold = 1000
+        local rareItems = {"epic", "legendary"}
+
+        for _, itemData in ipairs(inventorySnapshot.items) do
+            local recoveryValue = itemData.value * itemData.quantity
+            local isHighValue = recoveryValue >= highValueThreshold
+            local isRare = table.HasValue(rareItems, itemData.rarity)
+
+            if isHighValue or isRare then
+                table.insert(recoveryOptions, {
+                    itemName = itemData.name,
+                    value = recoveryValue,
+                    rarity = itemData.rarity,
+                    quantity = itemData.quantity,
+                    recoveryPriority = isRare and "high" or "medium",
+                    recoveryDeadline = currentTime + (30 * 24 * 60 * 60) -- 30 days
+                })
+            end
+        end
+
+        inventorySnapshot.recoveryOptions = recoveryOptions
+
+        -- Store comprehensive archive
+        local archiveID = string.format("storage_archive_%s_%d", inventoryID, currentTime)
+        lia.data.set(archiveID, inventorySnapshot)
+
+        -- Create database audit trail
+        lia.db.insertTable({
+            archiveID = archiveID,
+            inventoryID = inventoryID,
+            storageClass = storageClass,
+            owner = storageOwner,
+            totalItems = inventorySnapshot.statistics.totalItems,
+            totalValue = inventorySnapshot.statistics.totalValue,
+            recoveryOptions = #recoveryOptions,
+            timestamp = currentTime
+        }, "storage_removal_audit")
+
+        -- Update global statistics
+        local globalStats = lia.data.get("storageRemovalStats", {})
+        globalStats.totalRemovals = (globalStats.totalRemovals or 0) + 1
+        globalStats.totalItemsLost = (globalStats.totalItemsLost or 0) + inventorySnapshot.statistics.totalItems
+        globalStats.totalValueLost = (globalStats.totalValueLost or 0) + inventorySnapshot.statistics.totalValue
+        globalStats.recoveryCandidates = (globalStats.recoveryCandidates or 0) + #recoveryOptions
+        globalStats.lastRemoval = currentTime
+        lia.data.set("storageRemovalStats", globalStats)
+
+        -- Notify relevant parties
+        if storageOwner then
+            local ownerPlayer = player.GetBySteamID64(storageOwner)
+            if IsValid(ownerPlayer) then
+                ownerPlayer:notifyError(string.format("Your storage (%s) was removed! %d items archived for potential recovery.",
+                    storageClass, #inventorySnapshot.items))
+
+                if #recoveryOptions > 0 then
+                    ownerPlayer:notifyInfo(string.format("You have %d valuable/rare items eligible for recovery.", #recoveryOptions))
+                end
+            else
+                -- Store notification for when they return
+                local notifications = lia.data.get("pendingNotifications_" .. storageOwner, {})
+                table.insert(notifications, {
+                    type = "storage_removed",
+                    storageClass = storageClass,
+                    itemsArchived = #inventorySnapshot.items,
+                    recoveryOptions = #recoveryOptions,
+                    timestamp = currentTime
+                })
+                lia.data.set("pendingNotifications_" .. storageOwner, notifications)
+            end
+        end
+
+        -- Notify administrators of significant storage removals
+        if inventorySnapshot.statistics.totalValue >= 5000 or #recoveryOptions >= 3 then
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("storageAlerts") then
+                    ply:notifyWarning(string.format("High-value storage removed: %s worth $%d with %d recovery candidates",
+                        storageClass, inventorySnapshot.statistics.totalValue, #recoveryOptions))
+                end
+            end
+        end
+
+        -- Handle special item types
+        local specialItems = {"quest_items", "unique", "legendary"}
+        for _, itemData in ipairs(inventorySnapshot.items) do
+            if table.HasValue(specialItems, itemData.category) or table.HasValue(specialItems, itemData.rarity) then
+                -- Log special item loss for admin review
+                lia.log.add(nil, "special_item_lost", itemData.name, itemData.uniqueID, storageOwner)
+            end
+        end
+
+        -- Clean up related data
+        lia.data.set("storage_location_" .. inventoryID, nil)
+        lia.data.set("storage_access_" .. inventoryID, nil)
+        lia.data.set("storage_history_" .. inventoryID, nil)
+
+        -- Update economic impact tracking
+        if inventorySnapshot.statistics.totalValue > 0 then
+            local economyData = lia.data.get("economyData", {})
+            economyData.storageValueLost = (economyData.storageValueLost or 0) + inventorySnapshot.statistics.totalValue
+            economyData.storageRemovals = (economyData.storageRemovals or 0) + 1
+            lia.data.set("economyData", economyData)
+        end
+
+        -- Create recovery task if valuable items are present
+        if #recoveryOptions > 0 then
+            local recoveryTask = {
+                taskID = "recovery_" .. archiveID,
+                archiveID = archiveID,
+                owner = storageOwner,
+                items = recoveryOptions,
+                status = "pending",
+                created = currentTime,
+                deadline = currentTime + (30 * 24 * 60 * 60), -- 30 days
+                priority = (#recoveryOptions >= 5) and "high" or "normal"
+            }
+
+            lia.data.set("recovery_task_" .. recoveryTask.taskID, recoveryTask)
+
+            -- Add to recovery queue
+            local recoveryQueue = lia.data.get("recoveryQueue", {})
+            table.insert(recoveryQueue, recoveryTask.taskID)
+            lia.data.set("recoveryQueue", recoveryQueue)
+        end
+
+        lia.log.add(nil, "storage_removed_advanced",
+            string.format("%s:%s, items:%d, value:$%d, recovery:%d",
+                storageClass, inventoryID, inventorySnapshot.statistics.totalItems,
+                inventorySnapshot.statistics.totalValue, #recoveryOptions))
+
+        print(string.format("[STORAGE REMOVAL] Advanced archival complete: %s with %d items ($%d) - %d recovery options",
+            storageClass, inventorySnapshot.statistics.totalItems,
+            inventorySnapshot.statistics.totalValue, #recoveryOptions))
     end)
     ```
 ]]
@@ -20700,25 +24266,269 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageInventorySet", "MyAddon", function(entity, inventory, isCar)
-        -- Add your code here
+    -- Simple: Log storage inventory setup
+    hook.Add("StorageInventorySet", "StorageLogger", function(entity, inventory, isCar)
+        print(string.format("Storage inventory set: %s (ID: %s) - Car: %s",
+            entity:GetClass(), inventory:getID(), tostring(isCar)))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageInventorySet", "MyAddon", function(entity, inventory, isCar)
-        -- Add your code here
+    -- Medium: Initialize storage properties and basic permissions
+    hook.Add("StorageInventorySet", "StorageInitializer", function(entity, inventory, isCar)
+        -- Set basic storage properties
+        entity:setData("inventoryID", inventory:getID())
+        entity:setData("isVehicle", isCar)
+        entity:setData("createdAt", os.time())
+
+        -- Set default access permissions
+        if isCar then
+            -- Vehicle storage - owner only
+            entity:setData("ownerOnly", true)
+        else
+            -- Regular storage - faction access
+            entity:setData("publicAccess", false)
+        end
+
+        -- Set inventory capacity based on entity type
+        local capacity = 20 -- Default
+        if entity:GetClass() == "lia_storage_small" then
+            capacity = 10
+        elseif entity:GetClass() == "lia_storage_large" then
+            capacity = 50
+        elseif isCar then
+            capacity = 15 -- Car trunk
+        end
+
+        inventory:setMaxWeight(capacity)
+
+        -- Initialize access tracking
+        entity:setData("accessCount", 0)
+        entity:setData("lastAccessed", os.time())
+
+        -- Log storage creation
+        lia.log.add(nil, "storage_created", entity:GetClass(), inventory:getID(), isCar and "vehicle" or "static")
+
+        print(string.format("Storage initialized: %s with capacity %d", entity:GetClass(), capacity))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageInventorySet", "MyAddon", function(entity, inventory, isCar)
-        -- Add your code here
+    -- High: Advanced storage setup with analytics, integration, and smart initialization
+    hook.Add("StorageInventorySet", "AdvancedStorageSetup", function(entity, inventory, isCar)
+        if not IsValid(entity) or not inventory then return end
+
+        local entityClass = entity:GetClass()
+        local inventoryID = inventory:getID()
+        local currentTime = os.time()
+        local entityPos = entity:GetPos()
+
+        -- Create comprehensive storage profile
+        local storageProfile = {
+            entityID = entity:EntIndex(),
+            entityClass = entityClass,
+            inventoryID = inventoryID,
+            position = entityPos,
+            isVehicle = isCar,
+            createdAt = currentTime,
+            serverUptime = SysTime(),
+            mapLocation = game.GetMap(),
+
+            -- Physical properties
+            model = entity:GetModel(),
+            angles = entity:GetAngles(),
+            boundingBox = {
+                mins = entity:OBBMins(),
+                maxs = entity:OBBMaxs()
+            },
+
+            -- Functional properties
+            maxWeight = inventory:getMaxWeight() or 20,
+            accessLevel = "private", -- Will be updated based on configuration
+            securityLevel = "basic",
+
+            -- Tracking data
+            accessHistory = {},
+            itemHistory = {},
+            maintenanceSchedule = {},
+            performanceMetrics = {
+                totalAccesses = 0,
+                averageItemsStored = 0,
+                peakUsageTime = nil,
+                lastMaintenance = currentTime
+            }
+        }
+
+        -- Determine storage type and configure accordingly
+        if isCar then
+            storageProfile.storageType = "vehicle"
+            storageProfile.accessLevel = "owner_only"
+            storageProfile.securityLevel = "medium"
+            storageProfile.vehicleData = {
+                make = entity:GetVehicleClass() or "unknown",
+                seats = entity:GetMaxPassengers() or 0,
+                fuelType = "gasoline" -- Default
+            }
+        elseif entityClass:find("storage") then
+            storageProfile.storageType = "container"
+            storageProfile.containerType = entityClass:gsub("lia_storage_", "")
+            storageProfile.accessLevel = "faction"
+            storageProfile.securityLevel = "basic"
+        else
+            storageProfile.storageType = "custom"
+            storageProfile.accessLevel = "public"
+            storageProfile.securityLevel = "minimal"
+        end
+
+        -- Set up access control system
+        local accessRules = {}
+
+        if storageProfile.accessLevel == "owner_only" then
+            -- For vehicles: only owner can access
+            accessRules.ownerOnly = true
+        elseif storageProfile.accessLevel == "faction" then
+            -- Faction-based access for containers
+            accessRules.factionRestricted = true
+        elseif storageProfile.accessLevel == "public" then
+            -- Public access for community storage
+            accessRules.publicAccess = true
+        end
+
+        entity:setData("accessRules", accessRules)
+        entity:setData("storageProfile", storageProfile)
+
+        -- Initialize security features
+        if storageProfile.securityLevel == "medium" then
+            entity:setData("alarmSystem", {
+                enabled = true,
+                sensitivity = "normal",
+                notifications = {"owner", "police"}
+            })
+        elseif storageProfile.securityLevel == "high" then
+            entity:setData("alarmSystem", {
+                enabled = true,
+                sensitivity = "high",
+                notifications = {"owner", "police", "admins"},
+                lockdown = true
+            })
+            entity:setData("reinforced", true)
+        end
+
+        -- Set up maintenance schedule
+        local maintenanceSchedule = {}
+        if storageProfile.storageType == "vehicle" then
+            maintenanceSchedule.oilChange = currentTime + (30 * 24 * 60 * 60) -- 30 days
+            maintenanceSchedule.tireRotation = currentTime + (90 * 24 * 60 * 60) -- 90 days
+        else
+            maintenanceSchedule.deepClean = currentTime + (180 * 24 * 60 * 60) -- 180 days
+            maintenanceSchedule.securityAudit = currentTime + (30 * 24 * 60 * 60) -- 30 days
+        end
+
+        entity:setData("maintenanceSchedule", maintenanceSchedule)
+
+        -- Integrate with economy system
+        if storageProfile.storageType == "container" then
+            local rentalCost = 0
+            if storageProfile.containerType == "small" then
+                rentalCost = 50
+            elseif storageProfile.containerType == "medium" then
+                rentalCost = 100
+            elseif storageProfile.containerType == "large" then
+                rentalCost = 200
+            end
+
+            entity:setData("rentalCost", rentalCost)
+            entity:setData("rentalDue", currentTime + (7 * 24 * 60 * 60)) -- 7 days
+        end
+
+        -- Register with storage network
+        local storageNetwork = lia.data.get("storageNetwork", {})
+        storageNetwork[inventoryID] = {
+            entityID = entity:EntIndex(),
+            position = entityPos,
+            type = storageProfile.storageType,
+            accessLevel = storageProfile.accessLevel,
+            lastPing = currentTime
+        }
+        lia.data.set("storageNetwork", storageNetwork)
+
+        -- Update global storage statistics
+        local globalStats = lia.data.get("storageStats", {})
+        globalStats.totalStorages = (globalStats.totalStorages or 0) + 1
+        globalStats.byType = globalStats.byType or {}
+        globalStats.byType[storageProfile.storageType] = (globalStats.byType[storageProfile.storageType] or 0) + 1
+        globalStats.byAccessLevel = globalStats.byAccessLevel or {}
+        globalStats.byAccessLevel[storageProfile.accessLevel] = (globalStats.byAccessLevel[storageProfile.accessLevel] or 0) + 1
+        lia.data.set("storageStats", globalStats)
+
+        -- Create audit trail
+        lia.db.insertTable({
+            inventoryID = inventoryID,
+            entityID = entity:EntIndex(),
+            entityClass = entityClass,
+            storageType = storageProfile.storageType,
+            accessLevel = storageProfile.accessLevel,
+            isVehicle = isCar,
+            maxWeight = storageProfile.maxWeight,
+            position = string.format("%.1f,%.1f,%.1f", entityPos.x, entityPos.y, entityPos.z),
+            timestamp = currentTime
+        }, "storage_creation_audit")
+
+        -- Set up automated monitoring
+        if storageProfile.storageType == "container" then
+            -- Schedule periodic health checks
+            timer.Create("StorageHealth_" .. inventoryID, 300, 0, function() -- Every 5 minutes
+                if not IsValid(entity) then
+                    timer.Remove("StorageHealth_" .. inventoryID)
+                    return
+                end
+
+                local healthCheck = {
+                    timestamp = os.time(),
+                    entityHealth = entity:Health() or 100,
+                    inventoryItems = #inventory:getItems(),
+                    totalWeight = inventory:getWeight(),
+                    lastAccess = entity:getData("lastAccessed") or 0
+                }
+
+                -- Store health data (keep last 24 hours)
+                local healthHistory = entity:getData("healthHistory", {})
+                table.insert(healthHistory, healthCheck)
+
+                -- Keep only recent entries
+                while #healthHistory > 288 do -- 24 hours * 12 checks per hour
+                    table.remove(healthHistory, 1)
+                end
+
+                entity:setData("healthHistory", healthHistory)
+
+                -- Alert on issues
+                if healthCheck.entityHealth < 50 then
+                    lia.log.add(nil, "storage_damage_warning", inventoryID, healthCheck.entityHealth)
+                end
+            end)
+        end
+
+        -- Notify relevant systems
+        if storageProfile.storageType == "vehicle" then
+            -- Notify vehicle management system
+            hook.Run("VehicleStorageInitialized", entity, inventory)
+        else
+            -- Notify container management system
+            hook.Run("ContainerStorageInitialized", entity, inventory)
+        end
+
+        -- Final logging
+        lia.log.add(nil, "storage_advanced_setup",
+            string.format("%s:%s, type:%s, access:%s, capacity:%dkg",
+                entityClass, inventoryID, storageProfile.storageType,
+                storageProfile.accessLevel, storageProfile.maxWeight))
+
+        print(string.format("[STORAGE SETUP] Advanced initialization complete: %s %s (ID: %s) - %s access, %dkg capacity",
+            storageProfile.storageType, entityClass, inventoryID,
+            storageProfile.accessLevel, storageProfile.maxWeight))
     end)
     ```
 ]]
@@ -20745,25 +24555,205 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageItemRemoved", "MyAddon", function()
-        -- Add your code here
+    -- Simple: Log item removal from storage
+    hook.Add("StorageItemRemoved", "ItemRemovalLogger", function()
+        print("Item removed from storage")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageItemRemoved", "MyAddon", function()
-        -- Add your code here
+    -- Medium: Update storage statistics and notify about changes
+    hook.Add("StorageItemRemoved", "StorageUpdateHandler", function()
+        -- Update global storage statistics
+        local storageStats = lia.data.get("storageStats", {})
+        storageStats.totalRemovals = (storageStats.totalRemovals or 0) + 1
+        lia.data.set("storageStats", storageStats)
+
+        -- Log the removal event
+        lia.log.add(nil, "storage_item_removed")
+
+        print("Storage item removal processed - statistics updated")
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageItemRemoved", "MyAddon", function()
-        -- Add your code here
+    -- High: Advanced storage analytics and item lifecycle management
+    hook.Add("StorageItemRemoved", "AdvancedStorageAnalytics", function()
+        local currentTime = os.time()
+
+        -- Get the storage event data (this would need to be passed or retrieved from context)
+        -- For this example, we'll work with global storage tracking
+
+        -- Update comprehensive storage analytics
+        local storageAnalytics = lia.data.get("storageAnalytics", {
+            totalRemovals = 0,
+            itemsByCategory = {},
+            itemsByRarity = {},
+            removalPatterns = {},
+            economicImpact = {
+                totalValueRemoved = 0,
+                averageItemValue = 0,
+                peakRemovalHour = 0
+            },
+            userBehavior = {
+                frequentRemovers = {},
+                removalFrequency = {},
+                preferredTimes = {}
+            }
+        })
+
+        storageAnalytics.totalRemovals = storageAnalytics.totalRemovals + 1
+
+        -- Analyze removal patterns by time
+        local currentHour = tonumber(os.date("%H", currentTime))
+        storageAnalytics.removalPatterns[currentHour] = (storageAnalytics.removalPatterns[currentHour] or 0) + 1
+
+        -- Update peak removal hour tracking
+        if storageAnalytics.removalPatterns[currentHour] > (storageAnalytics.removalPatterns[storageAnalytics.economicImpact.peakRemovalHour] or 0) then
+            storageAnalytics.economicImpact.peakRemovalHour = currentHour
+        end
+
+        -- Track removal frequency patterns
+        local recentRemovals = storageAnalytics.userBehavior.removalFrequency
+        local timeWindow = currentTime - (24 * 60 * 60) -- Last 24 hours
+        local recentCount = 0
+
+        for timestamp, count in pairs(recentRemovals) do
+            if timestamp >= timeWindow then
+                recentCount = recentCount + count
+            end
+        end
+
+        -- Categorize removal activity level
+        local activityLevel = "low"
+        if recentCount > 100 then
+            activityLevel = "high"
+        elseif recentCount > 50 then
+            activityLevel = "medium"
+        end
+
+        storageAnalytics.userBehavior.activityLevel = activityLevel
+
+        -- Economic impact analysis
+        -- Note: In a real implementation, you'd need access to the actual item data
+        -- This is a simplified example
+        local estimatedItemValue = 50 -- Placeholder
+        storageAnalytics.economicImpact.totalValueRemoved =
+            storageAnalytics.economicImpact.totalValueRemoved + estimatedItemValue
+
+        -- Recalculate average item value
+        storageAnalytics.economicImpact.averageItemValue =
+            storageAnalytics.economicImpact.totalValueRemoved / storageAnalytics.totalRemovals
+
+        -- Storage efficiency analysis
+        local storageEfficiency = lia.data.get("storageEfficiency", {})
+        storageEfficiency.totalCapacityUsed = (storageEfficiency.totalCapacityUsed or 0) - 1 -- Simplified
+        storageEfficiency.averageUtilization = storageEfficiency.totalCapacityUsed / math.max(lia.data.get("totalStorageCapacity", 1000), 1)
+
+        -- Update efficiency metrics
+        if storageEfficiency.averageUtilization < 0.3 then
+            storageEfficiency.status = "underutilized"
+        elseif storageEfficiency.averageUtilization > 0.9 then
+            storageEfficiency.status = "overutilized"
+        else
+            storageEfficiency.status = "optimal"
+        end
+
+        lia.data.set("storageEfficiency", storageEfficiency)
+
+        -- Item lifecycle tracking
+        local itemLifecycle = lia.data.get("itemLifecycle", {
+            totalItems = 0,
+            activeItems = 0,
+            storedItems = 0,
+            removedItems = 0,
+            averageLifespan = 0,
+            totalLifespan = 0
+        })
+
+        itemLifecycle.removedItems = itemLifecycle.removedItems + 1
+        itemLifecycle.storedItems = math.max(0, itemLifecycle.storedItems - 1)
+
+        -- Recalculate average lifespan (simplified)
+        itemLifecycle.averageLifespan = itemLifecycle.totalLifespan / math.max(itemLifecycle.removedItems, 1)
+
+        lia.data.set("itemLifecycle", itemLifecycle)
+
+        -- Storage network health monitoring
+        local storageNetwork = lia.data.get("storageNetwork", {})
+        local networkHealth = {
+            totalStorages = table.Count(storageNetwork),
+            activeStorages = 0,
+            averageUtilization = 0,
+            networkLoad = "normal"
+        }
+
+        local totalUtilization = 0
+        for storageID, storageData in pairs(storageNetwork) do
+            if (currentTime - storageData.lastPing) < 300 then -- Active in last 5 minutes
+                networkHealth.activeStorages = networkHealth.activeStorages + 1
+            end
+            totalUtilization = totalUtilization + (storageData.utilization or 0)
+        end
+
+        if networkHealth.totalStorages > 0 then
+            networkHealth.averageUtilization = totalUtilization / networkHealth.totalStorages
+        end
+
+        -- Determine network load
+        local activeRatio = networkHealth.activeStorages / math.max(networkHealth.totalStorages, 1)
+        if activeRatio > 0.8 then
+            networkHealth.networkLoad = "high"
+        elseif activeRatio > 0.5 then
+            networkHealth.networkLoad = "medium"
+        end
+
+        lia.data.set("storageNetworkHealth", networkHealth)
+
+        -- Automated alerts for storage system issues
+        if networkHealth.averageUtilization > 0.95 then
+            lia.log.add(nil, "storage_overutilization_alert", networkHealth.averageUtilization)
+        end
+
+        if networkHealth.networkLoad == "high" and storageAnalytics.userBehavior.activityLevel == "high" then
+            lia.log.add(nil, "storage_system_stress", "High load and high activity detected")
+        end
+
+        -- Save all analytics data
+        lia.data.set("storageAnalytics", storageAnalytics)
+
+        -- Create detailed audit entry
+        lia.db.insertTable({
+            eventType = "storage_item_removed",
+            timestamp = currentTime,
+            activityLevel = activityLevel,
+            economicImpact = estimatedItemValue,
+            networkLoad = networkHealth.networkLoad,
+            storageEfficiency = storageEfficiency.status,
+            analyticsSnapshot = util.TableToJSON({
+                totalRemovals = storageAnalytics.totalRemovals,
+                averageItemValue = storageAnalytics.economicImpact.averageItemValue,
+                peakHour = storageAnalytics.economicImpact.peakRemovalHour
+            })
+        }, "storage_analytics_audit")
+
+        -- Performance monitoring
+        local processingTime = SysTime() - (lia.data.get("storageRemovalStartTime") or SysTime())
+        if processingTime > 0.1 then -- More than 100ms
+            lia.log.add(nil, "slow_storage_operation", processingTime, "item_removal")
+        end
+
+        lia.log.add(nil, "storage_item_removal_complete",
+            string.format("removals:%d, value:$%d, efficiency:%s, network:%s",
+                storageAnalytics.totalRemovals,
+                storageAnalytics.economicImpact.totalValueRemoved,
+                storageEfficiency.status,
+                networkHealth.networkLoad))
+
+        print(string.format("[STORAGE ANALYTICS] Item removal processed - Total: %d, Efficiency: %s, Network: %s",
+            storageAnalytics.totalRemovals, storageEfficiency.status, networkHealth.networkLoad))
     end)
     ```
 ]]
@@ -20791,25 +24781,197 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageOpen", "MyAddon", function(storage, isCar)
-        -- Add your code here
+    -- Simple: Log storage access
+    hook.Add("StorageOpen", "StorageAccessLogger", function(storage, isCar)
+        local storageType = isCar and "vehicle" or "container"
+        print(string.format("Storage opened: %s", storageType))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageOpen", "MyAddon", function(storage, isCar)
-        -- Add your code here
+    -- Medium: Track access patterns and send notifications
+    hook.Add("StorageOpen", "StorageAccessTracker", function(storage, isCar)
+        -- This hook runs on the client side according to the documentation
+        -- Track local player access patterns
+        local accessStats = LocalPlayer():GetNWTable("storageAccessStats") or {
+            totalOpens = 0,
+            vehicleOpens = 0,
+            containerOpens = 0,
+            lastAccess = 0
+        }
+
+        accessStats.totalOpens = accessStats.totalOpens + 1
+        if isCar then
+            accessStats.vehicleOpens = accessStats.vehicleOpens + 1
+        else
+            accessStats.containerOpens = accessStats.containerOpens + 1
+        end
+        accessStats.lastAccess = os.time()
+
+        LocalPlayer():SetNWTable("storageAccessStats", accessStats)
+
+        -- Notify about frequent access
+        if accessStats.totalOpens % 10 == 0 then
+            chat.AddText(Color(255, 255, 0), string.format("You've opened storage %d times!", accessStats.totalOpens))
+        end
+
+        -- Log access for server-side tracking (would need net message)
+        net.Start("StorageAccessLog")
+            net.WriteBool(isCar)
+            net.WriteUInt(accessStats.totalOpens, 16)
+        net.SendToServer()
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageOpen", "MyAddon", function(storage, isCar)
-        -- Add your code here
+    -- High: Advanced storage analytics and security monitoring
+    hook.Add("StorageOpen", "AdvancedStorageMonitor", function(storage, isCar)
+        local currentTime = os.time()
+        local localPlayer = LocalPlayer()
+
+        -- Initialize comprehensive access tracking
+        local accessTracking = localPlayer:GetNWTable("advancedStorageTracking") or {
+            sessionStats = {
+                startTime = currentTime,
+                totalOpens = 0,
+                vehicleOpens = 0,
+                containerOpens = 0,
+                uniqueStoragesAccessed = {},
+                accessPatterns = {},
+                securityEvents = {}
+            },
+            globalStats = {
+                lifetimeOpens = 0,
+                favoriteStorageType = "unknown",
+                peakAccessHour = 0,
+                suspiciousActivity = 0
+            }
+        }
+
+        -- Update session statistics
+        accessTracking.sessionStats.totalOpens = accessTracking.sessionStats.totalOpens + 1
+        if isCar then
+            accessTracking.sessionStats.vehicleOpens = accessTracking.sessionStats.vehicleOpens + 1
+        else
+            accessTracking.sessionStats.containerOpens = accessTracking.sessionStats.containerOpens + 1
+        end
+
+        -- Track unique storage access
+        local storageID = isCar and storage:EntIndex() or (storage.GetID and storage:GetID()) or "unknown"
+        accessTracking.sessionStats.uniqueStoragesAccessed[storageID] = currentTime
+
+        -- Analyze access patterns
+        local currentHour = tonumber(os.date("%H", currentTime))
+        accessTracking.sessionStats.accessPatterns[currentHour] = (accessTracking.sessionStats.accessPatterns[currentHour] or 0) + 1
+
+        -- Update global statistics
+        accessTracking.globalStats.lifetimeOpens = accessTracking.globalStats.lifetimeOpens + 1
+
+        -- Determine favorite storage type
+        if accessTracking.sessionStats.vehicleOpens > accessTracking.sessionStats.containerOpens then
+            accessTracking.globalStats.favoriteStorageType = "vehicle"
+        elseif accessTracking.sessionStats.containerOpens > accessTracking.sessionStats.vehicleOpens then
+            accessTracking.globalStats.favoriteStorageType = "container"
+        end
+
+        -- Track peak access hour
+        local maxAccesses = 0
+        for hour, accesses in pairs(accessTracking.sessionStats.accessPatterns) do
+            if accesses > maxAccesses then
+                maxAccesses = accesses
+                accessTracking.globalStats.peakAccessHour = hour
+            end
+        end
+
+        -- Security monitoring
+        local timeSinceLastAccess = currentTime - (accessTracking.sessionStats.lastAccessTime or 0)
+        accessTracking.sessionStats.lastAccessTime = currentTime
+
+        -- Detect rapid access patterns (potential exploitation)
+        if timeSinceLastAccess < 1 then -- Less than 1 second between accesses
+            accessTracking.globalStats.suspiciousActivity = accessTracking.globalStats.suspiciousActivity + 1
+            table.insert(accessTracking.sessionStats.securityEvents, {
+                type = "rapid_access",
+                timestamp = currentTime,
+                timeGap = timeSinceLastAccess
+            })
+
+            -- Alert if suspicious activity is high
+            if accessTracking.globalStats.suspiciousActivity > 5 then
+                chat.AddText(Color(255, 0, 0), "Warning: Unusual storage access patterns detected!")
+                net.Start("SuspiciousStorageActivity")
+                    net.WriteUInt(accessTracking.globalStats.suspiciousActivity, 8)
+                net.SendToServer()
+            end
+        end
+
+        -- Performance monitoring
+        local accessTime = SysTime()
+        local renderTime = 0 -- Would need to measure actual UI render time
+
+        -- Detect slow storage opening
+        timer.Simple(0.1, function()
+            local totalTime = SysTime() - accessTime
+            if totalTime > 0.5 then -- More than 500ms to open
+                table.insert(accessTracking.sessionStats.securityEvents, {
+                    type = "slow_access",
+                    timestamp = currentTime,
+                    accessTime = totalTime
+                })
+            end
+        end)
+
+        -- Economic impact tracking
+        local inventoryValue = 0 -- Would need to calculate actual inventory value
+        local accessFee = isCar and 0 or 1 -- Small access fee for containers
+
+        if accessFee > 0 then
+            -- Would deduct fee from player money
+            accessTracking.sessionStats.totalAccessFees = (accessTracking.sessionStats.totalAccessFees or 0) + accessFee
+        end
+
+        -- Update player data
+        localPlayer:SetNWTable("advancedStorageTracking", accessTracking)
+
+        -- Session summary every 10 opens
+        if accessTracking.sessionStats.totalOpens % 10 == 0 then
+            local sessionDuration = currentTime - accessTracking.sessionStats.startTime
+            local opensPerMinute = accessTracking.sessionStats.totalOpens / math.max(sessionDuration / 60, 1)
+
+            chat.AddText(Color(0, 255, 0), string.format("Storage Access Summary: %d opens (%.1f/min) - Favorite: %s",
+                accessTracking.sessionStats.totalOpens, opensPerMinute, accessTracking.globalStats.favoriteStorageType))
+        end
+
+        -- Send detailed analytics to server
+        net.Start("StorageAccessAnalytics")
+            net.WriteBool(isCar)
+            net.WriteUInt(accessTracking.sessionStats.totalOpens, 16)
+            net.WriteUInt(table.Count(accessTracking.sessionStats.uniqueStoragesAccessed), 8)
+            net.WriteUInt(accessTracking.globalStats.suspiciousActivity, 8)
+            net.WriteUInt(currentHour, 8)
+        net.SendToServer()
+
+        -- Visual feedback
+        if isCar then
+            surface.PlaySound("doors/door_locked2.wav")
+        else
+            surface.PlaySound("items/ammocrate_open.wav")
+        end
+
+        -- Achievement checking
+        if accessTracking.globalStats.lifetimeOpens >= 100 then
+            if not localPlayer:GetNWBool("achievement_storage_explorer") then
+                localPlayer:SetNWBool("achievement_storage_explorer", true)
+                chat.AddText(Color(255, 215, 0), "Achievement Unlocked: Storage Explorer!")
+            end
+        end
+
+        print(string.format("[STORAGE ACCESS] Session: %d opens, Unique: %d, Suspicious: %d",
+            accessTracking.sessionStats.totalOpens,
+            table.Count(accessTracking.sessionStats.uniqueStoragesAccessed),
+            accessTracking.globalStats.suspiciousActivity))
     end)
     ```
 ]]
@@ -20837,25 +24999,266 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StorageRestored", "MyAddon", function(ent, inventory)
-        -- Add your code here
+    -- Simple: Log storage restoration
+    hook.Add("StorageRestored", "StorageRestoreLogger", function(ent, inventory)
+        print(string.format("Storage restored: %s (ID: %s)", ent:GetClass(), inventory:getID()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StorageRestored", "MyAddon", function(ent, inventory)
-        -- Add your code here
+    -- Medium: Validate restored storage and set up basic properties
+    hook.Add("StorageRestored", "StorageRestoreValidator", function(ent, inventory)
+        -- Validate inventory integrity
+        local itemCount = #inventory:getItems()
+        local maxWeight = inventory:getMaxWeight()
+
+        -- Set up basic storage properties
+        ent:setData("restoredAt", os.time())
+        ent:setData("itemCount", itemCount)
+        ent:setData("maxWeight", maxWeight)
+
+        -- Check for common issues
+        if itemCount == 0 then
+            -- Empty storage - might need initialization
+            ent:setData("needsInitialization", true)
+        elseif itemCount > 50 then
+            -- Very full storage - might need optimization
+            ent:setData("highCapacity", true)
+        end
+
+        -- Set up access logging
+        ent:setData("lastRestored", os.time())
+        ent:setData("restoreCount", (ent:getData("restoreCount") or 0) + 1)
+
+        -- Log restoration details
+        lia.log.add(nil, "storage_restored", ent:GetClass(), inventory:getID(), itemCount)
+
+        print(string.format("Storage validated: %s with %d items (max: %dkg)",
+            ent:GetClass(), itemCount, maxWeight))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StorageRestored", "MyAddon", function(ent, inventory)
-        -- Add your code here
+    -- High: Advanced storage restoration with integrity checks, recovery, and analytics
+    hook.Add("StorageRestored", "AdvancedStorageRestorer", function(ent, inventory)
+        if not IsValid(ent) or not inventory then return end
+
+        local inventoryID = inventory:getID()
+        local storageClass = ent:GetClass()
+        local currentTime = os.time()
+
+        -- Create comprehensive restoration audit
+        local restorationAudit = {
+            timestamp = currentTime,
+            inventoryID = inventoryID,
+            storageClass = storageClass,
+            entityID = ent:EntIndex(),
+            position = ent:GetPos(),
+            items = {},
+            statistics = {
+                totalItems = 0,
+                totalValue = 0,
+                totalWeight = 0,
+                categories = {},
+                rarities = {},
+                corruptedItems = 0,
+                recoveredItems = 0
+            },
+            integrity = {
+                passed = true,
+                issues = {},
+                severity = "none"
+            },
+            performance = {
+                restorationTime = SysTime(),
+                memoryUsage = 0,
+                validationTime = 0
+            }
+        }
+
+        -- Track performance
+        local startTime = SysTime()
+
+        -- Analyze and validate each restored item
+        local items = inventory:getItems()
+        for _, item in pairs(items) do
+            local itemData = {
+                uniqueID = item.uniqueID,
+                name = item.name or "Unknown",
+                quantity = item:getQuantity(),
+                data = table.Copy(item:getData() or {}),
+                validation = {
+                    passed = true,
+                    issues = {}
+                }
+            }
+
+            -- Integrity validation
+            if not item.uniqueID then
+                itemData.validation.passed = false
+                table.insert(itemData.validation.issues, "missing_uniqueID")
+                restorationAudit.integrity.passed = false
+                restorationAudit.statistics.corruptedItems = restorationAudit.statistics.corruptedItems + 1
+            end
+
+            -- Check if item definition exists
+            if not lia.item.list[item.uniqueID] then
+                itemData.validation.passed = false
+                table.insert(itemData.validation.issues, "invalid_uniqueID")
+                restorationAudit.integrity.passed = false
+                restorationAudit.statistics.corruptedItems = restorationAudit.statistics.corruptedItems + 1
+            else
+                local itemDef = lia.item.list[item.uniqueID]
+                itemData.category = itemDef.category
+                itemData.value = item:getData("value") or itemDef.price or 0
+                itemData.weight = item.weight or 1
+
+                -- Update statistics
+                restorationAudit.statistics.totalItems = restorationAudit.statistics.totalItems + itemData.quantity
+                restorationAudit.statistics.totalValue = restorationAudit.statistics.totalValue + (itemData.value * itemData.quantity)
+                restorationAudit.statistics.totalWeight = restorationAudit.statistics.totalWeight + (itemData.weight * itemData.quantity)
+
+                -- Category breakdown
+                restorationAudit.statistics.categories[itemData.category or "misc"] =
+                    (restorationAudit.statistics.categories[itemData.category or "misc"] or 0) + itemData.quantity
+
+                -- Rarity breakdown
+                local rarity = item:getData("rarity") or "common"
+                restorationAudit.statistics.rarities[rarity] = (restorationAudit.statistics.rarities[rarity] or 0) + itemData.quantity
+            end
+
+            table.insert(restorationAudit.items, itemData)
+        end
+
+        -- Calculate validation time
+        restorationAudit.performance.validationTime = SysTime() - startTime
+
+        -- Determine integrity severity
+        if restorationAudit.statistics.corruptedItems > 0 then
+            local corruptionRate = restorationAudit.statistics.corruptedItems / math.max(#items, 1)
+            if corruptionRate > 0.5 then
+                restorationAudit.integrity.severity = "critical"
+                table.insert(restorationAudit.integrity.issues, "high_corruption_rate")
+            elseif corruptionRate > 0.2 then
+                restorationAudit.integrity.severity = "high"
+                table.insert(restorationAudit.integrity.issues, "moderate_corruption")
+            else
+                restorationAudit.integrity.severity = "medium"
+                table.insert(restorationAudit.integrity.issues, "minor_corruption")
+            end
+        end
+
+        -- Attempt recovery for corrupted items
+        if not restorationAudit.integrity.passed then
+            for _, itemData in ipairs(restorationAudit.items) do
+                if not itemData.validation.passed then
+                    -- Try to recover item data
+                    if table.HasValue(itemData.validation.issues, "missing_uniqueID") then
+                        -- Attempt to identify item by name
+                        for uniqueID, itemDef in pairs(lia.item.list) do
+                            if itemDef.name == itemData.name then
+                                itemData.uniqueID = uniqueID
+                                itemData.recovered = true
+                                restorationAudit.statistics.recoveredItems = restorationAudit.statistics.recoveredItems + 1
+                                table.remove(itemData.validation.issues, table.KeyFromValue(itemData.validation.issues, "missing_uniqueID"))
+                                if #itemData.validation.issues == 0 then
+                                    itemData.validation.passed = true
+                                end
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Update storage metadata
+        ent:setData("restorationAudit", restorationAudit)
+        ent:setData("lastRestored", currentTime)
+        ent:setData("integrityStatus", restorationAudit.integrity.severity)
+        ent:setData("totalValue", restorationAudit.statistics.totalValue)
+        ent:setData("itemCount", restorationAudit.statistics.totalItems)
+
+        -- Update global restoration statistics
+        local globalStats = lia.data.get("restorationStats", {
+            totalRestorations = 0,
+            totalItemsRestored = 0,
+            totalValueRestored = 0,
+            corruptedRestorations = 0,
+            recoveredItems = 0,
+            averageIntegrity = 1.0
+        })
+
+        globalStats.totalRestorations = globalStats.totalRestorations + 1
+        globalStats.totalItemsRestored = globalStats.totalItemsRestored + restorationAudit.statistics.totalItems
+        globalStats.totalValueRestored = globalStats.totalValueRestored + restorationAudit.statistics.totalValue
+        globalStats.recoveredItems = globalStats.recoveredItems + restorationAudit.statistics.recoveredItems
+
+        if not restorationAudit.integrity.passed then
+            globalStats.corruptedRestorations = globalStats.corruptedRestorations + 1
+        end
+
+        -- Recalculate average integrity
+        local integrityScore = restorationAudit.integrity.passed and 1.0 or
+                              (restorationAudit.integrity.severity == "critical" and 0.0 or
+                               restorationAudit.integrity.severity == "high" and 0.3 or
+                               restorationAudit.integrity.severity == "medium" and 0.6 or 0.8)
+        globalStats.averageIntegrity = ((globalStats.averageIntegrity * (globalStats.totalRestorations - 1)) + integrityScore) / globalStats.totalRestorations
+
+        lia.data.set("restorationStats", globalStats)
+
+        -- Create database audit trail
+        lia.db.insertTable({
+            inventoryID = inventoryID,
+            storageClass = storageClass,
+            entityID = ent:EntIndex(),
+            timestamp = currentTime,
+            totalItems = restorationAudit.statistics.totalItems,
+            totalValue = restorationAudit.statistics.totalValue,
+            corruptedItems = restorationAudit.statistics.corruptedItems,
+            recoveredItems = restorationAudit.statistics.recoveredItems,
+            integrityPassed = restorationAudit.integrity.passed,
+            integritySeverity = restorationAudit.integrity.severity,
+            validationTime = restorationAudit.performance.validationTime
+        }, "storage_restoration_audit")
+
+        -- Automated alerts for issues
+        if restorationAudit.integrity.severity == "critical" then
+            lia.log.add(nil, "critical_storage_restoration_failure",
+                inventoryID, restorationAudit.statistics.corruptedItems, restorationAudit.statistics.totalItems)
+        elseif restorationAudit.statistics.recoveredItems > 0 then
+            lia.log.add(nil, "storage_restoration_recovery",
+                inventoryID, restorationAudit.statistics.recoveredItems)
+        end
+
+        -- Performance monitoring
+        restorationAudit.performance.restorationTime = SysTime() - restorationAudit.performance.restorationTime
+        if restorationAudit.performance.restorationTime > 1.0 then -- More than 1 second
+            lia.log.add(nil, "slow_storage_restoration", inventoryID, restorationAudit.performance.restorationTime)
+        end
+
+        -- Update storage network status
+        local storageNetwork = lia.data.get("storageNetwork", {})
+        if storageNetwork[inventoryID] then
+            storageNetwork[inventoryID].lastRestored = currentTime
+            storageNetwork[inventoryID].integrityStatus = restorationAudit.integrity.severity
+            storageNetwork[inventoryID].itemCount = restorationAudit.statistics.totalItems
+            storageNetwork[inventoryID].totalValue = restorationAudit.statistics.totalValue
+            lia.data.set("storageNetwork", storageNetwork)
+        end
+
+        lia.log.add(nil, "storage_restored_advanced",
+            string.format("%s:%s, items:%d, value:$%d, integrity:%s, recovered:%d",
+                storageClass, inventoryID, restorationAudit.statistics.totalItems,
+                restorationAudit.statistics.totalValue, restorationAudit.integrity.severity,
+                restorationAudit.statistics.recoveredItems))
+
+        print(string.format("[STORAGE RESTORATION] Advanced audit complete: %s with %d items ($%d) - Integrity: %s, Time: %.3fs",
+            storageClass, restorationAudit.statistics.totalItems,
+            restorationAudit.statistics.totalValue, restorationAudit.integrity.severity,
+            restorationAudit.performance.restorationTime))
     end)
     ```
 ]]
@@ -20882,25 +25285,316 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("StoreSpawns", "MyAddon", function(spawns)
-        -- Add your code here
+    -- Simple: Log spawn storage
+    hook.Add("StoreSpawns", "SpawnStoreLogger", function(spawns)
+        print("Spawn points stored to persistence")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("StoreSpawns", "MyAddon", function(spawns)
-        -- Add your code here
+    -- Medium: Validate and summarize spawn data
+    hook.Add("StoreSpawns", "SpawnDataValidator", function(spawns)
+        -- Count total spawns by faction
+        local totalSpawns = 0
+        local factionCounts = {}
+
+        for factionName, spawnData in pairs(spawns) do
+            local count = 0
+            if spawnData.positions then
+                count = #spawnData.positions
+            end
+            factionCounts[factionName] = count
+            totalSpawns = totalSpawns + count
+        end
+
+        -- Validate spawn data integrity
+        local validSpawns = 0
+        local invalidSpawns = 0
+
+        for factionName, spawnData in pairs(spawns) do
+            if spawnData.positions then
+                for _, pos in ipairs(spawnData.positions) do
+                    if type(pos) == "Vector" and pos:IsValid() then
+                        validSpawns = validSpawns + 1
+                    else
+                        invalidSpawns = invalidSpawns + 1
+                    end
+                end
+            end
+        end
+
+        -- Log storage summary
+        lia.log.add(nil, "spawn_data_stored", totalSpawns, validSpawns, invalidSpawns)
+
+        -- Update spawn statistics
+        local spawnStats = lia.data.get("spawnStats", {})
+        spawnStats.lastStored = os.time()
+        spawnStats.totalSpawns = totalSpawns
+        spawnStats.validSpawns = validSpawns
+        spawnStats.invalidSpawns = invalidSpawns
+        spawnStats.factionBreakdown = factionCounts
+        lia.data.set("spawnStats", spawnStats)
+
+        print(string.format("Spawn data stored: %d total spawns (%d valid, %d invalid)",
+            totalSpawns, validSpawns, invalidSpawns))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("StoreSpawns", "MyAddon", function(spawns)
-        -- Add your code here
+    -- High: Advanced spawn management with analytics, optimization, and conflict detection
+    hook.Add("StoreSpawns", "AdvancedSpawnManager", function(spawns)
+        local currentTime = os.time()
+        local serverUptime = SysTime()
+
+        -- Create comprehensive spawn audit
+        local spawnAudit = {
+            timestamp = currentTime,
+            serverUptime = serverUptime,
+            mapName = game.GetMap(),
+            statistics = {
+                totalFactions = 0,
+                totalSpawns = 0,
+                validSpawns = 0,
+                invalidSpawns = 0,
+                averageSpawnsPerFaction = 0,
+                spawnDensity = 0,
+                conflicts = 0,
+                overcrowdedAreas = 0
+            },
+            factions = {},
+            conflicts = {},
+            performance = {
+                analysisTime = 0,
+                storageTime = 0
+            },
+            quality = {
+                score = 100,
+                issues = {}
+            }
+        }
+
+        -- Track analysis performance
+        local analysisStart = SysTime()
+
+        -- Analyze each faction's spawn data
+        for factionName, spawnData in pairs(spawns) do
+            spawnAudit.statistics.totalFactions = spawnAudit.statistics.totalFactions + 1
+
+            local factionAudit = {
+                name = factionName,
+                spawnCount = 0,
+                validSpawns = 0,
+                invalidSpawns = 0,
+                positions = {},
+                conflicts = {},
+                quality = {
+                    score = 100,
+                    issues = {}
+                }
+            }
+
+            if spawnData.positions and type(spawnData.positions) == "table" then
+                for i, pos in ipairs(spawnData.positions) do
+                    factionAudit.spawnCount = factionAudit.spawnCount + 1
+                    spawnAudit.statistics.totalSpawns = spawnAudit.statistics.totalSpawns + 1
+
+                    -- Validate position
+                    if type(pos) == "Vector" and pos:IsValid() then
+                        factionAudit.validSpawns = factionAudit.validSpawns + 1
+                        spawnAudit.statistics.validSpawns = spawnAudit.statistics.validSpawns + 1
+
+                        table.insert(factionAudit.positions, {
+                            index = i,
+                            position = pos,
+                            conflicts = 0
+                        })
+
+                        -- Check for conflicts with other factions
+                        for otherFaction, otherData in pairs(spawns) do
+                            if otherFaction ~= factionName and otherData.positions then
+                                for _, otherPos in ipairs(otherData.positions) do
+                                    if type(otherPos) == "Vector" and pos:DistToSqr(otherPos) < 10000 then -- Within 100 units
+                                        factionAudit.conflicts = (factionAudit.conflicts or 0) + 1
+                                        spawnAudit.statistics.conflicts = spawnAudit.statistics.conflicts + 1
+
+                                        table.insert(spawnAudit.conflicts, {
+                                            faction1 = factionName,
+                                            faction2 = otherFaction,
+                                            position1 = pos,
+                                            position2 = otherPos,
+                                            distance = pos:Distance(otherPos)
+                                        })
+                                    end
+                                end
+                            end
+                        end
+
+                        -- Check for overcrowding (multiple spawns too close together)
+                        local nearbySpawns = 0
+                        for j, otherPos in ipairs(spawnData.positions) do
+                            if i ~= j and type(otherPos) == "Vector" and pos:DistToSqr(otherPos) < 2500 then -- Within 50 units
+                                nearbySpawns = nearbySpawns + 1
+                            end
+                        end
+
+                        if nearbySpawns > 2 then
+                            spawnAudit.statistics.overcrowdedAreas = spawnAudit.statistics.overcrowdedAreas + 1
+                            factionAudit.quality.score = factionAudit.quality.score - 10
+                            table.insert(factionAudit.quality.issues, "overcrowded_spawn_area")
+                        end
+
+                        -- Check spawn accessibility
+                        local trace = util.TraceLine({
+                            start = pos + Vector(0, 0, 10),
+                            endpos = pos + Vector(0, 0, -100),
+                            mask = MASK_SOLID
+                        })
+
+                        if not trace.Hit then
+                            -- Spawn is floating
+                            factionAudit.quality.score = factionAudit.quality.score - 15
+                            table.insert(factionAudit.quality.issues, "floating_spawn")
+                        elseif trace.Fraction > 0.5 then
+                            -- Spawn is too high
+                            factionAudit.quality.score = factionAudit.quality.score - 5
+                            table.insert(factionAudit.quality.issues, "high_spawn")
+                        end
+
+                    else
+                        factionAudit.invalidSpawns = factionAudit.invalidSpawns + 1
+                        spawnAudit.statistics.invalidSpawns = spawnAudit.statistics.invalidSpawns + 1
+                        factionAudit.quality.score = factionAudit.quality.score - 20
+                        table.insert(factionAudit.quality.issues, "invalid_position")
+                    end
+                end
+            end
+
+            -- Calculate faction quality score
+            if factionAudit.spawnCount > 0 then
+                factionAudit.quality.score = math.max(0, factionAudit.quality.score - (factionAudit.invalidSpawns * 10))
+            end
+
+            spawnAudit.factions[factionName] = factionAudit
+        end
+
+        -- Calculate overall statistics
+        if spawnAudit.statistics.totalFactions > 0 then
+            spawnAudit.statistics.averageSpawnsPerFaction = spawnAudit.statistics.totalSpawns / spawnAudit.statistics.totalFactions
+        end
+
+        -- Calculate spawn density (spawns per 1000 units squared)
+        local mapSize = 100000 -- Approximate map size in units squared
+        spawnAudit.statistics.spawnDensity = (spawnAudit.statistics.totalSpawns / mapSize) * 1000
+
+        -- Calculate overall quality score
+        local totalFactionScore = 0
+        for _, factionAudit in pairs(spawnAudit.factions) do
+            totalFactionScore = totalFactionScore + factionAudit.quality.score
+        end
+
+        if spawnAudit.statistics.totalFactions > 0 then
+            spawnAudit.quality.score = totalFactionScore / spawnAudit.statistics.totalFactions
+        end
+
+        -- Add quality issues
+        if spawnAudit.statistics.conflicts > spawnAudit.statistics.totalSpawns * 0.1 then
+            spawnAudit.quality.score = spawnAudit.quality.score - 20
+            table.insert(spawnAudit.quality.issues, "high_conflict_rate")
+        end
+
+        if spawnAudit.statistics.invalidSpawns > spawnAudit.statistics.totalSpawns * 0.05 then
+            spawnAudit.quality.score = spawnAudit.quality.score - 15
+            table.insert(spawnAudit.quality.issues, "high_invalid_rate")
+        end
+
+        spawnAudit.performance.analysisTime = SysTime() - analysisStart
+
+        -- Update global spawn statistics
+        local globalStats = lia.data.get("globalSpawnStats", {
+            totalAudits = 0,
+            averageQuality = 100,
+            totalConflicts = 0,
+            totalInvalidSpawns = 0,
+            bestMap = "",
+            bestQuality = 0
+        })
+
+        globalStats.totalAudits = globalStats.totalAudits + 1
+        globalStats.totalConflicts = globalStats.totalConflicts + spawnAudit.statistics.conflicts
+        globalStats.totalInvalidSpawns = globalStats.totalInvalidSpawns + spawnAudit.statistics.invalidSpawns
+
+        -- Update average quality
+        globalStats.averageQuality = ((globalStats.averageQuality * (globalStats.totalAudits - 1)) + spawnAudit.quality.score) / globalStats.totalAudits
+
+        -- Track best map
+        if spawnAudit.quality.score > globalStats.bestQuality then
+            globalStats.bestMap = spawnAudit.mapName
+            globalStats.bestQuality = spawnAudit.quality.score
+        end
+
+        lia.data.set("globalSpawnStats", globalStats)
+
+        -- Create database audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            mapName = spawnAudit.mapName,
+            totalFactions = spawnAudit.statistics.totalFactions,
+            totalSpawns = spawnAudit.statistics.totalSpawns,
+            validSpawns = spawnAudit.statistics.validSpawns,
+            invalidSpawns = spawnAudit.statistics.invalidSpawns,
+            conflicts = spawnAudit.statistics.conflicts,
+            qualityScore = spawnAudit.quality.score,
+            analysisTime = spawnAudit.performance.analysisTime
+        }, "spawn_audit")
+
+        -- Automated alerts
+        if spawnAudit.quality.score < 50 then
+            lia.log.add(nil, "poor_spawn_quality", spawnAudit.mapName, spawnAudit.quality.score,
+                table.concat(spawnAudit.quality.issues, ", "))
+        elseif spawnAudit.statistics.conflicts > 10 then
+            lia.log.add(nil, "high_spawn_conflicts", spawnAudit.mapName, spawnAudit.statistics.conflicts)
+        end
+
+        -- Update spawn quality tracking
+        lia.data.set("currentSpawnQuality", {
+            score = spawnAudit.quality.score,
+            issues = spawnAudit.quality.issues,
+            lastChecked = currentTime
+        })
+
+        -- Generate optimization suggestions
+        local suggestions = {}
+        if spawnAudit.statistics.conflicts > 0 then
+            table.insert(suggestions, "Consider separating conflicting faction spawns by at least 100 units")
+        end
+
+        if spawnAudit.statistics.invalidSpawns > 0 then
+            table.insert(suggestions, "Fix or remove invalid spawn positions")
+        end
+
+        if spawnAudit.statistics.overcrowdedAreas > 0 then
+            table.insert(suggestions, "Reduce spawn clustering - ensure at least 50 units between spawns")
+        end
+
+        if #suggestions > 0 then
+            lia.data.set("spawnOptimizationSuggestions", {
+                suggestions = suggestions,
+                generated = currentTime,
+                map = spawnAudit.mapName
+            })
+        end
+
+        lia.log.add(nil, "spawn_data_stored_advanced",
+            string.format("map:%s, factions:%d, spawns:%d/%d, quality:%.1f, conflicts:%d",
+                spawnAudit.mapName, spawnAudit.statistics.totalFactions,
+                spawnAudit.statistics.validSpawns, spawnAudit.statistics.totalSpawns,
+                spawnAudit.quality.score, spawnAudit.statistics.conflicts))
+
+        print(string.format("[SPAWN STORAGE] Advanced audit complete: %d factions, %d/%d valid spawns, Quality: %.1f, Conflicts: %d",
+            spawnAudit.statistics.totalFactions, spawnAudit.statistics.validSpawns,
+            spawnAudit.statistics.totalSpawns, spawnAudit.quality.score, spawnAudit.statistics.conflicts))
     end)
     ```
 ]]
@@ -20927,25 +25621,291 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("SyncCharList", "MyAddon", function(client)
-        -- Add your code here
+    -- Simple: Log character list sync
+    hook.Add("SyncCharList", "CharListSyncLogger", function(client)
+        print(string.format("Character list synchronized for %s", client:Name()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("SyncCharList", "MyAddon", function(client)
-        -- Add your code here
+    -- Medium: Track character statistics and validate data
+    hook.Add("SyncCharList", "CharListValidator", function(client)
+        -- Get player's characters
+        local characters = client:getChar() and {client:getChar()} or {}
+        -- Note: In a real implementation, you'd get all characters for the player
+
+        local charCount = #characters
+        local totalPlaytime = 0
+        local factionBreakdown = {}
+        local classBreakdown = {}
+
+        for _, char in ipairs(characters) do
+            if char.getFaction then
+                local faction = char:getFaction()
+                factionBreakdown[faction] = (factionBreakdown[faction] or 0) + 1
+            end
+
+            if char.getClass then
+                local class = char:getClass()
+                classBreakdown[class] = (classBreakdown[class] or 0) + 1
+            end
+
+            if char.getData and char:getData("playtime") then
+                totalPlaytime = totalPlaytime + char:getData("playtime")
+            end
+        end
+
+        -- Update player statistics
+        local playerStats = client:getData("characterStats", {})
+        playerStats.totalCharacters = charCount
+        playerStats.lastSync = os.time()
+        playerStats.factionBreakdown = factionBreakdown
+        playerStats.classBreakdown = classBreakdown
+        playerStats.totalPlaytime = totalPlaytime
+        client:setData("characterStats", playerStats)
+
+        -- Log sync event
+        lia.log.add(client, "character_list_synced", charCount, totalPlaytime)
+
+        print(string.format("Character list synced for %s: %d characters, %d minutes playtime",
+            client:Name(), charCount, totalPlaytime))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("SyncCharList", "MyAddon", function(client)
-        -- Add your code here
+    -- High: Advanced character analytics and player behavior profiling
+    hook.Add("SyncCharList", "AdvancedCharAnalytics", function(client)
+        if not IsValid(client) then return end
+
+        local steamID = client:SteamID64()
+        local currentTime = os.time()
+        local clientIP = client:IPAddress()
+        local clientOS = client:GetNWString("os", "unknown")
+
+        -- Initialize comprehensive player profile
+        local playerProfile = client:getData("playerProfile", {
+            firstSeen = currentTime,
+            totalSessions = 0,
+            totalPlaytime = 0,
+            characterCount = 0,
+            preferredFaction = "none",
+            preferredClass = "none",
+            behaviorPatterns = {},
+            deviceHistory = {},
+            geographicData = {},
+            socialConnections = {},
+            achievementProgress = {},
+            riskAssessment = {
+                score = 0,
+                flags = {}
+            }
+        })
+
+        -- Update session tracking
+        playerProfile.totalSessions = playerProfile.totalSessions + 1
+        playerProfile.lastSeen = currentTime
+        playerProfile.lastIP = clientIP
+        playerProfile.lastOS = clientOS
+
+        -- Track device/OS changes (potential account sharing detection)
+        if not table.HasValue(playerProfile.deviceHistory, clientOS) then
+            table.insert(playerProfile.deviceHistory, clientOS)
+            if #playerProfile.deviceHistory > 3 then
+                table.insert(playerProfile.riskAssessment.flags, "multiple_devices")
+                playerProfile.riskAssessment.score = playerProfile.riskAssessment.score + 20
+            end
+        end
+
+        -- Analyze character data (would need access to all player characters)
+        local characters = {} -- Placeholder - would get all characters
+        local factionUsage = {}
+        local classUsage = {}
+        local totalCharPlaytime = 0
+        local totalCharMoney = 0
+
+        for _, char in ipairs(characters) do
+            -- Faction analysis
+            local faction = char:getFaction and char:getFaction() or "unknown"
+            factionUsage[faction] = (factionUsage[faction] or 0) + 1
+
+            -- Class analysis
+            local class = char:getClass and char:getClass() or "unknown"
+            classUsage[class] = (classUsage[class] or 0) + 1
+
+            -- Economic analysis
+            local money = char:getMoney and char:getMoney() or 0
+            totalCharMoney = totalCharMoney + money
+
+            -- Playtime analysis
+            local playtime = char:getData and char:getData("playtime") or 0
+            totalCharPlaytime = totalCharPlaytime + playtime
+        end
+
+        -- Determine preferred faction/class
+        local maxFaction = 0
+        for faction, count in pairs(factionUsage) do
+            if count > maxFaction then
+                maxFaction = count
+                playerProfile.preferredFaction = faction
+            end
+        end
+
+        local maxClass = 0
+        for class, count in pairs(classUsage) do
+            if count > maxClass then
+                maxClass = count
+                playerProfile.preferredClass = class
+            end
+        end
+
+        -- Update economic profile
+        playerProfile.totalWealth = totalCharMoney
+        playerProfile.averageCharWealth = #characters > 0 and totalCharMoney / #characters or 0
+        playerProfile.characterCount = #characters
+
+        -- Playtime analysis
+        playerProfile.totalPlaytime = totalCharPlaytime
+        playerProfile.averageSessionLength = playerProfile.totalSessions > 0 and
+            totalCharPlaytime / playerProfile.totalSessions or 0
+
+        -- Behavior pattern analysis
+        local currentHour = tonumber(os.date("%H", currentTime))
+        playerProfile.behaviorPatterns[currentHour] = (playerProfile.behaviorPatterns[currentHour] or 0) + 1
+
+        -- Peak activity hour
+        local peakHour = 0
+        local maxActivity = 0
+        for hour, activity in pairs(playerProfile.behaviorPatterns) do
+            if activity > maxActivity then
+                maxActivity = activity
+                peakHour = hour
+            end
+        end
+        playerProfile.peakActivityHour = peakHour
+
+        -- Geographic analysis (simplified)
+        playerProfile.geographicData.lastCountry = "US" -- Would use actual IP geolocation
+        playerProfile.geographicData.timezone = os.date("%Z", currentTime)
+
+        -- Social connection analysis
+        local friendsOnline = 0
+        for _, ply in ipairs(player.GetAll()) do
+            if ply ~= client and ply:GetFriendStatus(client) == "friend" then
+                friendsOnline = friendsOnline + 1
+                table.insert(playerProfile.socialConnections, ply:SteamID64())
+            end
+        end
+        playerProfile.friendsOnline = friendsOnline
+
+        -- Achievement progress tracking
+        if playerProfile.totalSessions >= 10 then
+            playerProfile.achievementProgress["returning_player"] = true
+        end
+
+        if playerProfile.totalPlaytime >= 1440 then -- 24 hours
+            playerProfile.achievementProgress["dedicated_player"] = true
+        end
+
+        if playerProfile.characterCount >= 5 then
+            playerProfile.achievementProgress["roleplayer"] = true
+        end
+
+        -- Risk assessment
+        if playerProfile.totalSessions < 3 and totalCharPlaytime < 60 then -- Less than 3 sessions, 1 hour playtime
+            table.insert(playerProfile.riskAssessment.flags, "new_player")
+        end
+
+        if friendsOnline == 0 and playerProfile.totalSessions > 10 then
+            table.insert(playerProfile.riskAssessment.flags, "lone_wolf")
+            playerProfile.riskAssessment.score = playerProfile.riskAssessment.score + 10
+        end
+
+        if #playerProfile.deviceHistory > 2 then
+            table.insert(playerProfile.riskAssessment.flags, "account_sharing")
+            playerProfile.riskAssessment.score = playerProfile.riskAssessment.score + 30
+        end
+
+        if playerProfile.riskAssessment.score > 50 then
+            table.insert(playerProfile.riskAssessment.flags, "high_risk")
+        end
+
+        -- Update player profile
+        client:setData("playerProfile", playerProfile)
+
+        -- Update global player statistics
+        local globalStats = lia.data.get("globalPlayerStats", {
+            totalPlayers = 0,
+            averageSessions = 0,
+            averagePlaytime = 0,
+            factionPopularity = {},
+            classPopularity = {},
+            riskDistribution = {}
+        })
+
+        globalStats.totalPlayers = globalStats.totalPlayers + 1
+        globalStats.averageSessions = ((globalStats.averageSessions * (globalStats.totalPlayers - 1)) + playerProfile.totalSessions) / globalStats.totalPlayers
+        globalStats.averagePlaytime = ((globalStats.averagePlaytime * (globalStats.totalPlayers - 1)) + playerProfile.totalPlaytime) / globalStats.totalPlayers
+
+        -- Update faction/class popularity
+        for faction, count in pairs(factionUsage) do
+            globalStats.factionPopularity[faction] = (globalStats.factionPopularity[faction] or 0) + count
+        end
+
+        for class, count in pairs(classUsage) do
+            globalStats.classPopularity[class] = (globalStats.classPopularity[class] or 0) + count
+        end
+
+        -- Update risk distribution
+        local riskLevel = "low"
+        if playerProfile.riskAssessment.score >= 50 then
+            riskLevel = "high"
+        elseif playerProfile.riskAssessment.score >= 20 then
+            riskLevel = "medium"
+        end
+        globalStats.riskDistribution[riskLevel] = (globalStats.riskDistribution[riskLevel] or 0) + 1
+
+        lia.data.set("globalPlayerStats", globalStats)
+
+        -- Create analytics audit trail
+        lia.db.insertTable({
+            steamID = steamID,
+            timestamp = currentTime,
+            sessionNumber = playerProfile.totalSessions,
+            characterCount = #characters,
+            totalPlaytime = totalCharPlaytime,
+            totalWealth = totalCharMoney,
+            preferredFaction = playerProfile.preferredFaction,
+            preferredClass = playerProfile.preferredClass,
+            riskScore = playerProfile.riskAssessment.score,
+            peakActivityHour = peakHour,
+            friendsOnline = friendsOnline
+        }, "player_analytics_audit")
+
+        -- Automated alerts for concerning behavior
+        if playerProfile.riskAssessment.score >= 40 then
+            lia.log.add(client, "high_risk_player_sync",
+                playerProfile.riskAssessment.score, table.concat(playerProfile.riskAssessment.flags, ", "))
+        end
+
+        -- Update achievement tracking
+        local achievements = client:getData("unlockedAchievements", {})
+        for achievement, unlocked in pairs(playerProfile.achievementProgress) do
+            if unlocked and not achievements[achievement] then
+                achievements[achievement] = currentTime
+                client:notifyInfo("Achievement Unlocked: " .. achievement:gsub("_", " "):gsub("^%l", string.upper))
+            end
+        end
+        client:setData("unlockedAchievements", achievements)
+
+        lia.log.add(client, "character_list_synced_advanced",
+            string.format("sessions:%d, chars:%d, playtime:%d, risk:%d, faction:%s, class:%s",
+                playerProfile.totalSessions, #characters, totalCharPlaytime,
+                playerProfile.riskAssessment.score, playerProfile.preferredFaction, playerProfile.preferredClass))
+
+        print(string.format("[CHARACTER SYNC] Advanced analytics complete for %s - Sessions: %d, Characters: %d, Risk Score: %d",
+            client:Name(), playerProfile.totalSessions, #characters, playerProfile.riskAssessment.score))
     end)
     ```
 ]]
@@ -20974,25 +25934,281 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("TicketSystemClaim", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- Simple: Log ticket claim
+    hook.Add("TicketSystemClaim", "TicketClaimLogger", function(client, requester, ticketMessage)
+        print(string.format("Ticket claimed by %s for %s", client:Name(), requester:Name()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("TicketSystemClaim", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- Medium: Track staff performance and notify parties
+    hook.Add("TicketSystemClaim", "TicketClaimHandler", function(client, requester, ticketMessage)
+        -- Update staff statistics
+        local staffStats = client:getData("staffStats", {
+            ticketsClaimed = 0,
+            ticketsClosed = 0,
+            averageResponseTime = 0,
+            lastActive = 0
+        })
+
+        staffStats.ticketsClaimed = staffStats.ticketsClaimed + 1
+        staffStats.lastActive = os.time()
+        client:setData("staffStats", staffStats)
+
+        -- Notify the ticket requester
+        if IsValid(requester) then
+            requester:notifyInfo(string.format("Your ticket has been claimed by %s", client:Name()))
+        end
+
+        -- Notify other staff members
+        for _, ply in ipairs(player.GetAll()) do
+            if ply ~= client and ply:hasPrivilege("viewTickets") then
+                ply:notifyInfo(string.format("%s claimed a ticket from %s", client:Name(), requester:Name()))
+            end
+        end
+
+        -- Log the claim event
+        lia.log.add(client, "ticket_claimed", requester:Name(), ticketMessage:sub(1, 50) .. "...")
+
+        print(string.format("Ticket claimed: Staff %s (%d total) assisting %s",
+            client:Name(), staffStats.ticketsClaimed, requester:Name()))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("TicketSystemClaim", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- High: Advanced ticket analytics and staff workload management
+    hook.Add("TicketSystemClaim", "AdvancedTicketAnalytics", function(client, requester, ticketMessage)
+        if not IsValid(client) or not IsValid(requester) then return end
+
+        local currentTime = os.time()
+        local ticketID = "TICKET_" .. currentTime .. "_" .. requester:SteamID64() -- Simplified ID generation
+
+        -- Initialize comprehensive ticket analytics
+        local ticketAnalytics = lia.data.get("ticketAnalytics", {
+            totalTickets = 0,
+            activeTickets = 0,
+            averageResponseTime = 0,
+            categoryBreakdown = {},
+            priorityDistribution = {},
+            staffWorkload = {},
+            peakHours = {},
+            resolutionRates = {}
+        })
+
+        -- Update global ticket statistics
+        ticketAnalytics.totalTickets = ticketAnalytics.totalTickets + 1
+        ticketAnalytics.activeTickets = ticketAnalytics.activeTickets + 1
+
+        -- Analyze ticket content for categorization
+        local ticketCategory = "general"
+        local ticketPriority = "normal"
+
+        -- Simple content analysis (would be more sophisticated in production)
+        ticketMessage = ticketMessage:lower()
+        if ticketMessage:find("bug") or ticketMessage:find("error") or ticketMessage:find("crash") then
+            ticketCategory = "technical"
+            ticketPriority = "high"
+        elseif ticketMessage:find("report") or ticketMessage:find("cheat") or ticketMessage:find("exploit") then
+            ticketCategory = "report"
+            ticketPriority = "urgent"
+        elseif ticketMessage:find("help") or ticketMessage:find("stuck") then
+            ticketCategory = "assistance"
+            ticketPriority = "normal"
+        elseif ticketMessage:find("suggestion") or ticketMessage:find("idea") then
+            ticketCategory = "feedback"
+            ticketPriority = "low"
+        end
+
+        -- Update category and priority statistics
+        ticketAnalytics.categoryBreakdown[ticketCategory] = (ticketAnalytics.categoryBreakdown[ticketCategory] or 0) + 1
+        ticketAnalytics.priorityDistribution[ticketPriority] = (ticketAnalytics.priorityDistribution[ticketPriority] or 0) + 1
+
+        -- Track peak ticket hours
+        local currentHour = tonumber(os.date("%H", currentTime))
+        ticketAnalytics.peakHours[currentHour] = (ticketAnalytics.peakHours[currentHour] or 0) + 1
+
+        -- Advanced staff workload management
+        local staffWorkload = ticketAnalytics.staffWorkload[client:SteamID64()] or {
+            activeTickets = 0,
+            totalClaimed = 0,
+            averageResolutionTime = 0,
+            specialization = {},
+            performanceRating = 100,
+            lastActive = 0,
+            experienceLevel = "junior"
+        }
+
+        staffWorkload.activeTickets = staffWorkload.activeTickets + 1
+        staffWorkload.totalClaimed = staffWorkload.totalClaimed + 1
+        staffWorkload.lastActive = currentTime
+
+        -- Update staff specialization tracking
+        staffWorkload.specialization[ticketCategory] = (staffWorkload.specialization[ticketCategory] or 0) + 1
+
+        -- Determine staff experience level
+        if staffWorkload.totalClaimed >= 100 then
+            staffWorkload.experienceLevel = "senior"
+        elseif staffWorkload.totalClaimed >= 50 then
+            staffWorkload.experienceLevel = "experienced"
+        elseif staffWorkload.totalClaimed >= 20 then
+            staffWorkload.experienceLevel = "intermediate"
+        end
+
+        -- Performance rating based on active tickets and experience
+        local baseRating = 100
+        if staffWorkload.activeTickets > 5 then
+            baseRating = baseRating - (staffWorkload.activeTickets - 5) * 5 -- Penalty for overload
+        end
+
+        if staffWorkload.experienceLevel == "senior" then
+            baseRating = baseRating + 10
+        elseif staffWorkload.experienceLevel == "experienced" then
+            baseRating = baseRating + 5
+        end
+
+        staffWorkload.performanceRating = math.max(0, math.min(100, baseRating))
+
+        ticketAnalytics.staffWorkload[client:SteamID64()] = staffWorkload
+
+        -- Intelligent staff assignment analysis
+        local bestStaffForCategory = nil
+        local bestScore = 0
+
+        for steamID, workload in pairs(ticketAnalytics.staffWorkload) do
+            local player = player.GetBySteamID64(steamID)
+            if IsValid(player) and player:hasPrivilege("handleTickets") then
+                local categoryScore = workload.specialization[ticketCategory] or 0
+                local experienceBonus = workload.experienceLevel == "senior" and 20 or
+                                       workload.experienceLevel == "experienced" and 10 or 0
+                local workloadPenalty = workload.activeTickets * 2
+                local finalScore = categoryScore + experienceBonus - workloadPenalty
+
+                if finalScore > bestScore then
+                    bestScore = finalScore
+                    bestStaffForCategory = player
+                end
+            end
+        end
+
+        -- Alert if wrong staff member claimed ticket
+        if bestStaffForCategory and bestStaffForCategory ~= client and bestScore > staffWorkload.specialization[ticketCategory] or 0 + 5 then
+            lia.log.add(client, "suboptimal_ticket_assignment",
+                string.format("Better staff available: %s (score: %d vs %d)",
+                    bestStaffForCategory:Name(), bestScore, staffWorkload.specialization[ticketCategory] or 0))
+        end
+
+        -- Requester analytics and support history
+        local requesterHistory = requester:getData("ticketHistory", {
+            totalTickets = 0,
+            openTickets = 0,
+            averageResolutionTime = 0,
+            commonIssues = {},
+            satisfactionRating = 5.0,
+            vipStatus = false
+        })
+
+        requesterHistory.totalTickets = requesterHistory.totalTickets + 1
+        requesterHistory.openTickets = requesterHistory.openTickets + 1
+
+        -- Track common issues
+        requesterHistory.commonIssues[ticketCategory] = (requesterHistory.commonIssues[ticketCategory] or 0) + 1
+
+        -- VIP status for frequent valuable players
+        if requesterHistory.totalTickets >= 10 and requesterHistory.satisfactionRating >= 4.0 then
+            requesterHistory.vipStatus = true
+        end
+
+        requester:setData("ticketHistory", requesterHistory)
+
+        -- Save analytics data
+        lia.data.set("ticketAnalytics", ticketAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            ticketID = ticketID,
+            staffSteamID = client:SteamID64(),
+            requesterSteamID = requester:SteamID64(),
+            category = ticketCategory,
+            priority = ticketPriority,
+            claimedAt = currentTime,
+            ticketMessage = ticketMessage:sub(1, 500), -- Truncate for DB
+            staffExperience = staffWorkload.experienceLevel,
+            staffWorkload = staffWorkload.activeTickets,
+            requesterVIP = requesterHistory.vipStatus,
+            analyticsSnapshot = util.TableToJSON({
+                activeTickets = ticketAnalytics.activeTickets,
+                staffPerformance = staffWorkload.performanceRating,
+                requesterHistory = requesterHistory.totalTickets
+            })
+        }, "ticket_claim_audit")
+
+        -- Smart notifications based on priority and VIP status
+        local notificationColor = Color(255, 255, 0) -- Default yellow
+        if ticketPriority == "urgent" then
+            notificationColor = Color(255, 0, 0) -- Red for urgent
+        elseif ticketPriority == "high" then
+            notificationColor = Color(255, 165, 0) -- Orange for high
+        end
+
+        -- Notify requester with personalized message
+        if requesterHistory.vipStatus then
+            requester:ChatPrint(Color(0, 255, 0), "[VIP Support] ", notificationColor,
+                string.format("Your %s priority ticket has been claimed by %s (%s staff)",
+                    ticketPriority, client:Name(), staffWorkload.experienceLevel))
+        else
+            requester:ChatPrint(notificationColor,
+                string.format("Your ticket has been claimed by %s", client:Name()))
+        end
+
+        -- Notify staff with context
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("viewTickets") and ply ~= client then
+                ply:ChatPrint(Color(0, 255, 0),
+                    string.format("[TICKET] %s claimed %s ticket from %s (%s)",
+                        client:Name(), ticketPriority, requester:Name(),
+                        requesterHistory.vipStatus and "VIP" or "Regular"))
+            end
+        end
+
+        -- Workload alerts
+        if staffWorkload.activeTickets >= 8 then
+            client:ChatPrint(Color(255, 165, 0), "[WORKLOAD] You have ", Color(255, 0, 0),
+                tostring(staffWorkload.activeTickets), Color(255, 165, 0), " active tickets. Consider focusing on resolution.")
+        end
+
+        -- Automated escalation for high-priority tickets
+        if ticketPriority == "urgent" and staffWorkload.experienceLevel == "junior" then
+            -- Find senior staff to shadow/advise
+            for steamID, workload in pairs(ticketAnalytics.staffWorkload) do
+                if workload.experienceLevel == "senior" and workload.activeTickets < 5 then
+                    local seniorStaff = player.GetBySteamID64(steamID)
+                    if IsValid(seniorStaff) then
+                        seniorStaff:ChatPrint(Color(255, 0, 0),
+                            "[ESCALATION] Urgent ticket claimed by junior staff - consider providing guidance to ", client:Name())
+                        break
+                    end
+                end
+            end
+        end
+
+        -- Update staff performance metrics
+        client:setData("staffTicketStats", {
+            activeTickets = staffWorkload.activeTickets,
+            totalClaimed = staffWorkload.totalClaimed,
+            specialization = staffWorkload.specialization,
+            performanceRating = staffWorkload.performanceRating,
+            experienceLevel = staffWorkload.experienceLevel
+        })
+
+        lia.log.add(client, "ticket_claimed_advanced",
+            string.format("category:%s, priority:%s, workload:%d, vip:%s, experience:%s",
+                ticketCategory, ticketPriority, staffWorkload.activeTickets,
+                tostring(requesterHistory.vipStatus), staffWorkload.experienceLevel))
+
+        print(string.format("[TICKET CLAIM] Advanced analytics: %s claimed %s ticket for %s - Category: %s, Priority: %s, Workload: %d",
+            client:Name(), ticketPriority, requester:Name(), ticketCategory, ticketPriority, staffWorkload.activeTickets))
     end)
     ```
 ]]
@@ -21021,25 +26237,268 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("TicketSystemClose", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- Simple: Log ticket closure
+    hook.Add("TicketSystemClose", "TicketCloseLogger", function(client, requester, ticketMessage)
+        print(string.format("Ticket closed by %s for %s", client:Name(), requester:Name()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("TicketSystemClose", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- Medium: Update resolution statistics and collect feedback
+    hook.Add("TicketSystemClose", "TicketResolutionHandler", function(client, requester, ticketMessage)
+        -- Update staff resolution statistics
+        local staffStats = client:getData("staffStats", {
+            ticketsClaimed = 0,
+            ticketsClosed = 0,
+            averageResponseTime = 0,
+            lastActive = 0
+        })
+
+        staffStats.ticketsClosed = staffStats.ticketsClosed + 1
+        client:setData("staffStats", staffStats)
+
+        -- Update ticket analytics
+        local ticketAnalytics = lia.data.get("ticketAnalytics", {
+            totalTickets = 0,
+            activeTickets = 0,
+            closedTickets = 0,
+            averageResolutionTime = 0
+        })
+
+        ticketAnalytics.activeTickets = math.max(0, ticketAnalytics.activeTickets - 1)
+        ticketAnalytics.closedTickets = ticketAnalytics.closedTickets + 1
+        lia.data.set("ticketAnalytics", ticketAnalytics)
+
+        -- Notify the requester
+        if IsValid(requester) then
+            requester:notifyInfo("Your ticket has been resolved by " .. client:Name())
+        end
+
+        -- Request feedback from requester (would integrate with a feedback system)
+        if IsValid(requester) then
+            timer.Simple(5, function() -- Delay to avoid spam
+                if IsValid(requester) then
+                    requester:notify("How would you rate the support you received? Use !rate <1-5>")
+                end
+            end)
+        end
+
+        -- Log resolution event
+        lia.log.add(client, "ticket_closed", requester:Name(), ticketMessage:sub(1, 50) .. "...")
+
+        print(string.format("Ticket resolved: Staff %s closed ticket for %s (%d total closed)",
+            client:Name(), requester:Name(), staffStats.ticketsClosed))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("TicketSystemClose", "MyAddon", function(client, requester, ticketMessage)
-        -- Add your code here
+    -- High: Advanced resolution analytics and quality assurance
+    hook.Add("TicketSystemClose", "AdvancedTicketResolution", function(client, requester, ticketMessage)
+        if not IsValid(client) or not IsValid(requester) then return end
+
+        local currentTime = os.time()
+        local resolutionTime = currentTime - (requester:getData("ticketOpenedAt") or currentTime) -- Would be set when ticket opened
+
+        -- Get ticket analytics and staff workload data
+        local ticketAnalytics = lia.data.get("ticketAnalytics", {
+            totalTickets = 0,
+            activeTickets = 0,
+            closedTickets = 0,
+            averageResolutionTime = 0,
+            resolutionRates = {},
+            categoryBreakdown = {},
+            staffWorkload = {}
+        })
+
+        -- Update global ticket statistics
+        ticketAnalytics.activeTickets = math.max(0, ticketAnalytics.activeTickets - 1)
+        ticketAnalytics.closedTickets = ticketAnalytics.closedTickets + 1
+
+        -- Update average resolution time
+        local totalResolutionTime = (ticketAnalytics.averageResolutionTime * (ticketAnalytics.closedTickets - 1)) + resolutionTime
+        ticketAnalytics.averageResolutionTime = totalResolutionTime / ticketAnalytics.closedTickets
+
+        -- Analyze ticket content for categorization (reuse from claim logic)
+        local ticketCategory = "general"
+        ticketMessage = ticketMessage:lower()
+        if ticketMessage:find("bug") or ticketMessage:find("error") or ticketMessage:find("crash") then
+            ticketCategory = "technical"
+        elseif ticketMessage:find("report") or ticketMessage:find("cheat") or ticketMessage:find("exploit") then
+            ticketCategory = "report"
+        elseif ticketMessage:find("help") or ticketMessage:find("stuck") then
+            ticketCategory = "assistance"
+        elseif ticketMessage:find("suggestion") or ticketMessage:find("idea") then
+            ticketCategory = "feedback"
+        end
+
+        -- Update resolution rates by category
+        ticketAnalytics.resolutionRates[ticketCategory] = ticketAnalytics.resolutionRates[ticketCategory] or {resolved = 0, total = 0}
+        ticketAnalytics.resolutionRates[ticketCategory].resolved = ticketAnalytics.resolutionRates[ticketCategory].resolved + 1
+        ticketAnalytics.resolutionRates[ticketCategory].total = ticketAnalytics.resolutionRates[ticketCategory].total + 1
+
+        -- Update staff workload and performance
+        local staffWorkload = ticketAnalytics.staffWorkload[client:SteamID64()] or {
+            activeTickets = 0,
+            totalClaimed = 0,
+            totalResolved = 0,
+            averageResolutionTime = 0,
+            specialization = {},
+            performanceRating = 100,
+            resolutionQuality = {}
+        }
+
+        staffWorkload.activeTickets = math.max(0, staffWorkload.activeTickets - 1)
+        staffWorkload.totalResolved = staffWorkload.totalResolved + 1
+
+        -- Update average resolution time for this staff member
+        local staffTotalTime = (staffWorkload.averageResolutionTime * (staffWorkload.totalResolved - 1)) + resolutionTime
+        staffWorkload.averageResolutionTime = staffTotalTime / staffWorkload.totalResolved
+
+        -- Update specialization resolution tracking
+        staffWorkload.specialization[ticketCategory] = staffWorkload.specialization[ticketCategory] or {resolved = 0, total = 0}
+        staffWorkload.specialization[ticketCategory].resolved = staffWorkload.specialization[ticketCategory].resolved + 1
+
+        -- Calculate resolution quality based on time and category
+        local expectedTime = 300 -- 5 minutes default
+        if ticketCategory == "technical" then expectedTime = 600 -- 10 minutes
+        elseif ticketCategory == "report" then expectedTime = 180 -- 3 minutes
+        elseif ticketCategory == "feedback" then expectedTime = 120 -- 2 minutes
+        end
+
+        local qualityScore = 100
+        if resolutionTime < expectedTime * 0.5 then
+            qualityScore = 120 -- Bonus for very fast resolution
+        elseif resolutionTime > expectedTime * 2 then
+            qualityScore = math.max(0, 100 - ((resolutionTime - expectedTime) / expectedTime) * 20) -- Penalty for slow resolution
+        end
+
+        staffWorkload.resolutionQuality[ticketCategory] = qualityScore
+
+        -- Recalculate overall performance rating
+        local totalQuality = 0
+        local qualityCount = 0
+        for _, score in pairs(staffWorkload.resolutionQuality) do
+            totalQuality = totalQuality + score
+            qualityCount = qualityCount + 1
+        end
+
+        if qualityCount > 0 then
+            staffWorkload.performanceRating = totalQuality / qualityCount
+        end
+
+        ticketAnalytics.staffWorkload[client:SteamID64()] = staffWorkload
+
+        -- Update requester satisfaction and history
+        local requesterHistory = requester:getData("ticketHistory", {
+            totalTickets = 0,
+            openTickets = 0,
+            resolvedTickets = 0,
+            averageResolutionTime = 0,
+            satisfactionRating = 5.0,
+            commonIssues = {}
+        })
+
+        requesterHistory.resolvedTickets = requesterHistory.resolvedTickets + 1
+        requesterHistory.openTickets = math.max(0, requesterHistory.openTickets - 1)
+
+        -- Update average resolution time for requester
+        local requesterTotalTime = (requesterHistory.averageResolutionTime * (requesterHistory.resolvedTickets - 1)) + resolutionTime
+        requesterHistory.averageResolutionTime = requesterTotalTime / requesterHistory.resolvedTickets
+
+        requester:setData("ticketHistory", requesterHistory)
+
+        -- Save updated analytics
+        lia.data.set("ticketAnalytics", ticketAnalytics)
+
+        -- Create detailed resolution audit trail
+        lia.db.insertTable({
+            ticketID = "TICKET_" .. currentTime .. "_" .. requester:SteamID64(), -- Simplified
+            staffSteamID = client:SteamID64(),
+            requesterSteamID = requester:SteamID64(),
+            category = ticketCategory,
+            resolutionTime = resolutionTime,
+            qualityScore = qualityScore,
+            staffPerformance = staffWorkload.performanceRating,
+            closedAt = currentTime,
+            ticketMessage = ticketMessage:sub(1, 500),
+            analyticsSnapshot = util.TableToJSON({
+                globalResolutionTime = ticketAnalytics.averageResolutionTime,
+                staffResolutionTime = staffWorkload.averageResolutionTime,
+                requesterSatisfaction = requesterHistory.satisfactionRating
+            })
+        }, "ticket_resolution_audit")
+
+        -- Intelligent feedback collection
+        if IsValid(requester) then
+            -- Personalized feedback request based on resolution time
+            local feedbackMessage = "Your ticket has been resolved!"
+            if resolutionTime < 300 then
+                feedbackMessage = feedbackMessage .. " We're glad we could help you quickly."
+            elseif resolutionTime > 1800 then
+                feedbackMessage = feedbackMessage .. " We apologize for the longer wait time."
+            end
+
+            requester:ChatPrint(Color(0, 255, 0), "[SUPPORT] ", Color(255, 255, 255), feedbackMessage)
+            requester:ChatPrint(Color(255, 255, 0), "How was your experience? Rate us: !rate <1-5>")
+
+            -- Store feedback expectation
+            requester:setData("pendingFeedback", {
+                ticketCategory = ticketCategory,
+                resolutionTime = resolutionTime,
+                staffMember = client:SteamID64(),
+                timestamp = currentTime
+            })
+        end
+
+        -- Staff performance notifications
+        if staffWorkload.performanceRating >= 110 then
+            if not client:getData("highPerformerBadge") then
+                client:setData("highPerformerBadge", true)
+                client:notifyInfo("🏆 High Performer Badge Unlocked! Your resolution quality is excellent.")
+            end
+        elseif staffWorkload.performanceRating < 70 then
+            client:ChatPrint(Color(255, 165, 0), "[PERFORMANCE] Your average resolution quality is below standards. Consider reviewing your process.")
+        end
+
+        -- Automated quality alerts
+        if qualityScore < 60 then
+            lia.log.add(client, "low_quality_resolution",
+                string.format("Category: %s, Time: %ds, Expected: %ds, Score: %d",
+                    ticketCategory, resolutionTime, expectedTime, qualityScore))
+        end
+
+        -- Resolution time alerts
+        if resolutionTime > 3600 then -- Over 1 hour
+            lia.log.add(client, "slow_resolution_alert",
+                string.format("Category: %s, Time: %d minutes", ticketCategory, resolutionTime / 60))
+        elseif resolutionTime < 60 then -- Under 1 minute
+            lia.log.add(client, "suspiciously_fast_resolution",
+                string.format("Category: %s, Time: %ds", ticketCategory, resolutionTime))
+        end
+
+        -- Update staff resolution statistics
+        client:setData("staffResolutionStats", {
+            totalResolved = staffWorkload.totalResolved,
+            averageResolutionTime = staffWorkload.averageResolutionTime,
+            performanceRating = staffWorkload.performanceRating,
+            specialization = staffWorkload.specialization,
+            lastResolution = currentTime
+        })
+
+        -- Global resolution rate calculation
+        local resolutionRate = ticketAnalytics.closedTickets / math.max(ticketAnalytics.totalTickets, 1)
+        if resolutionRate < 0.8 then
+            lia.log.add(nil, "low_resolution_rate_alert", string.format("%.1f%%", resolutionRate * 100))
+        end
+
+        lia.log.add(client, "ticket_closed_advanced",
+            string.format("category:%s, time:%ds, quality:%d, performance:%.1f, requester_history:%d",
+                ticketCategory, resolutionTime, qualityScore, staffWorkload.performanceRating, requesterHistory.resolvedTickets))
+
+        print(string.format("[TICKET RESOLUTION] Advanced analytics: %s resolved %s ticket for %s - Time: %ds, Quality: %d, Performance: %.1f",
+            client:Name(), ticketCategory, requester:Name(), resolutionTime, qualityScore, staffWorkload.performanceRating))
     end)
     ```
 ]]
@@ -21067,25 +26526,343 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("TicketSystemCreated", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- Simple: Log ticket creation
+    hook.Add("TicketSystemCreated", "TicketCreateLogger", function(noob, message)
+        print(string.format("New ticket created by %s", noob:Name()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("TicketSystemCreated", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- Medium: Process new tickets and notify staff
+    hook.Add("TicketSystemCreated", "TicketCreationHandler", function(noob, message)
+        -- Store ticket creation time for the player
+        noob:setData("ticketOpenedAt", os.time())
+
+        -- Update player's ticket history
+        local ticketHistory = noob:getData("ticketHistory", {
+            totalTickets = 0,
+            openTickets = 0
+        })
+
+        ticketHistory.totalTickets = ticketHistory.totalTickets + 1
+        ticketHistory.openTickets = ticketHistory.openTickets + 1
+        noob:setData("ticketHistory", ticketHistory)
+
+        -- Notify the player
+        noob:notifyInfo("Your ticket has been submitted. A staff member will assist you shortly.")
+
+        -- Notify available staff
+        local staffCount = 0
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("viewTickets") then
+                ply:notifyInfo(string.format("New ticket from %s", noob:Name()))
+                staffCount = staffCount + 1
+            end
+        end
+
+        -- Log ticket creation
+        lia.log.add(noob, "ticket_created", message:sub(1, 50) .. "...")
+
+        print(string.format("Ticket created: Player %s (%d total tickets) - %d staff notified",
+            noob:Name(), ticketHistory.totalTickets, staffCount))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("TicketSystemCreated", "MyAddon", function(noob, message)
-        -- Add your code here
+    -- High: Advanced ticket triage and intelligent routing
+    hook.Add("TicketSystemCreated", "AdvancedTicketTriage", function(noob, message)
+        if not IsValid(noob) then return end
+
+        local currentTime = os.time()
+        local ticketID = "TICKET_" .. currentTime .. "_" .. noob:SteamID64()
+
+        -- Initialize comprehensive ticket analytics
+        local ticketAnalytics = lia.data.get("ticketAnalytics", {
+            totalTickets = 0,
+            activeTickets = 0,
+            categoryBreakdown = {},
+            priorityDistribution = {},
+            staffWorkload = {},
+            peakHours = {},
+            playerTicketHistory = {}
+        })
+
+        -- Update global ticket statistics
+        ticketAnalytics.totalTickets = ticketAnalytics.totalTickets + 1
+        ticketAnalytics.activeTickets = ticketAnalytics.activeTickets + 1
+
+        -- Advanced ticket content analysis and categorization
+        local ticketCategory = "general"
+        local ticketPriority = "normal"
+        local keywords = {}
+
+        -- Convert message to lowercase for analysis
+        local lowerMessage = message:lower()
+
+        -- Technical issues
+        if lowerMessage:find("bug") or lowerMessage:find("error") or lowerMessage:find("crash") or
+           lowerMessage:find("not working") or lowerMessage:find("broken") then
+            ticketCategory = "technical"
+            ticketPriority = lowerMessage:find("crash") and "urgent" or "high"
+            table.insert(keywords, "technical")
+
+        -- Reports (cheating, harassment, etc.)
+        elseif lowerMessage:find("report") or lowerMessage:find("cheat") or lowerMessage:find("hack") or
+               lowerMessage:find("exploit") or lowerMessage:find("harass") or lowerMessage:find("spam") then
+            ticketCategory = "report"
+            ticketPriority = "urgent"
+            table.insert(keywords, "report")
+
+        -- Assistance requests
+        elseif lowerMessage:find("help") or lowerMessage:find("stuck") or lowerMessage:find("can't") or
+               lowerMessage:find("how do") or lowerMessage:find("where") then
+            ticketCategory = "assistance"
+            ticketPriority = "normal"
+            table.insert(keywords, "assistance")
+
+        -- Feedback and suggestions
+        elseif lowerMessage:find("suggestion") or lowerMessage:find("idea") or lowerMessage:find("feedback") or
+               lowerMessage:find("improve") or lowerMessage:find("change") then
+            ticketCategory = "feedback"
+            ticketPriority = "low"
+            table.insert(keywords, "feedback")
+
+        -- Administrative requests
+        elseif lowerMessage:find("ban") or lowerMessage:find("unban") or lowerMessage:find("warn") or
+               lowerMessage:find("kick") or lowerMessage:find("mute") then
+            ticketCategory = "administrative"
+            ticketPriority = lowerMessage:find("unban") and "high" or "normal"
+            table.insert(keywords, "admin")
+        end
+
+        -- Update analytics
+        ticketAnalytics.categoryBreakdown[ticketCategory] = (ticketAnalytics.categoryBreakdown[ticketCategory] or 0) + 1
+        ticketAnalytics.priorityDistribution[ticketPriority] = (ticketAnalytics.priorityDistribution[ticketPriority] or 0) + 1
+
+        -- Track peak ticket creation hours
+        local currentHour = tonumber(os.date("%H", currentTime))
+        ticketAnalytics.peakHours[currentHour] = (ticketAnalytics.peakHours[currentHour] or 0) + 1
+
+        -- Player ticket history analysis
+        local playerSteamID = noob:SteamID64()
+        local playerHistory = ticketAnalytics.playerTicketHistory[playerSteamID] or {
+            totalTickets = 0,
+            categories = {},
+            averageTicketLength = 0,
+            lastTicket = 0,
+            ticketFrequency = 0
+        }
+
+        playerHistory.totalTickets = playerHistory.totalTickets + 1
+        playerHistory.categories[ticketCategory] = (playerHistory.categories[ticketCategory] or 0) + 1
+        playerHistory.lastTicket = currentTime
+
+        -- Calculate ticket frequency (tickets per day)
+        if playerHistory.totalTickets > 1 then
+            local timeSpan = currentTime - (playerHistory.firstTicket or currentTime)
+            playerHistory.ticketFrequency = playerHistory.totalTickets / math.max(timeSpan / 86400, 1) -- per day
+        else
+            playerHistory.firstTicket = currentTime
+        end
+
+        ticketAnalytics.playerTicketHistory[playerSteamID] = playerHistory
+
+        -- Intelligent staff routing algorithm
+        local bestStaff = nil
+        local bestScore = -1
+        local availableStaff = {}
+
+        -- Find all available staff
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("handleTickets") and ply ~= noob then
+                local steamID = ply:SteamID64()
+                local workload = ticketAnalytics.staffWorkload[steamID] or {
+                    activeTickets = 0,
+                    specialization = {},
+                    experienceLevel = "junior",
+                    lastActive = 0
+                }
+
+                -- Only consider staff active within last 30 minutes
+                if currentTime - workload.lastActive < 1800 then
+                    table.insert(availableStaff, {
+                        player = ply,
+                        workload = workload,
+                        steamID = steamID
+                    })
+                end
+            end
+        end
+
+        -- Score each available staff member
+        for _, staffData in ipairs(availableStaff) do
+            local score = 100
+            local workload = staffData.workload
+
+            -- Prefer staff with specialization in this category
+            local specializationScore = workload.specialization[ticketCategory] or 0
+            score = score + (specializationScore * 10)
+
+            -- Factor in experience level
+            if workload.experienceLevel == "senior" then
+                score = score + 30
+            elseif workload.experienceLevel == "experienced" then
+                score = score + 15
+            elseif workload.experienceLevel == "intermediate" then
+                score = score + 5
+            end
+
+            -- Penalize high workload
+            score = score - (workload.activeTickets * 15)
+
+            -- Prioritize urgent tickets to senior staff
+            if ticketPriority == "urgent" and workload.experienceLevel ~= "senior" then
+                score = score - 50
+            end
+
+            -- Boost score for recently active staff
+            local timeSinceActive = currentTime - workload.lastActive
+            if timeSinceActive < 300 then -- Active in last 5 minutes
+                score = score + 20
+            end
+
+            if score > bestScore then
+                bestScore = score
+                bestStaff = staffData.player
+            end
+        end
+
+        -- Create ticket record
+        local ticketRecord = {
+            id = ticketID,
+            player = playerSteamID,
+            category = ticketCategory,
+            priority = ticketPriority,
+            message = message,
+            keywords = keywords,
+            createdAt = currentTime,
+            assignedStaff = bestStaff and bestStaff:SteamID64() or nil,
+            status = "open",
+            playerHistory = {
+                totalTickets = playerHistory.totalTickets,
+                ticketFrequency = playerHistory.ticketFrequency,
+                commonCategory = ticketCategory
+            }
+        }
+
+        -- Store ticket data
+        noob:setData("currentTicket", ticketRecord)
+        noob:setData("ticketOpenedAt", currentTime)
+
+        -- Update player's ticket history
+        local playerTicketHistory = noob:getData("ticketHistory", {
+            totalTickets = 0,
+            openTickets = 0,
+            categories = {}
+        })
+
+        playerTicketHistory.totalTickets = playerTicketHistory.totalTickets + 1
+        playerTicketHistory.openTickets = playerTicketHistory.openTickets + 1
+        playerTicketHistory.categories[ticketCategory] = (playerTicketHistory.categories[ticketCategory] or 0) + 1
+        noob:setData("ticketHistory", playerTicketHistory)
+
+        -- Save analytics
+        lia.data.set("ticketAnalytics", ticketAnalytics)
+
+        -- Create database audit trail
+        lia.db.insertTable({
+            ticketID = ticketID,
+            playerSteamID = playerSteamID,
+            category = ticketCategory,
+            priority = ticketPriority,
+            message = message:sub(1, 500),
+            keywords = table.concat(keywords, ","),
+            assignedStaff = bestStaff and bestStaff:SteamID64() or "unassigned",
+            playerTicketCount = playerHistory.totalTickets,
+            ticketFrequency = playerHistory.ticketFrequency,
+            createdAt = currentTime
+        }, "ticket_creation_audit")
+
+        -- Smart notifications
+        local priorityColor = Color(255, 255, 0) -- Default yellow
+        local priorityIcon = "📋"
+
+        if ticketPriority == "urgent" then
+            priorityColor = Color(255, 0, 0)
+            priorityIcon = "🚨"
+        elseif ticketPriority == "high" then
+            priorityColor = Color(255, 165, 0)
+            priorityIcon = "⚠️"
+        elseif ticketPriority == "low" then
+            priorityColor = Color(0, 255, 0)
+            priorityIcon = "💡"
+        end
+
+        -- Notify the player
+        noob:ChatPrint(Color(0, 255, 0), "[TICKET] ", Color(255, 255, 255),
+            string.format("Your %s ticket has been submitted successfully!", ticketCategory))
+
+        if bestStaff then
+            noob:ChatPrint(Color(255, 255, 0), string.format("A staff member (%s) will assist you shortly.",
+                bestStaff:Name()))
+        else
+            noob:ChatPrint(Color(255, 165, 0), "All staff are currently busy. Your ticket is queued for attention.")
+        end
+
+        -- Notify staff with intelligent routing
+        for _, staffData in ipairs(availableStaff) do
+            local staff = staffData.staff
+            local isAssigned = (staff == bestStaff)
+
+            if isAssigned then
+                -- Special notification for assigned staff
+                staff:ChatPrint(Color(0, 255, 0), "[ASSIGNED TICKET] ", priorityColor,
+                    string.format("%s %s ticket from %s", priorityIcon, ticketCategory, noob:Name()))
+                staff:ChatPrint(Color(255, 255, 0), "Use !claim to accept this ticket")
+
+                -- Auto-assign the ticket
+                timer.Simple(0.1, function()
+                    if IsValid(staff) then
+                        -- Trigger the claim hook (would need integration with ticket system)
+                        hook.Run("TicketSystemClaim", staff, noob, message)
+                    end
+                end)
+            else
+                -- Regular notification for other staff
+                staff:ChatPrint(Color(0, 255, 0), "[NEW TICKET] ", priorityColor,
+                    string.format("%s %s ticket from %s", priorityIcon, ticketCategory, noob:Name()))
+            end
+        end
+
+        -- Alert if no staff available
+        if #availableStaff == 0 then
+            lia.log.add(nil, "no_staff_available", "New ticket created but no staff online")
+            noob:ChatPrint(Color(255, 165, 0), "No staff are currently online. Your ticket has been logged and will be reviewed when staff become available.")
+        end
+
+        -- Frequency warnings for frequent ticket creators
+        if playerHistory.ticketFrequency > 5 then -- More than 5 tickets per day
+            lia.log.add(noob, "high_ticket_frequency", string.format("%.1f tickets/day", playerHistory.ticketFrequency))
+
+            -- Notify staff about frequent ticket creator
+            for _, staffData in ipairs(availableStaff) do
+                staffData.player:ChatPrint(Color(255, 165, 0), "[FREQUENT] ",
+                    string.format("Player %s creates %.1f tickets/day", noob:Name(), playerHistory.ticketFrequency))
+            end
+        end
+
+        lia.log.add(noob, "ticket_created_advanced",
+            string.format("category:%s, priority:%s, assigned:%s, frequency:%.1f/day",
+                ticketCategory, ticketPriority,
+                bestStaff and bestStaff:Name() or "unassigned",
+                playerHistory.ticketFrequency))
+
+        print(string.format("[TICKET CREATION] Advanced triage: %s created %s (%s) ticket - Assigned: %s, Frequency: %.1f/day",
+            noob:Name(), ticketCategory, ticketPriority,
+            bestStaff and bestStaff:Name() or "unassigned",
+            playerHistory.ticketFrequency))
     end)
     ```
 ]]
@@ -21114,25 +26891,370 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("ToggleLock", "MyAddon", function(client, door, state)
-        -- Add your code here
+    -- Simple: Log lock state changes
+    hook.Add("ToggleLock", "LockLogger", function(client, door, state)
+        local action = state and "locked" or "unlocked"
+        print(string.format("%s %s the %s", client:Name(), action, door:GetClass()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("ToggleLock", "MyAddon", function(client, door, state)
-        -- Add your code here
+    -- Medium: Track access patterns and validate permissions
+    hook.Add("ToggleLock", "LockAccessTracker", function(client, door, state)
+        -- Update door access statistics
+        local doorStats = door:getData("accessStats", {
+            totalAccesses = 0,
+            lockToggles = 0,
+            lastAccessed = 0,
+            accessByPlayer = {}
+        })
+
+        doorStats.totalAccesses = doorStats.totalAccesses + 1
+        doorStats.lockToggles = doorStats.lockToggles + 1
+        doorStats.lastAccessed = os.time()
+
+        -- Track individual player access
+        local steamID = client:SteamID()
+        doorStats.accessByPlayer[steamID] = (doorStats.accessByPlayer[steamID] or 0) + 1
+
+        door:setData("accessStats", doorStats)
+
+        -- Check if player has permission
+        local owner = door:getData("owner")
+        local allowedPlayers = door:getData("allowedPlayers") or {}
+
+        local hasPermission = false
+        if owner == client:SteamID() then
+            hasPermission = true
+        elseif allowedPlayers[client:SteamID()] then
+            hasPermission = true
+        elseif client:hasPrivilege("manageDoors") then
+            hasPermission = true -- Staff override
+        end
+
+        -- Log security events
+        if hasPermission then
+            lia.log.add(client, "door_lock_toggle", door:GetClass(), state and "locked" or "unlocked")
+        else
+            lia.log.add(client, "unauthorized_lock_access", door:GetClass(), state and "locked" or "unlocked")
+            client:notifyError("You don't have permission to lock/unlock this door!")
+        end
+
+        -- Notify nearby players of lock change
+        local doorPos = door:GetPos()
+        for _, ply in ipairs(player.GetAll()) do
+            if ply ~= client and ply:GetPos():DistToSqr(doorPos) < 10000 then -- Within 100 units
+                ply:EmitSound(state and "doors/door_locked2.wav" or "doors/door_latch1.wav", 50, 100)
+            end
+        end
+
+        print(string.format("Lock toggled: %s %s %s (Permission: %s, Access count: %d)",
+            client:Name(), state and "locked" or "unlocked", door:GetClass(),
+            hasPermission and "granted" or "denied", doorStats.lockToggles))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("ToggleLock", "MyAddon", function(client, door, state)
-        -- Add your code here
+    -- High: Advanced security monitoring and access analytics
+    hook.Add("ToggleLock", "AdvancedLockSecurity", function(client, door, state)
+        if not IsValid(client) or not IsValid(door) then return end
+
+        local currentTime = os.time()
+        local steamID = client:SteamID64()
+        local doorID = door:EntIndex()
+        local doorClass = door:GetClass()
+        local action = state and "locked" or "unlocked"
+
+        -- Initialize comprehensive security analytics
+        local securityAnalytics = lia.data.get("securityAnalytics", {
+            totalLockOperations = 0,
+            doorsByType = {},
+            accessPatterns = {},
+            securityIncidents = {},
+            playerAccessHistory = {},
+            timeBasedPatterns = {},
+            doorSecurityLevels = {}
+        })
+
+        -- Update global statistics
+        securityAnalytics.totalLockOperations = securityAnalytics.totalLockOperations + 1
+
+        -- Track door types
+        securityAnalytics.doorsByType[doorClass] = (securityAnalytics.doorsByType[doorClass] or 0) + 1
+
+        -- Advanced permission validation
+        local permissionCheck = {
+            hasAccess = false,
+            accessType = "none",
+            securityLevel = 1,
+            flags = {}
+        }
+
+        -- Check ownership
+        local owner = door:getData("owner")
+        if owner == steamID then
+            permissionCheck.hasAccess = true
+            permissionCheck.accessType = "owner"
+            permissionCheck.securityLevel = 5
+            table.insert(permissionCheck.flags, "owner")
+        end
+
+        -- Check allowed players list
+        local allowedPlayers = door:getData("allowedPlayers") or {}
+        if not permissionCheck.hasAccess and allowedPlayers[steamID] then
+            permissionCheck.hasAccess = true
+            permissionCheck.accessType = "authorized"
+            permissionCheck.securityLevel = 4
+            table.insert(permissionCheck.flags, "authorized")
+        end
+
+        -- Check faction permissions
+        if not permissionCheck.hasAccess then
+            local playerFaction = client:getChar() and client:getChar():getFaction() or "none"
+            local doorFactions = door:getData("allowedFactions") or {}
+            if doorFactions[playerFaction] then
+                permissionCheck.hasAccess = true
+                permissionCheck.accessType = "faction"
+                permissionCheck.securityLevel = 3
+                table.insert(permissionCheck.flags, "faction")
+            end
+        end
+
+        -- Check staff privileges
+        if not permissionCheck.hasAccess and client:hasPrivilege("manageDoors") then
+            permissionCheck.hasAccess = true
+            permissionCheck.accessType = "staff"
+            permissionCheck.securityLevel = 5
+            table.insert(permissionCheck.flags, "staff_override")
+        end
+
+        -- Check master keys (emergency access)
+        if not permissionCheck.hasAccess then
+            local masterKeys = door:getData("masterKeys") or {}
+            for _, keyItem in ipairs(masterKeys) do
+                if client:getChar() and client:getChar():getInv() and client:getChar():getInv():hasItem(keyItem) then
+                    permissionCheck.hasAccess = true
+                    permissionCheck.accessType = "master_key"
+                    permissionCheck.securityLevel = 4
+                    table.insert(permissionCheck.flags, "master_key")
+                    break
+                end
+            end
+        end
+
+        -- Security incident detection
+        local securityIncident = {
+            type = "none",
+            severity = 0,
+            description = ""
+        }
+
+        if not permissionCheck.hasAccess then
+            securityIncident.type = "unauthorized_access"
+            securityIncident.severity = 3
+            securityIncident.description = "Attempted to toggle lock without permission"
+
+            -- Additional analysis for suspicious behavior
+            local recentAttempts = door:getData("recentAccessAttempts") or {}
+            local recentCount = 0
+            for timestamp, attempts in pairs(recentAttempts) do
+                if currentTime - timestamp < 300 then -- Last 5 minutes
+                    recentCount = recentCount + attempts
+                end
+            end
+
+            if recentCount > 5 then
+                securityIncident.type = "brute_force_attempt"
+                securityIncident.severity = 5
+                securityIncident.description = "Multiple unauthorized access attempts detected"
+
+                -- Lock out the door temporarily
+                door:setData("lockoutUntil", currentTime + 300) -- 5 minute lockout
+                lia.log.add(client, "door_lockout_triggered", doorClass, "Brute force protection activated")
+            end
+
+            -- Record the attempt
+            recentAttempts[currentTime] = (recentAttempts[currentTime] or 0) + 1
+            door:setData("recentAccessAttempts", recentAttempts)
+
+        else
+            -- Analyze normal access patterns for anomalies
+            local playerHistory = securityAnalytics.playerAccessHistory[steamID] or {
+                totalAccesses = 0,
+                doorsAccessed = {},
+                accessPatterns = {},
+                lastAccess = 0
+            }
+
+            playerHistory.totalAccesses = playerHistory.totalAccesses + 1
+            playerHistory.doorsAccessed[doorID] = (playerHistory.doorsAccessed[doorID] or 0) + 1
+            playerHistory.lastAccess = currentTime
+
+            -- Detect unusual access patterns
+            local currentHour = tonumber(os.date("%H", currentTime))
+            playerHistory.accessPatterns[currentHour] = (playerHistory.accessPatterns[currentHour] or 0) + 1
+
+            -- Check for unusual timing
+            if currentHour >= 2 and currentHour <= 6 then -- 2 AM to 6 AM
+                table.insert(permissionCheck.flags, "off_hours_access")
+                if playerHistory.accessPatterns[currentHour] > 10 then
+                    securityIncident.type = "suspicious_timing"
+                    securityIncident.severity = 2
+                    securityIncident.description = "Unusual access during off-hours"
+                end
+            end
+
+            -- Check for rapid access to multiple doors
+            local rapidAccessCount = 0
+            for doorID2, accessCount in pairs(playerHistory.doorsAccessed) do
+                if currentTime - (door:getData("lastAccessedBy_" .. steamID) or 0) < 60 then -- Within 1 minute
+                    rapidAccessCount = rapidAccessCount + 1
+                end
+            end
+
+            if rapidAccessCount > 3 then
+                securityIncident.type = "rapid_multi_access"
+                securityIncident.severity = 2
+                securityIncident.description = "Rapid access to multiple doors detected"
+            end
+
+            securityAnalytics.playerAccessHistory[steamID] = playerHistory
+        end
+
+        -- Update door security level tracking
+        local doorSecurity = securityAnalytics.doorSecurityLevels[doorID] or {
+            securityLevel = 1,
+            accessCount = 0,
+            incidentCount = 0,
+            lastIncident = 0
+        }
+
+        doorSecurity.accessCount = doorSecurity.accessCount + 1
+        if securityIncident.severity > 0 then
+            doorSecurity.incidentCount = doorSecurity.incidentCount + 1
+            doorSecurity.lastIncident = currentTime
+        end
+
+        -- Adjust door security level based on incidents
+        if doorSecurity.incidentCount > 10 then
+            doorSecurity.securityLevel = 3 -- High security
+        elseif doorSecurity.incidentCount > 5 then
+            doorSecurity.securityLevel = 2 -- Medium security
+        end
+
+        securityAnalytics.doorSecurityLevels[doorID] = doorSecurity
+
+        -- Time-based pattern analysis
+        local timeKey = os.date("%Y-%m-%d_%H", currentTime)
+        securityAnalytics.timeBasedPatterns[timeKey] = (securityAnalytics.timeBasedPatterns[timeKey] or 0) + 1
+
+        -- Record security incidents
+        if securityIncident.severity > 0 then
+            table.insert(securityAnalytics.securityIncidents, {
+                timestamp = currentTime,
+                player = steamID,
+                doorID = doorID,
+                doorClass = doorClass,
+                incidentType = securityIncident.type,
+                severity = securityIncident.severity,
+                description = securityIncident.description,
+                accessType = permissionCheck.accessType,
+                location = door:GetPos()
+            })
+
+            -- Keep only recent incidents (last 1000)
+            while #securityAnalytics.securityIncidents > 1000 do
+                table.remove(securityAnalytics.securityIncidents, 1)
+            end
+        end
+
+        -- Save analytics
+        lia.data.set("securityAnalytics", securityAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            playerSteamID = steamID,
+            doorID = doorID,
+            doorClass = doorClass,
+            action = action,
+            accessGranted = permissionCheck.hasAccess,
+            accessType = permissionCheck.accessType,
+            securityLevel = permissionCheck.securityLevel,
+            incidentType = securityIncident.type,
+            incidentSeverity = securityIncident.severity,
+            location = string.format("%.1f,%.1f,%.1f", door:GetPos().x, door:GetPos().y, door:GetPos().z)
+        }, "door_access_audit")
+
+        -- Smart notifications and responses
+        if permissionCheck.hasAccess then
+            -- Successful access - subtle feedback
+            client:EmitSound(state and "doors/door_locked2.wav" or "doors/door_latch1.wav", 50, 100)
+
+            -- Log normal access
+            lia.log.add(client, "door_access_granted", doorClass, action, permissionCheck.accessType)
+
+        else
+            -- Denied access - clear feedback
+            client:EmitSound("doors/door_locked2.wav", 60, 150)
+            client:notifyError("Access denied! You don't have permission to " .. action .. " this door.")
+
+            -- Alert security if high severity
+            if securityIncident.severity >= 4 then
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("viewSecurity") then
+                        ply:ChatPrint(Color(255, 0, 0), "[SECURITY] ",
+                            string.format("High-severity incident: %s attempted unauthorized access to %s",
+                                client:Name(), doorClass))
+                    end
+                end
+            end
+
+            lia.log.add(client, "door_access_denied", doorClass, action, securityIncident.description)
+        end
+
+        -- Automated security responses
+        if securityIncident.type == "brute_force_attempt" then
+            -- Lock down the door
+            door:Fire("Lock")
+            door:setData("securityLockdown", true)
+
+            -- Alert all staff
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageDoors") then
+                    ply:ChatPrint(Color(255, 0, 0), "[SECURITY LOCKDOWN] ",
+                        string.format("Door %s locked due to brute force attempt by %s", doorID, client:Name()))
+                end
+            end
+
+            -- Auto-unlock after 5 minutes
+            timer.Create("SecurityLockdown_" .. doorID, 300, 1, function()
+                if IsValid(door) then
+                    door:setData("securityLockdown", false)
+                    lia.log.add(nil, "security_lockdown_expired", doorID)
+                end
+            end)
+        end
+
+        -- Performance monitoring
+        local processingTime = SysTime() - (door:getData("lastToggleTime") or SysTime())
+        door:setData("lastToggleTime", SysTime())
+
+        if processingTime > 0.1 then -- More than 100ms
+            lia.log.add(client, "slow_door_operation", doorClass, processingTime)
+        end
+
+        -- Update door metadata
+        door:setData("lastAccessedBy_" .. steamID, currentTime)
+        door:setData("totalAccesses", (door:getData("totalAccesses") or 0) + 1)
+
+        print(string.format("[DOOR SECURITY] Advanced monitoring: %s %s %s - Access: %s (%s), Security: %d, Incident: %s (%d)",
+            client:Name(), action, doorClass,
+            permissionCheck.hasAccess and "granted" or "denied",
+            permissionCheck.accessType, permissionCheck.securityLevel,
+            securityIncident.type, securityIncident.severity))
     end)
     ```
 ]]
@@ -21159,25 +27281,62 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("TransferItem", "MyAddon", function(itemID)
-        -- Add your code here
+    -- Simple: Log item transfers
+    hook.Add("TransferItem", "TransferLogger", function(itemID)
+        print("Item " .. itemID .. " was transferred between inventories")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("TransferItem", "MyAddon", function(itemID)
-        -- Add your code here
+    -- Medium: Track transfer history and notify staff
+    hook.Add("TransferItem", "TransferTracker", function(itemID)
+        local itemTable = lia.item.instances[itemID]
+        if itemTable then
+            lia.log.add(nil, "item_transfer", itemTable.name, itemTable.uniqueID)
+
+            -- Notify online staff about valuable item transfers
+            if itemTable.price and itemTable.price > 1000 then
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("seeLogs") then
+                        ply:notify("High-value item '" .. itemTable.name .. "' was transferred")
+                    end
+                end
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("TransferItem", "MyAddon", function(itemID)
-        -- Add your code here
+    -- High: Advanced transfer validation and tracking system
+    hook.Add("TransferItem", "AdvancedTransferSystem", function(itemID)
+        local itemTable = lia.item.instances[itemID]
+        if not itemTable then return end
+
+        -- Check for restricted item transfers
+        if itemTable.uniqueID == "contraband" then
+            local client = itemTable:getOwner()
+            if client and client:getChar():getFaction() ~= FACTION_POLICE then
+                client:notify("You cannot transfer restricted items!")
+                return false -- Cancel transfer if invalid
+            end
+        end
+
+        -- Log detailed transfer information
+        lia.db.insertTable({
+            itemID = itemID,
+            itemName = itemTable.name,
+            uniqueID = itemTable.uniqueID,
+            transferTime = os.time(),
+            value = itemTable.price or 0
+        }, "item_transfers")
+
+        -- Update transfer statistics
+        local transferStats = lia.data.get("transferStats", {})
+        transferStats.total = (transferStats.total or 0) + 1
+        transferStats.value = (transferStats.value or 0) + (itemTable.price or 0)
+        lia.data.set("transferStats", transferStats)
     end)
     ```
 ]]
@@ -21204,25 +27363,79 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("UpdateEntityPersistence", "MyAddon", function(ent)
-        -- Add your code here
+    -- Simple: Log entity updates
+    hook.Add("UpdateEntityPersistence", "EntityLogger", function(ent)
+        print("Entity persistence updated: " .. tostring(ent))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("UpdateEntityPersistence", "MyAddon", function(ent)
-        -- Add your code here
+    -- Medium: Custom persistence for specific entity types
+    hook.Add("UpdateEntityPersistence", "CustomEntityPersistence", function(ent)
+        if ent:GetClass() == "lia_vendor" then
+            -- Custom vendor persistence logic
+            local vendorData = {
+                pos = ent:GetPos(),
+                angles = ent:GetAngles(),
+                model = ent:GetModel(),
+                lastUpdate = os.time()
+            }
+            lia.db.updateTable(vendorData, "custom_vendors", "entityID = " .. lia.db.convertDataType(ent:EntIndex()))
+        elseif ent:GetClass() == "lia_storage" then
+            -- Custom storage persistence
+            local storageData = {
+                inventory = ent:getInventory() and ent:getInventory():getID() or 0,
+                money = ent:getMoney() or 0,
+                lastAccessed = os.time()
+            }
+            lia.db.updateTable(storageData, "custom_storage", "entityID = " .. lia.db.convertDataType(ent:EntIndex()))
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("UpdateEntityPersistence", "MyAddon", function(ent)
-        -- Add your code here
+    -- High: Advanced entity persistence with validation and backup
+    hook.Add("UpdateEntityPersistence", "AdvancedEntityPersistence", function(ent)
+        if not IsValid(ent) then return end
+
+        -- Create backup before update
+        local backupData = {
+            entityID = ent:EntIndex(),
+            class = ent:GetClass(),
+            pos = ent:GetPos(),
+            angles = ent:GetAngles(),
+            model = ent:GetModel(),
+            backupTime = os.time()
+        }
+
+        -- Validate entity data
+        if ent.getInventory and ent:getInventory() then
+            backupData.inventoryID = ent:getInventory():getID()
+            backupData.inventoryItems = #ent:getInventory():getItems()
+        end
+
+        if ent.getMoney then
+            backupData.money = ent:getMoney()
+        end
+
+        -- Check for data corruption
+        if backupData.pos.x ~= backupData.pos.x or backupData.pos.x == math.huge then
+            lia.log.add(nil, "entity_corruption", "Invalid position data for entity " .. ent:EntIndex())
+            return -- Don't save corrupted data
+        end
+
+        -- Save backup
+        lia.db.insertTable(backupData, "entity_backups")
+
+        -- Clean old backups (keep last 10 per entity)
+        lia.db.query("DELETE FROM entity_backups WHERE entityID = " .. ent:EntIndex() ..
+                    " AND backupTime NOT IN (SELECT backupTime FROM entity_backups WHERE entityID = " ..
+                    ent:EntIndex() .. " ORDER BY backupTime DESC LIMIT 10)")
+
+        -- Log successful persistence update
+        lia.log.add(nil, "entity_persistence", ent:GetClass(), ent:EntIndex(), "updated")
     end)
     ```
 ]]
@@ -21251,25 +27464,89 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorClassUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- Simple: Log vendor access changes
+    hook.Add("VendorClassUpdated", "VendorAccessLogger", function(vendor, id, allowed)
+        local className = lia.class.list[id] and lia.class.list[id].name or "Unknown Class"
+        print("Vendor access " .. (allowed and "granted" or "denied") .. " for class: " .. className)
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorClassUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- Medium: Notify staff about vendor access changes
+    hook.Add("VendorClassUpdated", "VendorAccessNotifier", function(vendor, id, allowed)
+        local className = lia.class.list[id] and lia.class.list[id].name or "Unknown Class"
+        local action = allowed and "granted access to" or "denied access from"
+
+        -- Notify all staff members
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("manageVendors") then
+                ply:notify("Vendor '" .. vendor:getVendorName() .. "' " .. action .. " class '" .. className .. "'")
+            end
+        end
+
+        -- Log the change
+        lia.log.add(nil, "vendor_access_change", vendor:getVendorName(), className, allowed)
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorClassUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- High: Advanced vendor access control with validation and audit trail
+    hook.Add("VendorClassUpdated", "AdvancedVendorAccessControl", function(vendor, id, allowed)
+        if not lia.class.list[id] then
+            LocalPlayer():notify("Invalid class ID: " .. id)
+            return
+        end
+
+        local classData = lia.class.list[id]
+        local vendorName = vendor:getVendorName()
+        local className = classData.name
+
+        -- Validate access change based on business rules
+        if allowed then
+            -- Check if this class should have access
+            if classData.faction and vendor:getFaction() and classData.faction ~= vendor:getFaction() then
+                LocalPlayer():notify("Warning: Granting access to class from different faction")
+            end
+
+            -- Check for conflicting access rules
+            local conflictingClasses = {}
+            for otherId, otherClass in pairs(lia.class.list) do
+                if otherId ~= id and vendor:canClassAccess(otherId) and otherClass.faction ~= classData.faction then
+                    table.insert(conflictingClasses, otherClass.name)
+                end
+            end
+
+            if #conflictingClasses > 0 then
+                LocalPlayer():notify("Warning: This may create faction conflicts with: " .. table.concat(conflictingClasses, ", "))
+            end
+        end
+
+        -- Create detailed audit log
+        local auditData = {
+            vendorID = vendor:EntIndex(),
+            vendorName = vendorName,
+            classID = id,
+            className = className,
+            action = allowed and "grant" or "deny",
+            timestamp = os.time(),
+            playerName = LocalPlayer():Name(),
+            playerSteamID = LocalPlayer():SteamID()
+        }
+
+        -- Store in audit table
+        lia.db.insertTable(auditData, "vendor_access_audit")
+
+        -- Update vendor access statistics
+        local stats = lia.data.get("vendorAccessStats", {})
+        stats.totalChanges = (stats.totalChanges or 0) + 1
+        stats[allowed and "grants" or "denies"] = (stats[allowed and "grants" or "denies"] or 0) + 1
+        lia.data.set("vendorAccessStats", stats)
+
+        -- Log to console for immediate feedback
+        print("[VENDOR ACCESS] " .. vendorName .. " - " .. className .. " access " ..
+              (allowed and "GRANTED" or "DENIED") .. " by " .. LocalPlayer():Name())
     end)
     ```
 ]]
@@ -21297,25 +27574,95 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorEdited", "MyAddon", function(liaVendorEnt, key)
-        -- Add your code here
+    -- Simple: Log vendor property changes
+    hook.Add("VendorEdited", "VendorEditLogger", function(liaVendorEnt, key)
+        print("Vendor property '" .. key .. "' was edited")
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorEdited", "MyAddon", function(liaVendorEnt, key)
-        -- Add your code here
+    -- Medium: Track vendor changes and notify staff
+    hook.Add("VendorEdited", "VendorChangeTracker", function(liaVendorEnt, key)
+        local vendorName = liaVendorEnt:getVendorName() or "Unknown Vendor"
+
+        -- Log the change
+        lia.log.add(nil, "vendor_edited", vendorName, key)
+
+        -- Notify staff about vendor modifications
+        for _, ply in ipairs(player.GetAll()) do
+            if ply:hasPrivilege("manageVendors") then
+                ply:notify("Vendor '" .. vendorName .. "' property '" .. key .. "' was modified")
+            end
+        end
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorEdited", "MyAddon", function(liaVendorEnt, key)
-        -- Add your code here
+    -- High: Advanced vendor editing with validation and backup
+    hook.Add("VendorEdited", "AdvancedVendorEditor", function(liaVendorEnt, key)
+        if not IsValid(liaVendorEnt) then return end
+
+        local vendorName = liaVendorEnt:getVendorName()
+        local oldValue, newValue
+
+        -- Track different property types
+        if key == "name" then
+            oldValue = liaVendorEnt:getVendorName()
+            -- Name validation would happen before this hook
+        elseif key == "description" then
+            oldValue = liaVendorEnt:getVendorDesc()
+        elseif key == "model" then
+            oldValue = liaVendorEnt:GetModel()
+        elseif key == "scale" then
+            oldValue = liaVendorEnt:getScale()
+        elseif key == "faction" then
+            oldValue = liaVendorEnt:getFaction()
+        end
+
+        -- Create change log entry
+        local changeLog = {
+            vendorID = liaVendorEnt:EntIndex(),
+            vendorName = vendorName,
+            property = key,
+            oldValue = tostring(oldValue or "nil"),
+            newValue = tostring(newValue or "nil"),
+            changedBy = LocalPlayer():Name(),
+            steamID = LocalPlayer():SteamID(),
+            timestamp = os.time()
+        }
+
+        -- Store in database
+        lia.db.insertTable(changeLog, "vendor_change_log")
+
+        -- Backup vendor configuration
+        local vendorConfig = {
+            name = liaVendorEnt:getVendorName(),
+            description = liaVendorEnt:getVendorDesc(),
+            model = liaVendorEnt:GetModel(),
+            scale = liaVendorEnt:getScale(),
+            faction = liaVendorEnt:getFaction(),
+            items = liaVendorEnt:getItems(),
+            classes = liaVendorEnt:getClasses(),
+            backupTime = os.time()
+        }
+
+        lia.db.insertTable(vendorConfig, "vendor_backups")
+
+        -- Clean old backups (keep last 5)
+        lia.db.query("DELETE FROM vendor_backups WHERE vendorID = " .. liaVendorEnt:EntIndex() ..
+                    " AND backupTime NOT IN (SELECT backupTime FROM vendor_backups WHERE vendorID = " ..
+                    liaVendorEnt:EntIndex() .. " ORDER BY backupTime DESC LIMIT 5)")
+
+        -- Special handling for critical properties
+        if key == "faction" then
+            LocalPlayer():notify("Warning: Vendor faction changed. This may affect class access permissions.")
+        elseif key == "name" and string.find(string.lower(newValue or ""), "admin") then
+            lia.log.add(nil, "suspicious_vendor_edit", "Vendor name changed to contain 'admin'", vendorName)
+        end
+
+        print("[VENDOR EDIT] " .. vendorName .. " - Property '" .. key .. "' changed by " .. LocalPlayer():Name())
     end)
     ```
 ]]
@@ -21344,25 +27691,275 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorFactionUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- Simple: Log vendor faction access changes
+    hook.Add("VendorFactionUpdated", "VendorFactionLogger", function(vendor, id, allowed)
+        local action = allowed and "allowed" or "denied"
+        print(string.format("Faction %d %s access to vendor %s", id, action, vendor:GetClass()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorFactionUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- Medium: Track faction changes and notify affected players
+    hook.Add("VendorFactionUpdated", "VendorFactionTracker", function(vendor, id, allowed)
+        -- Update vendor access statistics
+        local vendorStats = vendor:getData("accessStats", {
+            totalChanges = 0,
+            factionChanges = {},
+            lastModified = 0
+        })
+
+        vendorStats.totalChanges = vendorStats.totalChanges + 1
+        vendorStats.factionChanges[id] = (vendorStats.factionChanges[id] or 0) + 1
+        vendorStats.lastModified = os.time()
+
+        vendor:setData("accessStats", vendorStats)
+
+        -- Get faction name for logging
+        local factionName = "Unknown"
+        if lia.faction.teams[id] then
+            factionName = lia.faction.teams[id].name
+        end
+
+        -- Log the change
+        lia.log.add(nil, "vendor_faction_updated", factionName, allowed and "granted" or "revoked")
+
+        -- Notify players of the faction about the change
+        for _, ply in ipairs(player.GetAll()) do
+            local char = ply:getChar()
+            if char and char:getFaction() == id then
+                if allowed then
+                    ply:notifyInfo(string.format("Your faction now has access to %s", vendor:GetClass()))
+                else
+                    ply:notifyError(string.format("Your faction's access to %s has been revoked", vendor:GetClass()))
+                end
+            end
+        end
+
+        print(string.format("Vendor faction updated: %s %s access to %s (Total changes: %d)",
+            factionName, allowed and "granted" or "revoked", vendor:GetClass(), vendorStats.totalChanges))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorFactionUpdated", "MyAddon", function(vendor, id, allowed)
-        -- Add your code here
+    -- High: Advanced vendor access control and economic impact analysis
+    hook.Add("VendorFactionUpdated", "AdvancedVendorAccessControl", function(vendor, id, allowed)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get faction information
+        local factionData = lia.faction.teams[id]
+        local factionName = factionData and factionData.name or "Unknown Faction"
+
+        -- Initialize comprehensive vendor access analytics
+        local vendorAnalytics = lia.data.get("vendorAnalytics", {
+            totalAccessChanges = 0,
+            factionAccessPatterns = {},
+            vendorAccessLevels = {},
+            economicImpact = {},
+            accessConflicts = {},
+            playerNotifications = {}
+        })
+
+        -- Update global statistics
+        vendorAnalytics.totalAccessChanges = vendorAnalytics.totalAccessChanges + 1
+
+        -- Track faction access patterns
+        local factionPattern = vendorAnalytics.factionAccessPatterns[id] or {
+            totalChanges = 0,
+            accessGranted = 0,
+            accessRevoked = 0,
+            vendorsAffected = {},
+            lastChange = 0
+        }
+
+        factionPattern.totalChanges = factionPattern.totalChanges + 1
+        if allowed then
+            factionPattern.accessGranted = factionPattern.accessGranted + 1
+        else
+            factionPattern.accessRevoked = factionPattern.accessRevoked + 1
+        end
+        factionPattern.vendorsAffected[vendorID] = currentTime
+        factionPattern.lastChange = currentTime
+
+        vendorAnalytics.factionAccessPatterns[id] = factionPattern
+
+        -- Update vendor access level tracking
+        local vendorAccess = vendorAnalytics.vendorAccessLevels[vendorID] or {
+            totalFactions = 0,
+            allowedFactions = {},
+            deniedFactions = {},
+            accessChanges = 0,
+            securityLevel = 1
+        }
+
+        vendorAccess.accessChanges = vendorAccess.accessChanges + 1
+
+        if allowed then
+            vendorAccess.allowedFactions[id] = currentTime
+            vendorAccess.deniedFactions[id] = nil
+        else
+            vendorAccess.deniedFactions[id] = currentTime
+            vendorAccess.allowedFactions[id] = nil
+        end
+
+        vendorAccess.totalFactions = table.Count(vendorAccess.allowedFactions)
+
+        -- Adjust vendor security level based on access patterns
+        if vendorAccess.totalFactions == 0 then
+            vendorAccess.securityLevel = 1 -- Private
+        elseif vendorAccess.totalFactions <= 2 then
+            vendorAccess.securityLevel = 2 -- Restricted
+        elseif vendorAccess.totalFactions <= 5 then
+            vendorAccess.securityLevel = 3 -- Moderate
+        else
+            vendorAccess.securityLevel = 4 -- Public
+        end
+
+        vendorAnalytics.vendorAccessLevels[vendorID] = vendorAccess
+
+        -- Economic impact analysis
+        local economicImpact = vendorAnalytics.economicImpact[id] or {
+            vendorsAccessible = {},
+            totalValueAccessible = 0,
+            tradeVolume = 0,
+            lastEconomicUpdate = 0
+        }
+
+        if allowed then
+            economicImpact.vendorsAccessible[vendorID] = true
+            -- Calculate accessible value (simplified)
+            local vendorValue = vendor:getData("totalValue") or 1000
+            economicImpact.totalValueAccessible = economicImpact.totalValueAccessible + vendorValue
+        else
+            economicImpact.vendorsAccessible[vendorID] = nil
+            local vendorValue = vendor:getData("totalValue") or 1000
+            economicImpact.totalValueAccessible = math.max(0, economicImpact.totalValueAccessible - vendorValue)
+        end
+
+        economicImpact.lastEconomicUpdate = currentTime
+        vendorAnalytics.economicImpact[id] = economicImpact
+
+        -- Access conflict detection
+        local conflicts = {}
+
+        -- Check for conflicting faction access
+        for otherFactionID, otherPattern in pairs(vendorAnalytics.factionAccessPatterns) do
+            if otherFactionID ~= id then
+                -- Check if factions have conflicting interests
+                local factionRelation = lia.faction.getRelation(id, otherFactionID) or "neutral"
+                if factionRelation == "enemy" or factionRelation == "hostile" then
+                    if vendorAccess.allowedFactions[otherFactionID] and allowed then
+                        table.insert(conflicts, {
+                            type = "faction_conflict",
+                            faction1 = factionName,
+                            faction2 = lia.faction.teams[otherFactionID] and lia.faction.teams[otherFactionID].name or "Unknown",
+                            severity = "high",
+                            description = "Enemy factions have access to the same vendor"
+                        })
+                    end
+                end
+            end
+        end
+
+        -- Check for over-access (too many factions)
+        if vendorAccess.totalFactions > 8 then
+            table.insert(conflicts, {
+                type = "over_access",
+                severity = "medium",
+                description = string.format("Vendor has access for %d factions - potential security risk", vendorAccess.totalFactions)
+            })
+        end
+
+        if #conflicts > 0 then
+            vendorAnalytics.accessConflicts[vendorID] = vendorAnalytics.accessConflicts[vendorID] or {}
+            for _, conflict in ipairs(conflicts) do
+                table.insert(vendorAnalytics.accessConflicts[vendorID], {
+                    timestamp = currentTime,
+                    conflict = conflict
+                })
+            end
+
+            -- Keep only recent conflicts (last 100 per vendor)
+            if #vendorAnalytics.accessConflicts[vendorID] > 100 then
+                table.remove(vendorAnalytics.accessConflicts[vendorID], 1)
+            end
+        end
+
+        -- Save analytics
+        lia.data.set("vendorAnalytics", vendorAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            factionID = id,
+            factionName = factionName,
+            accessGranted = allowed,
+            securityLevel = vendorAccess.securityLevel,
+            totalFactionAccess = vendorAccess.totalFactions,
+            economicImpact = economicImpact.totalValueAccessible,
+            conflictsDetected = #conflicts
+        }, "vendor_access_audit")
+
+        -- Smart notifications
+        local notificationColor = allowed and Color(0, 255, 0) or Color(255, 165, 0)
+        local actionIcon = allowed and "✅" or "❌"
+        local actionText = allowed and "granted access to" or "access revoked from"
+
+        -- Notify faction members
+        local notifiedPlayers = 0
+        for _, ply in ipairs(player.GetAll()) do
+            local char = ply:getChar()
+            if char and char:getFaction() == id then
+                ply:ChatPrint(notificationColor, "[VENDOR ACCESS] ", Color(255, 255, 255),
+                    string.format("%s Your faction has been %s %s", actionIcon,
+                        allowed and "granted access to" or "denied access to", vendorClass))
+                notifiedPlayers = notifiedPlayers + 1
+            end
+        end
+
+        -- Alert administrators about conflicts
+        if #conflicts > 0 then
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[VENDOR CONFLICT] ",
+                        string.format("Access conflict detected for %s - %d issues", vendorClass, #conflicts))
+                end
+            end
+        end
+
+        -- Economic impact notifications for high-value changes
+        if economicImpact.totalValueAccessible > 50000 then
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewEconomy") then
+                    ply:ChatPrint(Color(0, 255, 0), "[ECONOMIC IMPACT] ",
+                        string.format("Faction %s now has access to $%d worth of vendors",
+                            factionName, economicImpact.totalValueAccessible))
+                end
+            end
+        end
+
+        -- Update vendor metadata
+        vendor:setData("lastAccessChange", currentTime)
+        vendor:setData("totalAccessChanges", vendorAccess.accessChanges)
+        vendor:setData("securityLevel", vendorAccess.securityLevel)
+        vendor:setData("factionCount", vendorAccess.totalFactions)
+
+        -- Log the change
+        lia.log.add(nil, "vendor_faction_access_updated",
+            string.format("%s %s access to %s (security level: %d, total factions: %d)",
+                factionName, allowed and "granted" or "revoked", vendorClass,
+                vendorAccess.securityLevel, vendorAccess.totalFactions))
+
+        print(string.format("[VENDOR ACCESS] Advanced control: %s %s access to %s - Security: %d, Factions: %d, Conflicts: %d, Notified: %d",
+            factionName, allowed and "granted" or "revoked", vendorClass,
+            vendorAccess.securityLevel, vendorAccess.totalFactions, #conflicts, notifiedPlayers))
     end)
     ```
 ]]
@@ -21391,25 +27988,270 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorItemMaxStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Simple: Log vendor stock changes
+    hook.Add("VendorItemMaxStockUpdated", "VendorStockLogger", function(vendor, itemType, value)
+        local stockText = value and tostring(value) or "unlimited"
+        print(string.format("Vendor %s stock for %s set to %s", vendor:GetClass(), itemType, stockText))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorItemMaxStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Medium: Track stock changes and economic impact
+    hook.Add("VendorItemMaxStockUpdated", "VendorStockTracker", function(vendor, itemType, value)
+        -- Update vendor stock statistics
+        local stockStats = vendor:getData("stockStats", {
+            totalChanges = 0,
+            itemChanges = {},
+            lastModified = 0
+        })
+
+        stockStats.totalChanges = stockStats.totalChanges + 1
+        stockStats.itemChanges[itemType] = (stockStats.itemChanges[itemType] or 0) + 1
+        stockStats.lastModified = os.time()
+
+        vendor:setData("stockStats", stockStats)
+
+        -- Get item information for logging
+        local itemName = itemType
+        if lia.item.list[itemType] then
+            itemName = lia.item.list[itemType].name or itemType
+        end
+
+        -- Calculate economic impact (simplified)
+        local oldValue = vendor:getData("itemStock_" .. itemType) or 0
+        local newValue = value or 999 -- Assume high value for unlimited
+        local itemPrice = lia.item.list[itemType] and lia.item.list[itemType].price or 10
+        local economicChange = (newValue - oldValue) * itemPrice
+
+        -- Log the change
+        lia.log.add(nil, "vendor_stock_updated", itemName, value and tostring(value) or "unlimited", economicChange)
+
+        -- Update vendor's total value
+        local totalValue = vendor:getData("totalValue") or 0
+        totalValue = totalValue + economicChange
+        vendor:setData("totalValue", totalValue)
+        vendor:setData("itemStock_" .. itemType, newValue)
+
+        print(string.format("Vendor stock updated: %s now has %s %s (Economic impact: $%d, Total changes: %d)",
+            vendor:GetClass(), value and tostring(value) or "unlimited", itemName, economicChange, stockStats.totalChanges))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorItemMaxStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- High: Advanced stock management and supply chain analytics
+    hook.Add("VendorItemMaxStockUpdated", "AdvancedStockAnalytics", function(vendor, itemType, value)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get item information
+        local itemData = lia.item.list[itemType]
+        local itemName = itemData and itemData.name or itemType
+        local itemPrice = itemData and itemData.price or 10
+        local itemCategory = itemData and itemData.category or "misc"
+
+        -- Initialize comprehensive stock analytics
+        local stockAnalytics = lia.data.get("stockAnalytics", {
+            totalStockChanges = 0,
+            itemStockPatterns = {},
+            vendorStockLevels = {},
+            supplyChainMetrics = {},
+            economicIndicators = {},
+            stockOptimization = {}
+        })
+
+        -- Update global statistics
+        stockAnalytics.totalStockChanges = stockAnalytics.totalStockChanges + 1
+
+        -- Track item stock patterns
+        local itemPattern = stockAnalytics.itemStockPatterns[itemType] or {
+            totalChanges = 0,
+            averageStock = 0,
+            stockHistory = {},
+            vendorsStocking = {},
+            lastChange = 0,
+            volatility = 0
+        }
+
+        itemPattern.totalChanges = itemPattern.totalChanges + 1
+        itemPattern.vendorsStocking[vendorID] = value
+        itemPattern.lastChange = currentTime
+
+        -- Calculate stock volatility
+        local oldStock = vendor:getData("previousStock_" .. itemType) or 0
+        local stockChange = math.abs((value or 999) - oldStock)
+        itemPattern.volatility = (itemPattern.volatility + stockChange) / 2 -- Running average
+
+        -- Store stock history (keep last 10 changes)
+        table.insert(itemPattern.stockHistory, {
+            timestamp = currentTime,
+            vendorID = vendorID,
+            oldValue = oldStock,
+            newValue = value,
+            change = stockChange
+        })
+
+        if #itemPattern.stockHistory > 10 then
+            table.remove(itemPattern.stockHistory, 1)
+        end
+
+        -- Recalculate average stock across all vendors
+        local totalStock = 0
+        local vendorCount = 0
+        for _, stockValue in pairs(itemPattern.vendorsStocking) do
+            totalStock = totalStock + (stockValue or 999)
+            vendorCount = vendorCount + 1
+        end
+
+        if vendorCount > 0 then
+            itemPattern.averageStock = totalStock / vendorCount
+        end
+
+        stockAnalytics.itemStockPatterns[itemType] = itemPattern
+
+        -- Update vendor stock levels
+        local vendorStock = stockAnalytics.vendorStockLevels[vendorID] or {
+            totalItems = 0,
+            itemBreakdown = {},
+            stockCapacity = 0,
+            utilizationRate = 0,
+            lastUpdate = 0
+        }
+
+        vendorStock.itemBreakdown[itemType] = value
+        vendorStock.totalItems = table.Count(vendorStock.itemBreakdown)
+        vendorStock.lastUpdate = currentTime
+
+        -- Calculate stock utilization
+        local totalStockCapacity = 0
+        for _, stockValue in pairs(vendorStock.itemBreakdown) do
+            totalStockCapacity = totalStockCapacity + (stockValue or 999)
+        end
+
+        vendorStock.stockCapacity = totalStockCapacity
+        vendorStock.utilizationRate = totalStockCapacity > 0 and (vendorStock.totalItems / totalStockCapacity) or 0
+
+        stockAnalytics.vendorStockLevels[vendorID] = vendorStock
+
+        -- Supply chain metrics
+        local supplyMetrics = stockAnalytics.supplyChainMetrics[itemCategory] or {
+            totalItems = 0,
+            totalStock = 0,
+            averagePrice = 0,
+            marketSaturation = 0,
+            priceVolatility = 0
+        }
+
+        supplyMetrics.totalItems = supplyMetrics.totalItems + 1
+        supplyMetrics.totalStock = supplyMetrics.totalStock + (value or 999)
+        supplyMetrics.averagePrice = ((supplyMetrics.averagePrice * (supplyMetrics.totalItems - 1)) + itemPrice) / supplyMetrics.totalItems
+
+        -- Calculate market saturation (simplified)
+        supplyMetrics.marketSaturation = supplyMetrics.totalStock / math.max(supplyMetrics.totalItems, 1)
+
+        stockAnalytics.supplyChainMetrics[itemCategory] = supplyMetrics
+
+        -- Economic impact analysis
+        local economicImpact = stockAnalytics.economicIndicators[itemType] or {
+            totalValue = 0,
+            marketValue = 0,
+            priceElasticity = 0,
+            demandIndicators = {},
+            lastEconomicUpdate = 0
+        }
+
+        local oldValue = vendor:getData("previousStock_" .. itemType) or 0
+        local newValue = value or 999
+        local valueChange = (newValue - oldValue) * itemPrice
+
+        economicImpact.totalValue = economicImpact.totalValue + valueChange
+        economicImpact.marketValue = economicImpact.totalValue * 1.2 -- Market multiplier
+        economicImpact.lastEconomicUpdate = currentTime
+
+        stockAnalytics.economicIndicators[itemType] = economicImpact
+
+        -- Stock optimization recommendations
+        local optimization = stockAnalytics.stockOptimization[itemType] or {
+            recommendedStock = 0,
+            overstockAlerts = 0,
+            understockAlerts = 0,
+            optimizationScore = 100
+        }
+
+        -- Calculate recommended stock level based on historical data
+        local avgHistoricalStock = itemPattern.averageStock
+        optimization.recommendedStock = math.max(1, math.floor(avgHistoricalStock * 0.8)) -- 80% of average
+
+        if value and value > optimization.recommendedStock * 1.5 then
+            optimization.overstockAlerts = optimization.overstockAlerts + 1
+            optimization.optimizationScore = math.max(0, optimization.optimizationScore - 10)
+        elseif value and value < optimization.recommendedStock * 0.5 then
+            optimization.understockAlerts = optimization.understockAlerts + 1
+            optimization.optimizationScore = math.max(0, optimization.optimizationScore - 5)
+        end
+
+        stockAnalytics.stockOptimization[itemType] = optimization
+
+        -- Save analytics
+        lia.data.set("stockAnalytics", stockAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            itemType = itemType,
+            itemName = itemName,
+            itemCategory = itemCategory,
+            oldStock = oldValue,
+            newStock = value,
+            unlimited = (value == nil),
+            economicImpact = valueChange,
+            volatility = itemPattern.volatility,
+            utilizationRate = vendorStock.utilizationRate,
+            optimizationScore = optimization.optimizationScore
+        }, "vendor_stock_audit")
+
+        -- Smart notifications and alerts
+        if optimization.overstockAlerts > 0 and optimization.overstockAlerts % 3 == 0 then
+            -- Alert administrators about persistent overstocking
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[STOCK WARNING] ",
+                        string.format("Persistent overstocking of %s at %s vendors", itemName, vendorClass))
+                end
+            end
+        end
+
+        if supplyMetrics.marketSaturation > 1000 then
+            -- Market saturation alert
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewEconomy") then
+                    ply:ChatPrint(Color(255, 0, 0), "[MARKET SATURATION] ",
+                        string.format("%s market oversaturated - %d total stock across %d vendors",
+                            itemCategory, supplyMetrics.totalStock, supplyMetrics.totalItems))
+                end
+            end
+        end
+
+        -- Update vendor metadata
+        vendor:setData("previousStock_" .. itemType, value)
+        vendor:setData("lastStockChange", currentTime)
+        vendor:setData("stockUtilization", vendorStock.utilizationRate)
+
+        -- Log the change
+        lia.log.add(nil, "vendor_stock_updated_advanced",
+            string.format("%s:%s stock changed from %d to %s (volatility: %.2f, utilization: %.2f)",
+                vendorClass, itemName, oldValue, value and tostring(value) or "unlimited",
+                itemPattern.volatility, vendorStock.utilizationRate))
+
+        print(string.format("[STOCK ANALYTICS] Advanced management: %s stock for %s changed to %s - Volatility: %.2f, Utilization: %.2f, Economic Impact: $%d",
+            vendorClass, itemName, value and tostring(value) or "unlimited",
+            itemPattern.volatility, vendorStock.utilizationRate, valueChange))
     end)
     ```
 ]]
@@ -21438,25 +28280,399 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorItemModeUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Simple: Log vendor mode changes
+    hook.Add("VendorItemModeUpdated", "VendorModeLogger", function(vendor, itemType, value)
+        local modeText = "unknown"
+        if value == 0 then modeText = "none"
+        elseif value == 1 then modeText = "buy"
+        elseif value == 2 then modeText = "sell"
+        elseif value == 3 then modeText = "both"
+        end
+        print(string.format("Vendor %s mode for %s set to %s", vendor:GetClass(), itemType, modeText))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorItemModeUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Medium: Track mode changes and business impact
+    hook.Add("VendorItemModeUpdated", "VendorModeTracker", function(vendor, itemType, value)
+        -- Update vendor mode statistics
+        local modeStats = vendor:getData("modeStats", {
+            totalChanges = 0,
+            modeBreakdown = {},
+            lastModified = 0
+        })
+
+        modeStats.totalChanges = modeStats.totalChanges + 1
+        modeStats.modeBreakdown[itemType] = value
+        modeStats.lastModified = os.time()
+
+        vendor:setData("modeStats", modeStats)
+
+        -- Get item information
+        local itemName = itemType
+        if lia.item.list[itemType] then
+            itemName = lia.item.list[itemType].name or itemType
+        end
+
+        -- Determine mode text
+        local modeText = "unknown"
+        if value == 0 then modeText = "none"
+        elseif value == 1 then modeText = "buy"
+        elseif value == 2 then modeText = "sell"
+        elseif value == 3 then modeText = "both"
+        end
+
+        -- Calculate business impact
+        local itemPrice = lia.item.list[itemType] and lia.item.list[itemType].price or 10
+        local businessImpact = 0
+
+        if value == 1 then -- Buy only
+            businessImpact = -itemPrice -- Cost to vendor
+        elseif value == 2 then -- Sell only
+            businessImpact = itemPrice -- Revenue to vendor
+        elseif value == 3 then -- Both
+            businessImpact = 0 -- Balanced
+        end
+
+        -- Log the change
+        lia.log.add(nil, "vendor_mode_updated", itemName, modeText, businessImpact)
+
+        -- Update vendor's business metrics
+        local businessMetrics = vendor:getData("businessMetrics", {
+            totalRevenue = 0,
+            totalCosts = 0,
+            netProfit = 0
+        })
+
+        if businessImpact > 0 then
+            businessMetrics.totalRevenue = businessMetrics.totalRevenue + businessImpact
+        elseif businessImpact < 0 then
+            businessMetrics.totalCosts = businessMetrics.totalCosts + math.abs(businessImpact)
+        end
+
+        businessMetrics.netProfit = businessMetrics.totalRevenue - businessMetrics.totalCosts
+        vendor:setData("businessMetrics", businessMetrics)
+
+        print(string.format("Vendor mode updated: %s now %s %s (Business impact: $%d, Net profit: $%d)",
+            vendor:GetClass(), modeText, itemName, businessImpact, businessMetrics.netProfit))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorItemModeUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- High: Advanced vendor strategy and economic modeling
+    hook.Add("VendorItemModeUpdated", "AdvancedVendorStrategy", function(vendor, itemType, value)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get item information
+        local itemData = lia.item.list[itemType]
+        local itemName = itemData and itemData.name or itemType
+        local itemPrice = itemData and itemData.price or 10
+        local itemCategory = itemData and itemData.category or "misc"
+
+        -- Initialize comprehensive vendor strategy analytics
+        local vendorStrategy = lia.data.get("vendorStrategyAnalytics", {
+            totalModeChanges = 0,
+            itemModePatterns = {},
+            vendorStrategies = {},
+            marketDynamics = {},
+            economicModeling = {},
+            strategyOptimization = {}
+        })
+
+        -- Update global statistics
+        vendorStrategy.totalModeChanges = vendorStrategy.totalModeChanges + 1
+
+        -- Track item mode patterns
+        local itemPattern = vendorStrategy.itemModePatterns[itemType] or {
+            totalChanges = 0,
+            modeHistory = {},
+            currentMode = 0,
+            modeStability = 0,
+            vendorsUsing = {},
+            lastChange = 0
+        }
+
+        itemPattern.totalChanges = itemPattern.totalChanges + 1
+        itemPattern.vendorsUsing[vendorID] = value
+        itemPattern.lastChange = currentTime
+
+        -- Track mode stability (how often it changes)
+        if itemPattern.currentMode ~= value then
+            itemPattern.modeStability = itemPattern.modeStability + 1
+        end
+        itemPattern.currentMode = value
+
+        -- Store mode history (keep last 5 changes)
+        table.insert(itemPattern.modeHistory, {
+            timestamp = currentTime,
+            vendorID = vendorID,
+            oldMode = vendor:getData("previousMode_" .. itemType) or 0,
+            newMode = value
+        })
+
+        if #itemPattern.modeHistory > 5 then
+            table.remove(itemPattern.modeHistory, 1)
+        end
+
+        vendorStrategy.itemModePatterns[itemType] = itemPattern
+
+        -- Update vendor strategies
+        local vendorStrat = vendorStrategy.vendorStrategies[vendorID] or {
+            strategyType = "balanced",
+            buyItems = 0,
+            sellItems = 0,
+            bothItems = 0,
+            specialization = {},
+            profitMargin = 0,
+            marketPosition = "neutral",
+            lastStrategyUpdate = 0
+        }
+
+        -- Count items by mode for this vendor
+        local buyCount = 0
+        local sellCount = 0
+        local bothCount = 0
+
+        for itemType2, mode in pairs(vendorStrat.specialization) do
+            if mode == 1 then buyCount = buyCount + 1
+            elseif mode == 2 then sellCount = sellCount + 1
+            elseif mode == 3 then bothCount = bothCount + 1
+            end
+        end
+
+        vendorStrat.buyItems = buyCount
+        vendorStrat.sellItems = sellCount
+        vendorStrat.bothItems = bothCount
+
+        -- Update this item's mode
+        vendorStrat.specialization[itemType] = value
+
+        -- Determine vendor strategy type
+        local totalItems = buyCount + sellCount + bothCount
+        if totalItems > 0 then
+            if sellCount > buyCount * 1.5 then
+                vendorStrat.strategyType = "sales_focused"
+                vendorStrat.marketPosition = "supplier"
+            elseif buyCount > sellCount * 1.5 then
+                vendorStrat.strategyType = "procurement_focused"
+                vendorStrat.marketPosition = "collector"
+            else
+                vendorStrat.strategyType = "balanced"
+                vendorStrat.marketPosition = "generalist"
+            end
+        end
+
+        -- Calculate profit margin based on strategy
+        if vendorStrat.strategyType == "sales_focused" then
+            vendorStrat.profitMargin = 25 -- Higher margin on sales
+        elseif vendorStrat.strategyType == "procurement_focused" then
+            vendorStrat.profitMargin = 15 -- Lower margin on buys
+        else
+            vendorStrat.profitMargin = 20 -- Balanced margin
+        end
+
+        vendorStrat.lastStrategyUpdate = currentTime
+        vendorStrategy.vendorStrategies[vendorID] = vendorStrat
+
+        -- Market dynamics analysis
+        local marketDynamics = vendorStrategy.marketDynamics[itemCategory] or {
+            totalBuyOffers = 0,
+            totalSellOffers = 0,
+            buySellRatio = 0,
+            marketPressure = "neutral",
+            priceVolatility = 0,
+            competitionLevel = 0
+        }
+
+        -- Update market metrics based on mode change
+        if value == 1 then -- Buy mode
+            marketDynamics.totalBuyOffers = marketDynamics.totalBuyOffers + 1
+        elseif value == 2 then -- Sell mode
+            marketDynamics.totalSellOffers = marketDynamics.totalSellOffers + 1
+        elseif value == 3 then -- Both
+            marketDynamics.totalBuyOffers = marketDynamics.totalBuyOffers + 1
+            marketDynamics.totalSellOffers = marketDynamics.totalSellOffers + 1
+        end
+
+        -- Calculate buy/sell ratio
+        if marketDynamics.totalSellOffers > 0 then
+            marketDynamics.buySellRatio = marketDynamics.totalBuyOffers / marketDynamics.totalSellOffers
+        end
+
+        -- Determine market pressure
+        if marketDynamics.buySellRatio > 2 then
+            marketDynamics.marketPressure = "buy_pressure" -- High demand
+        elseif marketDynamics.buySellRatio < 0.5 then
+            marketDynamics.marketPressure = "sell_pressure" -- High supply
+        else
+            marketDynamics.marketPressure = "balanced"
+        end
+
+        -- Calculate competition level
+        local vendorCount = 0
+        for _ in pairs(vendorStrat.specialization) do
+            vendorCount = vendorCount + 1
+        end
+        marketDynamics.competitionLevel = vendorCount
+
+        vendorStrategy.marketDynamics[itemCategory] = marketDynamics
+
+        -- Economic modeling
+        local economicModel = vendorStrategy.economicModeling[itemType] or {
+            supplyCurve = {},
+            demandCurve = {},
+            equilibriumPrice = itemPrice,
+            marketEfficiency = 1.0,
+            elasticity = 0,
+            lastEconomicUpdate = 0
+        }
+
+        -- Update supply/demand curves based on mode
+        if value == 1 or value == 3 then -- Buying
+            economicModel.demandCurve[currentTime] = (economicModel.demandCurve[currentTime] or 0) + 1
+        end
+
+        if value == 2 or value == 3 then -- Selling
+            economicModel.supplyCurve[currentTime] = (economicModel.supplyCurve[currentTime] or 0) + 1
+        end
+
+        -- Recalculate market efficiency
+        local recentDemand = 0
+        local recentSupply = 0
+        for timestamp, amount in pairs(economicModel.demandCurve) do
+            if currentTime - timestamp < 3600 then -- Last hour
+                recentDemand = recentDemand + amount
+            end
+        end
+
+        for timestamp, amount in pairs(economicModel.supplyCurve) do
+            if currentTime - timestamp < 3600 then -- Last hour
+                recentSupply = recentSupply + amount
+            end
+        end
+
+        if recentDemand > 0 and recentSupply > 0 then
+            economicModel.marketEfficiency = math.min(recentSupply, recentDemand) / math.max(recentSupply, recentDemand)
+        end
+
+        economicModel.lastEconomicUpdate = currentTime
+        vendorStrategy.economicModeling[itemType] = economicModel
+
+        -- Strategy optimization
+        local optimization = vendorStrategy.strategyOptimization[itemType] or {
+            optimalMode = 3, -- Both by default
+            efficiencyScore = 100,
+            profitPotential = 0,
+            riskLevel = 0,
+            recommendations = {}
+        }
+
+        -- Calculate optimal mode based on market conditions
+        if marketDynamics.marketPressure == "buy_pressure" then
+            optimization.optimalMode = 2 -- Sell mode optimal
+            optimization.profitPotential = itemPrice * 1.3
+        elseif marketDynamics.marketPressure == "sell_pressure" then
+            optimization.optimalMode = 1 -- Buy mode optimal
+            optimization.profitPotential = -itemPrice * 0.7
+        else
+            optimization.optimalMode = 3 -- Both optimal
+            optimization.profitPotential = itemPrice * 0.2
+        end
+
+        -- Calculate efficiency score
+        if value == optimization.optimalMode then
+            optimization.efficiencyScore = 100
+        elseif (value == 1 or value == 2) and optimization.optimalMode == 3 then
+            optimization.efficiencyScore = 75 -- Partial optimization
+        else
+            optimization.efficiencyScore = 50 -- Suboptimal
+        end
+
+        -- Risk assessment
+        if marketDynamics.competitionLevel > 10 then
+            optimization.riskLevel = math.min(100, marketDynamics.competitionLevel * 5)
+        end
+
+        -- Generate recommendations
+        optimization.recommendations = {}
+        if optimization.optimalMode ~= value then
+            local modeNames = {[1] = "buy", [2] = "sell", [3] = "both"}
+            table.insert(optimization.recommendations,
+                string.format("Consider changing to %s mode for better profitability", modeNames[optimization.optimalMode]))
+        end
+
+        if optimization.riskLevel > 50 then
+            table.insert(optimization.recommendations, "High competition detected - consider differentiation")
+        end
+
+        vendorStrategy.strategyOptimization[itemType] = optimization
+
+        -- Save analytics
+        lia.data.set("vendorStrategyAnalytics", vendorStrategy)
+
+        -- Create detailed audit trail
+        local modeNames = {[0] = "none", [1] = "buy", [2] = "sell", [3] = "both"}
+        lia.db.insertTable({
+            timestamp = currentTime,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            itemType = itemType,
+            itemName = itemName,
+            itemCategory = itemCategory,
+            oldMode = vendor:getData("previousMode_" .. itemType) or 0,
+            newMode = value,
+            modeName = modeNames[value] or "unknown",
+            strategyType = vendorStrat.strategyType,
+            marketPressure = marketDynamics.marketPressure,
+            profitMargin = vendorStrat.profitMargin,
+            efficiencyScore = optimization.efficiencyScore,
+            riskLevel = optimization.riskLevel
+        }, "vendor_mode_audit")
+
+        -- Smart notifications and alerts
+        if optimization.efficiencyScore < 60 then
+            -- Alert administrators about suboptimal vendor configuration
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[STRATEGY ALERT] ",
+                        string.format("Suboptimal mode for %s at %s (efficiency: %d%%)",
+                            itemName, vendorClass, optimization.efficiencyScore))
+                end
+            end
+        end
+
+        if marketDynamics.marketPressure == "buy_pressure" and value == 2 then
+            -- Good strategic move
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewEconomy") then
+                    ply:ChatPrint(Color(0, 255, 0), "[MARKET OPPORTUNITY] ",
+                        string.format("Strategic sell mode set for %s during high demand", itemName))
+                end
+            end
+        end
+
+        -- Update vendor metadata
+        vendor:setData("previousMode_" .. itemType, value)
+        vendor:setData("lastModeChange", currentTime)
+        vendor:setData("strategyType", vendorStrat.strategyType)
+        vendor:setData("profitMargin", vendorStrat.profitMargin)
+
+        -- Log the change
+        lia.log.add(nil, "vendor_mode_updated_advanced",
+            string.format("%s:%s mode changed to %s (strategy: %s, efficiency: %d%%, market: %s)",
+                vendorClass, itemName, modeNames[value] or "unknown",
+                vendorStrat.strategyType, optimization.efficiencyScore, marketDynamics.marketPressure))
+
+        print(string.format("[VENDOR STRATEGY] Advanced analysis: %s mode for %s set to %s - Strategy: %s, Efficiency: %d%%, Market: %s, Risk: %d%%",
+            vendorClass, itemName, modeNames[value] or "unknown",
+            vendorStrat.strategyType, optimization.efficiencyScore,
+            marketDynamics.marketPressure, optimization.riskLevel))
     end)
     ```
 ]]
@@ -21485,25 +28701,390 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorItemPriceUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Simple: Log vendor price changes
+    hook.Add("VendorItemPriceUpdated", "VendorPriceLogger", function(vendor, itemType, value)
+        local priceText = value and ("$" .. value) or "default"
+        print(string.format("Vendor %s price for %s set to %s", vendor:GetClass(), itemType, priceText))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorItemPriceUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Medium: Track price changes and economic impact
+    hook.Add("VendorItemPriceUpdated", "VendorPriceTracker", function(vendor, itemType, value)
+        -- Update vendor price statistics
+        local priceStats = vendor:getData("priceStats", {
+            totalChanges = 0,
+            itemPrices = {},
+            lastModified = 0
+        })
+
+        priceStats.totalChanges = priceStats.totalChanges + 1
+        priceStats.itemPrices[itemType] = value
+        priceStats.lastModified = os.time()
+
+        vendor:setData("priceStats", priceStats)
+
+        -- Get item information
+        local itemName = itemType
+        if lia.item.list[itemType] then
+            itemName = lia.item.list[itemType].name or itemType
+        end
+
+        -- Calculate price change impact
+        local oldPrice = vendor:getData("previousPrice_" .. itemType) or lia.item.list[itemType] and lia.item.list[itemType].price or 10
+        local priceChange = value - oldPrice
+        local changePercent = (priceChange / oldPrice) * 100
+
+        -- Update vendor's economic data
+        local economicData = vendor:getData("economicData", {
+            totalRevenue = 0,
+            averagePriceChange = 0,
+            priceVolatility = 0
+        })
+
+        economicData.averagePriceChange = ((economicData.averagePriceChange * (priceStats.totalChanges - 1)) + changePercent) / priceStats.totalChanges
+        economicData.priceVolatility = math.abs(economicData.averagePriceChange)
+
+        vendor:setData("economicData", economicData)
+
+        -- Log the change
+        lia.log.add(nil, "vendor_price_updated", itemName, value and tostring(value) or "default", string.format("%.1f%%", changePercent))
+
+        print(string.format("Vendor price updated: %s price for %s changed by %.1f%% ($%d to $%s)",
+            vendor:GetClass(), itemName, changePercent, oldPrice, value and tostring(value) or "default"))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorItemPriceUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- High: Advanced pricing strategy and market analysis
+    hook.Add("VendorItemPriceUpdated", "AdvancedPricingStrategy", function(vendor, itemType, value)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get item information
+        local itemData = lia.item.list[itemType]
+        local itemName = itemData and itemData.name or itemType
+        local itemCategory = itemData and itemData.category or "misc"
+        local basePrice = itemData and itemData.price or 10
+
+        -- Use default price if none specified
+        if not value then
+            value = basePrice
+        end
+
+        -- Initialize comprehensive pricing analytics
+        local pricingAnalytics = lia.data.get("pricingAnalytics", {
+            totalPriceChanges = 0,
+            itemPricingHistory = {},
+            vendorPricingStrategies = {},
+            marketPricingData = {},
+            priceOptimization = {},
+            economicIndicators = {}
+        })
+
+        -- Update global statistics
+        pricingAnalytics.totalPriceChanges = pricingAnalytics.totalPriceChanges + 1
+
+        -- Track item pricing history
+        local itemPricing = pricingAnalytics.itemPricingHistory[itemType] or {
+            totalChanges = 0,
+            priceHistory = {},
+            vendorsPricing = {},
+            averagePrice = basePrice,
+            priceVolatility = 0,
+            lastChange = 0
+        }
+
+        itemPricing.totalChanges = itemPricing.totalChanges + 1
+        itemPricing.vendorsPricing[vendorID] = value
+        itemPricing.lastChange = currentTime
+
+        -- Store price history (keep last 10 changes)
+        table.insert(itemPricing.priceHistory, {
+            timestamp = currentTime,
+            vendorID = vendorID,
+            price = value,
+            change = value - (vendor:getData("previousPrice_" .. itemType) or basePrice)
+        })
+
+        if #itemPricing.priceHistory > 10 then
+            table.remove(itemPricing.priceHistory, 1)
+        end
+
+        -- Recalculate average price across all vendors
+        local totalPrice = 0
+        local vendorCount = 0
+        for _, price in pairs(itemPricing.vendorsPricing) do
+            totalPrice = totalPrice + price
+            vendorCount = vendorCount + 1
+        end
+
+        if vendorCount > 0 then
+            itemPricing.averagePrice = totalPrice / vendorCount
+        end
+
+        -- Calculate price volatility
+        local priceChanges = {}
+        for _, history in ipairs(itemPricing.priceHistory) do
+            table.insert(priceChanges, history.change)
+        end
+
+        if #priceChanges > 1 then
+            local variance = 0
+            local mean = 0
+            for _, change in ipairs(priceChanges) do
+                mean = mean + change
+            end
+            mean = mean / #priceChanges
+
+            for _, change in ipairs(priceChanges) do
+                variance = variance + (change - mean) ^ 2
+            end
+            variance = variance / #priceChanges
+
+            itemPricing.priceVolatility = math.sqrt(variance)
+        end
+
+        pricingAnalytics.itemPricingHistory[itemType] = itemPricing
+
+        -- Update vendor pricing strategies
+        local vendorStrategy = pricingAnalytics.vendorPricingStrategies[vendorID] or {
+            strategyType = "standard",
+            averageMarkup = 0,
+            priceChanges = 0,
+            itemsPriced = {},
+            marketPosition = "neutral",
+            lastStrategyUpdate = 0
+        }
+
+        vendorStrategy.priceChanges = vendorStrategy.priceChanges + 1
+        vendorStrategy.itemsPriced[itemType] = value
+
+        -- Calculate average markup
+        local totalMarkup = 0
+        local itemCount = 0
+        for item, price in pairs(vendorStrategy.itemsPriced) do
+            local itemBase = lia.item.list[item] and lia.item.list[item].price or 10
+            totalMarkup = totalMarkup + ((price - itemBase) / itemBase) * 100
+            itemCount = itemCount + 1
+        end
+
+        if itemCount > 0 then
+            vendorStrategy.averageMarkup = totalMarkup / itemCount
+        end
+
+        -- Determine pricing strategy type
+        if vendorStrategy.averageMarkup > 50 then
+            vendorStrategy.strategyType = "premium"
+            vendorStrategy.marketPosition = "luxury"
+        elseif vendorStrategy.averageMarkup < -20 then
+            vendorStrategy.strategyType = "discount"
+            vendorStrategy.marketPosition = "budget"
+        else
+            vendorStrategy.strategyType = "standard"
+            vendorStrategy.marketPosition = "mid-range"
+        end
+
+        vendorStrategy.lastStrategyUpdate = currentTime
+        pricingAnalytics.vendorPricingStrategies[vendorID] = vendorStrategy
+
+        -- Market pricing data and competition analysis
+        local marketData = pricingAnalytics.marketPricingData[itemCategory] or {
+            totalOffers = 0,
+            averagePrice = basePrice,
+            priceRange = {min = basePrice, max = basePrice},
+            competitionLevel = 0,
+            marketConcentration = 0,
+            lastMarketUpdate = 0
+        }
+
+        marketData.totalOffers = marketData.totalOffers + 1
+        marketData.priceRange.min = math.min(marketData.priceRange.min, value)
+        marketData.priceRange.max = math.max(marketData.priceRange.max, value)
+
+        -- Recalculate average price
+        marketData.averagePrice = ((marketData.averagePrice * (marketData.totalOffers - 1)) + value) / marketData.totalOffers
+
+        -- Calculate competition level (number of vendors offering this category)
+        local categoryVendors = {}
+        for vendorID2, strategy in pairs(pricingAnalytics.vendorPricingStrategies) do
+            for item in pairs(strategy.itemsPriced) do
+                if lia.item.list[item] and lia.item.list[item].category == itemCategory then
+                    categoryVendors[vendorID2] = true
+                    break
+                end
+            end
+        end
+
+        marketData.competitionLevel = table.Count(categoryVendors)
+
+        -- Calculate market concentration (Herfindahl-Hirschman Index simplified)
+        if marketData.competitionLevel > 0 then
+            marketData.marketConcentration = (1 / marketData.competitionLevel) * 100
+        end
+
+        marketData.lastMarketUpdate = currentTime
+        pricingAnalytics.marketPricingData[itemCategory] = marketData
+
+        -- Price optimization analysis
+        local optimization = pricingAnalytics.priceOptimization[itemType] or {
+            optimalPrice = basePrice,
+            elasticity = 0,
+            profitMaximization = basePrice,
+            marketShareOptimal = basePrice,
+            recommendation = "maintain",
+            confidence = 0
+        }
+
+        -- Simple price elasticity calculation (simplified model)
+        local priceDiff = value - basePrice
+        local percentChange = (priceDiff / basePrice) * 100
+
+        -- Assume demand elasticity based on category
+        local elasticityMap = {
+            food = -0.8,
+            weapons = -0.5,
+            clothing = -1.2,
+            tools = -0.6,
+            misc = -0.9
+        }
+
+        local categoryElasticity = elasticityMap[itemCategory] or -0.9
+        optimization.elasticity = categoryElasticity
+
+        -- Calculate profit maximization price (simplified)
+        -- In reality, this would use demand curves and cost data
+        if categoryElasticity < -1 then
+            -- Elastic: lower prices increase revenue
+            optimization.profitMaximization = basePrice * 0.9
+        elseif categoryElasticity > -0.5 then
+            -- Inelastic: higher prices increase revenue
+            optimization.profitMaximization = basePrice * 1.2
+        else
+            -- Unit elastic: current price is optimal
+            optimization.profitMaximization = basePrice
+        end
+
+        -- Market share optimization (compete on price vs premium)
+        if marketData.competitionLevel > 5 then
+            optimization.marketShareOptimal = marketData.averagePrice * 0.95 -- Slight discount
+        else
+            optimization.marketShareOptimal = marketData.averagePrice * 1.05 -- Slight premium
+        end
+
+        -- Overall recommendation
+        local profitDiff = math.abs(value - optimization.profitMaximization)
+        local marketDiff = math.abs(value - optimization.marketShareOptimal)
+
+        if profitDiff < marketDiff then
+            optimization.optimalPrice = optimization.profitMaximization
+            optimization.recommendation = "profit_focused"
+        else
+            optimization.optimalPrice = optimization.marketShareOptimal
+            optimization.recommendation = "market_share_focused"
+        end
+
+        optimization.confidence = math.max(0, 100 - math.abs(value - optimization.optimalPrice) / basePrice * 100)
+
+        pricingAnalytics.priceOptimization[itemType] = optimization
+
+        -- Economic indicators
+        local economicIndicator = pricingAnalytics.economicIndicators[itemType] or {
+            inflationRate = 0,
+            purchasingPower = 1.0,
+            marketSentiment = "neutral",
+            lastEconomicUpdate = 0
+        }
+
+        -- Calculate inflation rate based on price changes
+        if #itemPricing.priceHistory > 1 then
+            local recentPrices = {}
+            for i = math.max(1, #itemPricing.priceHistory - 5), #itemPricing.priceHistory do
+                table.insert(recentPrices, itemPricing.priceHistory[i].price)
+            end
+
+            if #recentPrices >= 2 then
+                local oldestPrice = recentPrices[1]
+                local newestPrice = recentPrices[#recentPrices]
+                economicIndicator.inflationRate = ((newestPrice - oldestPrice) / oldestPrice) * 100
+            end
+        end
+
+        -- Determine market sentiment
+        if economicIndicator.inflationRate > 10 then
+            economicIndicator.marketSentiment = "inflationary"
+        elseif economicIndicator.inflationRate < -5 then
+            economicIndicator.marketSentiment = "deflationary"
+        else
+            economicIndicator.marketSentiment = "stable"
+        end
+
+        economicIndicator.lastEconomicUpdate = currentTime
+        pricingAnalytics.economicIndicators[itemType] = economicIndicator
+
+        -- Save analytics
+        lia.data.set("pricingAnalytics", pricingAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            itemType = itemType,
+            itemName = itemName,
+            itemCategory = itemCategory,
+            oldPrice = vendor:getData("previousPrice_" .. itemType) or basePrice,
+            newPrice = value,
+            priceChange = value - (vendor:getData("previousPrice_" .. itemType) or basePrice),
+            percentChange = ((value - (vendor:getData("previousPrice_" .. itemType) or basePrice)) / (vendor:getData("previousPrice_" .. itemType) or basePrice)) * 100,
+            strategyType = vendorStrategy.strategyType,
+            marketPosition = vendorStrategy.marketPosition,
+            optimizationScore = optimization.confidence,
+            marketSentiment = economicIndicator.marketSentiment
+        }, "vendor_pricing_audit")
+
+        -- Smart notifications and alerts
+        if optimization.confidence < 50 then
+            -- Alert about suboptimal pricing
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[PRICING ALERT] ",
+                        string.format("Suboptimal price for %s at %s (confidence: %.1f%%, recommended: $%d)",
+                            itemName, vendorClass, optimization.confidence, optimization.optimalPrice))
+                end
+            end
+        end
+
+        if economicIndicator.marketSentiment == "inflationary" and value > marketData.averagePrice * 1.2 then
+            -- Alert about pricing during inflation
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewEconomy") then
+                    ply:ChatPrint(Color(255, 0, 0), "[INFLATION ALERT] ",
+                        string.format("%s price significantly above market during inflation", itemName))
+                end
+            end
+        end
+
+        -- Update vendor metadata
+        vendor:setData("previousPrice_" .. itemType, value)
+        vendor:setData("lastPriceChange", currentTime)
+        vendor:setData("pricingStrategy", vendorStrategy.strategyType)
+        vendor:setData("averageMarkup", vendorStrategy.averageMarkup)
+
+        -- Log the change
+        lia.log.add(nil, "vendor_price_updated_advanced",
+            string.format("%s:%s price changed to $%d (strategy: %s, confidence: %.1f%%, market: %s)",
+                vendorClass, itemName, value, vendorStrategy.strategyType,
+                optimization.confidence, economicIndicator.marketSentiment))
+
+        print(string.format("[PRICING STRATEGY] Advanced analysis: %s price for %s set to $%d - Strategy: %s, Confidence: %.1f%%, Market: %s, Optimization: %s",
+            vendorClass, itemName, value, vendorStrategy.strategyType,
+            optimization.confidence, economicIndicator.marketSentiment, optimization.recommendation))
     end)
     ```
 ]]
@@ -21532,25 +29113,338 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorItemStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Simple: Log vendor stock updates
+    hook.Add("VendorItemStockUpdated", "VendorStockUpdateLogger", function(vendor, itemType, value)
+        print(string.format("Vendor %s stock for %s updated to %d", vendor:GetClass(), itemType, value))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorItemStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- Medium: Track stock levels and availability alerts
+    hook.Add("VendorItemStockUpdated", "VendorStockTracker", function(vendor, itemType, value)
+        -- Update vendor stock tracking
+        local stockTracking = vendor:getData("stockTracking", {
+            totalUpdates = 0,
+            itemStocks = {},
+            lowStockAlerts = {},
+            lastUpdate = 0
+        })
+
+        stockTracking.totalUpdates = stockTracking.totalUpdates + 1
+        stockTracking.itemStocks[itemType] = value
+        stockTracking.lastUpdate = os.time()
+
+        -- Check for low stock conditions
+        local lowStockThreshold = 5
+        if value <= lowStockThreshold and value > 0 then
+            stockTracking.lowStockAlerts[itemType] = true
+            -- Notify staff about low stock
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:notifyWarning(string.format("Low stock alert: %s has only %d %s remaining", vendor:GetClass(), value, itemType))
+                end
+            end
+        elseif value == 0 then
+            stockTracking.lowStockAlerts[itemType] = true
+            -- Notify staff about out of stock
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:notifyError(string.format("Out of stock: %s is completely out of %s", vendor:GetClass(), itemType))
+                end
+            end
+        else
+            stockTracking.lowStockAlerts[itemType] = nil
+        end
+
+        vendor:setData("stockTracking", stockTracking)
+
+        -- Get item information for logging
+        local itemName = itemType
+        if lia.item.list[itemType] then
+            itemName = lia.item.list[itemType].name or itemType
+        end
+
+        -- Log the update
+        lia.log.add(nil, "vendor_stock_updated", itemName, value)
+
+        print(string.format("Vendor stock updated: %s now has %d %s (%d total updates)",
+            vendor:GetClass(), value, itemName, stockTracking.totalUpdates))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorItemStockUpdated", "MyAddon", function(vendor, itemType, value)
-        -- Add your code here
+    -- High: Advanced inventory management and restocking analytics
+    hook.Add("VendorItemStockUpdated", "AdvancedInventoryManager", function(vendor, itemType, value)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get item information
+        local itemData = lia.item.list[itemType]
+        local itemName = itemData and itemData.name or itemType
+        local itemCategory = itemData and itemData.category or "misc"
+
+        -- Initialize comprehensive inventory analytics
+        local inventoryAnalytics = lia.data.get("inventoryAnalytics", {
+            totalStockUpdates = 0,
+            itemStockLevels = {},
+            vendorInventoryHealth = {},
+            restockingPatterns = {},
+            demandForecasting = {},
+            inventoryOptimization = {}
+        })
+
+        -- Update global statistics
+        inventoryAnalytics.totalStockUpdates = inventoryAnalytics.totalStockUpdates + 1
+
+        -- Track item stock levels
+        local itemStock = inventoryAnalytics.itemStockLevels[itemType] or {
+            totalStock = 0,
+            vendorsStocking = {},
+            averageStock = 0,
+            stockVolatility = 0,
+            lastUpdate = 0
+        }
+
+        itemStock.vendorsStocking[vendorID] = value
+        itemStock.lastUpdate = currentTime
+
+        -- Recalculate total and average stock
+        local totalStock = 0
+        local vendorCount = 0
+        for _, stock in pairs(itemStock.vendorsStocking) do
+            totalStock = totalStock + stock
+            vendorCount = vendorCount + 1
+        end
+
+        itemStock.totalStock = totalStock
+        itemStock.averageStock = vendorCount > 0 and totalStock / vendorCount or 0
+
+        inventoryAnalytics.itemStockLevels[itemType] = itemStock
+
+        -- Update vendor inventory health
+        local vendorHealth = inventoryAnalytics.vendorInventoryHealth[vendorID] or {
+            totalItems = 0,
+            lowStockItems = 0,
+            outOfStockItems = 0,
+            healthyItems = 0,
+            inventoryScore = 100,
+            lastHealthCheck = 0
+        }
+
+        -- Recalculate vendor inventory health
+        local totalItems = 0
+        local lowStockItems = 0
+        local outOfStockItems = 0
+        local healthyItems = 0
+
+        -- Get all items this vendor stocks (simplified - would need actual vendor data)
+        local vendorItems = vendor:getData("stockedItems") or {[itemType] = true}
+
+        for stockedItem in pairs(vendorItems) do
+            totalItems = totalItems + 1
+            local stockLevel = vendor:getData("itemStock_" .. stockedItem) or 0
+
+            if stockLevel == 0 then
+                outOfStockItems = outOfStockItems + 1
+            elseif stockLevel <= 3 then
+                lowStockItems = lowStockItems + 1
+            else
+                healthyItems = healthyItems + 1
+            end
+        end
+
+        vendorHealth.totalItems = totalItems
+        vendorHealth.lowStockItems = lowStockItems
+        vendorHealth.outOfStockItems = outOfStockItems
+        vendorHealth.healthyItems = healthyItems
+
+        -- Calculate inventory health score
+        if totalItems > 0 then
+            local healthPercentage = (healthyItems / totalItems) * 100
+            local penalty = (lowStockItems * 10) + (outOfStockItems * 25)
+            vendorHealth.inventoryScore = math.max(0, healthPercentage - penalty)
+        end
+
+        vendorHealth.lastHealthCheck = currentTime
+        inventoryAnalytics.vendorInventoryHealth[vendorID] = vendorHealth
+
+        -- Restocking pattern analysis
+        local restockingPattern = inventoryAnalytics.restockingPatterns[itemType] or {
+            restockEvents = {},
+            averageRestockAmount = 0,
+            restockFrequency = 0,
+            optimalRestockLevel = 10,
+            lastRestock = 0
+        }
+
+        -- Track restocking events
+        local oldStock = vendor:getData("previousStock_" .. itemType) or 0
+        if value > oldStock then
+            -- This was a restock
+            local restockAmount = value - oldStock
+            table.insert(restockingPattern.restockEvents, {
+                timestamp = currentTime,
+                amount = restockAmount,
+                previousStock = oldStock,
+                newStock = value
+            })
+
+            -- Keep only recent restock events (last 20)
+            if #restockingPattern.restockEvents > 20 then
+                table.remove(restockingPattern.restockEvents, 1)
+            end
+
+            -- Recalculate average restock amount
+            local totalRestock = 0
+            for _, event in ipairs(restockingPattern.restockEvents) do
+                totalRestock = totalRestock + event.amount
+            end
+            restockingPattern.averageRestockAmount = totalRestock / #restockingPattern.restockEvents
+
+            -- Calculate restock frequency (in hours)
+            if #restockingPattern.restockEvents >= 2 then
+                local timeSpan = currentTime - restockingPattern.restockEvents[1].timestamp
+                local hoursSpan = timeSpan / 3600
+                restockingPattern.restockFrequency = hoursSpan / (#restockingPattern.restockEvents - 1)
+            end
+
+            restockingPattern.lastRestock = currentTime
+        end
+
+        inventoryAnalytics.restockingPatterns[itemType] = restockingPattern
+
+        -- Demand forecasting
+        local demandForecast = inventoryAnalytics.demandForecasting[itemType] or {
+            salesHistory = {},
+            averageDailySales = 0,
+            forecastAccuracy = 0,
+            recommendedStock = 10,
+            lastForecast = 0
+        }
+
+        -- Simple demand forecasting based on sales patterns (would need actual sales data)
+        -- This is a simplified model - in reality you'd track actual item sales
+        local estimatedDailySales = 2 -- Placeholder
+        demandForecast.averageDailySales = estimatedDailySales
+        demandForecast.recommendedStock = math.ceil(estimatedDailySales * 3) -- 3 days buffer
+        demandForecast.lastForecast = currentTime
+
+        inventoryAnalytics.demandForecasting[itemType] = demandForecast
+
+        -- Inventory optimization
+        local optimization = inventoryAnalytics.inventoryOptimization[itemType] or {
+            optimalStock = 10,
+            currentEfficiency = 100,
+            overstockRisk = 0,
+            stockoutRisk = 0,
+            carryingCost = 0,
+            recommendations = {}
+        }
+
+        -- Calculate optimization metrics
+        optimization.optimalStock = demandForecast.recommendedStock
+
+        -- Current efficiency based on current stock vs optimal
+        if value > 0 then
+            local efficiencyRatio = math.min(value, optimization.optimalStock) / math.max(value, optimization.optimalStock)
+            optimization.currentEfficiency = efficiencyRatio * 100
+        else
+            optimization.currentEfficiency = 0
+        end
+
+        -- Risk assessments
+        optimization.stockoutRisk = value == 0 and 100 or math.max(0, (optimization.optimalStock - value) / optimization.optimalStock * 100)
+        optimization.overstockRisk = value > optimization.optimalStock * 1.5 and ((value - optimization.optimalStock) / optimization.optimalStock * 100) or 0
+
+        -- Carrying cost (simplified)
+        local itemPrice = itemData and itemData.price or 10
+        optimization.carryingCost = value * itemPrice * 0.02 -- 2% monthly carrying cost
+
+        -- Generate recommendations
+        optimization.recommendations = {}
+        if optimization.stockoutRisk > 50 then
+            table.insert(optimization.recommendations, "Critical: Restock immediately to prevent stockouts")
+        elseif optimization.stockoutRisk > 20 then
+            table.insert(optimization.recommendations, "Warning: Consider restocking soon")
+        end
+
+        if optimization.overstockRisk > 30 then
+            table.insert(optimization.recommendations, "Consider reducing stock to minimize carrying costs")
+        end
+
+        if optimization.currentEfficiency < 50 then
+            table.insert(optimization.recommendations, "Stock level significantly deviates from optimal")
+        end
+
+        inventoryAnalytics.inventoryOptimization[itemType] = optimization
+
+        -- Save analytics
+        lia.data.set("inventoryAnalytics", inventoryAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            itemType = itemType,
+            itemName = itemName,
+            itemCategory = itemCategory,
+            oldStock = oldStock,
+            newStock = value,
+            stockChange = value - oldStock,
+            inventoryHealth = vendorHealth.inventoryScore,
+            optimizationScore = optimization.currentEfficiency,
+            stockoutRisk = optimization.stockoutRisk,
+            overstockRisk = optimization.overstockRisk
+        }, "vendor_inventory_audit")
+
+        -- Smart notifications and alerts
+        if value == 0 then
+            -- Critical out of stock alert
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 0, 0), "[OUT OF STOCK] ",
+                        string.format("CRITICAL: %s is completely out of %s", vendorClass, itemName))
+                end
+            end
+        elseif value <= 2 then
+            -- Low stock warning
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[LOW STOCK] ",
+                        string.format("Warning: %s has only %d %s remaining", vendorClass, value, itemName))
+                end
+            end
+        end
+
+        if vendorHealth.inventoryScore < 50 then
+            -- Poor inventory health alert
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(255, 165, 0), "[INVENTORY HEALTH] ",
+                        string.format("%s inventory health is poor (%d%%)", vendorClass, vendorHealth.inventoryScore))
+                end
+            end
+        end
+
+        -- Update vendor metadata
+        vendor:setData("previousStock_" .. itemType, value)
+        vendor:setData("lastStockUpdate", currentTime)
+        vendor:setData("inventoryHealth", vendorHealth.inventoryScore)
+        vendor:setData("itemStock_" .. itemType, value)
+
+        -- Log the update
+        lia.log.add(nil, "vendor_stock_updated_advanced",
+            string.format("%s:%s stock changed to %d (health: %d%%, efficiency: %.1f%%)",
+                vendorClass, itemName, value, vendorHealth.inventoryScore, optimization.currentEfficiency))
+
+        print(string.format("[INVENTORY MANAGEMENT] Advanced analytics: %s stock for %s set to %d - Health: %d%%, Efficiency: %.1f%%, Stockout Risk: %.1f%%",
+            vendorClass, itemName, value, vendorHealth.inventoryScore, optimization.currentEfficiency, optimization.stockoutRisk))
     end)
     ```
 ]]
@@ -21577,25 +29471,272 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorOpened", "MyAddon", function(vendor)
-        -- Add your code here
+    -- Simple: Log vendor access
+    hook.Add("VendorOpened", "VendorAccessLogger", function(vendor)
+        print(string.format("Vendor %s menu opened", vendor:GetClass()))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorOpened", "MyAddon", function(vendor)
-        -- Add your code here
+    -- Medium: Track vendor popularity and access patterns
+    hook.Add("VendorOpened", "VendorPopularityTracker", function(vendor)
+        -- Update vendor access statistics
+        local accessStats = vendor:getData("accessStats", {
+            totalOpens = 0,
+            uniqueVisitors = {},
+            peakHours = {},
+            lastAccessed = 0
+        })
+
+        accessStats.totalOpens = accessStats.totalOpens + 1
+        accessStats.lastAccessed = os.time()
+
+        -- Track peak access hours
+        local currentHour = tonumber(os.date("%H", os.time()))
+        accessStats.peakHours[currentHour] = (accessStats.peakHours[currentHour] or 0) + 1
+
+        vendor:setData("accessStats", accessStats)
+
+        -- Update global vendor popularity
+        local vendorPopularity = lia.data.get("vendorPopularity", {})
+        vendorPopularity[vendor:GetClass()] = (vendorPopularity[vendor:GetClass()] or 0) + 1
+        lia.data.set("vendorPopularity", vendorPopularity)
+
+        -- Log vendor access
+        lia.log.add(nil, "vendor_opened", vendor:GetClass(), accessStats.totalOpens)
+
+        print(string.format("Vendor opened: %s accessed %d times", vendor:GetClass(), accessStats.totalOpens))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorOpened", "MyAddon", function(vendor)
-        -- Add your code here
+    -- High: Advanced vendor analytics and customer behavior tracking
+    hook.Add("VendorOpened", "AdvancedVendorAnalytics", function(vendor)
+        if not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+
+        -- Get local player (client-side hook)
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+
+        local steamID = client:SteamID64()
+
+        -- Initialize comprehensive vendor analytics
+        local vendorAnalytics = lia.data.get("vendorAnalytics", {
+            totalOpens = 0,
+            vendorPopularity = {},
+            customerBehavior = {},
+            sessionAnalytics = {},
+            timeBasedPatterns = {},
+            vendorPerformance = {},
+            customerSegmentation = {}
+        })
+
+        -- Update global statistics
+        vendorAnalytics.totalOpens = vendorAnalytics.totalOpens + 1
+
+        -- Track vendor popularity
+        local vendorPop = vendorAnalytics.vendorPopularity[vendorClass] or {
+            totalOpens = 0,
+            uniqueCustomers = {},
+            averageSessionTime = 0,
+            conversionRate = 0,
+            lastAccess = 0
+        }
+
+        vendorPop.totalOpens = vendorPop.totalOpens + 1
+        vendorPop.uniqueCustomers[steamID] = (vendorPop.uniqueCustomers[steamID] or 0) + 1
+        vendorPop.lastAccess = currentTime
+
+        vendorAnalytics.vendorPopularity[vendorClass] = vendorPop
+
+        -- Customer behavior tracking
+        local customerBehavior = vendorAnalytics.customerBehavior[steamID] or {
+            totalVendorVisits = 0,
+            vendorsVisited = {},
+            shoppingPatterns = {},
+            averageTimeSpent = 0,
+            preferredCategories = {},
+            lastVisit = 0,
+            visitFrequency = 0
+        }
+
+        customerBehavior.totalVendorVisits = customerBehavior.totalVendorVisits + 1
+        customerBehavior.vendorsVisited[vendorClass] = (customerBehavior.vendorsVisited[vendorClass] or 0) + 1
+        customerBehavior.lastVisit = currentTime
+
+        -- Calculate visit frequency (visits per day)
+        if customerBehavior.totalVendorVisits > 1 then
+            -- Simplified frequency calculation
+            customerBehavior.visitFrequency = customerBehavior.totalVendorVisits / math.max((currentTime - (customerBehavior.firstVisit or currentTime)) / 86400, 1)
+        else
+            customerBehavior.firstVisit = currentTime
+        end
+
+        vendorAnalytics.customerBehavior[steamID] = customerBehavior
+
+        -- Session analytics
+        local sessionKey = steamID .. "_" .. currentTime -- Simplified session tracking
+        local sessionData = vendorAnalytics.sessionAnalytics[sessionKey] or {
+            startTime = currentTime,
+            vendorOpened = vendorClass,
+            itemsViewed = {},
+            purchasesMade = {},
+            timeSpent = 0,
+            sessionValue = 0
+        }
+
+        -- Track session start
+        sessionData.startTime = currentTime
+        vendorAnalytics.sessionAnalytics[sessionKey] = sessionData
+
+        -- Time-based pattern analysis
+        local timeKey = os.date("%Y-%m-%d_%H", currentTime)
+        vendorAnalytics.timeBasedPatterns[timeKey] = (vendorAnalytics.timeBasedPatterns[timeKey] or 0) + 1
+
+        -- Vendor performance metrics
+        local vendorPerf = vendorAnalytics.vendorPerformance[vendorID] or {
+            totalInteractions = 0,
+            successfulTransactions = 0,
+            averageTransactionValue = 0,
+            customerSatisfaction = 5.0,
+            inventoryTurnover = 0,
+            lastPerformanceUpdate = 0
+        }
+
+        vendorPerf.totalInteractions = vendorPerf.totalInteractions + 1
+        vendorPerf.lastPerformanceUpdate = currentTime
+
+        vendorAnalytics.vendorPerformance[vendorID] = vendorPerf
+
+        -- Customer segmentation
+        local segmentation = vendorAnalytics.customerSegmentation[steamID] or {
+            segment = "new",
+            loyaltyScore = 0,
+            spendingTier = "low",
+            activityLevel = "low",
+            riskProfile = "unknown",
+            lastSegmentation = 0
+        }
+
+        -- Update segmentation based on behavior
+        if customerBehavior.totalVendorVisits >= 50 then
+            segmentation.segment = "loyal_customer"
+            segmentation.loyaltyScore = 100
+        elseif customerBehavior.totalVendorVisits >= 20 then
+            segmentation.segment = "regular_customer"
+            segmentation.loyaltyScore = 75
+        elseif customerBehavior.totalVendorVisits >= 5 then
+            segmentation.segment = "occasional_customer"
+            segmentation.loyaltyScore = 50
+        else
+            segmentation.segment = "new_customer"
+            segmentation.loyaltyScore = 25
+        end
+
+        -- Activity level based on visit frequency
+        if customerBehavior.visitFrequency >= 5 then
+            segmentation.activityLevel = "high"
+        elseif customerBehavior.visitFrequency >= 2 then
+            segmentation.activityLevel = "medium"
+        else
+            segmentation.activityLevel = "low"
+        end
+
+        -- Spending tier (simplified - would need actual purchase data)
+        segmentation.spendingTier = "medium" -- Placeholder
+
+        -- Risk profile based on behavior patterns
+        if customerBehavior.visitFrequency > 10 then
+            segmentation.riskProfile = "high_activity"
+        elseif customerBehavior.totalVendorVisits < 3 then
+            segmentation.riskProfile = "new_user"
+        else
+            segmentation.riskProfile = "standard"
+        end
+
+        segmentation.lastSegmentation = currentTime
+        vendorAnalytics.customerSegmentation[steamID] = segmentation
+
+        -- Save analytics
+        lia.data.set("vendorAnalytics", vendorAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            playerSteamID = steamID,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            customerSegment = segmentation.segment,
+            loyaltyScore = segmentation.loyaltyScore,
+            activityLevel = segmentation.activityLevel,
+            visitFrequency = customerBehavior.visitFrequency,
+            vendorPopularity = vendorPop.totalOpens,
+            sessionID = sessionKey
+        }, "vendor_access_audit")
+
+        -- Smart notifications and personalized experiences
+        if segmentation.segment == "new_customer" then
+            -- Welcome new customers
+            timer.Simple(1, function()
+                if IsValid(client) then
+                    chat.AddText(Color(0, 255, 0), "[VENDOR] ", Color(255, 255, 255),
+                        "Welcome! Use the vendor interface to buy and sell items.")
+                end
+            end)
+        elseif segmentation.segment == "loyal_customer" then
+            -- Special treatment for loyal customers
+            timer.Simple(1, function()
+                if IsValid(client) then
+                    chat.AddText(Color(255, 215, 0), "[VIP CUSTOMER] ", Color(255, 255, 255),
+                        "Thank you for being a valued customer! Enjoy your shopping experience.")
+                end
+            end)
+        end
+
+        -- Performance alerts for administrators
+        if vendorPerf.totalInteractions > 0 then
+            local performanceScore = (vendorPerf.successfulTransactions / vendorPerf.totalInteractions) * 100
+            if performanceScore < 30 then
+                -- Alert admins about underperforming vendors
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("manageVendors") then
+                        ply:ChatPrint(Color(255, 165, 0), "[VENDOR PERFORMANCE] ",
+                            string.format("%s has low conversion rate (%d%%)", vendorClass, performanceScore))
+                    end
+                end
+            end
+        end
+
+        -- Peak time alerts
+        local currentHour = tonumber(os.date("%H", currentTime))
+        local hourlyTraffic = vendorAnalytics.timeBasedPatterns[timeKey] or 0
+        if hourlyTraffic > 20 then -- High traffic period
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("manageVendors") then
+                    ply:ChatPrint(Color(0, 255, 0), "[PEAK TRAFFIC] ",
+                        string.format("High vendor activity detected at hour %d", currentHour))
+                end
+            end
+        end
+
+        -- Update client-side data for UI enhancements
+        client:SetNWString("currentVendor", vendorClass)
+        client:SetNWInt("customerSegment", segmentation.loyaltyScore)
+        client:SetNWInt("visitCount", customerBehavior.totalVendorVisits)
+
+        -- Log the access
+        lia.log.add(client, "vendor_opened_advanced",
+            string.format("%s opened (segment: %s, loyalty: %d, frequency: %.1f/day)",
+                vendorClass, segmentation.segment, segmentation.loyaltyScore, customerBehavior.visitFrequency))
+
+        print(string.format("[VENDOR ANALYTICS] Advanced tracking: %s opened %s - Segment: %s, Loyalty: %d, Frequency: %.1f/day",
+            client:Name(), vendorClass, segmentation.segment, segmentation.loyaltyScore, customerBehavior.visitFrequency))
     end)
     ```
 ]]
@@ -21625,25 +29766,347 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("VendorTradeEvent", "MyAddon", function(client, vendor, itemType, isSellingToVendor)
-        -- Add your code here
+    -- Simple: Log vendor trades
+    hook.Add("VendorTradeEvent", "TradeLogger", function(client, vendor, itemType, isSellingToVendor)
+        local action = isSellingToVendor and "sold to" or "bought from"
+        print(string.format("%s %s vendor %s: %s", client:Name(), action, vendor:GetClass(), itemType))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("VendorTradeEvent", "MyAddon", function(client, vendor, itemType, isSellingToVendor)
-        -- Add your code here
+    -- Medium: Track trade statistics and economic impact
+    hook.Add("VendorTradeEvent", "TradeTracker", function(client, vendor, itemType, isSellingToVendor)
+        -- Update trade statistics
+        local tradeStats = lia.data.get("tradeStats", {
+            totalTrades = 0,
+            buyTrades = 0,
+            sellTrades = 0,
+            popularItems = {},
+            lastTrade = 0
+        })
+
+        tradeStats.totalTrades = tradeStats.totalTrades + 1
+        if isSellingToVendor then
+            tradeStats.sellTrades = tradeStats.sellTrades + 1
+        else
+            tradeStats.buyTrades = tradeStats.buyTrades + 1
+        end
+
+        tradeStats.popularItems[itemType] = (tradeStats.popularItems[itemType] or 0) + 1
+        tradeStats.lastTrade = os.time()
+
+        lia.data.set("tradeStats", tradeStats)
+
+        -- Get item information for economic tracking
+        local itemName = itemType
+        local itemPrice = 10 -- Default
+        if lia.item.list[itemType] then
+            itemName = lia.item.list[itemType].name or itemType
+            itemPrice = lia.item.list[itemType].price or 10
+        end
+
+        -- Calculate economic impact
+        local economicImpact = 0
+        if isSellingToVendor then
+            economicImpact = itemPrice -- Player gains money
+        else
+            economicImpact = -itemPrice -- Player spends money
+        end
+
+        -- Update player's economic data
+        local playerEconomy = client:getData("economyStats", {
+            totalSpent = 0,
+            totalEarned = 0,
+            netWorth = 0
+        })
+
+        if isSellingToVendor then
+            playerEconomy.totalEarned = playerEconomy.totalEarned + itemPrice
+        else
+            playerEconomy.totalSpent = playerEconomy.totalSpent + itemPrice
+        end
+
+        playerEconomy.netWorth = playerEconomy.totalEarned - playerEconomy.totalSpent
+        client:setData("economyStats", playerEconomy)
+
+        -- Log the trade
+        lia.log.add(client, "vendor_trade", itemName, isSellingToVendor and "sold" or "bought", economicImpact)
+
+        print(string.format("Trade completed: %s %s %s for $%d (Net worth: $%d)",
+            client:Name(), isSellingToVendor and "sold" or "bought", itemName, itemPrice, playerEconomy.netWorth))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("VendorTradeEvent", "MyAddon", function(client, vendor, itemType, isSellingToVendor)
-        -- Add your code here
+    -- High: Advanced trade analytics and market monitoring
+    hook.Add("VendorTradeEvent", "AdvancedTradeAnalytics", function(client, vendor, itemType, isSellingToVendor)
+        if not IsValid(client) or not IsValid(vendor) then return end
+
+        local currentTime = os.time()
+        local vendorID = vendor:EntIndex()
+        local vendorClass = vendor:GetClass()
+        local steamID = client:SteamID64()
+
+        -- Get item information
+        local itemData = lia.item.list[itemType]
+        local itemName = itemData and itemData.name or itemType
+        local itemPrice = itemData and itemData.price or 10
+        local itemCategory = itemData and itemData.category or "misc"
+
+        -- Initialize comprehensive trade analytics
+        local tradeAnalytics = lia.data.get("tradeAnalytics", {
+            totalTrades = 0,
+            buyTrades = 0,
+            sellTrades = 0,
+            itemTradeVolume = {},
+            categoryPerformance = {},
+            playerTradeHistory = {},
+            vendorPerformance = {},
+            marketDynamics = {},
+            economicIndicators = {},
+            tradePatterns = {}
+        })
+
+        -- Update global trade statistics
+        tradeAnalytics.totalTrades = tradeAnalytics.totalTrades + 1
+        if isSellingToVendor then
+            tradeAnalytics.sellTrades = tradeAnalytics.sellTrades + 1
+        else
+            tradeAnalytics.buyTrades = tradeAnalytics.buyTrades + 1
+        end
+
+        -- Track item trade volume
+        local itemVolume = tradeAnalytics.itemTradeVolume[itemType] or {
+            totalTrades = 0,
+            buyVolume = 0,
+            sellVolume = 0,
+            averagePrice = itemPrice,
+            priceVolatility = 0,
+            lastTrade = 0
+        }
+
+        itemVolume.totalTrades = itemVolume.totalTrades + 1
+        if isSellingToVendor then
+            itemVolume.sellVolume = itemVolume.sellVolume + 1
+        else
+            itemVolume.buyVolume = itemVolume.buyVolume + 1
+        end
+
+        -- Update average price (weighted moving average)
+        itemVolume.averagePrice = ((itemVolume.averagePrice * (itemVolume.totalTrades - 1)) + itemPrice) / itemVolume.totalTrades
+        itemVolume.lastTrade = currentTime
+
+        tradeAnalytics.itemTradeVolume[itemType] = itemVolume
+
+        -- Category performance tracking
+        local categoryPerf = tradeAnalytics.categoryPerformance[itemCategory] or {
+            totalTrades = 0,
+            buyTrades = 0,
+            sellTrades = 0,
+            averagePrice = 0,
+            marketShare = 0,
+            growthRate = 0,
+            lastUpdate = 0
+        }
+
+        categoryPerf.totalTrades = categoryPerf.totalTrades + 1
+        if isSellingToVendor then
+            categoryPerf.sellTrades = categoryPerf.sellTrades + 1
+        else
+            categoryPerf.buyTrades = categoryPerf.buyTrades + 1
+        end
+
+        categoryPerf.averagePrice = ((categoryPerf.averagePrice * (categoryPerf.totalTrades - 1)) + itemPrice) / categoryPerf.totalTrades
+        categoryPerf.lastUpdate = currentTime
+
+        tradeAnalytics.categoryPerformance[itemCategory] = categoryPerf
+
+        -- Player trade history and behavior analysis
+        local playerHistory = tradeAnalytics.playerTradeHistory[steamID] or {
+            totalTrades = 0,
+            buyTrades = 0,
+            sellTrades = 0,
+            favoriteCategories = {},
+            tradingFrequency = 0,
+            profitMargin = 0,
+            riskProfile = "standard",
+            lastTrade = 0
+        }
+
+        playerHistory.totalTrades = playerHistory.totalTrades + 1
+        if isSellingToVendor then
+            playerHistory.sellTrades = playerHistory.sellTrades + 1
+        else
+            playerHistory.buyTrades = playerHistory.buyTrades + 1
+        end
+
+        playerHistory.favoriteCategories[itemCategory] = (playerHistory.favoriteCategories[itemCategory] or 0) + 1
+        playerHistory.lastTrade = currentTime
+
+        -- Calculate trading frequency (trades per day)
+        if playerHistory.totalTrades > 1 then
+            local timeSpan = currentTime - (playerHistory.firstTrade or currentTime)
+            playerHistory.tradingFrequency = playerHistory.totalTrades / math.max(timeSpan / 86400, 1)
+        else
+            playerHistory.firstTrade = currentTime
+        end
+
+        -- Determine risk profile based on trading behavior
+        if playerHistory.tradingFrequency > 20 then
+            playerHistory.riskProfile = "high_frequency_trader"
+        elseif playerHistory.sellTrades > playerHistory.buyTrades * 2 then
+            playerHistory.riskProfile = "predominantly_seller"
+        elseif playerHistory.buyTrades > playerHistory.sellTrades * 2 then
+            playerHistory.riskProfile = "predominantly_buyer"
+        end
+
+        tradeAnalytics.playerTradeHistory[steamID] = playerHistory
+
+        -- Vendor performance tracking
+        local vendorPerf = tradeAnalytics.vendorPerformance[vendorID] or {
+            totalTrades = 0,
+            successfulTrades = 0,
+            failedTrades = 0,
+            averageTradeValue = 0,
+            customerSatisfaction = 5.0,
+            inventoryTurnover = 0,
+            lastPerformanceUpdate = 0
+        }
+
+        vendorPerf.totalTrades = vendorPerf.totalTrades + 1
+        vendorPerf.successfulTrades = vendorPerf.successfulTrades + 1 -- Assuming success for this example
+        vendorPerf.averageTradeValue = ((vendorPerf.averageTradeValue * (vendorPerf.totalTrades - 1)) + itemPrice) / vendorPerf.totalTrades
+        vendorPerf.lastPerformanceUpdate = currentTime
+
+        tradeAnalytics.vendorPerformance[vendorID] = vendorPerf
+
+        -- Market dynamics analysis
+        local marketDynamics = tradeAnalytics.marketDynamics[itemCategory] or {
+            supplyDemandRatio = 1.0,
+            priceElasticity = 0,
+            marketEfficiency = 1.0,
+            competitionLevel = 0,
+            lastMarketAnalysis = 0
+        }
+
+        -- Update supply/demand ratio
+        local categoryData = tradeAnalytics.categoryPerformance[itemCategory]
+        if categoryData.buyTrades > 0 and categoryData.sellTrades > 0 then
+            marketDynamics.supplyDemandRatio = categoryData.sellTrades / categoryData.buyTrades
+        end
+
+        marketDynamics.lastMarketAnalysis = currentTime
+        tradeAnalytics.marketDynamics[itemCategory] = marketDynamics
+
+        -- Economic indicators
+        local economicIndicator = tradeAnalytics.economicIndicators[itemType] or {
+            tradeVelocity = 0,
+            marketSaturation = 0,
+            priceStability = 1.0,
+            demandElasticity = 0,
+            lastEconomicUpdate = 0
+        }
+
+        -- Calculate trade velocity (trades per hour)
+        local recentTrades = 0
+        for itemType2, volume in pairs(tradeAnalytics.itemTradeVolume) do
+            if currentTime - volume.lastTrade < 3600 then -- Last hour
+                recentTrades = recentTrades + volume.totalTrades
+            end
+        end
+
+        economicIndicator.tradeVelocity = recentTrades / math.max(table.Count(tradeAnalytics.itemTradeVolume), 1)
+        economicIndicator.lastEconomicUpdate = currentTime
+
+        tradeAnalytics.economicIndicators[itemType] = economicIndicator
+
+        -- Trade pattern analysis
+        local timeKey = os.date("%Y-%m-%d_%H", currentTime)
+        tradeAnalytics.tradePatterns[timeKey] = (tradeAnalytics.tradePatterns[timeKey] or 0) + 1
+
+        -- Save analytics
+        lia.data.set("tradeAnalytics", tradeAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            playerSteamID = steamID,
+            vendorID = vendorID,
+            vendorClass = vendorClass,
+            itemType = itemType,
+            itemName = itemName,
+            itemCategory = itemCategory,
+            itemPrice = itemPrice,
+            isSellingToVendor = isSellingToVendor,
+            tradeValue = itemPrice,
+            playerTradeCount = playerHistory.totalTrades,
+            playerRiskProfile = playerHistory.riskProfile,
+            categoryAveragePrice = categoryPerf.averagePrice,
+            marketSupplyDemandRatio = marketDynamics.supplyDemandRatio
+        }, "vendor_trade_audit")
+
+        -- Smart notifications and market insights
+        if itemVolume.totalTrades >= 10 then
+            local buyRatio = itemVolume.buyVolume / itemVolume.totalTrades
+            if buyRatio > 0.7 then
+                -- High demand item
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("viewEconomy") then
+                        ply:ChatPrint(Color(255, 165, 0), "[MARKET INSIGHT] ",
+                            string.format("High demand detected for %s (%d%% buy ratio)", itemName, buyRatio * 100))
+                    end
+                end
+            elseif buyRatio < 0.3 then
+                -- Oversupply warning
+                for _, ply in ipairs(player.GetAll()) do
+                    if ply:hasPrivilege("viewEconomy") then
+                        ply:ChatPrint(Color(255, 0, 0), "[MARKET WARNING] ",
+                            string.format("Oversupply detected for %s (%d%% buy ratio)", itemName, buyRatio * 100))
+                    end
+                end
+            end
+        end
+
+        -- Achievement tracking
+        if playerHistory.totalTrades >= 100 then
+            if not client:getData("achievement_trader") then
+                client:setData("achievement_trader", true)
+                client:notifyInfo("🏆 Achievement Unlocked: Master Trader!")
+            end
+        elseif playerHistory.totalTrades >= 10 then
+            if not client:getData("achievement_trader_novice") then
+                client:setData("achievement_trader_novice", true)
+                client:notifyInfo("📈 Achievement Unlocked: Novice Trader!")
+            end
+        end
+
+        -- Price anomaly detection
+        if itemPrice > itemVolume.averagePrice * 1.5 then
+            lia.log.add(client, "price_anomaly_high", itemName, itemPrice, itemVolume.averagePrice)
+        elseif itemPrice < itemVolume.averagePrice * 0.5 then
+            lia.log.add(client, "price_anomaly_low", itemName, itemPrice, itemVolume.averagePrice)
+        end
+
+        -- Update player's trade statistics
+        client:setData("tradeStats", {
+            totalTrades = playerHistory.totalTrades,
+            tradingFrequency = playerHistory.tradingFrequency,
+            riskProfile = playerHistory.riskProfile,
+            favoriteCategory = itemCategory,
+            lastTrade = currentTime
+        })
+
+        -- Log the trade
+        lia.log.add(client, "vendor_trade_advanced",
+            string.format("%s %s %s for $%d (category: %s, frequency: %.1f/day, risk: %s)",
+                isSellingToVendor and "sold" or "bought", itemName, isSellingToVendor and "to" or "from",
+                itemPrice, itemCategory, playerHistory.tradingFrequency, playerHistory.riskProfile))
+
+        print(string.format("[TRADE ANALYTICS] Advanced monitoring: %s %s %s for $%d - Category: %s, Frequency: %.1f/day, Risk: %s",
+            client:Name(), isSellingToVendor and "sold" or "bought", itemName, itemPrice,
+            itemCategory, playerHistory.tradingFrequency, playerHistory.riskProfile))
     end)
     ```
 ]]
@@ -21675,25 +30138,317 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("WarningIssued", "MyAddon", function(client, target, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- Simple: Log warning issuance
+    hook.Add("WarningIssued", "WarningLogger", function(client, target, reason, count, warnerSteamID, warnerName)
+        print(string.format("Warning issued by %s to %s: %s (Total: %d)", client:Name(), target:Name(), reason, count))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("WarningIssued", "MyAddon", function(client, target, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- Medium: Track warning statistics and handle escalation
+    hook.Add("WarningIssued", "WarningTracker", function(client, target, reason, count, warnerSteamID, warnerName)
+        -- Update target's warning statistics
+        local targetStats = target:getData("warningStats", {
+            totalWarnings = 0,
+            recentWarnings = 0,
+            lastWarning = 0,
+            escalationLevel = 0
+        })
+
+        targetStats.totalWarnings = count
+        targetStats.lastWarning = os.time()
+        targetStats.recentWarnings = targetStats.recentWarnings + 1
+
+        -- Determine escalation level
+        if count >= 5 then
+            targetStats.escalationLevel = 3 -- Severe
+        elseif count >= 3 then
+            targetStats.escalationLevel = 2 -- Moderate
+        else
+            targetStats.escalationLevel = 1 -- Minor
+        end
+
+        target:setData("warningStats", targetStats)
+
+        -- Notify target and staff
+        if IsValid(target) then
+            target:notifyError(string.format("You have been warned by %s: %s", client:Name(), reason))
+            target:notifyInfo(string.format("Total warnings: %d", count))
+        end
+
+        -- Alert staff about escalation
+        if targetStats.escalationLevel >= 2 then
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("viewWarnings") and ply ~= client then
+                    ply:notifyWarning(string.format("Player %s has reached escalation level %d (%d warnings)",
+                        target:Name(), targetStats.escalationLevel, count))
+                end
+            end
+        end
+
+        -- Log the warning
+        lia.log.add(client, "warning_issued", target:Name(), reason, count)
+
+        print(string.format("Warning issued: %s warned %s (%s) - Total: %d, Escalation: %d",
+            client:Name(), target:Name(), reason, count, targetStats.escalationLevel))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("WarningIssued", "MyAddon", function(client, target, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- High: Advanced warning analytics and behavioral monitoring
+    hook.Add("WarningIssued", "AdvancedWarningAnalytics", function(client, target, reason, count, warnerSteamID, warnerName)
+        if not IsValid(client) or not IsValid(target) then return end
+
+        local currentTime = os.time()
+        local targetSteamID = target:SteamID64()
+
+        -- Initialize comprehensive warning analytics
+        local warningAnalytics = lia.data.get("warningAnalytics", {
+            totalWarnings = 0,
+            categoryBreakdown = {},
+            staffPerformance = {},
+            playerBehavior = {},
+            escalationPatterns = {},
+            recidivismRates = {},
+            disciplinaryActions = {}
+        })
+
+        -- Update global warning statistics
+        warningAnalytics.totalWarnings = warningAnalytics.totalWarnings + 1
+
+        -- Categorize warning reasons
+        local warningCategory = "general"
+        local lowerReason = reason:lower()
+
+        if lowerReason:find("cheat") or lowerReason:find("hack") or lowerReason:find("exploit") then
+            warningCategory = "cheating"
+        elseif lowerReason:find("harass") or lowerReason:find("bully") or lowerReason:find("spam") then
+            warningCategory = "harassment"
+        elseif lowerReason:find("grief") or lowerReason:find("vandal") or lowerReason:find("destroy") then
+            warningCategory = "griefing"
+        elseif lowerReason:find("language") or lowerReason:find("swear") or lowerReason:find("insult") then
+            warningCategory = "inappropriate_language"
+        elseif lowerReason:find("failrp") or lowerReason:find("roleplay") or lowerReason:find("metagame") then
+            warningCategory = "failrp"
+        end
+
+        warningAnalytics.categoryBreakdown[warningCategory] = (warningAnalytics.categoryBreakdown[warningCategory] or 0) + 1
+
+        -- Staff performance tracking
+        local staffPerf = warningAnalytics.staffPerformance[warnerSteamID] or {
+            totalWarnings = 0,
+            warningsByCategory = {},
+            averageResponseTime = 0,
+            consistencyRating = 100,
+            lastWarning = 0
+        }
+
+        staffPerf.totalWarnings = staffPerf.totalWarnings + 1
+        staffPerf.warningsByCategory[warningCategory] = (staffPerf.warningsByCategory[warningCategory] or 0) + 1
+        staffPerf.lastWarning = currentTime
+
+        warningAnalytics.staffPerformance[warnerSteamID] = staffPerf
+
+        -- Player behavior analysis
+        local playerBehavior = warningAnalytics.playerBehavior[targetSteamID] or {
+            totalWarnings = 0,
+            warningsByCategory = {},
+            warningFrequency = 0,
+            behaviorTrend = "improving",
+            riskLevel = "low",
+            rehabilitationProgress = 0,
+            lastWarning = 0,
+            firstWarning = 0
+        }
+
+        playerBehavior.totalWarnings = count
+        playerBehavior.warningsByCategory[warningCategory] = (playerBehavior.warningsByCategory[warningCategory] or 0) + 1
+        playerBehavior.lastWarning = currentTime
+
+        if playerBehavior.firstWarning == 0 then
+            playerBehavior.firstWarning = currentTime
+        end
+
+        -- Calculate warning frequency (warnings per month)
+        local timeSpan = currentTime - playerBehavior.firstWarning
+        local months = math.max(timeSpan / (30 * 24 * 60 * 60), 1) -- At least 1 month
+        playerBehavior.warningFrequency = playerBehavior.totalWarnings / months
+
+        -- Determine risk level and behavior trend
+        if playerBehavior.warningFrequency > 2 then
+            playerBehavior.riskLevel = "high"
+            playerBehavior.behaviorTrend = "worsening"
+        elseif playerBehavior.warningFrequency > 0.5 then
+            playerBehavior.riskLevel = "medium"
+            playerBehavior.behaviorTrend = "stable"
+        else
+            playerBehavior.riskLevel = "low"
+            playerBehavior.behaviorTrend = "improving"
+        end
+
+        -- Rehabilitation progress (simplified - based on time between warnings)
+        if playerBehavior.totalWarnings > 1 then
+            local avgTimeBetweenWarnings = timeSpan / (playerBehavior.totalWarnings - 1)
+            if avgTimeBetweenWarnings > (30 * 24 * 60 * 60) then -- More than 30 days between warnings
+                playerBehavior.rehabilitationProgress = math.min(100, playerBehavior.rehabilitationProgress + 10)
+            else
+                playerBehavior.rehabilitationProgress = math.max(0, playerBehavior.rehabilitationProgress - 5)
+            end
+        end
+
+        warningAnalytics.playerBehavior[targetSteamID] = playerBehavior
+
+        -- Escalation pattern analysis
+        local escalationPattern = warningAnalytics.escalationPatterns[targetSteamID] or {
+            warningCounts = {},
+            escalationPoints = {},
+            interventionNeeded = false,
+            interventionType = "none",
+            lastEscalationCheck = 0
+        }
+
+        escalationPattern.warningCounts[count] = (escalationPattern.warningCounts[count] or 0) + 1
+
+        -- Calculate escalation points based on warning count and frequency
+        local escalationPoints = count * 10 + (playerBehavior.warningFrequency * 20)
+        escalationPattern.escalationPoints[currentTime] = escalationPoints
+
+        -- Determine if intervention is needed
+        if escalationPoints >= 100 then
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "severe"
+        elseif escalationPoints >= 50 then
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "moderate"
+        elseif escalationPoints >= 25 then
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "mild"
+        end
+
+        escalationPattern.lastEscalationCheck = currentTime
+        warningAnalytics.escalationPatterns[targetSteamID] = escalationPattern
+
+        -- Recidivism rate tracking
+        local recidivismRate = warningAnalytics.recidivismRates[warningCategory] or {
+            totalCases = 0,
+            repeatOffenders = 0,
+            rehabilitationSuccess = 0,
+            averageReoffendTime = 0
+        }
+
+        recidivismRate.totalCases = recidivismRate.totalCases + 1
+        if playerBehavior.totalWarnings > 1 then
+            recidivismRate.repeatOffenders = recidivismRate.repeatOffenders + 1
+        end
+
+        warningAnalytics.recidivismRates[warningCategory] = recidivismRate
+
+        -- Disciplinary action tracking
+        local disciplinaryAction = warningAnalytics.disciplinaryActions[targetSteamID] or {
+            warnings = {},
+            actionsTaken = {},
+            effectiveness = 0,
+            lastAction = 0
+        }
+
+        table.insert(disciplinaryAction.warnings, {
+            timestamp = currentTime,
+            reason = reason,
+            category = warningCategory,
+            count = count,
+            staff = warnerSteamID
+        })
+
+        warningAnalytics.disciplinaryActions[targetSteamID] = disciplinaryAction
+
+        -- Save analytics
+        lia.data.set("warningAnalytics", warningAnalytics)
+
+        -- Create detailed audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            staffSteamID = warnerSteamID,
+            targetSteamID = targetSteamID,
+            warningReason = reason,
+            warningCategory = warningCategory,
+            warningCount = count,
+            targetRiskLevel = playerBehavior.riskLevel,
+            targetBehaviorTrend = playerBehavior.behaviorTrend,
+            escalationPoints = escalationPoints,
+            interventionNeeded = escalationPattern.interventionNeeded,
+            interventionType = escalationPattern.interventionType
+        }, "warning_audit")
+
+        -- Smart notifications based on risk and escalation
+        if playerBehavior.riskLevel == "high" then
+            -- High-risk player alert
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("moderatePlayers") then
+                    ply:ChatPrint(Color(255, 0, 0), "[HIGH RISK WARNING] ",
+                        string.format("High-risk player %s received warning #%d for %s", target:Name(), count, warningCategory))
+                end
+            end
+        elseif escalationPattern.interventionNeeded then
+            -- Escalation alert
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:hasPrivilege("moderatePlayers") then
+                    ply:ChatPrint(Color(255, 165, 0), "[ESCALATION ALERT] ",
+                        string.format("Player %s requires %s intervention (%d escalation points)",
+                            target:Name(), escalationPattern.interventionType, escalationPoints))
+                end
+            end
+        end
+
+        -- Target notifications with rehabilitation guidance
+        if IsValid(target) then
+            if playerBehavior.rehabilitationProgress > 50 then
+                target:ChatPrint(Color(0, 255, 0), "[WARNING] ", Color(255, 255, 255),
+                    string.format("Warning issued by %s: %s", client:Name(), reason))
+                target:ChatPrint(Color(0, 255, 0), "Your rehabilitation progress is good - keep up the positive behavior!")
+            elseif playerBehavior.riskLevel == "high" then
+                target:ChatPrint(Color(255, 0, 0), "[FINAL WARNING] ", Color(255, 255, 255),
+                    string.format("Warning #%d issued by %s: %s", count, client:Name(), reason))
+                target:ChatPrint(Color(255, 0, 0), "This is your final warning. Further violations may result in severe consequences.")
+            else
+                target:ChatPrint(Color(255, 165, 0), "[WARNING] ", Color(255, 255, 255),
+                    string.format("Warning #%d issued by %s: %s", count, client:Name(), reason))
+                target:ChatPrint(Color(255, 165, 0), string.format("Total warnings: %d. Please review server rules.", count))
+            end
+        end
+
+        -- Achievement tracking for staff
+        if staffPerf.totalWarnings >= 100 then
+            if not client:getData("achievement_warning_expert") then
+                client:setData("achievement_warning_expert", true)
+                client:notifyInfo("🏆 Achievement Unlocked: Warning Expert!")
+            end
+        elseif staffPerf.totalWarnings >= 25 then
+            if not client:getData("achievement_warning_specialist") then
+                client:setData("achievement_warning_specialist", true)
+                client:notifyInfo("⚖️ Achievement Unlocked: Warning Specialist!")
+            end
+        end
+
+        -- Update player warning data
+        target:setData("warningProfile", {
+            totalWarnings = count,
+            riskLevel = playerBehavior.riskLevel,
+            behaviorTrend = playerBehavior.behaviorTrend,
+            rehabilitationProgress = playerBehavior.rehabilitationProgress,
+            lastWarning = currentTime,
+            escalationPoints = escalationPoints
+        })
+
+        -- Log the warning
+        lia.log.add(client, "warning_issued_advanced",
+            string.format("warned %s for %s (category: %s, count: %d, risk: %s, escalation: %d)",
+                target:Name(), reason, warningCategory, count, playerBehavior.riskLevel, escalationPoints))
+
+        print(string.format("[WARNING ANALYTICS] Advanced monitoring: %s warned %s for %s - Count: %d, Risk: %s, Escalation: %d, Intervention: %s",
+            client:Name(), target:Name(), warningCategory, count, playerBehavior.riskLevel,
+            escalationPoints, escalationPattern.interventionType))
     end)
     ```
 ]]
@@ -21723,25 +30478,319 @@ end
 
     Low Complexity:
     ```lua
-    -- Simple: Basic usage
-    hook.Add("WarningRemoved", "MyAddon", function(client, targetClient, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- Simple: Log warning removal
+    hook.Add("WarningRemoved", "WarningRemovalLogger", function(client, targetClient, reason, count, warnerSteamID, warnerName)
+        print(string.format("Warning removed from %s by %s (Remaining: %d)", targetClient:Name(), client:Name(), count))
     end)
     ```
 
     Medium Complexity:
     ```lua
-    -- Medium: More complex usage
-    hook.Add("WarningRemoved", "MyAddon", function(client, targetClient, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- Medium: Update warning statistics and track rehabilitation progress
+    hook.Add("WarningRemoved", "WarningRemovalTracker", function(client, targetClient, reason, count, warnerSteamID, warnerName)
+        -- Update target's warning statistics
+        local targetStats = targetClient:getData("warningStats", {
+            totalWarnings = 0,
+            recentWarnings = 0,
+            lastWarning = 0,
+            escalationLevel = 0
+        })
+
+        targetStats.totalWarnings = count
+
+        -- Recalculate escalation level
+        if count >= 5 then
+            targetStats.escalationLevel = 3 -- Severe
+        elseif count >= 3 then
+            targetStats.escalationLevel = 2 -- Moderate
+        elseif count >= 1 then
+            targetStats.escalationLevel = 1 -- Minor
+        else
+            targetStats.escalationLevel = 0 -- Clean record
+        end
+
+        targetClient:setData("warningStats", targetStats)
+
+        -- Notify the target
+        if IsValid(targetClient) then
+            targetClient:notifyInfo(string.format("A warning has been removed from your record by %s", client:Name()))
+            targetClient:notifyInfo(string.format("Remaining warnings: %d", count))
+
+            if count == 0 then
+                targetClient:notifyInfo("Your warning record is now clean!")
+            end
+        end
+
+        -- Log the removal
+        lia.log.add(client, "warning_removed", targetClient:Name(), count)
+
+        print(string.format("Warning removed: %s cleaned %s's record - Remaining: %d, Escalation: %d",
+            client:Name(), targetClient:Name(), count, targetStats.escalationLevel))
     end)
     ```
 
     High Complexity:
     ```lua
-    -- High: Advanced usage
-    hook.Add("WarningRemoved", "MyAddon", function(client, targetClient, reason, count, warnerSteamID, warnerName)
-        -- Add your code here
+    -- High: Advanced rehabilitation analytics and trust restoration
+    hook.Add("WarningRemoved", "AdvancedWarningRehabilitation", function(client, targetClient, reason, count, warnerSteamID, warnerName)
+        if not IsValid(client) or not IsValid(targetClient) then return end
+
+        local currentTime = os.time()
+        local targetSteamID = targetClient:SteamID64()
+
+        -- Get existing warning analytics
+        local warningAnalytics = lia.data.get("warningAnalytics", {
+            totalWarnings = 0,
+            categoryBreakdown = {},
+            staffPerformance = {},
+            playerBehavior = {},
+            escalationPatterns = {},
+            recidivismRates = {},
+            disciplinaryActions = {}
+        })
+
+        -- Update player behavior for rehabilitation tracking
+        local playerBehavior = warningAnalytics.playerBehavior[targetSteamID] or {
+            totalWarnings = 0,
+            warningsByCategory = {},
+            warningFrequency = 0,
+            behaviorTrend = "improving",
+            riskLevel = "low",
+            rehabilitationProgress = 0,
+            lastWarning = 0,
+            firstWarning = 0
+        }
+
+        playerBehavior.totalWarnings = count
+
+        -- Recalculate warning frequency after removal
+        if playerBehavior.firstWarning > 0 then
+            local timeSpan = currentTime - playerBehavior.firstWarning
+            local months = math.max(timeSpan / (30 * 24 * 60 * 60), 1)
+            playerBehavior.warningFrequency = playerBehavior.totalWarnings / months
+        end
+
+        -- Update risk level after warning removal
+        if playerBehavior.warningFrequency <= 0.2 then
+            playerBehavior.riskLevel = "low"
+            playerBehavior.behaviorTrend = "improving"
+        elseif playerBehavior.warningFrequency <= 0.8 then
+            playerBehavior.riskLevel = "medium"
+            playerBehavior.behaviorTrend = "stable"
+        else
+            playerBehavior.riskLevel = "high"
+            playerBehavior.behaviorTrend = "worsening"
+        end
+
+        -- Boost rehabilitation progress
+        playerBehavior.rehabilitationProgress = math.min(100, playerBehavior.rehabilitationProgress + 25)
+
+        warningAnalytics.playerBehavior[targetSteamID] = playerBehavior
+
+        -- Update escalation patterns
+        local escalationPattern = warningAnalytics.escalationPatterns[targetSteamID] or {
+            warningCounts = {},
+            escalationPoints = {},
+            interventionNeeded = false,
+            interventionType = "none",
+            lastEscalationCheck = 0
+        }
+
+        -- Recalculate escalation points after removal
+        local escalationPoints = count * 10 + (playerBehavior.warningFrequency * 20)
+
+        if escalationPoints < 25 then
+            escalationPattern.interventionNeeded = false
+            escalationPattern.interventionType = "none"
+        elseif escalationPoints < 50 then
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "mild"
+        elseif escalationPoints < 100 then
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "moderate"
+        else
+            escalationPattern.interventionNeeded = true
+            escalationPattern.interventionType = "severe"
+        end
+
+        escalationPattern.lastEscalationCheck = currentTime
+        warningAnalytics.escalationPatterns[targetSteamID] = escalationPattern
+
+        -- Update recidivism rates with successful rehabilitation
+        if count < playerBehavior.totalWarnings then -- Warning was actually removed
+            local category = "general" -- Would need to track which category was removed
+            local recidivismRate = warningAnalytics.recidivismRates[category] or {
+                totalCases = 0,
+                repeatOffenders = 0,
+                rehabilitationSuccess = 0,
+                averageReoffendTime = 0
+            }
+
+            recidivismRate.rehabilitationSuccess = recidivismRate.rehabilitationSuccess + 1
+            warningAnalytics.recidivismRates[category] = recidivismRate
+        end
+
+        -- Update disciplinary actions tracking
+        local disciplinaryAction = warningAnalytics.disciplinaryActions[targetSteamID] or {
+            warnings = {},
+            actionsTaken = {},
+            effectiveness = 0,
+            lastAction = 0
+        }
+
+        table.insert(disciplinaryAction.actionsTaken, {
+            timestamp = currentTime,
+            action = "warning_removed",
+            staff = warnerSteamID,
+            remainingWarnings = count,
+            rehabilitationImpact = 25
+        })
+
+        -- Calculate disciplinary effectiveness
+        local totalWarnings = #disciplinaryAction.warnings
+        local totalActions = #disciplinaryAction.actionsTaken
+        if totalWarnings > 0 then
+            disciplinaryAction.effectiveness = ((totalActions / totalWarnings) * 100) + playerBehavior.rehabilitationProgress
+        end
+
+        disciplinaryAction.lastAction = currentTime
+        warningAnalytics.disciplinaryActions[targetSteamID] = disciplinaryAction
+
+        -- Trust restoration system
+        local trustData = targetClient:getData("trustProfile", {
+            trustLevel = 50,
+            violations = 0,
+            positiveActions = 0,
+            trustScore = 0,
+            lastTrustUpdate = 0
+        })
+
+        trustData.positiveActions = trustData.positiveActions + 1
+        trustData.violations = math.max(0, trustData.violations - 1) -- Reduce violations
+        trustData.trustLevel = math.min(100, trustData.trustLevel + 10) -- Restore trust
+        trustData.trustScore = (trustData.positiveActions / math.max(trustData.positiveActions + trustData.violations, 1)) * 100
+        trustData.lastTrustUpdate = currentTime
+
+        targetClient:setData("trustProfile", trustData)
+
+        -- Rehabilitation milestone tracking
+        local rehabilitationData = targetClient:getData("rehabilitationMilestones", {
+            warningsRemoved = 0,
+            consecutiveGoodBehavior = 0,
+            rehabilitationLevel = 1,
+            achievements = {}
+        })
+
+        rehabilitationData.warningsRemoved = rehabilitationData.warningsRemoved + 1
+
+        -- Rehabilitation level progression
+        if rehabilitationData.warningsRemoved >= 10 then
+            rehabilitationData.rehabilitationLevel = 5 -- Master
+        elseif rehabilitationData.warningsRemoved >= 5 then
+            rehabilitationData.rehabilitationLevel = 4 -- Expert
+        elseif rehabilitationData.warningsRemoved >= 3 then
+            rehabilitationData.rehabilitationLevel = 3 -- Advanced
+        elseif rehabilitationData.warningsRemoved >= 1 then
+            rehabilitationData.rehabilitationLevel = 2 -- Intermediate
+        end
+
+        targetClient:setData("rehabilitationMilestones", rehabilitationData)
+
+        -- Save analytics
+        lia.data.set("warningAnalytics", warningAnalytics)
+
+        -- Create detailed rehabilitation audit trail
+        lia.db.insertTable({
+            timestamp = currentTime,
+            staffSteamID = warnerSteamID,
+            targetSteamID = targetSteamID,
+            action = "warning_removed",
+            remainingWarnings = count,
+            rehabilitationProgress = playerBehavior.rehabilitationProgress,
+            trustLevel = trustData.trustLevel,
+            riskLevel = playerBehavior.riskLevel,
+            escalationPoints = escalationPoints,
+            interventionNeeded = escalationPattern.interventionNeeded
+        }, "rehabilitation_audit")
+
+        -- Smart notifications for rehabilitation success
+        if IsValid(targetClient) then
+            if playerBehavior.rehabilitationProgress >= 75 then
+                targetClient:ChatPrint(Color(0, 255, 0), "[REHABILITATION SUCCESS] ", Color(255, 255, 255),
+                    string.format("Warning removed by %s. Your rehabilitation progress is excellent!", client:Name()))
+                targetClient:ChatPrint(Color(0, 255, 0), "Keep up the positive behavior!")
+
+            elseif count == 0 then
+                targetClient:ChatPrint(Color(0, 255, 0), "[CLEAN RECORD] ", Color(255, 255, 255),
+                    string.format("All warnings removed by %s. Your record is now clean!", client:Name()))
+                targetClient:ChatPrint(Color(0, 255, 0), "Congratulations on your successful rehabilitation!")
+
+            else
+                targetClient:ChatPrint(Color(0, 255, 0), "[WARNING REMOVED] ", Color(255, 255, 255),
+                    string.format("Warning removed by %s. Remaining warnings: %d", client:Name(), count))
+                targetClient:ChatPrint(Color(0, 255, 0), string.format("Rehabilitation progress: %d%%", playerBehavior.rehabilitationProgress))
+            end
+        end
+
+        -- Staff rehabilitation achievements
+        local staffPerf = warningAnalytics.staffPerformance[warnerSteamID] or {
+            totalWarnings = 0,
+            warningsRemoved = 0,
+            rehabilitationRate = 0
+        }
+
+        staffPerf.warningsRemoved = (staffPerf.warningsRemoved or 0) + 1
+
+        if staffPerf.totalWarnings > 0 then
+            staffPerf.rehabilitationRate = (staffPerf.warningsRemoved / staffPerf.totalWarnings) * 100
+        end
+
+        warningAnalytics.staffPerformance[warnerSteamID] = staffPerf
+
+        -- Achievement tracking
+        if rehabilitationData.warningsRemoved >= 5 then
+            if not targetClient:getData("achievement_reformed") then
+                targetClient:setData("achievement_reformed", true)
+                targetClient:notifyInfo("🎉 Achievement Unlocked: Reformed Citizen!")
+            end
+        end
+
+        if staffPerf.rehabilitationRate >= 50 then
+            if not client:getData("achievement_rehabilitator") then
+                client:setData("achievement_rehabilitator", true)
+                client:notifyInfo("🌟 Achievement Unlocked: Master Rehabilitator!")
+            end
+        end
+
+        -- Trust-based privilege restoration
+        if trustData.trustLevel >= 80 and count == 0 then
+            -- Restore some basic privileges for reformed players
+            local char = targetClient:getChar()
+            if char then
+                -- Could restore muted chat, restricted items, etc.
+                targetClient:notifyInfo("Due to your successful rehabilitation, some privileges have been restored.")
+            end
+        end
+
+        -- Update player warning profile
+        targetClient:setData("warningProfile", {
+            totalWarnings = count,
+            riskLevel = playerBehavior.riskLevel,
+            behaviorTrend = playerBehavior.behaviorTrend,
+            rehabilitationProgress = playerBehavior.rehabilitationProgress,
+            trustLevel = trustData.trustLevel,
+            rehabilitationLevel = rehabilitationData.rehabilitationLevel
+        })
+
+        -- Log the rehabilitation event
+        lia.log.add(client, "warning_removed_advanced",
+            string.format("removed warning from %s (remaining: %d, rehab: %d%%, trust: %d, risk: %s)",
+                targetClient:Name(), count, playerBehavior.rehabilitationProgress,
+                trustData.trustLevel, playerBehavior.riskLevel))
+
+        print(string.format("[REHABILITATION ANALYTICS] Advanced tracking: %s removed warning from %s - Remaining: %d, Rehab: %d%%, Trust: %d, Risk: %s",
+            client:Name(), targetClient:Name(), count, playerBehavior.rehabilitationProgress,
+            trustData.trustLevel, playerBehavior.riskLevel))
     end)
     ```
 ]]
