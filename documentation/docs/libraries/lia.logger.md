@@ -10,7 +10,7 @@ The logger library provides comprehensive logging functionality for the Lilia fr
 
 ---
 
-### addType
+### lia.log.addType
 
 **Purpose**
 
@@ -70,7 +70,7 @@ end, "Advanced")
 
 ---
 
-### getString
+### lia.log.getString
 
 **Purpose**
 
@@ -133,7 +133,7 @@ local message, category = safeGetLogString(client, "adminAction", target, action
 
 ---
 
-### add
+### lia.log.add
 
 **Purpose**
 

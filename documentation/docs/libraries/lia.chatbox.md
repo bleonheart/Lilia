@@ -10,7 +10,7 @@ The chatbox library provides comprehensive functionality for managing chat syste
 
 ---
 
-### timestamp
+### lia.chat.timestamp
 
 **Purpose**
 
@@ -67,7 +67,7 @@ end
 
 ---
 
-### register
+### lia.chat.register
 
 **Purpose**
 
@@ -139,7 +139,7 @@ lia.chat.register("admin", {
 
 ---
 
-### parse
+### lia.chat.parse
 
 **Purpose**
 
@@ -207,7 +207,7 @@ end
 
 ---
 
-### send
+### lia.chat.send
 
 **Purpose**
 

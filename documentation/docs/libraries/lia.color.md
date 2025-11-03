@@ -10,7 +10,7 @@ The color library provides comprehensive functionality for managing colors and t
 
 ---
 
-### register
+### lia.color.register
 
 **Purpose**
 
@@ -65,7 +65,7 @@ end
 
 ---
 
-### adjust
+### lia.color.adjust
 
 **Purpose**
 
@@ -126,7 +126,7 @@ end
 
 ---
 
-### darken
+### lia.color.darken
 
 **Purpose**
 
@@ -178,7 +178,7 @@ end
 
 ---
 
-### getCurrentTheme
+### lia.color.getCurrentTheme
 
 **Purpose**
 
@@ -231,7 +231,7 @@ end
 
 ---
 
-### getCurrentThemeName
+### lia.color.getCurrentThemeName
 
 **Purpose**
 
@@ -287,7 +287,7 @@ end
 
 ---
 
-### getMainColor
+### lia.color.getMainColor
 
 **Purpose**
 
@@ -343,7 +343,7 @@ end
 
 ---
 
-### applyTheme
+### lia.color.applyTheme
 
 **Purpose**
 
@@ -400,7 +400,7 @@ end
 
 ---
 
-### isTransitionActive
+### lia.color.isTransitionActive
 
 **Purpose**
 
@@ -464,7 +464,7 @@ end)
 
 ---
 
-### testThemeTransition
+### lia.color.testThemeTransition
 
 **Purpose**
 
@@ -524,7 +524,7 @@ end
 
 ---
 
-### startThemeTransition
+### lia.color.startThemeTransition
 
 **Purpose**
 
@@ -590,7 +590,7 @@ end
 
 ---
 
-### isColor
+### lia.color.isColor
 
 **Purpose**
 
@@ -659,7 +659,7 @@ end
 
 ---
 
-### returnMainAdjustedColors
+### lia.color.returnMainAdjustedColors
 
 **Purpose**
 
@@ -729,7 +729,7 @@ end
 
 ---
 
-### lerp
+### lia.color.lerp
 
 **Purpose**
 
@@ -869,7 +869,7 @@ end
 
 ---
 
-### registerTheme
+### lia.color.registerTheme
 
 **Purpose**
 
@@ -941,7 +941,7 @@ end
 
 ---
 
-### getAllThemes
+### lia.color.getAllThemes
 
 **Purpose**
 

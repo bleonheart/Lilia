@@ -10,7 +10,7 @@ The player interaction library provides comprehensive functionality for managing
 
 ---
 
-### isWithinRange
+### lia.playerinteract.isWithinRange
 
 **Purpose**
 
@@ -69,7 +69,7 @@ end
 
 ---
 
-### getInteractions
+### lia.playerinteract.getInteractions
 
 **Purpose**
 
@@ -133,7 +133,7 @@ end
 
 ---
 
-### getActions
+### lia.playerinteract.getActions
 
 **Purpose**
 
@@ -197,7 +197,7 @@ end
 
 ---
 
-### getCategorizedOptions
+### lia.playerinteract.getCategorizedOptions
 
 **Purpose**
 
@@ -260,7 +260,7 @@ end
 
 ---
 
-### addInteraction
+### lia.playerinteract.addInteraction
 
 **Purpose**
 
@@ -363,7 +363,7 @@ lia.playerinteract.addInteraction("arrestPlayer", {
 
 ---
 
-### addAction
+### lia.playerinteract.addAction
 
 **Purpose**
 
@@ -564,7 +564,7 @@ end
 
 ---
 
-### syncToClients
+### lia.playerinteract.syncToClients
 
 **Purpose**
 
@@ -646,7 +646,7 @@ end
 
 ---
 
-### openMenu
+### lia.playerinteract.openMenu
 
 **Purpose**
 

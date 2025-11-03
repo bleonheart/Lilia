@@ -10,7 +10,7 @@ The bars library provides a comprehensive system for creating and managing dynam
 
 ---
 
-### get
+### lia.bar.get
 
 **Purpose**
 
@@ -73,7 +73,7 @@ end
 
 ---
 
-### add
+### lia.bar.add
 
 **Purpose**
 
@@ -145,7 +145,7 @@ createConditionalBar(
 
 ---
 
-### remove
+### lia.bar.remove
 
 **Purpose**
 
@@ -201,7 +201,7 @@ end
 
 ---
 
-### drawBar
+### lia.bar.drawBar
 
 **Purpose**
 
@@ -263,7 +263,7 @@ drawCustomBar(10, 10, 200, 20, player:Health(), player:GetMaxHealth(),
 
 ---
 
-### drawAction
+### lia.bar.drawAction
 
 **Purpose**
 
@@ -325,7 +325,7 @@ showActionProgress("heal", 2.5, {amount = 75})
 
 ---
 
-### drawAll
+### lia.bar.drawAll
 
 **Purpose**
 

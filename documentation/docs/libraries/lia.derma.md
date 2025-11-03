@@ -10,7 +10,7 @@ The derma library provides comprehensive UI rendering and interaction functional
 
 ---
 
-### dermaMenu
+### lia.derma.dermaMenu
 
 **Purpose**
 
@@ -65,7 +65,7 @@ menu:AddOption("Inspect", function() inspectItem(item) end)
 
 ---
 
-### optionsMenu
+### lia.derma.optionsMenu
 
 **Purpose**
 
@@ -625,7 +625,7 @@ autoCloseDelay = 60
 
 ---
 
-### colorPicker
+### lia.derma.colorPicker
 
 **Purpose**
 
@@ -685,7 +685,7 @@ end, currentColor)
 
 ---
 
-### radialMenu
+### lia.derma.radialMenu
 
 **Purpose**
 
@@ -756,7 +756,7 @@ menu:AddSubMenuOption("Actions", submenu, "icon16/gear.png", "Access action menu
 
 ---
 
-### playerSelector
+### lia.derma.playerSelector
 
 **Purpose**
 
@@ -818,7 +818,7 @@ end)
 
 ---
 
-### textBox
+### lia.derma.textBox
 
 **Purpose**
 
@@ -1028,7 +1028,7 @@ end)
 
 ---
 
-### draw
+### lia.derma.draw
 
 **Purpose**
 
@@ -1085,7 +1085,7 @@ lia.derma.draw(radius, x, y, w, h, color, flags)
 
 ---
 
-### drawOutlined
+### lia.derma.drawOutlined
 
 **Purpose**
 
@@ -1142,7 +1142,7 @@ lia.derma.drawOutlined(radius, x, y, w, h, color, thickness, flags)
 
 ---
 
-### drawTexture
+### lia.derma.drawTexture
 
 **Purpose**
 
@@ -1201,7 +1201,7 @@ lia.derma.drawTexture(radius, x, y, w, h, color, texture, flags)
 
 ---
 
-### drawMaterial
+### lia.derma.drawMaterial
 
 **Purpose**
 
@@ -1266,7 +1266,7 @@ if mat and mat:IsValid() then
 
 ---
 
-### drawCircle
+### lia.derma.drawCircle
 
 **Purpose**
 
@@ -1320,7 +1320,7 @@ lia.derma.drawCircle(x, y, radius, color, flags)
 
 ---
 
-### drawCircleOutlined
+### lia.derma.drawCircleOutlined
 
 **Purpose**
 
@@ -1375,7 +1375,7 @@ lia.derma.drawCircleOutlined(x, y, radius, color, thickness, flags)
 
 ---
 
-### drawCircleTexture
+### lia.derma.drawCircleTexture
 
 **Purpose**
 
@@ -1432,7 +1432,7 @@ lia.derma.drawCircleTexture(x, y, radius, color, texture, flags)
 
 ---
 
-### drawCircleMaterial
+### lia.derma.drawCircleMaterial
 
 **Purpose**
 
@@ -1495,7 +1495,7 @@ if mat and mat:IsValid() then
 
 ---
 
-### drawBlur
+### lia.derma.drawBlur
 
 **Purpose**
 
@@ -1556,7 +1556,7 @@ lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
 
 ---
 
-### drawShadowsEx
+### lia.derma.drawShadowsEx
 
 **Purpose**
 
@@ -1617,7 +1617,7 @@ lia.derma.drawShadowsEx(x, y, w, h, shadowColor, flags, tl, tr, bl, br, spread, 
 
 ---
 
-### drawShadows
+### lia.derma.drawShadows
 
 **Purpose**
 
@@ -1675,7 +1675,7 @@ lia.derma.drawShadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
 
 ---
 
-### drawShadowsOutlined
+### lia.derma.drawShadowsOutlined
 
 **Purpose**
 
@@ -1734,7 +1734,7 @@ lia.derma.drawShadowsOutlined(radius, x, y, w, h, shadowColor, thickness, spread
 
 ---
 
-### rect
+### lia.derma.rect
 
 **Purpose**
 
@@ -1793,7 +1793,7 @@ lia.derma.rect(x, y, w, h)
 
 ---
 
-### circle
+### lia.derma.circle
 
 **Purpose**
 
@@ -1850,7 +1850,7 @@ lia.derma.circle(x, y, radius)
 
 ---
 
-### setFlag
+### lia.derma.setFlag
 
 **Purpose**
 
@@ -1907,7 +1907,7 @@ lia.derma.circle(x, y, radius)
 
 ---
 
-### setDefaultShape
+### lia.derma.setDefaultShape
 
 **Purpose**
 
@@ -1964,7 +1964,7 @@ lia.derma.circle(x, y, radius)
 
 ---
 
-### shadowText
+### lia.derma.shadowText
 
 **Purpose**
 
@@ -2021,7 +2021,7 @@ lia.derma.shadowText(text, font, x, y, textColor, shadowColor, shadowDist, TEXT_
 
 ---
 
-### drawTextOutlined
+### lia.derma.drawTextOutlined
 
 **Purpose**
 
@@ -2077,7 +2077,7 @@ lia.derma.drawTextOutlined(text, font, x, y, textColor, TEXT_ALIGN_CENTER, outli
 
 ---
 
-### drawTip
+### lia.derma.drawTip
 
 **Purpose**
 
@@ -2135,7 +2135,7 @@ lia.derma.drawTip(x, y, w, h, text, font, textColor, outlineColor)
 
 ---
 
-### drawText
+### lia.derma.drawText
 
 **Purpose**
 
@@ -2191,7 +2191,7 @@ lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 
 
 ---
 
-### drawBoxWithText
+### lia.derma.drawBoxWithText
 
 **Purpose**
 
@@ -2247,7 +2247,7 @@ lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 
 
 ---
 
-### drawSurfaceTexture
+### lia.derma.drawSurfaceTexture
 
 **Purpose**
 
@@ -2303,7 +2303,7 @@ lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 
 
 ---
 
-### skinFunc
+### lia.derma.skinFunc
 
 **Purpose**
 
@@ -2359,7 +2359,7 @@ lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 
 
 ---
 
-### approachExp
+### lia.derma.approachExp
 
 **Purpose**
 
@@ -2421,7 +2421,7 @@ lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
 
 ---
 
-### easeOutCubic
+### lia.derma.easeOutCubic
 
 **Purpose**
 
@@ -2481,7 +2481,7 @@ panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
 
 ---
 
-### easeInOutCubic
+### lia.derma.easeInOutCubic
 
 **Purpose**
 
@@ -2543,7 +2543,7 @@ panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
 
 ---
 
-### animateAppearance
+### lia.derma.animateAppearance
 
 **Purpose**
 
@@ -2608,7 +2608,7 @@ end
 
 ---
 
-### clampMenuPosition
+### lia.derma.clampMenuPosition
 
 **Purpose**
 
@@ -2673,7 +2673,7 @@ end
 
 ---
 
-### drawGradient
+### lia.derma.drawGradient
 
 **Purpose**
 
@@ -2738,7 +2738,7 @@ end
 
 ---
 
-### wrapText
+### lia.derma.wrapText
 
 **Purpose**
 
@@ -2803,7 +2803,7 @@ end
 
 ---
 
-### drawBlur
+### lia.derma.drawBlur
 
 **Purpose**
 
@@ -2857,7 +2857,7 @@ end
 
 ---
 
-### drawBlackBlur
+### lia.derma.drawBlackBlur
 
 **Purpose**
 
@@ -2911,7 +2911,7 @@ end
 
 ---
 
-### drawBlurAt
+### lia.derma.drawBlurAt
 
 **Purpose**
 
@@ -2969,7 +2969,7 @@ end
 
 ---
 
-### requestArguments
+### lia.derma.requestArguments
 
 **Purpose**
 
@@ -3044,7 +3044,7 @@ end)
 
 ---
 
-### createTableUI
+### lia.derma.createTableUI
 
 **Purpose**
 
@@ -3119,7 +3119,7 @@ end)
 
 ---
 
-### openOptionsMenu
+### lia.derma.openOptionsMenu
 
 **Purpose**
 
@@ -3194,7 +3194,7 @@ end)
 
 ---
 
-### drawEntText
+### lia.derma.drawEntText
 
 **Purpose**
 
@@ -3251,7 +3251,7 @@ end
 
 ---
 
-### requestDropdown
+### lia.derma.requestDropdown
 
 **Purpose**
 
@@ -3321,7 +3321,7 @@ end)
 
 ---
 
-### requestString
+### lia.derma.requestString
 
 **Purpose**
 
@@ -3392,7 +3392,7 @@ end, "", 50)
 
 ---
 
-### requestOptions
+### lia.derma.requestOptions
 
 **Purpose**
 
@@ -3463,7 +3463,7 @@ end, userPermissions)
 
 ---
 
-### requestBinaryQuestion
+### lia.derma.requestBinaryQuestion
 
 **Purpose**
 
@@ -3601,7 +3601,7 @@ end, "Available actions for " .. item:GetName())
 
 ---
 
-### requestButtons
+### lia.derma.requestButtons
 
 **Purpose**
 

@@ -10,7 +10,7 @@ The database library provides comprehensive database management functionality fo
 
 ---
 
-### connect
+### lia.db.connect
 
 **Purpose**
 
@@ -70,7 +70,7 @@ end
 
 ---
 
-### wipeTables
+### lia.db.wipeTables
 
 **Purpose**
 
@@ -134,7 +134,7 @@ end
 
 ---
 
-### loadTables
+### lia.db.loadTables
 
 **Purpose**
 
@@ -193,7 +193,7 @@ end
 
 ---
 
-### waitForTablesToLoad
+### lia.db.waitForTablesToLoad
 
 **Purpose**
 
@@ -256,7 +256,7 @@ initializeAfterTables()
 
 ---
 
-### convertDataType
+### lia.db.convertDataType
 
 **Purpose**
 
@@ -329,7 +329,7 @@ end
 
 ---
 
-### insertTable
+### lia.db.insertTable
 
 **Purpose**
 
@@ -407,7 +407,7 @@ end
 
 ---
 
-### updateTable
+### lia.db.updateTable
 
 **Purpose**
 
@@ -485,7 +485,7 @@ end
 
 ---
 
-### select
+### lia.db.select
 
 **Purpose**
 
@@ -558,7 +558,7 @@ end
 
 ---
 
-### selectWithCondition
+### lia.db.selectWithCondition
 
 **Purpose**
 
@@ -642,7 +642,7 @@ end
 
 ---
 
-### count
+### lia.db.count
 
 **Purpose**
 
@@ -710,7 +710,7 @@ end
 
 ---
 
-### addDatabaseFields
+### lia.db.addDatabaseFields
 
 **Purpose**
 
@@ -763,7 +763,7 @@ ensureCharacterFields()
 
 ---
 
-### exists
+### lia.db.exists
 
 **Purpose**
 
@@ -840,7 +840,7 @@ end
 
 ---
 
-### selectOne
+### lia.db.selectOne
 
 **Purpose**
 
@@ -913,7 +913,7 @@ end
 
 ---
 
-### bulkInsert
+### lia.db.bulkInsert
 
 **Purpose**
 
@@ -1006,7 +1006,7 @@ end
 
 ---
 
-### bulkUpsert
+### lia.db.bulkUpsert
 
 **Purpose**
 
@@ -1102,7 +1102,7 @@ end
 
 ---
 
-### insertOrIgnore
+### lia.db.insertOrIgnore
 
 **Purpose**
 
@@ -1185,7 +1185,7 @@ end
 
 ---
 
-### tableExists
+### lia.db.tableExists
 
 **Purpose**
 
@@ -1268,7 +1268,7 @@ end
 
 ---
 
-### fieldExists
+### lia.db.fieldExists
 
 **Purpose**
 
@@ -1348,7 +1348,7 @@ end
 
 ---
 
-### getTables
+### lia.db.getTables
 
 **Purpose**
 
@@ -1431,7 +1431,7 @@ end
 
 ---
 
-### transaction
+### lia.db.transaction
 
 **Purpose**
 
@@ -1522,7 +1522,7 @@ end
 
 ---
 
-### escapeIdentifier
+### lia.db.escapeIdentifier
 
 **Purpose**
 
@@ -1588,7 +1588,7 @@ end
 
 ---
 
-### upsert
+### lia.db.upsert
 
 **Purpose**
 
@@ -1673,7 +1673,7 @@ end
 
 ---
 
-### delete
+### lia.db.delete
 
 **Purpose**
 
@@ -1751,7 +1751,7 @@ end
 
 ---
 
-### createTable
+### lia.db.createTable
 
 **Purpose**
 
@@ -1849,7 +1849,7 @@ end
 
 ---
 
-### createColumn
+### lia.db.createColumn
 
 **Purpose**
 
@@ -1939,7 +1939,7 @@ end
 
 ---
 
-### removeTable
+### lia.db.removeTable
 
 **Purpose**
 
@@ -2024,7 +2024,7 @@ end
 
 ---
 
-### removeColumn
+### lia.db.removeColumn
 
 **Purpose**
 
@@ -2116,7 +2116,7 @@ end
 
 ---
 
-### getCharacterTable
+### lia.db.getCharacterTable
 
 **Purpose**
 
@@ -2229,7 +2229,7 @@ end
 
 ---
 
-### createSnapshot
+### lia.db.createSnapshot
 
 **Purpose**
 
@@ -2318,7 +2318,7 @@ end
 
 ---
 
-### loadSnapshot
+### lia.db.loadSnapshot
 
 **Purpose**
 

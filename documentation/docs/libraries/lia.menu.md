@@ -10,7 +10,7 @@ The menu library provides a comprehensive context menu system for the Lilia fram
 
 ---
 
-### add
+### lia.menu.add
 
 **Purpose**
 
@@ -81,7 +81,7 @@ local menuIndex = lia.menu.add(menuData, Vector(100, 200, 50), cleanupFunc)
 
 ---
 
-### drawAll
+### lia.menu.drawAll
 
 **Purpose**
 
@@ -136,7 +136,7 @@ end)
 
 ---
 
-### getActiveMenu
+### lia.menu.getActiveMenu
 
 **Purpose**
 
@@ -203,7 +203,7 @@ end)
 
 ---
 
-### onButtonPressed
+### lia.menu.onButtonPressed
 
 **Purpose**
 

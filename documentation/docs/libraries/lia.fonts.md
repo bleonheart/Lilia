@@ -10,7 +10,7 @@ The font library provides comprehensive functionality for managing custom fonts 
 
 ---
 
-### loadFonts
+### lia.font.loadFonts
 
 **Purpose**
 
@@ -63,7 +63,7 @@ end)
 
 ---
 
-### register
+### lia.font.register
 
 **Purpose**
 
@@ -133,7 +133,7 @@ end
 
 ---
 
-### getAvailableFonts
+### lia.font.getAvailableFonts
 
 **Purpose**
 
@@ -189,7 +189,7 @@ end
 
 ---
 
-### getBoldFontName
+### lia.font.getBoldFontName
 
 **Purpose**
 
@@ -254,7 +254,7 @@ end
 
 ---
 
-### registerFonts
+### lia.font.registerFonts
 
 **Purpose**
 

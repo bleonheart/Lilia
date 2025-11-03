@@ -10,7 +10,7 @@ The loader library is the core initialization system for the Lilia framework, re
 
 ---
 
-### include
+### lia.loader.include
 
 **Purpose**
 
@@ -68,7 +68,7 @@ for _, filePath in ipairs(filesToLoad) do
 
 ---
 
-### includeDir
+### lia.loader.includeDir
 
 **Purpose**
 
@@ -125,7 +125,7 @@ end
 
 ---
 
-### includeGroupedDir
+### lia.loader.includeGroupedDir
 
 **Purpose**
 
@@ -186,7 +186,7 @@ for _, dir in ipairs(dirsToLoad) do
 
 ---
 
-### checkForUpdates
+### lia.loader.checkForUpdates
 
 **Purpose**
 
@@ -242,7 +242,7 @@ scheduledUpdateCheck()
 
 ---
 
-### error
+### lia.error
 
 **Purpose**
 
@@ -309,7 +309,7 @@ end
 
 ---
 
-### warning
+### lia.warning
 
 **Purpose**
 
@@ -375,7 +375,7 @@ end
 
 ---
 
-### information
+### lia.information
 
 **Purpose**
 
@@ -437,7 +437,7 @@ local function reportFrameworkStatus()
 
 ---
 
-### bootstrap
+### lia.bootstrap
 
 **Purpose**
 
@@ -498,7 +498,7 @@ end
 
 ---
 
-### relaydiscordMessage
+### lia.relaydiscordMessage
 
 **Purpose**
 
@@ -584,7 +584,7 @@ end
 
 ---
 
-### includeEntities
+### lia.loader.includeEntities
 
 **Purpose**
 

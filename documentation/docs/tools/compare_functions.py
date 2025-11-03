@@ -193,7 +193,7 @@ class LuaFunctionExtractor:
         # Scan all .lua files
         for root, dirs, files in os.walk(self.base_path):
             # Skip certain directories
-            dirs[:] = [d for d in dirs if d not in ['node_modules', '.git']]
+            dirs[:] = [d for d in dirs if d not in ['node_modules', '.git', 'docs', 'documentation']]
 
             for file in files:
                 if file.endswith('.lua'):

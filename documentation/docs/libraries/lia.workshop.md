@@ -10,7 +10,7 @@ The workshop library provides comprehensive functionality for managing Steam Wor
 
 ---
 
-### addWorkshop
+### lia.workshop.addWorkshop
 
 **Purpose**
 
@@ -65,7 +65,7 @@ end
 
 ---
 
-### gather
+### lia.workshop.gather
 
 **Purpose**
 
@@ -117,7 +117,7 @@ end
 
 ---
 
-### send
+### lia.workshop.send
 
 **Purpose**
 
@@ -178,7 +178,7 @@ end)
 
 ---
 
-### hasContentToDownload
+### lia.workshop.hasContentToDownload
 
 **Purpose**
 
@@ -245,7 +245,7 @@ end)
 
 ---
 
-### mountContent
+### lia.workshop.mountContent
 
 **Purpose**
 

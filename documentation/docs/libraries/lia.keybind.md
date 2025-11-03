@@ -10,7 +10,7 @@ The keybind library provides comprehensive functionality for managing keyboard b
 
 ---
 
-### add
+### lia.keybind.add
 
 **Purpose**
 
@@ -95,7 +95,7 @@ serverOnly = true
 
 ---
 
-### get
+### lia.keybind.get
 
 **Purpose**
 
@@ -160,7 +160,7 @@ end
 
 ---
 
-### save
+### lia.keybind.save
 
 **Purpose**
 
@@ -233,7 +233,7 @@ saveKeybindsWithBackup()
 
 ---
 
-### load
+### lia.keybind.load
 
 **Purpose**
 

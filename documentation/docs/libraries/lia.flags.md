@@ -10,7 +10,7 @@ The flags library provides a comprehensive permission system for managing charac
 
 ---
 
-### add
+### lia.flag.add
 
 **Purpose**
 
@@ -75,7 +75,7 @@ end)
 
 ---
 
-### onSpawn
+### lia.flag.onSpawn
 
 **Purpose**
 

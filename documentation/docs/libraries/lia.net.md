@@ -10,7 +10,7 @@ The network library provides comprehensive functionality for managing network co
 
 ---
 
-### register
+### lia.net.register
 
 **Purpose**
 
@@ -73,7 +73,7 @@ end)
 
 ---
 
-### send
+### lia.net.send
 
 **Purpose**
 
@@ -134,7 +134,7 @@ lia.net.send("adminNotification", admins, {
 
 ---
 
-### readBigTable
+### lia.net.readBigTable
 
 **Purpose**
 
@@ -211,7 +211,7 @@ end)
 
 ---
 
-### writeBigTable
+### lia.net.writeBigTable
 
 **Purpose**
 

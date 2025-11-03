@@ -501,9 +501,8 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
         # For meta functions, remove the prefix (e.g., "panelMeta:liaListenForInventoryChanges" -> "liaListenForInventoryChanges")
         display_name = function_name.split(':', 1)[1]
     elif is_library and function_name.startswith('lia.'):
-        # For library functions, remove the lia. prefix and intermediate parts (e.g., "lia.abc123.aaaaa" -> "aaaaa")
-        parts = function_name.split('.')
-        display_name = parts[-1]  # Take only the last part
+        # For library functions, keep the full function name as it appears in code
+        display_name = function_name
 
     md = f'### {display_name}\n\n'
 

@@ -10,7 +10,7 @@ The faction library provides comprehensive functionality for managing factions (
 
 ---
 
-### register
+### lia.faction.register
 
 **Purpose**
 
@@ -87,7 +87,7 @@ lia.faction.register("medic", {
 
 ---
 
-### cacheModels
+### lia.faction.cacheModels
 
 **Purpose**
 
@@ -149,7 +149,7 @@ lia.faction.cacheModels(models)
 
 ---
 
-### loadFromDir
+### lia.faction.loadFromDir
 
 **Purpose**
 
@@ -209,7 +209,7 @@ end
 
 ---
 
-### get
+### lia.faction.get
 
 **Purpose**
 
@@ -276,7 +276,7 @@ local faction = getFactionSafely("police")
 
 ---
 
-### getIndex
+### lia.faction.getIndex
 
 **Purpose**
 
@@ -342,7 +342,7 @@ return indices
 
 ---
 
-### getClasses
+### lia.faction.getClasses
 
 **Purpose**
 
@@ -417,7 +417,7 @@ local policeClasses = getFactionClasses("police")
 
 ---
 
-### getPlayers
+### lia.faction.getPlayers
 
 **Purpose**
 
@@ -491,7 +491,7 @@ local policePlayers = getFactionPlayers("police")
 
 ---
 
-### getPlayerCount
+### lia.faction.getPlayerCount
 
 **Purpose**
 
@@ -558,7 +558,7 @@ print("Total players: " .. stats.total)
 
 ---
 
-### isFactionCategory
+### lia.faction.isFactionCategory
 
 **Purpose**
 
@@ -633,7 +633,7 @@ local factionCategories = categorizeFactions({"police", "medic", "citizen"})
 
 ---
 
-### jobGenerate
+### lia.faction.jobGenerate
 
 **Purpose**
 
@@ -696,7 +696,7 @@ local policeFaction = generateCustomFaction(2, "Police Officer", Color(0, 0, 255
 
 ---
 
-### formatModelData
+### lia.faction.formatModelData
 
 **Purpose**
 
@@ -755,7 +755,7 @@ local success = formatFactionModels()
 
 ---
 
-### getCategories
+### lia.faction.getCategories
 
 **Purpose**
 
@@ -827,7 +827,7 @@ local factionData = getFactionCategories({"police", "medic", "citizen"})
 
 ---
 
-### getModelsFromCategory
+### lia.faction.getModelsFromCategory
 
 **Purpose**
 
@@ -903,7 +903,7 @@ local modelData = getFactionModelsByCategory("police", {"male", "female", "speci
 
 ---
 
-### getDefaultClass
+### lia.faction.getDefaultClass
 
 **Purpose**
 
@@ -985,7 +985,7 @@ local defaultClasses = getDefaultClasses({"citizen", "police", "medic"})
 
 ---
 
-### hasWhitelist
+### lia.faction.hasWhitelist
 
 **Purpose**
 
@@ -1055,7 +1055,7 @@ local whitelistInfo = checkFactionWhitelists({"citizen", "police", "medic", "sta
 
 ---
 
-### hasWhitelist
+### lia.faction.hasWhitelist
 
 **Purpose**
 

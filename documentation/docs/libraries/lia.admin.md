@@ -15,7 +15,7 @@ Superadmin automatically has all privileges and cannot be restricted by any perm
 
 ---
 
-### applyPunishment
+### lia.administrator.applyPunishment
 
 **Purpose**
 
@@ -76,7 +76,7 @@ end
 
 ---
 
-### hasAccess
+### lia.administrator.hasAccess
 
 **Purpose**
 
@@ -139,7 +139,7 @@ local hasAccess, grantedPrivilege = checkMultiplePrivileges(player, {"admin", "m
 
 ---
 
-### save
+### lia.administrator.save
 
 **Purpose**
 
@@ -202,7 +202,7 @@ end
 
 ---
 
-### registerPrivilege
+### lia.administrator.registerPrivilege
 
 **Purpose**
 
@@ -269,7 +269,7 @@ end
 
 ---
 
-### unregisterPrivilege
+### lia.administrator.unregisterPrivilege
 
 **Purpose**
 
@@ -326,7 +326,7 @@ end
 
 ---
 
-### applyInheritance
+### lia.administrator.applyInheritance
 
 **Purpose**
 
@@ -380,7 +380,7 @@ end
 
 ---
 
-### load
+### lia.administrator.load
 
 **Purpose**
 
@@ -446,7 +446,7 @@ end
 
 ---
 
-### createGroup
+### lia.administrator.createGroup
 
 **Purpose**
 
@@ -512,7 +512,7 @@ end
 
 ---
 
-### removeGroup
+### lia.administrator.removeGroup
 
 **Purpose**
 
@@ -571,7 +571,7 @@ end
 
 ---
 
-### renameGroup
+### lia.administrator.renameGroup
 
 **Purpose**
 
@@ -635,7 +635,7 @@ end
 
 ---
 
-### notifyAdmin
+### lia.administrator.notifyAdmin
 
 **Purpose**
 
@@ -696,7 +696,7 @@ end
 
 ---
 
-### addPermission
+### lia.administrator.addPermission
 
 **Purpose**
 
@@ -750,7 +750,7 @@ end
 
 ---
 
-### removePermission
+### lia.administrator.removePermission
 
 **Purpose**
 
@@ -804,7 +804,7 @@ end
 
 ---
 
-### sync
+### lia.administrator.sync
 
 **Purpose**
 
@@ -867,7 +867,7 @@ end
 
 ---
 
-### setPlayerUsergroup
+### lia.administrator.setPlayerUsergroup
 
 **Purpose**
 
@@ -926,7 +926,7 @@ end
 
 ---
 
-### setSteamIDUsergroup
+### lia.administrator.setSteamIDUsergroup
 
 **Purpose**
 
@@ -985,7 +985,7 @@ end
 
 ---
 
-### serverExecCommand
+### lia.administrator.serverExecCommand
 
 **Purpose**
 
@@ -1052,7 +1052,7 @@ end
 
 ---
 
-### execCommand
+### lia.administrator.execCommand
 
 **Purpose**
 

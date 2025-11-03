@@ -13,7 +13,7 @@ The library integrates with the configuration system to allow customizable curre
 
 ---
 
-### get
+### lia.currency.get
 
 **Purpose**
 
@@ -69,7 +69,7 @@ end
 
 ---
 
-### spawn
+### lia.currency.spawn
 
 **Purpose**
 

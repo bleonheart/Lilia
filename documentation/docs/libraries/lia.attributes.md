@@ -10,7 +10,7 @@ The attributes library provides functionality for managing character attributes 
 
 ---
 
-### loadFromDir
+### lia.attribs.loadFromDir
 
 **Purpose**
 
@@ -67,7 +67,7 @@ end
 
 ---
 
-### setup
+### lia.attribs.setup
 
 **Purpose**
 

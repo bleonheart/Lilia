@@ -4,7 +4,7 @@ The DarkRP compatibility library provides essential functions for maintaining co
 
 ---
 
-### isEmpty
+### lia.darkrp.isEmpty
 
 **Purpose**
 
@@ -70,7 +70,7 @@ end
 
 ---
 
-### findEmptyPos
+### lia.darkrp.findEmptyPos
 
 **Purpose**
 
@@ -143,7 +143,7 @@ end
 
 ---
 
-### notify
+### lia.darkrp.notify
 
 **Purpose**
 
@@ -199,7 +199,7 @@ end
 
 ---
 
-### textWrap
+### lia.darkrp.textWrap
 
 **Purpose**
 
@@ -269,7 +269,7 @@ local finalText = table.concat(wrappedParagraphs, "\n\n")
 
 ---
 
-### formatMoney
+### lia.darkrp.formatMoney
 
 **Purpose**
 
@@ -326,7 +326,7 @@ chat.AddText(Color(255, 255, 255), displayText)
 
 ---
 
-### createEntity
+### lia.darkrp.createEntity
 
 **Purpose**
 
@@ -414,7 +414,7 @@ end
 
 ---
 
-### createCategory
+### lia.darkrp.createCategory
 
 **Purpose**
 

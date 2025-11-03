@@ -10,7 +10,7 @@ The time library provides comprehensive functionality for time manipulation, for
 
 ---
 
-### timeSince
+### lia.time.timeSince
 
 **Purpose**
 
@@ -67,7 +67,7 @@ end
 
 ---
 
-### toNumber
+### lia.time.toNumber
 
 **Purpose**
 
@@ -125,7 +125,7 @@ end
 
 ---
 
-### getDate
+### lia.time.getDate
 
 **Purpose**
 
@@ -186,7 +186,7 @@ end
 
 ---
 
-### formatDHM
+### lia.time.formatDHM
 
 **Purpose**
 
@@ -253,7 +253,7 @@ print(formatMultipleDurations(durations))
 
 ---
 
-### getHour
+### lia.time.getHour
 
 **Purpose**
 

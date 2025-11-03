@@ -10,7 +10,7 @@ The web image library provides comprehensive functionality for downloading, cach
 
 ---
 
-### download
+### lia.webimage.download
 
 **Purpose**
 
@@ -84,7 +84,7 @@ end
 
 ---
 
-### register
+### lia.webimage.register
 
 **Purpose**
 
@@ -155,7 +155,7 @@ end
 
 ---
 
-### get
+### lia.webimage.get
 
 **Purpose**
 
@@ -377,7 +377,7 @@ for _, name in ipairs(imageNames) do
 
 ---
 
-### getStats
+### lia.webimage.getStats
 
 **Purpose**
 

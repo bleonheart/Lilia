@@ -10,7 +10,7 @@ The commands library provides comprehensive functionality for managing and execu
 
 ---
 
-### buildSyntaxFromArguments
+### lia.command.buildSyntaxFromArguments
 
 **Purpose**
 
@@ -74,7 +74,7 @@ local syntax = lia.command.buildSyntaxFromArguments(args)
 
 ---
 
-### add
+### lia.command.add
 
 **Purpose**
 
@@ -157,7 +157,7 @@ lia.command.add("ban", {
 
 ---
 
-### hasAccess
+### lia.command.hasAccess
 
 **Purpose**
 
@@ -223,7 +223,7 @@ end
 
 ---
 
-### extractArgs
+### lia.command.extractArgs
 
 **Purpose**
 
@@ -278,7 +278,7 @@ local silent = args[4] == "true"
 
 ---
 
-### run
+### lia.command.run
 
 **Purpose**
 
@@ -337,7 +337,7 @@ end
 
 ---
 
-### parse
+### lia.command.parse
 
 **Purpose**
 
@@ -398,7 +398,7 @@ end
 
 ---
 
-### openArgumentPrompt
+### lia.command.openArgumentPrompt
 
 **Purpose**
 
@@ -668,7 +668,7 @@ lia.command.openArgumentPrompt("ban", {"reason", "duration"}, {"player1"})
 
 ---
 
-### send
+### lia.command.send
 
 **Purpose**
 

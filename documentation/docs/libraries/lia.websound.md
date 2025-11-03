@@ -10,7 +10,7 @@ The websound library provides comprehensive functionality for managing web-based
 
 ---
 
-### download
+### lia.websound.download
 
 **Purpose**
 
@@ -87,7 +87,7 @@ end
 
 ---
 
-### register
+### lia.websound.register
 
 **Purpose**
 
@@ -173,7 +173,7 @@ end
 
 ---
 
-### get
+### lia.websound.get
 
 **Purpose**
 
@@ -541,7 +541,7 @@ end
 
 ---
 
-### getStats
+### lia.websound.getStats
 
 **Purpose**
 
@@ -623,7 +623,7 @@ timer.Create("WebSoundMonitor", 300, 0, monitorWebSoundPerformance)
 
 ---
 
-### playButtonSound
+### lia.websound.playButtonSound
 
 **Purpose**
 

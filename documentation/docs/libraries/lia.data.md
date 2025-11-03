@@ -10,7 +10,7 @@ The data library provides comprehensive functionality for data persistence, seri
 
 ---
 
-### encodetable
+### lia.data.encodetable
 
 **Purpose**
 
@@ -67,7 +67,7 @@ local encoded = lia.data.encodetable(complexData)
 
 ---
 
-### decode
+### lia.data.decode
 
 **Purpose**
 
@@ -124,7 +124,7 @@ local decoded = lia.data.decode(encodedData)
 
 ---
 
-### serialize
+### lia.data.serialize
 
 **Purpose**
 
@@ -180,7 +180,7 @@ local serialized = lia.data.serialize(complexData)
 
 ---
 
-### deserialize
+### lia.data.deserialize
 
 **Purpose**
 
@@ -232,7 +232,7 @@ local deserialized = lia.data.deserialize(complexJson)
 
 ---
 
-### decodeVector
+### lia.data.decodeVector
 
 **Purpose**
 
@@ -284,7 +284,7 @@ local vector = lia.data.decodeVector(vectorData)
 
 ---
 
-### decodeAngle
+### lia.data.decodeAngle
 
 **Purpose**
 
@@ -336,7 +336,7 @@ local angle = lia.data.decodeAngle(angleData)
 
 ---
 
-### set
+### lia.data.set
 
 **Purpose**
 
@@ -391,7 +391,7 @@ lia.data.set("player_" .. player:SteamID64(), playerData, false, true)
 
 ---
 
-### delete
+### lia.data.delete
 
 **Purpose**
 
@@ -442,7 +442,7 @@ lia.data.delete(playerID, false, true)
 
 ---
 
-### loadTables
+### lia.data.loadTables
 
 **Purpose**
 
@@ -490,7 +490,7 @@ lia.data.loadTables()
 
 ---
 
-### loadPersistence
+### lia.data.loadPersistence
 
 **Purpose**
 
@@ -545,7 +545,7 @@ end)
 
 ---
 
-### savePersistence
+### lia.data.savePersistence
 
 **Purpose**
 
@@ -619,7 +619,7 @@ lia.data.savePersistence(entities)
 
 ---
 
-### loadPersistenceData
+### lia.data.loadPersistenceData
 
 **Purpose**
 
@@ -688,7 +688,7 @@ end)
 
 ---
 
-### get
+### lia.data.get
 
 **Purpose**
 
@@ -747,7 +747,7 @@ end
 
 ---
 
-### getPersistence
+### lia.data.getPersistence
 
 **Purpose**
 

@@ -10,7 +10,7 @@ The languages library provides comprehensive internationalization (i18n) functio
 
 ---
 
-### loadFromDir
+### lia.lang.loadFromDir
 
 **Purpose**
 
@@ -69,7 +69,7 @@ end
 
 ---
 
-### addTable
+### lia.lang.addTable
 
 **Purpose**
 
@@ -133,7 +133,7 @@ end
 
 ---
 
-### getLanguages
+### lia.lang.getLanguages
 
 **Purpose**
 
@@ -197,7 +197,7 @@ local function setLanguage(langName)
 
 ---
 
-### getLocalizedString
+### lia.lang.getLocalizedString
 
 **Purpose**
 

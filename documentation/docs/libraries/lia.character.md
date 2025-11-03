@@ -10,7 +10,7 @@ The character library provides comprehensive functionality for managing player c
 
 ---
 
-### getCharacter
+### lia.char.getCharacter
 
 **Purpose**
 
@@ -80,7 +80,7 @@ end
 
 ---
 
-### getAll
+### lia.char.getAll
 
 **Purpose**
 
@@ -143,7 +143,7 @@ end
 
 ---
 
-### isLoaded
+### lia.char.isLoaded
 
 **Purpose**
 
@@ -211,7 +211,7 @@ print("Loaded:", table.Count(loadedChars), "Unloaded:", #unloadedChars)
 
 ---
 
-### addCharacter
+### lia.char.addCharacter
 
 **Purpose**
 
@@ -277,7 +277,7 @@ print("Loaded", table.Count(characters), "characters into cache")
 
 ---
 
-### removeCharacter
+### lia.char.removeCharacter
 
 **Purpose**
 
@@ -346,7 +346,7 @@ print("Removed", removedCount, "characters from cache")
 
 ---
 
-### new
+### lia.char.new
 
 **Purpose**
 
@@ -431,7 +431,7 @@ end
 
 ---
 
-### hookVar
+### lia.char.hookVar
 
 **Purpose**
 
@@ -518,7 +518,7 @@ end
 
 ---
 
-### registerVar
+### lia.char.registerVar
 
 **Purpose**
 
@@ -628,7 +628,7 @@ lia.char.registerVar("skills", {
 
 ---
 
-### getCharData
+### lia.char.getCharData
 
 **Purpose**
 
@@ -695,7 +695,7 @@ print("Retrieved data for", table.Count(charactersData), "characters")
 
 ---
 
-### getCharDataRaw
+### lia.char.getCharDataRaw
 
 **Purpose**
 
@@ -765,7 +765,7 @@ end
 
 ---
 
-### getOwnerByID
+### lia.char.getOwnerByID
 
 **Purpose**
 
@@ -835,7 +835,7 @@ print("Found owners for", table.Count(owners), "characters")
 
 ---
 
-### getBySteamID
+### lia.char.getBySteamID
 
 **Purpose**
 
@@ -906,7 +906,7 @@ print("Found", table.Count(foundCharacters), "characters")
 
 ---
 
-### getTeamColor
+### lia.char.getTeamColor
 
 **Purpose**
 
@@ -972,7 +972,7 @@ hook.Run("UpdateScoreboardColors", teamColors)
 
 ---
 
-### create
+### lia.char.create
 
 **Purpose**
 
@@ -1081,7 +1081,7 @@ end
 
 ---
 
-### restore
+### lia.char.restore
 
 **Purpose**
 
@@ -1180,7 +1180,7 @@ end)
 
 ---
 
-### cleanUpForPlayer
+### lia.char.cleanUpForPlayer
 
 **Purpose**
 
@@ -1261,7 +1261,7 @@ end
 
 ---
 
-### delete
+### lia.char.delete
 
 **Purpose**
 
@@ -1344,7 +1344,7 @@ end
 
 ---
 
-### getCharBanned
+### lia.char.getCharBanned
 
 **Purpose**
 
@@ -1420,7 +1420,7 @@ end
 
 ---
 
-### setCharDatabase
+### lia.char.setCharDatabase
 
 **Purpose**
 
@@ -1505,7 +1505,7 @@ end
 
 ---
 
-### unloadCharacter
+### lia.char.unloadCharacter
 
 **Purpose**
 
@@ -1595,7 +1595,7 @@ end
 
 ---
 
-### unloadUnusedCharacters
+### lia.char.unloadUnusedCharacters
 
 **Purpose**
 
@@ -1673,7 +1673,7 @@ end
 
 ---
 
-### loadSingleCharacter
+### lia.char.loadSingleCharacter
 
 **Purpose**
 

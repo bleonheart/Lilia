@@ -10,7 +10,7 @@ The configuration library provides comprehensive functionality for managing user
 
 ---
 
-### add
+### lia.config.add
 
 **Purpose**
 
@@ -86,7 +86,7 @@ lia.config.add("Language", "Language", "English", nil, {
 
 ---
 
-### getOptions
+### lia.config.getOptions
 
 **Purpose**
 
@@ -149,7 +149,7 @@ end
 
 ---
 
-### setDefault
+### lia.config.setDefault
 
 **Purpose**
 
@@ -207,7 +207,7 @@ end
 
 ---
 
-### forceSet
+### lia.config.forceSet
 
 **Purpose**
 
@@ -265,7 +265,7 @@ end
 
 ---
 
-### set
+### lia.config.set
 
 **Purpose**
 
@@ -330,7 +330,7 @@ end
 
 ---
 
-### get
+### lia.config.get
 
 **Purpose**
 
@@ -399,7 +399,7 @@ end
 
 ---
 
-### load
+### lia.config.load
 
 **Purpose**
 
@@ -455,7 +455,7 @@ end
 
 ---
 
-### getChangedValues
+### lia.config.getChangedValues
 
 **Purpose**
 
@@ -521,7 +521,7 @@ end
 
 ---
 
-### send
+### lia.config.send
 
 **Purpose**
 
@@ -590,7 +590,7 @@ end
 
 ---
 
-### save
+### lia.config.save
 
 **Purpose**
 
@@ -651,7 +651,7 @@ end
 
 ---
 
-### reset
+### lia.config.reset
 
 **Purpose**
 

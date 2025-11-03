@@ -10,7 +10,7 @@ The vendor library provides comprehensive functionality for managing NPC vendors
 
 ---
 
-### addRarities
+### lia.vendor.addRarities
 
 **Purpose**
 
@@ -67,7 +67,7 @@ end
 
 ---
 
-### addPreset
+### lia.vendor.addPreset
 
 **Purpose**
 
@@ -128,7 +128,7 @@ lia.vendor.addPreset("gun_dealer", weaponPreset)
 
 ---
 
-### getPreset
+### lia.vendor.getPreset
 
 **Purpose**
 

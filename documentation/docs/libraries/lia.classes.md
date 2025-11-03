@@ -10,7 +10,7 @@ The classes library provides comprehensive functionality for managing character 
 
 ---
 
-### register
+### lia.class.register
 
 **Purpose**
 
@@ -85,7 +85,7 @@ lia.class.register("elite_soldier", classData)
 
 ---
 
-### loadFromDir
+### lia.class.loadFromDir
 
 **Purpose**
 
@@ -142,7 +142,7 @@ end
 
 ---
 
-### canBe
+### lia.class.canBe
 
 **Purpose**
 
@@ -217,7 +217,7 @@ end
 
 ---
 
-### get
+### lia.class.get
 
 **Purpose**
 
@@ -292,7 +292,7 @@ end
 
 ---
 
-### getPlayers
+### lia.class.getPlayers
 
 **Purpose**
 
@@ -371,7 +371,7 @@ end
 
 ---
 
-### getPlayerCount
+### lia.class.getPlayerCount
 
 **Purpose**
 
@@ -442,7 +442,7 @@ end
 
 ---
 
-### retrieveClass
+### lia.class.retrieveClass
 
 **Purpose**
 
@@ -511,7 +511,7 @@ end
 
 ---
 
-### hasWhitelist
+### lia.class.hasWhitelist
 
 **Purpose**
 
@@ -592,7 +592,7 @@ local function getWhitelistClasses()
 
 ---
 
-### retrieveJoinable
+### lia.class.retrieveJoinable
 
 **Purpose**
 

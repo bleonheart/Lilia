@@ -10,7 +10,7 @@ The utility library provides comprehensive functionality for common operations a
 
 ---
 
-### findPlayersInBox
+### lia.util.findPlayersInBox
 
 **Purpose**
 
@@ -70,7 +70,7 @@ end
 
 ---
 
-### getBySteamID
+### lia.util.getBySteamID
 
 **Purpose**
 
@@ -133,7 +133,7 @@ end
 
 ---
 
-### findPlayersInSphere
+### lia.util.findPlayersInSphere
 
 **Purpose**
 
@@ -202,7 +202,7 @@ end
 
 ---
 
-### findPlayer
+### lia.util.findPlayer
 
 **Purpose**
 
@@ -275,7 +275,7 @@ end
 
 ---
 
-### findPlayerItems
+### lia.util.findPlayerItems
 
 **Purpose**
 
@@ -337,7 +337,7 @@ end
 
 ---
 
-### findPlayerItemsByClass
+### lia.util.findPlayerItemsByClass
 
 **Purpose**
 
@@ -402,7 +402,7 @@ local removed = cleanupPlayerItems(leavingPlayer, {"weapon_*", "item_*"})
 
 ---
 
-### findPlayerEntities
+### lia.util.findPlayerEntities
 
 **Purpose**
 
@@ -471,7 +471,7 @@ end
 
 ---
 
-### stringMatches
+### lia.util.stringMatches
 
 **Purpose**
 
@@ -537,7 +537,7 @@ local searchResults = advancedStringSearch("Player Name", {"player", "name", "te
 
 ---
 
-### getAdmins
+### lia.util.getAdmins
 
 **Purpose**
 
@@ -599,7 +599,7 @@ local activeStaff = getActiveAdmins()
 
 ---
 
-### findPlayerBySteamID64
+### lia.util.findPlayerBySteamID64
 
 **Purpose**
 
@@ -661,7 +661,7 @@ end
 
 ---
 
-### findPlayerBySteamID
+### lia.util.findPlayerBySteamID
 
 **Purpose**
 
@@ -728,7 +728,7 @@ end
 
 ---
 
-### canFit
+### lia.util.canFit
 
 **Purpose**
 
@@ -803,7 +803,7 @@ local positions = findValidPlacement(playerPos, {mins = Vector(-16, -16, 0), max
 
 ---
 
-### playerInRadius
+### lia.util.playerInRadius
 
 **Purpose**
 
@@ -876,7 +876,7 @@ end
 
 ---
 
-### formatStringNamed
+### lia.util.formatStringNamed
 
 **Purpose**
 
@@ -942,7 +942,7 @@ local message2 = formatPlayerInfo(template, playerData)
 
 ---
 
-### getMaterial
+### lia.util.getMaterial
 
 **Purpose**
 
@@ -1011,7 +1011,7 @@ drawMaterialEffect("effects/water_warp01", 100, 100, 200, 200, 150)
 
 ---
 
-### findFaction
+### lia.util.findFaction
 
 **Purpose**
 
@@ -1153,7 +1153,7 @@ local success, message = managePlayerFaction(admin, target, "Citizen", "assign")
 
 ---
 
-### generateRandomName
+### lia.util.generateRandomName
 
 **Purpose**
 
@@ -1224,7 +1224,7 @@ local easternName = generateCulturalName("eastern")
 
 ---
 
-### sendTableUI
+### lia.util.sendTableUI
 
 **Purpose**
 
@@ -1321,7 +1321,7 @@ end
 
 ---
 
-### findEmptySpace
+### lia.util.findEmptySpace
 
 **Purpose**
 
@@ -1407,7 +1407,7 @@ end
 
 ---
 
-### animateAppearance
+### lia.util.animateAppearance
 
 **Purpose**
 
@@ -1498,7 +1498,7 @@ end)
 
 ---
 
-### clampMenuPosition
+### lia.util.clampMenuPosition
 
 **Purpose**
 
@@ -1601,7 +1601,7 @@ end
 
 ---
 
-### drawGradient
+### lia.util.drawGradient
 
 **Purpose**
 
@@ -1685,7 +1685,7 @@ end
 
 ---
 
-### wrapText
+### lia.util.wrapText
 
 **Purpose**
 
@@ -1773,7 +1773,7 @@ local textPanel = createResponsiveTextPanel("Very long text that needs to fit in
 
 ---
 
-### drawBlur
+### lia.util.drawBlur
 
 **Purpose**
 
@@ -1863,7 +1863,7 @@ end
 
 ---
 
-### drawBlackBlur
+### lia.util.drawBlackBlur
 
 **Purpose**
 
@@ -1950,7 +1950,7 @@ local overlayUI = createContextualUI("overlay", "HUD Overlay")
 
 ---
 
-### drawBlurAt
+### lia.util.drawBlurAt
 
 **Purpose**
 
@@ -2025,7 +2025,7 @@ end
 
 ---
 
-### createTableUI
+### lia.util.createTableUI
 
 **Purpose**
 
@@ -2097,7 +2097,7 @@ end
 
 ---
 
-### openOptionsMenu
+### lia.util.openOptionsMenu
 
 **Purpose**
 
@@ -2176,7 +2176,7 @@ end
 
 ---
 
-### drawEntText
+### lia.util.drawEntText
 
 **Purpose**
 
@@ -2260,7 +2260,7 @@ local function drawSmartEntityLabels()
 
 ---
 
-### drawLookText
+### lia.util.drawLookText
 
 **Purpose**
 

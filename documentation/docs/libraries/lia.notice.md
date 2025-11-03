@@ -10,7 +10,7 @@ The notice library provides comprehensive functionality for displaying notificat
 
 ---
 
-### notify
+### lia.notices.notify
 
 **Purpose**
 
@@ -69,7 +69,7 @@ end
 
 ---
 
-### notifyLocalized
+### lia.notices.notifyLocalized
 
 **Purpose**
 
@@ -182,7 +182,7 @@ end
 
 ---
 
-### receiveNotify
+### lia.notices.receiveNotify
 
 **Purpose**
 
@@ -303,7 +303,7 @@ end
 
 ---
 
-### receiveNotifyL
+### lia.notices.receiveNotifyL
 
 **Purpose**
 
@@ -366,7 +366,7 @@ end
 
 ---
 
-### notify
+### lia.notices.notify
 
 **Purpose**
 
@@ -423,7 +423,7 @@ if player:GetNWInt("health") < 25 then
 
 ---
 
-### notifyLocalized
+### lia.notices.notifyLocalized
 
 **Purpose**
 
@@ -486,7 +486,7 @@ if health < 25 then
 
 ---
 
-### notifyInfoLocalized
+### lia.notices.notifyInfoLocalized
 
 **Purpose**
 
@@ -549,7 +549,7 @@ if health < 25 then
 
 ---
 
-### notifyWarningLocalized
+### lia.notices.notifyWarningLocalized
 
 **Purpose**
 
@@ -612,7 +612,7 @@ if health < 25 then
 
 ---
 
-### notifyErrorLocalized
+### lia.notices.notifyErrorLocalized
 
 **Purpose**
 
@@ -675,7 +675,7 @@ if health < 25 then
 
 ---
 
-### notifySuccessLocalized
+### lia.notices.notifySuccessLocalized
 
 **Purpose**
 
@@ -738,7 +738,7 @@ if health < 25 then
 
 ---
 
-### notifyMoneyLocalized
+### lia.notices.notifyMoneyLocalized
 
 **Purpose**
 
@@ -801,7 +801,7 @@ if health < 25 then
 
 ---
 
-### notifyAdminLocalized
+### lia.notices.notifyAdminLocalized
 
 **Purpose**
 

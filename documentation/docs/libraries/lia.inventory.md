@@ -10,7 +10,7 @@ The inventory library provides comprehensive functionality for managing inventor
 
 ---
 
-### newType
+### lia.inventory.newType
 
 **Purpose**
 
@@ -89,7 +89,7 @@ lia.inventory.newType("complex", complexInvType)
 
 ---
 
-### new
+### lia.inventory.new
 
 **Purpose**
 
@@ -142,7 +142,7 @@ customInv.items = {}
 
 ---
 
-### loadByID
+### lia.inventory.loadByID
 
 **Purpose**
 
@@ -209,7 +209,7 @@ end
 
 ---
 
-### loadFromDefaultStorage
+### lia.inventory.loadFromDefaultStorage
 
 **Purpose**
 
@@ -281,7 +281,7 @@ end
 
 ---
 
-### instance
+### lia.inventory.instance
 
 **Purpose**
 
@@ -353,7 +353,7 @@ end
 
 ---
 
-### loadAllFromCharID
+### lia.inventory.loadAllFromCharID
 
 **Purpose**
 
@@ -433,7 +433,7 @@ end
 
 ---
 
-### deleteByID
+### lia.inventory.deleteByID
 
 **Purpose**
 
@@ -514,7 +514,7 @@ end
 
 ---
 
-### cleanUpForCharacter
+### lia.inventory.cleanUpForCharacter
 
 **Purpose**
 
@@ -588,7 +588,7 @@ end
 
 ---
 
-### checkOverflow
+### lia.inventory.checkOverflow
 
 **Purpose**
 
@@ -648,7 +648,7 @@ end
 
 ---
 
-### registerStorage
+### lia.inventory.registerStorage
 
 **Purpose**
 
@@ -735,7 +735,7 @@ end
 
 ---
 
-### getStorage
+### lia.inventory.getStorage
 
 **Purpose**
 
@@ -823,7 +823,7 @@ end
 
 ---
 
-### registerTrunk
+### lia.inventory.registerTrunk
 
 **Purpose**
 
@@ -919,7 +919,7 @@ end
 
 ---
 
-### getTrunk
+### lia.inventory.getTrunk
 
 **Purpose**
 
@@ -1009,7 +1009,7 @@ end
 
 ---
 
-### getAllTrunks
+### lia.inventory.getAllTrunks
 
 **Purpose**
 
@@ -1175,7 +1175,7 @@ local function getCategorizedStorage(includeTrunks)
 
 ---
 
-### getAllStorage
+### lia.inventory.getAllStorage
 
 **Purpose**
 
@@ -1341,7 +1341,7 @@ local function getCategorizedStorage(includeTrunks)
 
 ---
 
-### show
+### lia.inventory.show
 
 **Purpose**
 

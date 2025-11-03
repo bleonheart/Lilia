@@ -10,7 +10,7 @@ The modularity library provides comprehensive functionality for managing modules
 
 ---
 
-### load
+### lia.module.load
 
 **Purpose**
 
@@ -210,7 +210,7 @@ lia.module.load("singlemode", "gamemodes/lilia/modules/singlemode", "SINGLE_MODU
 
 ---
 
-### initialize
+### lia.module.initialize
 
 **Purpose**
 
@@ -261,7 +261,7 @@ end
 
 ---
 
-### loadFromDir
+### lia.module.loadFromDir
 
 **Purpose**
 
@@ -311,7 +311,7 @@ lia.module.loadFromDir("gamemodes/lilia/modules", "module", skipModules)
 
 ---
 
-### get
+### lia.module.get
 
 **Purpose**
 

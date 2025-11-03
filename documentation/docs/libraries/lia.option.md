@@ -10,7 +10,7 @@ The option library provides comprehensive functionality for managing user-config
 
 ---
 
-### add
+### lia.option.add
 
 **Purpose**
 
@@ -79,7 +79,7 @@ lia.option.add("espColor", "ESP Color", "Color for ESP display", Color(255, 0, 0
 
 ---
 
-### getOptions
+### lia.option.getOptions
 
 **Purpose**
 
@@ -140,7 +140,7 @@ if #options > 0 then
 
 ---
 
-### set
+### lia.option.set
 
 **Purpose**
 
@@ -199,7 +199,7 @@ end
 
 ---
 
-### get
+### lia.option.get
 
 **Purpose**
 
@@ -262,7 +262,7 @@ end
 
 ---
 
-### save
+### lia.option.save
 
 **Purpose**
 
@@ -329,7 +329,7 @@ batchSaveOptions()
 
 ---
 
-### load
+### lia.option.load
 
 **Purpose**
 

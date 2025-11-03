@@ -10,7 +10,7 @@ The item library provides comprehensive functionality for managing items in the 
 
 ---
 
-### get
+### lia.item.get
 
 **Purpose**
 
@@ -64,7 +64,7 @@ end
 
 ---
 
-### getItemByID
+### lia.item.getItemByID
 
 **Purpose**
 
@@ -132,7 +132,7 @@ end
 
 ---
 
-### getInstancedItemByID
+### lia.item.getInstancedItemByID
 
 **Purpose**
 
@@ -198,7 +198,7 @@ end
 
 ---
 
-### getItemDataByID
+### lia.item.getItemDataByID
 
 **Purpose**
 
@@ -270,7 +270,7 @@ end
 
 ---
 
-### load
+### lia.item.load
 
 **Purpose**
 
@@ -318,7 +318,7 @@ lia.item.load("lilia/gamemode/items/weapons/assault_rifle.lua", "base_weapons")
 
 ---
 
-### isItem
+### lia.item.isItem
 
 **Purpose**
 
@@ -382,7 +382,7 @@ end
 
 ---
 
-### getInv
+### lia.item.getInv
 
 **Purpose**
 
@@ -438,7 +438,7 @@ end
 
 ---
 
-### register
+### lia.item.register
 
 **Purpose**
 
@@ -499,7 +499,7 @@ ITEM.functions.customAction = {
 
 ---
 
-### loadFromDir
+### lia.item.loadFromDir
 
 **Purpose**
 
@@ -555,7 +555,7 @@ end
 
 ---
 
-### new
+### lia.item.new
 
 **Purpose**
 
@@ -612,7 +612,7 @@ end
 
 ---
 
-### registerInv
+### lia.item.registerInv
 
 **Purpose**
 
@@ -774,7 +774,7 @@ end
 
 ---
 
-### newInv
+### lia.item.newInv
 
 **Purpose**
 
@@ -828,7 +828,7 @@ end)
 
 ---
 
-### createInv
+### lia.item.createInv
 
 **Purpose**
 
@@ -885,7 +885,7 @@ end
 
 ---
 
-### addWeaponOverride
+### lia.item.addWeaponOverride
 
 **Purpose**
 
@@ -959,7 +959,7 @@ end
 
 ---
 
-### addWeaponToBlacklist
+### lia.item.addWeaponToBlacklist
 
 **Purpose**
 
@@ -1017,7 +1017,7 @@ end
 
 ---
 
-### generateWeapons
+### lia.item.generateWeapons
 
 **Purpose**
 
@@ -1079,7 +1079,7 @@ lia.item.generateWeapons()
 
 ---
 
-### generateAmmo
+### lia.item.generateAmmo
 
 **Purpose**
 
@@ -1143,7 +1143,7 @@ lia.item.generateAmmo()
 
 ---
 
-### setItemDataByID
+### lia.item.setItemDataByID
 
 **Purpose**
 
@@ -1205,7 +1205,7 @@ end
 
 ---
 
-### instance
+### lia.item.instance
 
 **Purpose**
 
@@ -1265,7 +1265,7 @@ end)
 
 ---
 
-### deleteByID
+### lia.item.deleteByID
 
 **Purpose**
 
@@ -1326,7 +1326,7 @@ end
 
 ---
 
-### loadItemByID
+### lia.item.loadItemByID
 
 **Purpose**
 
@@ -1390,7 +1390,7 @@ end
 
 ---
 
-### spawn
+### lia.item.spawn
 
 **Purpose**
 
@@ -1453,7 +1453,7 @@ end)
 
 ---
 
-### restoreInv
+### lia.item.restoreInv
 
 **Purpose**
 
