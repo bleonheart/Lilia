@@ -271,7 +271,16 @@ class DocumentationParser:
                 if '.' in header_name:
                     qualified_name = header_name
                 else:
-                    qualified_name = f"{library_name}.{header_name}"
+                    # Special handling for global lia.* functions documented in library files
+                    # Check if this looks like a global function that should be qualified as lia.functionName
+                    # instead of libraryName.functionName
+                    global_lia_functions = {
+                        'bootstrap', 'error', 'warning', 'information', 'relaydiscordMessage'
+                    }
+                    if header_name in global_lia_functions and library_name.startswith('lia.'):
+                        qualified_name = f"lia.{header_name}"
+                    else:
+                        qualified_name = f"{library_name}.{header_name}"
                 # Extract parameters from the following lines
                 params = self._extract_parameters_from_docs(lines, line_num)
 

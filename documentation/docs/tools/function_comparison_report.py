@@ -283,8 +283,8 @@ class FunctionComparisonReportGenerator:
         lua_files = list(self.base_path.rglob("*.lua"))
 
         for lua_file in lua_files:
-            # Skip language files themselves
-            if 'languages' in lua_file.parts:
+            # Skip language files themselves and docs directory
+            if 'languages' in lua_file.parts or 'docs' in lua_file.parts:
                 continue
 
             try:
@@ -1042,7 +1042,7 @@ class FunctionComparisonReportGenerator:
 
         for lua_file in lua_files:
             # Skip certain directories
-            if any(skip in str(lua_file) for skip in ['languages', 'documentation']):
+            if any(skip in str(lua_file) for skip in ['languages', 'documentation', 'docs']):
                 continue
 
             try:
@@ -1247,7 +1247,7 @@ class FunctionComparisonReportGenerator:
 
         for lua_file in lua_files:
             # Skip certain directories
-            if any(skip in str(lua_file) for skip in ['languages', 'documentation']):
+            if any(skip in str(lua_file) for skip in ['languages', 'documentation', 'docs']):
                 continue
 
             try:

@@ -35,6 +35,28 @@ import argparse
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional
 
+# Core hooks that should not be documented in module files (they're documented centrally)
+CORE_HOOKS = {
+    'OnCharVarChanged', 'GetModelGender', 'CharPreSave', 'PlayerLoadedChar', 'PlayerDeath',
+    'PlayerShouldPermaKill', 'CharLoaded', 'PrePlayerLoadedChar', 'OnPickupMoney',
+    'CanItemBeTransfered', 'CanPlayerInteractItem', 'CanPlayerEquipItem', 'CanPlayerTakeItem',
+    'CanPlayerDropItem', 'CheckPassword', 'PlayerSay', 'CanPlayerHoldObject', 'EntityTakeDamage',
+    'KeyPress', 'InitializedSchema', 'GetGameDescription', 'PostPlayerLoadout', 'ShouldSpawnClientRagdoll',
+    'DoPlayerDeath', 'PlayerSpawn', 'PreCleanupMap', 'PostCleanupMap', 'ShutDown', 'PlayerAuthed',
+    'PlayerDisconnected', 'PlayerInitialSpawn', 'PlayerLoadout', 'CreateDefaultInventory',
+    'SetupBotPlayer', 'PlayerShouldTakeDamage', 'CanDrive', 'PlayerDeathThink', 'SaveData',
+    'LoadData', 'OnEntityCreated', 'UpdateEntityPersistence', 'EntityRemoved', 'LiliaTablesLoaded',
+    'PlayerCanHearPlayersVoice', 'CreateSalaryTimers', 'ShowHelp', 'PlayerSpray', 'PlayerDeathSound',
+    'CanPlayerSuicide', 'AllowPlayerPickup', 'PostDrawOpaqueRenderables', 'ShouldDrawEntityInfo',
+    'GetInjuredText', 'DrawCharInfo', 'DrawEntityInfo', 'HUDPaint', 'TooltipInitialize',
+    'TooltipPaint', 'TooltipLayout', 'DrawLiliaModelView', 'OnChatReceived', 'CreateMove',
+    'CalcView', 'PlayerBindPress', 'ItemShowEntityMenu', 'HUDPaintBackground', 'OnContextMenuOpen',
+    'OnContextMenuClose', 'CharListLoaded', 'ForceDermaSkin', 'DermaSkinChanged', 'HUDShouldDraw',
+    'PrePlayerDraw', 'PlayerStartVoice', 'PlayerEndVoice', 'VoiceToggled', 'SpawnMenuOpen',
+    'InitPostEntity', 'HUDDrawTargetID', 'HUDDrawPickupHistory', 'HUDAmmoPickedUp', 'DrawDeathNotice',
+    'GetMainMenuPosition'
+}
+
 
 def parse_comment_block(comment_text):
     """
@@ -607,6 +629,16 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False):
     for func in functions:
         parsed = parse_comment_block(func['comment'])
         if parsed['purpose']:  # Only process blocks that have at least a purpose
+            # Skip documenting core hook implementations in module files
+            # These should only be documented in the central hooks documentation
+            if is_library and 'modules' in str(file_path):
+                func_name = func['name']
+                if ':' in func_name:
+                    hook_name = func_name.split(':', 1)[1]
+                    if hook_name in CORE_HOOKS:
+                        print(f"  Skipping hook implementation: {func_name} (documented centrally)")
+                        continue
+
             section = generate_markdown_for_function(func['name'], parsed, is_library)
             sections.append(section)
 

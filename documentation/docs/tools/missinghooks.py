@@ -50,7 +50,7 @@ GMOD_HOOKS_BLACKLIST = {
     "PlayerBindPress", "PlayerButtonDown", "PlayerButtonUp",
     "PlayerCanHearPlayersVoice", "PlayerCanJoinTeam", "PlayerCanPickupItem",
     "PlayerCanPickupWeapon", "PlayerCanSeePlayersChat", "PlayerChangedTeam",
-    "PlayerCheckLimit", "PlayerClassChanged", "PlayerConnect", "PlayerDeath",
+    "PlayerCheckLimit", "PlayerClassChanged", "PlayerConnect", "PlayerDeath", "PlayerDisconnect",
     "PlayerDeathSound", "PlayerDeathThink", "PlayerDisconnected",
     "PlayerDriveAnimate", "PlayerDroppedWeapon", "PlayerEndVoice",
     "PlayerEnteredVehicle", "PlayerFireAnimationEvent", "PlayerFootstep",
