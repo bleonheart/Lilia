@@ -106,10 +106,14 @@ end
         Called during module initialization, when loading modules from directories, or when manually loading specific modules
 
     Parameters:
-        - uniqueID (string): Unique identifier for the module
-        - path (string): File system path to the module directory
-        - variable (string, optional): Global variable name to use (defaults to "MODULE")
-        - skipSubmodules (boolean, optional): Whether to skip loading submodules
+        uniqueID (string)
+            Unique identifier for the module
+        path (string)
+            File system path to the module directory
+        variable (string, optional)
+            Global variable name to use (defaults to "MODULE")
+        skipSubmodules (boolean, optional)
+            Whether to skip loading submodules
 
     Returns:
         None
@@ -312,9 +316,12 @@ end
         Called during module initialization to load multiple modules from a directory, or when manually loading modules from a specific folder
 
     Parameters:
-        - directory (string): Path to the directory containing modules
-        - group (string): Type of module group ("module", "schema", etc.)
-        - skip (table, optional): Table of module IDs to skip loading
+        directory (string)
+            Path to the directory containing modules
+        group (string)
+            Type of module group ("module", "schema", etc.)
+        skip (table, optional)
+            Table of module IDs to skip loading
 
     Returns:
         None
@@ -359,7 +366,8 @@ end
         Called when you need to access a specific module's data or functions, or to check if a module is loaded
 
     Parameters:
-        - identifier (string): Unique identifier of the module to retrieve
+        identifier (string)
+            Unique identifier of the module to retrieve
 
     Returns:
         Module table or nil if not found

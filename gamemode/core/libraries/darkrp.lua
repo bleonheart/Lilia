@@ -22,9 +22,11 @@ if SERVER then
         When Called:
             Called when checking spawn positions, entity placement, or any position validation
 
-        Parameters:
-            position (Vector): The world position to check
-            entitiesToIgnore (table, optional): Table of entities to ignore during the check
+    Parameters:
+        position (Vector)
+            The world position to check
+        entitiesToIgnore (table, optional)
+            Table of entities to ignore during the check
 
         Returns:
             boolean - true if the position is empty, false otherwise
@@ -93,12 +95,17 @@ if SERVER then
         When Called:
             Called when spawning entities or players and the initial position is occupied
 
-        Parameters:
-            startPos (Vector): The starting position to search from
-            entitiesToIgnore (table, optional): Table of entities to ignore during the search
-            maxDistance (number): Maximum distance to search from the starting position
-            searchStep (number): Step size for the search radius
-            checkArea (Vector): Additional area to check around each position
+    Parameters:
+        startPos (Vector)
+            The starting position to search from
+        entitiesToIgnore (table, optional)
+            Table of entities to ignore during the search
+        maxDistance (number)
+            Maximum distance to search from the starting position
+        searchStep (number)
+            Step size for the search radius
+            checkArea (Vector)
+                Additional area to check around each position
 
         Returns:
             Vector - The nearest empty position found, or the original position if none found
@@ -380,12 +387,18 @@ end
     Parameters:
         name (string): The display name of the entity
         data (table): Table containing entity configuration data
-            - cmd (string, optional): Command name for the entity
-            - model (string, optional): Model path for the entity
-            - desc (string, optional): Description of the entity
-            - category (string, optional): Category for the entity
-            - ent (string, optional): Entity class name
-            - price (number, optional): Price of the entity
+            cmd (string, optional)
+                Command name for the entity
+            model (string, optional)
+                Model path for the entity
+            desc (string, optional)
+                Description of the entity
+            category (string, optional)
+                Category for the entity
+            ent (string, optional)
+                Entity class name
+            price (number, optional)
+                Price of the entity
 
     Returns:
         nil

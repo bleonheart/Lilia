@@ -355,10 +355,9 @@ def _generate_localization_summary(data: Dict) -> List[str]:
 
 
 # Default paths for backwards compatibility
-DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode"
-DEFAULT_LANGUAGE_FILE = r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
+DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode"
+DEFAULT_LANGUAGE_FILE = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
 DEFAULT_MODULES_PATHS = [
-    r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules",
-    r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\modules",
-    r"E:\GMOD\Server\garrysmod\gamemodes\metrorp\devmodules"
+    r"E:\Server\garrysmod\gamemodes\metrorp\gitmodules",
+    r"E:\Server\garrysmod\gamemodes\metrorp\modules"
 ]

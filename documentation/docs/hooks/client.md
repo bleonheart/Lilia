@@ -12,46 +12,43 @@ Client-side hooks in the Lilia framework handle UI, rendering, input, and other 
 
 ### AddBarField
 
-**Purpose**
+#### 📋 Purpose
+Adds a configurable progress bar field to display character statistics, attributes, or custom metrics in the F1 menu character information panel
 
-Adds a bar field to a character information section in the F1 menu
+#### ⏰ When Called
+Called during the initialization of the F1 menu character panel, typically in client-side modules or addons that need to display dynamic character metrics like health, stamina, attributes, or custom progress indicators
 
-**When Called**
+#### ⚙️ Parameters
 
-When you want to add a progress bar field to display character statistics
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `sectionName` | **string** | The name of the section to add the field to |
+| `fieldName` | **string** | Unique identifier for the field |
+| `labelText` | **string** | Display text for the field label |
+| `minFunc` | **function** | Function that returns the minimum value for the bar |
+| `maxFunc` | **function** | Function that returns the maximum value for the bar |
+| `valueFunc` | **function** | Function that returns the current value for the bar |
 
-**Parameters**
+#### ↩️ Returns
+* `nil` - This hook doesn't return any value
 
-* `sectionName` (*string*): The name of the section to add the field to
-* `fieldName` (*string*): Unique identifier for the field
-* `labelText` (*string*): Display text for the field label
-* `minFunc` (*function*): Function that returns the minimum value for the bar
-* `maxFunc` (*function*): Function that returns the maximum value for the bar
-* `valueFunc` (*function*): Function that returns the current value for the bar
+#### 🌐 Realm
+**Client** *(runs on client-side only)*
 
-**Returns**
+#### 💡 Example Usage
 
-* None
-
-**Realm**
-
-Client
-
-**Example Usage**
-
-**Low Complexity:**
+#### 🔰 Low Complexity
 ```lua
--- Simple: Add a health bar field
+-- Basic health bar: Displays player's current health from 0-100
 hook.Run("AddBarField", "character", "health", "Health",
     function() return 0 end,
     function() return 100 end,
     function() return LocalPlayer():Health() end)
-
 ```
 
-**Medium Complexity:**
+#### 📊 Medium Complexity
 ```lua
--- Medium: Add a stamina bar field with character data
+-- Attribute-based bar: Shows character stamina attribute with null checking
 hook.Run("AddBarField", "character", "stamina", "Stamina",
     function() return 0 end,
     function() return 100 end,
@@ -59,12 +56,11 @@ hook.Run("AddBarField", "character", "stamina", "Stamina",
         local char = LocalPlayer():getChar()
         return char and char:getAttrib("stm") or 0
     end)
-
 ```
 
-**High Complexity:**
+#### ⚙️ High Complexity
 ```lua
--- High: Add multiple attribute bars dynamically
+-- Dynamic attribute system: Automatically creates bars for all registered attributes
 local attributes = {"str", "con", "dex", "int", "wis", "cha"}
 for _, attrId in ipairs(attributes) do
     local attr = lia.attribs.list[attrId]
@@ -78,7 +74,6 @@ for _, attrId in ipairs(attributes) do
             end)
     end
 end
-
 ```
 
 ---

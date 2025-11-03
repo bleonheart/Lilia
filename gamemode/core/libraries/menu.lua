@@ -57,9 +57,12 @@ end
         When you need to display a context menu with options for player interaction
 
     Parameters:
-        - opts (table): Table of menu options where keys are display text and values are callback functions
-        - pos (Vector|Entity, optional): World position or entity to attach menu to. If entity, menu attaches to entity's local position
-        - onRemove (function, optional): Callback function called when menu is removed
+        opts (table)
+            Table of menu options where keys are display text and values are callback functions
+        pos (Vector|Entity, optional)
+            World position or entity to attach menu to. If entity, menu attaches to entity's local position
+        onRemove (function, optional)
+            Callback function called when menu is removed
 
     Returns:
         (number) Index of the created menu in the menu list
@@ -341,8 +344,10 @@ end
         When a menu item is clicked or activated by player input
 
     Parameters:
-        - id (number): Index of the menu to remove from the menu list
-        - cb (function, optional): Callback function to execute when button is pressed
+        id (number)
+            Index of the menu to remove from the menu list
+        cb (function, optional)
+            Callback function to execute when button is pressed
 
     Returns:
         (boolean) True if callback was executed, false otherwise

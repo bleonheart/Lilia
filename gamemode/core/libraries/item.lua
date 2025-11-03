@@ -25,6 +25,7 @@ lia.item.WeaponsBlackList = lia.item.WeaponsBlackList or {
     lia_keys = true
 }
 
+lia.item.pendingOverrides = lia.item.pendingOverrides or {}
 local DefaultFunctions = {
     drop = {
         tip = "dropTip",
@@ -673,6 +674,78 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     hook.Run("OnItemRegistered", ITEM)
     ITEM = nil
     return targetTable[itemType]
+end
+
+--[[
+    Purpose:
+        Overrides functions or properties of an existing item definition
+
+    When Called:
+        When you need to modify an existing item's behavior without modifying core files
+
+    Parameters:
+        uniqueID (string) - The unique identifier of the item to override
+        overrides (table) - Table containing function/property overrides
+
+    Returns:
+        table - The item definition with overrides applied
+
+    Realm:
+        Shared
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        lia.item.overrideItem("base_weapons", {
+            paintOver = function(item, w, h)
+                surface.DrawRect(0, 0, w, h)
+            end
+        })
+        ```
+
+    Medium Complexity:
+        ```lua
+        lia.item.overrideItem("base_weapons", {
+            paintOver = function(item, w, h)
+                if item:getData("equip") then
+                    surface.SetDrawColor(110, 255, 110, 100)
+                    surface.DrawRect(w - 14, h - 14, 8, 8)
+                end
+            end,
+            getDesc = function(item)
+                return item:getData("desc") or item.desc
+            end
+        })
+        ```
+
+    High Complexity:
+        ```lua
+        lia.item.overrideItem("base_weapons", {
+            paintOver = function(item, w, h)
+                -- Custom rendering logic
+            end,
+            getDesc = function(item)
+                -- Custom description logic
+            end,
+            functions = {
+                customAction = {
+                    name = "Custom Action",
+                    onRun = function(item)
+                        -- Custom action logic
+                    end
+                }
+            }
+        })
+        ```
+]]
+function lia.item.overrideItem(uniqueID, overrides)
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
+    assert(istable(overrides), "overrides must be a table")
+    if not lia.item.pendingOverrides[uniqueID] then lia.item.pendingOverrides[uniqueID] = {} end
+    for key, value in pairs(overrides) do
+        lia.item.pendingOverrides[uniqueID][key] = value
+    end
 end
 
 --[[
@@ -1808,4 +1881,43 @@ hook.Add("InitializedModules", "liaItems", function()
             item.CanBeDestroyed = true
         end
     end
+
+    -- Apply pending item overrides
+    for uniqueID, overrides in pairs(lia.item.pendingOverrides) do
+        local item = lia.item.get(uniqueID)
+        if item then
+            for key, value in pairs(overrides) do
+                if isfunction(value) then
+                    item[key] = value
+                elseif istable(value) then
+                    if key == "functions" then
+                        item.functions = item.functions or {}
+                        for funcName, funcData in pairs(value) do
+                            item.functions[funcName] = funcData
+                        end
+                    elseif key == "hooks" then
+                        item.hooks = item.hooks or {}
+                        for hookName, hookFunc in pairs(value) do
+                            item.hooks[hookName] = hookFunc
+                        end
+                    elseif key == "postHooks" then
+                        item.postHooks = item.postHooks or {}
+                        for hookName, hookFunc in pairs(value) do
+                            item.postHooks[hookName] = hookFunc
+                        end
+                    else
+                        item[key] = value
+                    end
+                else
+                    item[key] = value
+                end
+            end
+
+            hook.Run("OnItemOverridden", item, overrides)
+        else
+            lia.error("[Lilia] Cannot override item '" .. tostring(uniqueID) .. "': item not found\n")
+        end
+    end
+
+    lia.item.pendingOverrides = {}
 end)

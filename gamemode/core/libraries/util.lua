@@ -15,8 +15,10 @@
         When you need to find players in a specific rectangular area for operations like area-of-effect abilities or zone management
 
     Parameters:
-        - mins (Vector): The minimum corner coordinates of the box
-        - maxs (Vector): The maximum corner coordinates of the box
+        mins (Vector)
+            The minimum corner coordinates of the box
+        maxs (Vector)
+            The maximum corner coordinates of the box
 
     Returns:
         Table of player entities found within the box area
@@ -74,7 +76,8 @@ end
         When you need to locate a specific player using their Steam identification for operations like bans, whitelists, or data retrieval
 
     Parameters:
-        - steamID (string): The Steam ID (STEAM_0:0:123456) or Steam ID 64 to search for
+        steamID (string)
+            The Steam ID (STEAM_0:0:123456) or Steam ID 64 to search for
 
     Returns:
         Player entity if found with a valid character, nil otherwise
@@ -136,8 +139,10 @@ end
         When you need to find players in a circular area for proximity-based operations like damage, effects, or notifications
 
     Parameters:
-        - origin (Vector): The center point of the sphere
-        - radius (number): The radius of the sphere in units
+        origin (Vector)
+            The center point of the sphere
+        radius (number)
+            The radius of the sphere in units
 
     Returns:
         Table of player entities found within the spherical area

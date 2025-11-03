@@ -144,7 +144,7 @@ end
         name (string) - The name of the rarity (e.g., "common", "rare", "legendary"), color (Color) - The color associated with this rarity
 
     Returns:
-        None
+        nil
 
     Realm:
         Shared
@@ -197,7 +197,7 @@ end
         name (string) - The name of the preset, items (table) - Table containing item types as keys and their configuration as values
 
     Returns:
-        None
+        nil
 
     Realm:
         Shared

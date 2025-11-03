@@ -17,9 +17,12 @@ lia.flag.list = lia.flag.list or {}
         During module initialization or when registering new permission flags
 
     Parameters:
-        - flag (string): Single character flag identifier (e.g., "C", "p", "t")
-        - desc (string, optional): Localized description key for the flag
-        - callback (function, optional): Function to execute when flag is granted/removed
+        flag (string)
+            Single character flag identifier (e.g., "C", "p", "t")
+        desc (string, optional)
+            Localized description key for the flag
+        callback (function, optional)
+            Function to execute when flag is granted/removed
 
     Returns:
         None
@@ -79,8 +82,9 @@ if SERVER then
         When Called:
             Automatically called when a character spawns on the server
 
-        Parameters:
-            - client (Player): The player whose character is spawning
+    Parameters:
+        client (Player)
+            The player whose character is spawning
 
         Returns:
             None

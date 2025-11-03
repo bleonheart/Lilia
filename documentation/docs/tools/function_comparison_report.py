@@ -34,10 +34,10 @@ def _get_paths_from_file_location():
         ]
         output_dir = docs_root
 
-    # Check if file is in the E:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure (legacy support)
-    elif r"E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
-        # File is in E:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
-        lilia_root = Path(r"E:\GMOD\Server\garrysmod\gamemodes\Lilia")
+    # Check if file is in the E:\Server\garrysmod\gamemodes\Lilia\ structure (legacy support)
+    elif r"E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
@@ -125,7 +125,7 @@ DEFAULT_GAMEMODE_ROOT = _paths['gamemode_root']
 DEFAULT_DOCS_ROOT = _paths['docs_root']
 DEFAULT_LANGUAGE_FILE = _paths['language_file']
 # Ensure correct path for E:\Server structure
-if str(DEFAULT_LANGUAGE_FILE).startswith(r'E:\GMOD\Server'):
+if str(DEFAULT_LANGUAGE_FILE).startswith(r'E:\Server'):
     DEFAULT_LANGUAGE_FILE = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
 DEFAULT_MODULES_PATHS = _paths['modules_paths']
 DEFAULT_OUTPUT_DIR = _paths['output_dir']
@@ -2302,7 +2302,7 @@ Examples:
                        help=f"Path to documentation directory (default: {DEFAULT_DOCS_ROOT})")
     # Use correct language file path for E:\Server structure
     default_lang_file = str(DEFAULT_LANGUAGE_FILE)
-    if default_lang_file.startswith(r'E:\GMOD\Server'):
+    if default_lang_file.startswith(r'E:\Server'):
         default_lang_file = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
     parser.add_argument("--language-file", default=default_lang_file,
                        help=f"Path to main language file (default: {default_lang_file})")

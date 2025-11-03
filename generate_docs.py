@@ -100,6 +100,7 @@ def parse_comment_block(comment_text):
     current_example = None
     example_complexity = None
     section_content = []
+    pending_parameter = None  # Track pending parameter for new format (name, type)
 
     def finalize_current_section():
         """Finalize the current section by joining accumulated content."""
@@ -168,6 +169,15 @@ def parse_comment_block(comment_text):
             # Parse parameter lines (various formats)
             if line.strip() and not line.startswith('--'):
                 # First check if this is a new section header (even if indented)
+                # Commit any pending parameter before switching sections
+                if pending_parameter:
+                    parsed['parameters'].append({
+                        'name': pending_parameter['name'],
+                        'type': pending_parameter['type'],
+                        'description': ''
+                    })
+                    pending_parameter = None
+                
                 if line.startswith('Returns:'):
                     finalize_current_section()
                     current_section = 'returns'
@@ -184,15 +194,62 @@ def parse_comment_block(comment_text):
                     current_section = 'examples'
                 # Check if this line is indented (parameter) or a new section header
                 elif original_line.startswith('    ') or original_line.startswith('\t'):
-                    # Indented format: name (Type) - Description (common in hooks)
-                    m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*-\s*(.+)', original_line)
+                    # Check if we have a pending parameter (from previous iteration) and this is its description
+                    if pending_parameter:
+                        current_indent = len(original_line) - len(original_line.lstrip())
+                        prev_indent = pending_parameter.get('indent', 0)
+                        # If this line is more indented than the parameter line, it's the description
+                        if current_indent > prev_indent and line.strip() and not line.startswith('--'):
+                            parsed['parameters'].append({
+                                'name': pending_parameter['name'],
+                                'type': pending_parameter['type'],
+                                'description': line.strip()
+                            })
+                            pending_parameter = None
+                            continue
+                        else:
+                            # Not a description, commit pending parameter without description
+                            parsed['parameters'].append({
+                                'name': pending_parameter['name'],
+                                'type': pending_parameter['type'],
+                                'description': ''
+                            })
+                            pending_parameter = None
+                    
+                    # NEW FORMAT: Check for "parameterName (type)" pattern with description on next line
+                    # This handles the new format: parameterName (type) on one line, description on next
+                    m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*$', original_line)
                     if m:
-                        parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                        # Found parameter name and type, store it and check next line for description
+                        param_name = m.group(1).strip()
+                        param_type = m.group(2).strip()
+                        param_indent = len(original_line) - len(original_line.lstrip())
+                        pending_parameter = {'name': param_name, 'type': param_type, 'indent': param_indent}
+                        # Don't add it yet, wait for next line to see if there's a description
                     else:
-                        # Fallback for indented lines without parentheses
-                        m = re.match(r'^\s+([A-Za-z_][\w]*)\s*-\s*(.+)', original_line)
+                        # OLD FORMAT: Indented format: name (Type) - Description (common in hooks)
+                        m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*-\s*(.+)', original_line)
                         if m:
-                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                            pending_parameter = None
+                        else:
+                            # Fallback for indented lines without parentheses
+                            m = re.match(r'^\s+([A-Za-z_][\w]*)\s*-\s*(.+)', original_line)
+                            if m:
+                                parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
+                                pending_parameter = None
+                            else:
+                                # Check if this is a description line for a pending parameter
+                                if pending_parameter:
+                                    current_indent = len(original_line) - len(original_line.lstrip())
+                                    if current_indent > pending_parameter['indent'] and line.strip():
+                                        parsed['parameters'].append({
+                                            'name': pending_parameter['name'],
+                                            'type': pending_parameter['type'],
+                                            'description': line.strip()
+                                        })
+                                        pending_parameter = None
+                                        continue
                 else:
                     # Not indented, might be a new section - reset current_section
                     current_section = None
@@ -243,6 +300,8 @@ def parse_comment_block(comment_text):
             inline_content = line[8:].strip()
             if inline_content:
                 section_content.append(inline_content)
+            # Check if next line might have the return type (new format)
+            # This will be handled in the returns section processing
         elif line.startswith('Realm:'):
             finalize_current_section()
             current_section = 'realm'
@@ -316,6 +375,14 @@ def parse_comment_block(comment_text):
 
     # Finalize any remaining section
     finalize_current_section()
+    
+    # Commit any pending parameter before finishing
+    if pending_parameter:
+        parsed['parameters'].append({
+            'name': pending_parameter['name'],
+            'type': pending_parameter['type'],
+            'description': ''
+        })
 
     # Add final example if exists
     if current_example:
@@ -367,7 +434,7 @@ def format_lua_code(code_lines):
     """
     if not code_lines:
         return code_lines
-    
+
     # Find the minimum indentation (excluding empty lines)
     min_indent = float('inf')
     for line in code_lines:
@@ -375,11 +442,17 @@ def format_lua_code(code_lines):
         if stripped:  # Skip only empty lines
             indent = len(line) - len(line.lstrip())
             min_indent = min(min_indent, indent)
-    
-    # If no valid indentation found, return as-is
+
+    # If no valid indentation found, return as-is but add 4 spaces
     if min_indent == float('inf') or min_indent == 0:
-        return code_lines
-    
+        final_lines = []
+        for line in code_lines:
+            if line.strip():  # Non-empty line
+                final_lines.append('    ' + line)
+            else:  # Empty line
+                final_lines.append('')
+        return final_lines
+
     # Remove the minimum indentation from all lines
     formatted_lines = []
     for line in code_lines:
@@ -391,8 +464,16 @@ def format_lua_code(code_lines):
                 formatted_lines.append(line)
         else:  # Empty line
             formatted_lines.append('')
-    
-    return formatted_lines
+
+    # Add 4 spaces by default to each line
+    final_lines = []
+    for line in formatted_lines:
+        if line.strip():  # Non-empty line
+            final_lines.append('    ' + line)
+        else:  # Empty line
+            final_lines.append('')
+
+    return final_lines
 
 
 def parse_overview_section(overview_text):
@@ -508,39 +589,50 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
 
     # Purpose
     if parsed_comment['purpose']:
-        md += f'**Purpose**\n\n{parsed_comment["purpose"]}\n\n'
+        md += f'#### 📋 Purpose\n{parsed_comment["purpose"]}\n\n'
 
     # When Called / When Used
     if parsed_comment['when_called']:
-        md += f'**When Called**\n\n{parsed_comment["when_called"]}\n\n'
+        md += f'#### ⏰ When Called\n{parsed_comment["when_called"]}\n\n'
     elif parsed_comment.get('when_used'):
-        md += f'**When Used**\n\n{parsed_comment["when_used"]}\n\n'
+        md += f'#### ⏰ When Called\n{parsed_comment["when_used"]}\n\n'
 
     # Parameters
     if parsed_comment['parameters']:
-        md += '**Parameters**\n\n'
+        md += '#### ⚙️ Parameters\n\n'
+        md += '| Parameter | Type | Description |\n'
+        md += '|-----------|------|-------------|\n'
         for param in parsed_comment['parameters']:
-            md += f'* `{param["name"]}` (*{param["type"]}*): {param["description"]}\n'
+            md += f'| `{param["name"]}` | **{param["type"]}** | {param["description"]} |\n'
         md += '\n'
 
     # Returns
     if parsed_comment['returns']:
-        md += f'**Returns**\n\n* {parsed_comment["returns"]}\n\n'
+        md += f'#### ↩️ Returns\n* {parsed_comment["returns"]}\n\n'
 
     # Realm
     if parsed_comment['realm']:
-        md += f'**Realm**\n\n{parsed_comment["realm"]}\n\n'
+        md += f'#### 🌐 Realm\n{parsed_comment["realm"]}\n\n'
 
     # Explanation (for panels)
     if parsed_comment.get('explanation'):
-        md += f'**Explanation**\n\n{parsed_comment["explanation"]}\n\n'
+        md += f'#### 📋 Purpose\n{parsed_comment["explanation"]}\n\n'
 
     # Example Usage
     if parsed_comment['examples']:
-        md += '**Example Usage**\n\n'
+        md += '#### 💡 Example Usage\n\n'
         for example in parsed_comment['examples']:
-            complexity = example['complexity'].title()
-            md += f'**{complexity} Complexity:**\n'
+            complexity = example.get('complexity', 'example').lower()
+            # Map complexity to emoji headers
+            if complexity == 'low':
+                md += '#### 🔰 Low Complexity\n'
+            elif complexity == 'medium':
+                md += '#### 📊 Medium Complexity\n'
+            elif complexity == 'high':
+                md += '#### ⚙️ High Complexity\n'
+            else:
+                # For generic examples without complexity, skip the header
+                pass
             md += '```lua\n'
             formatted_code = format_lua_code(example['code'])
             md += '\n'.join(formatted_code)
@@ -791,41 +883,43 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
         # Use existing function section generator for consistent field rendering
         md_parts.append(f'### {name}\n\n')
         if parsed.get('purpose'):
-            md_parts.append(f'**Purpose**\n\n{parsed["purpose"]}\n\n')
+            md_parts.append(f'#### 📋 Purpose\n{parsed["purpose"]}\n\n')
         # When Called / When Used
         if parsed.get('when_called'):
-            md_parts.append(f'**When Called**\n\n{parsed["when_called"]}\n\n')
+            md_parts.append(f'#### ⏰ When Called\n{parsed["when_called"]}\n\n')
         elif parsed.get('when_used'):
-            md_parts.append(f'**When Used**\n\n{parsed["when_used"]}\n\n')
+            md_parts.append(f'#### ⏰ When Called\n{parsed["when_used"]}\n\n')
         if parsed.get('realm'):
-            md_parts.append(f'**Realm**\n\n{parsed["realm"]}\n\n')
+            md_parts.append(f'#### 🌐 Realm\n{parsed["realm"]}\n\n')
         if parsed.get('explanation'):
-            md_parts.append(f'**Explanation**\n\n{parsed["explanation"]}\n\n')
+            md_parts.append(f'#### 📋 Purpose\n{parsed["explanation"]}\n\n')
         if parsed.get('parameters'):
-            md_parts.append('**Parameters**\n\n')
+            md_parts.append('#### ⚙️ Parameters\n\n')
+            md_parts.append('| Parameter | Type | Description |\n')
+            md_parts.append('|-----------|------|-------------|\n')
             for p in parsed['parameters']:
-                md_parts.append(f'* `{p["name"]}` (*{p["type"]}*): {p["description"]}\n')
+                md_parts.append(f'| `{p["name"]}` | **{p["type"]}** | {p["description"]} |\n')
             md_parts.append('\n')
         if parsed.get('returns'):
-            md_parts.append(f'**Returns**\n\n* {parsed["returns"]}\n\n')
+            md_parts.append(f'#### ↩️ Returns\n* {parsed["returns"]}\n\n')
         if parsed.get('examples'):
-            md_parts.append('**Example Usage**\n\n')
+            md_parts.append('#### 💡 Example Usage\n\n')
             for example in parsed['examples']:
-                complexity = example.get('complexity', 'example')
-                if complexity == 'example':
-                    # Simple example without complexity level
-                    md_parts.append('```lua\n')
-                    formatted_code = format_lua_code(example.get('code', []))
-                    md_parts.append('\n'.join(formatted_code))
-                    md_parts.append('\n```\n\n')
+                complexity = example.get('complexity', 'example').lower()
+                # Map complexity to emoji headers
+                if complexity == 'low':
+                    md_parts.append('#### 🔰 Low Complexity\n')
+                elif complexity == 'medium':
+                    md_parts.append('#### 📊 Medium Complexity\n')
+                elif complexity == 'high':
+                    md_parts.append('#### ⚙️ High Complexity\n')
                 else:
-                    # Complex example with complexity level
-                    complexity_title = complexity.title()
-                    md_parts.append(f'**{complexity_title} Complexity:**\n')
-                    md_parts.append('```lua\n')
-                    formatted_code = format_lua_code(example.get('code', []))
-                    md_parts.append('\n'.join(formatted_code))
-                    md_parts.append('\n```\n\n')
+                    # For generic examples without complexity, skip the header
+                    pass
+                md_parts.append('```lua\n')
+                formatted_code = format_lua_code(example.get('code', []))
+                md_parts.append('\n'.join(formatted_code))
+                md_parts.append('\n```\n\n')
         md_parts.append('---\n\n')
 
     # Add comprehensive examples at the end

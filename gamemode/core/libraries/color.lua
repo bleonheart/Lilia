@@ -19,8 +19,10 @@ if CLIENT then
             When defining custom colors or extending the color palette
 
         Parameters:
-            name (string) - The name identifier for the color
-            color (table) - Color table with r, g, b, a values or array format
+            name (string)
+                The name identifier for the color
+            color (table)
+                Color table with r, g, b, a values or array format
 
         Returns:
             None
@@ -67,11 +69,16 @@ if CLIENT then
             When creating color variations or adjusting existing colors
 
         Parameters:
-            color (Color) - The base color to adjust
-            rOffset (number) - Red channel offset (-255 to 255)
-            gOffset (number) - Green channel offset (-255 to 255)
-            bOffset (number) - Blue channel offset (-255 to 255)
-            aOffset (number, optional) - Alpha channel offset (-255 to 255)
+            color (Color)
+                The base color to adjust
+            rOffset (number)
+                Red channel offset (-255 to 255)
+            gOffset (number)
+                Green channel offset (-255 to 255)
+            bOffset (number)
+                Blue channel offset (-255 to 255)
+            aOffset (number, optional)
+                Alpha channel offset (-255 to 255)
 
         Returns:
             Color - New adjusted color with clamped values
@@ -121,8 +128,10 @@ if CLIENT then
             When creating darker variations of colors for shadows or depth
 
         Parameters:
-            color (Color) - The color to darken
-            factor (number, optional) - Darkening factor (0-1), defaults to 0.1
+            color (Color)
+                The color to darken
+            factor (number, optional)
+                Darkening factor (0-1), defaults to 0.1
 
         Returns:
             Color - New darkened color with preserved alpha
@@ -329,8 +338,10 @@ if CLIENT then
             When switching themes or initializing the color system
 
         Parameters:
-            themeName (string, optional) - Name of theme to apply, defaults to current theme
-            useTransition (boolean, optional) - Whether to use smooth transition animation
+            themeName (string, optional)
+                Name of theme to apply, defaults to current theme
+            useTransition (boolean, optional)
+                Whether to use smooth transition animation
 
         Returns:
             None
@@ -470,7 +481,8 @@ if CLIENT then
             When previewing theme changes or testing transitions
 
         Parameters:
-            themeName (string) - Name of theme to test transition to
+            themeName (string)
+                Name of theme to test transition to
 
         Returns:
             None
@@ -534,7 +546,8 @@ if CLIENT then
             When applying themes with transition animation enabled
 
         Parameters:
-            name (string) - Name of the theme to transition to
+            name (string)
+                Name of the theme to transition to
 
         Returns:
             None
@@ -655,7 +668,8 @@ if CLIENT then
             When validating color data or processing theme transitions
 
         Parameters:
-            v (any) - Value to check if it's a color
+            v (any)
+                Value to check if it's a color
 
         Returns:
             boolean - True if value is a valid color, false otherwise
@@ -799,9 +813,12 @@ if CLIENT then
             During theme transitions to smoothly blend between colors
 
         Parameters:
-            frac (number) - Interpolation factor/speed multiplier
-            col1 (Color) - Starting color
-            col2 (Color) - Target color
+            frac (number)
+                Interpolation factor/speed multiplier
+            col1 (Color)
+                Starting color
+            col2 (Color)
+                Target color
 
         Returns:
             Color - Interpolated color between col1 and col2
@@ -912,11 +929,13 @@ end
         When creating custom themes or extending the theme system
 
     Parameters:
-        name (string) - Name of the theme to register
-        themeData (table) - Table containing color definitions for the theme
+        name (string)
+            Name of the theme to register
+        themeData (table)
+            Table containing color definitions for the theme
 
     Returns:
-        None
+        nil
 
     Realm:
         Shared

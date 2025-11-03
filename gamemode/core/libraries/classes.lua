@@ -17,8 +17,10 @@ lia.class.list = lia.class.list or {}
         During gamemode initialization or when dynamically creating classes
 
     Parameters:
-        - uniqueID (string): Unique identifier for the class
-        - data (table): Table containing class properties (name, desc, limit, faction, etc.)
+        uniqueID (string)
+            Unique identifier for the class
+        data (table)
+            Table containing class properties (name, desc, limit, faction, etc.)
 
     Returns:
         The registered class table
@@ -116,10 +118,11 @@ end
         During gamemode initialization to load classes from files
 
     Parameters:
-        - directory (string): Path to directory containing class files
+        directory (string)
+            Path to directory containing class files
 
     Returns:
-        None
+        nil
 
     Realm:
         Shared
@@ -202,8 +205,10 @@ end
         When a player attempts to join a class or when checking class availability
 
     Parameters:
-        - client (Player): The player attempting to join the class
-        - class (number): The class index to check
+        client (Player)
+            The player attempting to join the class
+        class (number)
+            The class index to check
 
     Returns:
         boolean, string - Whether the player can join and reason if they cannot
@@ -284,7 +289,8 @@ end
         When needing to access class information or properties
 
     Parameters:
-        - identifier (number/string): Class index or uniqueID to retrieve
+        identifier (number/string)
+            Class index or uniqueID to retrieve
 
     Returns:
         table - The class data table or nil if not found
@@ -356,7 +362,8 @@ end
         When needing to find players in a particular class or check class population
 
     Parameters:
-        - class (number): The class index to get players for
+        class (number)
+            The class index to get players for
 
     Returns:
         table - Array of player entities in the specified class
@@ -440,7 +447,8 @@ end
         When needing to check class population without retrieving player objects
 
     Parameters:
-        - class (number): The class index to count players for
+        class (number)
+            The class index to count players for
 
     Returns:
         number - Number of players in the specified class
@@ -516,7 +524,8 @@ end
         When needing to find a class by name or partial identifier
 
     Parameters:
-        - class (string): String to match against class uniqueID or name
+        class (string)
+            String to match against class uniqueID or name
 
     Returns:
         number - The class index if found, nil otherwise
@@ -586,7 +595,8 @@ end
         When checking if a class requires special permissions or whitelist access
 
     Parameters:
-        - class (number): The class index to check for whitelist
+        class (number)
+            The class index to check for whitelist
 
     Returns:
         boolean - True if the class has whitelist restrictions, false otherwise
@@ -668,7 +678,8 @@ end
         When displaying available classes to a player or checking joinable options
 
     Parameters:
-        - client (Player): The player to check joinable classes for (optional, defaults to LocalPlayer on client)
+        client (Player)
+            The player to check joinable classes for (optional, defaults to LocalPlayer on client)
 
     Returns:
         table - Array of class tables that the client can join

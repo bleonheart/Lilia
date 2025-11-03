@@ -90,37 +90,66 @@ end
         When displaying a menu with selectable options (interactions, actions, or custom options)
 
     Parameters:
-        - rawOptions (table): Options to display. Can be:
+        rawOptions (table)
+            Options to display. Can be:
             * Dictionary table (keyed by option ID) for interaction/action menus
             * Sequential array of option tables for custom menus
-        - config (table, optional): Configuration options including:
-            - mode (string, optional): "interaction", "action", or "custom" (defaults to "custom")
-            - title (string, optional): Menu title text
-            - closeKey (number, optional): Key code that closes menu when released
-            - netMsg (string, optional): Network message name for server-only options
-            - preFiltered (boolean, optional): Whether options are already filtered (defaults to false)
-            - entity (Entity, optional): Target entity for interaction mode
-            - resolveEntity (boolean, optional): Whether to resolve traced entity (defaults to true for non-custom modes)
-            - emitHooks (boolean, optional): Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes)
-            - registryKey (string, optional): Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu")
-            - fadeSpeed (number, optional): Animation fade speed in seconds (defaults to 0.05)
-            - frameW (number, optional): Frame width in pixels (defaults to 450)
-            - frameH (number, optional): Frame height in pixels (auto-calculated if not provided)
-            - entryH (number, optional): Height of each option button (defaults to 30)
-            - maxHeight (number, optional): Maximum frame height (defaults to 60% of screen height)
-            - titleHeight (number, optional): Title label height (defaults to 36 or 16 based on mode)
-            - titleOffsetY (number, optional): Y offset for title (defaults to 2)
-            - verticalGap (number, optional): Vertical spacing between title and scroll area (defaults to 24)
-            - screenPadding (number, optional): Screen padding for frame positioning (defaults to 15% of screen width)
-            - x (number, optional): Custom X position (auto-calculated if not provided)
-            - y (number, optional): Custom Y position (auto-calculated if not provided)
-            - titleFont (string, optional): Font for title text (defaults to "liaSmallFont")
-            - titleColor (Color, optional): Color for title text (defaults to color_white)
-            - buttonFont (string, optional): Font for option buttons (defaults to "liaSmallFont")
-            - buttonTextColor (Color, optional): Color for button text (defaults to color_white)
-            - closeOnSelect (boolean, optional): Whether to close menu when option is selected (defaults to true)
-            - timerName (string, optional): Name for auto-close timer
-            - autoCloseDelay (number, optional): Seconds until auto-close (defaults to 30, 0 to disable)
+        config (table, optional)
+            Configuration options including:
+            mode (string, optional)
+                "interaction", "action", or "custom" (defaults to "custom")
+            title (string, optional)
+                Menu title text
+            closeKey (number, optional)
+                Key code that closes menu when released
+            netMsg (string, optional)
+                Network message name for server-only options
+            preFiltered (boolean, optional)
+                Whether options are already filtered (defaults to false)
+            entity (Entity, optional)
+                Target entity for interaction mode
+            resolveEntity (boolean, optional)
+                Whether to resolve traced entity (defaults to true for non-custom modes)
+            emitHooks (boolean, optional)
+                Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes)
+            registryKey (string, optional)
+                Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu")
+            fadeSpeed (number, optional)
+                Animation fade speed in seconds (defaults to 0.05)
+            frameW (number, optional)
+                Frame width in pixels (defaults to 450)
+            frameH (number, optional)
+                Frame height in pixels (auto-calculated if not provided)
+            entryH (number, optional)
+                Height of each option button (defaults to 30)
+            maxHeight (number, optional)
+                Maximum frame height (defaults to 60% of screen height)
+            titleHeight (number, optional)
+                Title label height (defaults to 36 or 16 based on mode)
+            titleOffsetY (number, optional)
+                Y offset for title (defaults to 2)
+            verticalGap (number, optional)
+                Vertical spacing between title and scroll area (defaults to 24)
+            screenPadding (number, optional)
+                Screen padding for frame positioning (defaults to 15% of screen width)
+            x (number, optional)
+                Custom X position (auto-calculated if not provided)
+            y (number, optional)
+                Custom Y position (auto-calculated if not provided)
+            titleFont (string, optional)
+                Font for title text (defaults to "liaSmallFont")
+            titleColor (Color, optional)
+                Color for title text (defaults to color_white)
+            buttonFont (string, optional)
+                Font for option buttons (defaults to "liaSmallFont")
+            buttonTextColor (Color, optional)
+                Color for button text (defaults to color_white)
+            closeOnSelect (boolean, optional)
+                Whether to close menu when option is selected (defaults to true)
+            timerName (string, optional)
+                Name for auto-close timer
+            autoCloseDelay (number, optional)
+                Seconds until auto-close (defaults to 30, 0 to disable)
 
     Returns:
         Panel - The created menu frame, or nil if no valid options or invalid client
@@ -473,7 +502,7 @@ end
         color_standart (Color, optional) - Default color to display
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -762,7 +791,7 @@ end
         do_click (function) - Callback function called when player is selected
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -906,7 +935,7 @@ end
         func (function) - Callback function called with the entered text
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -1639,7 +1668,7 @@ end
         thickness (number, optional) - Outline thickness
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -1732,7 +1761,7 @@ end
         thickness (number, optional) - Outline thickness
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -1796,7 +1825,7 @@ end
         flags (number, optional) - Drawing flags for customization
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -1848,7 +1877,7 @@ end
         flags (number, optional) - Drawing flags for customization
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2189,7 +2218,7 @@ end
         yalign (number, optional) - Vertical text alignment
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2247,7 +2276,7 @@ end
         outlinecolour (Color) - Color of the outline
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2303,7 +2332,7 @@ end
         outlineCol (Color) - Color of the bubble outline
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2390,7 +2419,7 @@ end
         alpha (number, optional) - Alpha multiplier for shadow
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2722,7 +2751,7 @@ end
         scale_factor (number, optional) - Initial scale factor (default: 0.8)
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2872,7 +2901,7 @@ end
         alpha (number, optional) - Blur alpha (default: 255)
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -2957,7 +2986,7 @@ end
         alpha (number, optional) - Blur alpha (default: 255)
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -3016,7 +3045,7 @@ end
         defaults (table, optional) - Default values for arguments
 
     Returns:
-        None
+        nil
 
     Realm:
         Client
@@ -3589,7 +3618,7 @@ lia.derma.entsScales = lia.derma.entsScales or {}
         alphaOverride (number, optional) - Alpha override for the text
 
     Returns:
-        None
+        nil
 
     Realm:
         Client

@@ -17,9 +17,12 @@ if SERVER then
             When server needs to display a notification to player(s)
 
         Parameters:
-            - client (Player|nil): Target player to send notification to, or nil for all players
-            - message (string): The notification message text to display
-            - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
+            client (Player|nil)
+                Target player to send notification to, or nil for all players
+            message (string)
+                The notification message text to display
+            notifType (string|nil)
+                Type of notification ("default", "error", "success", "info", etc.)
 
         Returns:
             None
@@ -76,10 +79,14 @@ if SERVER then
             When server needs to display a localized notification with parameter substitution
 
         Parameters:
-            - client (Player|nil): Target player to send notification to, or nil for all players
-            - key (string): Localization key for the message
-            - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
-            - ... (any): Variable arguments to substitute into the localized message
+            client (Player|nil)
+                Target player to send notification to, or nil for all players
+            key (string)
+                Localization key for the message
+            notifType (string|nil)
+                Type of notification ("default", "error", "success", "info", etc.)
+            ... (any)
+                Variable arguments to substitute into the localized message
 
         Returns:
             None
@@ -293,9 +300,12 @@ else
             When client needs to display a notification without server communication
 
         Parameters:
-            - _ (any): Ignored parameter (for compatibility with server version)
-            - message (string): The notification message text to display
-            - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
+            _ (any)
+                Ignored parameter (for compatibility with server version)
+            message (string)
+                The notification message text to display
+            notifType (string|nil)
+                Type of notification ("default", "error", "success", "info", etc.)
 
         Returns:
             None
@@ -352,10 +362,14 @@ else
             When client needs to display a localized notification without server communication
 
         Parameters:
-            - client (any): Ignored parameter (for compatibility with server version)
-            - key (string): Localization key for the message
-            - notifType (string|nil): Type of notification ("default", "error", "success", "info", etc.)
-            - ... (any): Variable arguments to substitute into the localized message
+            client (any)
+                Ignored parameter (for compatibility with server version)
+            key (string)
+                Localization key for the message
+            notifType (string|nil)
+                Type of notification ("default", "error", "success", "info", etc.)
+            ... (any)
+                Variable arguments to substitute into the localized message
 
         Returns:
             None
@@ -434,8 +448,10 @@ else
             When legacy notification functions are used (e.g., notification.AddLegacy)
 
         Parameters:
-            - text (string): The notification message text to display
-            - typeId (number): Legacy notification type ID (0=info, 1=error, 2=success)
+            text (string)
+                The notification message text to display
+            typeId (number)
+                Legacy notification type ID (0=info, 1=error, 2=success)
 
         Returns:
             None

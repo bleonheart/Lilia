@@ -184,9 +184,12 @@ end
         When triggering player animations for roleplay, emotes, or visual effects
 
     Parameters:
-        - a (number): Gesture slot (0-15)
-        - b (number): Gesture weight (0-255)
-        - c (boolean): Whether to restart the gesture
+        a (number)
+            Gesture slot (0-15)
+        b (number)
+            Gesture weight (0-255)
+        c (boolean)
+            Whether to restart the gesture
 
     Returns:
         None
@@ -241,7 +244,8 @@ end
         When validating player permissions for commands, features, or access control
 
     Parameters:
-        - privilegeName (string): The name of the privilege to check
+        privilegeName (string)
+            The name of the privilege to check
 
     Returns:
         boolean - True if player has the privilege, false otherwise
@@ -404,8 +408,10 @@ end
         When implementing proximity-based features, interaction systems, or distance validation
 
     Parameters:
-        - radius (number): The maximum distance to check
-        - entity (Entity): The entity to check distance against
+        radius (number)
+            The maximum distance to check
+        entity (Entity)
+            The entity to check distance against
 
     Returns:
         boolean - True if player is within radius, false otherwise
@@ -457,8 +463,10 @@ end
         When implementing area-of-effect systems, proximity detection, or entity scanning
 
     Parameters:
-        - radius (number): The radius to search within
-        - playerOnly (boolean, optional): If true, only returns player entities
+        radius (number)
+            The radius to search within
+        playerOnly (boolean, optional)
+            If true, only returns player entities
 
     Returns:
         table - Array of entities within the radius
@@ -809,7 +817,8 @@ end
         When implementing interaction systems, targeting, or line-of-sight detection
 
     Parameters:
-        - distance (number, optional): Maximum trace distance (default: 96)
+        distance (number, optional)
+            Maximum trace distance (default: 96)
 
     Returns:
         Entity|nil - The traced entity if found, nil otherwise
@@ -870,7 +879,8 @@ end
         When implementing collision detection, surface analysis, or spatial queries
 
     Parameters:
-        - distance (number, optional): Maximum trace distance (default: 200)
+        distance (number, optional)
+            Maximum trace distance (default: 200)
 
     Returns:
         table - Trace result containing hit information, position, and entity data
@@ -937,7 +947,8 @@ end
         When implementing precise targeting, interaction systems, or line-of-sight detection
 
     Parameters:
-        - distance (number, optional): Maximum distance to check (default: 150)
+        distance (number, optional)
+            Maximum distance to check (default: 150)
 
     Returns:
         Entity|nil - The entity if within distance, nil otherwise
@@ -994,8 +1005,10 @@ end
         When displaying messages, alerts, or status updates to the player
 
     Parameters:
-        - message (string): The message to display
-        - notifType (string, optional): The type of notification (default: "default")
+        message (string)
+            The message to display
+        notifType (string, optional)
+            The type of notification (default: "default")
 
     Returns:
         None
@@ -1047,9 +1060,12 @@ end
         When displaying translated messages, alerts, or status updates to the player
 
     Parameters:
-        - message (string): The localization key for the message
-        - notifType (string, optional): The type of notification (default: "default")
-        - ... (vararg): Arguments to format into the localized string
+        message (string)
+            The localization key for the message
+        notifType (string, optional)
+            The type of notification (default: "default")
+        ... (vararg)
+            Arguments to format into the localized string
 
     Returns:
         None
@@ -1097,7 +1113,8 @@ end
         When displaying error messages, failures, or critical alerts to the player
 
     Parameters:
-        - message (string): The error message to display
+        message (string)
+            The error message to display
 
     Returns:
         None
@@ -1150,7 +1167,8 @@ end
         When displaying warning messages, cautions, or important alerts to the player
 
     Parameters:
-        - message (string): The warning message to display
+        message (string)
+            The warning message to display
 
     Returns:
         None
@@ -3697,7 +3715,8 @@ if SERVER then
         When a player equips a new PAC accessory
 
     Parameters:
-        - partID (string): The unique identifier of the PAC part to add
+        partID (string)
+            The unique identifier of the PAC part to add
 
     Returns:
         None
@@ -3777,7 +3796,8 @@ if SERVER then
         When a player unequips a PAC accessory
 
     Parameters:
-        - partID (string): The unique identifier of the PAC part to remove
+        partID (string)
+            The unique identifier of the PAC part to remove
 
     Returns:
         None

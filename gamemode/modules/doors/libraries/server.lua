@@ -394,7 +394,7 @@ end
             }
 
     Returns:
-        None
+        nil
 
     Realm:
         Server
@@ -549,7 +549,7 @@ end
         None
 
     Returns:
-        None
+        nil
 
     Realm:
         Server
@@ -675,7 +675,7 @@ end
         None
 
     Returns:
-        None
+        nil
 
     Realm:
         Server

@@ -287,8 +287,10 @@ local ConditionalFiles = {
         During framework initialization, module loading, or when manually including files
 
     Parameters:
-        - path (string): The file path to include (e.g., "lilia/gamemode/core/libraries/util.lua")
-        - realm (string, optional): The realm to load the file in ("client", "server", "shared")
+        path (string)
+            The file path to include (e.g., "lilia/gamemode/core/libraries/util.lua")
+        realm (string, optional)
+            The realm to load the file in ("client", "server", "shared")
 
     Returns:
         None
@@ -365,10 +367,14 @@ end
         During framework initialization to load entire directories of files
 
     Parameters:
-        - dir (string): The directory path to scan for Lua files
-        - raw (boolean, optional): If true, uses the exact path; if false, resolves relative to gamemode/schema
-        - deep (boolean, optional): If true, recursively searches subdirectories
-        - realm (string, optional): The realm to load files in ("client", "server", "shared")
+        dir (string)
+            The directory path to scan for Lua files
+        raw (boolean, optional)
+            If true, uses the exact path; if false, resolves relative to gamemode/schema
+        deep (boolean, optional)
+            If true, recursively searches subdirectories
+        realm (string, optional)
+            The realm to load files in ("client", "server", "shared")
 
     Returns:
         None
@@ -426,10 +432,14 @@ end
         During framework initialization to load files with automatic realm detection
 
     Parameters:
-        - dir (string): The directory path to scan for Lua files
-        - raw (boolean, optional): If true, uses the exact path; if false, resolves relative to gamemode/schema
-        - recursive (boolean, optional): If true, recursively searches subdirectories
-        - forceRealm (string, optional): Forces all files to be loaded in this realm instead of auto-detection
+        dir (string)
+            The directory path to scan for Lua files
+        raw (boolean, optional)
+            If true, uses the exact path; if false, resolves relative to gamemode/schema
+        recursive (boolean, optional)
+            If true, recursively searches subdirectories
+        forceRealm (string, optional)
+            Forces all files to be loaded in this realm instead of auto-detection
 
     Returns:
         None
@@ -710,7 +720,8 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "server")
         When critical errors occur during framework operation or module loading
 
     Parameters:
-        - msg (string): The error message to display
+        msg (string)
+            The error message to display
 
     Returns:
         None
@@ -769,7 +780,8 @@ end
         When non-critical issues occur that should be brought to attention
 
     Parameters:
-        - msg (string): The warning message to display
+        msg (string)
+            The warning message to display
 
     Returns:
         None
@@ -827,7 +839,8 @@ end
         When providing general information about framework operations or status updates
 
     Parameters:
-        - msg (string): The informational message to display
+        msg (string)
+            The informational message to display
 
     Returns:
         None
@@ -881,8 +894,10 @@ end
         During framework initialization to report progress of different bootstrap phases
 
     Parameters:
-        - section (string): The bootstrap section name (e.g., "Database", "Modules", "HotReload")
-        - msg (string): The bootstrap message to display
+        section (string)
+            The bootstrap section name (e.g., "Database", "Modules", "HotReload")
+        msg (string)
+            The bootstrap message to display
 
     Returns:
         None
@@ -935,7 +950,8 @@ end
         When logging important events or sending notifications to Discord channels
 
     Parameters:
-        - embed (table): Discord embed object containing message data (title, description, color, fields, etc.)
+        embed (table)
+            Discord embed object containing message data (title, description, color, fields, etc.)
 
     Returns:
         None
@@ -1048,7 +1064,8 @@ end
         During framework initialization to register all custom entities, weapons, and tools
 
     Parameters:
-        - path (string): The base path containing entity folders (e.g., "lilia/gamemode/entities")
+        path (string)
+            The base path containing entity folders (e.g., "lilia/gamemode/entities")
 
     Returns:
         None
