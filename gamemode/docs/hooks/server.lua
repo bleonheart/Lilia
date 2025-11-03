@@ -18935,58 +18935,6 @@ end
 function PlayerCheatDetected(client)
 end
 
---[[
-    Purpose:
-        Cleanup and bookkeeping when a player leaves the server
-
-    When Called:
-        Runs during GM:PlayerDisconnected after Lilia saves per-player data and unloads their character
-
-    Parameters:
-        - client (Player): Player who disconnected
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-    ```lua
-    -- Simple: Log disconnect
-    hook.Add("PlayerDisconnected", "LogDisconnect", function(client)
-        lia.log.add(client, "playerDisconnected")
-    end)
-    ```
-
-    Medium Complexity:
-    ```lua
-    -- Medium: Clear pending tickets
-    hook.Add("PlayerDisconnected", "ClearPendingTickets", function(client)
-        ActiveTickets = ActiveTickets or {}
-        ActiveTickets[client:SteamID()] = nil
-    end)
-    ```
-
-    High Complexity:
-    ```lua
-    -- High: Persist session metrics
-    hook.Add("PlayerDisconnected", "PersistSessionMetrics", function(client)
-        local char = client:getChar()
-        if not char then return end
-        lia.db.insertTable({
-            steamID = client:SteamID(),
-            charID = char:getID(),
-            playTime = char:getPlayTime(),
-            leftAt = os.time()
-        }, nil, "session_metrics")
-    end)
-    ```
-]]
-function PlayerDisconnected(client)
-end
 
 --[[
     Purpose:
