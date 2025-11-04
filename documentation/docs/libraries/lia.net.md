@@ -115,7 +115,7 @@ Shared
 ```lua
     -- High: Send message to multiple players with complex data
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -245,7 +245,7 @@ Server
 ```lua
     -- Medium: Send to specific players with custom chunk size
     local playerData = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         playerData[ply:SteamID()] = {
             name  = ply:Name(),
             health = ply:Health(),
@@ -253,7 +253,7 @@ Server
         }
     end
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -267,7 +267,7 @@ Server
     -- High: Send complex inventory data with validation and error handling
     local function sendInventoryData(targets)
         local inventoryData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:GetCharacter()
             if char then
                 local inv = char:GetInventory()
@@ -339,7 +339,7 @@ Server
 ```lua
     -- Medium: Send to specific players with custom chunk size
     local playerData = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         playerData[ply:SteamID()] = {
             name  = ply:Name(),
             health = ply:Health(),
@@ -347,7 +347,7 @@ Server
         }
     end
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -361,7 +361,7 @@ Server
     -- High: Send complex inventory data with validation and error handling
     local function sendInventoryData(targets)
         local inventoryData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:GetCharacter()
             if char then
                 local inv = char:GetInventory()
@@ -433,7 +433,7 @@ Server
 ```lua
     -- Medium: Send to specific players with custom chunk size
     local playerData = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         playerData[ply:SteamID()] = {
             name  = ply:Name(),
             health = ply:Health(),
@@ -441,7 +441,7 @@ Server
         }
     end
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -455,7 +455,7 @@ Server
     -- High: Send complex inventory data with validation and error handling
     local function sendInventoryData(targets)
         local inventoryData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:GetCharacter()
             if char then
                 local inv = char:GetInventory()
@@ -527,7 +527,7 @@ Server
 ```lua
     -- Medium: Send to specific players with custom chunk size
     local playerData = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         playerData[ply:SteamID()] = {
             name  = ply:Name(),
             health = ply:Health(),
@@ -535,7 +535,7 @@ Server
         }
     end
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -549,7 +549,7 @@ Server
     -- High: Send complex inventory data with validation and error handling
     local function sendInventoryData(targets)
         local inventoryData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:GetCharacter()
             if char then
                 local inv = char:GetInventory()
@@ -621,7 +621,7 @@ Server
 ```lua
     -- Medium: Send to specific players with custom chunk size
     local playerData = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         playerData[ply:SteamID()] = {
             name  = ply:Name(),
             health = ply:Health(),
@@ -629,7 +629,7 @@ Server
         }
     end
     local admins = {}
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             table.insert(admins, ply)
         end
@@ -643,7 +643,7 @@ Server
     -- High: Send complex inventory data with validation and error handling
     local function sendInventoryData(targets)
         local inventoryData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:GetCharacter()
             if char then
                 local inv = char:GetInventory()

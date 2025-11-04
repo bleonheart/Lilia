@@ -280,7 +280,7 @@ local function drawVoiceIndicator()
         local radius = VoiceRanges[voiceType] or VoiceRanges[L("talking")]
         local clientPos = client:GetPos()
         local count = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= client and IsValid(ply) and ply:getChar() and ply:Alive() then
                 local distance = clientPos:Distance(ply:GetPos())
                 if distance <= radius then count = count + 1 end

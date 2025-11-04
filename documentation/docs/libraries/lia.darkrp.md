@@ -183,7 +183,7 @@ Server
 ```lua
     -- High: Send notifications to multiple players
     local message = "server_restart_warning"
-    for _, ply in ipairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsValid() and ply:IsConnected() then
             lia.darkrp.notify(ply, nil, nil, message)
         end

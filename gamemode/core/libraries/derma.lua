@@ -33,34 +33,34 @@ local color_target = Color(255, 255, 255, 200)
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Create a basic context menu
-    local menu = lia.derma.dermaMenu()
-    menu:AddOption("Option 1", function() print("Option 1 clicked") end)
-    ```
+        ```lua
+        -- Simple: Create a basic context menu
+        local menu = lia.derma.dermaMenu()
+        menu:AddOption("Option 1", function() print("Option 1 clicked") end)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Create context menu with multiple options
-    local menu = lia.derma.dermaMenu()
-    menu:AddOption("Edit", function() editItem() end)
-    menu:AddOption("Delete", function() deleteItem() end)
-    menu:AddSpacer()
-    menu:AddOption("Properties", function() showProperties() end)
-    ```
+        ```lua
+        -- Medium: Create context menu with multiple options
+        local menu = lia.derma.dermaMenu()
+        menu:AddOption("Edit", function() editItem() end)
+        menu:AddOption("Delete", function() deleteItem() end)
+        menu:AddSpacer()
+        menu:AddOption("Properties", function() showProperties() end)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Create dynamic context menu based on conditions
-    local menu = lia.derma.dermaMenu()
-    if player:IsAdmin() then
-        menu:AddOption("Admin Action", function() adminAction() end)
-    end
-    if item:CanUse() then
-        menu:AddOption("Use Item", function() item:Use() end)
-    end
-    menu:AddOption("Inspect", function() inspectItem(item) end)
-    ```
+        ```lua
+        -- High: Create dynamic context menu based on conditions
+        local menu = lia.derma.dermaMenu()
+        if player:IsAdmin() then
+            menu:AddOption("Admin Action", function() adminAction() end)
+        end
+        if item:CanUse() then
+            menu:AddOption("Use Item", function() item:Use() end)
+        end
+        menu:AddOption("Inspect", function() inspectItem(item) end)
+        ```
 ]]
 function lia.derma.dermaMenu()
     if IsValid(lia.gui.menuDermaMenu) then lia.gui.menuDermaMenu:CloseMenu() end
@@ -96,60 +96,60 @@ end
             * Sequential array of option tables for custom menus
         config (table, optional)
             Configuration options including:
-            mode (string, optional)
-                "interaction", "action", or "custom" (defaults to "custom")
-            title (string, optional)
-                Menu title text
-            closeKey (number, optional)
-                Key code that closes menu when released
-            netMsg (string, optional)
-                Network message name for server-only options
-            preFiltered (boolean, optional)
-                Whether options are already filtered (defaults to false)
-            entity (Entity, optional)
-                Target entity for interaction mode
-            resolveEntity (boolean, optional)
-                Whether to resolve traced entity (defaults to true for non-custom modes)
-            emitHooks (boolean, optional)
-                Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes)
-            registryKey (string, optional)
-                Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu")
-            fadeSpeed (number, optional)
-                Animation fade speed in seconds (defaults to 0.05)
-            frameW (number, optional)
-                Frame width in pixels (defaults to 450)
-            frameH (number, optional)
-                Frame height in pixels (auto-calculated if not provided)
-            entryH (number, optional)
-                Height of each option button (defaults to 30)
-            maxHeight (number, optional)
-                Maximum frame height (defaults to 60% of screen height)
-            titleHeight (number, optional)
-                Title label height (defaults to 36 or 16 based on mode)
-            titleOffsetY (number, optional)
-                Y offset for title (defaults to 2)
-            verticalGap (number, optional)
-                Vertical spacing between title and scroll area (defaults to 24)
-            screenPadding (number, optional)
-                Screen padding for frame positioning (defaults to 15% of screen width)
-            x (number, optional)
-                Custom X position (auto-calculated if not provided)
-            y (number, optional)
-                Custom Y position (auto-calculated if not provided)
-            titleFont (string, optional)
-                Font for title text (defaults to "liaSmallFont")
-            titleColor (Color, optional)
-                Color for title text (defaults to color_white)
-            buttonFont (string, optional)
-                Font for option buttons (defaults to "liaSmallFont")
-            buttonTextColor (Color, optional)
-                Color for button text (defaults to color_white)
-            closeOnSelect (boolean, optional)
-                Whether to close menu when option is selected (defaults to true)
-            timerName (string, optional)
-                Name for auto-close timer
-            autoCloseDelay (number, optional)
-                Seconds until auto-close (defaults to 30, 0 to disable)
+                mode (string, optional)
+                    "interaction", "action", or "custom" (defaults to "custom")
+                title (string, optional)
+                    Menu title text
+                closeKey (number, optional)
+                    Key code that closes menu when released
+                netMsg (string, optional)
+                    Network message name for server-only options
+                preFiltered (boolean, optional)
+                    Whether options are already filtered (defaults to false)
+                entity (Entity, optional)
+                    Target entity for interaction mode
+                resolveEntity (boolean, optional)
+                    Whether to resolve traced entity (defaults to true for non-custom modes)
+                emitHooks (boolean, optional)
+                    Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes)
+                registryKey (string, optional)
+                    Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu")
+                fadeSpeed (number, optional)
+                    Animation fade speed in seconds (defaults to 0.05)
+                frameW (number, optional)
+                    Frame width in pixels (defaults to 450)
+                frameH (number, optional)
+                    Frame height in pixels (auto-calculated if not provided)
+                entryH (number, optional)
+                    Height of each option button (defaults to 30)
+                maxHeight (number, optional)
+                    Maximum frame height (defaults to 60% of screen height)
+                titleHeight (number, optional)
+                    Title label height (defaults to 36 or 16 based on mode)
+                titleOffsetY (number, optional)
+                    Y offset for title (defaults to 2)
+                verticalGap (number, optional)
+                    Vertical spacing between title and scroll area (defaults to 24)
+                screenPadding (number, optional)
+                    Screen padding for frame positioning (defaults to 15% of screen width)
+                x (number, optional)
+                    Custom X position (auto-calculated if not provided)
+                y (number, optional)
+                    Custom Y position (auto-calculated if not provided)
+                titleFont (string, optional)
+                    Font for title text (defaults to "liaSmallFont")
+                titleColor (Color, optional)
+                    Color for title text (defaults to color_white)
+                buttonFont (string, optional)
+                    Font for option buttons (defaults to "liaSmallFont")
+                buttonTextColor (Color, optional)
+                    Color for button text (defaults to color_white)
+                closeOnSelect (boolean, optional)
+                    Whether to close menu when option is selected (defaults to true)
+                timerName (string, optional)
+                    Name for auto-close timer
+                autoCloseDelay (number, optional)
+                    Seconds until auto-close (defaults to 30, 0 to disable)
 
     Returns:
         Panel - The created menu frame, or nil if no valid options or invalid client
@@ -160,87 +160,87 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Display a basic custom options menu
-    lia.derma.optionsMenu({
-    {name = "Option 1", callback = function() print("Selected 1") end},
-    {name = "Option 2", callback = function() print("Selected 2") end}
-    })
-    ```
+        ```lua
+        -- Simple: Display a basic custom options menu
+        lia.derma.optionsMenu({
+            {name = "Option 1", callback = function() print("Selected 1") end},
+            {name = "Option 2", callback = function() print("Selected 2") end}
+        })
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Custom menu with descriptions and custom positioning
-    lia.derma.optionsMenu({
-    {
-    name = "Save Game",
-    description = "Save your current progress",
-    callback = function() saveGame() end
-    },
-    {
-    name = "Load Game",
-    description = "Load a previously saved game",
-    callback = function() loadGame() end
-    },
-    {
-    name = "Settings",
-    description = "Open game settings",
-    callback = function() openSettings() end
-    }
-    }, {
-    title = "Main Menu",
-    x = ScrW() / 2 - 225,
-    y = ScrH() / 2 - 150,
-    frameW = 450,
-    closeOnSelect = false
-    })
-    ```
+        ```lua
+        -- Medium: Custom menu with descriptions and custom positioning
+        lia.derma.optionsMenu({
+            {
+                name = "Save Game",
+                description = "Save your current progress",
+                callback = function() saveGame() end
+            },
+            {
+                name = "Load Game",
+                description = "Load a previously saved game",
+                callback = function() loadGame() end
+            },
+            {
+                name = "Settings",
+                description = "Open game settings",
+                callback = function() openSettings() end
+            }
+        }, {
+            title = "Main Menu",
+            x = ScrW() / 2 - 225,
+            y = ScrH() / 2 - 150,
+            frameW = 450,
+            closeOnSelect = false
+        })
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Advanced menu with custom callbacks and network messaging
-    lia.derma.optionsMenu({
-    {
-    name = "Radio Preset 1",
-    description = "Switch to preset frequency 1",
-    callback = function(client, entity, entry, frame)
-    -- Custom callback with context
-    lia.radio.setFrequency(100.0)
-    client:notify("Switched to radio preset 1")
-    end,
-    passContext = true -- Pass client, entity, entry, frame to callback
-    },
-    {
-    name = "Radio Preset 2",
-    description = "Switch to preset frequency 2",
-    serverOnly = true,
-    netMessage = "liaRadioSetPreset",
-    networkID = "preset2"
-    },
-    {
-    name = "Custom Frequency",
-    description = "Enter a custom frequency",
-    callback = function()
-    -- Open frequency input dialog
-    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-    local numFreq = tonumber(freq)
-    if numFreq and numFreq >= 80 and numFreq <= 200 then
-        lia.radio.setFrequency(numFreq)
-        client:notify("Frequency set to " .. freq .. " MHz")
-        else
-            client:notify("Invalid frequency range (80-200 MHz)")
-        end
-    end)
-    end
-    }
-    }, {
-    title = "Radio Presets",
-    mode = "custom",
-    closeKey = KEY_R,
-    fadeSpeed = 0.1,
-    autoCloseDelay = 60
-    })
-    ```
+        ```lua
+        -- High: Advanced menu with custom callbacks and network messaging
+        lia.derma.optionsMenu({
+            {
+                name = "Radio Preset 1",
+                description = "Switch to preset frequency 1",
+                callback = function(client, entity, entry, frame)
+                    -- Custom callback with context
+                    lia.radio.setFrequency(100.0)
+                    client:notify("Switched to radio preset 1")
+                end,
+                passContext = true -- Pass client, entity, entry, frame to callback
+            },
+            {
+                name = "Radio Preset 2",
+                description = "Switch to preset frequency 2",
+                serverOnly = true,
+                netMessage = "liaRadioSetPreset",
+                networkID = "preset2"
+            },
+            {
+                name = "Custom Frequency",
+                description = "Enter a custom frequency",
+                callback = function()
+                    -- Open frequency input dialog
+                    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                        local numFreq = tonumber(freq)
+                        if numFreq and numFreq >= 80 and numFreq <= 200 then
+                            lia.radio.setFrequency(numFreq)
+                            client:notify("Frequency set to " .. freq .. " MHz")
+                        else
+                            client:notify("Invalid frequency range (80-200 MHz)")
+                        end
+                    end)
+                end
+            }
+        }, {
+            title = "Radio Presets",
+            mode = "custom",
+            closeKey = KEY_R,
+            fadeSpeed = 0.1,
+            autoCloseDelay = 60
+        })
+        ```
 ]]
 function lia.derma.optionsMenu(rawOptions, config)
     config = config or {}
@@ -512,34 +512,34 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Open color picker with callback
-    lia.derma.colorPicker(function(color)
-    print("Selected color:", color.r, color.g, color.b)
-    end)
-    ```
+        ```lua
+        -- Simple: Open color picker with callback
+        lia.derma.colorPicker(function(color)
+            print("Selected color:", color.r, color.g, color.b)
+        end)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Open color picker with default color
-    local defaultColor = Color(255, 0, 0)
-    lia.derma.colorPicker(function(color)
-    myPanel:SetColor(color)
-    end, defaultColor)
-    ```
+        ```lua
+        -- Medium: Open color picker with default color
+        local defaultColor = Color(255, 0, 0)
+        lia.derma.colorPicker(function(color)
+            myPanel:SetColor(color)
+        end, defaultColor)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Color picker with validation and multiple callbacks
-    local currentColor = settings:GetColor("theme_color")
-    lia.derma.colorPicker(function(color)
-    if color:Distance(currentColor) > 50 then
-        settings:SetColor("theme_color", color)
-        updateTheme(color)
-        notify("Theme color updated!")
-    end
-    end, currentColor)
-    ```
+        ```lua
+        -- High: Color picker with validation and multiple callbacks
+        local currentColor = settings:GetColor("theme_color")
+        lia.derma.colorPicker(function(color)
+            if color:Distance(currentColor) > 50 then
+                settings:SetColor("theme_color", color)
+                updateTheme(color)
+                notify("Theme color updated!")
+            end
+        end, currentColor)
+        ```
 ]]
 function lia.derma.colorPicker(func, color_standart)
     if IsValid(lia.gui.menuColorPicker) then lia.gui.menuColorPicker:Remove() end
@@ -712,12 +712,18 @@ end
         When user needs to select from multiple options in a circular menu format
 
     Parameters:
-        options (table, optional) - Configuration table with the following optional fields:
-            radius (number) - Outer radius of the radial menu (default: 280)
-            inner_radius (number) - Inner radius of the radial menu (default: 96)
-            disable_background (boolean) - Whether to disable the background overlay (default: false)
-            hover_sound (string) - Sound file to play on hover (default: "ratio_button.wav")
-            scale_animation (boolean) - Whether to enable scale animation on open (default: true)
+        options (table, optional)
+            Configuration table with the following optional fields:
+            radius (number)
+                Outer radius of the radial menu (default: 280)
+            inner_radius (number)
+                Inner radius of the radial menu (default: 96)
+            disable_background (boolean)
+                Whether to disable the background overlay (default: false)
+            hover_sound (string)
+                Sound file to play on hover (default: "ratio_button.wav")
+            scale_animation (boolean)
+                Whether to enable scale animation on open (default: true)
 
     Returns:
         Panel - The created radial menu panel with methods for adding options
@@ -768,11 +774,16 @@ end
     ```
 
     Panel Methods:
-        - AddOption(text, func, icon, desc, submenu) - Adds an option to the menu
-        - CreateSubMenu(title, desc) - Creates a submenu for nested options
-        - AddSubMenuOption(text, submenu, icon, desc) - Adds a submenu option
-        - SetCenterText(title, desc) - Sets the center text and description
-    - Remove() - Closes and removes the menu
+        - AddOption(text, func, icon, desc, submenu)
+            Adds an option to the menu
+        - CreateSubMenu(title, desc)
+            Creates a submenu for nested options
+        - AddSubMenuOption(text, submenu, icon, desc)
+            Adds a submenu option
+        - SetCenterText(title, desc)
+            Sets the center text and description
+    - Remove()
+        Closes and removes the menu
 ]]
 function lia.derma.radialMenu(options)
     if IsValid(lia.gui.menu_radial) then lia.gui.menu_radial:Remove() end
@@ -790,7 +801,8 @@ end
         When user needs to select a player from a list
 
     Parameters:
-        do_click (function) - Callback function called when player is selected
+        do_click (function)
+            Callback function called when player is selected
 
     Returns:
         nil
@@ -801,38 +813,38 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Open player selector with callback
-    lia.derma.playerSelector(function(player)
-    print("Selected player:", player:Name())
-    end)
-    ```
+        ```lua
+        -- Simple: Open player selector with callback
+        lia.derma.playerSelector(function(player)
+            print("Selected player:", player:Name())
+        end)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Player selector with validation
-    lia.derma.playerSelector(function(player)
-    if IsValid(player) and player:IsPlayer() then
-        sendMessage(player, "Hello!")
-    end
-    end)
-    ```
+        ```lua
+        -- Medium: Player selector with validation
+        lia.derma.playerSelector(function(player)
+            if IsValid(player) and player:IsPlayer() then
+                sendMessage(player, "Hello!")
+            end
+        end)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Player selector with admin checks and multiple actions
-    lia.derma.playerSelector(function(player)
-    if not IsValid(player) then return end
+        ```lua
+        -- High: Player selector with admin checks and multiple actions
+        lia.derma.playerSelector(function(player)
+            if not IsValid(player) then return end
 
-        local menu = lia.derma.dermaMenu()
-        menu:AddOption("Teleport", function() teleportToPlayer(player) end)
-        menu:AddOption("Spectate", function() spectatePlayer(player) end)
-        if player:IsAdmin() then
-            menu:AddOption("Admin Panel", function() openAdminPanel(player) end)
-        end
-        menu:Open()
-    end)
-    ```
+            local menu = lia.derma.dermaMenu()
+            menu:AddOption("Teleport", function() teleportToPlayer(player) end)
+            menu:AddOption("Spectate", function() spectatePlayer(player) end)
+            if player:IsAdmin() then
+                menu:AddOption("Admin Panel", function() openAdminPanel(player) end)
+            end
+            menu:Open()
+        end)
+        ```
 ]]
 function lia.derma.playerSelector(do_click)
     if IsValid(lia.gui.menuPlayerSelector) then lia.gui.menuPlayerSelector:Remove() end
@@ -932,9 +944,12 @@ end
         When user needs to input text through a dialog
 
     Parameters:
-        title (string) - Title of the dialog window
-        desc (string) - Description/placeholder text for the input field
-        func (function) - Callback function called with the entered text
+        title (string)
+            Title of the dialog window
+        desc (string)
+            Description/placeholder text for the input field
+        func (function)
+            Callback function called with the entered text
 
     Returns:
         nil
@@ -945,46 +960,46 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Open text input dialog
-    lia.derma.textBox("Enter Name", "Type your name here", function(text)
-    print("Entered:", text)
-    end)
-    ```
+        ```lua
+        -- Simple: Open text input dialog
+        lia.derma.textBox("Enter Name", "Type your name here", function(text)
+            print("Entered:", text)
+        end)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Text input with validation
-    lia.derma.textBox("Set Password", "Enter new password", function(text)
-    if string.len(text) >= 6 then
-        setPassword(text)
-        else
-            notify("Password too short!")
-        end
-    end)
-    ```
+        ```lua
+        -- Medium: Text input with validation
+        lia.derma.textBox("Set Password", "Enter new password", function(text)
+            if string.len(text) >= 6 then
+                setPassword(text)
+            else
+                notify("Password too short!")
+            end
+        end)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Text input with multiple validations and processing
-    lia.derma.textBox("Create Item", "Enter item name", function(text)
-    if not text or text == "" then return end
+        ```lua
+        -- High: Text input with multiple validations and processing
+        lia.derma.textBox("Create Item", "Enter item name", function(text)
+            if not text or text == "" then return end
 
-        local cleanText = string.Trim(text)
-        if string.len(cleanText) < 3 then
-            notify("Name too short!")
-            return
-        end
+            local cleanText = string.Trim(text)
+            if string.len(cleanText) < 3 then
+                notify("Name too short!")
+                return
+            end
 
-        if itemExists(cleanText) then
-            notify("Item already exists!")
-            return
-        end
+            if itemExists(cleanText) then
+                notify("Item already exists!")
+                return
+            end
 
-        createItem(cleanText)
-        refreshItemList()
-    end)
-    ```
+            createItem(cleanText)
+            refreshItemList()
+        end)
+        ```
 ]]
 function lia.derma.textBox(title, desc, func)
     if IsValid(lia.gui.menuTextBox) then lia.gui.menuTextBox:Remove() end
@@ -1228,13 +1243,20 @@ end
         When rendering UI elements that need rounded corners
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Color to draw with
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Color to draw with
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1278,14 +1300,22 @@ end
         When rendering UI elements that need outlined rounded corners
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Color to draw with
-        thickness (number, optional) - Outline thickness (default: 1)
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Color to draw with
+        thickness (number, optional)
+            Outline thickness (default: 1)
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1328,14 +1358,22 @@ end
         When rendering UI elements that need textured rounded backgrounds
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Color tint to apply
-        texture (ITexture) - Texture to draw
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Color tint to apply
+        texture (ITexture)
+            Texture to draw
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1380,14 +1418,22 @@ end
         When rendering UI elements that need material-based rounded backgrounds
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Color tint to apply
-        mat (IMaterial) - Material to draw
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Color tint to apply
+        mat (IMaterial)
+            Material to draw
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status (if material has valid texture)
@@ -1439,11 +1485,16 @@ end
         When rendering circular UI elements like buttons or indicators
 
     Parameters:
-        x (number) - Center X position
-        y (number) - Center Y position
-        radius (number) - Circle radius
-        col (Color, optional) - Color to draw with
-        flags (number, optional) - Drawing flags for customization
+        x (number)
+            Center X position
+        y (number)
+            Center Y position
+        radius (number)
+            Circle radius
+        col (Color, optional)
+            Color to draw with
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1486,12 +1537,18 @@ end
         When rendering circular UI elements that need outlined borders
 
     Parameters:
-        x (number) - Center X position
-        y (number) - Center Y position
-        radius (number) - Circle radius
-        col (Color, optional) - Color to draw with
-        thickness (number, optional) - Outline thickness (default: 1)
-        flags (number, optional) - Drawing flags for customization
+        x (number)
+            Center X position
+        y (number)
+            Center Y position
+        radius (number)
+            Circle radius
+        col (Color, optional)
+            Color to draw with
+        thickness (number, optional)
+            Outline thickness (default: 1)
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1534,12 +1591,18 @@ end
         When rendering circular UI elements that need textured backgrounds
 
     Parameters:
-        x (number) - Center X position
-        y (number) - Center Y position
-        radius (number) - Circle radius
-        col (Color, optional) - Color tint to apply
-        texture (ITexture) - Texture to draw
-        flags (number, optional) - Drawing flags for customization
+        x (number)
+            Center X position
+        y (number)
+            Center Y position
+        radius (number)
+            Circle radius
+        col (Color, optional)
+            Color tint to apply
+        texture (ITexture)
+            Texture to draw
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status
@@ -1584,12 +1647,18 @@ end
         When rendering circular UI elements that need material-based backgrounds
 
     Parameters:
-        x (number) - Center X position
-        y (number) - Center Y position
-        radius (number) - Circle radius
-        col (Color, optional) - Color tint to apply
-        mat (IMaterial) - Material to draw
-        flags (number, optional) - Drawing flags for customization
+        x (number)
+            Center X position
+        y (number)
+            Center Y position
+        radius (number)
+            Circle radius
+        col (Color, optional)
+            Color tint to apply
+        mat (IMaterial)
+            Material to draw
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         boolean - Success status (if material has valid texture)
@@ -1658,16 +1727,26 @@ end
         When rendering UI elements that need blur effects
 
     Parameters:
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        flags (number, optional) - Drawing flags for customization
-        tl (number, optional) - Top-left corner radius
-        tr (number, optional) - Top-right corner radius
-        bl (number, optional) - Bottom-left corner radius
-        br (number, optional) - Bottom-right corner radius
-        thickness (number, optional) - Outline thickness
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        flags (number, optional)
+            Drawing flags for customization
+        tl (number, optional)
+            Top-left corner radius
+        tr (number, optional)
+            Top-right corner radius
+        bl (number, optional)
+            Bottom-left corner radius
+        br (number, optional)
+            Bottom-right corner radius
+        thickness (number, optional)
+            Outline thickness
 
     Returns:
         nil
@@ -1748,19 +1827,32 @@ end
         When rendering UI elements that need shadow effects
 
     Parameters:
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Shadow color
-        flags (number, optional) - Drawing flags for customization
-        tl (number, optional) - Top-left corner radius
-        tr (number, optional) - Top-right corner radius
-        bl (number, optional) - Bottom-left corner radius
-        br (number, optional) - Bottom-right corner radius
-        spread (number, optional) - Shadow spread distance (default: 30)
-        intensity (number, optional) - Shadow intensity (default: spread * 1.2)
-        thickness (number, optional) - Outline thickness
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Shadow color
+        flags (number, optional)
+            Drawing flags for customization
+        tl (number, optional)
+            Top-left corner radius
+        tr (number, optional)
+            Top-right corner radius
+        bl (number, optional)
+            Bottom-left corner radius
+        br (number, optional)
+            Bottom-right corner radius
+        spread (number, optional)
+            Shadow spread distance (default: 30)
+        intensity (number, optional)
+            Shadow intensity (default: spread * 1.2)
+        thickness (number, optional)
+            Outline thickness
 
     Returns:
         nil
@@ -1816,15 +1908,24 @@ end
         When rendering UI elements that need shadow effects with same corner radius
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Shadow color
-        spread (number, optional) - Shadow spread distance (default: 30)
-        intensity (number, optional) - Shadow intensity (default: spread * 1.2)
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Shadow color
+        spread (number, optional)
+            Shadow spread distance (default: 30)
+        intensity (number, optional)
+            Shadow intensity (default: spread * 1.2)
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         nil
@@ -1867,16 +1968,26 @@ end
         When rendering UI elements that need outlined shadow effects
 
     Parameters:
-        radius (number) - Corner radius for all corners
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
-        col (Color, optional) - Shadow color
-        thickness (number, optional) - Outline thickness (default: 1)
-        spread (number, optional) - Shadow spread distance (default: 30)
-        intensity (number, optional) - Shadow intensity (default: spread * 1.2)
-        flags (number, optional) - Drawing flags for customization
+        radius (number)
+            Corner radius for all corners
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
+        col (Color, optional)
+            Shadow color
+        thickness (number, optional)
+            Outline thickness (default: 1)
+        spread (number, optional)
+            Shadow spread distance (default: 30)
+        intensity (number, optional)
+            Shadow intensity (default: spread * 1.2)
+        flags (number, optional)
+            Drawing flags for customization
 
     Returns:
         nil
@@ -2084,10 +2195,14 @@ lia.derma.Types = {
         When creating complex UI elements with multiple drawing operations
 
     Parameters:
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width
-        h (number) - Height
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width
+        h (number)
+            Height
 
     Returns:
         Table - Fluent drawing object with methods for chaining
@@ -2098,31 +2213,31 @@ lia.derma.Types = {
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Create and draw a rectangle
-    lia.derma.rect(100, 100, 200, 100):Color(Color(255, 0, 0)):Draw()
-    ```
+        ```lua
+        -- Simple: Create and draw a rectangle
+        lia.derma.rect(100, 100, 200, 100):Color(Color(255, 0, 0)):Draw()
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Create rectangle with multiple properties
-    lia.derma.rect(50, 50, 300, 150)
-    :Color(Color(0, 255, 0, 200))
-    :Rad(12)
-    :Shape(lia.derma.SHAPE_IOS)
-    :Draw()
-    ```
+        ```lua
+        -- Medium: Create rectangle with multiple properties
+        lia.derma.rect(50, 50, 300, 150)
+            :Color(Color(0, 255, 0, 200))
+            :Rad(12)
+            :Shape(lia.derma.SHAPE_IOS)
+            :Draw()
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex rectangle with shadows and clipping
-    lia.derma.rect(x, y, w, h)
-    :Color(backgroundColor)
-    :Radii(16, 8, 16, 8)
-    :Shadow(20, 25)
-    :Clip(parentPanel)
-    :Draw()
-    ```
+        ```lua
+        -- High: Complex rectangle with shadows and clipping
+        lia.derma.rect(x, y, w, h)
+            :Color(backgroundColor)
+            :Radii(16, 8, 16, 8)
+            :Shadow(20, 25)
+            :Clip(parentPanel)
+            :Draw()
+        ```
 ]]
 function lia.derma.rect(x, y, w, h)
     return lia.derma.Types.Rect(x, y, w, h)
@@ -2136,9 +2251,12 @@ end
         When creating complex circular UI elements with multiple drawing operations
 
     Parameters:
-        x (number) - Center X position
-        y (number) - Center Y position
-        r (number) - Circle radius
+        x (number)
+            Center X position
+        y (number)
+            Center Y position
+        r (number)
+            Circle radius
 
     Returns:
         Table - Fluent drawing object with methods for chaining
@@ -2149,30 +2267,30 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Create and draw a circle
-    lia.derma.circle(100, 100, 50):Color(Color(255, 0, 0)):Draw()
-    ```
+        ```lua
+        -- Simple: Create and draw a circle
+        lia.derma.circle(100, 100, 50):Color(Color(255, 0, 0)):Draw()
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Create circle with multiple properties
-    lia.derma.circle(200, 200, 75)
-    :Color(Color(0, 255, 0, 200))
-    :Outline(2)
-    :Draw()
-    ```
+        ```lua
+        -- Medium: Create circle with multiple properties
+        lia.derma.circle(200, 200, 75)
+            :Color(Color(0, 255, 0, 200))
+            :Outline(2)
+            :Draw()
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex circle with shadows and textures
-    lia.derma.circle(x, y, radius)
-    :Color(circleColor)
-    :Texture(circleTexture)
-    :Shadow(15, 20)
-    :Blur(1.5)
-    :Draw()
-    ```
+        ```lua
+        -- High: Complex circle with shadows and textures
+        lia.derma.circle(x, y, radius)
+            :Color(circleColor)
+            :Texture(circleTexture)
+            :Shadow(15, 20)
+            :Blur(1.5)
+            :Draw()
+        ```
 ]]
 function lia.derma.circle(x, y, r)
     return lia.derma.Types.Circle(x, y, r)
@@ -2209,15 +2327,24 @@ end
         When rendering text that needs to stand out against backgrounds
 
     Parameters:
-        text (string) - Text to draw
-        font (string) - Font to use
-        x (number) - X position
-        y (number) - Y position
-        colortext (Color) - Color of the main text
-        colorshadow (Color) - Color of the shadow
-        dist (number) - Shadow distance/offset
-        xalign (number, optional) - Horizontal text alignment
-        yalign (number, optional) - Vertical text alignment
+        text (string)
+            Text to draw
+        font (string)
+            Font to use
+        x (number)
+            X position
+        y (number)
+            Y position
+        colortext (Color)
+            Color of the main text
+        colorshadow (Color)
+            Color of the shadow
+        dist (number)
+            Shadow distance/offset
+        xalign (number, optional)
+            Horizontal text alignment
+        yalign (number, optional)
+            Vertical text alignment
 
     Returns:
         nil
@@ -2228,24 +2355,24 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Draw text with shadow
-    lia.derma.shadowText("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
-    ```
+        ```lua
+        -- Simple: Draw text with shadow
+        lia.derma.shadowText("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), Color(0, 0, 0), 2)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Draw with custom alignment
-    lia.derma.shadowText("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), Color(0, 0, 0, 150), 3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    ```
+        ```lua
+        -- Medium: Draw with custom alignment
+        lia.derma.shadowText("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), Color(0, 0, 0, 150), 3, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Dynamic shadow text with hover effects
-    local shadowDist = isHovered and 4 or 2
-    local shadowColor = Color(0, 0, 0, isHovered and 200 or 100)
-    lia.derma.shadowText(text, font, x, y, textColor, shadowColor, shadowDist, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    ```
+        ```lua
+        -- High: Dynamic shadow text with hover effects
+        local shadowDist = isHovered and 4 or 2
+        local shadowColor = Color(0, 0, 0, isHovered and 200 or 100)
+        lia.derma.shadowText(text, font, x, y, textColor, shadowColor, shadowDist, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        ```
 ]]
 function lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
     surface.SetFont(font)
@@ -2268,14 +2395,22 @@ end
         When rendering text that needs to stand out with outline effects
 
     Parameters:
-        text (string) - Text to draw
-        font (string) - Font to use
-        x (number) - X position
-        y (number) - Y position
-        colour (Color) - Color of the main text
-        xalign (number, optional) - Horizontal text alignment
-        outlinewidth (number) - Width of the outline
-        outlinecolour (Color) - Color of the outline
+        text (string)
+            Text to draw
+        font (string)
+            Font to use
+        x (number)
+            X position
+        y (number)
+            Y position
+        colour (Color)
+            Color of the main text
+        xalign (number, optional)
+            Horizontal text alignment
+        outlinewidth (number)
+            Width of the outline
+        outlinecolour (Color)
+            Color of the outline
 
     Returns:
         nil
@@ -2286,24 +2421,24 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Draw outlined text
-    lia.derma.drawTextOutlined("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
-    ```
+        ```lua
+        -- Simple: Draw outlined text
+        lia.derma.drawTextOutlined("Hello World", "DermaDefault", 100, 100, Color(255, 255, 255), TEXT_ALIGN_LEFT, 2, Color(0, 0, 0))
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Draw with custom alignment and outline
-    lia.derma.drawTextOutlined("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0, 200))
-    ```
+        ```lua
+        -- Medium: Draw with custom alignment and outline
+        lia.derma.drawTextOutlined("Centered Text", "LiliaFont.20", 200, 200, Color(255, 255, 255), TEXT_ALIGN_CENTER, 3, Color(0, 0, 0, 200))
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Dynamic outlined text with hover effects
-    local outlineWidth = isHovered and 4 or 2
-    local outlineColor = Color(0, 0, 0, isHovered and 255 or 150)
-    lia.derma.drawTextOutlined(text, font, x, y, textColor, TEXT_ALIGN_CENTER, outlineWidth, outlineColor)
-    ```
+        ```lua
+        -- High: Dynamic outlined text with hover effects
+        local outlineWidth = isHovered and 4 or 2
+        local outlineColor = Color(0, 0, 0, isHovered and 255 or 150)
+        lia.derma.drawTextOutlined(text, font, x, y, textColor, TEXT_ALIGN_CENTER, outlineWidth, outlineColor)
+        ```
 ]]
 function lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
     local steps = (outlinewidth * 2) / 3
@@ -2324,14 +2459,22 @@ end
         When rendering tooltips or help text in speech bubble format
 
     Parameters:
-        x (number) - X position
-        y (number) - Y position
-        w (number) - Width of the bubble
-        h (number) - Height of the bubble
-        text (string) - Text to display in the bubble
-        font (string) - Font to use for the text
-        textCol (Color) - Color of the text
-        outlineCol (Color) - Color of the bubble outline
+        x (number)
+            X position
+        y (number)
+            Y position
+        w (number)
+            Width of the bubble
+        h (number)
+            Height of the bubble
+        text (string)
+            Text to display in the bubble
+        font (string)
+            Font to use for the text
+        textCol (Color)
+            Color of the text
+        outlineCol (Color)
+            Color of the bubble outline
 
     Returns:
         nil
@@ -2342,26 +2485,26 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Draw basic tooltip
-    lia.derma.drawTip(100, 100, 200, 80, "Help text", "DermaDefault", Color(255, 255, 255), Color(0, 0, 0))
-    ```
+        ```lua
+        -- Simple: Draw basic tooltip
+        lia.derma.drawTip(100, 100, 200, 80, "Help text", "DermaDefault", Color(255, 255, 255), Color(0, 0, 0))
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Draw with custom styling
-    lia.derma.drawTip(50, 50, 300, 100, "This is a tooltip", "LiliaFont.16", Color(255, 255, 255), Color(100, 100, 100))
-    ```
+        ```lua
+        -- Medium: Draw with custom styling
+        lia.derma.drawTip(50, 50, 300, 100, "This is a tooltip", "LiliaFont.16", Color(255, 255, 255), Color(100, 100, 100))
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Dynamic tooltip with hover effects
-    local w = math.max(200, surface.GetTextSize(text) + 40)
-    local h = 60
-    local textColor = Color(255, 255, 255)
-    local outlineColor = Color(0, 0, 0, isHovered and 200 or 100)
-    lia.derma.drawTip(x, y, w, h, text, font, textColor, outlineColor)
-    ```
+        ```lua
+        -- High: Dynamic tooltip with hover effects
+        local w = math.max(200, surface.GetTextSize(text) + 40)
+        local h = 60
+        local textColor = Color(255, 255, 255)
+        local outlineColor = Color(0, 0, 0, isHovered and 200 or 100)
+        lia.derma.drawTip(x, y, w, h, text, font, textColor, outlineColor)
+        ```
 ]]
 function lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)
     draw.NoTexture()
@@ -2411,14 +2554,22 @@ end
         When rendering text that needs consistent shadow styling
 
     Parameters:
-        text (string) - Text to draw
-        x (number) - X position
-        y (number) - Y position
-        color (Color, optional) - Color of the text (default: white)
-        alignX (number, optional) - Horizontal text alignment
-        alignY (number, optional) - Vertical text alignment
-        font (string, optional) - Font to use (default: "LiliaFont.16")
-        alpha (number, optional) - Alpha multiplier for shadow
+        text (string)
+            Text to draw
+        x (number)
+            X position
+        y (number)
+            Y position
+        color (Color, optional)
+            Color of the text (default: white)
+        alignX (number, optional)
+            Horizontal text alignment
+        alignY (number, optional)
+            Vertical text alignment
+        font (string, optional)
+            Font to use (default: "LiliaFont.16")
+        alpha (number, optional)
+            Alpha multiplier for shadow
 
     Returns:
         nil
@@ -2429,24 +2580,24 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Draw text with automatic shadow
-    lia.derma.drawText("Hello World", 100, 100)
-    ```
+        ```lua
+        -- Simple: Draw text with automatic shadow
+        lia.derma.drawText("Hello World", 100, 100)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Draw with custom color and alignment
-    lia.derma.drawText("Centered Text", 200, 200, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    ```
+        ```lua
+        -- Medium: Draw with custom color and alignment
+        lia.derma.drawText("Centered Text", 200, 200, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Dynamic text with hover effects
-    local textColor = Color(255, 255, 255)
-    local alpha = isHovered and 1.0 or 0.7
-    lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, font, alpha)
-    ```
+        ```lua
+        -- High: Dynamic text with hover effects
+        local textColor = Color(255, 255, 255)
+        local alpha = isHovered and 1.0 or 0.7
+        lia.derma.drawText(text, x, y, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, font, alpha)
+        ```
 ]]
 function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
     color = color or Color(255, 255, 255)
@@ -2573,10 +2724,14 @@ end
         When smooth animation transitions are needed
 
     Parameters:
-        current (number) - Current value
-        target (number) - Target value to approach
-        speed (number) - Animation speed multiplier
-        dt (number) - Delta time (FrameTime())
+        current (number)
+            Current value
+        target (number)
+            Target value to approach
+        speed (number)
+            Animation speed multiplier
+        dt (number)
+            Delta time (FrameTime())
 
     Returns:
         number - New interpolated value
@@ -2587,35 +2742,35 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Smooth value transition
-    local currentValue = lia.derma.approachExp(currentValue, targetValue, 5, FrameTime())
-    ```
+        ```lua
+        -- Simple: Smooth value transition
+        local currentValue = lia.derma.approachExp(currentValue, targetValue, 5, FrameTime())
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Animate panel alpha
-    local targetAlpha = isVisible and 255 or 0
-    panel:SetAlpha(lia.derma.approachExp(panel:GetAlpha(), targetAlpha, 8, FrameTime()))
-    ```
+        ```lua
+        -- Medium: Animate panel alpha
+        local targetAlpha = isVisible and 255 or 0
+        panel:SetAlpha(lia.derma.approachExp(panel:GetAlpha(), targetAlpha, 8, FrameTime()))
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex animation with multiple properties
-    local dt = FrameTime()
-    local targetX = isHovered and hoverX or normalX
-    local targetY = isHovered and hoverY or normalY
-    local targetScale = isHovered and 1.1 or 1.0
+        ```lua
+        -- High: Complex animation with multiple properties
+        local dt = FrameTime()
+        local targetX = isHovered and hoverX or normalX
+        local targetY = isHovered and hoverY or normalY
+        local targetScale = isHovered and 1.1 or 1.0
 
-    panel:SetPos(
-    lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
-    lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
-    )
-    panel:SetSize(
-    lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
-    lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
-    )
-    ```
+        panel:SetPos(
+            lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
+            lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
+        )
+        panel:SetSize(
+            lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
+            lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
+        )
+        ```
 ]]
 function lia.derma.approachExp(current, target, speed, dt)
     local t = 1 - math.exp(-speed * dt)
@@ -2630,7 +2785,8 @@ end
         When smooth deceleration animations are needed
 
     Parameters:
-        t (number) - Normalized time value (0 to 1)
+        t (number)
+            Normalized time value (0 to 1)
 
     Returns:
         number - Eased value
@@ -2641,36 +2797,36 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Apply ease-out to animation progress
-    local eased = lia.derma.easeOutCubic(animationProgress)
-    panel:SetAlpha(eased * 255)
-    ```
+        ```lua
+        -- Simple: Apply ease-out to animation progress
+        local eased = lia.derma.easeOutCubic(animationProgress)
+        panel:SetAlpha(eased * 255)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Smooth panel movement with ease-out
-    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
-    local eased = lia.derma.easeOutCubic(progress)
-    panel:SetPos(startX + (endX - startX) * eased, startY + (endY - startY) * eased)
-    ```
+        ```lua
+        -- Medium: Smooth panel movement with ease-out
+        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+        local eased = lia.derma.easeOutCubic(progress)
+        panel:SetPos(startX + (endX - startX) * eased, startY + (endY - startY) * eased)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex animation with multiple eased properties
-    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
-    local eased = lia.derma.easeOutCubic(progress)
+        ```lua
+        -- High: Complex animation with multiple eased properties
+        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+        local eased = lia.derma.easeOutCubic(progress)
 
-    panel:SetPos(
-    startX + (endX - startX) * eased,
-    startY + (endY - startY) * eased
-    )
-    panel:SetSize(
-    startW + (endW - startW) * eased,
-    startH + (endH - startH) * eased
-    )
-    panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
-    ```
+        panel:SetPos(
+            startX + (endX - startX) * eased,
+            startY + (endY - startY) * eased
+        )
+        panel:SetSize(
+            startW + (endW - startW) * eased,
+            startH + (endH - startH) * eased
+        )
+        panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
+        ```
 ]]
 function lia.derma.easeOutCubic(t)
     return 1 - (1 - t) * (1 - t) * (1 - t)
@@ -2684,7 +2840,8 @@ end
         When smooth acceleration and deceleration animations are needed
 
     Parameters:
-        t (number) - Normalized time value (0 to 1)
+        t (number)
+            Normalized time value (0 to 1)
 
     Returns:
         number - Eased value
@@ -2695,38 +2852,38 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Apply ease-in-out to animation progress
-    local eased = lia.derma.easeInOutCubic(animationProgress)
-    panel:SetAlpha(eased * 255)
-    ```
+        ```lua
+        -- Simple: Apply ease-in-out to animation progress
+        local eased = lia.derma.easeInOutCubic(animationProgress)
+        panel:SetAlpha(eased * 255)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Smooth panel scaling with ease-in-out
-    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
-    local eased = lia.derma.easeInOutCubic(progress)
-    local scale = startScale + (endScale - startScale) * eased
-    panel:SetSize(baseW * scale, baseH * scale)
-    ```
+        ```lua
+        -- Medium: Smooth panel scaling with ease-in-out
+        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+        local eased = lia.derma.easeInOutCubic(progress)
+        local scale = startScale + (endScale - startScale) * eased
+        panel:SetSize(baseW * scale, baseH * scale)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex UI animation with ease-in-out
-    local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
-    local eased = lia.derma.easeInOutCubic(progress)
+        ```lua
+        -- High: Complex UI animation with ease-in-out
+        local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
+        local eased = lia.derma.easeInOutCubic(progress)
 
-    -- Animate position, size, and rotation
-    panel:SetPos(
-    startX + (endX - startX) * eased,
-    startY + (endY - startY) * eased
-    )
-    panel:SetSize(
-    startW + (endW - startW) * eased,
-    startH + (endH - startH) * eased
-    )
-    panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
-    ```
+        -- Animate position, size, and rotation
+        panel:SetPos(
+            startX + (endX - startX) * eased,
+            startY + (endY - startY) * eased
+        )
+        panel:SetSize(
+            startW + (endW - startW) * eased,
+            startH + (endH - startH) * eased
+        )
+        panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
+        ```
 ]]
 function lia.derma.easeInOutCubic(t)
     if t < 0.5 then
@@ -2744,13 +2901,20 @@ end
         When panels need smooth entrance animations
 
     Parameters:
-        panel (Panel) - Panel to animate
-        target_w (number) - Target width
-        target_h (number) - Target height
-        duration (number, optional) - Animation duration (default: 0.18)
-        alpha_dur (number, optional) - Alpha animation duration (default: same as duration)
-        callback (function, optional) - Callback function called when animation completes
-        scale_factor (number, optional) - Initial scale factor (default: 0.8)
+        panel (Panel)
+            Panel to animate
+        target_w (number)
+            Target width
+        target_h (number)
+            Target height
+        duration (number, optional)
+            Animation duration (default: 0.18)
+        alpha_dur (number, optional)
+            Alpha animation duration (default: same as duration)
+        callback (function, optional)
+            Callback function called when animation completes
+        scale_factor (number, optional)
+            Initial scale factor (default: 0.8)
 
     Returns:
         nil
@@ -2761,35 +2925,35 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Animate panel appearance
-    lia.derma.animateAppearance(myPanel, 300, 200)
-    ```
+        ```lua
+        -- Simple: Animate panel appearance
+        lia.derma.animateAppearance(myPanel, 300, 200)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Animate with custom duration and callback
-    lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-    print("Animation completed!")
-    end)
-    ```
+        ```lua
+        -- Medium: Animate with custom duration and callback
+        lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
+            print("Animation completed!")
+        end)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex animation with validation and effects
-    if IsValid(panel) then
-        local targetW = isExpanded and 500 or 300
-        local targetH = isExpanded and 400 or 200
-        local duration = isExpanded and 0.25 or 0.15
-        local scaleFactor = isExpanded and 0.9 or 0.7
+        ```lua
+        -- High: Complex animation with validation and effects
+        if IsValid(panel) then
+            local targetW = isExpanded and 500 or 300
+            local targetH = isExpanded and 400 or 200
+            local duration = isExpanded and 0.25 or 0.15
+            local scaleFactor = isExpanded and 0.9 or 0.7
 
-        lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-        if IsValid(animPanel) then
-            onAnimationComplete(animPanel)
+            lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
+                if IsValid(animPanel) then
+                    onAnimationComplete(animPanel)
+                end
+            end, scaleFactor)
         end
-    end, scaleFactor)
-    end
-    ```
+        ```
 ]]
 function lia.derma.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)
     local scaleFactor = 0.8
@@ -2897,10 +3061,14 @@ end
         When rendering panel backgrounds that need blur effects
 
     Parameters:
-        panel (Panel) - Panel to draw blur behind
-        amount (number, optional) - Blur intensity (default: 5)
-        passes (number, optional) - Number of blur passes (default: 0.2)
-        alpha (number, optional) - Blur alpha (default: 255)
+        panel (Panel)
+            Panel to draw blur behind
+        amount (number, optional)
+            Blur intensity (default: 5)
+        passes (number, optional)
+            Number of blur passes (default: 0.2)
+        alpha (number, optional)
+            Blur alpha (default: 255)
 
     Returns:
         nil
@@ -2979,13 +3147,20 @@ end
         When rendering blur effects at specific screen positions
 
     Parameters:
-        x (number) - X position on screen
-        y (number) - Y position on screen
-        w (number) - Width of blur area
-        h (number) - Height of blur area
-        amount (number, optional) - Blur intensity (default: 5)
-        passes (number, optional) - Number of blur passes (default: 0.2)
-        alpha (number, optional) - Blur alpha (default: 255)
+        x (number)
+            X position on screen
+        y (number)
+            Y position on screen
+        w (number)
+            Width of blur area
+        h (number)
+            Height of blur area
+        amount (number, optional)
+            Blur intensity (default: 5)
+        passes (number, optional)
+            Number of blur passes (default: 0.2)
+        alpha (number, optional)
+            Blur alpha (default: 255)
 
     Returns:
         nil
@@ -3041,10 +3216,14 @@ end
         When user input is needed for multiple fields with different types
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        argTypes (table) - Table defining argument types and properties
-        onSubmit (function) - Callback function called with results
-        defaults (table, optional) - Default values for arguments
+        title (string, optional)
+            Title of the dialog
+        argTypes (table)
+            Table defining argument types and properties
+        onSubmit (function)
+            Callback function called with results
+        defaults (table, optional)
+            Default values for arguments
 
     Returns:
         nil
@@ -3055,47 +3234,47 @@ end
     Example Usage:
 
     Low Complexity:
-    ```lua
-    -- Simple: Request basic arguments
-    local argTypes = {
-    name = "string",
-    age = "number",
-    isActive = "boolean"
-    }
-    lia.derma.requestArguments("User Info", argTypes, function(success, results)
-    if success then
-        print("Name:", results.name, "Age:", results.age)
-    end
-    end)
-    ```
+        ```lua
+        -- Simple: Request basic arguments
+        local argTypes = {
+            name = "string",
+            age = "number",
+            isActive = "boolean"
+        }
+        lia.derma.requestArguments("User Info", argTypes, function(success, results)
+            if success then
+                print("Name:", results.name, "Age:", results.age)
+            end
+        end)
+        ```
 
     Medium Complexity:
-    ```lua
-    -- Medium: Request with dropdown and defaults
-    local argTypes = {
-    {name = "player", type = "player"},
-    {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-    {name = "reason", type = "string"}
-    }
-    local defaults = {reason = "No reason provided"}
-    lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
-    ```
+        ```lua
+        -- Medium: Request with dropdown and defaults
+        local argTypes = {
+            {name = "player", type = "player"},
+            {name = "action", type = "table", data = {"kick", "ban", "mute"}},
+            {name = "reason", type = "string"}
+        }
+        local defaults = {reason = "No reason provided"}
+        lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
+        ```
 
     High Complexity:
-    ```lua
-    -- High: Complex argument validation with ordered fields
-    local argTypes = {
-    {name = "itemName", type = "string"},
-    {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-    {name = "quantity", type = "number"},
-    {name = "isStackable", type = "boolean"}
-    }
-    lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-    if success and validateItemData(results) then
-        createItem(results)
-    end
-    end)
-    ```
+        ```lua
+        -- High: Complex argument validation with ordered fields
+        local argTypes = {
+            {name = "itemName", type = "string"},
+            {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
+            {name = "quantity", type = "number"},
+            {name = "isStackable", type = "boolean"}
+        }
+        lia.derma.requestArguments("Create Item", argTypes, function(success, results)
+            if success and validateItemData(results) then
+                createItem(results)
+            end
+        end)
+        ```
 ]]
 function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
     defaults = defaults or {}
@@ -3614,10 +3793,14 @@ lia.derma.entsScales = lia.derma.entsScales or {}
         When rendering entity labels or information in 3D space
 
     Parameters:
-        ent (Entity) - Entity to draw text above
-        text (string) - Text to display
-        posY (number, optional) - Y offset from entity center (default: 0)
-        alphaOverride (number, optional) - Alpha override for the text
+        ent (Entity)
+            Entity to draw text above
+        text (string)
+            Text to display
+        posY (number, optional)
+            Y offset from entity center (default: 0)
+        alphaOverride (number, optional)
+            Alpha override for the text
 
     Returns:
         nil
@@ -3716,10 +3899,14 @@ end
         When user needs to select from a list of options
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        options (table) - Array of options (strings or {text, data} tables)
-        callback (function) - Callback function called with selected option
-        defaultValue (string/table, optional) - Default selected value
+        title (string, optional)
+            Title of the dialog
+        options (table)
+            Array of options (strings or {text, data} tables)
+        callback (function)
+            Callback function called with selected option
+        defaultValue (string/table, optional)
+            Default selected value
 
     Returns:
         Panel - The created dialog frame
@@ -3755,7 +3942,7 @@ end
     ```lua
     -- High: Dynamic options with validation
     local options = {}
-    for _, player in pairs(player.GetAll()) do
+    for _, player in player.Iterator() do
         if IsValid(player) then
             table.insert(options, {player:Name(), player:SteamID()})
         end
@@ -3878,11 +4065,16 @@ end
         When user needs to input text through a dialog
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        description (string, optional) - Description text for the input
-        callback (function) - Callback function called with entered text
-        defaultValue (string, optional) - Default text value
-        maxLength (number, optional) - Maximum text length
+        title (string, optional)
+            Title of the dialog
+        description (string, optional)
+            Description text for the input
+        callback (function)
+            Callback function called with entered text
+        defaultValue (string, optional)
+            Default text value
+        maxLength (number, optional)
+            Maximum text length
 
     Returns:
         Panel - The created dialog frame
@@ -4001,10 +4193,14 @@ end
         When user needs to select multiple options from a list
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        options (table) - Array of options (strings or {text, data} tables)
-        callback (function) - Callback function called with selected options array
-        defaults (table, optional) - Array of default selected values
+        title (string, optional)
+            Title of the dialog
+        options (table)
+            Array of options (strings or {text, data} tables)
+        callback (function)
+            Callback function called with selected options array
+        defaults (table, optional)
+            Array of default selected values
 
     Returns:
         Panel - The created dialog frame
@@ -4137,11 +4333,16 @@ end
         When user confirmation is needed for an action
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        question (string, optional) - Question text to display
-        callback (function) - Callback function called with boolean result
-        yesText (string, optional) - Text for yes button
-        noText (string, optional) - Text for no button
+        title (string, optional)
+            Title of the dialog
+        question (string, optional)
+            Question text to display
+        callback (function)
+            Callback function called with boolean result
+        yesText (string, optional)
+            Text for yes button
+        noText (string, optional)
+            Text for no button
 
     Returns:
         Panel - The created dialog frame
@@ -4242,10 +4443,14 @@ end
         When user needs to choose from multiple actions
 
     Parameters:
-        title (string, optional) - Title of the dialog
-        buttons (table) - Array of button definitions (strings or {text, callback, icon} tables)
-        callback (function, optional) - Default callback function
-        description (string, optional) - Description text for the dialog
+        title (string, optional)
+            Title of the dialog
+        buttons (table)
+            Array of button definitions (strings or {text, callback, icon} tables)
+        callback (function, optional)
+            Default callback function
+        description (string, optional)
+            Description text for the dialog
 
     Returns:
         Panel, Table - The created dialog frame and button panels array

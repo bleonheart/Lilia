@@ -150,12 +150,12 @@ local KeybindKeys = {
         ```lua
         -- Simple: Add a basic keybind with table configuration
         lia.keybind.add("openInventory", {
-        keyBind = KEY_I,
-        desc = "openInventoryDesc",
-        onPress = function()
-        local f1Menu = vgui.Create("liaMenu")
-        f1Menu:setActiveTab(L("inv"))
-        end
+            keyBind = KEY_I,
+            desc = "openInventoryDesc",
+            onPress = function()
+                local f1Menu = vgui.Create("liaMenu")
+                f1Menu:setActiveTab(L("inv"))
+            end
         })
         ```
 
@@ -163,17 +163,17 @@ local KeybindKeys = {
         ```lua
         -- Medium: Add keybind with conditional execution and server-only flag
         lia.keybind.add("adminMode", {
-        keyBind = KEY_F1,
-        desc = "adminModeDesc",
-        serverOnly = true,
-        onPress = function(client)
-        if not IsValid(client) then return end
-            client:ChatPrint(L("adminModeToggle"))
-            -- Admin mode logic here
-        end,
-        shouldRun = function(client)
-        return client:IsAdmin()
-        end
+            keyBind = KEY_F1,
+            desc = "adminModeDesc",
+            serverOnly = true,
+            onPress = function(client)
+                if not IsValid(client) then return end
+                client:ChatPrint(L("adminModeToggle"))
+                -- Admin mode logic here
+            end,
+            shouldRun = function(client)
+                return client:IsAdmin()
+            end
         })
         ```
 
@@ -181,21 +181,21 @@ local KeybindKeys = {
         ```lua
         -- High: Add keybind with multiple callbacks and complex validation
         lia.keybind.add("convertEntity", {
-        keyBind = KEY_E,
-        desc = "convertEntityDesc",
-        onPress = function(client)
-        if not IsValid(client) or not client:getChar() then return end
-            local trace = client:GetEyeTrace()
-            local targetEntity = trace.Entity
-            -- Complex entity conversion logic
-        end,
-        onRelease = function(client)
-        -- Handle key release if needed
-        end,
-        shouldRun = function(client)
-        return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
-        end,
-        serverOnly = true
+            keyBind = KEY_E,
+            desc = "convertEntityDesc",
+            onPress = function(client)
+                if not IsValid(client) or not client:getChar() then return end
+                local trace = client:GetEyeTrace()
+                local targetEntity = trace.Entity
+                -- Complex entity conversion logic
+            end,
+            onRelease = function(client)
+                -- Handle key release if needed
+            end,
+            shouldRun = function(client)
+                return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
+            end,
+            serverOnly = true
         })
         ```
 ]]
@@ -436,62 +436,62 @@ if CLIENT then
     end)
 
     --[[
-        Purpose:
-            Retrieves the current key code bound to a specific keybind action
+    Purpose:
+        Retrieves the current key code bound to a specific keybind action
 
-        When Called:
-            When checking what key is currently bound to an action, typically in UI or validation code
+    When Called:
+        When checking what key is currently bound to an action, typically in UI or validation code
 
-        Parameters:
-            a (string)
-                The action name to get the key for
-            df (number, optional)
-                Default key code to return if no key is bound
+    Parameters:
+        a (string)
+            The action name to get the key for
+        df (number, optional)
+            Default key code to return if no key is bound
 
-        Returns:
-            number - The key code bound to the action, or the default value if none is set
+    Returns:
+        number - The key code bound to the action, or the default value if none is set
 
-        Realm:
-            Client
+    Realm:
+        Client
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Get the key bound to open inventory
-            local inventoryKey = lia.keybind.get("openInventory")
-            print("Inventory key:", inventoryKey)
-            ```
+        ```lua
+        -- Simple: Get the key bound to open inventory
+        local inventoryKey = lia.keybind.get("openInventory")
+        print("Inventory key:", inventoryKey)
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Get key with fallback default
-            local adminKey = lia.keybind.get("adminMode", KEY_F1)
-            if adminKey == KEY_NONE then
-                print("Admin mode not bound to any key")
-                else
-                    print("Admin mode bound to:", input.GetKeyName(adminKey))
-                end
-            ```
+        ```lua
+        -- Medium: Get key with fallback default
+        local adminKey = lia.keybind.get("adminMode", KEY_F1)
+        if adminKey == KEY_NONE then
+            print("Admin mode not bound to any key")
+        else
+            print("Admin mode bound to:", input.GetKeyName(adminKey))
+        end
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Check multiple keybinds and handle different states
-            local keybinds = {"openInventory", "adminMode", "quickTakeItem"}
-            local boundKeys = {}
+        ```lua
+        -- High: Check multiple keybinds and handle different states
+        local keybinds = {"openInventory", "adminMode", "quickTakeItem"}
+        local boundKeys = {}
 
-            for _, action in ipairs(keybinds) do
-                local key = lia.keybind.get(action, KEY_NONE)
-                if key ~= KEY_NONE then
-                    boundKeys[action] = {
+        for _, action in ipairs(keybinds) do
+            local key = lia.keybind.get(action, KEY_NONE)
+            if key ~= KEY_NONE then
+                boundKeys[action] = {
                     key = key,
                     name = input.GetKeyName(key) or "Unknown"
-                    }
-                end
+                }
             end
+        end
 
-            -- Process bound keys...
-            ```
+        -- Process bound keys...
+        ```
     ]]
     function lia.keybind.get(a, df)
         local act = lia.keybind.stored[a]
@@ -500,62 +500,62 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Saves all current keybind configurations to a JSON file for persistent storage
+    Purpose:
+        Saves all current keybind configurations to a JSON file for persistent storage
 
-        When Called:
-            When keybind settings are changed by the player or during shutdown to preserve settings
+    When Called:
+        When keybind settings are changed by the player or during shutdown to preserve settings
 
-        Parameters:
-            None
+    Parameters:
+        None
 
-        Returns:
-            None
+    Returns:
+        None
 
-        Realm:
-            Client
+    Realm:
+        Client
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Save keybinds after player changes settings
-            lia.keybind.save()
-            ```
+        ```lua
+        -- Simple: Save keybinds after player changes settings
+        lia.keybind.save()
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Save keybinds with validation
-            local function saveKeybindsSafely()
-                local success = pcall(function()
+        ```lua
+        -- Medium: Save keybinds with validation
+        local function saveKeybindsSafely()
+            local success = pcall(function()
                 lia.keybind.save()
             end)
 
             if success then
                 print("Keybinds saved successfully")
-                else
-                    print("Failed to save keybinds")
-                end
+            else
+                print("Failed to save keybinds")
             end
+        end
 
-            saveKeybindsSafely()
-            ```
+        saveKeybindsSafely()
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Save keybinds with backup and error handling
-            local function saveKeybindsWithBackup()
-                -- Create backup of current settings
-                local backupPath = "lilia/keybinds_backup.json"
-                local currentPath = "lilia/keybinds.json"
+        ```lua
+        -- High: Save keybinds with backup and error handling
+        local function saveKeybindsWithBackup()
+            -- Create backup of current settings
+            local backupPath = "lilia/keybinds_backup.json"
+            local currentPath = "lilia/keybinds.json"
 
-                if file.Exists(currentPath, "DATA") then
-                    local currentData = file.Read(currentPath, "DATA")
-                    file.Write(backupPath, currentData)
-                end
+            if file.Exists(currentPath, "DATA") then
+                local currentData = file.Read(currentPath, "DATA")
+                file.Write(backupPath, currentData)
+            end
 
-                -- Save new settings
-                local success = pcall(function()
+            -- Save new settings
+            local success = pcall(function()
                 lia.keybind.save()
             end)
 
@@ -566,10 +566,10 @@ if CLIENT then
                     file.Write(currentPath, backupData)
                 end
             end
-            end
+        end
 
-            saveKeybindsWithBackup()
-            ```
+        saveKeybindsWithBackup()
+        ```
     ]]
     function lia.keybind.save()
         local path = "lilia/keybinds.json"
@@ -583,72 +583,72 @@ if CLIENT then
     end
 
     --[[
-        Purpose:
-            Loads keybind configurations from a JSON file and applies them to the keybind system
+    Purpose:
+        Loads keybind configurations from a JSON file and applies them to the keybind system
 
-        When Called:
-            During client initialization to restore previously saved keybind settings
+    When Called:
+        During client initialization to restore previously saved keybind settings
 
-        Parameters:
-            None
+    Parameters:
+        None
 
-        Returns:
-            None
+    Returns:
+        None
 
-        Realm:
-            Client
+    Realm:
+        Client
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Load keybinds during initialization
-            lia.keybind.load()
-            ```
+        ```lua
+        -- Simple: Load keybinds during initialization
+        lia.keybind.load()
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Load keybinds with validation and fallback
-            local function loadKeybindsSafely()
-                local success = pcall(function()
+        ```lua
+        -- Medium: Load keybinds with validation and fallback
+        local function loadKeybindsSafely()
+            local success = pcall(function()
                 lia.keybind.load()
             end)
 
             if success then
                 print("Keybinds loaded successfully")
                 hook.Run("KeybindsLoaded")
-                else
-                    print("Failed to load keybinds, using defaults")
-                    -- Reset to default keybinds
-                    for action, data in pairs(lia.keybind.stored) do
-                        if istable(data) and data.default then
-                            data.value = data.default
-                        end
+            else
+                print("Failed to load keybinds, using defaults")
+                -- Reset to default keybinds
+                for action, data in pairs(lia.keybind.stored) do
+                    if istable(data) and data.default then
+                        data.value = data.default
                     end
                 end
             end
+        end
 
-            loadKeybindsSafely()
-            ```
+        loadKeybindsSafely()
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Load keybinds with migration and validation
-            local function loadKeybindsWithMigration()
-                local keybindPath = "lilia/keybinds.json"
-                local oldPath = "lilia/old_keybinds.json"
+        ```lua
+        -- High: Load keybinds with migration and validation
+        local function loadKeybindsWithMigration()
+            local keybindPath = "lilia/keybinds.json"
+            local oldPath = "lilia/old_keybinds.json"
 
-                -- Check for old format and migrate if needed
-                if file.Exists(oldPath, "DATA") and not file.Exists(keybindPath, "DATA") then
-                    local oldData = file.Read(oldPath, "DATA")
-                    if oldData then
-                        file.Write(keybindPath, oldData)
-                        file.Delete(oldPath)
-                    end
+            -- Check for old format and migrate if needed
+            if file.Exists(oldPath, "DATA") and not file.Exists(keybindPath, "DATA") then
+                local oldData = file.Read(oldPath, "DATA")
+                if oldData then
+                    file.Write(keybindPath, oldData)
+                    file.Delete(oldPath)
                 end
+            end
 
-                -- Load with error handling
-                local success = pcall(function()
+            -- Load with error handling
+            local success = pcall(function()
                 lia.keybind.load()
             end)
 
@@ -676,10 +676,10 @@ if CLIENT then
                     end
                 end
             end
-            end
+        end
 
-            loadKeybindsWithMigration()
-            ```
+        loadKeybindsWithMigration()
+        ```
     ]]
     function lia.keybind.load()
         local path = "lilia/keybinds.json"

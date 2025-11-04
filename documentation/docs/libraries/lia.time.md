@@ -167,7 +167,7 @@ Shared
             file.Append("logs/server.log", logEntry .. "\n")
         end
         -- Send to admin chat
-        for _, admin in ipairs(player.GetAll()) do
+        for _, admin in player.Iterator() do
             if admin:IsAdmin() then
                 admin:ChatPrint(logEntry)
             end

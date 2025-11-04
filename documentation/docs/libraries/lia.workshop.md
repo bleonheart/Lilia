@@ -99,7 +99,7 @@ Server
 ```lua
     -- High: Gather workshop IDs and send to specific players
     local workshopIds = lia.workshop.gather()
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             net.Start("liaWorkshopDownloaderStart")
             net.WriteTable(workshopIds)
@@ -143,7 +143,7 @@ Server
 #### 📊 Medium Complexity
 ```lua
     -- Medium: Send workshop IDs to admin players only
-    for _, ply in pairs(player.GetAll()) do
+    for _, ply in player.Iterator() do
         if ply:IsAdmin() then
             lia.workshop.send(ply)
         end

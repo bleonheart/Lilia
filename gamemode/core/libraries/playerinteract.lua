@@ -10,6 +10,8 @@
 lia.playerinteract = lia.playerinteract or {}
 lia.playerinteract.stored = lia.playerinteract.stored or {}
 lia.playerinteract.categories = lia.playerinteract.categories or {}
+lia.playerinteract._lastSyncInteractionCount = lia.playerinteract._lastSyncInteractionCount or 0
+lia.playerinteract._lastSyncCategoryCount = lia.playerinteract._lastSyncCategoryCount or 0
 --[[
     Purpose:
         Checks if a client is within interaction range of an entity
@@ -506,7 +508,7 @@ if SERVER then
                 client:GetPos()
             )
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
                     ply:notify(emergencyMsg)
                 end
@@ -565,7 +567,7 @@ if SERVER then
     Low Complexity:
     ```lua
     -- Simple: Sync all interactions to all clients
-    lia.playerinteract.syncToClients()
+    lia.playerinteract.sync ()
         ```
 
     Medium Complexity:
@@ -574,7 +576,7 @@ if SERVER then
     hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
         timer.Simple(2, function() -- Wait for client to fully load
             if IsValid(client) then
-                lia.playerinteract.syncToClients(client)
+                lia.playerinteract.sync (client)
             end
         end)
     end)
@@ -618,7 +620,7 @@ if SERVER then
     end
     ```
     ]]
-    function lia.playerinteract.syncToClients(client)
+    function lia.playerinteract.sync(client)
         local filteredData = {}
         for name, data in pairs(lia.playerinteract.stored) do
             filteredData[name] = {
@@ -638,6 +640,8 @@ if SERVER then
             lia.net.writeBigTable(client, "liaPlayerInteractSync", filteredData)
             lia.net.writeBigTable(client, "liaPlayerInteractCategories", lia.playerinteract.categories)
         else
+            lia.playerinteract._lastSyncInteractionCount = table.Count(lia.playerinteract.stored)
+            lia.playerinteract._lastSyncCategoryCount = table.Count(lia.playerinteract.categories)
             local players = player.GetAll()
             local batchSize = 3
             local delay = 0
@@ -657,6 +661,37 @@ if SERVER then
                 delay = delay + 0.15
             end
         end
+    end
+
+    --[[
+    Purpose:
+        Checks if player interaction data has changed since the last sync operation
+
+    When Called:
+        Called during hot reload to determine if interaction data needs to be re-synced
+
+    Parameters:
+        None
+
+    Returns:
+        boolean
+            true if interactions or categories have changed since last sync, false otherwise
+
+    Realm:
+        Server
+
+    Example Usage:
+    ```lua
+    -- Check if interaction data needs syncing
+    if lia.playerinteract.hasChanges() then
+        lia.playerinteract.sync()
+    end
+    ```
+    ]]
+    function lia.playerinteract.hasChanges()
+        local currentInteractionCount = table.Count(lia.playerinteract.stored)
+        local currentCategoryCount = table.Count(lia.playerinteract.categories)
+        return currentInteractionCount ~= lia.playerinteract._lastSyncInteractionCount or currentCategoryCount ~= lia.playerinteract._lastSyncCategoryCount
     end
 
     lia.playerinteract.addInteraction("giveMoney", {

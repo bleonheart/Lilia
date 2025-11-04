@@ -81,20 +81,20 @@ if SERVER then
                 The client whose character attributes need to be set up
 
         Returns:
-            None
+            nil
 
         Realm:
             Server
 
         Example Usage:
 
-    Low Complexity:
+        Low Complexity:
             ```lua
             -- Simple: Setup attributes for a client
             lia.attribs.setup(client)
             ```
 
-    Medium Complexity:
+        Medium Complexity:
             ```lua
             -- Medium: Setup attributes with validation
             if IsValid(client) and client:IsPlayer() then
@@ -102,7 +102,7 @@ if SERVER then
             end
             ```
 
-    High Complexity:
+        High Complexity:
             ```lua
             -- High: Setup attributes with custom logic and error handling
             hook.Add("PlayerSpawn", "SetupAttributes", function(client)

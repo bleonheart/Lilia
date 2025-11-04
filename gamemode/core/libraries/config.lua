@@ -338,7 +338,7 @@ end
         ```lua
         -- Medium: Set configuration with validation
         local function setConfigWithValidation(key, value, min, max)
-            if type(value) == "number" and value >= min and value <= max then
+            if isnumber(value) and value >= min and value <= max then
                 lia.config.set(key, value)
             else
                 print("Invalid value for " .. key)
@@ -639,7 +639,7 @@ if SERVER then
                 Specific client to send to, or nil to send to all clients
 
         Returns:
-            None
+            nil
 
         Realm:
             Server
@@ -753,7 +753,7 @@ if SERVER then
             None
 
         Returns:
-            None
+            nil
 
         Realm:
             Server
@@ -827,7 +827,7 @@ if SERVER then
             None
 
         Returns:
-            None
+            nil
 
         Realm:
             Server

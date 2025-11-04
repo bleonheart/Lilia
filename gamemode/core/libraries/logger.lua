@@ -389,7 +389,8 @@ end
             The player who triggered the log event (can be nil for system events)
         logType (string)
             The log type identifier to use for formatting
-        - ... (vararg): Additional parameters passed to the log type's formatting function
+        ... (vararg)
+            Additional parameters passed to the log type's formatting function
 
     Returns:
         None

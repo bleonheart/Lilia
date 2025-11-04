@@ -9,135 +9,6 @@
         Client-side hooks in the Lilia framework handle UI, rendering, input, and other client-specific functionality; they can be used to customize the user experience and can be overridden or extended by addons and modules.
 ]]
 --[[
-    Overview:
-        Shared hooks in the Lilia framework handle functionality available on both client and server, typically for data synchronization, shared utilities, and cross-realm features. They follow the Garry's Mod hook system and can be overridden or extended by addons and modules.
-]]
---[[
-    Purpose:
-        Formats a currency amount with the proper symbol, singular/plural form, and localization.
-
-    When Called:
-        When displaying currency amounts in UI, chat messages, or any text output.
-
-    Parameters:
-        amount (number)
-            The numeric amount to format.
-
-    Returns:
-        string
-            Formatted currency string with symbol and proper singular/plural form.
-
-    Example Usage:
-
-    Low Complexity:
-        ```lua
-        -- Simple: Run initialization when modules are loaded
-        hook.Add("InitializedModules", "MyModuleInit", function()
-            print("Modules initialized")
-        end)
-        ```
-
-    Medium Complexity:
-        ```lua
-        -- Medium: Initialize custom systems after modules load
-        hook.Add("InitializedModules", "InitializeCustomSystems", function()
-            local client = LocalPlayer()
-            if not client then return end
-
-            -- Initialize custom HUD elements
-            hook.Run("AddBarField", "Custom", "energy", "Energy",
-                function() return 0 end,
-                function() return 100 end,
-                function() return client:getEnergy() or 0 end)
-
-            -- Register custom fonts
-            if lia.config.get("CustomFonts") then
-                surface.CreateFont("CustomFont", {
-                    font = "Arial",
-                    size = 24,
-                    weight = 500
-                })
-            end
-        end)
-        ```
-
-    High Complexity:
-        ```lua
-        -- High: Comprehensive module initialization with validation and error handling
-        hook.Add("InitializedModules", "AdvancedModuleInit", function()
-            local client = LocalPlayer()
-            if not client then return end
-
-            -- Validate module dependencies
-            if not lia.module.isLoaded("inventory") then
-                ErrorNoHalt("Required module 'inventory' not loaded")
-                return
-            end
-
-            -- Initialize multiple systems with configuration checks
-            if lia.config.get("CustomHUD") then
-                -- Add multiple custom HUD sections
-                local sections = {
-                    {name = "Combat", color = Color(255, 0, 0), priority = 1},
-                    {name = "Status", color = Color(0, 255, 0), priority = 2},
-                    {name = "Social", color = Color(0, 0, 255), priority = 3}
-                }
-
-                for _, section in ipairs(sections) do
-                    hook.Run("AddSection", section.name, section.color, section.priority, 1)
-                end
-
-                -- Add custom fields based on character data
-                local char = client:getChar()
-                if char then
-                    local faction = char:getFaction()
-                    if faction == FACTION_POLICE then
-                        hook.Run("AddBarField", "Combat", "ammo", "Ammo",
-                            function() return 0 end,
-                            function() return 100 end,
-                            function() return client:GetAmmoCount("pistol") end)
-                    end
-                end
-            end
-
-            -- Initialize custom UI panels
-            if lia.module.isLoaded("mainmenu") then
-                hook.Add("F1MenuOpened", "CustomMenuButtons", function(menuPanel)
-                    -- Add custom menu buttons
-                    hook.Run("CreateMenuButtons", {
-                        {name = "Custom", icon = "icon16/star.png", callback = function()
-                            -- Custom menu logic
-                        end}
-                    })
-                end)
-            end
-
-            -- Load custom data and validate
-            lia.data.get("customModuleData", {}, function(data)
-                if not data or not data.initialized then
-                    -- Initialize default data
-                    lia.data.set("customModuleData", {initialized = true, version = 1})
-                end
-            end)
-
-            -- Register custom commands after modules load
-            hook.Run("CommandAdded", "customcmd", {
-                description = "Custom command",
-                adminOnly = false,
-                onRun = function(client, arguments)
-                    client:notify("Custom command executed")
-                end
-            })
-
-            -- Log initialization
-            lia.log.add("Custom module initialized successfully", FLAG_NORMAL)
-        end)
-        ```
-]]
-function InitializedModules()
-end
-
---[[
     Purpose:
         Allows adding custom fields to the HUD bars system.
 
@@ -160,6 +31,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -235,6 +109,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -305,6 +182,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -397,6 +277,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -502,6 +385,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -606,7 +492,7 @@ end
 
             -- Notify nearby players
             if lia.config.get("AnnouncePACAttachments") then
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:GetPos():Distance(client:GetPos()) <= 500 and ply ~= client then
                         ply:notify(client:Name() .. " equipped " .. (item.name or id))
                     end
@@ -642,7 +528,8 @@ end
         boolean
             Whether the bag panel can be opened.
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -818,6 +705,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -911,6 +801,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1008,6 +901,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1109,6 +1005,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1219,6 +1118,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1357,6 +1259,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -1453,7 +1358,7 @@ end
             if not hudInfos then return false end
 
             -- Check for required fields
-            if hudInfos.health and (type(hudInfos.health) ~= "number" or hudInfos.health < 0) then
+            if hudInfos.health and (not isnumber(hudInfos.health) or hudInfos.health < 0) then
                 return false
             end
 
@@ -1493,6 +1398,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1600,7 +1508,8 @@ end
         boolean
             Whether the scoreboard can be opened.
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1718,7 +1627,8 @@ end
         boolean
             Whether the inventory can be viewed.
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -1913,7 +1823,8 @@ end
     Returns:
         nil
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -2165,7 +2076,8 @@ end
     Returns:
         nil
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -2490,6 +2402,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -2581,6 +2496,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -2684,6 +2602,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -2776,7 +2697,8 @@ end
         table
             Modified markup object (return nil to cancel).
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -2890,7 +2812,8 @@ end
     Returns:
         nil
 
-    Realm: Client
+    Realm:
+        Client
 
     Example Usage:
 
@@ -3450,6 +3373,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -3565,6 +3491,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -3709,6 +3638,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -3827,6 +3759,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4002,6 +3937,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -4134,6 +4072,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -4227,6 +4168,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4324,6 +4268,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4425,6 +4372,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4535,6 +4485,82 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic ragdoll drawing
+        function MODULE:DrawPlayerRagdoll(entity)
+            if IsValid(entity) then
+                entity:DrawModel()
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Draw ragdoll with character information
+        function MODULE:DrawPlayerRagdoll(entity)
+            if not IsValid(entity) then return end
+
+            -- Draw the ragdoll model
+            entity:DrawModel()
+
+            -- Draw character name above ragdoll
+            local character = entity:getNetVar("char")
+            if character then
+                local pos = entity:GetPos() + Vector(0, 0, 10)
+                local screenPos = pos:ToScreen()
+                if screenPos.visible then
+                    draw.SimpleText(character.name, "liaCharInfoSmall", screenPos.x, screenPos.y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                end
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced ragdoll rendering with effects and information
+        function MODULE:DrawPlayerRagdoll(entity)
+            if not IsValid(entity) then return end
+
+            -- Draw the ragdoll model
+            entity:DrawModel()
+
+            -- Get character data
+            local character = entity:getNetVar("char")
+            if not character then return end
+
+            -- Calculate time since death
+            local deathTime = entity:getNetVar("deathTime", 0)
+            local timeSinceDeath = CurTime() - deathTime
+
+            -- Draw death effects
+            if timeSinceDeath < 10 then
+                local alpha = 1 - (timeSinceDeath / 10)
+                render.SetMaterial(Material("sprites/light_glow02_add"))
+                render.DrawSprite(
+                    entity:GetPos() - Vector(0, 0, 50),
+                    64,
+                    64,
+                    Color(150, 0, 0, 200 * alpha)
+                )
+            end
+
+            -- Draw identification tag
+            if character:getData("showID") then
+                local pos = entity:GetPos() + Vector(0, 0, 10)
+                local screenPos = pos:ToScreen()
+                if screenPos.visible then
+                    draw.SimpleTextOutlined(character:getName(), "liaCharInfoSmall", screenPos.x, screenPos.y, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+                end
+            end
+        end
+        ```
 ]]
 function DrawPlayerRagdoll(entity)
 end
@@ -4551,6 +4577,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4638,6 +4667,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4733,6 +4765,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4834,6 +4869,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -4962,6 +5000,9 @@ end
         Vector
             The position for the main menu.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5049,6 +5090,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5131,6 +5175,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -5257,6 +5304,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5382,6 +5432,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5480,6 +5533,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -5614,6 +5670,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5715,6 +5774,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -5844,6 +5906,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -5956,6 +6021,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6065,6 +6133,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -6186,6 +6257,61 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Log menu closure
+        function MODULE:OnAdminStickMenuClosed()
+            print("Admin stick menu closed")
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Clean up menu resources
+        function MODULE:OnAdminStickMenuClosed()
+            -- Remove menu references
+            self.adminStickMenu = nil
+
+            -- Reset any menu-related states
+            self.menuOpen = false
+
+            -- Log closure
+            lia.log.add("Admin stick menu closed", FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced menu cleanup with state management
+        function MODULE:OnAdminStickMenuClosed()
+            -- Clean up menu references
+            if IsValid(self.adminStickMenu) then
+                self.adminStickMenu:Remove()
+                self.adminStickMenu = nil
+            end
+
+            -- Reset menu state
+            self.menuOpen = false
+            self.selectedTarget = nil
+
+            -- Save menu preferences
+            if self.menuPreferences then
+                self:SaveMenuPreferences(self.menuPreferences)
+            end
+
+            -- Notify other systems
+            hook.Run("OnAdminMenuClosed", "stick")
+
+            -- Log closure with details
+            lia.log.add("Admin stick menu closed", FLAG_NORMAL)
+        end
+        ```
 ]]
 function OnAdminStickMenuClosed()
 end
@@ -6202,6 +6328,83 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Load basic character info
+        function MODULE:LoadCharInformation()
+            local char = LocalPlayer():getChar()
+            if char then
+                print("Character: " .. char:getName())
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Load and display character information
+        function MODULE:LoadCharInformation()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local char = client:getChar()
+            if not char then return end
+
+            -- Load character data
+            self.charInfo = {
+                name = char:getName(),
+                faction = char:getFaction(),
+                money = char:getMoney(),
+                level = char:getData("level", 1)
+            }
+
+            -- Update UI
+            hook.Run("UpdateCharInfoUI", self.charInfo)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced character information loading with caching
+        function MODULE:LoadCharInformation()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local char = client:getChar()
+            if not char then return end
+
+            -- Load comprehensive character data
+            self.charInfo = {
+                name = char:getName(),
+                desc = char:getDesc(),
+                faction = char:getFaction(),
+                class = char:getClass(),
+                money = char:getMoney(),
+                level = char:getData("level", 1),
+                playTime = char:getData("playTime", 0),
+                attributes = char:getAttribs(),
+                inventory = self:GetCharInventoryInfo(char),
+                flags = char:getFlags(),
+                data = char:getData()
+            }
+
+            -- Cache character information
+            self:CacheCharInfo(char:getID(), self.charInfo)
+
+            -- Update UI elements
+            hook.Run("UpdateCharInfoUI", self.charInfo)
+            hook.Run("UpdateCharAttributesUI", self.charInfo.attributes)
+            hook.Run("UpdateCharInventoryUI", self.charInfo.inventory)
+
+            -- Log load
+            lia.log.add("Character information loaded: " .. char:getName(), FLAG_NORMAL)
+        end
+        ```
 ]]
 function LoadCharInformation()
 end
@@ -6221,6 +6424,84 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Add basic character info
+        function MODULE:LoadMainMenuInformation(info, character)
+            if character then
+                info.name = character:getName()
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Load character and player info
+        function MODULE:LoadMainMenuInformation(info, character)
+            if character then
+                info.name = character:getName()
+                info.faction = character:getFaction()
+                info.money = character:getMoney()
+                info.playTime = character:getData("playTime", 0)
+            end
+
+            local client = LocalPlayer()
+            if IsValid(client) then
+                info.steamID = client:SteamID()
+                info.ping = client:Ping()
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced main menu information loading
+        function MODULE:LoadMainMenuInformation(info, character)
+            if character then
+                -- Character data
+                info.name = character:getName()
+                info.desc = character:getDesc()
+                info.faction = character:getFaction()
+                info.class = character:getClass()
+                info.money = character:getMoney()
+                info.playTime = character:getData("playTime", 0)
+                info.level = character:getData("level", 1)
+                info.attributes = character:getAttribs()
+
+                -- Character statistics
+                info.stats = {
+                    deaths = character:getData("deaths", 0),
+                    kills = character:getData("kills", 0),
+                    itemsCrafted = character:getData("itemsCrafted", 0)
+                }
+            end
+
+            -- Player data
+            local client = LocalPlayer()
+            if IsValid(client) then
+                info.steamID = client:SteamID()
+                info.ping = client:Ping()
+                info.fps = math.floor(1 / FrameTime())
+                info.serverName = GetHostName()
+            end
+
+            -- Server information
+            info.serverData = {
+                players = #player.GetAll(),
+                maxPlayers = game.MaxPlayers(),
+                map = game.GetMap()
+            }
+
+            -- Cache information
+            self.mainMenuInfo = info
+        end
+        ```
 ]]
 function LoadMainMenuInformation(info, character)
 end
@@ -6240,6 +6521,88 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Apply model modification
+        function MODULE:ModifyCharacterModel(entity, character)
+            if IsValid(entity) and character then
+                entity:SetModel(character:getModel())
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Modify model with character-specific settings
+        function MODULE:ModifyCharacterModel(entity, character)
+            if not IsValid(entity) or not character then return end
+
+            -- Set model
+            entity:SetModel(character:getModel())
+
+            -- Apply character-specific skin
+            local skin = character:getData("skin", 0)
+            if skin > 0 then
+                entity:SetSkin(skin)
+            end
+
+            -- Apply bodygroups
+            local bodygroups = character:getData("bodygroups", {})
+            for group, value in pairs(bodygroups) do
+                entity:SetBodygroup(group, value)
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced model modification with validation and effects
+        function MODULE:ModifyCharacterModel(entity, character)
+            if not IsValid(entity) or not character then return end
+
+            -- Validate model
+            local model = character:getModel()
+            if not util.IsValidModel(model) then
+                model = "models/player/Group01/male_01.mdl"
+            end
+
+            -- Set model
+            entity:SetModel(model)
+
+            -- Apply character-specific modifications
+            local skin = character:getData("skin", 0)
+            if skin >= 0 and skin < entity:SkinCount() then
+                entity:SetSkin(skin)
+            end
+
+            -- Apply bodygroups
+            local bodygroups = character:getData("bodygroups", {})
+            for group, value in pairs(bodygroups) do
+                if group >= 0 and group < entity:GetBodygroupCount() then
+                    entity:SetBodygroup(group, value)
+                end
+            end
+
+            -- Apply custom materials
+            local materials = character:getData("materials", {})
+            for materialPath, materialID in pairs(materials) do
+                entity:SetSubMaterial(materialID, materialPath)
+            end
+
+            -- Apply color modifications
+            local color = character:getData("color", Color(255, 255, 255))
+            entity:SetColor(color)
+
+            -- Apply effects
+            hook.Run("OnCharacterModelModified", entity, character)
+        end
+        ```
 ]]
 function ModifyCharacterModel(entity, character)
 end
@@ -6259,6 +6622,88 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic scoreboard model modification
+        function MODULE:ModifyScoreboardModel(entity, player)
+            if IsValid(entity) and IsValid(player) then
+                entity:SetModel(player:GetModel())
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Modify scoreboard model with player data
+        function MODULE:ModifyScoreboardModel(entity, player)
+            if not IsValid(entity) or not IsValid(player) then return end
+
+            -- Set model
+            entity:SetModel(player:GetModel())
+
+            -- Apply player color
+            local color = team.GetColor(player:Team())
+            entity:SetColor(color)
+
+            -- Apply skin if available
+            local skin = player:GetInfoNum("cl_playerskin", 0)
+            if skin > 0 then
+                entity:SetSkin(skin)
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced scoreboard model modification with character data
+        function MODULE:ModifyScoreboardModel(entity, player)
+            if not IsValid(entity) or not IsValid(player) then return end
+
+            -- Get character data
+            local char = player:getChar()
+            if char then
+                -- Set character model
+                local model = char:getModel()
+                if util.IsValidModel(model) then
+                    entity:SetModel(model)
+                else
+                    entity:SetModel(player:GetModel())
+                end
+
+                -- Apply character-specific modifications
+                local skin = char:getData("skin", 0)
+                if skin >= 0 and skin < entity:SkinCount() then
+                    entity:SetSkin(skin)
+                end
+
+                -- Apply bodygroups
+                local bodygroups = char:getData("bodygroups", {})
+                for group, value in pairs(bodygroups) do
+                    if group >= 0 and group < entity:GetBodygroupCount() then
+                        entity:SetBodygroup(group, value)
+                    end
+                end
+            else
+                -- Default player model
+                entity:SetModel(player:GetModel())
+            end
+
+            -- Apply team color
+            local color = team.GetColor(player:Team())
+            entity:SetColor(color)
+
+            -- Apply admin status indicator
+            if player:IsAdmin() then
+                entity:SetMaterial("models/debug/debugwhite")
+            end
+        end
+        ```
 ]]
 function ModifyScoreboardModel(entity, player)
 end
@@ -6280,6 +6725,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -6309,10 +6757,10 @@ end
         -- High: Advanced voice indicator with roleplay context
         function MODULE:ModifyVoiceIndicatorText(client, voiceText, voiceType)
             if not IsValid(client) then return voiceText end
-            
+
             local char = client:getChar()
             if not char then return voiceText end
-            
+
             -- Customize based on voice type
             local customText = voiceText
             if voiceType == "whisper" then
@@ -6322,17 +6770,17 @@ end
             elseif voiceType == "radio" then
                 customText = "Radio: " .. char:getName()
             end
-            
+
             -- Add roleplay context
             if char:getData("roleplayMode") then
                 customText = "[RP] " .. customText
             end
-            
+
             -- Check if player is muted
             if char:getData("muted", false) then
                 customText = "Muted"
             end
-            
+
             return customText
         end
         ```
@@ -6358,6 +6806,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6380,7 +6831,7 @@ end
                     LocalPlayer():notify("Special action performed!")
                 end)
             end
-            
+
             -- Add option based on item data
             if itemTable.data and itemTable.data.customData then
                 menu:AddOption("View Custom Data", function()
@@ -6395,18 +6846,18 @@ end
         -- High: Advanced menu customization with validation and integration
         function MODULE:OnCreateItemInteractionMenu(panel, menu, itemTable)
             if not panel or not menu or not itemTable then return end
-            
+
             local client = LocalPlayer()
             local char = client:getChar()
             if not char then return end
-            
+
             -- Add custom options based on item type
             if itemTable.category == "weapon" then
                 menu:AddOption("Inspect Weapon", function()
                     hook.Run("OpenItemInspection", itemTable)
                 end):SetImage("icon16/eye.png")
             end
-            
+
             -- Add admin-only options
             if client:IsAdmin() then
                 menu:AddSpacer()
@@ -6414,7 +6865,7 @@ end
                     hook.Run("OpenItemEditor", itemTable)
                 end):SetImage("icon16/wrench.png")
             end
-            
+
             -- Add faction-specific options
             local faction = char:getFaction()
             if faction and faction.uniqueID == "police" and itemTable.category == "evidence" then
@@ -6422,7 +6873,7 @@ end
                     hook.Run("TagItemEvidence", itemTable)
                 end):SetImage("icon16/tag_blue.png")
             end
-            
+
             -- Add options based on item data
             if itemTable.data and itemTable.data.customOptions then
                 for _, option in ipairs(itemTable.data.customOptions) do
@@ -6453,6 +6904,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6482,13 +6936,13 @@ end
         -- High: Advanced storage panel customization with validation
         function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
             if not IsValid(localInvPanel) or not IsValid(storageInvPanel) then return end
-            
+
             -- Customize panel appearance
             storageInvPanel:SetBackgroundColor(Color(40, 40, 50))
             storageInvPanel.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 200))
             end
-            
+
             -- Add custom header
             local header = vgui.Create("DPanel", storageInvPanel)
             header:SetPos(0, 0)
@@ -6496,7 +6950,7 @@ end
             header.Paint = function(self, w, h)
                 draw.SimpleText(storage.name or "Storage", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
-            
+
             -- Add sort button
             local sortBtn = vgui.Create("DButton", storageInvPanel)
             sortBtn:SetText("Sort Items")
@@ -6505,7 +6959,7 @@ end
             sortBtn.DoClick = function()
                 hook.Run("SortInventory", storageInvPanel)
             end
-            
+
             -- Add search box
             local searchBox = vgui.Create("DTextEntry", storageInvPanel)
             searchBox:SetPos(120, 50)
@@ -6536,6 +6990,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6562,13 +7019,13 @@ end
         -- High: Advanced death sound system with effects
         function MODULE:OnDeathSoundPlayed(client, deathSound)
             if not IsValid(client) then return end
-            
+
             -- Custom death effects for local player
             if client == LocalPlayer() then
                 -- Screen shake
                 local shake = math.random(5, 10)
                 util.ScreenShake(Vector(0, 0, 0), shake, shake, 0.5, 0)
-                
+
                 -- Color overlay
                 hook.Add("RenderScreenspaceEffects", "DeathEffect", function()
                     DrawColorModify({
@@ -6580,13 +7037,13 @@ end
                         ["$pp_colour_mulb"] = 0.8
                     })
                 end)
-                
+
                 -- Remove effect after delay
                 timer.Simple(2, function()
                     hook.Remove("RenderScreenspaceEffects", "DeathEffect")
                 end)
             end
-            
+
             -- Track death statistics
             local char = client:getChar()
             if char then
@@ -6617,6 +7074,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -6649,17 +7109,17 @@ end
         -- High: Advanced vendor menu with customization
         function MODULE:OnOpenVendorMenu(panel, vendor)
             if not IsValid(panel) or not IsValid(vendor) then return end
-            
+
             -- Get vendor data
             local vendorData = vendor:GetNetVar("vendorData")
             if not vendorData then return end
-            
+
             -- Customize panel
             panel:SetBackgroundColor(Color(50, 50, 60))
             panel.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(40, 40, 50, 240))
             end
-            
+
             -- Add vendor header
             local header = vgui.Create("DPanel", panel)
             header:SetPos(0, 0)
@@ -6667,7 +7127,7 @@ end
             header.Paint = function(self, w, h)
                 draw.SimpleText(vendorData.name or "Vendor", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
-            
+
             -- Add vendor info panel
             if vendorData.description then
                 local infoPanel = vgui.Create("DPanel", panel)
@@ -6677,7 +7137,7 @@ end
                     draw.SimpleText(vendorData.description, "liaMediumFont", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
                 end
             end
-            
+
             -- Add custom buttons
             if vendorData.customButtons then
                 for i, buttonData in ipairs(vendorData.customButtons) do
@@ -6714,6 +7174,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6748,7 +7211,7 @@ end
         -- High: Advanced pain system with effects and tracking
         function MODULE:OnPainSoundPlayed(client, painSound)
             if not IsValid(client) then return end
-            
+
             -- Local player effects
             if client == LocalPlayer() then
                 -- Screen flash
@@ -6760,17 +7223,17 @@ end
                 timer.Simple(0.3, function()
                     hook.Remove("HUDPaint", "PainFlash")
                 end)
-                
+
                 -- Screen shake
                 local shake = math.random(2, 5)
                 util.ScreenShake(Vector(0, 0, 0), shake, shake, 0.3, 0)
-                
+
                 -- Blood particles
                 local effectData = EffectData()
                 effectData:SetOrigin(LocalPlayer():GetPos())
                 util.Effect("bloodimpact", effectData)
             end
-            
+
             -- Track pain statistics
             local char = client:getChar()
             if char then
@@ -6808,6 +7271,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -6838,19 +7304,19 @@ end
         -- High: Advanced transfer system with validation and tracking
         function MODULE:OnRequestItemTransfer(panel, itemID, inventoryID, x, y)
             if not itemID or not inventoryID then return end
-            
+
             local item = lia.item.instances[itemID]
             if not item then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             -- Validate transfer
             if item:getData("restricted", false) then
                 client:notify("This item cannot be transferred.")
                 return false
             end
-            
+
             -- Check cooldown
             local lastTransfer = item:getData("lastTransfer", 0)
             local cooldown = item:getData("transferCooldown", 0)
@@ -6859,13 +7325,13 @@ end
                 client:notify("Transfer cooldown: " .. remaining .. " seconds")
                 return false
             end
-            
+
             -- Validate position
             if x < 0 or y < 0 then
                 client:notify("Invalid transfer position.")
                 return false
             end
-            
+
             -- Track transfer request
             local char = client:getChar()
             if char then
@@ -6874,13 +7340,13 @@ end
                 transferStats.lastTransfer = os.time()
                 char:setData("transferStats", transferStats)
             end
-            
+
             -- Log transfer
-            lia.log.add(string.format("%s (%s) requested transfer of item %d to inventory %d", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) requested transfer of item %d to inventory %d",
+                client:Name(),
                 client:SteamID(),
                 itemID,
-                inventoryID), 
+                inventoryID),
                 FLAG_NORMAL)
         end
         ```
@@ -6903,6 +7369,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -6931,17 +7400,17 @@ end
         -- High: Advanced theme system with transitions and persistence
         function MODULE:OnThemeChanged(themeName, useTransition)
             if not themeName then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             -- Store theme preference
             local char = client:getChar()
             if char then
                 char:setData("preferredTheme", themeName)
                 char:save()
             end
-            
+
             -- Apply theme with transition
             if useTransition then
                 -- Fade out current UI
@@ -6950,7 +7419,7 @@ end
                     timer.Simple(0.5, function()
                         -- Apply new theme
                         lia.theme.set(themeName)
-                        
+
                         -- Fade in new UI
                         timer.Simple(0.5, function()
                             hook.Remove("HUDPaint", "ThemeTransition")
@@ -6961,19 +7430,19 @@ end
                 -- Immediate theme change
                 lia.theme.set(themeName)
             end
-            
+
             -- Update all panels
             for _, panel in ipairs(vgui.GetWorldPanel():GetChildren()) do
                 if IsValid(panel) and panel.OnThemeChanged then
                     panel:OnThemeChanged(themeName)
                 end
             end
-            
+
             -- Log theme change
-            lia.log.add(string.format("%s (%s) changed theme to %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) changed theme to %s",
+                client:Name(),
                 client:SteamID(),
-                themeName), 
+                themeName),
                 FLAG_NORMAL)
         end
         ```
@@ -6994,6 +7463,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7020,14 +7492,14 @@ end
         -- High: Advanced staff tracking with UI updates
         function MODULE:OnlineStaffDataReceived(staffData)
             if not staffData then return end
-            
+
             -- Store staff data
             MODULE.staffData = staffData
-            
+
             -- Update staff list panel
             if IsValid(lia.gui.staffList) then
                 lia.gui.staffList:Clear()
-                
+
                 for steamID, data in pairs(staffData) do
                     local row = lia.gui.staffList:Add("DButton")
                     row:SetText(data.name .. " - " .. data.rank)
@@ -7038,18 +7510,18 @@ end
                     end
                 end
             end
-            
+
             -- Update staff count display
             local staffCount = table.Count(staffData)
             if IsValid(lia.gui.staffCount) then
                 lia.gui.staffCount:SetText("Staff Online: " .. staffCount)
             end
-            
+
             -- Notify if new staff joined
             if MODULE.lastStaffCount and staffCount > MODULE.lastStaffCount then
                 LocalPlayer():notify("A staff member has joined the server.")
             end
-            
+
             MODULE.lastStaffCount = staffCount
         end
         ```
@@ -7070,6 +7542,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7100,37 +7575,37 @@ end
         -- High: Advanced admin UI with validation and customization
         function MODULE:OpenAdminStickUI(target)
             if not IsValid(target) then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             -- Check permissions
             if not client:IsAdmin() then
                 client:notify("You don't have permission to use admin tools.")
                 return
             end
-            
+
             -- Close existing admin UI
             if IsValid(lia.gui.adminStick) then
                 lia.gui.adminStick:Remove()
             end
-            
+
             -- Create admin stick panel
             local panel = vgui.Create("liaAdminStick")
             panel:SetTarget(target)
             panel:SetPos(ScrW()/2 - 300, ScrH()/2 - 200)
             panel:SetSize(600, 400)
             panel:MakePopup()
-            
+
             -- Store reference
             lia.gui.adminStick = panel
-            
+
             -- Log admin UI open
-            lia.log.add(string.format("%s (%s) opened admin stick for %s (%s)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) opened admin stick for %s (%s)",
+                client:Name(),
                 client:SteamID(),
                 target:Name(),
-                target:SteamID()), 
+                target:SteamID()),
                 FLAG_NORMAL)
         end
         ```
@@ -7155,6 +7630,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7182,35 +7660,35 @@ end
         function MODULE:OptionReceived(client, key, value)
             if not IsValid(client) or client ~= LocalPlayer() then return end
             if not key then return end
-            
+
             -- Validate option
             local option = lia.config.getOption(key)
             if not option then
                 lia.log.add(string.format("Received invalid option: %s", key), FLAG_WARNING)
                 return
             end
-            
+
             -- Validate value type
             if type(value) ~= option.dataType then
-                lia.log.add(string.format("Invalid value type for option %s: expected %s, got %s", 
-                    key, 
-                    option.dataType, 
-                    type(value)), 
+                lia.log.add(string.format("Invalid value type for option %s: expected %s, got %s",
+                    key,
+                    option.dataType,
+                    type(value)),
                     FLAG_WARNING)
                 return
             end
-            
+
             -- Apply option
             lia.config.set(key, value)
-            
+
             -- Update UI if option panel is open
             if IsValid(lia.gui.optionPanel) then
                 lia.gui.optionPanel:UpdateOption(key, value)
             end
-            
+
             -- Trigger option change hook
             hook.Run("OptionChanged", key, value)
-            
+
             -- Save to client settings
             file.Write("lilia_client_options.txt", util.TableToJSON(lia.config.client))
         end
@@ -7233,6 +7711,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -7250,7 +7731,7 @@ end
             if item:getData("rare", false) then
                 draw.RoundedBox(4, 0, 0, 100, 100, Color(255, 215, 0, 100))
             end
-            
+
             draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
         end
         ```
@@ -7260,10 +7741,10 @@ end
         -- High: Advanced item painting with effects
         function MODULE:PaintItem(item)
             if not item then return end
-            
+
             local w, h = 100, 100
             local x, y = 0, 0
-            
+
             -- Paint background based on rarity
             local rarity = item:getData("rarity", "common")
             local rarityColors = {
@@ -7273,24 +7754,24 @@ end
                 epic = Color(150, 0, 255),
                 legendary = Color(255, 215, 0)
             }
-            
+
             draw.RoundedBox(4, x, y, w, h, rarityColors[rarity] or rarityColors.common)
-            
+
             -- Paint item icon
             if item.icon then
                 surface.SetDrawColor(255, 255, 255)
                 surface.SetMaterial(item.icon)
                 surface.DrawTexturedRect(x + 10, y + 10, w - 20, h - 40)
             end
-            
+
             -- Paint item name
             draw.SimpleText(item.name, "liaMediumFont", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-            
+
             -- Paint quantity if stackable
             if item.isStackable and item:getData("quantity", 1) > 1 then
                 draw.SimpleText("x" .. item:getData("quantity", 1), "liaSmallFont", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
             end
-            
+
             -- Paint glow effect for rare items
             if rarity == "legendary" then
                 local time = CurTime() * 2
@@ -7320,6 +7801,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7353,14 +7837,14 @@ end
         -- High: Advanced admin stick with multiple actions
         function MODULE:PopulateAdminStick(currentMenu, currentTarget, currentStores)
             if not IsValid(currentMenu) or not IsValid(currentTarget) then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) or not client:IsAdmin() then return end
-            
+
             -- Get target character
             local targetChar = currentTarget:getChar()
             if not targetChar then return end
-            
+
             -- Add custom admin actions
             local actions = {
                 {
@@ -7385,7 +7869,7 @@ end
                     end
                 }
             }
-            
+
             for i, actionData in ipairs(actions) do
                 local btn = vgui.Create("DButton", currentMenu)
                 btn:SetText(actionData.name)
@@ -7394,7 +7878,7 @@ end
                 btn:SetSize(200, 30)
                 btn.DoClick = actionData.action
             end
-            
+
             -- Add target info panel
             local infoPanel = vgui.Create("DPanel", currentMenu)
             infoPanel:SetPos(10, 200)
@@ -7423,6 +7907,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7454,7 +7941,7 @@ end
         function MODULE:PopulateAdminTabs(adminPages)
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             -- Add custom admin tabs
             local customTabs = {
                 {
@@ -7465,7 +7952,7 @@ end
                         local label = panel:Add("DLabel")
                         label:SetText("Custom Admin Tools")
                         label:SetFont("liaBigFont")
-                        
+
                         local btn = panel:Add("DButton")
                         btn:SetText("Custom Action")
                         btn:SetSize(200, 30)
@@ -7490,7 +7977,7 @@ end
                     end
                 }
             }
-            
+
             for _, tabData in ipairs(customTabs) do
                 -- Check permissions
                 if client:HasPrivilege(tabData.permission) then
@@ -7516,6 +8003,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7579,7 +8069,7 @@ end
                     end
                 }
             }
-            
+
             for _, pageData in ipairs(customPages) do
                 -- Check permissions if required
                 if not pageData.permission or LocalPlayer():HasPrivilege(pageData.permission) then
@@ -7607,6 +8097,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7638,16 +8131,16 @@ end
         -- High: Advanced inventory UI with filters and search
         function MODULE:PopulateInventoryItems(pnlContent, tree)
             if not IsValid(pnlContent) then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             local inv = char:getInv()
             if not inv then return end
-            
+
             -- Add search box
             local searchBox = vgui.Create("DTextEntry", pnlContent)
             searchBox:SetPos(10, 10)
@@ -7657,7 +8150,7 @@ end
                 local searchText = string.lower(self:GetValue())
                 hook.Run("FilterInventoryItems", pnlContent, searchText)
             end
-            
+
             -- Add sort button
             local sortBtn = vgui.Create("DButton", pnlContent)
             sortBtn:SetText("Sort")
@@ -7666,7 +8159,7 @@ end
             sortBtn.DoClick = function()
                 hook.Run("SortInventoryItems", pnlContent, "name")
             end
-            
+
             -- Add filter dropdown
             local filterCombo = vgui.Create("DComboBox", pnlContent)
             filterCombo:SetPos(310, 10)
@@ -7679,7 +8172,7 @@ end
             filterCombo.OnSelect = function(self, index, value)
                 hook.Run("FilterInventoryByType", pnlContent, value)
             end
-            
+
             -- Add item count display
             local countLabel = vgui.Create("DLabel", pnlContent)
             countLabel:SetPos(470, 10)
@@ -7707,6 +8200,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -7733,44 +8229,44 @@ end
         -- High: Advanced inventory overlay with stats
         function MODULE:PostDrawInventory(mainPanel, parentPanel)
             if not IsValid(mainPanel) then return end
-            
+
             local client = LocalPlayer()
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             local inv = char:getInv()
             if not inv then return end
-            
+
             local w, h = mainPanel:GetSize()
-            
+
             -- Draw inventory stats overlay
             local statsPanel = vgui.Create("DPanel", mainPanel)
             statsPanel:SetPos(w - 200, 10)
             statsPanel:SetSize(190, 100)
             statsPanel.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 240))
-                
+
                 local items = inv:getItems()
                 draw.SimpleText("Items: " .. table.Count(items), "liaMediumFont", 5, 5, color_white)
-                
+
                 local weight = 0
                 for _, item in pairs(items) do
                     weight = weight + (item.weight or 0) * (item:getData("quantity", 1) or 1)
                 end
                 draw.SimpleText("Weight: " .. weight .. "kg", "liaMediumFont", 5, 25, color_white)
-                
+
                 local maxWeight = inv:getData("maxWeight", 100)
                 local weightPercent = (weight / maxWeight) * 100
                 draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "liaMediumFont", 5, 45, color_white)
-                
+
                 -- Draw weight bar
                 local barWidth = w - 10
                 local barHeight = 10
                 local barX = 5
                 local barY = 70
-                
+
                 draw.RoundedBox(2, barX, barY, barWidth, barHeight, Color(50, 50, 50))
                 draw.RoundedBox(2, barX, barY, barWidth * (weightPercent / 100), barHeight, Color(0, 255, 0))
             end
@@ -7795,6 +8291,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7823,7 +8322,7 @@ end
         -- High: Advanced font system with fallbacks
         function MODULE:PostLoadFonts(mainFont, configuredFont)
             local fontToUse = configuredFont or mainFont or "Arial"
-            
+
             -- Create font family with multiple sizes
             local fontSizes = {12, 16, 20, 24, 32, 48, 64}
             for _, size in ipairs(fontSizes) do
@@ -7834,7 +8333,7 @@ end
                     antialias = true,
                     extended = true
                 })
-                
+
                 surface.CreateFont("liaFont" .. size .. "Bold", {
                     font = fontToUse,
                     size = size,
@@ -7843,7 +8342,7 @@ end
                     extended = true
                 })
             end
-            
+
             -- Create icon font
             surface.CreateFont("liaIconFont", {
                 font = "FontAwesome",
@@ -7851,18 +8350,18 @@ end
                 weight = 400,
                 antialias = true
             })
-            
+
             -- Validate fonts
             for _, size in ipairs(fontSizes) do
                 if not surface.GetFontID("liaFont" .. size) then
                     lia.log.add(string.format("Failed to create font: liaFont%d", size), FLAG_WARNING)
                 end
             end
-            
+
             -- Log font loading
-            lia.log.add(string.format("Fonts loaded successfully: %s (config: %s)", 
-                mainFont, 
-                configuredFont), 
+            lia.log.add(string.format("Fonts loaded successfully: %s (config: %s)",
+                mainFont,
+                configuredFont),
                 FLAG_NORMAL)
         end
         ```
@@ -7882,6 +8381,75 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic physgun beam modification
+        function MODULE:PreDrawPhysgunBeam()
+            -- Custom beam color
+            render.SetColorModulation(1, 0, 0) -- Red beam
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Modify beam with player data
+        function MODULE:PreDrawPhysgunBeam()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local char = client:getChar()
+            if char then
+                -- Get character-specific beam color
+                local beamColor = char:getData("physgunBeamColor", Color(255, 255, 255))
+                render.SetColorModulation(beamColor.r / 255, beamColor.g / 255, beamColor.b / 255)
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced physgun beam modification with effects
+        function MODULE:PreDrawPhysgunBeam()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local char = client:getChar()
+            if not char then return end
+
+            -- Get beam color from character data
+            local beamColor = char:getData("physgunBeamColor", Color(255, 255, 255))
+            render.SetColorModulation(beamColor.r / 255, beamColor.g / 255, beamColor.b / 255)
+
+            -- Apply beam width modification
+            local beamWidth = char:getData("physgunBeamWidth", 1)
+            if beamWidth ~= 1 then
+                render.SetBlend(beamWidth)
+            end
+
+            -- Add trail effects
+            if char:getData("physgunTrail", false) then
+                local tr = util.TraceLine({
+                    start = client:GetShootPos(),
+                    endpos = client:GetShootPos() + client:GetAimVector() * 10000,
+                    filter = client
+                })
+
+                if tr.Hit then
+                    local effectData = EffectData()
+                    effectData:SetOrigin(tr.HitPos)
+                    effectData:SetNormal(tr.HitNormal)
+                    effectData:SetColor(beamColor.r, beamColor.g, beamColor.b)
+                    util.Effect("physgun_trail", effectData)
+                end
+            end
+        end
+        ```
 ]]
 function PreDrawPhysgunBeam()
 end
@@ -7898,6 +8466,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -7969,6 +8540,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -8011,10 +8585,10 @@ end
             end
 
             -- Log part removal
-            lia.log.add(string.format("%s (%s) removed PAC part: %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) removed PAC part: %s",
+                client:Name(),
                 client:SteamID(),
-                partID), 
+                partID),
                 FLAG_NORMAL)
 
             -- Remove part data
@@ -8056,6 +8630,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8143,6 +8720,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -8218,6 +8798,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8304,6 +8887,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8394,6 +8980,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -8470,6 +9059,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8620,6 +9212,9 @@ end
         boolean
             Whether the override is allowed.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -8695,6 +9290,9 @@ end
     Returns:
         boolean
             Whether the bar should be drawn.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8780,6 +9378,9 @@ end
     Returns:
         boolean
             Whether third person should be disabled.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -8869,6 +9470,9 @@ end
         boolean
             Whether ammo should be drawn.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -8955,6 +9559,9 @@ end
     Returns:
         boolean
             Whether entity info should be drawn.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -9052,6 +9659,9 @@ end
         boolean
             Whether player info should be drawn.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -9145,6 +9755,9 @@ end
         boolean
             Whether weapon selection should be drawn.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -9232,6 +9845,9 @@ end
     Returns:
         boolean
             Whether bars should be hidden.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -9328,6 +9944,9 @@ end
     Returns:
         boolean
             Whether the button should be shown.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -9443,6 +10062,9 @@ end
         boolean
             Whether the sound should be played.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -9551,6 +10173,9 @@ end
         boolean
             Whether the sound should be played.
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -9657,85 +10282,88 @@ end
         boolean
             Whether respawn screen should appear.
 
-            Example Usage:
+    Realm:
+        Client
+
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Always show respawn screen
-            function MODULE:ShouldRespawnScreenAppear()
-                return true
-            end
-            ```
+        ```lua
+        -- Simple: Always show respawn screen
+        function MODULE:ShouldRespawnScreenAppear()
+            return true
+        end
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Show respawn screen based on player state
-            function MODULE:ShouldRespawnScreenAppear()
-                local client = LocalPlayer()
-                if not IsValid(client) then return false end
+        ```lua
+        -- Medium: Show respawn screen based on player state
+        function MODULE:ShouldRespawnScreenAppear()
+            local client = LocalPlayer()
+            if not IsValid(client) then return false end
 
-                -- Don't show if player is alive
-                if client:Alive() then
-                    return false
-                end
-
-                return true
+            -- Don't show if player is alive
+            if client:Alive() then
+                return false
             end
-            ```
+
+            return true
+        end
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Advanced respawn screen control with game mode checks
-            function MODULE:ShouldRespawnScreenAppear()
-                local client = LocalPlayer()
-                if not IsValid(client) then return false end
+        ```lua
+        -- High: Advanced respawn screen control with game mode checks
+        function MODULE:ShouldRespawnScreenAppear()
+            local client = LocalPlayer()
+            if not IsValid(client) then return false end
 
-                local char = client:getChar()
-                if not char then return false end
+            local char = client:getChar()
+            if not char then return false end
 
-                -- Don't show if player is alive
-                if client:Alive() then
-                    return false
-                end
-
-                -- Check if respawn is allowed
-                if GetGlobalBool("DisableRespawn", false) then
-                    return false
-                end
-
-                -- Check game mode specific rules
-                local gameMode = engine.ActiveGamemode()
-                if gameMode == "sandbox" and lia.config.get("SandboxNoRespawnScreen", false) then
-                    return false
-                end
-
-                -- Check faction restrictions
-                local faction = char:getFaction()
-                if faction and faction.noRespawnScreen then
-                    return false
-                end
-
-                -- Check admin override
-                if client:IsAdmin() and GetGlobalBool("AdminNoRespawnScreen", false) then
-                    return false
-                end
-
-                -- Check time-based restrictions
-                local deathTime = client:GetNWFloat("DeathTime", 0)
-                local respawnDelay = lia.config.get("RespawnDelay", 5)
-
-                if (CurTime() - deathTime) < respawnDelay then
-                    return false -- Too soon after death
-                end
-
-                -- Check for custom respawn conditions
-                if hook.Run("CanPlayerRespawn", client) == false then
-                    return false
-                end
-
-                return true
+            -- Don't show if player is alive
+            if client:Alive() then
+                return false
             end
-            ```
+
+            -- Check if respawn is allowed
+            if GetGlobalBool("DisableRespawn", false) then
+                return false
+            end
+
+            -- Check game mode specific rules
+            local gameMode = engine.ActiveGamemode()
+            if gameMode == "sandbox" and lia.config.get("SandboxNoRespawnScreen", false) then
+                return false
+            end
+
+            -- Check faction restrictions
+            local faction = char:getFaction()
+            if faction and faction.noRespawnScreen then
+                return false
+            end
+
+            -- Check admin override
+            if client:IsAdmin() and GetGlobalBool("AdminNoRespawnScreen", false) then
+                return false
+            end
+
+            -- Check time-based restrictions
+            local deathTime = client:GetNWFloat("DeathTime", 0)
+            local respawnDelay = lia.config.get("RespawnDelay", 5)
+
+            if (CurTime() - deathTime) < respawnDelay then
+                return false -- Too soon after death
+            end
+
+            -- Check for custom respawn conditions
+            if hook.Run("CanPlayerRespawn", client) == false then
+                return false
+            end
+
+            return true
+        end
+        ```
 ]]
 function ShouldRespawnScreenAppear()
 end
@@ -9755,79 +10383,82 @@ end
         boolean
             Whether class should be shown.
 
-            Example Usage:
+    Realm:
+        Client
+
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Always show classes
-            function MODULE:ShouldShowClassOnScoreboard(clsData)
-                return true
-            end
-            ```
+        ```lua
+        -- Simple: Always show classes
+        function MODULE:ShouldShowClassOnScoreboard(clsData)
+            return true
+        end
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Show classes based on visibility setting
-            function MODULE:ShouldShowClassOnScoreboard(clsData)
-                if clsData and clsData.hideOnScoreboard then
-                    return false
-                end
-                return true
+        ```lua
+        -- Medium: Show classes based on visibility setting
+        function MODULE:ShouldShowClassOnScoreboard(clsData)
+            if clsData and clsData.hideOnScoreboard then
+                return false
             end
-            ```
+            return true
+        end
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Advanced class display with permission and faction checks
-            function MODULE:ShouldShowClassOnScoreboard(clsData)
-                if not clsData then return false end
+        ```lua
+        -- High: Advanced class display with permission and faction checks
+        function MODULE:ShouldShowClassOnScoreboard(clsData)
+            if not clsData then return false end
 
-                local client = LocalPlayer()
-                if not IsValid(client) then return false end
+            local client = LocalPlayer()
+            if not IsValid(client) then return false end
 
-                local char = client:getChar()
-                if not char then return false end
+            local char = client:getChar()
+            if not char then return false end
 
-                -- Check if class is hidden by default
-                if clsData.hideOnScoreboard then
-                    return false
-                end
-
-                -- Check faction visibility
-                if clsData.faction and clsData.faction ~= char:getFaction().uniqueID then
-                    -- Only show classes from same faction unless admin
-                    if not client:IsAdmin() then
-                        return false
-                    end
-                end
-
-                -- Check class restrictions
-                if clsData.restricted and not client:IsAdmin() then
-                    return false
-                end
-
-                -- Check gamemode specific rules
-                if clsData.gamemodeOnly then
-                    if not table.HasValue(clsData.gamemodeOnly, engine.ActiveGamemode()) then
-                        return false
-                    end
-                end
-
-                -- Check player permissions
-                if clsData.adminOnly and not client:IsAdmin() then
-                    return false
-                end
-
-                -- Check team visibility
-                if clsData.teamOnly then
-                    if client:Team() ~= clsData.teamOnly then
-                        return false
-                    end
-                end
-
-                return true
+            -- Check if class is hidden by default
+            if clsData.hideOnScoreboard then
+                return false
             end
-            ```
+
+            -- Check faction visibility
+            if clsData.faction and clsData.faction ~= char:getFaction().uniqueID then
+                -- Only show classes from same faction unless admin
+                if not client:IsAdmin() then
+                    return false
+                end
+            end
+
+            -- Check class restrictions
+            if clsData.restricted and not client:IsAdmin() then
+                return false
+            end
+
+            -- Check gamemode specific rules
+            if clsData.gamemodeOnly then
+                if not table.HasValue(clsData.gamemodeOnly, engine.ActiveGamemode()) then
+                    return false
+                end
+            end
+
+            -- Check player permissions
+            if clsData.adminOnly and not client:IsAdmin() then
+                return false
+            end
+
+            -- Check team visibility
+            if clsData.teamOnly then
+                if client:Team() ~= clsData.teamOnly then
+                    return false
+                end
+            end
+
+            return true
+        end
+        ```
 ]]
 function ShouldShowClassOnScoreboard(clsData)
 end
@@ -9847,103 +10478,106 @@ end
         boolean
             Whether faction should be shown.
 
-            Example Usage:
+    Realm:
+        Client
+
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Always show factions
-            function MODULE:ShouldShowFactionOnScoreboard(player)
-                return true
-            end
-            ```
+        ```lua
+        -- Simple: Always show factions
+        function MODULE:ShouldShowFactionOnScoreboard(player)
+            return true
+        end
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Show factions based on visibility settings
-            function MODULE:ShouldShowFactionOnScoreboard(player)
-                if not IsValid(player) then return false end
+        ```lua
+        -- Medium: Show factions based on visibility settings
+        function MODULE:ShouldShowFactionOnScoreboard(player)
+            if not IsValid(player) then return false end
 
-                local char = player:getChar()
-                if not char then return false end
+            local char = player:getChar()
+            if not char then return false end
 
-                local faction = char:getFaction()
-                if faction and faction.hideOnScoreboard then
-                    return false
-                end
-
-                return true
+            local faction = char:getFaction()
+            if faction and faction.hideOnScoreboard then
+                return false
             end
-            ```
+
+            return true
+        end
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Advanced faction display with permission and relationship checks
-            function MODULE:ShouldShowFactionOnScoreboard(player)
-                if not IsValid(player) then return false end
+        ```lua
+        -- High: Advanced faction display with permission and relationship checks
+        function MODULE:ShouldShowFactionOnScoreboard(player)
+            if not IsValid(player) then return false end
 
-                local client = LocalPlayer()
-                if not IsValid(client) then return false end
+            local client = LocalPlayer()
+            if not IsValid(client) then return false end
 
-                local char = player:getChar()
-                if not char then return false end
+            local char = player:getChar()
+            if not char then return false end
 
-                local clientChar = client:getChar()
-                if not clientChar then return false end
+            local clientChar = client:getChar()
+            if not clientChar then return false end
 
-                local faction = char:getFaction()
-                if not faction then return false end
+            local faction = char:getFaction()
+            if not faction then return false end
 
-                -- Check if faction is hidden by default
-                if faction.hideOnScoreboard then
-                    return false
-                end
-
-                -- Check admin visibility
-                if faction.adminOnly and not client:IsAdmin() then
-                    return false
-                end
-
-                -- Check faction relationships
-                local clientFaction = clientChar:getFaction()
-                if clientFaction then
-                    -- Hide enemy factions unless admin
-                    if clientFaction.hostileFactions and table.HasValue(clientFaction.hostileFactions, faction.uniqueID) then
-                        if not client:IsAdmin() then
-                            return false
-                        end
-                    end
-
-                    -- Show allied factions
-                    if clientFaction.alliedFactions and table.HasValue(clientFaction.alliedFactions, faction.uniqueID) then
-                        return true
-                    end
-                end
-
-                -- Check gamemode restrictions
-                if faction.gamemodeOnly then
-                    if not table.HasValue(faction.gamemodeOnly, engine.ActiveGamemode()) then
-                        return false
-                    end
-                end
-
-                -- Check team restrictions
-                if faction.teamOnly then
-                    if client:Team() ~= faction.teamOnly then
-                        return false
-                    end
-                end
-
-                -- Check distance-based visibility
-                if faction.localOnly then
-                    local dist = client:GetPos():Distance(player:GetPos())
-                    if dist > 1000 then -- 1000 units = ~30 meters
-                        return false
-                    end
-                end
-
-                return true
+            -- Check if faction is hidden by default
+            if faction.hideOnScoreboard then
+                return false
             end
-            ```
+
+            -- Check admin visibility
+            if faction.adminOnly and not client:IsAdmin() then
+                return false
+            end
+
+            -- Check faction relationships
+            local clientFaction = clientChar:getFaction()
+            if clientFaction then
+                -- Hide enemy factions unless admin
+                if clientFaction.hostileFactions and table.HasValue(clientFaction.hostileFactions, faction.uniqueID) then
+                    if not client:IsAdmin() then
+                        return false
+                    end
+                end
+
+                -- Show allied factions
+                if clientFaction.alliedFactions and table.HasValue(clientFaction.alliedFactions, faction.uniqueID) then
+                    return true
+                end
+            end
+
+            -- Check gamemode restrictions
+            if faction.gamemodeOnly then
+                if not table.HasValue(faction.gamemodeOnly, engine.ActiveGamemode()) then
+                    return false
+                end
+            end
+
+            -- Check team restrictions
+            if faction.teamOnly then
+                if client:Team() ~= faction.teamOnly then
+                    return false
+                end
+            end
+
+            -- Check distance-based visibility
+            if faction.localOnly then
+                local dist = client:GetPos():Distance(player:GetPos())
+                if dist > 1000 then -- 1000 units = ~30 meters
+                    return false
+                end
+            end
+
+            return true
+        end
+        ```
 ]]
 function ShouldShowFactionOnScoreboard(player)
 end
@@ -9963,103 +10597,106 @@ end
         boolean
             Whether player should be shown.
 
-            Example Usage:
+    Realm:
+        Client
+
+    Example Usage:
 
     Low Complexity:
-            ```lua
-            -- Simple: Always show players
-            function MODULE:ShouldShowPlayerOnScoreboard(player)
-                return true
-            end
-            ```
+        ```lua
+        -- Simple: Always show players
+        function MODULE:ShouldShowPlayerOnScoreboard(player)
+            return true
+        end
+        ```
 
     Medium Complexity:
-            ```lua
-            -- Medium: Show players based on visibility settings
-            function MODULE:ShouldShowPlayerOnScoreboard(player)
-                if not IsValid(player) then return false end
+        ```lua
+        -- Medium: Show players based on visibility settings
+        function MODULE:ShouldShowPlayerOnScoreboard(player)
+            if not IsValid(player) then return false end
 
-                -- Don't show spectators
-                if player:GetObserverMode() ~= OBS_MODE_NONE then
-                    return false
-                end
-
-                return true
+            -- Don't show spectators
+            if player:GetObserverMode() ~= OBS_MODE_NONE then
+                return false
             end
-            ```
+
+            return true
+        end
+        ```
 
     High Complexity:
-            ```lua
-            -- High: Advanced player visibility with permission and distance checks
-            function MODULE:ShouldShowPlayerOnScoreboard(player)
-                if not IsValid(player) then return false end
+        ```lua
+        -- High: Advanced player visibility with permission and distance checks
+        function MODULE:ShouldShowPlayerOnScoreboard(player)
+            if not IsValid(player) then return false end
 
-                local client = LocalPlayer()
-                if not IsValid(client) then return false end
+            local client = LocalPlayer()
+            if not IsValid(client) then return false end
 
-                -- Don't show self (usually handled elsewhere, but good practice)
-                if player == client then
-                    return true
+            -- Don't show self (usually handled elsewhere, but good practice)
+            if player == client then
+                return true
+            end
+
+            -- Check if player has character
+            local char = player:getChar()
+            if not char then return false end
+
+            -- Check admin visibility
+            if player:IsAdmin() and not client:IsAdmin() then
+                -- Hide admins from non-admins
+                if lia.config.get("HideAdminsOnScoreboard", false) then
+                    return false
                 end
+            end
 
-                -- Check if player has character
-                local char = player:getChar()
-                if not char then return false end
-
-                -- Check admin visibility
-                if player:IsAdmin() and not client:IsAdmin() then
-                    -- Hide admins from non-admins
-                    if lia.config.get("HideAdminsOnScoreboard", false) then
-                        return false
-                    end
+            -- Check distance-based visibility
+            if lia.config.get("LocalScoreboardOnly", false) then
+                local dist = client:GetPos():Distance(player:GetPos())
+                if dist > 2000 then -- ~60 meters
+                    return false
                 end
+            end
 
-                -- Check distance-based visibility
-                if lia.config.get("LocalScoreboardOnly", false) then
-                    local dist = client:GetPos():Distance(player:GetPos())
-                    if dist > 2000 then -- ~60 meters
-                        return false
-                    end
+            -- Check team restrictions
+            if lia.config.get("TeamOnlyScoreboard", false) then
+                if client:Team() ~= player:Team() then
+                    return false
                 end
+            end
 
-                -- Check team restrictions
-                if lia.config.get("TeamOnlyScoreboard", false) then
-                    if client:Team() ~= player:Team() then
-                        return false
-                    end
-                end
+            -- Check faction restrictions
+            local clientChar = client:getChar()
+            if clientChar then
+                local clientFaction = clientChar:getFaction()
+                local playerFaction = char:getFaction()
 
-                -- Check faction restrictions
-                local clientChar = client:getChar()
-                if clientChar then
-                    local clientFaction = clientChar:getFaction()
-                    local playerFaction = char:getFaction()
-
-                    if clientFaction and playerFaction then
-                        -- Hide enemy factions
-                        if clientFaction.hostileFactions and table.HasValue(clientFaction.hostileFactions, playerFaction.uniqueID) then
-                            if not client:IsAdmin() then
-                                return false
-                            end
+                if clientFaction and playerFaction then
+                    -- Hide enemy factions
+                    if clientFaction.hostileFactions and table.HasValue(clientFaction.hostileFactions, playerFaction.uniqueID) then
+                        if not client:IsAdmin() then
+                            return false
                         end
                     end
                 end
+            end
 
-                -- Check observer mode
-                if player:GetObserverMode() ~= OBS_MODE_NONE then
-                    if not lia.config.get("ShowSpectatorsOnScoreboard", true) then
-                        return false
-                    end
-                end
-
-                -- Check player state
-                if player:IsDormant() and not lia.config.get("ShowDormantPlayers", false) then
+            -- Check observer mode
+            if player:GetObserverMode() ~= OBS_MODE_NONE then
+                if not lia.config.get("ShowSpectatorsOnScoreboard", true) then
                     return false
                 end
-
-                return true
             end
-            ```
+
+            -- Check player state
+            if player:IsDormant() and not lia.config.get("ShowDormantPlayers", false) then
+                return false
+            end
+
+            return true
+        end
+        ```
 ]]
 function ShouldShowPlayerOnScoreboard(player)
 end
@@ -10077,6 +10714,9 @@ end
     Returns:
         boolean
             Whether quick menu should be shown.
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -10189,6 +10829,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -10403,6 +11046,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -10571,6 +11217,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -10750,6 +11399,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -10978,6 +11630,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11049,6 +11704,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11117,6 +11775,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11171,6 +11832,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -11246,6 +11910,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11320,6 +11987,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 
@@ -11456,6 +12126,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11533,6 +12206,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Client
+
     Example Usage:
 
     Low Complexity:
@@ -11599,6 +12275,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Client
 
     Example Usage:
 

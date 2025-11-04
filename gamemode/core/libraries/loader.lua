@@ -141,6 +141,10 @@ local FilesToLoad = {
         realm = "client"
     },
     {
+        path = "lilia/gamemode/core/libraries/swepeditor.lua",
+        realm = "shared"
+    },
+    {
         path = "lilia/gamemode/core/libraries/currency.lua",
         realm = "shared"
     },
@@ -1214,8 +1218,6 @@ function lia.loader.includeEntities(path)
     HandleEntityInclusion("effects", "EFFECT", effects and effects.Register, nil, true)
 end
 
-lia.loader.includeEntities("lilia/gamemode/entities")
-lia.loader.includeEntities(engine.ActiveGamemode() .. "/gamemode/entities")
 if SERVER then
     local function SetupDatabase()
         hook.Run("SetupDatabase")
@@ -1254,12 +1256,87 @@ else
 end
 
 local hasInitializedModules = false
+--[[
+    Purpose:
+        Initializes or re-initializes the Lilia gamemode, including modules, config, factions, and compatibility files
+
+    When Called:
+        Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM:OnReloaded)
+
+    Parameters:
+        isReload (boolean)
+            true if this is a hot reload, false if this is initial gamemode startup
+
+    Returns:
+        void
+
+    Realm:
+        Shared
+
+    Example Usage:
+    ```lua
+    -- Initial gamemode startup
+    lia.loader.initializeGamemode(false)
+
+    -- Hot reload
+    lia.loader.initializeGamemode(true)
+    ```
+]]
+function lia.loader.initializeGamemode(isReload)
+    if isReload then
+        lia.reloadInProgress = true
+        lia.lastReloadTime = CurTime()
+    end
+
+    if isReload or not hasInitializedModules then
+        lia.module.initialize()
+        if not isReload then hasInitializedModules = true end
+    end
+
+    lia.config.load()
+    lia.faction.formatModelData()
+    if SERVER then
+        if isReload then
+            local adminHasChanges = lia.administrator.hasChanges()
+            local playerInteractHasChanges = lia.playerinteract.hasChanges()
+            timer.Simple(0.5, function() lia.config.send() end)
+            timer.Simple(2.0, function() if adminHasChanges then lia.administrator.sync() end end)
+            timer.Simple(3.5, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
+            timer.Simple(5.0, function() lia.reloadInProgress = false end)
+        else
+            lia.config.send()
+            lia.administrator.sync()
+            lia.playerinteract.sync()
+        end
+    end
+
+    local loadedCompatibility = {}
+    for _, compatFile in ipairs(ConditionalFiles) do
+        local shouldLoad = false
+        if isfunction(compatFile.condition) then
+            local ok, result = pcall(compatFile.condition)
+            if ok then
+                shouldLoad = result
+            else
+                lia.error(L("compatibilityConditionError", tostring(result)))
+            end
+        elseif compatFile.global then
+            shouldLoad = _G[compatFile.global] ~= nil
+        end
+
+        if shouldLoad then
+            lia.loader.include(compatFile.path, compatFile.realm or "shared")
+            loadedCompatibility[#loadedCompatibility + 1] = compatFile.name
+        end
+    end
+
+    if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
+    if isReload then lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully")) end
+end
+
 function GM:Initialize()
     if engine.ActiveGamemode() == "lilia" then lia.error(L("noSchemaLoaded")) end
-    if not hasInitializedModules then
-        lia.module.initialize()
-        hasInitializedModules = true
-    end
+    lia.loader.initializeGamemode(false)
 end
 
 function GM:OnReloaded()
@@ -1276,43 +1353,7 @@ function GM:OnReloaded()
         return
     end
 
-    lia.reloadInProgress = true
-    lia.lastReloadTime = currentTime
-    lia.module.initialize()
-    lia.config.load()
-    lia.faction.formatModelData()
-    if SERVER then
-        timer.Simple(0.5, function() lia.config.send() end)
-        timer.Simple(2.0, function() lia.administrator.sync() end)
-        timer.Simple(3.5, function() lia.playerinteract.syncToClients() end)
-        timer.Simple(5.0, function()
-            lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully"))
-            lia.reloadInProgress = false
-        end)
-    else
-        chat.AddText(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("gamemodeHotreloadedSuccessfully"))
-    end
+    lia.loader.initializeGamemode(true)
 end
 
-local loadedCompatibility = {}
-for _, compatFile in ipairs(ConditionalFiles) do
-    local shouldLoad = false
-    if isfunction(compatFile.condition) then
-        local ok, result = pcall(compatFile.condition)
-        if ok then
-            shouldLoad = result
-        else
-            lia.error(L("compatibilityConditionError", tostring(result)))
-        end
-    elseif compatFile.global then
-        shouldLoad = _G[compatFile.global] ~= nil
-    end
-
-    if shouldLoad then
-        lia.loader.include(compatFile.path, compatFile.realm or "shared")
-        loadedCompatibility[#loadedCompatibility + 1] = compatFile.name
-    end
-end
-
-if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
 if game.IsDedicated() then concommand.Remove("gm_save") end

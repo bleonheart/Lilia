@@ -8,7 +8,6 @@
     Overview:
         Server-side hooks in the Lilia framework handle server-side logic, data persistence, permissions, character management, and other server-specific functionality. They follow the Garry's Mod hook system and can be overridden or extended by addons and modules.
 ]]
-
 --[[
     Purpose:
         Handles adding warnings to characters.
@@ -34,6 +33,9 @@
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -65,7 +67,7 @@
             }, nil, "warnings")
 
             -- Notify online admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Staff Permissions") then
                     admin:notify(warner .. " issued a warning to " .. warned)
                 end
@@ -99,7 +101,7 @@
                 -- Check for automatic actions based on warning count
                 if warningCount >= 5 then
                     -- Find the player and kick them
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         if ply:SteamID() == warnedSteamID then
                             ply:Kick("Accumulated too many warnings - please review server rules")
                             lia.log.add("Auto-kicked " .. warned .. " for reaching 5 warnings", FLAG_WARNING)
@@ -108,7 +110,7 @@
                     end
                 elseif warningCount >= 3 then
                     -- Send warning notification to player
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         if ply:SteamID() == warnedSteamID then
                             ply:notify("You have received " .. warningCount .. " warnings. Further violations may result in a kick or ban.")
                             break
@@ -151,6 +153,9 @@ end
     Returns:
         boolean
             Whether the character can be transferred.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -249,6 +254,9 @@ end
     Returns:
         boolean
             Whether the character can be deleted.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -350,7 +358,8 @@ end
         boolean
             Whether the invitation can be sent.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -479,7 +488,8 @@ end
         boolean
             Whether the invitation can be sent.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -660,7 +670,8 @@ end
         boolean
             Whether the item can be transferred.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -845,7 +856,8 @@ end
         boolean
             Whether the model can be changed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1048,7 +1060,8 @@ end
         boolean
             Whether the vendor can be edited.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1231,7 +1244,8 @@ end
         boolean
             Whether the entity can be persisted.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1430,7 +1444,8 @@ end
         boolean
             Whether the player can access the door.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1579,7 +1594,8 @@ end
         boolean
             Whether the weapon can be chosen.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1749,7 +1765,8 @@ end
         boolean
             Whether the character can be created.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -1961,7 +1978,8 @@ end
         boolean
             Whether the item can be dropped.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -2151,7 +2169,8 @@ end
         boolean
             Whether salary can be earned.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -2349,7 +2368,8 @@ end
         boolean
             Whether the item can be equipped.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -2611,7 +2631,8 @@ end
         boolean
             Whether the object can be held.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -2842,7 +2863,8 @@ end
         boolean
             Whether the interaction is allowed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3039,7 +3061,8 @@ end
         boolean
             Whether the player can join the class.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3162,7 +3185,7 @@ end
             -- Check class limits per faction
             if class.limitPerFaction then
                 local factionMembers = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getFaction() == charFaction and plyChar:getClass() == class.uniqueID then
                         factionMembers = factionMembers + 1
@@ -3209,7 +3232,7 @@ end
             -- Check if class has limited slots
             if class.maxPlayers then
                 local currentPlayers = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getClass() == class.uniqueID then
                         currentPlayers = currentPlayers + 1
@@ -3269,7 +3292,8 @@ end
         boolean
             Whether the knock is allowed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3447,7 +3471,8 @@ end
         boolean
             Whether the door can be locked.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3644,7 +3669,8 @@ end
         boolean
             Whether the config can be modified.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3744,7 +3770,8 @@ end
         boolean
             Whether the item can be rotated.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -3886,7 +3913,8 @@ end
         boolean
             Whether the player can see the log category.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -4059,7 +4087,8 @@ end
         boolean
             Whether storage can be spawned.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -4241,7 +4270,8 @@ end
         boolean
             Whether the character switch is allowed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -4405,7 +4435,8 @@ end
         boolean
             Whether the item can be taken.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -4635,7 +4666,8 @@ end
         boolean
             Whether the punch is allowed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -4836,7 +4868,8 @@ end
         boolean
             Whether the trade is allowed.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -5088,7 +5121,8 @@ end
         boolean
             Whether the item can be unequipped.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -5330,7 +5364,8 @@ end
         boolean
             Whether the door can be unlocked.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -5566,7 +5601,7 @@ end
         -- Helper function to trigger door alarm
         function MODULE:TriggerDoorAlarm(door, client)
             -- Alert nearby players or authorities
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                     ply:notify("Security alarm triggered at door!")
                 end
@@ -5599,7 +5634,8 @@ end
         boolean
             Whether the character can be used.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -5690,7 +5726,7 @@ end
                 -- Check faction limits
                 if factionData.limit then
                     local factionCount = 0
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         local plyChar = ply:getChar()
                         if plyChar and plyChar:getFaction() == charFaction then
                             factionCount = factionCount + 1
@@ -5719,7 +5755,7 @@ end
                     -- Check class limits
                     if classData.limit then
                         local classCount = 0
-                        for _, ply in ipairs(player.GetAll()) do
+                        for _, ply in player.Iterator() do
                             local plyChar = ply:getChar()
                             if plyChar and plyChar:getClass() == charClass then
                                 classCount = classCount + 1
@@ -5771,7 +5807,7 @@ end
             -- Check server population limits for certain character types
             if character:getData("unique", false) then
                 -- Unique characters can only be used by one player at a time
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:getChar() == character and ply ~= client then
                         return false -- Character already in use
                     end
@@ -5837,7 +5873,8 @@ end
         boolean
             Whether the command can be used.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -6055,7 +6092,8 @@ end
         boolean
             Whether the door can be used.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -6298,7 +6336,8 @@ end
         boolean
             Whether the action can be run.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -6566,7 +6605,8 @@ end
         boolean
             Whether the data can be saved.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -6776,7 +6816,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7040,7 +7081,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7189,7 +7231,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7313,7 +7356,7 @@ end
             self:CheckDeletionTriggers(character, client)
 
             -- Notify administrators of character deletion
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
                 end
@@ -7355,7 +7398,7 @@ end
             end
 
             -- Remove from any active player lists
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getID() == charID then
                     ply:setNetVar("liaChar", nil)
                     break
@@ -7486,7 +7529,7 @@ end
         -- Helper function to execute trigger actions
         function MODULE:ExecuteTriggerAction(action, character, client)
             if action.type == "notify_staff" then
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:hasPrivilege("Staff Permissions") then
                         ply:notify("Character deletion trigger activated: " .. character:getName())
                     end
@@ -7527,7 +7570,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7670,7 +7714,8 @@ end
         boolean
             Whether the character should be saved (return false to cancel).
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7795,7 +7840,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7944,7 +7990,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -7952,7 +7999,7 @@ end
         ```lua
         -- Simple: Force recognition for all players in range
         function MODULE:CharForceRecognized(player, range)
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                     ply:recognize(player)
                 end
@@ -7969,7 +8016,7 @@ end
 
             local playerFaction = char:getFaction()
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                     local plyChar = ply:getChar()
                     if plyChar then
@@ -8007,7 +8054,7 @@ end
                 recognizedPlayers = {}
             }
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                     local plyChar = ply:getChar()
                     if plyChar then
@@ -8200,7 +8247,8 @@ end
         boolean
             Whether the character has the flags.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -8439,7 +8487,8 @@ end
         boolean
             Whether the faction limit has been reached.
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -8451,7 +8500,7 @@ end
 
             -- Count current faction members
             local memberCount = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local char = ply:getChar()
                 if char and char:getFaction() == faction.uniqueID then
                     memberCount = memberCount + 1
@@ -8478,7 +8527,7 @@ end
             local memberCount = 0
             local activeMembers = 0
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local char = ply:getChar()
                 if char and char:getFaction() == faction.uniqueID then
                     memberCount = memberCount + 1
@@ -8617,7 +8666,7 @@ end
                 totalLevel = 0
             }
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local char = ply:getChar()
                 if char and char:getFaction() == factionID then
                     stats.totalMembers = stats.totalMembers + 1
@@ -8698,7 +8747,7 @@ end
             if totalPlayers < 10 then return false end -- Not enough players to worry about balance
 
             local factionCount = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local char = ply:getChar()
                 if char and char:getFaction() == faction.uniqueID then
                     factionCount = factionCount + 1
@@ -8746,7 +8795,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -9072,7 +9122,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -9194,7 +9245,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -9485,7 +9537,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -10141,6 +10194,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -10277,6 +10333,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -10284,7 +10343,7 @@ end
         -- Simple: Create basic salary timer
         function MODULE:CreateSalaryTimers()
             timer.Create("liaSalaryTimer", 300, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         -- Give basic salary
                         local character = client:getChar()
@@ -10312,7 +10371,7 @@ end
 
             for factionID, data in pairs(salaryData) do
                 timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                    for _, client in ipairs(player.GetAll()) do
+                    for _, client in player.Iterator() do
                         if IsValid(client) then
                             local character = client:getChar()
                             if character and character:getFaction() == factionID then
@@ -10332,7 +10391,7 @@ end
         function MODULE:CreateSalaryTimers()
             -- Main salary timer
             timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if not character then continue end
@@ -10374,7 +10433,7 @@ end
 
             -- Overtime bonus timer (for long play sessions)
             timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if not character then continue end
@@ -10394,7 +10453,7 @@ end
                 -- Random chance for special bonuses
                 if math.random() < 0.1 then -- 10% chance
                     local bonusAmount = math.random(50, 200)
-                    for _, client in ipairs(player.GetAll()) do
+                    for _, client in player.Iterator() do
                         if IsValid(client) and client:getChar() then
                             client:getChar():giveMoney(bonusAmount)
                             client:notify("Special bonus payment: $" .. bonusAmount)
@@ -10452,6 +10511,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -10604,6 +10666,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -10694,7 +10759,7 @@ end
             end
 
             -- Validate color (should be number)
-            if embed.color and type(embed.color) ~= "number" then
+            if embed.color and not isnumber(embed.color) then
                 return false
             end
 
@@ -10741,6 +10806,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -10759,7 +10827,7 @@ end
             lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
 
             -- Notify administrators
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Server Admin") then
                     client:notify("Discord integration is currently unavailable.")
                 end
@@ -10825,7 +10893,7 @@ end
             local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                                "Discord relay service is down. Administrative actions may be logged locally only."
 
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Staff") then
                     client:notify(staffMessage)
                     client:ChatPrint(staffMessage)
@@ -10864,6 +10932,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -10889,7 +10960,7 @@ end
 
             -- Relay to in-game chat if it's a public message
             if embed.channel == "general" then
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
                 end
             end
@@ -10968,13 +11039,13 @@ end
 
             -- Send to all players or specific groups
             if embed.channel == "admin" then
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if client:hasPrivilege("Admin") then
                         client:ChatPrint(formattedMessage)
                     end
                 end
             else
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     client:ChatPrint(formattedMessage)
                 end
             end
@@ -11002,6 +11073,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11025,7 +11099,7 @@ end
 
             -- Notify nearby players
             local nearbyPlayers = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) < 500 then
                     table.insert(nearbyPlayers, ply)
                 end
@@ -11154,6 +11228,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11180,7 +11257,7 @@ end
 
             -- Notify nearby players
             local nearbyPlayers = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(entity:GetPos()) < 300 then
                     table.insert(nearbyPlayers, ply)
                 end
@@ -11320,6 +11397,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11346,7 +11426,7 @@ end
 
             -- Notify nearby players
             local nearbyPlayers = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) < 200 then
                     table.insert(nearbyPlayers, ply)
                 end
@@ -11505,6 +11585,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11535,7 +11618,7 @@ end
 
             -- Notify nearby players
             local nearbyPlayers = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) < 300 then
                     table.insert(nearbyPlayers, ply)
                 end
@@ -11687,6 +11770,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11720,7 +11806,7 @@ end
 
             -- Notify nearby players
             local nearbyPlayers = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) < 300 then
                     table.insert(nearbyPlayers, ply)
                 end
@@ -11897,6 +11983,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -11964,7 +12053,7 @@ end
             lia.log.add(client:Name() .. " (" .. client:SteamID() .. ") set door title to: " .. sanitized)
 
             -- Notify nearby players
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(door:GetPos()) < 200 then
                     ply:notify(client:Name() .. " set the door title to: " .. sanitized)
                 end
@@ -11988,6 +12077,9 @@ end
     Returns:
         table
             Table of spawn points.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -12096,6 +12188,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -12120,7 +12215,7 @@ end
             -- Set recognition data
             character:setData("forceRecognized", true)
             character:setData("recognitionRange", range or 500)
-            
+
             if fakeName then
                 character:setData("fakeName", fakeName)
             end
@@ -12141,19 +12236,19 @@ end
 
             -- Validate range
             local validRange = math.Clamp(range or 500, 0, 10000)
-            
+
             -- Set recognition data
             character:setData("forceRecognized", true)
             character:setData("recognitionRange", validRange)
             character:setData("recognitionTime", CurTime())
-            
+
             if fakeName then
                 character:setData("fakeName", fakeName)
                 character:setData("usingFakeName", true)
             end
 
             -- Notify all nearby players
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= validRange then
                     local targetChar = ply:getChar()
                     if targetChar then
@@ -12189,6 +12284,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -12294,6 +12392,9 @@ end
         table
             Table of case claims.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -12309,7 +12410,7 @@ end
         -- Medium: Get claims from database
         function MODULE:GetAllCaseClaims()
             local claims = {}
-            
+
             lia.db.query("SELECT * FROM case_claims", {}, function(data)
                 if data then
                     claims = data
@@ -12381,11 +12482,11 @@ end
                 local priorityOrder = {high = 1, medium = 2, normal = 3, low = 4}
                 local aPriority = priorityOrder[a.priority] or 3
                 local bPriority = priorityOrder[b.priority] or 3
-                
+
                 if aPriority ~= bPriority then
                     return aPriority < bPriority
                 end
-                
+
                 return tonumber(a.created) > tonumber(b.created)
             end)
 
@@ -12414,6 +12515,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -12433,13 +12537,13 @@ end
             if doorData.name then
                 table.insert(doorInfo, {text = "Door: " .. doorData.name, color = color_white})
             end
-            
+
             if doorData.locked then
                 table.insert(doorInfo, {text = "Locked", color = Color(255, 0, 0)})
             else
                 table.insert(doorInfo, {text = "Unlocked", color = Color(0, 255, 0)})
             end
-            
+
             if doorData.owner then
                 table.insert(doorInfo, {text = "Owner: " .. doorData.owner, color = Color(200, 200, 200)})
             end
@@ -12555,6 +12659,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -12626,7 +12733,7 @@ end
                 if doorData then
                     local isOwner = doorData.owner == target:SteamID()
                     local hasAccess = false
-                    
+
                     -- Check faction access
                     if doorData.factions then
                         for _, factionID in ipairs(doorData.factions) do
@@ -12646,7 +12753,7 @@ end
                             position = door:GetPos()
                         })
                         totalValue = totalValue + (doorData.price or 0)
-                        
+
                         if doorData.locked then
                             lockedDoors = lockedDoors + 1
                         else
@@ -12697,6 +12804,9 @@ end
     Returns:
         table
             The save data.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -12820,6 +12930,9 @@ end
         number
             The maximum character count.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -12885,7 +12998,7 @@ end
             -- Calculate final limit
             local finalLimit = baseLimit + additionalSlots
             local maxLimit = lia.config.get("MaxCharacterLimit", 10)
-            
+
             return math.Clamp(finalLimit, 1, maxLimit)
         end
         ```
@@ -12907,6 +13020,9 @@ end
     Returns:
         number
             The play time in seconds.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -13004,6 +13120,9 @@ end
         number
             The overridden price.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13062,7 +13181,7 @@ end
                 -- Apply sell/buy multiplier
                 if isSellingToVendor then
                     multiplier = multiplier * (vendorData.sellMultiplier or 0.5)
-                    
+
                     -- Check item condition if selling
                     local itemTable = lia.item.list[uniqueID]
                     if itemTable and itemTable.condition then
@@ -13096,7 +13215,7 @@ end
                 if vendorData.stock and vendorData.stock[uniqueID] then
                     local stock = vendorData.stock[uniqueID]
                     local maxStock = vendorData.maxStock and vendorData.maxStock[uniqueID] or 100
-                    
+
                     if stock < maxStock * 0.2 then -- Low stock
                         multiplier = multiplier * 1.2
                     elseif stock > maxStock * 0.8 then -- High stock
@@ -13137,6 +13256,9 @@ end
         number
             The salary amount.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13157,7 +13279,7 @@ end
             if not IsValid(client) then return 0 end
 
             local baseSalary = 0
-            
+
             if class and class.salary then
                 baseSalary = class.salary
             elseif faction and faction.salary then
@@ -13251,6 +13373,9 @@ end
         table
             Table of tickets.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13326,7 +13451,7 @@ end
             table.sort(tickets, function(a, b)
                 local priorityOrder = {high = 1, medium = 2, normal = 3, low = 4}
                 local statusOrder = {open = 1, claimed = 2, closed = 3}
-                
+
                 local aPriority = priorityOrder[a.priority] or 3
                 local bPriority = priorityOrder[b.priority] or 3
                 local aStatus = statusOrder[a.status] or 3
@@ -13364,6 +13489,9 @@ end
     Returns:
         number
             The sale scale.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -13471,6 +13599,80 @@ end
     Returns:
         table
             Table of warnings.
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get warnings for a character
+        function MODULE:GetWarnings(charID)
+            return lia.warning.get(charID) or {}
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Get warnings with filtering
+        function MODULE:GetWarnings(charID)
+            local warnings = lia.warning.get(charID) or {}
+
+            -- Filter active warnings only
+            local activeWarnings = {}
+            for _, warning in ipairs(warnings) do
+                if not warning.removed then
+                    table.insert(activeWarnings, warning)
+                end
+            end
+
+            return activeWarnings
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced warning retrieval with caching and validation
+        function MODULE:GetWarnings(charID)
+            if not charID then return {} end
+
+            -- Check cache first
+            if self.warningCache and self.warningCache[charID] then
+                local cacheTime = self.warningCache[charID].time
+                if CurTime() - cacheTime < 60 then -- Cache for 60 seconds
+                    return self.warningCache[charID].data
+                end
+            end
+
+            -- Get warnings from database
+            local warnings = lia.warning.get(charID) or {}
+
+            -- Validate and process warnings
+            local processedWarnings = {}
+            for _, warning in ipairs(warnings) do
+                -- Validate warning data
+                if warning.id and warning.reason then
+                    -- Add formatted date
+                    warning.formattedDate = os.date("%Y-%m-%d %H:%M:%S", warning.time or os.time())
+
+                    -- Check if warning is still active
+                    if not warning.removed and (not warning.expires or warning.expires > os.time()) then
+                        table.insert(processedWarnings, warning)
+                    end
+                end
+            end
+
+            -- Cache results
+            self.warningCache = self.warningCache or {}
+            self.warningCache[charID] = {
+                data = processedWarnings,
+                time = CurTime()
+            }
+
+            return processedWarnings
+        end
+        ```
 ]]
 function GetWarnings(charID)
 end
@@ -13489,6 +13691,88 @@ end
     Returns:
         table
             Table of warnings.
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get warnings by issuer
+        function MODULE:GetWarningsByIssuer(steamID)
+            return lia.warning.getByIssuer(steamID) or {}
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Get warnings with issuer information
+        function MODULE:GetWarningsByIssuer(steamID)
+            if not steamID then return {} end
+
+            local warnings = lia.warning.getByIssuer(steamID) or {}
+
+            -- Add issuer name to each warning
+            for _, warning in ipairs(warnings) do
+                local issuer = player.GetBySteamID(steamID)
+                if IsValid(issuer) then
+                    warning.issuerName = issuer:Name()
+                else
+                    warning.issuerName = "Unknown"
+                end
+            end
+
+            return warnings
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced warning retrieval with statistics
+        function MODULE:GetWarningsByIssuer(steamID)
+            if not steamID then return {} end
+
+            -- Get all warnings by this issuer
+            local warnings = lia.warning.getByIssuer(steamID) or {}
+
+            -- Process and analyze warnings
+            local processedWarnings = {
+                warnings = {},
+                statistics = {
+                    total = 0,
+                    active = 0,
+                    removed = 0,
+                    byCharacter = {}
+                }
+            }
+
+            for _, warning in ipairs(warnings) do
+                processedWarnings.statistics.total = processedWarnings.statistics.total + 1
+
+                if warning.removed then
+                    processedWarnings.statistics.removed = processedWarnings.statistics.removed + 1
+                else
+                    processedWarnings.statistics.active = processedWarnings.statistics.active + 1
+                end
+
+                -- Group by character
+                local charID = warning.charID or 0
+                processedWarnings.statistics.byCharacter[charID] = (processedWarnings.statistics.byCharacter[charID] or 0) + 1
+
+                -- Add formatted data
+                warning.formattedDate = os.date("%Y-%m-%d %H:%M:%S", warning.time or os.time())
+
+                -- Get issuer name
+                local issuer = player.GetBySteamID(steamID)
+                warning.issuerName = IsValid(issuer) and issuer:Name() or "Unknown"
+
+                table.insert(processedWarnings.warnings, warning)
+            end
+
+            return processedWarnings
+        end
+        ```
 ]]
 function GetWarningsByIssuer(steamID)
 end
@@ -13514,6 +13798,91 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic item transfer handling
+        function MODULE:HandleItemTransferRequest(client, itemID, x, y, inventoryID)
+            local item = lia.item.get(itemID)
+            if item then
+                item:transfer(inventoryID, x, y)
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Item transfer with validation
+        function MODULE:HandleItemTransferRequest(client, itemID, x, y, inventoryID)
+            if not IsValid(client) then return end
+
+            local item = lia.item.get(itemID)
+            if not item then return end
+
+            -- Check if player can transfer
+            if not hook.Run("CanPlayerTransferItem", client, item) then
+                client:notify("You cannot transfer this item")
+                return
+            end
+
+            -- Transfer item
+            item:transfer(inventoryID, x, y)
+            client:notify("Item transferred")
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced item transfer with logging and validation
+        function MODULE:HandleItemTransferRequest(client, itemID, x, y, inventoryID)
+            if not IsValid(client) then return end
+
+            local item = lia.item.get(itemID)
+            if not item then
+                client:notifyError("Item not found")
+                return
+            end
+
+            -- Validate transfer permissions
+            if not hook.Run("CanPlayerTransferItem", client, item) then
+                client:notifyError("You don't have permission to transfer this item")
+                return
+            end
+
+            -- Validate destination inventory
+            local inventory = lia.inventory.get(inventoryID)
+            if not inventory then
+                client:notifyError("Destination inventory not found")
+                return
+            end
+
+            -- Check inventory space
+            if not inventory:canFit(item, x, y) then
+                client:notifyError("Item cannot fit in destination")
+                return
+            end
+
+            -- Perform transfer
+            item:transfer(inventoryID, x, y)
+
+            -- Log transfer
+            lia.log.add(string.format(
+                "%s transferred item %s (ID: %d) to inventory %d",
+                client:Name(),
+                item:getName(),
+                itemID,
+                inventoryID
+            ), FLAG_NORMAL)
+
+            -- Notify success
+            client:notify("Item transferred successfully")
+        end
+        ```
 ]]
 function HandleItemTransferRequest(client, itemID, x, y, inventoryID)
 end
@@ -13531,6 +13900,86 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic storage initialization
+        function MODULE:InitializeStorage(entity)
+            if IsValid(entity) then
+                entity:setNetVar("storage", true)
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Initialize storage with default inventory
+        function MODULE:InitializeStorage(entity)
+            if not IsValid(entity) then return end
+
+            -- Create storage inventory
+            local inventory = lia.inventory.create({
+                w = 10,
+                h = 10,
+                name = "Storage Container"
+            })
+
+            entity:setNetVar("inventory", inventory:getID())
+            entity:setNetVar("storage", true)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced storage initialization with validation
+        function MODULE:InitializeStorage(entity)
+            if not IsValid(entity) then return end
+
+            -- Get storage configuration
+            local storageConfig = entity:getNetVar("storageConfig", {})
+            local width = storageConfig.width or 10
+            local height = storageConfig.height or 10
+            local name = storageConfig.name or "Storage Container"
+
+            -- Create storage inventory
+            local inventory = lia.inventory.create({
+                w = width,
+                h = height,
+                name = name
+            })
+
+            if not inventory then
+                lia.log.add("Failed to create storage inventory for entity " .. entity:EntIndex(), FLAG_ERROR)
+                return
+            end
+
+            -- Set up entity storage
+            entity:setNetVar("inventory", inventory:getID())
+            entity:setNetVar("storage", true)
+            entity:setNetVar("storageName", name)
+
+            -- Add default items if configured
+            if storageConfig.defaultItems then
+                for _, itemData in ipairs(storageConfig.defaultItems) do
+                    inventory:add(itemData.uniqueID, itemData.quantity or 1)
+                end
+            end
+
+            -- Log initialization
+            lia.log.add(string.format(
+                "Storage initialized for entity %d: %dx%d inventory (ID: %d)",
+                entity:EntIndex(),
+                width,
+                height,
+                inventory:getID()
+            ), FLAG_NORMAL)
+        end
+        ```
 ]]
 function InitializeStorage(entity)
 end
@@ -13552,6 +14001,119 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic item combination
+        function MODULE:ItemCombine(client, item, target)
+            if item and target then
+                print("Combining " .. item:getName() .. " with " .. target:getName())
+            end
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Item combination with recipe checking
+        function MODULE:ItemCombine(client, item, target)
+            if not IsValid(client) or not item or not target then return end
+
+            -- Check for combination recipe
+            local recipe = self:FindCombinationRecipe(item, target)
+            if recipe then
+                -- Remove items
+                item:remove()
+                target:remove()
+
+                -- Give result item
+                local char = client:getChar()
+                if char then
+                    char:getInv():add(recipe.result)
+                    client:notify("Items combined successfully!")
+                end
+            else
+                client:notify("These items cannot be combined")
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced item combination with validation and effects
+        function MODULE:ItemCombine(client, item, target)
+            if not IsValid(client) then return end
+            if not item or not target then
+                client:notifyError("Invalid items")
+                return
+            end
+
+            local char = client:getChar()
+            if not char then return end
+
+            -- Find combination recipe
+            local recipe = self:FindCombinationRecipe(item, target)
+            if not recipe then
+                client:notifyError("These items cannot be combined")
+                return
+            end
+
+            -- Validate recipe requirements
+            if recipe.requiresSkill then
+                local skill = char:getData("skill_" .. recipe.requiresSkill, 0)
+                if skill < recipe.skillLevel then
+                    client:notifyError("You don't have the required skill level")
+                    return
+                end
+            end
+
+            -- Check if player has required tools
+            if recipe.requiresTools then
+                for _, toolID in ipairs(recipe.requiresTools) do
+                    if not char:getInv():hasItem(toolID) then
+                        client:notifyError("You need a " .. toolID .. " to combine these items")
+                        return
+                    end
+                end
+            end
+
+            -- Remove source items
+            item:remove()
+            target:remove()
+
+            -- Create result item
+            local resultItem = char:getInv():add(recipe.result, recipe.quantity or 1)
+
+            -- Apply skill experience
+            if recipe.skillExperience then
+                for skill, exp in pairs(recipe.skillExperience) do
+                    char:addSkillExperience(skill, exp)
+                end
+            end
+
+            -- Play combination effect
+            if recipe.effect then
+                local effectData = EffectData()
+                effectData:SetOrigin(client:GetPos())
+                util.Effect(recipe.effect, effectData)
+            end
+
+            -- Log combination
+            lia.log.add(string.format(
+                "%s combined %s with %s to create %s",
+                client:Name(),
+                item:getName(),
+                target:getName(),
+                recipe.result
+            ), FLAG_NORMAL)
+
+            client:notify("Items combined successfully!")
+        end
+        ```
 ]]
 function ItemCombine(client, item, target)
 end
@@ -13574,6 +14136,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13591,9 +14156,9 @@ end
             local char = owner:getChar()
             if char then
                 lia.log.add(owner:Name() .. " locked entity " .. tostring(entity), FLAG_NORMAL)
-                
+
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:GetPos():Distance(entity:GetPos()) < 200 then
                         v:notify("You hear a lock click.")
                     end
@@ -13608,25 +14173,25 @@ end
         function MODULE:KeyLock(owner, entity, time)
             local char = owner:getChar()
             if not char then return end
-            
+
             -- Check if entity can be locked
             if not IsValid(entity) then return end
-            
+
             -- Log the lock event
-            lia.log.add(string.format("%s (%s) locked entity %s at %s", 
-                owner:Name(), 
-                owner:SteamID(), 
-                tostring(entity), 
-                os.date("%Y-%m-%d %H:%M:%S")), 
+            lia.log.add(string.format("%s (%s) locked entity %s at %s",
+                owner:Name(),
+                owner:SteamID(),
+                tostring(entity),
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store lock data
             entity:SetNetVar("lockedBy", owner:SteamID())
             entity:SetNetVar("lockedTime", os.time())
             entity:SetNetVar("lockDuration", time or 0)
-            
+
             -- Notify nearby players with sound
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(entity:GetPos())
                 if dist < 300 then
                     v:notify("You hear a lock click.")
@@ -13635,7 +14200,7 @@ end
                     end
                 end
             end
-            
+
             -- Update door data if it's a door
             if entity:GetClass() == "lia_door" then
                 local doorData = entity:getNetVar("doorData")
@@ -13668,6 +14233,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13685,7 +14253,7 @@ end
             local char = owner:getChar()
             if char then
                 lia.log.add(owner:Name() .. " unlocked entity " .. tostring(entity), FLAG_NORMAL)
-                
+
                 -- Check if entity was locked by this player
                 local lockedBy = entity:GetNetVar("lockedBy")
                 if lockedBy == owner:SteamID() then
@@ -13701,13 +14269,13 @@ end
         function MODULE:KeyUnlock(owner, entity, time)
             local char = owner:getChar()
             if not char then return end
-            
+
             if not IsValid(entity) then return end
-            
+
             -- Verify unlock permission
             local lockedBy = entity:GetNetVar("lockedBy")
             local canUnlock = false
-            
+
             if lockedBy == owner:SteamID() then
                 canUnlock = true
             elseif owner:IsAdmin() then
@@ -13715,27 +14283,27 @@ end
             elseif hook.Run("CanPlayerUnlock", owner, entity) then
                 canUnlock = true
             end
-            
+
             if not canUnlock then
                 owner:notify("You don't have permission to unlock this.")
                 return
             end
-            
+
             -- Log the unlock event
-            lia.log.add(string.format("%s (%s) unlocked entity %s at %s", 
-                owner:Name(), 
-                owner:SteamID(), 
-                tostring(entity), 
-                os.date("%Y-%m-%d %H:%M:%S")), 
+            lia.log.add(string.format("%s (%s) unlocked entity %s at %s",
+                owner:Name(),
+                owner:SteamID(),
+                tostring(entity),
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Clear lock data
             entity:SetNetVar("lockedBy", nil)
             entity:SetNetVar("lockedTime", nil)
             entity:SetNetVar("lockDuration", nil)
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(entity:GetPos())
                 if dist < 300 then
                     v:notify("You hear a lock click.")
@@ -13744,7 +14312,7 @@ end
                     end
                 end
             end
-            
+
             -- Update door data if it's a door
             if entity:GetClass() == "lia_door" then
                 local doorData = entity:getNetVar("doorData")
@@ -13772,6 +14340,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13787,7 +14358,7 @@ end
         -- Medium: Load data from database or files
         function MODULE:LoadData()
             MODULE.customData = {}
-            
+
             -- Load from file
             if file.Exists("lilia_data/module_custom.txt", "DATA") then
                 local data = file.Read("lilia_data/module_custom.txt", "DATA")
@@ -13795,7 +14366,7 @@ end
                     MODULE.customData = util.JSONToTable(data) or {}
                 end
             end
-            
+
             -- Load from database
             lia.db.query("SELECT * FROM custom_module_data", function(data)
                 if data then
@@ -13813,14 +14384,14 @@ end
         function MODULE:LoadData()
             MODULE.customData = {}
             MODULE.loadedData = false
-            
+
             -- Try loading from database first
             lia.db.query("SELECT * FROM custom_module_data WHERE map = ?", {game.GetMap()}, function(data)
                 if data and #data > 0 then
                     for _, row in ipairs(data) do
                         local key = row.key
                         local value = row.value
-                        
+
                         -- Validate and parse JSON values
                         if string.StartWith(value, "{") or string.StartWith(value, "[") then
                             local parsed = util.JSONToTable(value)
@@ -13833,7 +14404,7 @@ end
                             MODULE.customData[key] = value
                         end
                     end
-                    
+
                     MODULE.loadedData = true
                     print("[MODULE] Loaded " .. #data .. " data entries from database")
                 else
@@ -13841,11 +14412,11 @@ end
                     MODULE:LoadDataFromFile()
                 end
             end)
-            
+
             -- Load file-based data as backup
             MODULE:LoadDataFromFile()
         end
-        
+
         function MODULE:LoadDataFromFile()
             local path = "lilia_data/" .. game.GetMap() .. "/module_custom.txt"
             if file.Exists(path, "DATA") then
@@ -13880,6 +14451,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13896,7 +14470,7 @@ end
         function MODULE:OnAdminSystemLoaded(groups, privileges)
             MODULE.adminGroups = groups
             MODULE.adminPrivileges = privileges
-            
+
             -- Add custom privilege
             privileges["custom_privilege"] = {
                 name = "Custom Privilege",
@@ -13912,7 +14486,7 @@ end
             MODULE.adminGroups = groups
             MODULE.adminPrivileges = privileges
             MODULE.adminLoaded = true
-            
+
             -- Validate and merge custom privileges
             local customPrivileges = {
                 ["custom_privilege"] = {
@@ -13926,14 +14500,14 @@ end
                     category = "advanced"
                 }
             }
-            
+
             for key, priv in pairs(customPrivileges) do
                 if not privileges[key] then
                     privileges[key] = priv
                     print("[MODULE] Added custom privilege: " .. key)
                 end
             end
-            
+
             -- Validate group structure
             for groupName, groupData in pairs(groups) do
                 if not groupData.privileges then
@@ -13943,10 +14517,10 @@ end
                     groupData.inherit = {}
                 end
             end
-            
+
             -- Log admin system load
             lia.log.add("Admin system loaded: " .. table.Count(groups) .. " groups, " .. table.Count(privileges) .. " privileges", FLAG_NORMAL)
-            
+
             -- Notify modules that admin system is ready
             hook.Run("AdminSystemReady", groups, privileges)
         end
@@ -13973,6 +14547,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -13990,14 +14567,14 @@ end
             -- Set custom data
             character:setData("created", os.time())
             character:setData("playTime", 0)
-            
+
             -- Log creation
-            lia.log.add(string.format("%s created character %s (ID: %d)", 
-                client:Name(), 
-                character:getName(), 
-                character:getID()), 
+            lia.log.add(string.format("%s created character %s (ID: %d)",
+                client:Name(),
+                character:getName(),
+                character:getID()),
                 FLAG_NORMAL)
-            
+
             -- Give starter items
             local faction = character:getFaction()
             if faction and faction.startingItems then
@@ -14013,7 +14590,7 @@ end
         -- High: Complex character creation with validation, cross-module integration, and events
         function MODULE:OnCharCreated(client, character, originalData)
             if not IsValid(client) or not character then return end
-            
+
             -- Initialize character data
             local charData = character:getData()
             charData.created = os.time()
@@ -14026,16 +14603,16 @@ end
                 moneyEarned = 0,
                 itemsFound = 0
             }
-            
+
             -- Log detailed creation
-            lia.log.add(string.format("%s (%s) created character %s (ID: %d, Faction: %s)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) created character %s (ID: %d, Faction: %s)",
+                client:Name(),
                 client:SteamID(),
-                character:getName(), 
+                character:getName(),
                 character:getID(),
-                character:getFaction() and character:getFaction().name or "Unknown"), 
+                character:getFaction() and character:getFaction().name or "Unknown"),
                 FLAG_NORMAL)
-            
+
             -- Apply faction-specific bonuses
             local faction = character:getFaction()
             if faction then
@@ -14043,31 +14620,31 @@ end
                 if faction.startingMoney then
                     character:giveMoney(faction.startingMoney)
                 end
-                
+
                 -- Starting items
                 if faction.startingItems then
                     local inv = character:getInv()
                     if inv then
                         for _, itemData in ipairs(faction.startingItems) do
-                            if type(itemData) == "string" then
+                            if isstring(itemData) then
                                 inv:add(itemData)
-                            elseif type(itemData) == "table" then
+                            elseif istable(itemData) then
                                 inv:add(itemData[1], itemData[2] or 1, itemData[3] or {})
                             end
                         end
                     end
                 end
             end
-            
+
             -- Apply class-specific bonuses
             local class = character:getClass()
             if class and class.onCreated then
                 class.onCreated(client, character, originalData)
             end
-            
+
             -- Notify modules
             hook.Run("CharacterFullyCreated", client, character, originalData)
-            
+
             -- Send welcome message
             timer.Simple(1, function()
                 if IsValid(client) then
@@ -14096,6 +14673,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14110,11 +14690,11 @@ end
         ```lua
         -- Medium: Handle character deletion with cleanup
         function MODULE:OnCharDelete(client, characterID)
-            lia.log.add(string.format("%s deleted character ID %d", 
-                client:Name(), 
-                characterID), 
+            lia.log.add(string.format("%s deleted character ID %d",
+                client:Name(),
+                characterID),
                 FLAG_NORMAL)
-            
+
             -- Clean up character data
             lia.db.query("DELETE FROM character_data WHERE charID = ?", {characterID})
         end
@@ -14125,19 +14705,19 @@ end
         -- High: Advanced deletion with validation, cleanup, and logging
         function MODULE:OnCharDelete(client, characterID)
             if not characterID then return end
-            
+
             -- Get character before deletion
             local character = lia.char.loaded[characterID]
             local charName = character and character:getName() or "Unknown"
-            
+
             -- Log deletion with details
-            lia.log.add(string.format("%s (%s) deleted character %s (ID: %d)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) deleted character %s (ID: %d)",
+                client:Name(),
                 client:SteamID(),
                 charName,
-                characterID), 
+                characterID),
                 FLAG_NORMAL)
-            
+
             -- Clean up inventory
             if character then
                 local inv = character:getInv()
@@ -14145,15 +14725,15 @@ end
                     inv:destroy()
                 end
             end
-            
+
             -- Clean up database entries
             lia.db.query("DELETE FROM character_data WHERE charID = ?", {characterID})
             lia.db.query("DELETE FROM character_items WHERE charID = ?", {characterID})
             lia.db.query("DELETE FROM character_warnings WHERE charID = ?", {characterID})
-            
+
             -- Notify modules
             hook.Run("CharacterDeleted", client, characterID, character)
-            
+
             -- Update player's character count
             if IsValid(client) then
                 client:syncCharList()
@@ -14180,6 +14760,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14197,7 +14780,7 @@ end
             if character then
                 character:setData("lastDisconnect", os.time())
                 character:save()
-                
+
                 lia.log.add(client:Name() .. " disconnected from " .. character:getName(), FLAG_NORMAL)
             end
         end
@@ -14208,39 +14791,39 @@ end
         -- High: Advanced disconnect handling with cleanup and data persistence
         function MODULE:OnCharDisconnect(client, character)
             if not IsValid(client) or not character then return end
-            
+
             -- Update last disconnect time
             character:setData("lastDisconnect", os.time())
             character:setData("lastPosition", client:GetPos())
             character:setData("lastAngles", client:GetAngles())
-            
+
             -- Save playtime
             local playTime = character:getData("playTime", 0)
             local sessionTime = os.time() - (character:getData("lastLogin", os.time()))
             character:setData("playTime", playTime + sessionTime)
-            
+
             -- Save inventory
             local inv = character:getInv()
             if inv then
                 inv:sync()
             end
-            
+
             -- Save character
             character:save()
-            
+
             -- Log disconnection
-            lia.log.add(string.format("%s (%s) disconnected from %s (ID: %d)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) disconnected from %s (ID: %d)",
+                client:Name(),
                 client:SteamID(),
                 character:getName(),
-                character:getID()), 
+                character:getID()),
                 FLAG_NORMAL)
-            
+
             -- Clean up temporary data
             if character:getData("tempData") then
                 character:setData("tempData", nil)
             end
-            
+
             -- Notify modules
             hook.Run("CharacterDisconnected", client, character)
         end
@@ -14267,6 +14850,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14286,11 +14872,11 @@ end
             local char = client:getChar()
             if char then
                 char:setData("falloverState", state)
-                
+
                 if state then
                     lia.log.add(client:Name() .. " fell over", FLAG_NORMAL)
                     -- Notify nearby players
-                    for _, v in ipairs(player.GetAll()) do
+                    for _, v in player.Iterator() do
                         if v:GetPos():Distance(client:GetPos()) < 300 then
                             v:notify("You see " .. char:getName() .. " fall over.")
                         end
@@ -14305,30 +14891,30 @@ end
         -- High: Advanced fallover system with injuries, effects, and recovery
         function MODULE:OnCharFallover(client, ragdoll, state)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             char:setData("falloverState", state)
             char:setData("falloverTime", state and os.time() or nil)
-            
+
             if state then
                 -- Log fallover
-                lia.log.add(string.format("%s (%s) fell over at %s", 
-                    client:Name(), 
+                lia.log.add(string.format("%s (%s) fell over at %s",
+                    client:Name(),
                     client:SteamID(),
-                    os.date("%Y-%m-%d %H:%M:%S")), 
+                    os.date("%Y-%m-%d %H:%M:%S")),
                     FLAG_NORMAL)
-                
+
                 -- Apply injury chance
                 local injuryChance = hook.Run("GetInjuryChance", client) or 10
                 if math.random(100) <= injuryChance then
                     char:setData("injuries", char:getData("injuries", {}) + 1)
                     client:notify("You sustained an injury from the fall!")
                 end
-                
+
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     local dist = v:GetPos():Distance(client:GetPos())
                     if dist < 500 then
                         v:notify("You see " .. char:getName() .. " fall over.")
@@ -14337,7 +14923,7 @@ end
                         end
                     end
                 end
-                
+
                 -- Set recovery timer
                 timer.Create("charFallover_" .. client:SteamID(), 5, 1, function()
                     if IsValid(client) and IsValid(ragdoll) then
@@ -14372,6 +14958,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14386,11 +14975,11 @@ end
         ```lua
         -- Medium: Track flag changes and notify
         function MODULE:OnCharFlagsGiven(player, character, addedFlags)
-            lia.log.add(string.format("%s received flags: %s", 
-                character:getName(), 
-                addedFlags), 
+            lia.log.add(string.format("%s received flags: %s",
+                character:getName(),
+                addedFlags),
                 FLAG_NORMAL)
-            
+
             -- Store flag history
             local flagHistory = character:getData("flagHistory", {})
             table.insert(flagHistory, {
@@ -14407,7 +14996,7 @@ end
         -- High: Advanced flag system with validation, logging, and integration
         function MODULE:OnCharFlagsGiven(player, character, addedFlags)
             if not character or not addedFlags then return end
-            
+
             -- Validate flags
             local validFlags = {}
             for flag in string.gmatch(addedFlags, ".") do
@@ -14415,18 +15004,18 @@ end
                     table.insert(validFlags, flag)
                 end
             end
-            
+
             if #validFlags == 0 then return end
-            
+
             -- Log flag assignment
-            lia.log.add(string.format("%s (%s) gave flags '%s' to %s (ID: %d)", 
-                player:Name(), 
+            lia.log.add(string.format("%s (%s) gave flags '%s' to %s (ID: %d)",
+                player:Name(),
                 player:SteamID(),
                 addedFlags,
                 character:getName(),
-                character:getID()), 
+                character:getID()),
                 FLAG_NORMAL)
-            
+
             -- Store flag history
             local flagHistory = character:getData("flagHistory", {})
             table.insert(flagHistory, {
@@ -14435,19 +15024,19 @@ end
                 givenBy = player:SteamID(),
                 givenByName = player:Name()
             })
-            
+
             -- Limit history size
             if #flagHistory > 50 then
                 table.remove(flagHistory, 1)
             end
-            
+
             character:setData("flagHistory", flagHistory)
-            
+
             -- Apply flag-specific effects
             for flag in string.gmatch(addedFlags, ".") do
                 hook.Run("OnFlagGiven", character, flag, player)
             end
-            
+
             -- Notify modules
             hook.Run("CharacterFlagsUpdated", character, addedFlags, true)
         end
@@ -14474,6 +15063,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14488,11 +15080,11 @@ end
         ```lua
         -- Medium: Track flag removal and log
         function MODULE:OnCharFlagsTaken(player, character, removedFlags)
-            lia.log.add(string.format("%s lost flags: %s", 
-                character:getName(), 
-                removedFlags), 
+            lia.log.add(string.format("%s lost flags: %s",
+                character:getName(),
+                removedFlags),
                 FLAG_NORMAL)
-            
+
             -- Store removal in history
             local flagHistory = character:getData("flagHistory", {})
             table.insert(flagHistory, {
@@ -14509,16 +15101,16 @@ end
         -- High: Advanced flag removal with validation and logging
         function MODULE:OnCharFlagsTaken(player, character, removedFlags)
             if not character or not removedFlags then return end
-            
+
             -- Log flag removal
-            lia.log.add(string.format("%s (%s) removed flags '%s' from %s (ID: %d)", 
-                player:Name(), 
+            lia.log.add(string.format("%s (%s) removed flags '%s' from %s (ID: %d)",
+                player:Name(),
                 player:SteamID(),
                 removedFlags,
                 character:getName(),
-                character:getID()), 
+                character:getID()),
                 FLAG_NORMAL)
-            
+
             -- Store removal in history
             local flagHistory = character:getData("flagHistory", {})
             table.insert(flagHistory, {
@@ -14527,19 +15119,19 @@ end
                 removedBy = player:SteamID(),
                 removedByName = player:Name()
             })
-            
+
             -- Limit history size
             if #flagHistory > 50 then
                 table.remove(flagHistory, 1)
             end
-            
+
             character:setData("flagHistory", flagHistory)
-            
+
             -- Apply flag-specific removal effects
             for flag in string.gmatch(removedFlags, ".") do
                 hook.Run("OnFlagRemoved", character, flag, player)
             end
-            
+
             -- Notify modules
             hook.Run("CharacterFlagsUpdated", character, removedFlags, false)
         end
@@ -14564,6 +15156,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14582,7 +15177,7 @@ end
             if char then
                 char:setData("falloverState", false)
                 char:setData("falloverTime", nil)
-                
+
                 lia.log.add(target:Name() .. " recovered from fallover", FLAG_NORMAL)
             end
         end
@@ -14593,27 +15188,27 @@ end
         -- High: Advanced recovery system with effects and validation
         function MODULE:OnCharGetup(target, entity)
             if not IsValid(target) then return end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             -- Clear fallover state
             char:setData("falloverState", false)
             local falloverTime = char:getData("falloverTime")
             char:setData("falloverTime", nil)
-            
+
             -- Calculate recovery time
             if falloverTime then
                 local recoveryTime = os.time() - falloverTime
-                lia.log.add(string.format("%s recovered from fallover after %d seconds", 
-                    target:Name(), 
-                    recoveryTime), 
+                lia.log.add(string.format("%s recovered from fallover after %d seconds",
+                    target:Name(),
+                    recoveryTime),
                     FLAG_NORMAL)
             end
-            
+
             -- Apply recovery effects
             hook.Run("OnCharacterRecovered", target, entity)
-            
+
             -- Remove ragdoll if valid
             if IsValid(entity) then
                 timer.Simple(0.5, function()
@@ -14644,6 +15239,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14658,12 +15256,12 @@ end
         ```lua
         -- Medium: Track kicks and log
         function MODULE:OnCharKick(character, admin)
-            lia.log.add(string.format("%s kicked character %s (ID: %d)", 
-                admin:Name(), 
+            lia.log.add(string.format("%s kicked character %s (ID: %d)",
+                admin:Name(),
                 character:getName(),
-                character:getID()), 
+                character:getID()),
                 FLAG_NORMAL)
-            
+
             -- Store kick history
             character:setData("kickHistory", character:getData("kickHistory", {}) + 1)
         end
@@ -14674,16 +15272,16 @@ end
         -- High: Advanced kick system with logging and integration
         function MODULE:OnCharKick(character, admin)
             if not character or not IsValid(admin) then return end
-            
+
             -- Log kick with details
-            lia.log.add(string.format("%s (%s) kicked character %s (ID: %d) at %s", 
-                admin:Name(), 
+            lia.log.add(string.format("%s (%s) kicked character %s (ID: %d) at %s",
+                admin:Name(),
                 admin:SteamID(),
                 character:getName(),
                 character:getID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store kick history
             local kickHistory = character:getData("kickHistory", {})
             table.insert(kickHistory, {
@@ -14692,18 +15290,18 @@ end
                 time = os.time(),
                 reason = character:getData("kickReason") or "No reason provided"
             })
-            
+
             -- Limit history
             if #kickHistory > 20 then
                 table.remove(kickHistory, 1)
             end
-            
+
             character:setData("kickHistory", kickHistory)
             character:setData("kickCount", (character:getData("kickCount", 0) + 1))
-            
+
             -- Notify modules
             hook.Run("CharacterKicked", character, admin)
-            
+
             -- Get player if online
             local player = character:getPlayer()
             if IsValid(player) then
@@ -14731,6 +15329,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14745,12 +15346,12 @@ end
         ```lua
         -- Medium: Handle permakill with logging
         function MODULE:OnCharPermakilled(character, time)
-            lia.log.add(string.format("Character %s (ID: %d) was permakilled at %s", 
+            lia.log.add(string.format("Character %s (ID: %d) was permakilled at %s",
                 character:getName(),
                 character:getID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             character:setData("permakilled", true)
             character:setData("permakillTime", time or os.time())
         end
@@ -14761,20 +15362,20 @@ end
         -- High: Advanced permakill handling with cleanup and restrictions
         function MODULE:OnCharPermakilled(character, time)
             if not character then return end
-            
+
             local permakillTime = time or os.time()
-            
+
             -- Log permakill
-            lia.log.add(string.format("Character %s (ID: %d) was permakilled at %s", 
+            lia.log.add(string.format("Character %s (ID: %d) was permakilled at %s",
                 character:getName(),
                 character:getID(),
-                os.date("%Y-%m-%d %H:%M:%S", permakillTime)), 
+                os.date("%Y-%m-%d %H:%M:%S", permakillTime)),
                 FLAG_CRITICAL)
-            
+
             -- Mark as permakilled
             character:setData("permakilled", true)
             character:setData("permakillTime", permakillTime)
-            
+
             -- Remove all items from inventory
             local inv = character:getInv()
             if inv then
@@ -14782,22 +15383,22 @@ end
                     item:remove()
                 end
             end
-            
+
             -- Reset money
             character:setMoney(0)
-            
+
             -- Clear all flags
             character:setFlags("")
-            
+
             -- Save character
             character:save()
-            
+
             -- Notify player if online
             local player = character:getPlayer()
             if IsValid(player) then
                 player:notify("Your character has been permanently killed.")
             end
-            
+
             -- Notify modules
             hook.Run("CharacterPermakilled", character, permakillTime)
         end
@@ -14832,6 +15433,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14849,12 +15453,12 @@ end
         -- Medium: Track trades and log
         function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
             if isFailed then return end
-            
+
             local action = isSellingToVendor and "sold" or "bought"
-            lia.log.add(string.format("%s %s %s from vendor", 
-                client:Name(), 
+            lia.log.add(string.format("%s %s %s from vendor",
+                client:Name(),
                 action,
-                itemType), 
+                itemType),
                 FLAG_NORMAL)
         end
         ```
@@ -14864,33 +15468,33 @@ end
         -- High: Advanced trade tracking with validation and analytics
         function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
             if not IsValid(client) or not character then return end
-            
+
             if isFailed then
-                lia.log.add(string.format("%s failed to trade %s with vendor", 
-                    client:Name(), 
-                    itemType), 
+                lia.log.add(string.format("%s failed to trade %s with vendor",
+                    client:Name(),
+                    itemType),
                     FLAG_WARNING)
                 return
             end
-            
+
             local action = isSellingToVendor and "sold" or "bought"
             local vendorName = IsValid(vendor) and vendor:GetName() or "Unknown"
-            
+
             -- Log trade
-            lia.log.add(string.format("%s (%s) %s %s from vendor %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) %s %s from vendor %s",
+                client:Name(),
                 client:SteamID(),
                 action,
                 itemType,
-                vendorName), 
+                vendorName),
                 FLAG_NORMAL)
-            
+
             -- Track trade statistics
             local tradeStats = character:getData("tradeStats", {})
             tradeStats.totalTrades = (tradeStats.totalTrades or 0) + 1
             tradeStats[action .. "Count"] = (tradeStats[action .. "Count"] or 0) + 1
             character:setData("tradeStats", tradeStats)
-            
+
             -- Apply vendor-specific effects
             if IsValid(vendor) then
                 local vendorData = vendor:getNetVar("vendorData")
@@ -14898,7 +15502,7 @@ end
                     vendorData.onTrade(client, item, isSellingToVendor)
                 end
             end
-            
+
             -- Notify modules
             hook.Run("VendorTradeCompleted", client, vendor, item, isSellingToVendor, character, itemType)
         end
@@ -14927,6 +15531,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -14946,11 +15553,11 @@ end
                 client:notify("Please watch your language.")
                 return false -- Prevent message
             end
-            
-            lia.log.add(string.format("%s [%s]: %s", 
-                client:Name(), 
+
+            lia.log.add(string.format("%s [%s]: %s",
+                client:Name(),
                 chatType,
-                text), 
+                text),
                 FLAG_NORMAL)
         end
         ```
@@ -14960,41 +15567,41 @@ end
         -- High: Advanced chat filtering with logging and moderation
         function MODULE:OnChatReceived(client, chatType, text, anonymous)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Check if player is muted
             if char:getData("muted", false) then
                 client:notify("You are muted and cannot speak.")
                 return false
             end
-            
+
             -- Filter profanity
             local filteredWords = {"badword1", "badword2"}
             local filteredText = text
             for _, word in ipairs(filteredWords) do
                 filteredText = string.gsub(string.lower(filteredText), word, string.rep("*", #word))
             end
-            
+
             if filteredText ~= text then
                 client:notify("Your message contained inappropriate language.")
-                lia.log.add(string.format("%s tried to use profanity: %s", 
-                    client:Name(), 
-                    text), 
+                lia.log.add(string.format("%s tried to use profanity: %s",
+                    client:Name(),
+                    text),
                     FLAG_WARNING)
                 return false
             end
-            
+
             -- Log all chat
-            lia.log.add(string.format("%s (%s) [%s]%s: %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) [%s]%s: %s",
+                client:Name(),
                 client:SteamID(),
                 chatType,
                 anonymous and " [ANON]" or "",
-                text), 
+                text),
                 FLAG_NORMAL)
-            
+
             -- Check for admin commands in chat
             if client:IsAdmin() and string.StartWith(text, "/") then
                 local command = string.match(text, "/(%w+)")
@@ -15022,6 +15629,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15036,11 +15646,11 @@ end
         ```lua
         -- Medium: Handle cheater with logging and action
         function MODULE:OnCheaterCaught(client)
-            lia.log.add(string.format("Cheater detected: %s (%s)", 
-                client:Name(), 
-                client:SteamID()), 
+            lia.log.add(string.format("Cheater detected: %s (%s)",
+                client:Name(),
+                client:SteamID()),
                 FLAG_CRITICAL)
-            
+
             -- Kick the player
             client:Kick("Cheating detected")
         end
@@ -15051,14 +15661,14 @@ end
         -- High: Advanced anti-cheat with logging, actions, and tracking
         function MODULE:OnCheaterCaught(client)
             if not IsValid(client) then return end
-            
+
             -- Log cheater detection
-            lia.log.add(string.format("CHEATER DETECTED: %s (%s) at %s", 
-                client:Name(), 
+            lia.log.add(string.format("CHEATER DETECTED: %s (%s) at %s",
+                client:Name(),
                 client:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_CRITICAL)
-            
+
             -- Store cheater data
             local char = client:getChar()
             if char then
@@ -15072,14 +15682,14 @@ end
                 char:setData("isCheater", true)
                 char:save()
             end
-            
+
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
                 end
             end
-            
+
             -- Ban the player
             client:Ban(0, "Cheating detected")
             client:Kick("Cheating detected - You have been banned")
@@ -15107,6 +15717,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15124,11 +15737,11 @@ end
             local char = target:getChar()
             if char then
                 char:setData("cheaterStatus", newStatus)
-                
-                lia.log.add(string.format("%s changed %s's cheater status to: %s", 
+
+                lia.log.add(string.format("%s changed %s's cheater status to: %s",
                     client:Name(),
                     target:Name(),
-                    newStatus), 
+                    newStatus),
                     FLAG_NORMAL)
             end
         end
@@ -15139,30 +15752,30 @@ end
         -- High: Advanced status management with validation and logging
         function MODULE:OnCheaterStatusChanged(client, target, newStatus)
             if not IsValid(client) or not IsValid(target) then return end
-            
+
             if not client:IsAdmin() then
                 client:notify("You don't have permission to change cheater status.")
                 return
             end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             local oldStatus = char:getData("cheaterStatus", "none")
             char:setData("cheaterStatus", newStatus)
             char:setData("cheaterStatusChangedBy", client:SteamID())
             char:setData("cheaterStatusChangedTime", os.time())
-            
+
             -- Log status change
-            lia.log.add(string.format("%s (%s) changed %s (%s)'s cheater status from %s to %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) changed %s (%s)'s cheater status from %s to %s",
+                client:Name(),
                 client:SteamID(),
                 target:Name(),
                 target:SteamID(),
                 oldStatus,
-                newStatus), 
+                newStatus),
                 FLAG_CRITICAL)
-            
+
             -- Store in history
             local statusHistory = char:getData("cheaterStatusHistory", {})
             table.insert(statusHistory, {
@@ -15172,21 +15785,21 @@ end
                 byName = client:Name(),
                 time = os.time()
             })
-            
+
             if #statusHistory > 50 then
                 table.remove(statusHistory, 1)
             end
-            
+
             char:setData("cheaterStatusHistory", statusHistory)
             char:save()
-            
+
             -- Apply status-based effects
             if newStatus == "banned" then
                 target:Ban(0, "Marked as cheater")
             elseif newStatus == "cleared" then
                 char:setData("isCheater", false)
             end
-            
+
             -- Notify modules
             hook.Run("CheaterStatusUpdated", target, oldStatus, newStatus, client)
         end
@@ -15212,6 +15825,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -15241,37 +15857,37 @@ end
         -- High: Advanced ragdoll system with effects and persistence
         function MODULE:OnCreatePlayerRagdoll(player, entity, isDead)
             if not IsValid(player) or not IsValid(entity) then return end
-            
+
             local char = player:getChar()
             if not char then return end
-            
+
             -- Set ragdoll model and skin
             entity:SetModel(player:GetModel())
             entity:SetSkin(char:getData("skin", 0))
-            
+
             -- Apply body groups
             for i = 0, player:GetNumBodyGroups() - 1 do
                 entity:SetBodygroup(i, player:GetBodygroup(i))
             end
-            
+
             -- Store ragdoll data
             entity:SetNetVar("ragdollOwner", player:SteamID())
             entity:SetNetVar("ragdollTime", os.time())
             entity:SetNetVar("isDead", isDead)
-            
+
             -- Apply death effects
             if isDead then
                 -- Create blood effects
                 local effectdata = EffectData()
                 effectdata:SetOrigin(entity:GetPos())
                 util.Effect("bloodimpact", effectdata)
-                
+
                 -- Set ragdoll to persist
                 entity:SetSaveValue("persist", true)
             end
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(entity:GetPos()) < 500 then
                     v:notify("You see " .. char:getName() .. "'s body.")
                 end
@@ -15297,6 +15913,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -15326,7 +15945,7 @@ end
         -- High: Advanced entity restoration with validation
         function MODULE:OnEntityLoaded(entity, data)
             if not IsValid(entity) or not data then return end
-            
+
             -- Restore position and angles
             if data.pos then
                 entity:SetPos(Vector(data.pos[1], data.pos[2], data.pos[3]))
@@ -15334,29 +15953,29 @@ end
             if data.ang then
                 entity:SetAngles(Angle(data.ang[1], data.ang[2], data.ang[3]))
             end
-            
+
             -- Restore model
             if data.model then
                 entity:SetModel(data.model)
             end
-            
+
             -- Restore custom data
             if data.customData then
                 entity:SetNetVar("customData", data.customData)
             end
-            
+
             -- Restore health
             if data.health then
                 entity:SetHealth(data.health)
             end
-            
+
             -- Apply saved properties
             if data.properties then
                 for key, value in pairs(data.properties) do
                     entity:SetKeyValue(key, tostring(value))
                 end
             end
-            
+
             -- Notify modules
             hook.Run("EntityRestored", entity, data)
         end
@@ -15380,6 +15999,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -15406,31 +16028,31 @@ end
         -- High: Advanced persistence tracking with validation
         function MODULE:OnEntityPersistUpdated(entity, data)
             if not IsValid(entity) or not data then return end
-            
+
             -- Validate data
             if not data.pos or not data.ang then
                 return
             end
-            
+
             -- Store update timestamp
             entity:SetNetVar("lastUpdated", os.time())
             entity:SetNetVar("updateCount", (entity:GetNetVar("updateCount", 0) + 1))
-            
+
             -- Log significant changes
             local oldPos = entity:GetNetVar("lastSavedPos")
             if oldPos then
                 local dist = Vector(data.pos[1], data.pos[2], data.pos[3]):Distance(oldPos)
                 if dist > 100 then
-                    lia.log.add(string.format("Entity %s moved %d units", 
-                        tostring(entity), 
-                        dist), 
+                    lia.log.add(string.format("Entity %s moved %d units",
+                        tostring(entity),
+                        dist),
                         FLAG_NORMAL)
                 end
             end
-            
+
             -- Store last saved position
             entity:SetNetVar("lastSavedPos", Vector(data.pos[1], data.pos[2], data.pos[3]))
-            
+
             -- Notify modules
             hook.Run("EntityPersistenceChanged", entity, data)
         end
@@ -15454,6 +16076,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -15480,42 +16105,42 @@ end
         -- High: Advanced persistence with validation and metadata
         function MODULE:OnEntityPersisted(entity, entityData)
             if not IsValid(entity) then return end
-            
+
             -- Add metadata
             entityData.persistedAt = os.time()
             entityData.map = game.GetMap()
             entityData.serverName = GetHostName()
-            
+
             -- Store custom data
             local customData = entity:GetNetVar("customData")
             if customData then
                 entityData.customData = customData
             end
-            
+
             -- Store owner if applicable
             local owner = entity:GetNetVar("owner")
             if owner then
                 entityData.owner = owner
             end
-            
+
             -- Validate critical data
             if not entityData.pos or not entityData.ang then
                 entityData.pos = {entity:GetPos().x, entity:GetPos().y, entity:GetPos().z}
                 entityData.ang = {entity:GetAngles().p, entity:GetAngles().y, entity:GetAngles().r}
             end
-            
+
             -- Store model
             entityData.model = entity:GetModel()
-            
+
             -- Store health
             if entity:Health() > 0 then
                 entityData.health = entity:Health()
             end
-            
+
             -- Log persistence
-            lia.log.add(string.format("Entity %s persisted at %s", 
+            lia.log.add(string.format("Entity %s persisted at %s",
                 tostring(entity),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
         end
         ```
@@ -15539,6 +16164,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15555,11 +16183,11 @@ end
         function MODULE:OnItemAdded(owner, item)
             local char = owner:getChar()
             if char then
-                lia.log.add(string.format("%s received item: %s", 
-                    owner:Name(), 
-                    item.uniqueID), 
+                lia.log.add(string.format("%s received item: %s",
+                    owner:Name(),
+                    item.uniqueID),
                     FLAG_NORMAL)
-                
+
                 owner:notify("You received: " .. item.name)
             end
         end
@@ -15570,36 +16198,36 @@ end
         -- High: Advanced item tracking with validation and effects
         function MODULE:OnItemAdded(owner, item)
             if not IsValid(owner) or not item then return end
-            
+
             local char = owner:getChar()
             if not char then return end
-            
+
             -- Log item addition
-            lia.log.add(string.format("%s (%s) received item %s (ID: %s)", 
-                owner:Name(), 
+            lia.log.add(string.format("%s (%s) received item %s (ID: %s)",
+                owner:Name(),
                 owner:SteamID(),
                 item.uniqueID,
-                item.id), 
+                item.id),
                 FLAG_NORMAL)
-            
+
             -- Track item statistics
             local itemStats = char:getData("itemStats", {})
             itemStats.totalReceived = (itemStats.totalReceived or 0) + 1
             itemStats[item.uniqueID] = (itemStats[item.uniqueID] or 0) + 1
             char:setData("itemStats", itemStats)
-            
+
             -- Apply item-specific effects
             if item.onReceived then
                 item.onReceived(owner, item)
             end
-            
+
             -- Notify player
             timer.Simple(0.1, function()
                 if IsValid(owner) then
                     owner:notify("You received: " .. item.name)
                 end
             end)
-            
+
             -- Apply achievement/progress tracking
             hook.Run("ItemReceived", owner, item)
         end
@@ -15623,6 +16251,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -15650,17 +16281,17 @@ end
         -- High: Advanced item creation with customization and validation
         function MODULE:OnItemCreated(itemTable, itemEntity)
             if not itemTable or not IsValid(itemEntity) then return end
-            
+
             -- Set item properties
             itemEntity:SetNetVar("itemName", itemTable.name)
             itemEntity:SetNetVar("itemID", itemTable.uniqueID)
             itemEntity:SetNetVar("itemCategory", itemTable.category)
-            
+
             -- Apply custom model if specified
             if itemTable.model then
                 itemEntity:SetModel(itemTable.model)
             end
-            
+
             -- Set physics properties
             local phys = itemEntity:GetPhysicsObject()
             if IsValid(phys) then
@@ -15671,17 +16302,17 @@ end
                     itemEntity:SetMaterial(itemTable.material)
                 end
             end
-            
+
             -- Apply glow effect for special items
             if itemTable.rare then
                 itemEntity:SetRenderMode(RENDERMODE_TRANSADD)
                 itemEntity:SetColor(Color(255, 255, 0, 100))
             end
-            
+
             -- Log item creation
-            lia.log.add(string.format("Item created: %s (ID: %s)", 
+            lia.log.add(string.format("Item created: %s (ID: %s)",
                 itemTable.name,
-                itemTable.uniqueID), 
+                itemTable.uniqueID),
                 FLAG_NORMAL)
         end
         ```
@@ -15703,6 +16334,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15719,7 +16353,7 @@ end
         function MODULE:OnItemSpawned(itemEntity)
             if IsValid(itemEntity) then
                 itemEntity:SetNetVar("spawnTime", os.time())
-                
+
                 -- Make item glow briefly
                 itemEntity:SetRenderMode(RENDERMODE_TRANSADD)
                 timer.Simple(2, function()
@@ -15736,23 +16370,23 @@ end
         -- High: Advanced spawn system with effects and tracking
         function MODULE:OnItemSpawned(itemEntity)
             if not IsValid(itemEntity) then return end
-            
+
             -- Store spawn data
             itemEntity:SetNetVar("spawnTime", os.time())
             itemEntity:SetNetVar("spawnPos", itemEntity:GetPos())
-            
+
             -- Create spawn effect
             local effectdata = EffectData()
             effectdata:SetOrigin(itemEntity:GetPos())
             util.Effect("item_spawn", effectdata)
-            
+
             -- Play spawn sound
             itemEntity:EmitSound("items/ammopickup.wav", 60, 100)
-            
+
             -- Apply glow effect
             itemEntity:SetRenderMode(RENDERMODE_TRANSADD)
             itemEntity:SetColor(Color(255, 255, 255, 200))
-            
+
             -- Remove glow after 3 seconds
             timer.Create("itemGlow_" .. itemEntity:EntIndex(), 3, 1, function()
                 if IsValid(itemEntity) then
@@ -15760,9 +16394,9 @@ end
                     itemEntity:SetColor(Color(255, 255, 255, 255))
                 end
             end)
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(itemEntity:GetPos()) < 300 then
                     v:notify("An item has appeared nearby.")
                 end
@@ -15789,6 +16423,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15803,11 +16440,11 @@ end
         ```lua
         -- Medium: Filter and log OOC
         function MODULE:OnOOCMessageSent(client, message)
-            lia.log.add(string.format("%s [OOC]: %s", 
-                client:Name(), 
-                message), 
+            lia.log.add(string.format("%s [OOC]: %s",
+                client:Name(),
+                message),
                 FLAG_NORMAL)
-            
+
             -- Filter profanity
             if string.find(string.lower(message), "badword") then
                 client:notify("Please keep OOC chat appropriate.")
@@ -15821,10 +16458,10 @@ end
         -- High: Advanced OOC moderation with rate limiting
         function MODULE:OnOOCMessageSent(client, message)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Rate limiting
             local lastOOC = char:getData("lastOOCTime", 0)
             local timeSince = os.time() - lastOOC
@@ -15832,27 +16469,27 @@ end
                 client:notify("Please wait before sending another OOC message.")
                 return false
             end
-            
+
             char:setData("lastOOCTime", os.time())
-            
+
             -- Filter profanity
             local filteredWords = {"badword1", "badword2"}
             for _, word in ipairs(filteredWords) do
                 if string.find(string.lower(message), word) then
                     client:notify("Please keep OOC chat appropriate.")
-                    lia.log.add(string.format("%s tried to use profanity in OOC: %s", 
-                        client:Name(), 
-                        message), 
+                    lia.log.add(string.format("%s tried to use profanity in OOC: %s",
+                        client:Name(),
+                        message),
                         FLAG_WARNING)
                     return false
                 end
             end
-            
+
             -- Log OOC message
-            lia.log.add(string.format("%s (%s) [OOC]: %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) [OOC]: %s",
+                client:Name(),
                 client:SteamID(),
-                message), 
+                message),
                 FLAG_NORMAL)
         end
         ```
@@ -15876,6 +16513,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15893,9 +16533,9 @@ end
             local char = client:getChar()
             if char then
                 local amount = moneyEntity:GetNetVar("amount", 0)
-                lia.log.add(string.format("%s picked up $%d", 
-                    client:Name(), 
-                    amount), 
+                lia.log.add(string.format("%s picked up $%d",
+                    client:Name(),
+                    amount),
                     FLAG_NORMAL)
             end
         end
@@ -15906,37 +16546,37 @@ end
         -- High: Advanced money pickup with validation and effects
         function MODULE:OnPickupMoney(client, moneyEntity)
             if not IsValid(client) or not IsValid(moneyEntity) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             local amount = moneyEntity:GetNetVar("amount", 0)
             if amount <= 0 then return end
-            
+
             -- Log pickup
-            lia.log.add(string.format("%s (%s) picked up $%d at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) picked up $%d at %s",
+                client:Name(),
                 client:SteamID(),
                 amount,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Track statistics
             local moneyStats = char:getData("moneyStats", {})
             moneyStats.totalFound = (moneyStats.totalFound or 0) + amount
             moneyStats.pickupCount = (moneyStats.pickupCount or 0) + 1
             char:setData("moneyStats", moneyStats)
-            
+
             -- Create pickup effect
             local effectdata = EffectData()
             effectdata:SetOrigin(moneyEntity:GetPos())
             util.Effect("money_pickup", effectdata)
-            
+
             -- Play sound
             client:EmitSound("items/smallmedkit1.wav", 60, 100)
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(moneyEntity:GetPos()) < 200 then
                     v:notify("You see " .. char:getName() .. " pick up money.")
                 end
@@ -15965,6 +16605,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -15981,9 +16624,9 @@ end
         function MODULE:OnPlayerDropWeapon(client, originalWeapon, droppedEntity)
             local char = client:getChar()
             if char then
-                lia.log.add(string.format("%s dropped weapon: %s", 
-                    client:Name(), 
-                    originalWeapon:GetClass()), 
+                lia.log.add(string.format("%s dropped weapon: %s",
+                    client:Name(),
+                    originalWeapon:GetClass()),
                     FLAG_NORMAL)
             end
         end
@@ -15994,41 +16637,41 @@ end
         -- High: Advanced weapon drop system with persistence and effects
         function MODULE:OnPlayerDropWeapon(client, originalWeapon, droppedEntity)
             if not IsValid(client) or not IsValid(droppedEntity) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Log weapon drop
-            lia.log.add(string.format("%s (%s) dropped weapon %s at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) dropped weapon %s at %s",
+                client:Name(),
                 client:SteamID(),
                 originalWeapon:GetClass(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store weapon data on dropped entity
             droppedEntity:SetNetVar("weaponClass", originalWeapon:GetClass())
             droppedEntity:SetNetVar("droppedBy", client:SteamID())
             droppedEntity:SetNetVar("dropTime", os.time())
-            
+
             -- Set persistence
             droppedEntity:SetSaveValue("persist", true)
-            
+
             -- Create drop effect
             local effectdata = EffectData()
             effectdata:SetOrigin(droppedEntity:GetPos())
             util.Effect("weapon_drop", effectdata)
-            
+
             -- Play sound
             droppedEntity:EmitSound("weapons/weapon_drop.wav", 60, 100)
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(droppedEntity:GetPos()) < 300 then
                     v:notify("You hear a weapon drop.")
                 end
             end
-            
+
             -- Track statistics
             local weaponStats = char:getData("weaponStats", {})
             weaponStats.dropped = (weaponStats.dropped or 0) + 1
@@ -16061,6 +16704,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16088,33 +16734,33 @@ end
         -- High: Advanced sequence system with validation and effects
         function MODULE:OnPlayerEnterSequence(player, sequenceName, callback, time, noFreeze)
             if not IsValid(player) then return end
-            
+
             local char = player:getChar()
             if not char then return end
-            
+
             -- Validate sequence
             if not sequenceName or sequenceName == "" then return end
-            
+
             -- Store sequence data
             char:setData("currentSequence", sequenceName)
             char:setData("sequenceStart", os.time())
             char:setData("sequenceDuration", time or 0)
-            
+
             -- Log sequence entry
-            lia.log.add(string.format("%s entered sequence: %s", 
-                player:Name(), 
-                sequenceName), 
+            lia.log.add(string.format("%s entered sequence: %s",
+                player:Name(),
+                sequenceName),
                 FLAG_NORMAL)
-            
+
             -- Apply sequence-specific effects
             if sequenceName == "sit" then
                 player:SetAnimation(ACT_GMOD_SIT_ROLLERCOASTER)
             elseif sequenceName == "lay" then
                 player:SetAnimation(ACT_GMOD_TAUNT_LAUGH)
             end
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(player:GetPos()) < 200 then
                     v:notify("You see " .. char:getName() .. " start " .. sequenceName .. ".")
                 end
@@ -16147,6 +16793,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16163,10 +16812,10 @@ end
         function MODULE:OnPlayerInteractItem(client, action, item, result, data)
             local char = client:getChar()
             if char then
-                lia.log.add(string.format("%s used %s (action: %s)", 
-                    client:Name(), 
+                lia.log.add(string.format("%s used %s (action: %s)",
+                    client:Name(),
                     item.name,
-                    action), 
+                    action),
                     FLAG_NORMAL)
             end
         end
@@ -16177,36 +16826,36 @@ end
         -- High: Advanced interaction system with validation and tracking
         function MODULE:OnPlayerInteractItem(client, action, item, result, data)
             if not IsValid(client) or not item then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Log interaction
-            lia.log.add(string.format("%s (%s) used %s (ID: %s) with action: %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) used %s (ID: %s) with action: %s",
+                client:Name(),
                 client:SteamID(),
                 item.name,
                 item.id,
-                action), 
+                action),
                 FLAG_NORMAL)
-            
+
             -- Track item usage statistics
             local usageStats = char:getData("itemUsageStats", {})
             usageStats.total = (usageStats.total or 0) + 1
             usageStats[item.uniqueID] = (usageStats[item.uniqueID] or 0) + 1
             usageStats[action] = (usageStats[action] or 0) + 1
             char:setData("itemUsageStats", usageStats)
-            
+
             -- Apply item-specific post-interaction effects
             if item.onInteract then
                 item.onInteract(client, action, result, data)
             end
-            
+
             -- Check for achievements
             if result and result.success then
                 hook.Run("ItemInteractionSuccess", client, item, action)
             end
-            
+
             -- Notify modules
             hook.Run("ItemInteractionCompleted", client, item, action, result, data)
         end
@@ -16233,6 +16882,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16249,11 +16901,11 @@ end
         function MODULE:OnPlayerJoinClass(client, class, oldClass)
             local char = client:getChar()
             if char then
-                lia.log.add(string.format("%s joined class: %s", 
-                    client:Name(), 
-                    class.name), 
+                lia.log.add(string.format("%s joined class: %s",
+                    client:Name(),
+                    class.name),
                     FLAG_NORMAL)
-                
+
                 client:notify("You joined: " .. class.name)
             end
         end
@@ -16264,19 +16916,19 @@ end
         -- High: Advanced class system with validation and effects
         function MODULE:OnPlayerJoinClass(client, class, oldClass)
             if not IsValid(client) or not class then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Log class change
             local oldClassName = oldClass and oldClass.name or "None"
-            lia.log.add(string.format("%s (%s) joined class %s (from %s)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) joined class %s (from %s)",
+                client:Name(),
                 client:SteamID(),
                 class.name,
-                oldClassName), 
+                oldClassName),
                 FLAG_NORMAL)
-            
+
             -- Store class history
             local classHistory = char:getData("classHistory", {})
             table.insert(classHistory, {
@@ -16285,18 +16937,18 @@ end
                 time = os.time(),
                 from = oldClassName
             })
-            
+
             if #classHistory > 20 then
                 table.remove(classHistory, 1)
             end
-            
+
             char:setData("classHistory", classHistory)
-            
+
             -- Apply class-specific bonuses
             if class.onJoined then
                 class.onJoined(client, char, oldClass)
             end
-            
+
             -- Give class starting items
             if class.startingItems then
                 local inv = char:getInv()
@@ -16306,10 +16958,10 @@ end
                     end
                 end
             end
-            
+
             -- Notify player
             client:notify("You joined: " .. class.name)
-            
+
             -- Notify modules
             hook.Run("ClassJoined", client, class, oldClass)
         end
@@ -16331,6 +16983,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -16359,29 +17014,29 @@ end
         -- High: Advanced sequence exit with tracking and effects
         function MODULE:OnPlayerLeaveSequence(player)
             if not IsValid(player) then return end
-            
+
             local char = player:getChar()
             if not char then return end
-            
+
             -- Get sequence data
             local sequenceName = char:getData("currentSequence")
             local sequenceStart = char:getData("sequenceStart")
-            
+
             -- Calculate duration
             if sequenceStart then
                 local duration = os.time() - sequenceStart
-                lia.log.add(string.format("%s left sequence %s after %d seconds", 
-                    player:Name(), 
+                lia.log.add(string.format("%s left sequence %s after %d seconds",
+                    player:Name(),
                     sequenceName or "unknown",
-                    duration), 
+                    duration),
                     FLAG_NORMAL)
             end
-            
+
             -- Clear sequence data
             char:setData("currentSequence", nil)
             char:setData("sequenceStart", nil)
             char:setData("sequenceDuration", nil)
-            
+
             -- Reset animation
             player:SetAnimation(ACT_GMOD_GESTURE_BOW)
             timer.Simple(0.5, function()
@@ -16389,7 +17044,7 @@ end
                     player:SetAnimation(ACT_IDLE)
                 end
             end)
-            
+
             -- Notify modules
             hook.Run("SequenceCompleted", player, sequenceName)
         end
@@ -16412,13 +17067,16 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
         ```lua
         -- Simple: Log stack item loss
         function MODULE:OnPlayerLostStackItem(itemTypeOrItem)
-            local itemID = type(itemTypeOrItem) == "string" and itemTypeOrItem or itemTypeOrItem.uniqueID
+            local itemID = isstring(itemTypeOrItem) and itemTypeOrItem or itemTypeOrItem.uniqueID
             print("Stack item lost: " .. itemID)
         end
         ```
@@ -16427,7 +17085,7 @@ end
         ```lua
         -- Medium: Track stack item losses
         function MODULE:OnPlayerLostStackItem(itemTypeOrItem)
-            local itemID = type(itemTypeOrItem) == "string" and itemTypeOrItem or itemTypeOrItem.uniqueID
+            local itemID = isstring(itemTypeOrItem) and itemTypeOrItem or itemTypeOrItem.uniqueID
             lia.log.add("Stack item lost: " .. itemID, FLAG_NORMAL)
         end
         ```
@@ -16436,14 +17094,14 @@ end
         ```lua
         -- High: Advanced stack item tracking with analytics
         function MODULE:OnPlayerLostStackItem(itemTypeOrItem)
-            local itemID = type(itemTypeOrItem) == "string" and itemTypeOrItem or itemTypeOrItem.uniqueID
-            
+            local itemID = isstring(itemTypeOrItem) and itemTypeOrItem or itemTypeOrItem.uniqueID
+
             -- Log loss
-            lia.log.add(string.format("Stack item lost: %s at %s", 
+            lia.log.add(string.format("Stack item lost: %s at %s",
                 itemID,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Track global statistics
             MODULE.stackItemLosses = MODULE.stackItemLosses or {}
             MODULE.stackItemLosses[itemID] = (MODULE.stackItemLosses[itemID] or 0) + 1
@@ -16469,6 +17127,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16486,9 +17147,9 @@ end
             local char = client:getChar()
             if char then
                 char:setData("observerMode", state)
-                lia.log.add(string.format("%s %s observer mode", 
-                    client:Name(), 
-                    state and "entered" or "left"), 
+                lia.log.add(string.format("%s %s observer mode",
+                    client:Name(),
+                    state and "entered" or "left"),
                     FLAG_NORMAL)
             end
         end
@@ -16499,30 +17160,30 @@ end
         -- High: Advanced observer system with restrictions and logging
         function MODULE:OnPlayerObserve(client, state)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Store observer state
             char:setData("observerMode", state)
             char:setData("observerTime", state and os.time() or nil)
-            
+
             -- Log observer state change
-            lia.log.add(string.format("%s (%s) %s observer mode at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) %s observer mode at %s",
+                client:Name(),
                 client:SteamID(),
                 state and "entered" or "left",
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Apply observer restrictions
             if state then
                 -- Disable player movement
                 client:SetMoveType(MOVETYPE_OBSERVER)
                 client:SetNoDraw(true)
-                
+
                 -- Notify admins
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:IsAdmin() then
                         v:notify(client:Name() .. " entered observer mode")
                     end
@@ -16531,14 +17192,14 @@ end
                 -- Restore player
                 client:SetMoveType(MOVETYPE_WALK)
                 client:SetNoDraw(false)
-                
+
                 -- Calculate observer duration
                 local observerTime = char:getData("observerTime")
                 if observerTime then
                     local duration = os.time() - observerTime
-                    lia.log.add(string.format("%s was in observer mode for %d seconds", 
-                        client:Name(), 
-                        duration), 
+                    lia.log.add(string.format("%s was in observer mode for %d seconds",
+                        client:Name(),
+                        duration),
                         FLAG_NORMAL)
                 end
             end
@@ -16566,6 +17227,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16584,10 +17248,10 @@ end
             local char = client:getChar()
             if char then
                 local action = isPurchase and "purchased" or "sold"
-                lia.log.add(string.format("%s %s door at %s", 
-                    client:Name(), 
+                lia.log.add(string.format("%s %s door at %s",
+                    client:Name(),
                     action,
-                    tostring(door:GetPos())), 
+                    tostring(door:GetPos())),
                     FLAG_NORMAL)
             end
         end
@@ -16598,22 +17262,22 @@ end
         -- High: Advanced door transaction system with validation and logging
         function MODULE:OnPlayerPurchaseDoor(client, door, isPurchase)
             if not IsValid(client) or not IsValid(door) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             local action = isPurchase and "purchased" or "sold"
             local price = door:GetNetVar("price", 0)
-            
+
             -- Log transaction
-            lia.log.add(string.format("%s (%s) %s door at %s for $%d", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) %s door at %s for $%d",
+                client:Name(),
                 client:SteamID(),
                 action,
                 tostring(door:GetPos()),
-                price), 
+                price),
                 FLAG_NORMAL)
-            
+
             -- Store transaction history
             local doorHistory = char:getData("doorHistory", {})
             table.insert(doorHistory, {
@@ -16623,13 +17287,13 @@ end
                 price = price,
                 time = os.time()
             })
-            
+
             if #doorHistory > 50 then
                 table.remove(doorHistory, 1)
             end
-            
+
             char:setData("doorHistory", doorHistory)
-            
+
             -- Update door ownership
             if isPurchase then
                 door:SetNetVar("owner", client:SteamID())
@@ -16638,9 +17302,9 @@ end
                 door:SetNetVar("owner", nil)
                 door:SetNetVar("owned", false)
             end
-            
+
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(door:GetPos()) < 200 then
                     v:notify("You see " .. char:getName() .. " " .. action .. " the door.")
                 end
@@ -16669,6 +17333,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16686,10 +17353,10 @@ end
             local char = client:getChar()
             if char then
                 local oldName = oldClass and oldClass.name or "None"
-                lia.log.add(string.format("%s switched from %s to %s", 
-                    client:Name(), 
+                lia.log.add(string.format("%s switched from %s to %s",
+                    client:Name(),
                     oldName,
-                    class.name), 
+                    class.name),
                     FLAG_NORMAL)
             end
         end
@@ -16700,20 +17367,20 @@ end
         -- High: Advanced class switching with validation and effects
         function MODULE:OnPlayerSwitchClass(client, class, oldClass)
             if not IsValid(client) or not class then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             local oldName = oldClass and oldClass.name or "None"
-            
+
             -- Log class switch
-            lia.log.add(string.format("%s (%s) switched from class %s to %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) switched from class %s to %s",
+                client:Name(),
                 client:SteamID(),
                 oldName,
-                class.name), 
+                class.name),
                 FLAG_NORMAL)
-            
+
             -- Store class switch history
             local switchHistory = char:getData("classSwitchHistory", {})
             table.insert(switchHistory, {
@@ -16723,25 +17390,25 @@ end
                 toID = class.index,
                 time = os.time()
             })
-            
+
             if #switchHistory > 30 then
                 table.remove(switchHistory, 1)
             end
-            
+
             char:setData("classSwitchHistory", switchHistory)
-            
+
             -- Apply class switch effects
             if oldClass and oldClass.onLeave then
                 oldClass.onLeave(client, char)
             end
-            
+
             if class.onJoined then
                 class.onJoined(client, char, oldClass)
             end
-            
+
             -- Notify player
             client:notify("You switched to: " .. class.name)
-            
+
             -- Notify modules
             hook.Run("ClassSwitched", client, class, oldClass)
         end
@@ -16763,6 +17430,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -16791,35 +17461,35 @@ end
         -- High: Advanced salary adjustment with calculations and logging
         function MODULE:OnSalaryAdjust(client)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Store adjustment data
             char:setData("salaryAdjusted", true)
             char:setData("salaryAdjustTime", os.time())
-            
+
             -- Calculate adjustment based on playtime
             local playTime = char:getData("playTime", 0)
             local adjustmentFactor = 1.0
-            
+
             if playTime > 3600 then -- 1 hour
                 adjustmentFactor = 1.1
             elseif playTime > 7200 then -- 2 hours
                 adjustmentFactor = 1.2
             end
-            
+
             -- Apply faction bonuses
             local faction = char:getFaction()
             if faction and faction.salaryBonus then
                 adjustmentFactor = adjustmentFactor * faction.salaryBonus
             end
-            
+
             char:setData("salaryAdjustmentFactor", adjustmentFactor)
-            
-            lia.log.add(string.format("Salary adjusted for %s (factor: %.2f)", 
-                client:Name(), 
-                adjustmentFactor), 
+
+            lia.log.add(string.format("Salary adjusted for %s (factor: %.2f)",
+                client:Name(),
+                adjustmentFactor),
                 FLAG_NORMAL)
         end
         ```
@@ -16849,6 +17519,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16863,11 +17536,11 @@ end
         ```lua
         -- Medium: Track salary payments
         function MODULE:OnSalaryGiven(client, character, pay, faction, class)
-            lia.log.add(string.format("%s received salary: $%d", 
-                client:Name(), 
-                pay), 
+            lia.log.add(string.format("%s received salary: $%d",
+                client:Name(),
+                pay),
                 FLAG_NORMAL)
-            
+
             -- Track total earnings
             local totalEarnings = character:getData("totalEarnings", 0)
             character:setData("totalEarnings", totalEarnings + pay)
@@ -16879,16 +17552,16 @@ end
         -- High: Advanced salary system with tracking and analytics
         function MODULE:OnSalaryGiven(client, character, pay, faction, class)
             if not IsValid(client) or not character then return end
-            
+
             -- Log salary payment
-            lia.log.add(string.format("%s (%s) received salary: $%d (Faction: %s, Class: %s)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) received salary: $%d (Faction: %s, Class: %s)",
+                client:Name(),
                 client:SteamID(),
                 pay,
                 faction and faction.name or "None",
-                class and class.name or "None"), 
+                class and class.name or "None"),
                 FLAG_NORMAL)
-            
+
             -- Track salary statistics
             local salaryStats = character:getData("salaryStats", {})
             salaryStats.totalReceived = (salaryStats.totalReceived or 0) + pay
@@ -16896,14 +17569,14 @@ end
             salaryStats.lastPayment = os.time()
             salaryStats.lastAmount = pay
             character:setData("salaryStats", salaryStats)
-            
+
             -- Track faction/class earnings
             if faction then
                 local factionEarnings = character:getData("factionEarnings", {})
                 factionEarnings[faction.uniqueID] = (factionEarnings[faction.uniqueID] or 0) + pay
                 character:setData("factionEarnings", factionEarnings)
             end
-            
+
             -- Apply bonus tracking
             local adjustmentFactor = character:getData("salaryAdjustmentFactor", 1.0)
             if adjustmentFactor > 1.0 then
@@ -16911,10 +17584,10 @@ end
                 salaryStats.totalBonus = (salaryStats.totalBonus or 0) + bonus
                 character:setData("salaryStats", salaryStats)
             end
-            
+
             -- Notify player
             client:notify("You received your salary: $" .. pay)
-            
+
             -- Notify modules
             hook.Run("SalaryPaid", client, character, pay, faction, class)
         end
@@ -16937,6 +17610,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -16952,7 +17628,7 @@ end
         -- Medium: Process loaded items
         function MODULE:OnSavedItemLoaded(loadedItems)
             lia.log.add(string.format("Loaded %d saved items", #loadedItems), FLAG_NORMAL)
-            
+
             for _, item in ipairs(loadedItems) do
                 if item.customData then
                     item:setData("restored", true)
@@ -16966,10 +17642,10 @@ end
         -- High: Advanced item restoration with validation
         function MODULE:OnSavedItemLoaded(loadedItems)
             if not loadedItems then return end
-            
+
             local successCount = 0
             local failCount = 0
-            
+
             for _, item in ipairs(loadedItems) do
                 if IsValid(item) then
                     -- Restore item data
@@ -16977,7 +17653,7 @@ end
                         item:setData("restored", true)
                         item:setData("restoredAt", os.time())
                     end
-                    
+
                     -- Validate item
                     if item:validateItem() then
                         successCount = successCount + 1
@@ -16989,11 +17665,11 @@ end
                     failCount = failCount + 1
                 end
             end
-            
-            lia.log.add(string.format("Loaded %d items: %d success, %d failed", 
-                #loadedItems, 
-                successCount, 
-                failCount), 
+
+            lia.log.add(string.format("Loaded %d items: %d success, %d failed",
+                #loadedItems,
+                successCount,
+                failCount),
                 FLAG_NORMAL)
         end
         ```
@@ -17021,6 +17697,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17036,10 +17715,10 @@ end
         -- Medium: Filter and log important events
         function MODULE:OnServerLog(client, logType, logString, category)
             if category == "admin" or category == "warning" then
-                lia.log.add(string.format("[%s] %s: %s", 
-                    category or "general", 
+                lia.log.add(string.format("[%s] %s: %s",
+                    category or "general",
                     logType,
-                    logString), 
+                    logString),
                     FLAG_NORMAL)
             end
         end
@@ -17050,17 +17729,17 @@ end
         -- High: Advanced logging system with categorization and storage
         function MODULE:OnServerLog(client, logType, logString, category)
             category = category or "general"
-            
+
             -- Log to file based on category
             local logFile = "lilia_logs/" .. category .. "_" .. os.date("%Y-%m-%d") .. ".txt"
-            local logEntry = string.format("[%s] %s: %s - %s\n", 
+            local logEntry = string.format("[%s] %s: %s - %s\n",
                 os.date("%H:%M:%S"),
                 logType,
                 client and client:Name() or "SERVER",
                 logString)
-            
+
             file.Append(logFile, logEntry)
-            
+
             -- Store critical logs in database
             if category == "admin" or category == "warning" or category == "error" then
                 lia.db.query("INSERT INTO server_logs (category, log_type, message, player, timestamp) VALUES (?, ?, ?, ?, ?)", {
@@ -17071,10 +17750,10 @@ end
                     os.time()
                 })
             end
-            
+
             -- Notify admins of critical events
             if category == "error" or category == "warning" then
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:IsAdmin() then
                         v:notify("[LOG] " .. logType .. ": " .. logString)
                     end
@@ -17104,6 +17783,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17118,11 +17800,11 @@ end
         ```lua
         -- Medium: Track ticket claims
         function MODULE:OnTicketClaimed(client, requester, ticketMessage)
-            lia.log.add(string.format("%s claimed ticket from %s", 
-                client:Name(), 
-                requester:Name()), 
+            lia.log.add(string.format("%s claimed ticket from %s",
+                client:Name(),
+                requester:Name()),
                 FLAG_NORMAL)
-            
+
             requester:notify("Your ticket has been claimed by " .. client:Name())
         end
         ```
@@ -17132,16 +17814,16 @@ end
         -- High: Advanced ticket system with tracking and notifications
         function MODULE:OnTicketClaimed(client, requester, ticketMessage)
             if not IsValid(client) or not IsValid(requester) then return end
-            
+
             -- Log ticket claim
-            lia.log.add(string.format("%s (%s) claimed ticket from %s (%s) - %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) claimed ticket from %s (%s) - %s",
+                client:Name(),
                 client:SteamID(),
                 requester:Name(),
                 requester:SteamID(),
-                ticketMessage), 
+                ticketMessage),
                 FLAG_NORMAL)
-            
+
             -- Store claim data
             local ticketData = {
                 claimedBy = client:SteamID(),
@@ -17149,19 +17831,19 @@ end
                 claimedAt = os.time(),
                 message = ticketMessage
             }
-            
+
             requester:setData("ticketClaimed", ticketData)
-            
+
             -- Notify requester
             requester:notify("Your ticket has been claimed by " .. client:Name())
-            
+
             -- Notify other staff
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() and v ~= client then
                     v:notify(client:Name() .. " claimed a ticket from " .. requester:Name())
                 end
             end
-            
+
             -- Track staff performance
             local staffStats = client:getData("staffStats", {})
             staffStats.ticketsClaimed = (staffStats.ticketsClaimed or 0) + 1
@@ -17190,6 +17872,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17204,11 +17889,11 @@ end
         ```lua
         -- Medium: Track ticket closures
         function MODULE:OnTicketClosed(client, requester, ticketMessage)
-            lia.log.add(string.format("%s closed ticket from %s", 
-                client:Name(), 
-                requester:Name()), 
+            lia.log.add(string.format("%s closed ticket from %s",
+                client:Name(),
+                requester:Name()),
                 FLAG_NORMAL)
-            
+
             requester:notify("Your ticket has been closed by " .. client:Name())
         end
         ```
@@ -17218,35 +17903,35 @@ end
         -- High: Advanced ticket closure with analytics
         function MODULE:OnTicketClosed(client, requester, ticketMessage)
             if not IsValid(client) or not IsValid(requester) then return end
-            
+
             -- Get ticket data
             local ticketData = requester:getData("ticketClaimed")
             local duration = 0
             if ticketData and ticketData.claimedAt then
                 duration = os.time() - ticketData.claimedAt
             end
-            
+
             -- Log closure
-            lia.log.add(string.format("%s (%s) closed ticket from %s (%s) - Duration: %d seconds", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) closed ticket from %s (%s) - Duration: %d seconds",
+                client:Name(),
                 client:SteamID(),
                 requester:Name(),
                 requester:SteamID(),
-                duration), 
+                duration),
                 FLAG_NORMAL)
-            
+
             -- Clear ticket data
             requester:setData("ticketClaimed", nil)
-            
+
             -- Notify requester
             requester:notify("Your ticket has been closed by " .. client:Name())
-            
+
             -- Track staff performance
             local staffStats = client:getData("staffStats", {})
             staffStats.ticketsClosed = (staffStats.ticketsClosed or 0) + 1
             staffStats.totalTicketTime = (staffStats.totalTicketTime or 0) + duration
             client:setData("staffStats", staffStats)
-            
+
             -- Store ticket history
             local ticketHistory = requester:getData("ticketHistory", {})
             table.insert(ticketHistory, {
@@ -17256,11 +17941,11 @@ end
                 duration = duration,
                 message = ticketMessage
             })
-            
+
             if #ticketHistory > 20 then
                 table.remove(ticketHistory, 1)
             end
-            
+
             requester:setData("ticketHistory", ticketHistory)
         end
         ```
@@ -17284,6 +17969,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17298,13 +17986,13 @@ end
         ```lua
         -- Medium: Track tickets and notify staff
         function MODULE:OnTicketCreated(requester, message)
-            lia.log.add(string.format("%s created ticket: %s", 
-                requester:Name(), 
-                message), 
+            lia.log.add(string.format("%s created ticket: %s",
+                requester:Name(),
+                message),
                 FLAG_NORMAL)
-            
+
             -- Notify online staff
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("New ticket from " .. requester:Name())
                 end
@@ -17317,17 +18005,17 @@ end
         -- High: Advanced ticket system with tracking and prioritization
         function MODULE:OnTicketCreated(requester, message)
             if not IsValid(requester) then return end
-            
+
             local char = requester:getChar()
             if not char then return end
-            
+
             -- Log ticket creation
-            lia.log.add(string.format("%s (%s) created ticket: %s", 
-                requester:Name(), 
+            lia.log.add(string.format("%s (%s) created ticket: %s",
+                requester:Name(),
                 requester:SteamID(),
-                message), 
+                message),
                 FLAG_NORMAL)
-            
+
             -- Store ticket data
             local ticketID = os.time() .. "_" .. requester:SteamID()
             local ticketData = {
@@ -17338,26 +18026,26 @@ end
                 createdAt = os.time(),
                 status = "open"
             }
-            
+
             char:setData("currentTicket", ticketData)
-            
+
             -- Track ticket statistics
             local ticketStats = char:getData("ticketStats", {})
             ticketStats.totalCreated = (ticketStats.totalCreated or 0) + 1
             char:setData("ticketStats", ticketStats)
-            
+
             -- Notify online staff
             local staffCount = 0
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("New ticket from " .. requester:Name() .. ": " .. message)
                     staffCount = staffCount + 1
                 end
             end
-            
+
             -- Notify requester
             requester:notify("Your ticket has been submitted. " .. staffCount .. " staff members have been notified.")
-            
+
             -- Store in database
             lia.db.query("INSERT INTO tickets (ticket_id, requester, message, created_at, status) VALUES (?, ?, ?, ?, ?)", {
                 ticketID,
@@ -17386,6 +18074,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17413,32 +18104,32 @@ end
         -- High: Advanced transfer system with tracking
         function MODULE:OnTransferred(targetPlayer)
             if not IsValid(targetPlayer) then return end
-            
+
             local char = targetPlayer:getChar()
             if not char then return end
-            
+
             -- Log transfer
-            lia.log.add(string.format("%s (%s) was transferred at %s", 
-                targetPlayer:Name(), 
+            lia.log.add(string.format("%s (%s) was transferred at %s",
+                targetPlayer:Name(),
                 targetPlayer:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store transfer data
             char:setData("transferred", true)
             char:setData("transferTime", os.time())
-            
+
             -- Track transfer history
             local transferHistory = char:getData("transferHistory", {})
             table.insert(transferHistory, {
                 time = os.time(),
                 steamID = targetPlayer:SteamID()
             })
-            
+
             if #transferHistory > 10 then
                 table.remove(transferHistory, 1)
             end
-            
+
             char:setData("transferHistory", transferHistory)
         end
         ```
@@ -17462,6 +18153,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17477,7 +18171,7 @@ end
         -- Medium: Track usergroup creation
         function MODULE:OnUsergroupCreated(groupName, groupData)
             lia.log.add(string.format("Usergroup created: %s", groupName), FLAG_NORMAL)
-            
+
             -- Initialize default permissions
             if not groupData.privileges then
                 groupData.privileges = {}
@@ -17490,33 +18184,33 @@ end
         -- High: Advanced usergroup system with validation
         function MODULE:OnUsergroupCreated(groupName, groupData)
             if not groupName or groupName == "" then return end
-            
+
             -- Log creation
-            lia.log.add(string.format("Usergroup created: %s at %s", 
+            lia.log.add(string.format("Usergroup created: %s at %s",
                 groupName,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Validate and initialize group data
             if not groupData.privileges then
                 groupData.privileges = {}
             end
-            
+
             if not groupData.inherit then
                 groupData.inherit = {}
             end
-            
+
             -- Set default values
             groupData.created = os.time()
             groupData.memberCount = 0
-            
+
             -- Store in database
             lia.db.query("INSERT INTO usergroups (name, data, created_at) VALUES (?, ?, ?)", {
                 groupName,
                 util.TableToJSON(groupData),
                 os.time()
             })
-            
+
             -- Notify modules
             hook.Run("UsergroupCreated", groupName, groupData)
         end
@@ -17541,6 +18235,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17564,13 +18261,13 @@ end
         -- High: Advanced permission tracking with validation
         function MODULE:OnUsergroupPermissionsChanged(groupName, groupData)
             if not groupName or not groupData then return end
-            
+
             -- Log permission change
-            lia.log.add(string.format("Permissions changed for %s at %s", 
+            lia.log.add(string.format("Permissions changed for %s at %s",
                 groupName,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_CRITICAL)
-            
+
             -- Validate permissions
             if groupData.privileges then
                 for priv, enabled in pairs(groupData.privileges) do
@@ -17579,21 +18276,21 @@ end
                     end
                 end
             end
-            
+
             -- Update database
             lia.db.query("UPDATE usergroups SET data = ?, updated_at = ? WHERE name = ?", {
                 util.TableToJSON(groupData),
                 os.time(),
                 groupName
             })
-            
+
             -- Notify affected players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetUserGroup() == groupName then
                     v:notify("Your usergroup permissions have been updated.")
                 end
             end
-            
+
             -- Notify modules
             hook.Run("UsergroupPermissionsUpdated", groupName, groupData)
         end
@@ -17616,6 +18313,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17631,9 +18331,9 @@ end
         -- Medium: Track removal and reassign members
         function MODULE:OnUsergroupRemoved(groupName)
             lia.log.add(string.format("Usergroup removed: %s", groupName), FLAG_NORMAL)
-            
+
             -- Reassign members to default group
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetUserGroup() == groupName then
                     v:SetUserGroup("user")
                 end
@@ -17646,32 +18346,32 @@ end
         -- High: Advanced removal with member reassignment
         function MODULE:OnUsergroupRemoved(groupName)
             if not groupName then return end
-            
+
             -- Log removal
-            lia.log.add(string.format("Usergroup removed: %s at %s", 
+            lia.log.add(string.format("Usergroup removed: %s at %s",
                 groupName,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_CRITICAL)
-            
+
             -- Count and reassign members
             local memberCount = 0
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetUserGroup() == groupName then
                     v:SetUserGroup("user")
                     v:notify("Your usergroup has been removed. You have been moved to the default group.")
                     memberCount = memberCount + 1
                 end
             end
-            
+
             -- Update database
             lia.db.query("UPDATE players SET usergroup = 'user' WHERE usergroup = ?", {groupName})
             lia.db.query("DELETE FROM usergroups WHERE name = ?", {groupName})
-            
+
             -- Log member reassignment
             if memberCount > 0 then
                 lia.log.add(string.format("%d members reassigned from %s", memberCount, groupName), FLAG_NORMAL)
             end
-            
+
             -- Notify modules
             hook.Run("UsergroupRemoved", groupName)
         end
@@ -17696,6 +18396,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17711,9 +18414,9 @@ end
         -- Medium: Track rename and update players
         function MODULE:OnUsergroupRenamed(oldName, newName)
             lia.log.add(string.format("Usergroup renamed: %s -> %s", oldName, newName), FLAG_NORMAL)
-            
+
             -- Update player usergroups
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetUserGroup() == oldName then
                     v:SetUserGroup(newName)
                 end
@@ -17726,37 +18429,37 @@ end
         -- High: Advanced rename with validation and updates
         function MODULE:OnUsergroupRenamed(oldName, newName)
             if not oldName or not newName or oldName == newName then return end
-            
+
             -- Log rename
-            lia.log.add(string.format("Usergroup renamed: %s -> %s at %s", 
+            lia.log.add(string.format("Usergroup renamed: %s -> %s at %s",
                 oldName,
                 newName,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_CRITICAL)
-            
+
             -- Update database
             lia.db.query("UPDATE usergroups SET name = ?, updated_at = ? WHERE name = ?", {
                 newName,
                 os.time(),
                 oldName
             })
-            
+
             lia.db.query("UPDATE players SET usergroup = ? WHERE usergroup = ?", {newName, oldName})
-            
+
             -- Update player usergroups
             local updatedCount = 0
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetUserGroup() == oldName then
                     v:SetUserGroup(newName)
                     v:notify("Your usergroup has been renamed to: " .. newName)
                     updatedCount = updatedCount + 1
                 end
             end
-            
+
             if updatedCount > 0 then
                 lia.log.add(string.format("%d players updated for rename", updatedCount), FLAG_NORMAL)
             end
-            
+
             -- Notify modules
             hook.Run("UsergroupRenamed", oldName, newName)
         end
@@ -17783,6 +18486,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17797,10 +18503,10 @@ end
         ```lua
         -- Medium: Track vendor edits
         function MODULE:OnVendorEdited(client, vendor, key)
-            lia.log.add(string.format("%s edited vendor %s: %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s edited vendor %s: %s",
+                client:Name(),
                 tostring(vendor),
-                key), 
+                key),
                 FLAG_NORMAL)
         end
         ```
@@ -17810,16 +18516,16 @@ end
         -- High: Advanced vendor edit tracking with validation
         function MODULE:OnVendorEdited(client, vendor, key)
             if not IsValid(client) or not IsValid(vendor) then return end
-            
+
             -- Log edit
-            lia.log.add(string.format("%s (%s) edited vendor %s: %s at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) edited vendor %s: %s at %s",
+                client:Name(),
                 client:SteamID(),
                 tostring(vendor),
                 key,
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store edit history
             local editHistory = vendor:GetNetVar("editHistory", {})
             table.insert(editHistory, {
@@ -17828,13 +18534,13 @@ end
                 key = key,
                 time = os.time()
             })
-            
+
             if #editHistory > 50 then
                 table.remove(editHistory, 1)
             end
-            
+
             vendor:SetNetVar("editHistory", editHistory)
-            
+
             -- Validate edit
             if key == "price" then
                 local price = vendor:GetNetVar("price", 0)
@@ -17843,7 +18549,7 @@ end
                     client:notify("Price cannot be negative.")
                 end
             end
-            
+
             -- Notify modules
             hook.Run("VendorEdited", vendor, key, client)
         end
@@ -17868,6 +18574,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17884,9 +18593,9 @@ end
         function MODULE:PlayerAccessVendor(activator, vendor)
             local char = activator:getChar()
             if char then
-                lia.log.add(string.format("%s accessed vendor at %s", 
-                    activator:Name(), 
-                    tostring(vendor:GetPos())), 
+                lia.log.add(string.format("%s accessed vendor at %s",
+                    activator:Name(),
+                    tostring(vendor:GetPos())),
                     FLAG_NORMAL)
             end
         end
@@ -17897,23 +18606,23 @@ end
         -- High: Advanced vendor access tracking with restrictions
         function MODULE:PlayerAccessVendor(activator, vendor)
             if not IsValid(activator) or not IsValid(vendor) then return end
-            
+
             local char = activator:getChar()
             if not char then return end
-            
+
             -- Log access
-            lia.log.add(string.format("%s (%s) accessed vendor at %s", 
-                activator:Name(), 
+            lia.log.add(string.format("%s (%s) accessed vendor at %s",
+                activator:Name(),
                 activator:SteamID(),
-                tostring(vendor:GetPos())), 
+                tostring(vendor:GetPos())),
                 FLAG_NORMAL)
-            
+
             -- Track access statistics
             local vendorStats = char:getData("vendorStats", {})
             vendorStats.accessCount = (vendorStats.accessCount or 0) + 1
             vendorStats.lastAccess = os.time()
             char:setData("vendorStats", vendorStats)
-            
+
             -- Check vendor restrictions
             local vendorData = vendor:GetNetVar("vendorData")
             if vendorData and vendorData.restricted then
@@ -17943,6 +18652,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -17957,11 +18669,11 @@ end
         ```lua
         -- Medium: Handle cheater with logging
         function MODULE:PlayerCheatDetected(client)
-            lia.log.add(string.format("Cheater detected: %s (%s)", 
-                client:Name(), 
-                client:SteamID()), 
+            lia.log.add(string.format("Cheater detected: %s (%s)",
+                client:Name(),
+                client:SteamID()),
                 FLAG_CRITICAL)
-            
+
             client:Kick("Cheating detected")
         end
         ```
@@ -17971,14 +18683,14 @@ end
         -- High: Advanced anti-cheat with logging and actions
         function MODULE:PlayerCheatDetected(client)
             if not IsValid(client) then return end
-            
+
             -- Log detection
-            lia.log.add(string.format("CHEATER DETECTED: %s (%s) at %s", 
-                client:Name(), 
+            lia.log.add(string.format("CHEATER DETECTED: %s (%s) at %s",
+                client:Name(),
                 client:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_CRITICAL)
-            
+
             -- Store cheater data
             local char = client:getChar()
             if char then
@@ -17986,14 +18698,14 @@ end
                 char:setData("cheatDetectedAt", os.time())
                 char:save()
             end
-            
+
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
                 end
             end
-            
+
             -- Ban player
             client:Ban(0, "Cheating detected")
             client:Kick("Cheating detected - You have been banned")
@@ -18019,6 +18731,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18036,9 +18751,9 @@ end
             local char = target:getChar()
             if char then
                 char:setData("gagged", true)
-                lia.log.add(string.format("%s gagged %s", 
-                    admin:Name(), 
-                    target:Name()), 
+                lia.log.add(string.format("%s gagged %s",
+                    admin:Name(),
+                    target:Name()),
                     FLAG_NORMAL)
             end
         end
@@ -18049,26 +18764,26 @@ end
         -- High: Advanced gag system with tracking and duration
         function MODULE:PlayerGagged(target, admin)
             if not IsValid(target) or not IsValid(admin) then return end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             -- Log gag
-            lia.log.add(string.format("%s (%s) gagged %s (%s) at %s", 
-                admin:Name(), 
+            lia.log.add(string.format("%s (%s) gagged %s (%s) at %s",
+                admin:Name(),
                 admin:SteamID(),
                 target:Name(),
                 target:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store gag data
             char:setData("gagged", true)
             char:setData("gaggedBy", admin:SteamID())
             char:setData("gaggedAt", os.time())
             char:setData("gagDuration", 0) -- 0 = permanent
             char:save()
-            
+
             -- Store gag history
             local gagHistory = char:getData("gagHistory", {})
             table.insert(gagHistory, {
@@ -18077,13 +18792,13 @@ end
                 time = os.time(),
                 duration = 0
             })
-            
+
             if #gagHistory > 20 then
                 table.remove(gagHistory, 1)
             end
-            
+
             char:setData("gagHistory", gagHistory)
-            
+
             -- Notify player
             target:notify("You have been gagged by " .. admin:Name())
         end
@@ -18114,6 +18829,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18128,12 +18846,12 @@ end
         ```lua
         -- Medium: Track and filter messages
         function MODULE:PlayerMessageSend(speaker, chatType, text, anonymous, receivers)
-            lia.log.add(string.format("%s [%s]: %s", 
-                speaker:Name(), 
+            lia.log.add(string.format("%s [%s]: %s",
+                speaker:Name(),
                 chatType,
-                text), 
+                text),
                 FLAG_NORMAL)
-            
+
             -- Filter profanity
             if string.find(string.lower(text), "badword") then
                 return false -- Prevent message
@@ -18146,44 +18864,44 @@ end
         -- High: Advanced message system with moderation and analytics
         function MODULE:PlayerMessageSend(speaker, chatType, text, anonymous, receivers)
             if not IsValid(speaker) then return end
-            
+
             local char = speaker:getChar()
             if not char then return end
-            
+
             -- Check if gagged
             if char:getData("gagged", false) then
                 speaker:notify("You are gagged and cannot speak.")
                 return false
             end
-            
+
             -- Check if muted
             if char:getData("muted", false) then
                 speaker:notify("You are muted and cannot speak.")
                 return false
             end
-            
+
             -- Filter profanity
             local filteredWords = {"badword1", "badword2"}
             for _, word in ipairs(filteredWords) do
                 if string.find(string.lower(text), word) then
                     speaker:notify("Your message contained inappropriate language.")
-                    lia.log.add(string.format("%s tried to use profanity: %s", 
-                        speaker:Name(), 
-                        text), 
+                    lia.log.add(string.format("%s tried to use profanity: %s",
+                        speaker:Name(),
+                        text),
                         FLAG_WARNING)
                     return false
                 end
             end
-            
+
             -- Log message
-            lia.log.add(string.format("%s (%s) [%s]%s: %s", 
-                speaker:Name(), 
+            lia.log.add(string.format("%s (%s) [%s]%s: %s",
+                speaker:Name(),
                 speaker:SteamID(),
                 chatType,
                 anonymous and " [ANON]" or "",
-                text), 
+                text),
                 FLAG_NORMAL)
-            
+
             -- Track message statistics
             local msgStats = char:getData("messageStats", {})
             msgStats.total = (msgStats.total or 0) + 1
@@ -18211,6 +18929,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18228,9 +18949,9 @@ end
             local char = client:getChar()
             if char then
                 char:setData("currentModel", value)
-                lia.log.add(string.format("%s changed model to: %s", 
-                    client:Name(), 
-                    value), 
+                lia.log.add(string.format("%s changed model to: %s",
+                    client:Name(),
+                    value),
                     FLAG_NORMAL)
             end
         end
@@ -18241,29 +18962,29 @@ end
         -- High: Advanced model change tracking with validation
         function MODULE:PlayerModelChanged(client, value)
             if not IsValid(client) or not value then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Validate model
             if not util.IsValidModel(value) then
                 client:notify("Invalid model: " .. value)
                 return
             end
-            
+
             -- Log model change
             local oldModel = char:getData("currentModel")
-            lia.log.add(string.format("%s (%s) changed model from %s to %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) changed model from %s to %s",
+                client:Name(),
                 client:SteamID(),
                 oldModel or "unknown",
-                value), 
+                value),
                 FLAG_NORMAL)
-            
+
             -- Store model
             char:setData("currentModel", value)
             char:setData("modelChangedAt", os.time())
-            
+
             -- Track model history
             local modelHistory = char:getData("modelHistory", {})
             table.insert(modelHistory, {
@@ -18271,13 +18992,13 @@ end
                 time = os.time(),
                 from = oldModel
             })
-            
+
             if #modelHistory > 20 then
                 table.remove(modelHistory, 1)
             end
-            
+
             char:setData("modelHistory", modelHistory)
-            
+
             -- Apply model-specific effects
             hook.Run("ModelChanged", client, value, oldModel)
         end
@@ -18302,6 +19023,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18319,9 +19043,9 @@ end
             local char = target:getChar()
             if char then
                 char:setData("muted", true)
-                lia.log.add(string.format("%s muted %s", 
-                    admin:Name(), 
-                    target:Name()), 
+                lia.log.add(string.format("%s muted %s",
+                    admin:Name(),
+                    target:Name()),
                     FLAG_NORMAL)
             end
         end
@@ -18332,26 +19056,26 @@ end
         -- High: Advanced mute system with tracking and duration
         function MODULE:PlayerMuted(target, admin)
             if not IsValid(target) or not IsValid(admin) then return end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             -- Log mute
-            lia.log.add(string.format("%s (%s) muted %s (%s) at %s", 
-                admin:Name(), 
+            lia.log.add(string.format("%s (%s) muted %s (%s) at %s",
+                admin:Name(),
                 admin:SteamID(),
                 target:Name(),
                 target:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Store mute data
             char:setData("muted", true)
             char:setData("mutedBy", admin:SteamID())
             char:setData("mutedAt", os.time())
             char:setData("muteDuration", 0) -- 0 = permanent
             char:save()
-            
+
             -- Store mute history
             local muteHistory = char:getData("muteHistory", {})
             table.insert(muteHistory, {
@@ -18360,13 +19084,13 @@ end
                 time = os.time(),
                 duration = 0
             })
-            
+
             if #muteHistory > 20 then
                 table.remove(muteHistory, 1)
             end
-            
+
             char:setData("muteHistory", muteHistory)
-            
+
             -- Notify player
             target:notify("You have been muted by " .. admin:Name())
         end
@@ -18389,6 +19113,9 @@ end
         boolean
             Whether the player should act.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18405,7 +19132,7 @@ end
         function MODULE:PlayerShouldAct()
             local client = LocalPlayer()
             if not IsValid(client) then return false end
-            
+
             local char = client:getChar()
             return char and not char:getData("frozen", false)
         end
@@ -18417,30 +19144,30 @@ end
         function MODULE:PlayerShouldAct()
             local client = LocalPlayer()
             if not IsValid(client) then return false end
-            
+
             local char = client:getChar()
             if not char then return false end
-            
+
             -- Check if frozen
             if char:getData("frozen", false) then
                 return false
             end
-            
+
             -- Check if in sequence
             if char:getData("currentSequence") then
                 return false
             end
-            
+
             -- Check if unconscious
             if char:getData("unconscious", false) then
                 return false
             end
-            
+
             -- Check if dead
             if not client:Alive() then
                 return false
             end
-            
+
             return true
         end
         ```
@@ -18466,6 +19193,9 @@ end
     Returns:
         boolean
             Whether the player should be permakilled.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -18496,29 +19226,29 @@ end
         -- High: Advanced permakill system with multiple conditions
         function MODULE:PlayerShouldPermaKill(client, inflictor, attacker)
             if not IsValid(client) then return false end
-            
+
             local char = client:getChar()
             if not char then return false end
-            
+
             -- Check death count
             local deathCount = char:getData("deathCount", 0)
             if deathCount >= 10 then
                 return true
             end
-            
+
             -- Check if killed by admin
             if IsValid(attacker) and attacker:IsAdmin() then
                 local reason = attacker:GetNetVar("permakillReason")
                 if reason then
-                    lia.log.add(string.format("%s permakilled %s: %s", 
-                        attacker:Name(), 
+                    lia.log.add(string.format("%s permakilled %s: %s",
+                        attacker:Name(),
                         client:Name(),
-                        reason), 
+                        reason),
                         FLAG_CRITICAL)
                     return true
                 end
             end
-            
+
             -- Check character age
             local created = char:getData("created", 0)
             if created > 0 then
@@ -18528,7 +19258,7 @@ end
                     return true
                 end
             end
-            
+
             return false
         end
         ```
@@ -18554,6 +19284,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18571,9 +19304,9 @@ end
             local char = client:getChar()
             if char then
                 char:setData("lastSpawnPos", pos)
-                lia.log.add(string.format("%s selected spawn at %s", 
-                    client:Name(), 
-                    tostring(pos)), 
+                lia.log.add(string.format("%s selected spawn at %s",
+                    client:Name(),
+                    tostring(pos)),
                     FLAG_NORMAL)
             end
         end
@@ -18584,22 +19317,22 @@ end
         -- High: Advanced spawn system with validation and tracking
         function MODULE:PlayerSpawnPointSelected(client, pos, ang)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Log spawn selection
-            lia.log.add(string.format("%s (%s) selected spawn at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) selected spawn at %s",
+                client:Name(),
                 client:SteamID(),
-                tostring(pos)), 
+                tostring(pos)),
                 FLAG_NORMAL)
-            
+
             -- Store spawn data
             char:setData("lastSpawnPos", pos)
             char:setData("lastSpawnAng", ang)
             char:setData("lastSpawnTime", os.time())
-            
+
             -- Track spawn history
             local spawnHistory = char:getData("spawnHistory", {})
             table.insert(spawnHistory, {
@@ -18608,19 +19341,19 @@ end
                 time = os.time(),
                 map = game.GetMap()
             })
-            
+
             if #spawnHistory > 20 then
                 table.remove(spawnHistory, 1)
             end
-            
+
             char:setData("spawnHistory", spawnHistory)
-            
+
             -- Validate spawn location
             if not util.IsInWorld(pos) then
                 client:notify("Invalid spawn location selected.")
                 return
             end
-            
+
             -- Apply spawn effects
             hook.Run("SpawnPointSelected", client, pos, ang)
         end
@@ -18642,6 +19375,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -18669,20 +19405,20 @@ end
         -- High: Advanced stamina system with tracking and effects
         function MODULE:PlayerStaminaGained(player)
             if not IsValid(player) then return end
-            
+
             local char = player:getChar()
             if not char then return end
-            
+
             -- Track stamina gain
             local staminaStats = char:getData("staminaStats", {})
             staminaStats.totalGained = (staminaStats.totalGained or 0) + 1
             staminaStats.lastGain = os.time()
             char:setData("staminaStats", staminaStats)
-            
+
             -- Apply stamina gain effects
             local currentStamina = char:getData("stamina", 100)
             local maxStamina = hook.Run("GetCharMaxStamina", char) or 100
-            
+
             if currentStamina < maxStamina then
                 -- Play stamina restore sound
                 player:EmitSound("items/smallmedkit1.wav", 60, 100)
@@ -18706,6 +19442,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -18733,23 +19472,23 @@ end
         -- High: Advanced stamina system with effects and tracking
         function MODULE:PlayerStaminaLost(player)
             if not IsValid(player) then return end
-            
+
             local char = player:getChar()
             if not char then return end
-            
+
             -- Track stamina loss
             local staminaStats = char:getData("staminaStats", {})
             staminaStats.totalLost = (staminaStats.totalLost or 0) + 1
             staminaStats.lastLoss = os.time()
             char:setData("staminaStats", staminaStats)
-            
+
             -- Check if stamina depleted
             local currentStamina = char:getData("stamina", 100)
             if currentStamina <= 0 then
                 -- Apply exhaustion effects
                 player:SetWalkSpeed(100)
                 player:SetRunSpeed(150)
-                
+
                 -- Notify player
                 player:notify("You are exhausted!")
             end
@@ -18774,6 +19513,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -18802,15 +19544,15 @@ end
         -- High: Advanced punch system with damage and effects
         function MODULE:PlayerThrowPunch(client, trace)
             if not IsValid(client) or not trace then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Track punch statistics
             local combatStats = char:getData("combatStats", {})
             combatStats.punchesThrown = (combatStats.punchesThrown or 0) + 1
             char:setData("combatStats", combatStats)
-            
+
             -- Check if hit target
             if trace.Hit and IsValid(trace.Entity) then
                 local target = trace.Entity
@@ -18822,14 +19564,14 @@ end
                         if damage > 0 then
                             -- Apply damage
                             target:TakeDamage(damage, client, client)
-                            
+
                             -- Play hit sound
                             target:EmitSound("physics/body/body_medium_impact_hard" .. math.random(1, 6) .. ".wav", 60, 100)
                         end
                     end
                 end
             end
-            
+
             -- Play punch sound
             client:EmitSound("npc/vort/claw_swing" .. math.random(1, 2) .. ".wav", 60, 100)
         end
@@ -18854,6 +19596,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18871,9 +19616,9 @@ end
             local char = target:getChar()
             if char then
                 char:setData("gagged", false)
-                lia.log.add(string.format("%s ungagged %s", 
-                    admin:Name(), 
-                    target:Name()), 
+                lia.log.add(string.format("%s ungagged %s",
+                    admin:Name(),
+                    target:Name()),
                     FLAG_NORMAL)
             end
         end
@@ -18884,35 +19629,35 @@ end
         -- High: Advanced ungag system with tracking
         function MODULE:PlayerUngagged(target, admin)
             if not IsValid(target) or not IsValid(admin) then return end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             -- Log ungag
-            lia.log.add(string.format("%s (%s) ungagged %s (%s) at %s", 
-                admin:Name(), 
+            lia.log.add(string.format("%s (%s) ungagged %s (%s) at %s",
+                admin:Name(),
                 admin:SteamID(),
                 target:Name(),
                 target:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Remove gag data
             char:setData("gagged", false)
             local gagTime = char:getData("gaggedAt")
             char:setData("gaggedAt", nil)
             char:setData("gaggedBy", nil)
             char:save()
-            
+
             -- Calculate gag duration
             if gagTime then
                 local duration = os.time() - gagTime
-                lia.log.add(string.format("%s was gagged for %d seconds", 
-                    target:Name(), 
-                    duration), 
+                lia.log.add(string.format("%s was gagged for %d seconds",
+                    target:Name(),
+                    duration),
                     FLAG_NORMAL)
             end
-            
+
             -- Notify player
             target:notify("You have been ungagged by " .. admin:Name())
         end
@@ -18937,6 +19682,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -18954,9 +19702,9 @@ end
             local char = target:getChar()
             if char then
                 char:setData("muted", false)
-                lia.log.add(string.format("%s unmuted %s", 
-                    admin:Name(), 
-                    target:Name()), 
+                lia.log.add(string.format("%s unmuted %s",
+                    admin:Name(),
+                    target:Name()),
                     FLAG_NORMAL)
             end
         end
@@ -18967,35 +19715,35 @@ end
         -- High: Advanced unmute system with tracking
         function MODULE:PlayerUnmuted(target, admin)
             if not IsValid(target) or not IsValid(admin) then return end
-            
+
             local char = target:getChar()
             if not char then return end
-            
+
             -- Log unmute
-            lia.log.add(string.format("%s (%s) unmuted %s (%s) at %s", 
-                admin:Name(), 
+            lia.log.add(string.format("%s (%s) unmuted %s (%s) at %s",
+                admin:Name(),
                 admin:SteamID(),
                 target:Name(),
                 target:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Remove mute data
             char:setData("muted", false)
             local muteTime = char:getData("mutedAt")
             char:setData("mutedAt", nil)
             char:setData("mutedBy", nil)
             char:save()
-            
+
             -- Calculate mute duration
             if muteTime then
                 local duration = os.time() - muteTime
-                lia.log.add(string.format("%s was muted for %d seconds", 
-                    target:Name(), 
-                    duration), 
+                lia.log.add(string.format("%s was muted for %d seconds",
+                    target:Name(),
+                    duration),
                     FLAG_NORMAL)
             end
-            
+
             -- Notify player
             target:notify("You have been unmuted by " .. admin:Name())
         end
@@ -19020,6 +19768,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -19036,9 +19787,9 @@ end
         function MODULE:PlayerUseDoor(client, door)
             local char = client:getChar()
             if char then
-                lia.log.add(string.format("%s used door at %s", 
-                    client:Name(), 
-                    tostring(door:GetPos())), 
+                lia.log.add(string.format("%s used door at %s",
+                    client:Name(),
+                    tostring(door:GetPos())),
                     FLAG_NORMAL)
             end
         end
@@ -19049,10 +19800,10 @@ end
         -- High: Advanced door system with access control and tracking
         function MODULE:PlayerUseDoor(client, door)
             if not IsValid(client) or not IsValid(door) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Check door access
             local doorData = door:GetNetVar("doorData")
             if doorData and doorData.locked then
@@ -19064,14 +19815,14 @@ end
                     end
                 end
             end
-            
+
             -- Log door usage
-            lia.log.add(string.format("%s (%s) used door at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) used door at %s",
+                client:Name(),
                 client:SteamID(),
-                tostring(door:GetPos())), 
+                tostring(door:GetPos())),
                 FLAG_NORMAL)
-            
+
             -- Track door usage statistics
             local doorStats = char:getData("doorStats", {})
             doorStats.totalUsed = (doorStats.totalUsed or 0) + 1
@@ -19097,6 +19848,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19130,27 +19884,27 @@ end
         -- High: Advanced door restoration with validation
         function MODULE:PostDoorDataLoad(entity, doorData)
             if not IsValid(entity) or not doorData then return end
-            
+
             -- Restore door properties
             entity:SetNetVar("doorData", doorData)
-            
+
             if doorData.locked then
                 entity:SetNetVar("locked", true)
             end
-            
+
             if doorData.owner then
                 entity:SetNetVar("owner", doorData.owner)
             end
-            
+
             if doorData.price then
                 entity:SetNetVar("price", doorData.price)
             end
-            
+
             -- Validate and restore custom data
             if doorData.customData then
                 entity:SetNetVar("customData", doorData.customData)
             end
-            
+
             -- Apply door-specific restoration
             hook.Run("DoorRestored", entity, doorData)
         end
@@ -19171,6 +19925,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19197,7 +19954,7 @@ end
         function MODULE:PostLoadData()
             MODULE.initialized = true
             MODULE.loadTime = os.time()
-            
+
             -- Validate loaded data
             if MODULE.customData then
                 for key, value in pairs(MODULE.customData) do
@@ -19206,12 +19963,12 @@ end
                     end
                 end
             end
-            
+
             -- Log successful load
-            lia.log.add(string.format("Server data loaded at %s", 
-                os.date("%Y-%m-%d %H:%M:%S")), 
+            lia.log.add(string.format("Server data loaded at %s",
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
-            
+
             -- Notify modules
             hook.Run("DataLoaded", MODULE.customData)
         end
@@ -19233,6 +19990,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19260,34 +20020,34 @@ end
         -- High: Advanced spawn initialization with setup
         function MODULE:PostPlayerInitialSpawn(client)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Set first spawn time
             if not char:getData("firstSpawn") then
                 char:setData("firstSpawn", os.time())
             end
-            
+
             -- Give welcome items
             local inv = char:getInv()
             if inv then
                 inv:add("handbook")
                 inv:add("radio")
             end
-            
+
             -- Send welcome message
             timer.Simple(2, function()
                 if IsValid(client) then
                     client:notify("Welcome to the server, " .. char:getName() .. "!")
                 end
             end)
-            
+
             -- Log spawn
-            lia.log.add(string.format("%s (%s) spawned at %s", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) spawned at %s",
+                client:Name(),
                 client:SteamID(),
-                os.date("%Y-%m-%d %H:%M:%S")), 
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
         end
         ```
@@ -19312,6 +20072,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19341,37 +20104,37 @@ end
         -- High: Advanced character loading with setup
         function MODULE:PostPlayerLoadedChar(client, character, currentChar)
             if not IsValid(client) or not character then return end
-            
+
             if currentChar then
                 -- Update last login
                 character:setData("lastLogin", os.time())
-                
+
                 -- Calculate playtime
                 local lastLogin = character:getData("lastLoginBefore", os.time())
                 local sessionTime = os.time() - lastLogin
                 local totalPlayTime = character:getData("playTime", 0) + sessionTime
                 character:setData("playTime", totalPlayTime)
-                
+
                 -- Restore inventory
                 local inv = character:getInv()
                 if inv then
                     inv:sync()
                 end
-                
+
                 -- Apply character-specific effects
                 local faction = character:getFaction()
                 if faction and faction.onLoad then
                     faction.onLoad(client, character)
                 end
-                
+
                 -- Log character load
-                lia.log.add(string.format("%s (%s) loaded character %s (ID: %d)", 
-                    client:Name(), 
+                lia.log.add(string.format("%s (%s) loaded character %s (ID: %d)",
+                    client:Name(),
                     client:SteamID(),
                     character:getName(),
-                    character:getID()), 
+                    character:getID()),
                     FLAG_NORMAL)
-                
+
                 -- Notify modules
                 hook.Run("CharacterFullyLoaded", client, character)
             end
@@ -19394,6 +20157,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19421,20 +20187,20 @@ end
         -- High: Advanced loadout system with validation
         function MODULE:PostPlayerLoadout(client)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Store loadout time
             char:setData("loadoutSet", os.time())
-            
+
             -- Validate weapons
             for _, wep in ipairs(client:GetWeapons()) do
                 if not hook.Run("CanPlayerChooseWeapon", wep) then
                     client:StripWeapon(wep:GetClass())
                 end
             end
-            
+
             -- Apply faction/class loadout
             local faction = char:getFaction()
             if faction and faction.loadout then
@@ -19442,7 +20208,7 @@ end
                     client:Give(wep)
                 end
             end
-            
+
             local class = char:getClass()
             if class and class.loadout then
                 for _, wep in ipairs(class.loadout) do
@@ -19475,6 +20241,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -19502,22 +20271,22 @@ end
         -- High: Advanced message tracking with analytics
         function MODULE:PostPlayerSay(client, message, chatType, anonymous)
             if not IsValid(client) then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Track message statistics
             local msgStats = char:getData("messageStats", {})
             msgStats.total = (msgStats.total or 0) + 1
             msgStats[chatType] = (msgStats[chatType] or 0) + 1
             msgStats.lastMessage = os.time()
             char:setData("messageStats", msgStats)
-            
+
             -- Check for command keywords
             if string.find(string.lower(message), "help") then
                 client:notify("Type /help for commands")
             end
-            
+
             -- Apply message effects
             hook.Run("MessageProcessed", client, message, chatType, anonymous)
         end
@@ -19539,6 +20308,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19569,16 +20341,16 @@ end
         -- High: Advanced pre-deletion validation and cleanup
         function MODULE:PreCharDelete(characterID)
             if not characterID then return end
-            
+
             local character = lia.char.loaded[characterID]
             if not character then return end
-            
+
             -- Check if protected
             if character:getData("protected", false) then
                 lia.log.add(string.format("Attempted to delete protected character %d", characterID), FLAG_WARNING)
                 return false
             end
-            
+
             -- Backup character data
             local backupData = {
                 name = character:getName(),
@@ -19586,16 +20358,16 @@ end
                 data = character:getData(),
                 time = os.time()
             }
-            
+
             -- Save backup
             file.Write("lilia_backups/char_" .. characterID .. "_" .. os.time() .. ".txt", util.TableToJSON(backupData))
-            
+
             -- Log pre-deletion
-            lia.log.add(string.format("Preparing to delete character %d (%s)", 
+            lia.log.add(string.format("Preparing to delete character %d (%s)",
                 characterID,
-                character:getName()), 
+                character:getName()),
                 FLAG_NORMAL)
-            
+
             -- Clean up inventory
             local inv = character:getInv()
             if inv then
@@ -19625,6 +20397,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -19652,16 +20427,16 @@ end
         -- High: Advanced door data preparation with validation
         function MODULE:PreDoorDataSave(door, doorData)
             if not IsValid(door) then return end
-            
+
             -- Add metadata
             doorData.savedAt = os.time()
             doorData.map = game.GetMap()
             doorData.version = "1.0"
-            
+
             -- Store position and angles
             doorData.pos = {door:GetPos().x, door:GetPos().y, door:GetPos().z}
             doorData.ang = {door:GetAngles().p, door:GetAngles().y, door:GetAngles().r}
-            
+
             -- Store door properties
             local doorNetData = door:GetNetVar("doorData")
             if doorNetData then
@@ -19669,13 +20444,13 @@ end
                 doorData.owner = doorNetData.owner
                 doorData.price = doorNetData.price
             end
-            
+
             -- Validate data
             if not doorData.pos or not doorData.ang then
                 lia.log.add("Invalid door data for save", FLAG_WARNING)
                 return false
             end
-            
+
             -- Clean up temporary data
             doorData.tempData = nil
         end
@@ -19701,6 +20476,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19732,16 +20510,16 @@ end
         -- High: Advanced interaction validation with permissions
         function MODULE:PrePlayerInteractItem(client, action, item)
             if not IsValid(client) or not item then return end
-            
+
             local char = client:getChar()
             if not char then return end
-            
+
             -- Check if item is broken
             if item:getData("broken", false) then
                 client:notify("This item is broken and cannot be used.")
                 return false
             end
-            
+
             -- Check cooldowns
             local lastUse = item:getData("lastUsed", 0)
             local cooldown = item:getData("cooldown", 0)
@@ -19750,7 +20528,7 @@ end
                 client:notify("Item is on cooldown. " .. remaining .. " seconds remaining.")
                 return false
             end
-            
+
             -- Check permissions
             if item:getData("restricted", false) then
                 local faction = char:getFaction()
@@ -19759,13 +20537,13 @@ end
                     return false
                 end
             end
-            
+
             -- Log interaction attempt
-            lia.log.add(string.format("%s (%s) attempting to interact with %s (action: %s)", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) attempting to interact with %s (action: %s)",
+                client:Name(),
                 client:SteamID(),
                 item.name,
-                action), 
+                action),
                 FLAG_NORMAL)
         end
         ```
@@ -19790,6 +20568,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -19816,36 +20597,36 @@ end
         -- High: Advanced pre-load processing with validation
         function MODULE:PrePlayerLoadedChar(client, character, currentChar)
             if not IsValid(client) or not character then return end
-            
+
             if currentChar then
                 -- Mark as loading
                 character:setData("loading", true)
                 character:setData("loadStartTime", os.time())
-                
+
                 -- Validate character data
                 if not character:getName() or character:getName() == "" then
                     client:notify("Character has invalid name.")
                     return false
                 end
-                
+
                 -- Check if character is banned
                 if character:getData("banned", false) then
                     client:notify("This character is banned.")
                     return false
                 end
-                
+
                 -- Check if character is permakilled
                 if character:getData("permakilled", false) then
                     client:notify("This character is permanently dead.")
                     return false
                 end
-                
+
                 -- Log character load start
-                lia.log.add(string.format("%s (%s) loading character %s (ID: %d)", 
-                    client:Name(), 
+                lia.log.add(string.format("%s (%s) loading character %s (ID: %d)",
+                    client:Name(),
                     client:SteamID(),
                     character:getName(),
-                    character:getID()), 
+                    character:getID()),
                     FLAG_NORMAL)
             end
         end
@@ -19876,6 +20657,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -19902,36 +20686,36 @@ end
         -- High: Advanced salary system with bonuses and deductions
         function MODULE:PreSalaryGive(client, character, pay, faction, class)
             if not IsValid(client) or not character then return end
-            
+
             local finalPay = pay
-            
+
             -- Apply bonuses
             if character:getData("vip", false) then
                 finalPay = finalPay * 1.5
             end
-            
+
             if character:getData("loyal", false) then
                 finalPay = finalPay + 50
             end
-            
+
             -- Apply deductions
             local warnings = character:getData("warnings", {})
             if #warnings > 0 then
                 finalPay = finalPay * (1 - (#warnings * 0.1))
             end
-            
+
             -- Check attendance
             local attendance = character:getData("attendance", 100)
             finalPay = finalPay * (attendance / 100)
-            
+
             -- Log salary calculation
-            lia.log.add(string.format("%s (%s) salary: base=%d, final=%d", 
-                client:Name(), 
+            lia.log.add(string.format("%s (%s) salary: base=%d, final=%d",
+                client:Name(),
                 client:SteamID(),
                 pay,
-                finalPay), 
+                finalPay),
                 FLAG_NORMAL)
-            
+
             return math.max(0, finalPay)
         end
         ```
@@ -19952,6 +20736,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20001,7 +20788,7 @@ end
                     }
                 }
             })
-            
+
             -- Add another category
             table.insert(categories, {
                 name = "Advanced Tools",
@@ -20035,6 +20822,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20063,14 +20853,14 @@ end
             lia.db.prepare("set_custom_data", "UPDATE custom_table SET data = ? WHERE id = ?")
             lia.db.prepare("insert_custom_data", "INSERT INTO custom_table (id, data) VALUES (?, ?)")
             lia.db.prepare("delete_custom_data", "DELETE FROM custom_table WHERE id = ?")
-            
+
             -- Register statistics queries
             lia.db.prepare("get_player_stats", "SELECT * FROM player_stats WHERE steamid = ?")
             lia.db.prepare("update_player_stats", "UPDATE player_stats SET stats = ? WHERE steamid = ?")
-            
+
             -- Register log queries
             lia.db.prepare("log_action", "INSERT INTO action_logs (steamid, action, time) VALUES (?, ?, ?)")
-            
+
             -- Validate statements
             if not lia.db.prepared then
                 lia.db.prepared = {}
@@ -20096,6 +20886,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20128,34 +20921,34 @@ end
         -- High: Advanced warning removal with validation and logging
         function MODULE:RemoveWarning(charID, index)
             if not charID or not index then return end
-            
+
             local character = lia.char.loaded[charID]
             if not character then return end
-            
+
             local warnings = character:getData("warnings", {})
             if not warnings[index] then
-                lia.log.add(string.format("Attempted to remove non-existent warning %d from character %d", 
-                    index, 
-                    charID), 
+                lia.log.add(string.format("Attempted to remove non-existent warning %d from character %d",
+                    index,
+                    charID),
                     FLAG_WARNING)
                 return false
             end
-            
+
             -- Get warning data before removal
             local warningData = warnings[index]
-            
+
             -- Remove warning
             table.remove(warnings, index)
             character:setData("warnings", warnings)
             character:save()
-            
+
             -- Log removal
-            lia.log.add(string.format("Warning removed from character %d (%s): %s", 
+            lia.log.add(string.format("Warning removed from character %d (%s): %s",
                 charID,
                 character:getName(),
-                warningData.reason or "No reason"), 
+                warningData.reason or "No reason"),
                 FLAG_NORMAL)
-            
+
             -- Notify player if online
             local player = character:getPlayer()
             if IsValid(player) then
@@ -20187,6 +20980,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20201,9 +20997,9 @@ end
         ```lua
         -- Medium: Track command usage
         function MODULE:RunAdminSystemCommand(command, victim, duration, reason)
-            lia.log.add(string.format("Admin command: %s on %s", 
-                command, 
-                victim:Name()), 
+            lia.log.add(string.format("Admin command: %s on %s",
+                command,
+                victim:Name()),
                 FLAG_NORMAL)
         end
         ```
@@ -20213,28 +21009,28 @@ end
         -- High: Advanced command system with validation and tracking
         function MODULE:RunAdminSystemCommand(command, victim, duration, reason)
             if not command or not IsValid(victim) then return end
-            
+
             -- Log command execution
-            lia.log.add(string.format("Admin command executed: %s on %s (%s) - Duration: %s, Reason: %s", 
+            lia.log.add(string.format("Admin command executed: %s on %s (%s) - Duration: %s, Reason: %s",
                 command,
                 victim:Name(),
                 victim:SteamID(),
                 duration or "N/A",
-                reason or "No reason"), 
+                reason or "No reason"),
                 FLAG_CRITICAL)
-            
+
             -- Track command statistics
             local cmdStats = MODULE.commandStats or {}
             cmdStats[command] = (cmdStats[command] or 0) + 1
             MODULE.commandStats = cmdStats
-            
+
             -- Validate command
             local allowedCommands = {"kick", "ban", "mute", "gag", "freeze"}
             if not table.HasValue(allowedCommands, command) then
                 lia.log.add(string.format("Invalid admin command attempted: %s", command), FLAG_WARNING)
                 return false
             end
-            
+
             -- Apply command-specific logic
             if command == "kick" then
                 timer.Simple(duration or 0, function()
@@ -20245,7 +21041,7 @@ end
             elseif command == "ban" then
                 victim:Ban(duration or 0, reason or "Banned by admin")
             end
-            
+
             -- Notify modules
             hook.Run("AdminCommandExecuted", command, victim, duration, reason)
         end
@@ -20266,6 +21062,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20298,7 +21097,7 @@ end
                 local backupPath = "lilia_backups/data_" .. os.time() .. ".txt"
                 file.Write(backupPath, util.TableToJSON(MODULE.customData))
             end
-            
+
             -- Validate data
             local dataToSave = {}
             if MODULE.customData then
@@ -20308,23 +21107,23 @@ end
                     end
                 end
             end
-            
+
             -- Save to database
             lia.db.query("UPDATE server_data SET data = ?, saved_at = ? WHERE id = 1", {
                 util.TableToJSON(dataToSave),
                 os.time()
             })
-            
+
             -- Store in memory
             MODULE.savedData = {
                 data = dataToSave,
                 savedAt = os.time(),
                 version = "1.0"
             }
-            
+
             -- Log save
-            lia.log.add(string.format("Server data saved at %s", 
-                os.date("%Y-%m-%d %H:%M:%S")), 
+            lia.log.add(string.format("Server data saved at %s",
+                os.date("%Y-%m-%d %H:%M:%S")),
                 FLAG_NORMAL)
         end
         ```
@@ -20347,6 +21146,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20371,7 +21173,7 @@ end
         -- High: Advanced popup system with types and tracking
         function MODULE:SendPopup(client, message)
             if not IsValid(client) or not message then return end
-            
+
             -- Determine popup type
             local popupType = "info"
             if string.find(string.lower(message), "error") then
@@ -20381,10 +21183,10 @@ end
             elseif string.find(string.lower(message), "success") then
                 popupType = "success"
             end
-            
+
             -- Send popup
             client:notify(message, popupType)
-            
+
             -- Track popup statistics
             local char = client:getChar()
             if char then
@@ -20393,14 +21195,14 @@ end
                 popupStats[popupType] = (popupStats[popupType] or 0) + 1
                 char:setData("popupStats", popupStats)
             end
-            
+
             -- Log important popups
             if popupType == "error" or popupType == "warning" then
-                lia.log.add(string.format("Popup sent to %s (%s): %s [%s]", 
-                    client:Name(), 
+                lia.log.add(string.format("Popup sent to %s (%s): %s [%s]",
+                    client:Name(),
                     client:SteamID(),
                     message,
-                    popupType), 
+                    popupType),
                     FLAG_NORMAL)
             end
         end
@@ -20422,6 +21224,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20526,6 +21331,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20613,6 +21421,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20688,6 +21499,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20702,7 +21516,7 @@ end
         ```lua
         -- Medium: Load PAC data from equipped items
         function MODULE:SetupPACDataFromItems()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local char = client:getChar()
                     if char then
@@ -20722,7 +21536,7 @@ end
         function MODULE:SetupPACDataFromItems()
             MODULE.pacDataCache = MODULE.pacDataCache or {}
 
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if not IsValid(client) then continue end
 
                 local char = client:getChar()
@@ -20799,6 +21613,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -20903,6 +21720,9 @@ end
         boolean
             Whether saved items should be deleted.
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -20989,6 +21809,9 @@ end
     Returns:
         boolean
             Whether ragdoll should be spawned.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -21120,6 +21943,9 @@ end
     Returns:
         boolean
             Whether the item can be transferred.
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -21266,6 +22092,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -21402,6 +22231,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -21534,6 +22366,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -21651,6 +22486,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -21795,6 +22633,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -21935,6 +22776,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -22106,6 +22950,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -22309,6 +23156,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -22475,6 +23325,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -22661,6 +23514,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -22831,6 +23687,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -22996,6 +23855,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -23088,6 +23950,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -23200,6 +24065,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -23326,6 +24194,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -23439,6 +24310,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -23563,6 +24437,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -23683,6 +24560,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -23814,6 +24694,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -23895,6 +24778,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -23971,6 +24857,9 @@ end
     Returns:
         nil
 
+    Realm:
+        Server
+
     Example Usage:
 
     Low Complexity:
@@ -24045,6 +24934,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -24142,6 +25034,9 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
 
     Example Usage:
 
@@ -24246,6 +25141,86 @@ end
 
     Returns:
         nil
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Log warning removal
+        function MODULE:WarningRemoved(admin, target, warningData, index)
+            print(admin:Name() .. " removed warning from " .. target:Name())
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Warning removal with notification
+        function MODULE:WarningRemoved(admin, target, warningData, index)
+            if not IsValid(admin) or not IsValid(target) then return end
+
+            -- Notify target player
+            target:notify("A warning has been removed from your record")
+
+            -- Log removal
+            lia.log.add(string.format(
+                "%s removed warning #%d from %s",
+                admin:Name(),
+                index,
+                target:Name()
+            ), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced warning removal with validation and logging
+        function MODULE:WarningRemoved(admin, target, warningData, index)
+            if not IsValid(admin) or not IsValid(target) then return end
+            if not warningData then return end
+
+            -- Validate admin permissions
+            if not admin:IsAdmin() and not admin:hasPrivilege("Remove Warnings") then
+                lia.log.add(admin:Name() .. " attempted to remove warning without permission", FLAG_WARNING)
+                return
+            end
+
+            -- Get character data
+            local char = target:getChar()
+            if not char then return end
+
+            -- Update warning status in database
+            lia.warning.remove(char:getID(), index)
+
+            -- Notify target player
+            target:notify("A warning has been removed from your record by " .. admin:Name())
+
+            -- Send updated warning list to target
+            local warnings = lia.warning.get(char:getID())
+            net.Start("liaWarningUpdate")
+            net.WriteTable(warnings)
+            net.Send(target)
+
+            -- Log comprehensive removal
+            lia.log.add(string.format(
+                "%s (%s) removed warning #%d from %s (%s) - Reason: %s",
+                admin:Name(),
+                admin:SteamID(),
+                index,
+                target:Name(),
+                target:SteamID(),
+                warningData.reason or "Unknown"
+            ), FLAG_NORMAL)
+
+            -- Update warning statistics
+            self:UpdateWarningStatistics(char:getID())
+
+            -- Trigger post-removal hook
+            hook.Run("OnWarningRemoved", admin, target, warningData, index)
+        end
+        ```
 ]]
 function WarningRemoved(admin, target, warningData, index)
 end
@@ -24263,7 +25238,8 @@ end
     Returns:
         nil
 
-    Realm: Server
+    Realm:
+        Server
 
     Example Usage:
 
@@ -24292,7 +25268,7 @@ end
             self:SetupDataSync()
 
             -- Notify administrators
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:IsAdmin() then
                     client:ChatPrint("Database connection established")
                 end

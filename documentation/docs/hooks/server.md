@@ -62,7 +62,7 @@ When a warning is issued to a character.
             warnerSteamID = warnerSteamID
         }, nil, "warnings")
         -- Notify online admins
-        for _, admin in ipairs(player.GetAll()) do
+        for _, admin in player.Iterator() do
             if admin:hasPrivilege("Staff Permissions") then
                 admin:notify(warner .. " issued a warning to " .. warned)
             end
@@ -94,7 +94,7 @@ When a warning is issued to a character.
             -- Check for automatic actions based on warning count
             if warningCount >= 5 then
                 -- Find the player and kick them
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:Kick("Accumulated too many warnings - please review server rules")
                         lia.log.add("Auto-kicked " .. warned .. " for reaching 5 warnings", FLAG_WARNING)
@@ -103,7 +103,7 @@ When a warning is issued to a character.
                 end
             elseif warningCount >= 3 then
                 -- Send warning notification to player
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:notify("You have received " .. warningCount .. " warnings. Further violations may result in a kick or ban.")
                         break
@@ -179,7 +179,7 @@ When a warning is issued to a character.
             warnerSteamID = warnerSteamID
         }, nil, "warnings")
         -- Notify online admins
-        for _, admin in ipairs(player.GetAll()) do
+        for _, admin in player.Iterator() do
             if admin:hasPrivilege("Staff Permissions") then
                 admin:notify(warner .. " issued a warning to " .. warned)
             end
@@ -211,7 +211,7 @@ When a warning is issued to a character.
             -- Check for automatic actions based on warning count
             if warningCount >= 5 then
                 -- Find the player and kick them
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:Kick("Accumulated too many warnings - please review server rules")
                         lia.log.add("Auto-kicked " .. warned .. " for reaching 5 warnings", FLAG_WARNING)
@@ -220,7 +220,7 @@ When a warning is issued to a character.
                 end
             elseif warningCount >= 3 then
                 -- Send warning notification to player
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:notify("You have received " .. warningCount .. " warnings. Further violations may result in a kick or ban.")
                         break
@@ -296,7 +296,7 @@ When a warning is issued to a character.
             warnerSteamID = warnerSteamID
         }, nil, "warnings")
         -- Notify online admins
-        for _, admin in ipairs(player.GetAll()) do
+        for _, admin in player.Iterator() do
             if admin:hasPrivilege("Staff Permissions") then
                 admin:notify(warner .. " issued a warning to " .. warned)
             end
@@ -328,7 +328,7 @@ When a warning is issued to a character.
             -- Check for automatic actions based on warning count
             if warningCount >= 5 then
                 -- Find the player and kick them
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:Kick("Accumulated too many warnings - please review server rules")
                         lia.log.add("Auto-kicked " .. warned .. " for reaching 5 warnings", FLAG_WARNING)
@@ -337,7 +337,7 @@ When a warning is issued to a character.
                 end
             elseif warningCount >= 3 then
                 -- Send warning notification to player
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:notify("You have received " .. warningCount .. " warnings. Further violations may result in a kick or ban.")
                         break
@@ -413,7 +413,7 @@ When a warning is issued to a character.
             warnerSteamID = warnerSteamID
         }, nil, "warnings")
         -- Notify online admins
-        for _, admin in ipairs(player.GetAll()) do
+        for _, admin in player.Iterator() do
             if admin:hasPrivilege("Staff Permissions") then
                 admin:notify(warner .. " issued a warning to " .. warned)
             end
@@ -445,7 +445,7 @@ When a warning is issued to a character.
             -- Check for automatic actions based on warning count
             if warningCount >= 5 then
                 -- Find the player and kick them
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:Kick("Accumulated too many warnings - please review server rules")
                         lia.log.add("Auto-kicked " .. warned .. " for reaching 5 warnings", FLAG_WARNING)
@@ -454,7 +454,7 @@ When a warning is issued to a character.
                 end
             elseif warningCount >= 3 then
                 -- Send warning notification to player
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     if ply:SteamID() == warnedSteamID then
                         ply:notify("You have received " .. warningCount .. " warnings. Further violations may result in a kick or ban.")
                         break
@@ -11234,7 +11234,7 @@ Server
         -- Check class limits per faction
         if class.limitPerFaction then
             local factionMembers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getFaction() == charFaction and plyChar:getClass() == class.uniqueID then
                     factionMembers = factionMembers + 1
@@ -11273,7 +11273,7 @@ Server
         -- Check if class has limited slots
         if class.maxPlayers then
             local currentPlayers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getClass() == class.uniqueID then
                     currentPlayers = currentPlayers + 1
@@ -11437,7 +11437,7 @@ Server
         -- Check class limits per faction
         if class.limitPerFaction then
             local factionMembers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getFaction() == charFaction and plyChar:getClass() == class.uniqueID then
                     factionMembers = factionMembers + 1
@@ -11476,7 +11476,7 @@ Server
         -- Check if class has limited slots
         if class.maxPlayers then
             local currentPlayers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getClass() == class.uniqueID then
                     currentPlayers = currentPlayers + 1
@@ -11640,7 +11640,7 @@ Server
         -- Check class limits per faction
         if class.limitPerFaction then
             local factionMembers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getFaction() == charFaction and plyChar:getClass() == class.uniqueID then
                     factionMembers = factionMembers + 1
@@ -11679,7 +11679,7 @@ Server
         -- Check if class has limited slots
         if class.maxPlayers then
             local currentPlayers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getClass() == class.uniqueID then
                     currentPlayers = currentPlayers + 1
@@ -11843,7 +11843,7 @@ Server
         -- Check class limits per faction
         if class.limitPerFaction then
             local factionMembers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getFaction() == charFaction and plyChar:getClass() == class.uniqueID then
                     factionMembers = factionMembers + 1
@@ -11882,7 +11882,7 @@ Server
         -- Check if class has limited slots
         if class.maxPlayers then
             local currentPlayers = 0
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local plyChar = ply:getChar()
                 if plyChar and plyChar:getClass() == class.uniqueID then
                     currentPlayers = currentPlayers + 1
@@ -19791,7 +19791,7 @@ Server
     -- Helper function to trigger door alarm
     function MODULE:TriggerDoorAlarm(door, client)
         -- Alert nearby players or authorities
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                 ply:notify("Security alarm triggered at door!")
             end
@@ -20027,7 +20027,7 @@ Server
     -- Helper function to trigger door alarm
     function MODULE:TriggerDoorAlarm(door, client)
         -- Alert nearby players or authorities
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                 ply:notify("Security alarm triggered at door!")
             end
@@ -20263,7 +20263,7 @@ Server
     -- Helper function to trigger door alarm
     function MODULE:TriggerDoorAlarm(door, client)
         -- Alert nearby players or authorities
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                 ply:notify("Security alarm triggered at door!")
             end
@@ -20499,7 +20499,7 @@ Server
     -- Helper function to trigger door alarm
     function MODULE:TriggerDoorAlarm(door, client)
         -- Alert nearby players or authorities
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                 ply:notify("Security alarm triggered at door!")
             end
@@ -20735,7 +20735,7 @@ Server
     -- Helper function to trigger door alarm
     function MODULE:TriggerDoorAlarm(door, client)
         -- Alert nearby players or authorities
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) <= 500 and ply ~= client then
                 ply:notify("Security alarm triggered at door!")
             end
@@ -20848,7 +20848,7 @@ Server
             -- Check faction limits
             if factionData.limit then
                 local factionCount = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getFaction() == charFaction then
                         factionCount = factionCount + 1
@@ -20874,7 +20874,7 @@ Server
                 -- Check class limits
                 if classData.limit then
                     local classCount = 0
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         local plyChar = ply:getChar()
                         if plyChar and plyChar:getClass() == charClass then
                             classCount = classCount + 1
@@ -20916,7 +20916,7 @@ Server
         -- Check server population limits for certain character types
         if character:getData("unique", false) then
             -- Unique characters can only be used by one player at a time
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() == character and ply ~= client then
                     return false -- Character already in use
                 end
@@ -21058,7 +21058,7 @@ Server
             -- Check faction limits
             if factionData.limit then
                 local factionCount = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getFaction() == charFaction then
                         factionCount = factionCount + 1
@@ -21084,7 +21084,7 @@ Server
                 -- Check class limits
                 if classData.limit then
                     local classCount = 0
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         local plyChar = ply:getChar()
                         if plyChar and plyChar:getClass() == charClass then
                             classCount = classCount + 1
@@ -21126,7 +21126,7 @@ Server
         -- Check server population limits for certain character types
         if character:getData("unique", false) then
             -- Unique characters can only be used by one player at a time
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() == character and ply ~= client then
                     return false -- Character already in use
                 end
@@ -21268,7 +21268,7 @@ Server
             -- Check faction limits
             if factionData.limit then
                 local factionCount = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getFaction() == charFaction then
                         factionCount = factionCount + 1
@@ -21294,7 +21294,7 @@ Server
                 -- Check class limits
                 if classData.limit then
                     local classCount = 0
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         local plyChar = ply:getChar()
                         if plyChar and plyChar:getClass() == charClass then
                             classCount = classCount + 1
@@ -21336,7 +21336,7 @@ Server
         -- Check server population limits for certain character types
         if character:getData("unique", false) then
             -- Unique characters can only be used by one player at a time
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() == character and ply ~= client then
                     return false -- Character already in use
                 end
@@ -21478,7 +21478,7 @@ Server
             -- Check faction limits
             if factionData.limit then
                 local factionCount = 0
-                for _, ply in ipairs(player.GetAll()) do
+                for _, ply in player.Iterator() do
                     local plyChar = ply:getChar()
                     if plyChar and plyChar:getFaction() == charFaction then
                         factionCount = factionCount + 1
@@ -21504,7 +21504,7 @@ Server
                 -- Check class limits
                 if classData.limit then
                     local classCount = 0
-                    for _, ply in ipairs(player.GetAll()) do
+                    for _, ply in player.Iterator() do
                         local plyChar = ply:getChar()
                         if plyChar and plyChar:getClass() == charClass then
                             classCount = classCount + 1
@@ -21546,7 +21546,7 @@ Server
         -- Check server population limits for certain character types
         if character:getData("unique", false) then
             -- Unique characters can only be used by one player at a time
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() == character and ply ~= client then
                     return false -- Character already in use
                 end
@@ -27367,7 +27367,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -27404,7 +27404,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -27521,7 +27521,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -27674,7 +27674,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -27711,7 +27711,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -27828,7 +27828,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -27981,7 +27981,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -28018,7 +28018,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -28135,7 +28135,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -28288,7 +28288,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -28325,7 +28325,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -28442,7 +28442,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -28595,7 +28595,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -28632,7 +28632,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -28749,7 +28749,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -28902,7 +28902,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -28939,7 +28939,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -29056,7 +29056,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -29209,7 +29209,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -29246,7 +29246,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -29363,7 +29363,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -29516,7 +29516,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -29553,7 +29553,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -29670,7 +29670,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -29823,7 +29823,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -29860,7 +29860,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -29977,7 +29977,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -30130,7 +30130,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -30167,7 +30167,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -30284,7 +30284,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -30437,7 +30437,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -30474,7 +30474,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -30591,7 +30591,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -30744,7 +30744,7 @@ Server
         -- Check if this triggers any server events
         self:CheckDeletionTriggers(character, client)
         -- Notify administrators of character deletion
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:hasPrivilege("Staff Permissions") then
                 ply:notify("Character deleted: " .. charName .. " by " .. (IsValid(client) and client:Name() or "Unknown"))
             end
@@ -30781,7 +30781,7 @@ Server
             end
         end
         -- Remove from any active player lists
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
                 ply:setNetVar("liaChar", nil)
                 break
@@ -30898,7 +30898,7 @@ Server
     -- Helper function to execute trigger actions
     function MODULE:ExecuteTriggerAction(action, character, client)
         if action.type == "notify_staff" then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:hasPrivilege("Staff Permissions") then
                     ply:notify("Character deletion trigger activated: " .. character:getName())
                 end
@@ -32852,7 +32852,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -32868,7 +32868,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -32903,7 +32903,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33085,7 +33085,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -33101,7 +33101,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33136,7 +33136,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33318,7 +33318,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -33334,7 +33334,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33369,7 +33369,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33551,7 +33551,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -33567,7 +33567,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33602,7 +33602,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33784,7 +33784,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -33800,7 +33800,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -33835,7 +33835,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -34017,7 +34017,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -34033,7 +34033,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -34068,7 +34068,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -34250,7 +34250,7 @@ Server
 ```lua
     -- Simple: Force recognition for all players in range
     function MODULE:CharForceRecognized(player, range)
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 ply:recognize(player)
             end
@@ -34266,7 +34266,7 @@ Server
         local char = player:getChar()
         if not char then return end
         local playerFaction = char:getFaction()
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -34301,7 +34301,7 @@ Server
             range = range,
             recognizedPlayers = {}
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= range then
                 local plyChar = ply:getChar()
                 if plyChar then
@@ -36216,7 +36216,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36240,7 +36240,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36354,7 +36354,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -36419,7 +36419,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -36479,7 +36479,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36503,7 +36503,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36617,7 +36617,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -36682,7 +36682,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -36742,7 +36742,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36766,7 +36766,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -36880,7 +36880,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -36945,7 +36945,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -37005,7 +37005,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37029,7 +37029,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37143,7 +37143,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -37208,7 +37208,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -37268,7 +37268,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37292,7 +37292,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37406,7 +37406,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -37471,7 +37471,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -37531,7 +37531,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37555,7 +37555,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37669,7 +37669,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -37734,7 +37734,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -37794,7 +37794,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37818,7 +37818,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -37932,7 +37932,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -37997,7 +37997,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -38057,7 +38057,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38081,7 +38081,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38195,7 +38195,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -38260,7 +38260,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -38320,7 +38320,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38344,7 +38344,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38458,7 +38458,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -38523,7 +38523,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -38583,7 +38583,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38607,7 +38607,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38721,7 +38721,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -38786,7 +38786,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -38846,7 +38846,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38870,7 +38870,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -38984,7 +38984,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -39049,7 +39049,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -39109,7 +39109,7 @@ Server
         if not faction.limit then return false end
         -- Count current faction members
         local memberCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -39133,7 +39133,7 @@ Server
         -- Count current active faction members
         local memberCount = 0
         local activeMembers = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 memberCount = memberCount + 1
@@ -39247,7 +39247,7 @@ Server
             averageLevel = 0,
             totalLevel = 0
         }
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == factionID then
                 stats.totalMembers = stats.totalMembers + 1
@@ -39312,7 +39312,7 @@ Server
         local totalPlayers = #player.GetAll()
         if totalPlayers < 10 then return false end -- Not enough players to worry about balance
         local factionCount = 0
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getFaction() == faction.uniqueID then
                 factionCount = factionCount + 1
@@ -61847,7 +61847,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -61875,7 +61875,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -61896,7 +61896,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -61928,7 +61928,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -61946,7 +61946,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62004,7 +62004,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62032,7 +62032,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62053,7 +62053,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62085,7 +62085,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62103,7 +62103,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62161,7 +62161,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62189,7 +62189,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62210,7 +62210,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62242,7 +62242,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62260,7 +62260,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62318,7 +62318,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62346,7 +62346,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62367,7 +62367,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62399,7 +62399,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62417,7 +62417,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62475,7 +62475,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62503,7 +62503,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62524,7 +62524,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62556,7 +62556,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62574,7 +62574,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62632,7 +62632,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62660,7 +62660,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62681,7 +62681,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62713,7 +62713,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62731,7 +62731,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -62789,7 +62789,7 @@ When salary system is initialized.
     -- Simple: Create basic salary timer
     function MODULE:CreateSalaryTimers()
         timer.Create("liaSalaryTimer", 300, 0, function()
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     -- Give basic salary
                     local character = client:getChar()
@@ -62817,7 +62817,7 @@ When salary system is initialized.
         }
         for factionID, data in pairs(salaryData) do
             timer.Create("liaSalary_" .. factionID, data.interval, 0, function()
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) then
                         local character = client:getChar()
                         if character and character:getFaction() == factionID then
@@ -62838,7 +62838,7 @@ When salary system is initialized.
     function MODULE:CreateSalaryTimers()
         -- Main salary timer
         timer.Create("liaAdvancedSalary", 600, 0, function() -- Every 10 minutes
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62870,7 +62870,7 @@ When salary system is initialized.
         end)
         -- Overtime bonus timer (for long play sessions)
         timer.Create("liaOvertimeBonus", 3600, 0, function() -- Every hour
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then
                     local character = client:getChar()
                     if not character then continue end
@@ -62888,7 +62888,7 @@ When salary system is initialized.
             -- Random chance for special bonuses
             if math.random() < 0.1 then -- 10% chance
                 local bonusAmount = math.random(50, 200)
-                for _, client in ipairs(player.GetAll()) do
+                for _, client in player.Iterator() do
                     if IsValid(client) and client:getChar() then
                         client:getChar():giveMoney(bonusAmount)
                         client:notify("Special bonus payment: $" .. bonusAmount)
@@ -64505,7 +64505,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -64557,7 +64557,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -64610,7 +64610,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -64662,7 +64662,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -64715,7 +64715,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -64767,7 +64767,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -64820,7 +64820,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -64872,7 +64872,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -64925,7 +64925,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -64977,7 +64977,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -65030,7 +65030,7 @@ When Discord integration fails or is unavailable.
         -- Log the outage
         lia.log.add("Discord relay unavailable - switching to alternative logging", FLAG_WARNING)
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Server Admin") then
                 client:notify("Discord integration is currently unavailable.")
             end
@@ -65082,7 +65082,7 @@ When Discord integration fails or is unavailable.
     function MODULE:NotifyStaffOfDiscordOutage()
         local staffMessage = "⚠️ **DISCORD INTEGRATION UNAVAILABLE** ⚠️\n" ..
                            "Discord relay service is down. Administrative actions may be logged locally only."
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:hasPrivilege("Staff") then
                 client:notify(staffMessage)
                 client:ChatPrint(staffMessage)
@@ -65147,7 +65147,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65213,13 +65213,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65270,7 +65270,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65336,13 +65336,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65393,7 +65393,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65459,13 +65459,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65516,7 +65516,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65582,13 +65582,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65639,7 +65639,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65705,13 +65705,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65762,7 +65762,7 @@ When Discord messages are received and processed.
         lia.log.add("Discord relay: " .. (embed.content or "No content"), FLAG_NORMAL)
         -- Relay to in-game chat if it's a public message
         if embed.channel == "general" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint("[Discord] " .. (embed.author or "Unknown") .. ": " .. (embed.content or ""))
             end
         end
@@ -65828,13 +65828,13 @@ When Discord messages are received and processed.
         local formattedMessage = string.format("[Discord] %s: %s", author, message)
         -- Send to all players or specific groups
         if embed.channel == "admin" then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege("Admin") then
                     client:ChatPrint(formattedMessage)
                 end
             end
         else
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 client:ChatPrint(formattedMessage)
             end
         end
@@ -65885,7 +65885,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66020,7 +66020,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66155,7 +66155,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66290,7 +66290,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66425,7 +66425,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66560,7 +66560,7 @@ When a door's enabled state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "enabled" or "disabled") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 500 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66697,7 +66697,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66843,7 +66843,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -66989,7 +66989,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67135,7 +67135,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67281,7 +67281,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67427,7 +67427,7 @@ When a door's hidden state is toggled.
         lia.log.add(client:Name() .. " " .. (newState and "hid" or "showed") .. " door: " .. tostring(entity), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(entity:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67573,7 +67573,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67736,7 +67736,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -67899,7 +67899,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68062,7 +68062,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68225,7 +68225,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68388,7 +68388,7 @@ When a door's lock state is toggled.
         lia.log.add(client:Name() .. " " .. (state and "locked" or "unlocked") .. " door: " .. tostring(door), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68555,7 +68555,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68714,7 +68714,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -68873,7 +68873,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69032,7 +69032,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69191,7 +69191,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69350,7 +69350,7 @@ When a door's ownable state is toggled.
             (newState and "ownable" or "unownable"), FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69511,7 +69511,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69689,7 +69689,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -69867,7 +69867,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -70045,7 +70045,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -70223,7 +70223,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -70401,7 +70401,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -70579,7 +70579,7 @@ When a door's price is set.
         lia.log.add(client:Name() .. " set door " .. tostring(door) .. " price to $" .. price, FLAG_NORMAL)
         -- Notify nearby players
         local nearbyPlayers = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 300 then
                 table.insert(nearbyPlayers, ply)
             end
@@ -70787,7 +70787,7 @@ When a door's title is set.
         -- Log the change
         lia.log.add(client:Name() .. " (" .. client:SteamID() .. ") set door title to: " .. sanitized)
         -- Notify nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 ply:notify(client:Name() .. " set the door title to: " .. sanitized)
             end
@@ -70877,7 +70877,7 @@ When a door's title is set.
         -- Log the change
         lia.log.add(client:Name() .. " (" .. client:SteamID() .. ") set door title to: " .. sanitized)
         -- Notify nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 ply:notify(client:Name() .. " set the door title to: " .. sanitized)
             end
@@ -70967,7 +70967,7 @@ When a door's title is set.
         -- Log the change
         lia.log.add(client:Name() .. " (" .. client:SteamID() .. ") set door title to: " .. sanitized)
         -- Notify nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 ply:notify(client:Name() .. " set the door title to: " .. sanitized)
             end
@@ -71057,7 +71057,7 @@ When a door's title is set.
         -- Log the change
         lia.log.add(client:Name() .. " (" .. client:SteamID() .. ") set door title to: " .. sanitized)
         -- Notify nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:GetPos():Distance(door:GetPos()) < 200 then
                 ply:notify(client:Name() .. " set the door title to: " .. sanitized)
             end
@@ -71517,7 +71517,7 @@ When forcing character recognition.
             character:setData("usingFakeName", true)
         end
         -- Notify all nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= validRange then
                 local targetChar = ply:getChar()
                 if targetChar then
@@ -71605,7 +71605,7 @@ When forcing character recognition.
             character:setData("usingFakeName", true)
         end
         -- Notify all nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= validRange then
                 local targetChar = ply:getChar()
                 if targetChar then
@@ -71693,7 +71693,7 @@ When forcing character recognition.
             character:setData("usingFakeName", true)
         end
         -- Notify all nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= validRange then
                 local targetChar = ply:getChar()
                 if targetChar then
@@ -71781,7 +71781,7 @@ When forcing character recognition.
             character:setData("usingFakeName", true)
         end
         -- Notify all nearby players
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply ~= player and ply:GetPos():Distance(player:GetPos()) <= validRange then
                 local targetChar = ply:getChar()
                 if targetChar then
@@ -76770,7 +76770,7 @@ When players lock doors or containers.
         if char then
             lia.log.add(owner:Name() .. " locked entity " .. tostring(entity), FLAG_NORMAL)
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(entity:GetPos()) < 200 then
                     v:notify("You hear a lock click.")
                 end
@@ -76800,7 +76800,7 @@ When players lock doors or containers.
         entity:SetNetVar("lockedTime", os.time())
         entity:SetNetVar("lockDuration", time or 0)
         -- Notify nearby players with sound
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -76861,7 +76861,7 @@ When players lock doors or containers.
         if char then
             lia.log.add(owner:Name() .. " locked entity " .. tostring(entity), FLAG_NORMAL)
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(entity:GetPos()) < 200 then
                     v:notify("You hear a lock click.")
                 end
@@ -76891,7 +76891,7 @@ When players lock doors or containers.
         entity:SetNetVar("lockedTime", os.time())
         entity:SetNetVar("lockDuration", time or 0)
         -- Notify nearby players with sound
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -76952,7 +76952,7 @@ When players lock doors or containers.
         if char then
             lia.log.add(owner:Name() .. " locked entity " .. tostring(entity), FLAG_NORMAL)
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(entity:GetPos()) < 200 then
                     v:notify("You hear a lock click.")
                 end
@@ -76982,7 +76982,7 @@ When players lock doors or containers.
         entity:SetNetVar("lockedTime", os.time())
         entity:SetNetVar("lockDuration", time or 0)
         -- Notify nearby players with sound
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -77043,7 +77043,7 @@ When players lock doors or containers.
         if char then
             lia.log.add(owner:Name() .. " locked entity " .. tostring(entity), FLAG_NORMAL)
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:GetPos():Distance(entity:GetPos()) < 200 then
                     v:notify("You hear a lock click.")
                 end
@@ -77073,7 +77073,7 @@ When players lock doors or containers.
         entity:SetNetVar("lockedTime", os.time())
         entity:SetNetVar("lockDuration", time or 0)
         -- Notify nearby players with sound
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -77176,7 +77176,7 @@ When players unlock doors or containers.
         entity:SetNetVar("lockedTime", nil)
         entity:SetNetVar("lockDuration", nil)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -77279,7 +77279,7 @@ When players unlock doors or containers.
         entity:SetNetVar("lockedTime", nil)
         entity:SetNetVar("lockDuration", nil)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -77382,7 +77382,7 @@ When players unlock doors or containers.
         entity:SetNetVar("lockedTime", nil)
         entity:SetNetVar("lockDuration", nil)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -77485,7 +77485,7 @@ When players unlock doors or containers.
         entity:SetNetVar("lockedTime", nil)
         entity:SetNetVar("lockDuration", nil)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             local dist = v:GetPos():Distance(entity:GetPos())
             if dist < 300 then
                 v:notify("You hear a lock click.")
@@ -79520,7 +79520,7 @@ When characters enter fallover state.
             if state then
                 lia.log.add(client:Name() .. " fell over", FLAG_NORMAL)
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:GetPos():Distance(client:GetPos()) < 300 then
                         v:notify("You see " .. char:getName() .. " fall over.")
                     end
@@ -79554,7 +79554,7 @@ When characters enter fallover state.
                 client:notify("You sustained an injury from the fall!")
             end
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(client:GetPos())
                 if dist < 500 then
                     v:notify("You see " .. char:getName() .. " fall over.")
@@ -79621,7 +79621,7 @@ When characters enter fallover state.
             if state then
                 lia.log.add(client:Name() .. " fell over", FLAG_NORMAL)
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:GetPos():Distance(client:GetPos()) < 300 then
                         v:notify("You see " .. char:getName() .. " fall over.")
                     end
@@ -79655,7 +79655,7 @@ When characters enter fallover state.
                 client:notify("You sustained an injury from the fall!")
             end
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(client:GetPos())
                 if dist < 500 then
                     v:notify("You see " .. char:getName() .. " fall over.")
@@ -79722,7 +79722,7 @@ When characters enter fallover state.
             if state then
                 lia.log.add(client:Name() .. " fell over", FLAG_NORMAL)
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:GetPos():Distance(client:GetPos()) < 300 then
                         v:notify("You see " .. char:getName() .. " fall over.")
                     end
@@ -79756,7 +79756,7 @@ When characters enter fallover state.
                 client:notify("You sustained an injury from the fall!")
             end
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(client:GetPos())
                 if dist < 500 then
                     v:notify("You see " .. char:getName() .. " fall over.")
@@ -79823,7 +79823,7 @@ When characters enter fallover state.
             if state then
                 lia.log.add(client:Name() .. " fell over", FLAG_NORMAL)
                 -- Notify nearby players
-                for _, v in ipairs(player.GetAll()) do
+                for _, v in player.Iterator() do
                     if v:GetPos():Distance(client:GetPos()) < 300 then
                         v:notify("You see " .. char:getName() .. " fall over.")
                     end
@@ -79857,7 +79857,7 @@ When characters enter fallover state.
                 client:notify("You sustained an injury from the fall!")
             end
             -- Notify nearby players
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local dist = v:GetPos():Distance(client:GetPos())
                 if dist < 500 then
                     v:notify("You see " .. char:getName() .. " fall over.")
@@ -82429,7 +82429,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -82510,7 +82510,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -82591,7 +82591,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -82672,7 +82672,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -83154,7 +83154,7 @@ When player ragdolls are created.
             entity:SetSaveValue("persist", true)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(entity:GetPos()) < 500 then
                 v:notify("You see " .. char:getName() .. "'s body.")
             end
@@ -83237,7 +83237,7 @@ When player ragdolls are created.
             entity:SetSaveValue("persist", true)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(entity:GetPos()) < 500 then
                 v:notify("You see " .. char:getName() .. "'s body.")
             end
@@ -83320,7 +83320,7 @@ When player ragdolls are created.
             entity:SetSaveValue("persist", true)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(entity:GetPos()) < 500 then
                 v:notify("You see " .. char:getName() .. "'s body.")
             end
@@ -83403,7 +83403,7 @@ When player ragdolls are created.
             entity:SetSaveValue("persist", true)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(entity:GetPos()) < 500 then
                 v:notify("You see " .. char:getName() .. "'s body.")
             end
@@ -85073,7 +85073,7 @@ When item entities are spawned in the world.
             end
         end)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(itemEntity:GetPos()) < 300 then
                 v:notify("An item has appeared nearby.")
             end
@@ -85155,7 +85155,7 @@ When item entities are spawned in the world.
             end
         end)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(itemEntity:GetPos()) < 300 then
                 v:notify("An item has appeared nearby.")
             end
@@ -85237,7 +85237,7 @@ When item entities are spawned in the world.
             end
         end)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(itemEntity:GetPos()) < 300 then
                 v:notify("An item has appeared nearby.")
             end
@@ -85319,7 +85319,7 @@ When item entities are spawned in the world.
             end
         end)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(itemEntity:GetPos()) < 300 then
                 v:notify("An item has appeared nearby.")
             end
@@ -85743,7 +85743,7 @@ When players pick up money entities.
         -- Play sound
         client:EmitSound("items/smallmedkit1.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(moneyEntity:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " pick up money.")
             end
@@ -85827,7 +85827,7 @@ When players pick up money entities.
         -- Play sound
         client:EmitSound("items/smallmedkit1.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(moneyEntity:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " pick up money.")
             end
@@ -85911,7 +85911,7 @@ When players pick up money entities.
         -- Play sound
         client:EmitSound("items/smallmedkit1.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(moneyEntity:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " pick up money.")
             end
@@ -85995,7 +85995,7 @@ When players pick up money entities.
         -- Play sound
         client:EmitSound("items/smallmedkit1.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(moneyEntity:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " pick up money.")
             end
@@ -86078,7 +86078,7 @@ When players drop weapons.
         -- Play sound
         droppedEntity:EmitSound("weapons/weapon_drop.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(droppedEntity:GetPos()) < 300 then
                 v:notify("You hear a weapon drop.")
             end
@@ -86165,7 +86165,7 @@ When players drop weapons.
         -- Play sound
         droppedEntity:EmitSound("weapons/weapon_drop.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(droppedEntity:GetPos()) < 300 then
                 v:notify("You hear a weapon drop.")
             end
@@ -86252,7 +86252,7 @@ When players drop weapons.
         -- Play sound
         droppedEntity:EmitSound("weapons/weapon_drop.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(droppedEntity:GetPos()) < 300 then
                 v:notify("You hear a weapon drop.")
             end
@@ -86339,7 +86339,7 @@ When players drop weapons.
         -- Play sound
         droppedEntity:EmitSound("weapons/weapon_drop.wav", 60, 100)
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(droppedEntity:GetPos()) < 300 then
                 v:notify("You hear a weapon drop.")
             end
@@ -86424,7 +86424,7 @@ When players start animations/sequences.
             player:SetAnimation(ACT_GMOD_TAUNT_LAUGH)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(player:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " start " .. sequenceName .. ".")
             end
@@ -86505,7 +86505,7 @@ When players start animations/sequences.
             player:SetAnimation(ACT_GMOD_TAUNT_LAUGH)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(player:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " start " .. sequenceName .. ".")
             end
@@ -86586,7 +86586,7 @@ When players start animations/sequences.
             player:SetAnimation(ACT_GMOD_TAUNT_LAUGH)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(player:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " start " .. sequenceName .. ".")
             end
@@ -86667,7 +86667,7 @@ When players start animations/sequences.
             player:SetAnimation(ACT_GMOD_TAUNT_LAUGH)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(player:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " start " .. sequenceName .. ".")
             end
@@ -88018,7 +88018,7 @@ When players start spectating.
             client:SetMoveType(MOVETYPE_OBSERVER)
             client:SetNoDraw(true)
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify(client:Name() .. " entered observer mode")
                 end
@@ -88111,7 +88111,7 @@ When players start spectating.
             client:SetMoveType(MOVETYPE_OBSERVER)
             client:SetNoDraw(true)
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify(client:Name() .. " entered observer mode")
                 end
@@ -88204,7 +88204,7 @@ When players start spectating.
             client:SetMoveType(MOVETYPE_OBSERVER)
             client:SetNoDraw(true)
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify(client:Name() .. " entered observer mode")
                 end
@@ -88297,7 +88297,7 @@ When players start spectating.
             client:SetMoveType(MOVETYPE_OBSERVER)
             client:SetNoDraw(true)
             -- Notify admins
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify(client:Name() .. " entered observer mode")
                 end
@@ -88409,7 +88409,7 @@ When door purchases occur.
             door:SetNetVar("owned", false)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(door:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " " .. action .. " the door.")
             end
@@ -88507,7 +88507,7 @@ When door purchases occur.
             door:SetNetVar("owned", false)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(door:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " " .. action .. " the door.")
             end
@@ -88605,7 +88605,7 @@ When door purchases occur.
             door:SetNetVar("owned", false)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(door:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " " .. action .. " the door.")
             end
@@ -88703,7 +88703,7 @@ When door purchases occur.
             door:SetNetVar("owned", false)
         end
         -- Notify nearby players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetPos():Distance(door:GetPos()) < 200 then
                 v:notify("You see " .. char:getName() .. " " .. action .. " the door.")
             end
@@ -90125,7 +90125,7 @@ When server events are logged.
         end
         -- Notify admins of critical events
         if category == "error" or category == "warning" then
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[LOG] " .. logType .. ": " .. logString)
                 end
@@ -90208,7 +90208,7 @@ When server events are logged.
         end
         -- Notify admins of critical events
         if category == "error" or category == "warning" then
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[LOG] " .. logType .. ": " .. logString)
                 end
@@ -90291,7 +90291,7 @@ When server events are logged.
         end
         -- Notify admins of critical events
         if category == "error" or category == "warning" then
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[LOG] " .. logType .. ": " .. logString)
                 end
@@ -90374,7 +90374,7 @@ When server events are logged.
         end
         -- Notify admins of critical events
         if category == "error" or category == "warning" then
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 if v:IsAdmin() then
                     v:notify("[LOG] " .. logType .. ": " .. logString)
                 end
@@ -90453,7 +90453,7 @@ When support tickets are claimed.
         -- Notify requester
         requester:notify("Your ticket has been claimed by " .. client:Name())
         -- Notify other staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() and v ~= client then
                 v:notify(client:Name() .. " claimed a ticket from " .. requester:Name())
             end
@@ -90535,7 +90535,7 @@ When support tickets are claimed.
         -- Notify requester
         requester:notify("Your ticket has been claimed by " .. client:Name())
         -- Notify other staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() and v ~= client then
                 v:notify(client:Name() .. " claimed a ticket from " .. requester:Name())
             end
@@ -90617,7 +90617,7 @@ When support tickets are claimed.
         -- Notify requester
         requester:notify("Your ticket has been claimed by " .. client:Name())
         -- Notify other staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() and v ~= client then
                 v:notify(client:Name() .. " claimed a ticket from " .. requester:Name())
             end
@@ -90699,7 +90699,7 @@ When support tickets are claimed.
         -- Notify requester
         requester:notify("Your ticket has been claimed by " .. client:Name())
         -- Notify other staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() and v ~= client then
                 v:notify(client:Name() .. " claimed a ticket from " .. requester:Name())
             end
@@ -91112,7 +91112,7 @@ When support tickets are submitted.
             message),
             FLAG_NORMAL)
         -- Notify online staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name())
             end
@@ -91151,7 +91151,7 @@ When support tickets are submitted.
         char:setData("ticketStats", ticketStats)
         -- Notify online staff
         local staffCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name() .. ": " .. message)
                 staffCount = staffCount + 1
@@ -91211,7 +91211,7 @@ When support tickets are submitted.
             message),
             FLAG_NORMAL)
         -- Notify online staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name())
             end
@@ -91250,7 +91250,7 @@ When support tickets are submitted.
         char:setData("ticketStats", ticketStats)
         -- Notify online staff
         local staffCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name() .. ": " .. message)
                 staffCount = staffCount + 1
@@ -91310,7 +91310,7 @@ When support tickets are submitted.
             message),
             FLAG_NORMAL)
         -- Notify online staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name())
             end
@@ -91349,7 +91349,7 @@ When support tickets are submitted.
         char:setData("ticketStats", ticketStats)
         -- Notify online staff
         local staffCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name() .. ": " .. message)
                 staffCount = staffCount + 1
@@ -91409,7 +91409,7 @@ When support tickets are submitted.
             message),
             FLAG_NORMAL)
         -- Notify online staff
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name())
             end
@@ -91448,7 +91448,7 @@ When support tickets are submitted.
         char:setData("ticketStats", ticketStats)
         -- Notify online staff
         local staffCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("New ticket from " .. requester:Name() .. ": " .. message)
                 staffCount = staffCount + 1
@@ -92129,7 +92129,7 @@ When admin usergroup permissions are modified.
             groupName
         })
         -- Notify affected players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:notify("Your usergroup permissions have been updated.")
             end
@@ -92205,7 +92205,7 @@ When admin usergroup permissions are modified.
             groupName
         })
         -- Notify affected players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:notify("Your usergroup permissions have been updated.")
             end
@@ -92281,7 +92281,7 @@ When admin usergroup permissions are modified.
             groupName
         })
         -- Notify affected players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:notify("Your usergroup permissions have been updated.")
             end
@@ -92357,7 +92357,7 @@ When admin usergroup permissions are modified.
             groupName
         })
         -- Notify affected players
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:notify("Your usergroup permissions have been updated.")
             end
@@ -92404,7 +92404,7 @@ When admin usergroups are deleted.
     function MODULE:OnUsergroupRemoved(groupName)
         lia.log.add(string.format("Usergroup removed: %s", groupName), FLAG_NORMAL)
         -- Reassign members to default group
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
             end
@@ -92425,7 +92425,7 @@ When admin usergroups are deleted.
             FLAG_CRITICAL)
         -- Count and reassign members
         local memberCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
                 v:notify("Your usergroup has been removed. You have been moved to the default group.")
@@ -92481,7 +92481,7 @@ When admin usergroups are deleted.
     function MODULE:OnUsergroupRemoved(groupName)
         lia.log.add(string.format("Usergroup removed: %s", groupName), FLAG_NORMAL)
         -- Reassign members to default group
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
             end
@@ -92502,7 +92502,7 @@ When admin usergroups are deleted.
             FLAG_CRITICAL)
         -- Count and reassign members
         local memberCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
                 v:notify("Your usergroup has been removed. You have been moved to the default group.")
@@ -92558,7 +92558,7 @@ When admin usergroups are deleted.
     function MODULE:OnUsergroupRemoved(groupName)
         lia.log.add(string.format("Usergroup removed: %s", groupName), FLAG_NORMAL)
         -- Reassign members to default group
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
             end
@@ -92579,7 +92579,7 @@ When admin usergroups are deleted.
             FLAG_CRITICAL)
         -- Count and reassign members
         local memberCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
                 v:notify("Your usergroup has been removed. You have been moved to the default group.")
@@ -92635,7 +92635,7 @@ When admin usergroups are deleted.
     function MODULE:OnUsergroupRemoved(groupName)
         lia.log.add(string.format("Usergroup removed: %s", groupName), FLAG_NORMAL)
         -- Reassign members to default group
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
             end
@@ -92656,7 +92656,7 @@ When admin usergroups are deleted.
             FLAG_CRITICAL)
         -- Count and reassign members
         local memberCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == groupName then
                 v:SetUserGroup("user")
                 v:notify("Your usergroup has been removed. You have been moved to the default group.")
@@ -92713,7 +92713,7 @@ When admin usergroups are renamed.
     function MODULE:OnUsergroupRenamed(oldName, newName)
         lia.log.add(string.format("Usergroup renamed: %s -> %s", oldName, newName), FLAG_NORMAL)
         -- Update player usergroups
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
             end
@@ -92742,7 +92742,7 @@ When admin usergroups are renamed.
         lia.db.query("UPDATE players SET usergroup = ? WHERE usergroup = ?", {newName, oldName})
         -- Update player usergroups
         local updatedCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
                 v:notify("Your usergroup has been renamed to: " .. newName)
@@ -92795,7 +92795,7 @@ When admin usergroups are renamed.
     function MODULE:OnUsergroupRenamed(oldName, newName)
         lia.log.add(string.format("Usergroup renamed: %s -> %s", oldName, newName), FLAG_NORMAL)
         -- Update player usergroups
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
             end
@@ -92824,7 +92824,7 @@ When admin usergroups are renamed.
         lia.db.query("UPDATE players SET usergroup = ? WHERE usergroup = ?", {newName, oldName})
         -- Update player usergroups
         local updatedCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
                 v:notify("Your usergroup has been renamed to: " .. newName)
@@ -92877,7 +92877,7 @@ When admin usergroups are renamed.
     function MODULE:OnUsergroupRenamed(oldName, newName)
         lia.log.add(string.format("Usergroup renamed: %s -> %s", oldName, newName), FLAG_NORMAL)
         -- Update player usergroups
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
             end
@@ -92906,7 +92906,7 @@ When admin usergroups are renamed.
         lia.db.query("UPDATE players SET usergroup = ? WHERE usergroup = ?", {newName, oldName})
         -- Update player usergroups
         local updatedCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
                 v:notify("Your usergroup has been renamed to: " .. newName)
@@ -92959,7 +92959,7 @@ When admin usergroups are renamed.
     function MODULE:OnUsergroupRenamed(oldName, newName)
         lia.log.add(string.format("Usergroup renamed: %s -> %s", oldName, newName), FLAG_NORMAL)
         -- Update player usergroups
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
             end
@@ -92988,7 +92988,7 @@ When admin usergroups are renamed.
         lia.db.query("UPDATE players SET usergroup = ? WHERE usergroup = ?", {newName, oldName})
         -- Update player usergroups
         local updatedCount = 0
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:GetUserGroup() == oldName then
                 v:SetUserGroup(newName)
                 v:notify("Your usergroup has been renamed to: " .. newName)
@@ -93710,7 +93710,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -93784,7 +93784,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -93858,7 +93858,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -93932,7 +93932,7 @@ When anti-cheat systems detect cheating.
             char:save()
         end
         -- Notify admins
-        for _, v in ipairs(player.GetAll()) do
+        for _, v in player.Iterator() do
             if v:IsAdmin() then
                 v:notify("[ANTI-CHEAT] " .. client:Name() .. " detected as cheater")
             end
@@ -104380,7 +104380,7 @@ When PAC data is loaded from items.
 ```lua
     -- Medium: Load PAC data from equipped items
     function MODULE:SetupPACDataFromItems()
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if IsValid(client) then
                 local char = client:getChar()
                 if char then
@@ -104400,7 +104400,7 @@ When PAC data is loaded from items.
     -- High: Advanced PAC data setup with validation and caching
     function MODULE:SetupPACDataFromItems()
         MODULE.pacDataCache = MODULE.pacDataCache or {}
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if not IsValid(client) then continue end
             local char = client:getChar()
             if not char then continue end
@@ -104479,7 +104479,7 @@ When PAC data is loaded from items.
 ```lua
     -- Medium: Load PAC data from equipped items
     function MODULE:SetupPACDataFromItems()
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if IsValid(client) then
                 local char = client:getChar()
                 if char then
@@ -104499,7 +104499,7 @@ When PAC data is loaded from items.
     -- High: Advanced PAC data setup with validation and caching
     function MODULE:SetupPACDataFromItems()
         MODULE.pacDataCache = MODULE.pacDataCache or {}
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if not IsValid(client) then continue end
             local char = client:getChar()
             if not char then continue end
@@ -104578,7 +104578,7 @@ When PAC data is loaded from items.
 ```lua
     -- Medium: Load PAC data from equipped items
     function MODULE:SetupPACDataFromItems()
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if IsValid(client) then
                 local char = client:getChar()
                 if char then
@@ -104598,7 +104598,7 @@ When PAC data is loaded from items.
     -- High: Advanced PAC data setup with validation and caching
     function MODULE:SetupPACDataFromItems()
         MODULE.pacDataCache = MODULE.pacDataCache or {}
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if not IsValid(client) then continue end
             local char = client:getChar()
             if not char then continue end
@@ -104677,7 +104677,7 @@ When PAC data is loaded from items.
 ```lua
     -- Medium: Load PAC data from equipped items
     function MODULE:SetupPACDataFromItems()
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if IsValid(client) then
                 local char = client:getChar()
                 if char then
@@ -104697,7 +104697,7 @@ When PAC data is loaded from items.
     -- High: Advanced PAC data setup with validation and caching
     function MODULE:SetupPACDataFromItems()
         MODULE.pacDataCache = MODULE.pacDataCache or {}
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if not IsValid(client) then continue end
             local char = client:getChar()
             if not char then continue end
@@ -114487,7 +114487,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end
@@ -114602,7 +114602,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end
@@ -114717,7 +114717,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end
@@ -114832,7 +114832,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end
@@ -114947,7 +114947,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end
@@ -115062,7 +115062,7 @@ Server
         -- Set up data synchronization
         self:SetupDataSync()
         -- Notify administrators
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if client:IsAdmin() then
                 client:ChatPrint("Database connection established")
             end

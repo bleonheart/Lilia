@@ -352,7 +352,7 @@ end
             local receivers = {}
 
             -- Collect admin players
-            for _, player in pairs(player.GetAll()) do
+            for _, player in player.Iterator() do
                 if player:IsAdmin() and (not options.excludeSelf or player ~= speaker) then
                     table.insert(receivers, player)
                 end

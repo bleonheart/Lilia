@@ -385,7 +385,7 @@ end
         if data then
             local customData = data.customData or {}
             for key, value in pairs(customData) do
-                if type(value) == "table" then
+                if istable(value) then
                     print("Complex data for", key, ":", util.TableToJSON(value))
                 else
                     print("Simple data for", key, ":", value)
@@ -1440,11 +1440,11 @@ function lia.item.generateAmmo()
     local entityList = {}
     local scriptedEntities = scripted_ents.GetList()
     for className, _ in pairs(scriptedEntities) do
-        if type(className) == "string" and className then entityList[className] = true end
+        if isstring(className) and className then entityList[className] = true end
     end
 
     for className, _ in pairs(entityList) do
-        if not className or type(className) ~= "string" then continue end
+        if not className or not isstring(className) then continue end
         local isArc9Ammo = className:find("^arc9_ammo_")
         local isArccwAmmo = className:find("^arccw_ammo_")
         if not (isArc9Ammo or isArccwAmmo) then continue end
@@ -1465,33 +1465,33 @@ end
 
 if SERVER then
     --[[
-        Purpose:
-            Sets data for an item instance by its ID on the server
+    Purpose:
+        Sets data for an item instance by its ID on the server
 
-        When Called:
-            When you need to modify item data from server-side code
+    When Called:
+        When you need to modify item data from server-side code
 
-        Parameters:
-            itemID (number)
-                The unique ID of the item instance
-            key (string)
-                The data key to set
-            value (any)
-                The value to set
-            receivers (table, optional)
-                Players to sync to
-            noSave (boolean, optional)
-                Whether to skip database save
-            noCheckEntity (boolean, optional)
-                Whether to skip entity validation
+    Parameters:
+        itemID (number)
+            The unique ID of the item instance
+        key (string)
+            The data key to set
+        value (any)
+            The value to set
+        receivers (table, optional)
+            Players to sync to
+        noSave (boolean, optional)
+            Whether to skip database save
+        noCheckEntity (boolean, optional)
+            Whether to skip entity validation
 
-        Returns:
-            boolean, string - Success status and error message if failed
+    Returns:
+        boolean, string - Success status and error message if failed
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1536,33 +1536,33 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Creates a new item instance in a specific inventory with database persistence
+    Purpose:
+        Creates a new item instance in a specific inventory with database persistence
 
-        When Called:
-            When you need to create a new item instance that will be saved to the database
+    When Called:
+        When you need to create a new item instance that will be saved to the database
 
-        Parameters:
-            index (string/number)
-                Inventory ID or character ID
-            uniqueID (string)
-                Item definition ID
-            itemData (table, optional)
-                Initial item data
-            x (number, optional)
-                X position in inventory
-            y (number, optional)
-                Y position in inventory
-            callback (function, optional)
-                Function to call when item is created
+    Parameters:
+        index (string/number)
+            Inventory ID or character ID
+        uniqueID (string)
+            Item definition ID
+        itemData (table, optional)
+            Initial item data
+        x (number, optional)
+            X position in inventory
+        y (number, optional)
+            Y position in inventory
+        callback (function, optional)
+            Function to call when item is created
 
-        Returns:
-            Promise - Resolves with the created item instance
+    Returns:
+        Promise - Resolves with the created item instance
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1647,23 +1647,23 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Deletes an item instance by its ID from both memory and database
+    Purpose:
+        Deletes an item instance by its ID from both memory and database
 
-        When Called:
-            When you need to permanently remove an item from the game
+    When Called:
+        When you need to permanently remove an item from the game
 
-        Parameters:
-            id (number)
-                The unique ID of the item instance to delete
+    Parameters:
+        id (number)
+            The unique ID of the item instance to delete
 
-        Returns:
-            void
+    Returns:
+        void
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1706,23 +1706,23 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Loads item instances from the database by their IDs
+    Purpose:
+        Loads item instances from the database by their IDs
 
-        When Called:
-            During server startup or when specific items need to be restored from database
+    When Called:
+        During server startup or when specific items need to be restored from database
 
-        Parameters:
-            itemIndex (number/table)
-                Single item ID or table of item IDs to load
+    Parameters:
+        itemIndex (number/table)
+            Single item ID or table of item IDs to load
 
-        Returns:
-            void
+    Returns:
+        void
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1789,31 +1789,31 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Spawns an item entity in the world at a specific position
+    Purpose:
+        Spawns an item entity in the world at a specific position
 
-        When Called:
-            When you need to create an item that exists as a world entity
+    When Called:
+        When you need to create an item that exists as a world entity
 
-        Parameters:
-            uniqueID (string)
-                The item definition ID
-            position (Vector)
-                World position to spawn at
-            callback (function, optional)
-                Function to call when item is spawned
-            angles (Angle, optional)
-                Rotation angles for the entity
-            data (table, optional)
-                Initial item data
+    Parameters:
+        uniqueID (string)
+            The item definition ID
+        position (Vector)
+            World position to spawn at
+        callback (function, optional)
+            Function to call when item is spawned
+        angles (Angle, optional)
+            Rotation angles for the entity
+        data (table, optional)
+            Initial item data
 
-        Returns:
-            Promise - Resolves with the spawned item instance
+    Returns:
+        Promise - Resolves with the spawned item instance
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1880,29 +1880,29 @@ if SERVER then
     end
 
     --[[
-        Purpose:
-            Restores an inventory from the database with specified dimensions
+    Purpose:
+        Restores an inventory from the database with specified dimensions
 
-        When Called:
-            During server startup or when restoring inventories from database
+    When Called:
+        During server startup or when restoring inventories from database
 
-        Parameters:
-            invID (number)
-                The inventory ID to restore
-            w (number)
-                Width of the inventory
-            h (number)
-                Height of the inventory
-            callback (function, optional)
-                Function to call when inventory is restored
+    Parameters:
+        invID (number)
+            The inventory ID to restore
+        w (number)
+            Width of the inventory
+        h (number)
+            Height of the inventory
+        callback (function, optional)
+            Function to call when inventory is restored
 
-        Returns:
-            void
+    Returns:
+        void
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
+    Example Usage:
 
     Low Complexity:
         ```lua
@@ -1967,7 +1967,6 @@ hook.Add("InitializedModules", "liaItems", function()
         end
     end
 
-    -- Apply pending item overrides
     for uniqueID, overrides in pairs(lia.item.pendingOverrides) do
         local item = lia.item.get(uniqueID)
         if item then

@@ -1040,7 +1040,7 @@ end
         -- Simple: Get basic data
         local playerCount = lia.data.get("playerCount", 0)
         -- Returns stored player count or 0 if not found
-    ```
+        ```
 
     Medium Complexity:
         ```lua

@@ -811,9 +811,9 @@ end
         When accessing stored character-specific data
 
     Parameters:
-        key (string, optional)
+        key (string)
             The data key to retrieve
-        default (any, optional)
+        default (any)
             Default value if key doesn't exist
 
     Returns:
@@ -922,7 +922,7 @@ if SERVER then
     Parameters:
         character (number|character)
             Character ID or character object to recognize
-        name (string, optional)
+        name (string)
             Optional fake name to assign (default: nil)
 
     Returns:
@@ -1571,7 +1571,7 @@ if SERVER then
         When persisting character changes to the database
 
     Parameters:
-        callback (function, optional)
+        callback (function)
             Optional callback function to execute after save
 
     Returns:

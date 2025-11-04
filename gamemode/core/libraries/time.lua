@@ -195,7 +195,7 @@ end
             end
 
             -- Send to admin chat
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:IsAdmin() then
                     admin:ChatPrint(logEntry)
                 end
@@ -347,7 +347,7 @@ end
 
             -- Parse hour for both formats
             local hourNum
-            if type(hour) == "string" then
+            if isstring(hour) then
                 hourNum = tonumber(hour:match("%d+"))
                 local isPM = hour:find("pm")
                 if isPM and hourNum ~= 12 then

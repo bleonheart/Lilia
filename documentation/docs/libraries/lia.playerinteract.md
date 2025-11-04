@@ -457,7 +457,7 @@ Server
                 client:getChar():getDisplayedName(),
                 client:GetPos()
             )
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getFaction() == FACTION_POLICE then
                     ply:notify(emergencyMsg)
                 end
@@ -495,7 +495,7 @@ Server
 #### 🔰 Low Complexity
 ```lua
     -- Simple: Sync all interactions to all clients
-    lia.playerinteract.syncToClients()
+    lia.playerinteract.sync()
 
 ```
 
@@ -505,7 +505,7 @@ Server
     hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
         timer.Simple(2, function() -- Wait for client to fully load
             if IsValid(client) then
-                lia.playerinteract.syncToClients(client)
+                lia.playerinteract.sync(client)
             end
         end)
     end)
@@ -550,7 +550,7 @@ Server
 
 ---
 
-### lia.playerinteract.syncToClients
+### lia.playerinteract.sync
 
 #### 📋 Purpose
 Synchronizes interaction and action data from server to clients
@@ -575,7 +575,7 @@ Server
 #### 🔰 Low Complexity
 ```lua
     -- Simple: Sync all interactions to all clients
-    lia.playerinteract.syncToClients()
+    lia.playerinteract.sync()
 
 ```
 
@@ -585,7 +585,7 @@ Server
     hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
         timer.Simple(2, function() -- Wait for client to fully load
             if IsValid(client) then
-                lia.playerinteract.syncToClients(client)
+                lia.playerinteract.sync(client)
             end
         end)
     end)

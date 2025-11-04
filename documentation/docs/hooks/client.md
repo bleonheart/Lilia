@@ -891,7 +891,7 @@ When a PAC3 part is being attached to a player.
         end
         -- Notify nearby players
         if lia.config.get("AnnouncePACAttachments") then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(client:GetPos()) <= 500 and ply ~= client then
                     ply:notify(client:Name() .. " equipped " .. (item.name or id))
                 end
@@ -1020,7 +1020,7 @@ When a PAC3 part is being attached to a player.
         end
         -- Notify nearby players
         if lia.config.get("AnnouncePACAttachments") then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(client:GetPos()) <= 500 and ply ~= client then
                     ply:notify(client:Name() .. " equipped " .. (item.name or id))
                 end
@@ -1149,7 +1149,7 @@ When a PAC3 part is being attached to a player.
         end
         -- Notify nearby players
         if lia.config.get("AnnouncePACAttachments") then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(client:GetPos()) <= 500 and ply ~= client then
                     ply:notify(client:Name() .. " equipped " .. (item.name or id))
                 end
@@ -1278,7 +1278,7 @@ When a PAC3 part is being attached to a player.
         end
         -- Notify nearby players
         if lia.config.get("AnnouncePACAttachments") then
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:GetPos():Distance(client:GetPos()) <= 500 and ply ~= client then
                     ply:notify(client:Name() .. " equipped " .. (item.name or id))
                 end

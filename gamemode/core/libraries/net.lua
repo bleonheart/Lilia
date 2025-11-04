@@ -120,7 +120,7 @@ end
         ```lua
         -- High: Send message to multiple players with complex data
         local admins = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:IsAdmin() then
                 table.insert(admins, ply)
             end
@@ -370,7 +370,7 @@ if SERVER then
                 Size of each chunk in bytes (default: 2048, 512 during reload)
 
         Returns:
-            None
+            nil
 
         Realm:
             Server
@@ -390,7 +390,7 @@ if SERVER then
         ```lua
         -- Medium: Send to specific players with custom chunk size
         local playerData = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             playerData[ply:SteamID()] = {
                 name  = ply:Name(),
                 health = ply:Health(),
@@ -399,7 +399,7 @@ if SERVER then
         end
 
         local admins = {}
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:IsAdmin() then
                 table.insert(admins, ply)
             end
@@ -414,7 +414,7 @@ if SERVER then
         local function sendInventoryData(targets)
             local inventoryData = {}
 
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 local char = ply:GetCharacter()
                 if char then
                     local inv = char:GetInventory()

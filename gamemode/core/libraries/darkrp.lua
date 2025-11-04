@@ -104,8 +104,8 @@ if SERVER then
             Maximum distance to search from the starting position
         searchStep (number)
             Step size for the search radius
-            checkArea (Vector)
-                Additional area to check around each position
+        checkArea (Vector)
+            Additional area to check around each position
 
         Returns:
             Vector - The nearest empty position found, or the original position if none found
@@ -212,7 +212,7 @@ if SERVER then
         ```lua
         -- High: Send notifications to multiple players
         local message = "server_restart_warning"
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             if ply:IsValid() and ply:IsConnected() then
                 lia.darkrp.notify(ply, nil, nil, message)
             end
@@ -397,18 +397,6 @@ end
             The display name of the entity
         data (table)
             Table containing entity configuration data
-            cmd (string, optional)
-                Command name for the entity
-            model (string, optional)
-                Model path for the entity
-            desc (string, optional)
-                Description of the entity
-            category (string, optional)
-                Category for the entity
-            ent (string, optional)
-                Entity class name
-            price (number, optional)
-                Price of the entity
 
     Returns:
         nil

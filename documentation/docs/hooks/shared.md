@@ -2485,7 +2485,7 @@ Whether the character info can be displayed.
         local clientChar = client:getChar()
         if not clientChar then return true end
         -- Find the character being viewed
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 local targetFaction = char:getFaction()
@@ -2512,7 +2512,7 @@ Whether the character info can be displayed.
         -- Find the target character
         local targetPlayer = nil
         local targetChar = nil
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 targetPlayer = ply
@@ -2637,7 +2637,7 @@ Whether the character info can be displayed.
         local clientChar = client:getChar()
         if not clientChar then return true end
         -- Find the character being viewed
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 local targetFaction = char:getFaction()
@@ -2664,7 +2664,7 @@ Whether the character info can be displayed.
         -- Find the target character
         local targetPlayer = nil
         local targetChar = nil
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 targetPlayer = ply
@@ -2789,7 +2789,7 @@ Whether the character info can be displayed.
         local clientChar = client:getChar()
         if not clientChar then return true end
         -- Find the character being viewed
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 local targetFaction = char:getFaction()
@@ -2816,7 +2816,7 @@ Whether the character info can be displayed.
         -- Find the target character
         local targetPlayer = nil
         local targetChar = nil
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 targetPlayer = ply
@@ -2941,7 +2941,7 @@ Whether the character info can be displayed.
         local clientChar = client:getChar()
         if not clientChar then return true end
         -- Find the character being viewed
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 local targetFaction = char:getFaction()
@@ -2968,7 +2968,7 @@ Whether the character info can be displayed.
         -- Find the target character
         local targetPlayer = nil
         local targetChar = nil
-        for _, ply in ipairs(player.GetAll()) do
+        for _, ply in player.Iterator() do
             local char = ply:getChar()
             if char and char:getName() == name then
                 targetPlayer = ply
@@ -4794,7 +4794,7 @@ When server configuration is modified through admin commands or interfaces.
         if not validation.valid then
             lia.log.add("Configuration change validation failed: " .. validation.error, FLAG_ERROR)
             -- Send notification to admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Server Config") then
                     admin:notify("Warning: Invalid configuration change detected for '" .. key .. "'")
                 end
@@ -4919,7 +4919,7 @@ When server configuration is modified through admin commands or interfaces.
         if not validation.valid then
             lia.log.add("Configuration change validation failed: " .. validation.error, FLAG_ERROR)
             -- Send notification to admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Server Config") then
                     admin:notify("Warning: Invalid configuration change detected for '" .. key .. "'")
                 end
@@ -5044,7 +5044,7 @@ When server configuration is modified through admin commands or interfaces.
         if not validation.valid then
             lia.log.add("Configuration change validation failed: " .. validation.error, FLAG_ERROR)
             -- Send notification to admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Server Config") then
                     admin:notify("Warning: Invalid configuration change detected for '" .. key .. "'")
                 end
@@ -5169,7 +5169,7 @@ When server configuration is modified through admin commands or interfaces.
         if not validation.valid then
             lia.log.add("Configuration change validation failed: " .. validation.error, FLAG_ERROR)
             -- Send notification to admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Server Config") then
                     admin:notify("Warning: Invalid configuration change detected for '" .. key .. "'")
                 end
@@ -5294,7 +5294,7 @@ When server configuration is modified through admin commands or interfaces.
         if not validation.valid then
             lia.log.add("Configuration change validation failed: " .. validation.error, FLAG_ERROR)
             -- Send notification to admins
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:hasPrivilege("Server Config") then
                     admin:notify("Warning: Invalid configuration change detected for '" .. key .. "'")
                 end
@@ -43189,7 +43189,7 @@ When admin privileges are removed.
         self:RemovePrivilegePermissions(privilege.name)
         -- Notify players with this privilege
         if SERVER then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege(privilege.name) then
                     client:ChatPrint("Your privilege '" .. privilege.name .. "' has been removed")
                 end
@@ -43262,7 +43262,7 @@ When admin privileges are removed.
         self:RemovePrivilegePermissions(privilege.name)
         -- Notify players with this privilege
         if SERVER then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege(privilege.name) then
                     client:ChatPrint("Your privilege '" .. privilege.name .. "' has been removed")
                 end
@@ -43335,7 +43335,7 @@ When admin privileges are removed.
         self:RemovePrivilegePermissions(privilege.name)
         -- Notify players with this privilege
         if SERVER then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege(privilege.name) then
                     client:ChatPrint("Your privilege '" .. privilege.name .. "' has been removed")
                 end
@@ -43408,7 +43408,7 @@ When admin privileges are removed.
         self:RemovePrivilegePermissions(privilege.name)
         -- Notify players with this privilege
         if SERVER then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if client:hasPrivilege(privilege.name) then
                     client:ChatPrint("Your privilege '" .. privilege.name .. "' has been removed")
                 end

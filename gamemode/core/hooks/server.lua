@@ -513,7 +513,7 @@ function GM:PlayerInitialSpawn(client)
             if v.entity and v.invID == 0 then v:sync(client) end
         end
 
-        timer.Simple(1, function() lia.playerinteract.syncToClients(client) end)
+        timer.Simple(1, function() lia.playerinteract.sync(client) end)
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")
         net.Send(client)

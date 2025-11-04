@@ -1409,6 +1409,36 @@ else
         end
     end)
 
+    concommand.Add("lia_test_panels", function()
+        local panels = vgui.GetWorldPanel():GetChildren()
+        local panelCount = #panels
+        local visiblePanels = 0
+        local panelTypes = {}
+        LocalPlayer():ChatPrint("Total panels on screen: " .. panelCount)
+        for _, panel in ipairs(panels) do
+            if IsValid(panel) then
+                local panelType = panel:GetName() or "Unknown"
+                if panel:IsVisible() then
+                    visiblePanels = visiblePanels + 1
+                    panelTypes[panelType] = (panelTypes[panelType] or 0) + 1
+                end
+            end
+        end
+
+        LocalPlayer():ChatPrint("Visible panels: " .. visiblePanels)
+        if table.Count(panelTypes) > 0 then
+            LocalPlayer():ChatPrint("Panel types:")
+            for panelType, count in pairs(panelTypes) do
+                LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
+            end
+        end
+
+        print("[TestPanels] Total panels: " .. panelCount .. ", Visible: " .. visiblePanels)
+        for panelType, count in pairs(panelTypes) do
+            print("[TestPanels] " .. panelType .. ": " .. count)
+        end
+    end)
+
     concommand.Add("lia_saved_sounds", function()
         local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")
@@ -4926,7 +4956,7 @@ lia.command.add("bot", {
         timer.Simple(0.5, function()
             if not IsValid(client) then return end
             local bots = {}
-            for _, ply in ipairs(player.GetAll()) do
+            for _, ply in player.Iterator() do
                 if ply:IsBot() then table.insert(bots, ply) end
             end
 

@@ -295,6 +295,8 @@ function lia.module.initialize()
     lia.module.loadFromDir(schemaPath .. "/overrides", "module")
     hook.Run("InitializedModules")
     lia.item.loadFromDir(schemaPath .. "/schema/items")
+    lia.loader.includeEntities("lilia/gamemode/entities")
+    lia.loader.includeEntities(engine.ActiveGamemode() .. "/gamemode/entities")
     for id, mod in pairs(lia.module.list) do
         if id ~= "schema" then
             local ok = isfunction(mod.enabled) and mod.enabled() or mod.enabled

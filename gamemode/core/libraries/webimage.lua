@@ -42,7 +42,7 @@ local function buildMaterial(p, flags)
 end
 
 local function validateURL(url)
-    if not url or type(url) ~= "string" then return false, L("urlNotValidString") end
+    if not url or not isstring(url) then return false, L("urlNotValidString") end
     if not url:find("^https?://") then return false, L("urlMustStartWithHttp") end
     local domain = url:match("^https?://([^/]+)")
     if not domain then return false, L("urlNoValidDomain") end
