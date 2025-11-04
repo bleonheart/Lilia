@@ -1212,14 +1212,14 @@ if SERVER then
             item:delete()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:delete():next(function()
             print("Item permanently deleted")
             end)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function safelyDeleteExpiredItems()
                 local expiredItems = lia.db.select("*", "items", "expiry_date < " .. os.time())
@@ -1759,7 +1759,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function ITEM:onSync(recipient)
                 -- Send additional data to specific client
@@ -1772,7 +1772,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function ITEM:onSync(recipient)
                 -- Advanced sync with filtering
@@ -1825,7 +1825,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function ITEM:onRemoved()
                 -- Clean up references
@@ -1833,7 +1833,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function ITEM:onRemoved()
                 -- Comprehensive cleanup
@@ -1888,7 +1888,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function ITEM:onRestored(inventory)
                 -- Validate restored data
@@ -1898,7 +1898,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function ITEM:onRestored(inventory)
                 -- Comprehensive restoration logic
@@ -1959,12 +1959,12 @@ if SERVER then
             item:sync()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:sync(specificPlayer)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function syncItemToGroup(item, players)
                 -- Send different data based on player permissions
@@ -2025,13 +2025,13 @@ if SERVER then
             item:setData("durability", 50)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:setData("owner", player:GetName())
             item:setData("acquired", os.time())
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function applyDamageToItem(item, damage)
                 local currentDurability = item:getData("durability", 100)
@@ -2120,12 +2120,12 @@ if SERVER then
             item:addQuantity(5)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:addQuantity(1, player) -- Notify specific player
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function combineStacks(item1, item2)
                 if item1.uniqueID == item2.uniqueID then
@@ -2178,12 +2178,12 @@ if SERVER then
             item:setQuantity(10)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:setQuantity(0) -- Remove all items from stack
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function splitStack(item, splitAmount)
                 local currentQuantity = item:getQuantity()
@@ -2260,12 +2260,12 @@ if SERVER then
             item:interact("use", player)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             item:interact("drop", player, nil, {position = dropPos})
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function handleComplexInteraction(item, action, player, entity, data)
                 -- Pre-interaction validation

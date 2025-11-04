@@ -1259,10 +1259,10 @@ if SERVER then
 
         for model, data in pairs(storageOnly) do
             table.insert(containers, {
-            model = model,
-            name = data.name,
-            type = data.invType,
-            size = data.invData.w * data.invData.h
+                model = model,
+                name = data.name,
+                type = data.invType,
+                size = data.invData.w * data.invData.h
             })
         end
 

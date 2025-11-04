@@ -823,13 +823,13 @@ if SERVER then
             inventory:addItem(myItem)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local weapon = lia.item.new("weapon_pistol", 1)
             player:getInventory():addItem(weapon)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function addItemsToInventory(inv, itemList)
                 for _, itemData in ipairs(itemList) do
@@ -878,12 +878,12 @@ if SERVER then
             inventory:add(myItem)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             playerInventory:add(lia.item.new("food_apple", 1))
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local items = {weapon = "weapon_pistol", armor = "armor_helmet"}
             for slot, uniqueID in pairs(items) do
@@ -919,14 +919,14 @@ if SERVER then
             inventory:syncItemAdded(item)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local item = lia.item.new("weapon_sniper", 1)
             inventory:addItem(item)
             -- syncItemAdded is called automatically
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function batchAddItems(inv, items)
                 for _, item in ipairs(items) do
@@ -973,7 +973,7 @@ if SERVER then
             deferred:next(function(id) print("Created inventory:", id) end)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local initialData = {
                 char        = player:getCharacter():getID(),
@@ -982,7 +982,7 @@ if SERVER then
             inventory:initializeStorage(initialData)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function createGuildInventory(guildData)
                 local inventory = lia.inventory.new("guild_storage")
@@ -1048,7 +1048,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function SecureInventory:restoreFromStorage()
                 -- Load encryption keys, permissions, etc.
@@ -1056,7 +1056,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function AdvancedInventory:restoreFromStorage()
                 -- Restore complex state from multiple data sources
@@ -1092,13 +1092,13 @@ if SERVER then
             inventory:removeItem(12345)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local itemID = playerInventory:getFirstItemOfType("food_apple"):getID()
             inventory:removeItem(itemID)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function removeItemsByType(inv, itemType, preserve)
                 local items = inv:getItemsOfType(itemType)
@@ -1158,13 +1158,13 @@ if SERVER then
             inventory:remove(12345)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local item = inventory:getFirstItemOfType("weapon_knife")
             if item then inventory:remove(item:getID()) end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function clearInventoryOfType(inv, itemType)
                 local items = inv:getItemsOfType(itemType)
@@ -1202,12 +1202,12 @@ if SERVER then
             inventory:setData("money", 1000)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             inventory:setData("permissions", {"read", "write", "admin"})
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function updateInventoryStats(inv, stats)
                 for statName, statValue in pairs(stats) do
@@ -1268,13 +1268,13 @@ if SERVER then
             if not canAccess then print("Access denied:", reason) end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local canAdd, reason = inventory:canAccess("add", {client = player})
             if canAdd then inventory:addItem(item) end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function checkInventoryPermissions(inv, player, action)
                 local context = {
@@ -1326,7 +1326,7 @@ if SERVER then
             end)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             inventory:addAccessRule(function(inv, action, context)
                 if context.client == inv:getOwner() then
@@ -1335,7 +1335,7 @@ if SERVER then
             end)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function complexAccessRule(inv, action, context)
                 local client = context.client
@@ -1393,7 +1393,7 @@ if SERVER then
             inventory:removeAccessRule(myRule)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local rules = inventory.config.accessRules
             for i, rule in ipairs(rules) do
@@ -1404,7 +1404,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function cleanupAccessRules(inv)
                 local rules = inv.config.accessRules
@@ -1448,7 +1448,7 @@ if SERVER then
             local recipients = inventory:getRecipients()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local players = inventory:getRecipients()
             for _, client in ipairs(players) do
@@ -1456,7 +1456,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function sendCustomNotification(inv, message)
                 local recipients = inv:getRecipients()
@@ -1504,7 +1504,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function PlayerInventory:onInstanced()
                 self:addAccessRule(function(inv, action, context)
@@ -1513,7 +1513,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function SecureInventory:onInstanced()
                 -- Initialize security features
@@ -1562,7 +1562,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function PlayerInventory:onLoaded()
                 -- Restore character-specific settings
@@ -1573,7 +1573,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function AdvancedInventory:onLoaded()
                 -- Validate inventory integrity
@@ -1615,7 +1615,7 @@ if SERVER then
             end)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             playerInventory:loadItems():next(function(items)
                 for _, item in pairs(items) do
@@ -1626,7 +1626,7 @@ if SERVER then
             end)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function loadInventoryWithValidation(inv)
                 return inv:loadItems():next(function(items)
@@ -1707,7 +1707,7 @@ if SERVER then
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             function PlayerInventory:onItemsLoaded(items)
                 for _, item in pairs(items) do
@@ -1718,7 +1718,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             function AdvancedInventory:onItemsLoaded(items)
                 -- Categorize items
@@ -1766,7 +1766,7 @@ if SERVER then
             local inventory = MyInventory:instance({char = playerID})
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local bank = BankInventory:instance({
                 char        = characterID,
@@ -1774,7 +1774,7 @@ if SERVER then
             })
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function createComplexInventory(typeClass, config)
                 local inventory = typeClass:instance({
@@ -1830,13 +1830,13 @@ if SERVER then
             inventory:syncData("money")
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             inventory:setData("level", 5)
             -- syncData is called automatically
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function updateInventoryData(inv, updates)
                 local recipients = inv:getRecipients()
@@ -1882,13 +1882,13 @@ if SERVER then
             inventory:sync()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local recipients = inventory:getRecipients()
             inventory:sync(recipients)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function fullInventorySync(inv, targetClients)
                 -- Send full inventory state
@@ -1955,14 +1955,14 @@ if SERVER then
             inventory:delete()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             if inventory:getItemCount() == 0 then
                 inventory:delete()
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function safelyDeleteInventory(inv)
                 -- Archive inventory data first
@@ -2008,14 +2008,14 @@ if SERVER then
             inventory:destroy()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             if shouldDestroy then
                 inventory:destroy()
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function cleanupPlayerInventory(player)
                 local inventory = player:getInventory()
@@ -2073,12 +2073,12 @@ else
             inventory:show()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             local panel = inventory:show(myCustomParent)
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             local function createCustomInventoryUI(inv)
                 local frame = vgui.Create("DFrame")

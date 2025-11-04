@@ -498,8 +498,10 @@ end
         When user needs to select a color from a visual picker interface
 
     Parameters:
-        func (function) - Callback function called when color is selected
-        color_standart (Color, optional) - Default color to display
+        func (function)
+            Callback function called when color is selected
+        color_standart (Color, optional)
+            Default color to display
 
     Returns:
         nil

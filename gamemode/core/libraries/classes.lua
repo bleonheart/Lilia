@@ -134,7 +134,7 @@ end
         lia.class.loadFromDir("gamemodes/lilia/classes")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local classDir = "gamemodes/lilia/modules/custom_classes/classes"
         if file.Exists(classDir, "LUA") then
@@ -379,7 +379,7 @@ end
         print("Players in class 1: " .. #players)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local function getClassMembers(className)
             local classIndex = lia.class.retrieveClass(className)
@@ -464,7 +464,7 @@ end
         print("Players in class: " .. count)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local function checkClassAvailability(classIndex)
             local class = lia.class.get(classIndex)
@@ -543,7 +543,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local function findClassByName(searchTerm)
             local classIndex = lia.class.retrieveClass(searchTerm)
@@ -614,7 +614,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local function checkClassAccess(client, classIndex)
             local class = lia.class.get(classIndex)
@@ -632,7 +632,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         local function getWhitelistClasses()
             local whitelistClasses = {}
@@ -641,25 +641,25 @@ end
             for i, class in ipairs(lia.class.list) do
                 if lia.class.hasWhitelist(i) then
                     table.insert(whitelistClasses, {
-                    index = i,
-                    class = class,
-                    requiredPermissions = class.requiredPermissions or {}
+                        index = i,
+                        class = class,
+                        requiredPermissions = class.requiredPermissions or {}
                     })
-                    else
-                        table.insert(regularClasses, {
+                else
+                    table.insert(regularClasses, {
                         index = i,
                         class = class
-                        })
-                    end
+                    })
                 end
+            end
 
-                return {
+            return {
                 whitelist = whitelistClasses,
                 regular = regularClasses,
                 totalWhitelist = #whitelistClasses,
                 totalRegular = #regularClasses
-                }
-            end
+            }
+        end
         ```
 ]]
 function lia.class.hasWhitelist(class)
@@ -695,7 +695,7 @@ end
         print("Player can join " .. #joinableClasses .. " classes")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         local function getJoinableClassNames(client)
             local joinableClasses = lia.class.retrieveJoinable(client)
@@ -709,7 +709,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         local function getDetailedJoinableClasses(client)
             local joinableClasses = lia.class.retrieveJoinable(client)
@@ -720,24 +720,24 @@ end
                 local isFull = class.limit > 0 and playerCount >= class.limit
 
                 table.insert(detailedClasses, {
-                class = class,
-                playerCount = playerCount,
-                limit = class.limit,
-                isFull = isFull,
-                availability = isFull and "Full" or "Available",
-                requiresWhitelist = lia.class.hasWhitelist(class.index)
+                    class = class,
+                    playerCount = playerCount,
+                    limit = class.limit,
+                    isFull = isFull,
+                    availability = isFull and "Full" or "Available",
+                    requiresWhitelist = lia.class.hasWhitelist(class.index)
                 })
             end
 
             -- Sort by availability and name
             table.sort(detailedClasses, function(a, b)
-            if a.isFull ~= b.isFull then
-                return not a.isFull -- Available classes first
-            end
-            return a.class.name < b.class.name
-        end)
+                if a.isFull ~= b.isFull then
+                    return not a.isFull -- Available classes first
+                end
+                return a.class.name < b.class.name
+            end)
 
-        return detailedClasses
+            return detailedClasses
         end
         ```
 ]]

@@ -38,7 +38,7 @@ lia.flag.list = lia.flag.list or {}
         lia.flag.add("A", "flagAdmin")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Add flag with callback for weapon management
         lia.flag.add("w", "flagWeapon", function(client, isGiven)
@@ -50,7 +50,7 @@ lia.flag.list = lia.flag.list or {}
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Add flag with complex callback and validation
         lia.flag.add("M", "flagModerator", function(client, isGiven)
@@ -76,30 +76,31 @@ end
 
 if SERVER then
     --[[
-        Purpose:
-            Processes and executes callbacks for all flags assigned to a character when they spawn
+    Purpose:
+        Processes and executes callbacks for all flags assigned to a character when they spawn
 
-        When Called:
-            Automatically called when a character spawns on the server
+    When Called:
+        Automatically called when a character spawns on the server
 
     Parameters:
         client (Player)
             The player whose character is spawning
 
-        Returns:
-            None
+    Returns:
+        None
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
-        Low Complexity:
+    Example Usage:
+
+    Low Complexity:
             ```lua
             -- Simple: Called automatically when player spawns
             -- No direct usage needed - handled by framework
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Manual flag processing for specific cases
             local client = Player(1)
@@ -108,7 +109,7 @@ if SERVER then
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Custom spawn handling with flag validation
             hook.Add("PlayerSpawn", "CustomFlagHandler", function(client)

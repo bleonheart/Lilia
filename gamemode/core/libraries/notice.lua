@@ -109,7 +109,7 @@ if SERVER then
         lia.notices.notifySuccessLocalized(player, "player.welcome", player:Name())
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Send localized notifications with multiple parameters
         local players = player.GetAll()
@@ -166,7 +166,7 @@ else
         -- No direct usage needed - handled by network receiver
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotificationData", function()
@@ -176,7 +176,7 @@ else
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Override default behavior with custom notification handling
         local originalReceiveNotify = lia.notices.receiveNotify
@@ -235,7 +235,7 @@ else
         -- No direct usage needed - handled by network receiver
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Custom network receiver with additional processing
         net.Receive("liaNotifyLocal", function()
@@ -245,7 +245,7 @@ else
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Override default behavior with custom localized notification handling
         local originalReceiveNotifyL = lia.notices.receiveNotifyL
@@ -321,14 +321,14 @@ else
         lia.notices.notify(nil, "Settings saved!", "success")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Display notification with dynamic content
         local playerName = LocalPlayer():Name()
         lia.notices.notify(nil, "Welcome back, " .. playerName .. "!", "info")
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Display notifications based on conditions
         local player = LocalPlayer()
@@ -385,14 +385,14 @@ else
         lia.notices.notifySuccessLocalized(nil, "ui.settings.saved")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Display localized notification with one parameter
         local playerName = LocalPlayer():Name()
         lia.notices.notifyInfoLocalized(nil, "ui.welcome.back", playerName)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Display localized notifications with multiple parameters
         local player = LocalPlayer()
@@ -467,7 +467,7 @@ else
         notification.AddLegacy("Server restarting!", 0)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Convert legacy notifications to new system
         local legacyTypes = {[0] = "info", [1] = "error", [2] = "success"}
@@ -476,7 +476,7 @@ else
         notification.AddLegacy(message, typeId)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Override legacy notification with custom handling
         local originalAddLegacy = notification.AddLegacy

@@ -157,7 +157,8 @@ lia.meta.item.height = 1
         When you need to get an item definition for registration, instantiation, or reference
 
     Parameters:
-        identifier (string) - The unique identifier of the item to retrieve
+        identifier (string)
+            The unique identifier of the item to retrieve
 
     Returns:
         table - The item definition table, or nil if not found
@@ -204,7 +205,8 @@ end
         When you need to find an item instance and know where it's located (inventory or world)
 
     Parameters:
-        itemID (number) - The unique ID of the item instance
+        itemID (number)
+            The unique ID of the item instance
 
     Returns:
         table - Contains 'item' (the item instance) and 'location' (string: "inventory", "world", or "unknown"), or nil, error message
@@ -278,7 +280,8 @@ end
         When you only need the item instance and don't care about its location
 
     Parameters:
-        itemID (number) - The unique ID of the item instance
+        itemID (number)
+            The unique ID of the item instance
 
     Returns:
         table - The item instance, or nil, error message
@@ -341,7 +344,8 @@ end
         When you need to access the custom data stored in an item instance
 
     Parameters:
-        itemID (number) - The unique ID of the item instance
+        itemID (number)
+            The unique ID of the item instance
 
     Returns:
         table - The item's data table, or nil, error message
@@ -410,7 +414,12 @@ end
         During item loading process, typically called by lia.item.loadFromDir
 
     Parameters:
-        path (string) - The file path to the item definition, baseID (string, optional) - Base item to inherit from, isBaseItem (boolean, optional) - Whether this is a base item
+        path (string)
+            The file path to the item definition
+        baseID (string, optional)
+            Base item to inherit from
+        isBaseItem (boolean, optional)
+            Whether this is a base item
 
     Returns:
         void
@@ -460,7 +469,8 @@ end
         When you need to validate that an object is an item before performing operations
 
     Parameters:
-        object (any) - The object to check
+        object (any)
+            The object to check
 
     Returns:
         boolean - True if the object is an item, false otherwise
@@ -517,7 +527,8 @@ end
         When you need to access an inventory instance for item operations
 
     Parameters:
-        invID (number) - The unique ID of the inventory
+        invID (number)
+            The unique ID of the inventory
 
     Returns:
         table - The inventory instance, or nil if not found
@@ -566,7 +577,16 @@ end
         During item loading or when creating custom items programmatically
 
     Parameters:
-        uniqueID (string) - Unique identifier for the item, baseID (string, optional) - Base item to inherit from, isBaseItem (boolean, optional) - Whether this is a base item, path (string, optional) - File path for loading, luaGenerated (boolean, optional) - Whether this is generated from Lua code
+        uniqueID (string)
+            Unique identifier for the item
+        baseID (string, optional)
+            Base item to inherit from
+        isBaseItem (boolean, optional)
+            Whether this is a base item
+        path (string, optional)
+            File path for loading
+        luaGenerated (boolean, optional)
+            Whether this is generated from Lua code
 
     Returns:
         table - The registered item definition
@@ -684,8 +704,10 @@ end
         When you need to modify an existing item's behavior without modifying core files
 
     Parameters:
-        uniqueID (string) - The unique identifier of the item to override
-        overrides (table) - Table containing function/property overrides
+        uniqueID (string)
+            The unique identifier of the item to override
+        overrides (table)
+            Table containing function/property overrides
 
     Returns:
         table - The item definition with overrides applied
@@ -756,7 +778,8 @@ end
         During gamemode initialization to load all items from the items directory
 
     Parameters:
-        directory (string) - The directory path to load items from
+        directory (string)
+            The directory path to load items from
 
     Returns:
         void
@@ -824,7 +847,10 @@ end
         When you need to create a specific instance of an item with a unique ID
 
     Parameters:
-        uniqueID (string) - The unique identifier of the item definition, id (number) - The unique ID for this item instance
+        uniqueID (string)
+            The unique identifier of the item definition
+        id (number)
+            The unique ID for this item instance
 
     Returns:
         table - The new item instance, or error if item definition not found
@@ -892,7 +918,12 @@ end
         During initialization to register custom inventory types
 
     Parameters:
-        invType (string) - The inventory type identifier, w (number) - Width of the inventory, h (number) - Height of the inventory
+        invType (string)
+            The inventory type identifier
+        w (number)
+            Width of the inventory
+        h (number)
+            Height of the inventory
 
     Returns:
         void
@@ -952,7 +983,12 @@ end
         When you need to create a new inventory instance for a player or entity
 
     Parameters:
-        owner (number) - The character ID of the owner, invType (string) - The inventory type, callback (function, optional) - Function to call when inventory is created
+        owner (number)
+            The character ID of the owner
+        invType (string)
+            The inventory type
+        callback (function, optional)
+            Function to call when inventory is created
 
     Returns:
         void
@@ -1013,7 +1049,12 @@ end
         When you need to create a custom inventory with specific dimensions
 
     Parameters:
-        w (number) - Width of the inventory, h (number) - Height of the inventory, id (number) - The ID for the inventory
+        w (number)
+            Width of the inventory
+        h (number)
+            Height of the inventory
+        id (number)
+            The ID for the inventory
 
     Returns:
         table - The created inventory instance
@@ -1136,7 +1177,10 @@ lia.item.holdTypeSizeMapping = {
         Before calling lia.item.generateWeapons to customize weapon properties
 
     Parameters:
-        className (string) - The weapon class name, data (table) - Override data containing name, desc, model, etc.
+        className (string)
+            The weapon class name
+        data (table)
+            Override data containing name, desc, model, etc.
 
     Returns:
         void
@@ -1204,7 +1248,8 @@ end
         Before calling lia.item.generateWeapons to exclude specific weapons
 
     Parameters:
-        className (string) - The weapon class name to blacklist
+        className (string)
+            The weapon class name to blacklist
 
     Returns:
         void
@@ -1427,7 +1472,18 @@ if SERVER then
             When you need to modify item data from server-side code
 
         Parameters:
-            itemID (number) - The unique ID of the item instance, key (string) - The data key to set, value (any) - The value to set, receivers (table, optional) - Players to sync to, noSave (boolean, optional) - Whether to skip database save, noCheckEntity (boolean, optional) - Whether to skip entity validation
+            itemID (number)
+                The unique ID of the item instance
+            key (string)
+                The data key to set
+            value (any)
+                The value to set
+            receivers (table, optional)
+                Players to sync to
+            noSave (boolean, optional)
+                Whether to skip database save
+            noCheckEntity (boolean, optional)
+                Whether to skip entity validation
 
         Returns:
             boolean, string - Success status and error message if failed
@@ -1487,7 +1543,18 @@ if SERVER then
             When you need to create a new item instance that will be saved to the database
 
         Parameters:
-            index (string/number) - Inventory ID or character ID, uniqueID (string) - Item definition ID, itemData (table, optional) - Initial item data, x (number, optional) - X position in inventory, y (number, optional) - Y position in inventory, callback (function, optional) - Function to call when item is created
+            index (string/number)
+                Inventory ID or character ID
+            uniqueID (string)
+                Item definition ID
+            itemData (table, optional)
+                Initial item data
+            x (number, optional)
+                X position in inventory
+            y (number, optional)
+                Y position in inventory
+            callback (function, optional)
+                Function to call when item is created
 
         Returns:
             Promise - Resolves with the created item instance
@@ -1587,7 +1654,8 @@ if SERVER then
             When you need to permanently remove an item from the game
 
         Parameters:
-            id (number) - The unique ID of the item instance to delete
+            id (number)
+                The unique ID of the item instance to delete
 
         Returns:
             void
@@ -1645,7 +1713,8 @@ if SERVER then
             During server startup or when specific items need to be restored from database
 
         Parameters:
-            itemIndex (number/table) - Single item ID or table of item IDs to load
+            itemIndex (number/table)
+                Single item ID or table of item IDs to load
 
         Returns:
             void
@@ -1727,7 +1796,16 @@ if SERVER then
             When you need to create an item that exists as a world entity
 
         Parameters:
-            uniqueID (string) - The item definition ID, position (Vector) - World position to spawn at, callback (function, optional) - Function to call when item is spawned, angles (Angle, optional) - Rotation angles for the entity, data (table, optional) - Initial item data
+            uniqueID (string)
+                The item definition ID
+            position (Vector)
+                World position to spawn at
+            callback (function, optional)
+                Function to call when item is spawned
+            angles (Angle, optional)
+                Rotation angles for the entity
+            data (table, optional)
+                Initial item data
 
         Returns:
             Promise - Resolves with the spawned item instance
@@ -1809,7 +1887,14 @@ if SERVER then
             During server startup or when restoring inventories from database
 
         Parameters:
-            invID (number) - The inventory ID to restore, w (number) - Width of the inventory, h (number) - Height of the inventory, callback (function, optional) - Function to call when inventory is restored
+            invID (number)
+                The inventory ID to restore
+            w (number)
+                Width of the inventory
+            h (number)
+                Height of the inventory
+            callback (function, optional)
+                Function to call when inventory is restored
 
         Returns:
             void

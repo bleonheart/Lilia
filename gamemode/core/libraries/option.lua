@@ -140,7 +140,7 @@ end
         -- Returns: {"Left", "Right", "Center"}
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Use options in UI creation
         local combo = vgui.Create("liaComboBox")
@@ -150,7 +150,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic options with validation
         local options = lia.option.getOptions("teamSelection")

@@ -97,7 +97,8 @@ end
         When a panel no longer needs to listen to inventory changes, during cleanup, or when switching inventories
 
     Parameters:
-        id (optional) - The specific inventory ID to remove hooks for, or nil to remove all hooks
+        id (optional)
+            The specific inventory ID to remove hooks for, or nil to remove all hooks
 
     Returns:
         Nothing

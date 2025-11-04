@@ -9659,7 +9659,7 @@ end
 
             Example Usage:
 
-            Low Complexity:
+    Low Complexity:
             ```lua
             -- Simple: Always show respawn screen
             function MODULE:ShouldRespawnScreenAppear()
@@ -9667,7 +9667,7 @@ end
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Show respawn screen based on player state
             function MODULE:ShouldRespawnScreenAppear()
@@ -9683,7 +9683,7 @@ end
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Advanced respawn screen control with game mode checks
             function MODULE:ShouldRespawnScreenAppear()
@@ -9757,7 +9757,7 @@ end
 
             Example Usage:
 
-            Low Complexity:
+    Low Complexity:
             ```lua
             -- Simple: Always show classes
             function MODULE:ShouldShowClassOnScoreboard(clsData)
@@ -9765,7 +9765,7 @@ end
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Show classes based on visibility setting
             function MODULE:ShouldShowClassOnScoreboard(clsData)
@@ -9776,7 +9776,7 @@ end
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Advanced class display with permission and faction checks
             function MODULE:ShouldShowClassOnScoreboard(clsData)
@@ -9849,7 +9849,7 @@ end
 
             Example Usage:
 
-            Low Complexity:
+    Low Complexity:
             ```lua
             -- Simple: Always show factions
             function MODULE:ShouldShowFactionOnScoreboard(player)
@@ -9857,7 +9857,7 @@ end
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Show factions based on visibility settings
             function MODULE:ShouldShowFactionOnScoreboard(player)
@@ -9875,7 +9875,7 @@ end
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Advanced faction display with permission and relationship checks
             function MODULE:ShouldShowFactionOnScoreboard(player)
@@ -9965,7 +9965,7 @@ end
 
             Example Usage:
 
-            Low Complexity:
+    Low Complexity:
             ```lua
             -- Simple: Always show players
             function MODULE:ShouldShowPlayerOnScoreboard(player)
@@ -9973,7 +9973,7 @@ end
             end
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Show players based on visibility settings
             function MODULE:ShouldShowPlayerOnScoreboard(player)
@@ -9988,7 +9988,7 @@ end
             end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Advanced player visibility with permission and distance checks
             function MODULE:ShouldShowPlayerOnScoreboard(player)
@@ -11455,6 +11455,67 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic voice toggle logging
+        function MODULE:VoiceToggled(enabled)
+            print("Voice toggled:", enabled)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update voice state
+        function MODULE:VoiceToggled(enabled)
+            local client = LocalPlayer()
+            client:SetNetVar("voiceEnabled", enabled)
+
+            if enabled then
+                -- Show voice icon
+                MODULE.ShowVoiceIcon()
+            else
+                -- Hide voice icon
+                MODULE.HideVoiceIcon()
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive voice management
+        function MODULE:VoiceToggled(enabled)
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local char = client:getChar()
+
+            -- Update voice state
+            client:SetNetVar("voiceEnabled", enabled)
+
+            -- Log voice toggle
+            lia.log.add(string.format("Voice %s for %s", enabled and "enabled" or "disabled", client:Name()), FLAG_NORMAL)
+
+            if enabled then
+                -- Handle voice activation
+                MODULE.OnVoiceActivated(client)
+                MODULE.ShowVoiceIcon()
+                MODULE.UpdateVoiceRange(char)
+            else
+                -- Handle voice deactivation
+                MODULE.OnVoiceDeactivated(client)
+                MODULE.HideVoiceIcon()
+            end
+
+            -- Update voice settings
+            char:setData("voiceEnabled", enabled)
+
+            -- Trigger voice events
+            hook.Run("VoiceStateChanged", client, enabled)
+        end
+        ```
 ]]
 function VoiceToggled(enabled)
 end
@@ -11471,6 +11532,57 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Play default cycle sound
+        function MODULE:WeaponCycleSound()
+            surface.PlaySound("weapons/smg1/switch_burst.wav")
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Play sound based on current weapon
+        function MODULE:WeaponCycleSound()
+            local client = LocalPlayer()
+            local weapon = client:GetActiveWeapon()
+
+            if IsValid(weapon) then
+                local soundPath = weapon.CycleSound or "weapons/smg1/switch_burst.wav"
+                surface.PlaySound(soundPath)
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced weapon cycling with custom sounds
+        function MODULE:WeaponCycleSound()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local weapon = client:GetActiveWeapon()
+            local char = client:getChar()
+
+            if IsValid(weapon) then
+                -- Get custom sound based on weapon type
+                local soundPath = MODULE.GetWeaponCycleSound(weapon:GetClass()) or "weapons/smg1/switch_burst.wav"
+
+                -- Apply volume and pitch modifications
+                local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+                local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+
+                -- Play the sound
+                surface.PlaySound(soundPath)
+
+                -- Log weapon cycling
+                MODULE.LogWeaponCycle(client, weapon:GetClass())
+            end
+        end
+        ```
 ]]
 function WeaponCycleSound()
 end
@@ -11487,6 +11599,63 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Play default select sound
+        function MODULE:WeaponSelectSound()
+            surface.PlaySound("weapons/smg1/switch_single.wav")
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Play sound based on current weapon
+        function MODULE:WeaponSelectSound()
+            local client = LocalPlayer()
+            local weapon = client:GetActiveWeapon()
+
+            if IsValid(weapon) then
+                local soundPath = weapon.SelectSound or "weapons/smg1/switch_single.wav"
+                surface.PlaySound(soundPath)
+            end
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced weapon selection with custom sounds and effects
+        function MODULE:WeaponSelectSound()
+            local client = LocalPlayer()
+            if not IsValid(client) then return end
+
+            local weapon = client:GetActiveWeapon()
+            local char = client:getChar()
+
+            if IsValid(weapon) then
+                -- Get custom sound based on weapon type and character
+                local soundPath = MODULE.GetWeaponSelectSound(weapon:GetClass(), char) or "weapons/smg1/switch_single.wav"
+
+                -- Apply sound modifications
+                local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+                local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+
+                -- Play the sound
+                surface.PlaySound(soundPath)
+
+                -- Add visual effects
+                MODULE.AddWeaponSelectEffect(client, weapon)
+
+                -- Update weapon statistics
+                MODULE.UpdateWeaponSelectStats(client, weapon:GetClass())
+
+                -- Log weapon selection
+                MODULE.LogWeaponSelect(client, weapon:GetClass())
+            end
+        end
+        ```
 ]]
 function WeaponSelectSound()
 end

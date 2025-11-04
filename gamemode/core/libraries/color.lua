@@ -38,13 +38,13 @@ if CLIENT then
         lia.color.register("myred", {255, 0, 0})
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Register color with alpha channel
         lia.color.register("semitransparent", {255, 255, 255, 128})
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Register multiple colors from configuration
         local colorConfig = {
@@ -94,7 +94,7 @@ if CLIENT then
         local brightRed = lia.color.adjust(Color(100, 0, 0), 50, 0, 0)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Create color variations
         local baseColor = Color(128, 128, 128)
@@ -102,7 +102,7 @@ if CLIENT then
         local darker = lia.color.adjust(baseColor, -30, -30, -30)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic color adjustment based on conditions
         local function adjustColorForTime(color, timeOfDay)
@@ -147,14 +147,14 @@ if CLIENT then
         local darkBlue = lia.color.darken(Color(0, 0, 255))
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Create shadow effect
         local baseColor = Color(100, 150, 200)
         local shadowColor = lia.color.darken(baseColor, 0.5)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic darkening based on distance
         local function getShadowColor(baseColor, distance)
@@ -194,7 +194,7 @@ if CLIENT then
         print("Current theme:", currentTheme)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Conditional theme-based logic
         if lia.color.getCurrentTheme() == "dark" then
@@ -202,7 +202,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Theme-based UI customization
         local function getThemeSpecificColor(colorName)
@@ -244,7 +244,7 @@ if CLIENT then
         print("Active theme:", themeName)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Theme selection menu
         local function createThemeMenu()
@@ -254,7 +254,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Theme validation and fallback
         local function validateTheme()
@@ -297,7 +297,7 @@ if CLIENT then
         local mainColor = lia.color.getMainColor()
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Use main color for UI elements
         local function createThemedButton(text)
@@ -308,7 +308,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic color scheme generation
         local function generateColorScheme()
@@ -357,13 +357,13 @@ if CLIENT then
         lia.color.applyTheme("dark")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Apply theme with smooth transition
         lia.color.applyTheme("light", true)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Theme switching with validation and fallback
         local function switchTheme(themeName)
@@ -437,7 +437,7 @@ if CLIENT then
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Prevent multiple transitions
         local function safeThemeSwitch(themeName)
@@ -449,7 +449,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Queue theme changes during transitions
         local themeQueue = {}
@@ -498,7 +498,7 @@ if CLIENT then
         lia.color.testThemeTransition("dark")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Preview multiple themes
         local function previewTheme(themeName)
@@ -509,7 +509,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Theme preview system with cycling
         local previewThemes = {"dark", "light", "blue", "red"}
@@ -563,7 +563,7 @@ if CLIENT then
         lia.color.startThemeTransition("dark")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Transition with validation
         local function transitionToTheme(themeName)
@@ -579,7 +579,7 @@ if CLIENT then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Custom transition with progress tracking
         local function customThemeTransition(themeName, callback)
@@ -687,7 +687,7 @@ if CLIENT then
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Validate color data
         local function processColorData(data)
@@ -748,7 +748,7 @@ if CLIENT then
         local bgColor = colors.background
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Apply colors to UI elements
         local function createThemedPanel()
@@ -834,7 +834,7 @@ if CLIENT then
         local blendedColor = lia.color.lerp(5, Color(255, 0, 0), Color(0, 255, 0))
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Smooth color transition
         local function fadeBetweenColors(startColor, endColor, duration)

@@ -45,7 +45,7 @@ if SERVER then
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Check position while ignoring specific entities
         local pos = player:GetPos()
@@ -55,7 +55,7 @@ if SERVER then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Validate spawn position with multiple checks
         local spawnPos = Vector(0, 0, 0)
@@ -123,7 +123,7 @@ if SERVER then
         player:SetPos(emptyPos)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Find spawn position ignoring specific entities
         local startPos = Vector(100, 200, 50)
@@ -134,7 +134,7 @@ if SERVER then
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Advanced spawn system with multiple checks
         local spawnPoints = {Vector(0, 0, 0), Vector(100, 0, 0), Vector(0, 100, 0)}
@@ -178,10 +178,14 @@ if SERVER then
             Called when sending notifications to players in DarkRP-compatible systems
 
         Parameters:
-            client (Player): The player to send the notification to
-            _ (any): Unused parameter (DarkRP compatibility)
-            _ (any): Unused parameter (DarkRP compatibility)
-            message (string): The localized message key to send
+            client (Player)
+                The player to send the notification to
+            _ (any)
+                Unused parameter (DarkRP compatibility)
+            _ (any)
+                Unused parameter (DarkRP compatibility)
+            message (string)
+                The localized message key to send
 
         Returns:
             nil
@@ -197,14 +201,14 @@ if SERVER then
         lia.darkrp.notify(player, nil, nil, "welcome_message")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Send notification with context
         local message = "player_joined"
         lia.darkrp.notify(player, nil, nil, message)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Send notifications to multiple players
         local message = "server_restart_warning"
@@ -241,9 +245,12 @@ else
             Called when displaying text in UI elements that need to fit within width constraints
 
         Parameters:
-            text (string): The text to wrap
-            fontName (string): The font name to use for width calculations
-            maxLineWidth (number): The maximum width in pixels for each line
+            text (string)
+                The text to wrap
+            fontName (string)
+                The font name to use for width calculations
+            maxLineWidth (number)
+                The maximum width in pixels for each line
 
         Returns:
             string - The wrapped text with line breaks inserted
@@ -260,7 +267,7 @@ else
         print(wrappedText)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Wrap text with different fonts
         local text = "This is a sample text that needs to be wrapped properly"
@@ -274,7 +281,7 @@ else
         label:SetFont(font)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Dynamic text wrapping with multiple paragraphs
         local paragraphs = {
@@ -333,7 +340,8 @@ end
         Called when displaying money amounts in UI or chat messages
 
     Parameters:
-        amount (number): The numeric amount to format
+        amount (number)
+            The numeric amount to format
 
     Returns:
         string - The formatted currency string
@@ -385,8 +393,10 @@ end
         Called when registering DarkRP entities for compatibility with existing addons
 
     Parameters:
-        name (string): The display name of the entity
-        data (table): Table containing entity configuration data
+        name (string)
+            The display name of the entity
+        data (table)
+            Table containing entity configuration data
             cmd (string, optional)
                 Command name for the entity
             model (string, optional)

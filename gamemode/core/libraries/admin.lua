@@ -1043,7 +1043,7 @@ end
         lia.administrator.renameGroup("oldModerator", "moderator")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Rename with validation
         local oldGroupName = "tempGroup"
@@ -1053,7 +1053,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch rename with error handling
         local renameOperations = {

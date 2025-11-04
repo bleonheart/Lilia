@@ -1113,14 +1113,14 @@ end
         lia.db.loadTables() -- This automatically calls addDatabaseFields()
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Add fields with logging
         lia.db.addDatabaseFields()
         lia.log.add("Database fields updated for character variables")
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Add fields with validation and error handling
         local function ensureCharacterFields()
@@ -2867,7 +2867,7 @@ end
         end)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Create snapshot with validation
         local function backupTable(tableName)
@@ -2881,7 +2881,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Create snapshot with validation and error handling
         local function createBackupWithValidation(tableName)
@@ -2985,7 +2985,7 @@ end
         end)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Load snapshot with validation
         local function restoreTable(fileName)
@@ -2999,7 +2999,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Load snapshot with validation and error handling
         local function restoreWithValidation(fileName)

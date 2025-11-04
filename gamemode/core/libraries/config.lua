@@ -275,7 +275,7 @@ end
         lia.config.forceSet("WalkSpeed", 150)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Force set without saving for temporary changes
         lia.config.forceSet("DebugMode", true, true)
@@ -283,7 +283,7 @@ end
         lia.config.forceSet("DebugMode", false, true)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Bulk force set with conditional saving
         local function applyModuleConfigs(moduleName, configs, saveAfter)
@@ -583,7 +583,7 @@ if SERVER then
             print("Changed configurations:", table.Count(changed))
             ```
 
-        Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Send only changed configurations to specific client
             local function sendConfigToClient(client)
@@ -596,7 +596,7 @@ if SERVER then
             end
             ```
 
-        High Complexity:
+    High Complexity:
             ```lua
             -- High: Export changed configurations with filtering and validation
             local function exportChangedConfigs(filterFunc)
@@ -651,7 +651,7 @@ if SERVER then
             lia.config.send()
             ```
 
-        Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Send configurations to specific client on connect
             hook.Add("PlayerInitialSpawn", "SendConfigs", function(client)
@@ -663,7 +663,7 @@ if SERVER then
             end)
             ```
 
-        High Complexity:
+    High Complexity:
             ```lua
             -- High: Send configurations with priority and filtering
             local function sendConfigsWithPriority(priority, filterFunc)
@@ -765,7 +765,7 @@ if SERVER then
             lia.config.save()
             ```
 
-        Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Save configurations with error handling
             local function saveConfigsSafely()
@@ -777,7 +777,7 @@ if SERVER then
             end
             ```
 
-        High Complexity:
+    High Complexity:
             ```lua
             -- High: Save configurations with backup and validation
             local function saveConfigsWithBackup()
@@ -839,7 +839,7 @@ if SERVER then
             lia.config.reset()
             ```
 
-        Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Reset configurations with confirmation
             local function resetConfigsWithConfirmation()
@@ -849,7 +849,7 @@ if SERVER then
             end
             ```
 
-        High Complexity:
+    High Complexity:
             ```lua
             -- High: Reset configurations with selective restoration and logging
             local function resetConfigsSelectively(keepConfigs)

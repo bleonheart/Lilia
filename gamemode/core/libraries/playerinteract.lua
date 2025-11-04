@@ -39,7 +39,7 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     if lia.playerinteract.isWithinRange(client, targetEntity) then
         -- Player is within 250 units
     end
-    ```
+        ```
 
     Medium Complexity:
     ```lua
@@ -48,7 +48,7 @@ lia.playerinteract.categories = lia.playerinteract.categories or {}
     if lia.playerinteract.isWithinRange(client, targetEntity, customRange) then
         -- Player is within 100 units for close-range interaction
     end
-    ```
+        ```
 
     High Complexity:
     ```lua
@@ -93,7 +93,7 @@ end
     for name, interaction in pairs(interactions) do
         print("Available interaction:", name)
     end
-    ```
+        ```
 
     Medium Complexity:
     ```lua
@@ -106,7 +106,7 @@ end
             -- Player has interactions available
         end
     end
-    ```
+        ```
 
     High Complexity:
     ```lua
@@ -163,7 +163,7 @@ end
     for name, action in pairs(actions) do
         print("Available action:", name)
     end
-    ```
+        ```
 
     Medium Complexity:
     ```lua
@@ -176,7 +176,7 @@ end
             -- Player has actions available
         end
     end
-    ```
+        ```
 
     High Complexity:
     ```lua
@@ -228,7 +228,7 @@ end
     for _, option in pairs(optionsList) do
         print("Option:", option.name)
     end
-    ```
+        ```
 
     Medium Complexity:
     ```lua
@@ -239,7 +239,7 @@ end
     if count > 0 then
         -- Options are ready for display
     end
-    ```
+        ```
 
     High Complexity:
     ```lua
@@ -315,9 +315,9 @@ if SERVER then
             -- Give money logic here
         end
     })
-    ```
+        ```
 
-        Medium Complexity:
+    Medium Complexity:
     ```lua
     -- Medium: Add timed interaction with progress indicators
     lia.playerinteract.addInteraction("healPlayer", {
@@ -334,9 +334,9 @@ if SERVER then
             client:notify("Player healed successfully!")
         end
     })
-    ```
+        ```
 
-        High Complexity:
+    High Complexity:
     ```lua
     -- High: Complex interaction with validation and server-side processing
     lia.playerinteract.addInteraction("arrestPlayer", {
@@ -448,9 +448,9 @@ if SERVER then
             client:notifyInfoLocalized("voiceModeSet", L("whispering"))
         end
     })
-    ```
+        ```
 
-        Medium Complexity:
+    Medium Complexity:
     ```lua
     -- Medium: Add timed personal action with progress indicator
     lia.playerinteract.addAction("meditate", {
@@ -472,9 +472,9 @@ if SERVER then
             end)
         end
     })
-    ```
+        ```
 
-        High Complexity:
+    High Complexity:
     ```lua
     -- High: Complex personal action with multiple conditions and effects
     lia.playerinteract.addAction("emergencyCall", {
@@ -566,7 +566,7 @@ if SERVER then
     ```lua
     -- Simple: Sync all interactions to all clients
     lia.playerinteract.syncToClients()
-    ```
+        ```
 
     Medium Complexity:
     ```lua
@@ -578,9 +578,9 @@ if SERVER then
             end
         end)
     end)
-    ```
+        ```
 
-        High Complexity:
+    High Complexity:
     ```lua
     -- High: Conditional sync with validation and error handling
     function syncInteractionsToClient(client)
@@ -764,16 +764,16 @@ else
     -- Simple: Open basic interaction menu
     local interactions = lia.playerinteract.getInteractions()
     lia.playerinteract.openMenu(interactions, true, "Interactions", KEY_TAB, "liaRequestInteractOptions")
-    ```
+        ```
 
     Medium Complexity:
     ```lua
     -- Medium: Open action menu with custom title and key
     local actions = lia.playerinteract.getActions()
     lia.playerinteract.openMenu(actions, false, "Personal Actions", KEY_G, "liaRequestInteractOptions")
-    ```
+        ```
 
-        High Complexity:
+    High Complexity:
     ```lua
     -- High: Custom menu with pre-filtered options and validation
     local client = LocalPlayer()

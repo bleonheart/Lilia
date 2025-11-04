@@ -13,23 +13,25 @@ if SERVER then
     lia.workshop.known = lia.workshop.known or {}
     lia.workshop.cache = lia.workshop.cache or {}
     --[[
-        Purpose:
-            Adds a workshop addon ID to the server's required workshop content list
+    Purpose:
+        Adds a workshop addon ID to the server's required workshop content list
 
-        When Called:
-            Called when modules or addons need specific workshop content
+    When Called:
+        Called when modules or addons need specific workshop content
 
-        Parameters:
-            id (string/number) - The Steam Workshop ID of the addon to add
+    Parameters:
+        id (string/number)
+            The Steam Workshop ID of the addon to add
 
-        Returns:
-            None
+    Returns:
+        None
 
-        Realm:
-            Server
+    Realm:
+        Server
 
-        Example Usage:
-        Low Complexity:
+    Example Usage:
+
+    Low Complexity:
                 ```lua
                 -- Simple: Add a single workshop addon
                 lia.workshop.addWorkshop("1234567890")
@@ -93,7 +95,7 @@ if SERVER then
                 local workshopIds = lia.workshop.gather()
                 ```
 
-        Medium Complexity:
+    Medium Complexity:
                 ```lua
                 -- Medium: Gather and validate workshop IDs
                 local workshopIds = lia.workshop.gather()
@@ -101,7 +103,7 @@ if SERVER then
                 print("Found " .. count .. " workshop addons")
                 ```
 
-        High Complexity:
+    High Complexity:
                 ```lua
                 -- High: Gather workshop IDs and send to specific players
                 local workshopIds = lia.workshop.gather()
@@ -148,7 +150,8 @@ if SERVER then
             Called when a player requests workshop content or during initial spawn
 
         Parameters:
-            ply (Player) - The player to send workshop IDs to
+            ply (Player)
+                The player to send workshop IDs to
 
         Returns:
             None
@@ -163,7 +166,7 @@ if SERVER then
                 lia.workshop.send(player.GetByID(1))
                 ```
 
-        Medium Complexity:
+    Medium Complexity:
                 ```lua
                 -- Medium: Send workshop IDs to admin players only
                 for _, ply in pairs(player.GetAll()) do
@@ -173,7 +176,7 @@ if SERVER then
                 end
                 ```
 
-        High Complexity:
+    High Complexity:
                 ```lua
                 -- High: Send workshop IDs with validation and logging
                 local function sendToPlayer(ply)
@@ -265,7 +268,7 @@ else
                 end
                 ```
 
-        Medium Complexity:
+    Medium Complexity:
                 ```lua
                 -- Medium: Check and show notification
                 if lia.workshop.hasContentToDownload() then
@@ -273,7 +276,7 @@ else
                 end
                 ```
 
-        High Complexity:
+    High Complexity:
                 ```lua
                 -- High: Check downloads and create custom UI
                 local function checkDownloads()
@@ -445,7 +448,7 @@ else
                 lia.workshop.mountContent()
                 ```
 
-        Medium Complexity:
+    Medium Complexity:
                 ```lua
                 -- Medium: Mount content with custom callback
                 lia.workshop.mountContent()
@@ -457,7 +460,7 @@ else
                 end)
                 ```
 
-        High Complexity:
+    High Complexity:
                 ```lua
                 -- High: Mount content with progress tracking and custom UI
                 local function mountWithProgress()

@@ -23325,6 +23325,99 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorFactionUpdated(vendor, factionID, allowed)
+            -- Log the faction restriction update
+            lia.log.add(string.format("Vendor faction updated: %s %s", factionID, allowed and "allowed" or "denied"), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update vendor data
+        function MODULE:VendorFactionUpdated(vendor, factionID, allowed)
+            if not IsValid(vendor) or not factionID then return end
+
+            -- Update vendor's faction restrictions
+            local restrictions = vendor:getData("factionRestrictions", {})
+            restrictions[factionID] = allowed
+            vendor:setData("factionRestrictions", restrictions)
+
+            -- Log the update
+            lia.log.add(string.format("Vendor %s faction restriction updated: %s -> %s",
+                vendor:getNetVar("name", "Unknown"), factionID, allowed and "allowed" or "denied"), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive faction restriction management
+        function MODULE:VendorFactionUpdated(vendor, factionID, allowed)
+            if not IsValid(vendor) or not factionID then return end
+
+            local currentTime = os.time()
+
+            -- Get faction information
+            local factionData = lia.faction.get(factionID)
+            if not factionData then
+                lia.log.add(string.format("Attempted to update restrictions for invalid faction: %s", factionID), FLAG_WARNING)
+                return
+            end
+
+            -- Update vendor's faction restrictions
+            local restrictions = vendor:getData("factionRestrictions", {})
+            local oldAllowed = restrictions[factionID]
+            restrictions[factionID] = allowed
+            vendor:setData("factionRestrictions", restrictions)
+
+            -- Update restriction history
+            local history = vendor:getData("factionRestrictionHistory", {})
+            table.insert(history, {
+                factionID = factionID,
+                oldAllowed = oldAllowed,
+                newAllowed = allowed,
+                timestamp = currentTime,
+                admin = "system"
+            })
+            vendor:setData("factionRestrictionHistory", history)
+
+            -- Notify players from affected faction
+            MODULE.NotifyFactionMembers(vendor, factionID, allowed)
+
+            -- Update vendor statistics
+            local stats = vendor:getData("restrictionStats", {})
+            stats.totalFactionUpdates = (stats.totalFactionUpdates or 0) + 1
+            stats.lastFactionUpdate = currentTime
+            vendor:setData("restrictionStats", stats)
+
+            -- Log detailed update
+            lia.log.add(string.format("Vendor faction restriction updated - Vendor: %s, Faction: %s (%s), Changed: %s -> %s, Time: %s",
+                vendor:getNetVar("name", "Unknown"),
+                factionData.name, factionID,
+                oldAllowed and "allowed" or "denied",
+                allowed and "allowed" or "denied",
+                os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            -- Handle faction-specific logic
+            if allowed and MODULE.IsHostileFaction(factionID) then
+                MODULE.LogHostileFactionAccess(vendor, factionID, currentTime)
+            end
+
+            -- Update client-side displays
+            MODULE.BroadcastVendorUpdate(vendor, "faction_restriction")
+
+            -- Check for conflicts with other restrictions
+            MODULE.CheckFactionRestrictionConflicts(vendor, factionID, allowed)
+
+            -- Trigger synchronization
+            MODULE.SyncVendorRestrictions(vendor)
+        end
+        ```
 ]]
 function VendorFactionUpdated(vendor, factionID, allowed)
 end
@@ -23346,6 +23439,108 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorItemMaxStockUpdated(vendor, itemType, value)
+            -- Log the stock update
+            lia.log.add(string.format("Vendor item max stock updated: %s -> %d", itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update vendor inventory
+        function MODULE:VendorItemMaxStockUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            -- Update vendor's item stock limits
+            local stockLimits = vendor:getData("itemStockLimits", {})
+            stockLimits[itemType] = value
+            vendor:setData("itemStockLimits", stockLimits)
+
+            -- Log the update
+            lia.log.add(string.format("Vendor %s item stock limit updated: %s -> %d",
+                vendor:getNetVar("name", "Unknown"), itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive stock management
+        function MODULE:VendorItemMaxStockUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            local currentTime = os.time()
+
+            -- Validate the value
+            if value < 0 then
+                lia.log.add(string.format("Invalid stock limit for %s: %d", itemType, value), FLAG_WARNING)
+                return
+            end
+
+            -- Get item information
+            local itemData = lia.item.get(itemType)
+            if not itemData then
+                lia.log.add(string.format("Attempted to update stock for invalid item: %s", itemType), FLAG_WARNING)
+                return
+            end
+
+            -- Update vendor's item stock limits
+            local stockLimits = vendor:getData("itemStockLimits", {})
+            local oldValue = stockLimits[itemType] or 0
+            stockLimits[itemType] = value
+            vendor:setData("itemStockLimits", stockLimits)
+
+            -- Update stock history
+            local history = vendor:getData("stockLimitHistory", {})
+            table.insert(history, {
+                itemType = itemType,
+                oldValue = oldValue,
+                newValue = value,
+                timestamp = currentTime,
+                admin = "system"
+            })
+            vendor:setData("stockLimitHistory", history)
+
+            -- Check current stock against new limit
+            local currentStock = MODULE.GetVendorItemStock(vendor, itemType)
+            if currentStock > value then
+                -- Reduce current stock to match new limit
+                MODULE.AdjustVendorStock(vendor, itemType, value)
+                lia.log.add(string.format("Reduced %s stock from %d to %d to match new limit", itemType, currentStock, value), FLAG_WARNING)
+            end
+
+            -- Update vendor statistics
+            local stats = vendor:getData("stockStats", {})
+            stats.totalStockUpdates = (stats.totalStockUpdates or 0) + 1
+            stats.lastStockUpdate = currentTime
+            vendor:setData("stockStats", stats)
+
+            -- Log detailed update
+            lia.log.add(string.format("Vendor item stock limit updated - Vendor: %s, Item: %s (%s), Changed: %d -> %d, Time: %s",
+                vendor:getNetVar("name", "Unknown"),
+                itemData.name, itemType,
+                oldValue, value,
+                os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            -- Handle economic impacts
+            if value == 0 then
+                MODULE.HandleItemOutOfStock(vendor, itemType)
+            elseif oldValue == 0 and value > 0 then
+                MODULE.HandleItemRestocked(vendor, itemType)
+            end
+
+            -- Update client-side displays
+            MODULE.BroadcastVendorUpdate(vendor, "stock_limit")
+
+            -- Trigger synchronization
+            MODULE.SyncVendorStockLimits(vendor)
+        end
+        ```
 ]]
 function VendorItemMaxStockUpdated(vendor, itemType, value)
 end
@@ -23367,6 +23562,106 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorItemModeUpdated(vendor, itemType, value)
+            -- Log the mode update
+            lia.log.add(string.format("Vendor item mode updated: %s -> %d", itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update vendor trading modes
+        function MODULE:VendorItemModeUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            -- Update vendor's item trading modes
+            local tradingModes = vendor:getData("itemTradingModes", {})
+            tradingModes[itemType] = value
+            vendor:setData("itemTradingModes", tradingModes)
+
+            -- Log the update
+            lia.log.add(string.format("Vendor %s item trading mode updated: %s -> %d",
+                vendor:getNetVar("name", "Unknown"), itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive trading mode management
+        function MODULE:VendorItemModeUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            local currentTime = os.time()
+
+            -- Validate the mode value
+            local validModes = MODULE.GetValidTradingModes()
+            if not table.HasValue(validModes, value) then
+                lia.log.add(string.format("Invalid trading mode for %s: %d", itemType, value), FLAG_WARNING)
+                return
+            end
+
+            -- Get item information
+            local itemData = lia.item.get(itemType)
+            if not itemData then
+                lia.log.add(string.format("Attempted to update mode for invalid item: %s", itemType), FLAG_WARNING)
+                return
+            end
+
+            -- Update vendor's item trading modes
+            local tradingModes = vendor:getData("itemTradingModes", {})
+            local oldValue = tradingModes[itemType] or 0
+            tradingModes[itemType] = value
+            vendor:setData("itemTradingModes", tradingModes)
+
+            -- Update mode history
+            local history = vendor:getData("modeChangeHistory", {})
+            table.insert(history, {
+                itemType = itemType,
+                oldMode = oldValue,
+                newMode = value,
+                timestamp = currentTime,
+                admin = "system"
+            })
+            vendor:setData("modeChangeHistory", history)
+
+            -- Handle mode-specific logic
+            if value == MODULE.TRADING_MODE_BUY_ONLY then
+                MODULE.SetupBuyOnlyMode(vendor, itemType)
+            elseif value == MODULE.TRADING_MODE_SELL_ONLY then
+                MODULE.SetupSellOnlyMode(vendor, itemType)
+            elseif value == MODULE.TRADING_MODE_BARTER then
+                MODULE.SetupBarterMode(vendor, itemType)
+            end
+
+            -- Update vendor statistics
+            local stats = vendor:getData("tradingStats", {})
+            stats.totalModeUpdates = (stats.totalModeUpdates or 0) + 1
+            stats.lastModeUpdate = currentTime
+            vendor:setData("tradingStats", stats)
+
+            -- Log detailed update
+            lia.log.add(string.format("Vendor item trading mode updated - Vendor: %s, Item: %s (%s), Mode: %d -> %d, Time: %s",
+                vendor:getNetVar("name", "Unknown"),
+                itemData.name, itemType,
+                oldValue, value,
+                os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            -- Notify affected players
+            MODULE.NotifyTradingModeChange(vendor, itemType, value)
+
+            -- Update client-side displays
+            MODULE.BroadcastVendorUpdate(vendor, "trading_mode")
+
+            -- Trigger synchronization
+            MODULE.SyncVendorTradingModes(vendor)
+        end
+        ```
 ]]
 function VendorItemModeUpdated(vendor, itemType, value)
 end
@@ -23388,6 +23683,115 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorItemPriceUpdated(vendor, itemType, value)
+            -- Log the price update
+            lia.log.add(string.format("Vendor item price updated: %s -> %d", itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update vendor prices
+        function MODULE:VendorItemPriceUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            -- Update vendor's item prices
+            local prices = vendor:getData("itemPrices", {})
+            prices[itemType] = value
+            vendor:setData("itemPrices", prices)
+
+            -- Log the update
+            lia.log.add(string.format("Vendor %s item price updated: %s -> %d",
+                vendor:getNetVar("name", "Unknown"), itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive price management with economic impact
+        function MODULE:VendorItemPriceUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            local currentTime = os.time()
+
+            -- Validate the price value
+            if value < 0 then
+                lia.log.add(string.format("Invalid price for %s: %d", itemType, value), FLAG_WARNING)
+                return
+            end
+
+            -- Get item information
+            local itemData = lia.item.get(itemType)
+            if not itemData then
+                lia.log.add(string.format("Attempted to update price for invalid item: %s", itemType), FLAG_WARNING)
+                return
+            end
+
+            -- Update vendor's item prices
+            local prices = vendor:getData("itemPrices", {})
+            local oldPrice = prices[itemType] or itemData.price or 0
+            prices[itemType] = value
+            vendor:setData("itemPrices", prices)
+
+            -- Update price history
+            local history = vendor:getData("priceChangeHistory", {})
+            table.insert(history, {
+                itemType = itemType,
+                oldPrice = oldPrice,
+                newPrice = value,
+                timestamp = currentTime,
+                admin = "system"
+            })
+            vendor:setData("priceChangeHistory", history)
+
+            -- Calculate price change percentage
+            local priceChange = 0
+            if oldPrice > 0 then
+                priceChange = ((value - oldPrice) / oldPrice) * 100
+            end
+
+            -- Handle economic impacts
+            if priceChange > 50 then
+                MODULE.HandlePriceInflation(vendor, itemType, priceChange)
+            elseif priceChange < -50 then
+                MODULE.HandlePriceDeflation(vendor, itemType, priceChange)
+            end
+
+            -- Update vendor statistics
+            local stats = vendor:getData("priceStats", {})
+            stats.totalPriceUpdates = (stats.totalPriceUpdates or 0) + 1
+            stats.lastPriceUpdate = currentTime
+            stats.averagePriceChange = ((stats.averagePriceChange or 0) + priceChange) / 2
+            vendor:setData("priceStats", stats)
+
+            -- Log detailed update
+            lia.log.add(string.format("Vendor item price updated - Vendor: %s, Item: %s (%s), Price: %d -> %d (%.1f%%), Time: %s",
+                vendor:getNetVar("name", "Unknown"),
+                itemData.name, itemType,
+                oldPrice, value, priceChange,
+                os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            -- Notify players of significant price changes
+            if math.abs(priceChange) > 25 then
+                MODULE.NotifyPriceChange(vendor, itemType, oldPrice, value, priceChange)
+            end
+
+            -- Update market analytics
+            MODULE.UpdateMarketAnalytics(vendor, itemType, value, oldPrice)
+
+            -- Update client-side displays
+            MODULE.BroadcastVendorUpdate(vendor, "price")
+
+            -- Trigger synchronization
+            MODULE.SyncVendorPrices(vendor)
+        end
+        ```
 ]]
 function VendorItemPriceUpdated(vendor, itemType, value)
 end
@@ -23409,6 +23813,70 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorItemStockUpdated(vendor, itemType, value)
+            lia.log.add(string.format("Vendor item stock updated: %s -> %d", itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update vendor stock
+        function MODULE:VendorItemStockUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            local stock = vendor:getData("itemStock", {})
+            stock[itemType] = value
+            vendor:setData("itemStock", stock)
+
+            lia.log.add(string.format("Vendor %s stock updated: %s -> %d",
+                vendor:getNetVar("name", "Unknown"), itemType, value), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced stock management
+        function MODULE:VendorItemStockUpdated(vendor, itemType, value)
+            if not IsValid(vendor) or not itemType then return end
+
+            local currentTime = os.time()
+            local itemData = lia.item.get(itemType)
+            if not itemData then return end
+
+            local stock = vendor:getData("itemStock", {})
+            local oldStock = stock[itemType] or 0
+            stock[itemType] = value
+            vendor:setData("itemStock", stock)
+
+            -- Update stock history
+            local history = vendor:getData("stockHistory", {})
+            table.insert(history, {
+                itemType = itemType,
+                oldStock = oldStock,
+                newStock = value,
+                timestamp = currentTime
+            })
+            vendor:setData("stockHistory", history)
+
+            -- Handle stock events
+            if value == 0 and oldStock > 0 then
+                MODULE.HandleOutOfStock(vendor, itemType)
+            elseif value > 0 and oldStock == 0 then
+                MODULE.HandleRestocked(vendor, itemType)
+            end
+
+            lia.log.add(string.format("Vendor stock updated - %s: %s (%s) %d -> %d",
+                vendor:getNetVar("name", "Unknown"), itemData.name, itemType, oldStock, value), FLAG_NORMAL)
+
+            MODULE.SyncVendorStock(vendor)
+        end
+        ```
 ]]
 function VendorItemStockUpdated(vendor, itemType, value)
 end
@@ -23426,6 +23894,65 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic logging
+        function MODULE:VendorOpened(vendor)
+            lia.log.add("Vendor opened", FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Track vendor access
+        function MODULE:VendorOpened(vendor)
+            if not IsValid(vendor) then return end
+
+            vendor:setData("lastOpened", os.time())
+            vendor:setData("openCount", vendor:getData("openCount", 0) + 1)
+
+            lia.log.add(string.format("Vendor %s opened", vendor:getNetVar("name", "Unknown")), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive vendor opening tracking
+        function MODULE:VendorOpened(vendor)
+            if not IsValid(vendor) then return end
+
+            local currentTime = os.time()
+            local vendorName = vendor:getNetVar("name", "Unknown Vendor")
+
+            -- Update vendor statistics
+            vendor:setData("lastOpened", currentTime)
+            vendor:setData("totalOpens", vendor:getData("totalOpens", 0) + 1)
+
+            -- Track opening history
+            local openHistory = vendor:getData("openHistory", {})
+            table.insert(openHistory, {
+                timestamp = currentTime,
+                playerCount = player.GetCount()
+            })
+            vendor:setData("openHistory", openHistory)
+
+            -- Log detailed opening
+            lia.log.add(string.format("Vendor opened - Name: %s, Total Opens: %d, Time: %s",
+                vendorName, vendor:getData("totalOpens"), os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            -- Update global vendor statistics
+            MODULE.UpdateGlobalVendorStats("opened")
+
+            -- Handle vendor maintenance
+            MODULE.CheckVendorMaintenance(vendor)
+
+            -- Trigger opening events
+            hook.Run("VendorOpenedDetailed", vendor, currentTime)
+        end
+        ```
 ]]
 function VendorOpened(vendor)
 end
@@ -23443,6 +23970,58 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic sync logging
+        function MODULE:VendorSynchronized(vendor)
+            lia.log.add("Vendor synchronized", FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Mark as synced
+        function MODULE:VendorSynchronized(vendor)
+            if not IsValid(vendor) then return end
+
+            vendor:setData("lastSynced", os.time())
+            vendor:SetNetVar("synced", true)
+
+            lia.log.add(string.format("Vendor %s synchronized", vendor:getNetVar("name", "Unknown")), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive sync tracking
+        function MODULE:VendorSynchronized(vendor)
+            if not IsValid(vendor) then return end
+
+            local currentTime = os.time()
+            local vendorName = vendor:getNetVar("name", "Unknown Vendor")
+
+            -- Update sync statistics
+            vendor:setData("lastSynced", currentTime)
+            vendor:setData("totalSyncs", vendor:getData("totalSyncs", 0) + 1)
+            vendor:SetNetVar("synced", true)
+
+            -- Track sync history
+            local syncHistory = vendor:getData("syncHistory", {})
+            table.insert(syncHistory, {
+                timestamp = currentTime,
+                dataSize = MODULE.CalculateVendorDataSize(vendor)
+            })
+            vendor:setData("syncHistory", syncHistory)
+
+            lia.log.add(string.format("Vendor synchronized - Name: %s, Total Syncs: %d, Time: %s",
+                vendorName, vendor:getData("totalSyncs"), os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_NORMAL)
+
+            MODULE.UpdateGlobalSyncStats(vendor)
+        end
+        ```
 ]]
 function VendorSynchronized(vendor)
 end
@@ -23466,6 +24045,76 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic trade logging
+        function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
+            lia.log.add(string.format("Trade: %s %s %s", client:Name(), isSellingToVendor and "sold" or "bought", itemType), FLAG_NORMAL)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update trade statistics
+        function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
+            if not IsValid(client) or not IsValid(vendor) then return end
+
+            local stats = vendor:getData("tradeStats", {})
+            local key = isSellingToVendor and "sells" or "buys"
+            stats[key] = (stats[key] or 0) + 1
+            vendor:setData("tradeStats", stats)
+
+            lia.log.add(string.format("Vendor trade - %s %s %s from %s",
+                client:Name(), isSellingToVendor and "sold" or "bought", itemType, vendor:getNetVar("name", "Unknown")), FLAG_NORMAL)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive trade tracking and analytics
+        function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
+            if not IsValid(client) or not IsValid(vendor) then return end
+
+            local currentTime = os.time()
+            local itemData = lia.item.get(itemType)
+            if not itemData then return end
+
+            -- Record trade details
+            local tradeData = {
+                timestamp = currentTime,
+                player = client,
+                vendor = vendor,
+                itemType = itemType,
+                itemName = itemData.name,
+                isSelling = isSellingToVendor,
+                price = MODULE.GetTradePrice(vendor, itemType, isSellingToVendor)
+            }
+
+            -- Update vendor trade statistics
+            local stats = vendor:getData("tradeStats", {})
+            local key = isSellingToVendor and "totalSells" or "totalBuys"
+            stats[key] = (stats[key] or 0) + 1
+            stats.lastTrade = currentTime
+            vendor:setData("tradeStats", stats)
+
+            -- Update player trade history
+            local char = client:getChar()
+            if char then
+                local history = char:getData("tradeHistory", {})
+                table.insert(history, tradeData)
+                char:setData("tradeHistory", history)
+            end
+
+            lia.log.add(string.format("Vendor trade - Player: %s, Vendor: %s, Item: %s (%s), Action: %s, Price: %d",
+                client:Name(), vendor:getNetVar("name", "Unknown"), itemData.name, itemType,
+                isSellingToVendor and "sold" or "bought", tradeData.price), FLAG_NORMAL)
+
+            MODULE.UpdateTradeAnalytics(tradeData)
+        end
+        ```
 ]]
 function VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
 end
@@ -23493,6 +24142,87 @@ end
 
     Returns:
         nil
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Basic warning logging
+        function MODULE:WarningIssued(admin, target, reason, count, warnerSteamID, targetSteamID)
+            lia.log.add(string.format("Warning issued: %s warned %s for %s", admin:Name(), target:Name(), reason), FLAG_WARNING)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Update warning statistics
+        function MODULE:WarningIssued(admin, target, reason, count, warnerSteamID, targetSteamID)
+            if not IsValid(target) then return end
+
+            local char = target:getChar()
+            if char then
+                char:setData("warnings", count)
+                char:setData("lastWarning", os.time())
+            end
+
+            lia.log.add(string.format("Warning %d issued to %s by %s: %s", count, target:Name(), admin:Name(), reason), FLAG_WARNING)
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Comprehensive warning tracking and consequences
+        function MODULE:WarningIssued(admin, target, reason, count, warnerSteamID, targetSteamID)
+            if not IsValid(target) or not IsValid(admin) then return end
+
+            local currentTime = os.time()
+            local char = target:getChar()
+
+            -- Record warning details
+            local warningData = {
+                admin = admin,
+                adminSteamID = warnerSteamID,
+                target = target,
+                targetSteamID = targetSteamID,
+                reason = reason,
+                count = count,
+                timestamp = currentTime
+            }
+
+            -- Update character warning data
+            if char then
+                local warnings = char:getData("warnings", 0)
+                char:setData("warnings", count)
+                char:setData("lastWarning", currentTime)
+                char:setData("lastWarningReason", reason)
+                char:setData("lastWarningAdmin", admin:Name())
+
+                -- Track warning history
+                local history = char:getData("warningHistory", {})
+                table.insert(history, warningData)
+                char:setData("warningHistory", history)
+            end
+
+            -- Log detailed warning
+            lia.log.add(string.format("Warning issued - Admin: %s (%s), Target: %s (%s), Reason: %s, Count: %d, Time: %s",
+                admin:Name(), warnerSteamID, target:Name(), targetSteamID, reason, count,
+                os.date("%Y-%m-%d %H:%M:%S", currentTime)), FLAG_WARNING)
+
+            -- Handle warning consequences
+            MODULE.ApplyWarningConsequences(target, count, reason)
+
+            -- Notify relevant parties
+            MODULE.NotifyWarningIssued(admin, target, reason, count)
+
+            -- Update warning statistics
+            MODULE.UpdateWarningStats(admin, target, reason)
+
+            -- Check for ban thresholds
+            if MODULE.ShouldAutoBan(target, count) then
+                MODULE.AutoBanPlayer(target, count, reason)
+            end
+        end
+        ```
 ]]
 function WarningIssued(admin, target, reason, count, warnerSteamID, targetSteamID)
 end

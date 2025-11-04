@@ -17,7 +17,8 @@ lia.command.list = lia.command.list or {}
         Automatically called by lia.command.add when registering commands
 
     Parameters:
-        args (table) - Array of argument definition tables with type, name, and optional properties
+        args (table)
+            Array of argument definition tables with type, name, and optional properties
 
     Returns:
         string - Formatted syntax string showing argument types and names
@@ -94,7 +95,10 @@ end
         When registering commands during gamemode initialization or module loading
 
     Parameters:
-        command (string) - The command name, data (table) - Command configuration including onRun, arguments, privilege, etc.
+        command (string)
+            The command name
+        data (table)
+            Command configuration including onRun, arguments, privilege, etc.
 
     Returns:
         void
@@ -267,7 +271,12 @@ end
         Before command execution to verify player permissions
 
     Parameters:
-        client (Player) - The player attempting to use the command, command (string) - Command name, data (table, optional) - Command data table
+        client (Player)
+            The player attempting to use the command
+        command (string)
+            Command name
+        data (table, optional)
+            Command data table
 
     Returns:
         boolean, string - Access granted status and privilege name
@@ -357,7 +366,8 @@ end
         When parsing command input to separate arguments for command execution
 
     Parameters:
-        text (string) - The command text to parse (excluding the command name)
+        text (string)
+            The command text to parse (excluding the command name)
 
     Returns:
         table - Array of extracted argument strings
@@ -463,7 +473,12 @@ if SERVER then
         When a command needs to be executed after parsing and access validation
 
     Parameters:
-        client (Player) - The player executing the command, command (string) - Command name, arguments (table) - Command arguments
+        client (Player)
+            The player executing the command
+        command (string)
+            Command name
+        arguments (table)
+            Command arguments
 
     Returns:
         void
@@ -530,7 +545,14 @@ if SERVER then
         When processing player chat input or console commands that start with "/"
 
     Parameters:
-        client (Player) - The player executing the command, text (string) - Full command text, realCommand (string, optional) - Pre-parsed command name, arguments (table, optional) - Pre-parsed arguments
+        client (Player)
+            The player executing the command
+        text (string)
+            Full command text
+        realCommand (string, optional)
+            Pre-parsed command name
+        arguments (table, optional)
+            Pre-parsed arguments
 
     Returns:
         boolean - True if command was processed, false if not a command
@@ -634,7 +656,12 @@ else
         When a command is executed with missing required arguments
 
     Parameters:
-        cmdKey (string) - Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments
+        cmdKey (string)
+            Command name
+        missing (table)
+            Array of missing argument names
+        prefix (table)
+            Already provided arguments
 
     Returns:
         void
@@ -901,7 +928,10 @@ else
         When client needs to execute a command on the server
 
     Parameters:
-        command (string) - Command name, ... (vararg) - Command arguments
+        command (string)
+            Command name
+        ... (vararg)
+            Command arguments
 
     Returns:
         void
@@ -1009,7 +1039,10 @@ end)
         When commands need to resolve player names to player entities
 
     Parameters:
-        client (Player) - The player executing the command, name (string) - Player name or identifier to find
+        client (Player)
+            The player executing the command
+        name (string)
+            Player name or identifier to find
 
     Returns:
         Player or nil - Found player entity or nil if not found

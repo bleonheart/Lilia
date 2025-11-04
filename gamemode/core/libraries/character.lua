@@ -258,7 +258,7 @@ end
         lia.char.addCharacter(123, character)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Add character and handle pending requests
         local charID = 123
@@ -273,7 +273,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch character loading with callback management
         local characters = {}
@@ -324,7 +324,7 @@ end
         lia.char.removeCharacter(123)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Remove character with validation
         local charID = 123
@@ -338,7 +338,7 @@ end
         end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch character cleanup with error handling
         local charIDs = {123, 456, 789}
@@ -1359,7 +1359,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Find character with Steam ID conversion
         local steamID64 = "76561198000000000"

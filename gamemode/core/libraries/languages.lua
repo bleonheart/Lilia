@@ -18,7 +18,8 @@ lia.lang.stored = lia.lang.stored or {}
         During gamemode initialization or when manually loading language files
 
     Parameters:
-        directory (string) - The directory path containing language files
+        directory (string)
+            The directory path containing language files
 
     Returns:
         None
@@ -94,7 +95,10 @@ end
         When manually adding language strings or when modules need to register their own translations
 
     Parameters:
-        name (string) - The language name/key, tbl (table) - Table containing key-value pairs of translations
+        name (string)
+            The language name/key
+        tbl (table)
+            Table containing key-value pairs of translations
 
     Returns:
         None
@@ -227,7 +231,10 @@ end
         When displaying text to users or when any localized string is needed
 
     Parameters:
-        key (string) - The language key to look up, ... (variadic) - Parameters for string formatting
+        key (string)
+            The language key to look up
+        ... (variadic)
+            Parameters for string formatting
 
     Returns:
         string - The localized and formatted string, or the key if not found
@@ -305,7 +312,10 @@ end
         Anywhere in the codebase when a localized string is needed
 
     Parameters:
-        key (string) - The language key to look up, ... (variadic) - Parameters for string formatting
+        key (string)
+            The language key to look up
+        ... (variadic)
+            Parameters for string formatting
 
     Returns:
         string - The localized and formatted string, or the key if not found

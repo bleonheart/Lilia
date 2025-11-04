@@ -96,7 +96,7 @@ end
         lia.webimage.download("logo", "https://example.com/logo.png")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Download with callback and custom flags
         lia.webimage.download("avatar", "https://example.com/avatar.jpg", function(material, fromCache)
@@ -108,7 +108,7 @@ end
         end, "noclamp smooth")
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch download with error handling and progress tracking
         local images = {
@@ -249,7 +249,7 @@ end
         lia.webimage.register("logo", "https://example.com/logo.png")
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Register with callback for UI updates
         lia.webimage.register("avatar", "https://example.com/avatar.jpg", function(material)
@@ -260,7 +260,7 @@ end
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Register multiple images with progress tracking
         local imageConfigs = {
@@ -324,7 +324,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Get material with custom flags and fallback
         local avatar = lia.webimage.get("avatar", "noclamp smooth")
@@ -335,7 +335,7 @@ end
             end
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Batch retrieval with validation and error handling
         local imageNames = {"banner", "icon", "background", "logo"}
@@ -474,7 +474,7 @@ end
         print("Stored images: " .. stats.stored)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Display statistics in a panel
         local stats = lia.webimage.getStats()
@@ -494,7 +494,7 @@ end
         resetLabel:SetPos(10, 50)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Create a comprehensive statistics dashboard
         local function createStatsDashboard()

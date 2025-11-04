@@ -81,7 +81,7 @@ end
         })
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Create menu attached to an entity
         local ent = Entity(1)
@@ -92,7 +92,7 @@ end
         }, ent)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Create menu with custom position and cleanup
         local menuData = {
@@ -178,7 +178,7 @@ end
         hook.Add("HUDPaint", "MenuDraw", lia.menu.drawAll)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Custom rendering with additional checks
         hook.Add("HUDPaint", "CustomMenuDraw", function()
@@ -187,7 +187,7 @@ end
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Conditional rendering with performance optimization
         local lastDrawTime = 0
@@ -277,7 +277,7 @@ end
         end
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuInteraction", function(ply, button)
@@ -291,7 +291,7 @@ end
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Advanced menu interaction with cooldown and logging
         local lastMenuTime = 0
@@ -366,7 +366,7 @@ end
         end)
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Handle menu interaction with validation
         hook.Add("PlayerButtonDown", "MenuButtonPress", function(ply, button)
@@ -382,7 +382,7 @@ end
         end)
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Advanced menu handling with error checking and logging
         local function handleMenuPress(menuIndex, callback)

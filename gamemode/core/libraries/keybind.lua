@@ -129,10 +129,14 @@ local KeybindKeys = {
         During initialization of modules or when registering custom keybinds for gameplay features
 
     Parameters:
-        k (string|number): Either the action name (string) or key code (number) depending on parameter format
-        d (table|string): Either configuration table with keyBind, desc, onPress, etc. or action name (string)
-        desc (string, optional): Description of the keybind action (used when d is action name)
-        cb (table, optional): Callback table with onPress, onRelease, shouldRun, serverOnly functions (used when d is action name)
+        k (string|number)
+            Either the action name (string) or key code (number) depending on parameter format
+        d (table|string)
+            Either configuration table with keyBind, desc, onPress, etc. or action name (string)
+        desc (string, optional)
+            Description of the keybind action (used when d is action name)
+        cb (table, optional)
+            Callback table with onPress, onRelease, shouldRun, serverOnly functions (used when d is action name)
 
     Returns:
         None
@@ -155,7 +159,7 @@ local KeybindKeys = {
         })
         ```
 
-        Medium Complexity:
+    Medium Complexity:
         ```lua
         -- Medium: Add keybind with conditional execution and server-only flag
         lia.keybind.add("adminMode", {
@@ -173,7 +177,7 @@ local KeybindKeys = {
         })
         ```
 
-        High Complexity:
+    High Complexity:
         ```lua
         -- High: Add keybind with multiple callbacks and complex validation
         lia.keybind.add("convertEntity", {
@@ -439,8 +443,10 @@ if CLIENT then
             When checking what key is currently bound to an action, typically in UI or validation code
 
         Parameters:
-            a (string): The action name to get the key for
-            df (number, optional): Default key code to return if no key is bound
+            a (string)
+                The action name to get the key for
+            df (number, optional)
+                Default key code to return if no key is bound
 
         Returns:
             number - The key code bound to the action, or the default value if none is set
@@ -449,14 +455,15 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
             ```lua
             -- Simple: Get the key bound to open inventory
             local inventoryKey = lia.keybind.get("openInventory")
             print("Inventory key:", inventoryKey)
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Get key with fallback default
             local adminKey = lia.keybind.get("adminMode", KEY_F1)
@@ -467,7 +474,7 @@ if CLIENT then
                 end
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Check multiple keybinds and handle different states
             local keybinds = {"openInventory", "adminMode", "quickTakeItem"}
@@ -509,13 +516,14 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
             ```lua
             -- Simple: Save keybinds after player changes settings
             lia.keybind.save()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Save keybinds with validation
             local function saveKeybindsSafely()
@@ -533,7 +541,7 @@ if CLIENT then
             saveKeybindsSafely()
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Save keybinds with backup and error handling
             local function saveKeybindsWithBackup()
@@ -591,13 +599,14 @@ if CLIENT then
             Client
 
         Example Usage:
-        Low Complexity:
+
+    Low Complexity:
             ```lua
             -- Simple: Load keybinds during initialization
             lia.keybind.load()
             ```
 
-            Medium Complexity:
+    Medium Complexity:
             ```lua
             -- Medium: Load keybinds with validation and fallback
             local function loadKeybindsSafely()
@@ -622,7 +631,7 @@ if CLIENT then
             loadKeybindsSafely()
             ```
 
-            High Complexity:
+    High Complexity:
             ```lua
             -- High: Load keybinds with migration and validation
             local function loadKeybindsWithMigration()
