@@ -13,15 +13,13 @@ lia.swepeditor.DefaultSweps = lia.swepeditor.DefaultSweps or {}
 lia.swepeditor.HardcodedOverrides = lia.swepeditor.HardcodedOverrides or {}
 if SERVER then
     lia.swepeditor.NetworkData = lia.swepeditor.NetworkData or {}
-    net.Receive("liaSwepeditorUpdate", function(len, ply)
+    net.Receive("liaSwepeditorUpdate", function(_, ply)
         if not IsValid(ply) or not ply:hasPrivilege("canEditWeapons") then return end
         local updateData = net.ReadTable()
         local class = net.ReadString()
         local hasChanges = false
-
         for k, v in pairs(updateData) do
             lia.swepeditor.NetworkData[class] = lia.swepeditor.NetworkData[class] or {}
-
             -- Check if value actually changed
             if lia.swepeditor.NetworkData[class][k] ~= v then
                 lia.swepeditor.adjustValue(class, k, v)
@@ -31,10 +29,9 @@ if SERVER then
         end
 
         if not hasChanges then return end
-
         print(ply:Name() .. " has updated the variables of: " .. class)
         ply:ChatPrint(string.upper(class) .. " has been successfully updated!")
-        for k, v in player.Iterator() do
+        for _, v in player.Iterator() do
             if v:HasWeapon(class) then
                 v:StripWeapon(class)
                 v:Give(class)
@@ -50,7 +47,7 @@ if SERVER then
             }, "swepeditor")
         end
 
-        for k, v in player.Iterator() do
+        for _, v in player.Iterator() do
             if v ~= ply and lia.swepeditor.NetworkData[class] then
                 net.Start("liaSwepeditorLoad")
                 net.WriteTable(lia.swepeditor.NetworkData[class])
@@ -60,7 +57,7 @@ if SERVER then
         end
     end)
 
-    net.Receive("liaSwepeditorReset", function(len, ply)
+    net.Receive("liaSwepeditorReset", function(_, ply)
         if not IsValid(ply) or not ply:hasPrivilege("canEditWeapons") then return end
         local class = net.ReadString()
         local weapon = lia.swepeditor.DefaultSweps[class]
@@ -78,7 +75,7 @@ if SERVER then
         })
 
         lia.swepeditor.NetworkData[class] = nil
-        for k, v in player.Iterator() do
+        for _, v in player.Iterator() do
             if v:HasWeapon(class) then
                 v:StripWeapon(class)
                 v:Give(class)
@@ -257,7 +254,7 @@ if SERVER then
         end)
     end
 
-    net.Receive("liaSwepeditorLoad", function(len, ply)
+    net.Receive("liaSwepeditorLoad", function(_, ply)
         local weaponClass = net.ReadString()
         if weaponClass and weaponClass ~= "" then
             lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = %s", lia.db.escape(weaponClass)), function(results)
@@ -271,7 +268,6 @@ if SERVER then
                     end
                 end
             end)
-        else
         end
     end)
 end
@@ -657,14 +653,10 @@ function lia.swepeditor.applyOverrides(weaponClass, overrideTable)
 end
 
 hook.Add("InitPostEntity", "InitializeSWEPEditor", function()
-    local swepCount = 0
-    for k, v in pairs(lia.swepeditor.Sweps) do
-        swepCount = swepCount + 1
-    end
-
+    local swepCount = #lia.swepeditor.Sweps
     if swepCount <= 0 then
         lia.swepeditor.Sweps = {}
-        for k, v in pairs(weapons.GetList()) do
+        for _, v in pairs(weapons.GetList()) do
             if v and v.ClassName then
                 table.insert(lia.swepeditor.Sweps, v.ClassName)
                 if not lia.swepeditor.DefaultSweps[v.ClassName] then lia.swepeditor.DefaultSweps[v.ClassName] = lia.swepeditor.copyTable(v) end
@@ -677,7 +669,7 @@ hook.Add("InitPostEntity", "InitializeSWEPEditor", function()
     end
 
     if SERVER then
-        for k, v in pairs(weapons.GetList()) do
+        for _, v in pairs(weapons.GetList()) do
             if v and v.ClassName then lia.swepeditor.loadData(v.ClassName) end
         end
     end
