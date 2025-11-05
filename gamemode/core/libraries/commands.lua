@@ -1410,38 +1410,79 @@ else
     end)
 
     local function performPanelCheck()
-        local panels = vgui.GetWorldPanel():GetChildren()
-        local panelCount = #panels
-        local visiblePanels = 0
-        local panelTypes = {}
-        LocalPlayer():ChatPrint("Total panels on screen: " .. panelCount)
-        for _, panel in ipairs(panels) do
-            if IsValid(panel) then
-                local panelType = panel:GetName() or "Unknown"
-                if panel:IsVisible() then
-                    visiblePanels = visiblePanels + 1
-                    panelTypes[panelType] = (panelTypes[panelType] or 0) + 1
+        local function enumeratePanels(panel, depth)
+            depth = depth or 0
+            local children = panel:GetChildren()
+            local count = 0
+            for _, child in ipairs(children) do
+                if IsValid(child) then
+                    count = count + 1
+                    -- Recursively enumerate subpanels
+                    count = count + enumeratePanels(child, depth + 1)
+                end
+            end
+            return count
+        end
+
+        local function collectPanelData(panel, panelTypes, hiddenPanelTypes, depth)
+            depth = depth or 0
+            local children = panel:GetChildren()
+            for _, child in ipairs(children) do
+                if IsValid(child) then
+                    local panelType = child:GetName() or "Unknown"
+                    if child:IsVisible() then
+                        panelTypes[panelType] = (panelTypes[panelType] or 0) + 1
+                    else
+                        hiddenPanelTypes[panelType] = (hiddenPanelTypes[panelType] or 0) + 1
+                    end
+
+                    -- Recursively collect data from subpanels
+                    collectPanelData(child, panelTypes, hiddenPanelTypes, depth + 1)
                 end
             end
         end
 
+        local worldPanel = vgui.GetWorldPanel()
+        local panelCount = enumeratePanels(worldPanel)
+        local visiblePanels = 0
+        local panelTypes = {}
+        local hiddenPanelTypes = {}
+        collectPanelData(worldPanel, panelTypes, hiddenPanelTypes)
+        -- Count visible panels
+        for panelType, count in pairs(panelTypes) do
+            visiblePanels = visiblePanels + count
+        end
+
+        LocalPlayer():ChatPrint("Total panels on screen (including subpanels): " .. panelCount)
         LocalPlayer():ChatPrint("Visible panels: " .. visiblePanels)
         if table.Count(panelTypes) > 0 then
-            LocalPlayer():ChatPrint("Panel types:")
+            LocalPlayer():ChatPrint("Visible panel types:")
             for panelType, count in pairs(panelTypes) do
                 LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
             end
         end
 
-        print("[TestPanels] Total panels: " .. panelCount .. ", Visible: " .. visiblePanels)
+        LocalPlayer():ChatPrint("Hidden panels: " .. (panelCount - visiblePanels))
+        if table.Count(hiddenPanelTypes) > 0 then
+            LocalPlayer():ChatPrint("Hidden panel types:")
+            for panelType, count in pairs(hiddenPanelTypes) do
+                LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
+            end
+        end
+
+        print("[TestPanels] Total panels (including subpanels): " .. panelCount .. ", Visible: " .. visiblePanels)
         for panelType, count in pairs(panelTypes) do
+            print("[TestPanels] " .. panelType .. ": " .. count)
+        end
+
+        print("[TestPanels] Hidden panels (including subpanels):")
+        for panelType, count in pairs(hiddenPanelTypes) do
             print("[TestPanels] " .. panelType .. ": " .. count)
         end
     end
 
     concommand.Add("lia_test_panels", function(ply, cmd, args)
         local delay = tonumber(args[1]) or 0
-
         if delay > 0 then
             LocalPlayer():ChatPrint("Checking panels in " .. delay .. " seconds...")
             timer.Simple(delay, function()

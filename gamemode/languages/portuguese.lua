@@ -553,6 +553,7 @@ LANGUAGE = {
     canNotAfford = "No podes pagar esse item.",
     respawnKey = "Pressiona %s para renascer",
     respawnIn = "Renascer automaticamente em %s segundos",
+    pressAnyKeyToRespawn = "Pressione ESPAÇO para renascer",
     youHaveDied = "Morreste",
     factionStaffName = "Staff em Servio",
     factionStaffDesc = "O Staff",

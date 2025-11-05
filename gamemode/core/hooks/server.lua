@@ -388,10 +388,6 @@ function GM:PostPlayerLoadout(client)
     client:setNetVar("VoiceType", L("talking"))
 end
 
-function GM:ShouldSpawnClientRagdoll(client)
-    if client:IsBot() then return false end
-end
-
 function GM:DoPlayerDeath(client, attacker)
     client:AddDeaths(1)
     local existingRagdoll = client:getNetVar("ragdoll")
@@ -609,15 +605,7 @@ function GM:CanDrive()
 end
 
 function GM:PlayerDeathThink()
-    local client = self
-    if not IsValid(client) or not client:getChar() then return false end
-    local respawnTime = lia.config.get("SpawnTime", 5)
-    local spawnTimeOverride = hook.Run("OverrideSpawnTime", client, respawnTime)
-    if spawnTimeOverride then respawnTime = math.floor(spawnTimeOverride) end
-    local lastDeathTime = client:getNetVar("lastDeathTime", 0)
-    local currentTime = os.time()
-    local timeSinceDeath = currentTime - lastDeathTime
-    return timeSinceDeath >= respawnTime
+    return false
 end
 
 local function makeKey(ent)
