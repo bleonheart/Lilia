@@ -1449,7 +1449,7 @@ else
         local hiddenPanelTypes = {}
         collectPanelData(worldPanel, panelTypes, hiddenPanelTypes)
         -- Count visible panels
-        for panelType, count in pairs(panelTypes) do
+        for _, count in pairs(panelTypes) do
             visiblePanels = visiblePanels + count
         end
 
@@ -1481,7 +1481,7 @@ else
         end
     end
 
-    concommand.Add("lia_test_panels", function(ply, cmd, args)
+    concommand.Add("lia_test_panels", function(_, _, args)
         local delay = tonumber(args[1]) or 0
         if delay > 0 then
             LocalPlayer():ChatPrint("Checking panels in " .. delay .. " seconds...")

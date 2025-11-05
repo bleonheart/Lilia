@@ -441,8 +441,8 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     weaponHeader:SetText(string.format("%s (%s)", weapons.GetStored(weaponClass).PrintName or weaponClass, weaponClass))
-                    for _, panel in pairs(propertyPanels) do
-                        if IsValid(panel) then panel:Remove() end
+                    for _, propPanel in pairs(propertyPanels) do
+                        if IsValid(propPanel) then propPanel:Remove() end
                     end
 
                     propertyPanels = {}
@@ -489,11 +489,11 @@ function MODULE:PopulateAdminTabs(pages)
                 local function EditProperty(key, currentValue, propType)
                     local function onValueEntered(newValue)
                         modifiedValues[key] = newValue
-                        local panel = propertyPanels[key]
-                        if IsValid(panel) then
-                            local valueLabel = panel:GetChildren()[2]
+                        local propPanel = propertyPanels[key]
+                        if IsValid(propPanel) then
+                            local valueLabel = propPanel:GetChildren()[2]
                             if IsValid(valueLabel) then valueLabel:SetText(FormatValue(newValue, propType)) end
-                            panel.propertyValue = newValue
+                            propPanel.propertyValue = newValue
                         end
 
                         UpdateButtonStates()
@@ -527,15 +527,15 @@ function MODULE:PopulateAdminTabs(pages)
                         propPanel:DockMargin(2, 2, 2, 2)
                         propPanel:SetTall(30)
                         propPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(3):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
-                        propPanel.PerformLayout = function(self, w, _)
-                            if IsValid(self.nameLabel) and IsValid(self.valueControl) then
+                        propPanel.PerformLayout = function(s, w, _)
+                            if IsValid(s.nameLabel) and IsValid(s.valueControl) then
                                 local nameWidth = math.floor(w * 0.25) - 20
                                 local valueWidth = math.floor(w * 0.7) - 10
-                                self.nameLabel:SetWide(nameWidth)
-                                if self.valueControl:GetName() == "liaCheckbox" then
-                                    self.valueControl:SetWide(math.min(20, valueWidth))
+                                s.nameLabel:SetWide(nameWidth)
+                                if s.valueControl:GetName() == "liaCheckbox" then
+                                    s.valueControl:SetWide(math.min(20, valueWidth))
                                 else
-                                    self.valueControl:SetWide(valueWidth)
+                                    s.valueControl:SetWide(valueWidth)
                                 end
                             end
                         end
@@ -579,40 +579,40 @@ function MODULE:PopulateAdminTabs(pages)
                             valueControl:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
                             valueControl:SetCursorColor((lia.color.theme and lia.color.theme.accent and lia.color.theme.accent[1]) or Color(60, 140, 140))
                             local originalTextColor = valueControl:GetTextColor()
-                            valueControl.OnEnter = function(self)
+                            valueControl.OnEnter = function(s)
                                 if propPanel.lastChange and (CurTime() - propPanel.lastChange) < 0.1 then return end
                                 propPanel.lastChange = CurTime()
-                                local newText = self:GetValue()
-                                local newValue = self:ParseValue(newText, propType)
+                                local newText = s:GetValue()
+                                local newValue = s:ParseValue(newText, propType)
                                 if newValue ~= nil then
                                     modifiedValues[key] = newValue
                                     propPanel.propertyValue = newValue
                                     UpdateButtonStates()
                                     LocalPlayer():notify(L("propertyModified", key))
-                                    self:SetTextColor(originalTextColor)
+                                    s:SetTextColor(originalTextColor)
                                 else
-                                    self:SetText(FormatValue(propPanel.propertyValue, propType))
-                                    self:SetTextColor(originalTextColor)
+                                    s:SetText(FormatValue(propPanel.propertyValue, propType))
+                                    s:SetTextColor(originalTextColor)
                                 end
                             end
 
                             if propType == "number" then
-                                valueControl.OnChange = function(self)
-                                    local text = self:GetValue()
-                                    local isValid = self:ValidateNumber(text)
+                                valueControl.OnChange = function(s)
+                                    local text = s:GetValue()
+                                    local isValid = s:ValidateNumber(text)
                                     if isValid then
-                                        self:SetTextColor(originalTextColor)
+                                        s:SetTextColor(originalTextColor)
                                     else
-                                        self:SetTextColor(Color(255, 100, 100))
+                                        s:SetTextColor(Color(255, 100, 100))
                                     end
                                 end
                             end
 
-                            function valueControl:ParseValue(text, propType)
-                                if propType == "number" then
+                            function valueControl:ParseValue(text, type)
+                                if type == "number" then
                                     local num = tonumber(text)
                                     return num
-                                elseif propType == "string" then
+                                elseif type == "string" then
                                     return text
                                 else
                                     return text
@@ -646,13 +646,13 @@ function MODULE:PopulateAdminTabs(pages)
 
                 local function LoadWeaponData(data)
                     for key, value in pairs(data) do
-                        local panel = propertyPanels[key]
-                        if IsValid(panel) then
-                            panel.propertyValue = value
-                            if IsValid(panel.valueEntry) then
-                                panel.valueEntry:SetText(FormatValue(value, panel.propertyType))
-                            elseif IsValid(panel.valueCheckbox) then
-                                panel.valueCheckbox:SetChecked(value or false)
+                        local propPanel = propertyPanels[key]
+                        if IsValid(propPanel) then
+                            propPanel.propertyValue = value
+                            if IsValid(propPanel.valueEntry) then
+                                propPanel.valueEntry:SetText(FormatValue(value, propPanel.propertyType))
+                            elseif IsValid(propPanel.valueCheckbox) then
+                                propPanel.valueCheckbox:SetChecked(value or false)
                             end
                         end
                     end
