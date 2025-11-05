@@ -486,6 +486,33 @@ function MODULE:PopulateAdminTabs(pages)
                     return displayName
                 end
 
+                local function EditProperty(key, currentValue, propType)
+                    local function onValueEntered(newValue)
+                        modifiedValues[key] = newValue
+                        local panel = propertyPanels[key]
+                        if IsValid(panel) then
+                            local valueLabel = panel:GetChildren()[2]
+                            if IsValid(valueLabel) then valueLabel:SetText(FormatValue(newValue, propType)) end
+                            panel.propertyValue = newValue
+                        end
+
+                        UpdateButtonStates()
+                    end
+
+                    if propType == "boolean" then
+                        local menu = lia.derma.dermaMenu()
+                        menu:AddOption("true", function() onValueEntered(true) end)
+                        menu:AddOption("false", function() onValueEntered(false) end)
+                        menu:Open()
+                    elseif propType == "number" then
+                        LocalPlayer():requestNumber(L("enterValue"), L("enterNewValue"), currentValue or 0, function(value) onValueEntered(tonumber(value)) end)
+                    elseif propType == "string" then
+                        LocalPlayer():requestString(L("enterValue"), L("enterNewValue"), currentValue or "", function(value) onValueEntered(value) end)
+                    else
+                        LocalPlayer():requestString(L("enterValue"), L("enterNewValue"), tostring(currentValue or ""), function(value) onValueEntered(value) end)
+                    end
+                end
+
                 function LoadWeaponProperties(weaponClass)
                     local weaponData = weapons.GetStored(weaponClass)
                     if not weaponData then return end
@@ -500,7 +527,7 @@ function MODULE:PopulateAdminTabs(pages)
                         propPanel:DockMargin(2, 2, 2, 2)
                         propPanel:SetTall(30)
                         propPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(3):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
-                        propPanel.PerformLayout = function(self, w, h)
+                        propPanel.PerformLayout = function(self, w, _)
                             if IsValid(self.nameLabel) and IsValid(self.valueControl) then
                                 local nameWidth = math.floor(w * 0.25) - 20
                                 local valueWidth = math.floor(w * 0.7) - 10
@@ -530,7 +557,7 @@ function MODULE:PopulateAdminTabs(pages)
                             valueControl:DockMargin(0, 5, 10, 5)
                             valueControl:SetWide(math.min(20, valueWidth or 150))
                             valueControl:SetChecked(value or false)
-                            valueControl.OnChange = function(self, checked)
+                            valueControl.OnChange = function(_, checked)
                                 if propPanel.lastChange and (CurTime() - propPanel.lastChange) < 0.1 then return end
                                 propPanel.lastChange = CurTime()
                                 modifiedValues[key] = checked
@@ -666,33 +693,6 @@ function MODULE:PopulateAdminTabs(pages)
                         if isangle(value) then return string.format("Angle(%f, %f, %f)", value.p, value.y, value.r) end
                     end
                     return tostring(value)
-                end
-
-                local function EditProperty(key, currentValue, propType)
-                    local function onValueEntered(newValue)
-                        modifiedValues[key] = newValue
-                        local panel = propertyPanels[key]
-                        if IsValid(panel) then
-                            local valueLabel = panel:GetChildren()[2]
-                            if IsValid(valueLabel) then valueLabel:SetText(FormatValue(newValue, propType)) end
-                            panel.propertyValue = newValue
-                        end
-
-                        UpdateButtonStates()
-                    end
-
-                    if propType == "boolean" then
-                        local menu = lia.derma.dermaMenu()
-                        menu:AddOption("true", function() onValueEntered(true) end)
-                        menu:AddOption("false", function() onValueEntered(false) end)
-                        menu:Open()
-                    elseif propType == "number" then
-                        LocalPlayer():requestNumber(L("enterValue"), L("enterNewValue"), currentValue or 0, function(value) onValueEntered(tonumber(value)) end)
-                    elseif propType == "string" then
-                        LocalPlayer():requestString(L("enterValue"), L("enterNewValue"), currentValue or "", function(value) onValueEntered(value) end)
-                    else
-                        LocalPlayer():requestString(L("enterValue"), L("enterNewValue"), tostring(currentValue or ""), function(value) onValueEntered(value) end)
-                    end
                 end
 
                 function UpdateButtonStates()
@@ -3779,7 +3779,6 @@ function MODULE:TicketFrame(requester, message, claimed)
     timer.Create("ticketsystem-" .. requester:SteamID(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
 end
 
-local ticketPanel
 net.Receive("liaActiveTickets", function()
     local tickets = net.ReadTable() or {}
     if not IsValid(ticketPanel) then return end
@@ -3946,7 +3945,6 @@ net.Receive("liaClearAllTicketFrames", function()
     end
 end)
 
-local panelRef
 net.Receive("liaAllWarnings", function()
     local warnings = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
