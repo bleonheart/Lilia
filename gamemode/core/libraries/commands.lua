@@ -1409,7 +1409,7 @@ else
         end
     end)
 
-    concommand.Add("lia_test_panels", function()
+    local function performPanelCheck()
         local panels = vgui.GetWorldPanel():GetChildren()
         local panelCount = #panels
         local visiblePanels = 0
@@ -1436,6 +1436,20 @@ else
         print("[TestPanels] Total panels: " .. panelCount .. ", Visible: " .. visiblePanels)
         for panelType, count in pairs(panelTypes) do
             print("[TestPanels] " .. panelType .. ": " .. count)
+        end
+    end
+
+    concommand.Add("lia_test_panels", function(ply, cmd, args)
+        local delay = tonumber(args[1]) or 0
+
+        if delay > 0 then
+            LocalPlayer():ChatPrint("Checking panels in " .. delay .. " seconds...")
+            timer.Simple(delay, function()
+                if not IsValid(LocalPlayer()) then return end
+                performPanelCheck()
+            end)
+        else
+            performPanelCheck()
         end
     end)
 

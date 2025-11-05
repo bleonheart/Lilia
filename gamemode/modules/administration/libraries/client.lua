@@ -619,7 +619,6 @@ function MODULE:PopulateAdminTabs(pages)
 
                 local function LoadWeaponData(data)
                     for key, value in pairs(data) do
-                        modifiedValues[key] = value
                         local panel = propertyPanels[key]
                         if IsValid(panel) then
                             panel.propertyValue = value

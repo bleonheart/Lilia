@@ -17,11 +17,20 @@ if SERVER then
         if not IsValid(ply) or not ply:hasPrivilege("canEditWeapons") then return end
         local updateData = net.ReadTable()
         local class = net.ReadString()
+        local hasChanges = false
+
         for k, v in pairs(updateData) do
-            lia.swepeditor.adjustValue(class, k, v)
             lia.swepeditor.NetworkData[class] = lia.swepeditor.NetworkData[class] or {}
-            lia.swepeditor.NetworkData[class][k] = v
+
+            -- Check if value actually changed
+            if lia.swepeditor.NetworkData[class][k] ~= v then
+                lia.swepeditor.adjustValue(class, k, v)
+                lia.swepeditor.NetworkData[class][k] = v
+                hasChanges = true
+            end
         end
+
+        if not hasChanges then return end
 
         print(ply:Name() .. " has updated the variables of: " .. class)
         ply:ChatPrint(string.upper(class) .. " has been successfully updated!")
