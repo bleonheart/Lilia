@@ -628,7 +628,7 @@ When administrative notifications need to be broadcast to qualified players
 | `notification` | **table** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -639,8 +639,8 @@ Server
 ```lua
     -- Simple: Notify admins about an event
     lia.administrator.notifyAdmin({
-    text = "Player kicked for cheating",
-    type = "warning"
+        text = "Player kicked for cheating",
+        type = "warning"
     })
 
 ```
@@ -649,9 +649,9 @@ Server
 ```lua
     -- Medium: Notify with specific privilege requirement
     lia.administrator.notifyAdmin({
-    text = "Suspicious activity detected",
-    type = "alert",
-    privilege = "canSeeAltingNotifications"
+        text = "Suspicious activity detected",
+        type = "alert",
+        privilege = "canSeeAltingNotifications"
     })
 
 ```
@@ -660,9 +660,9 @@ Server
 ```lua
     -- High: Batch notifications with different privilege levels
     local notifications = {
-    {text = "Server restart in 5 minutes", privilege = "admin"},
-    {text = "New player joined", privilege = "moderator"},
-    {text = "VIP player online", privilege = "vip"}
+        {text = "Server restart in 5 minutes", privilege = "admin"},
+        {text = "New player joined", privilege = "moderator"},
+        {text = "VIP player online", privilege = "vip"}
     }
     for _, notification in ipairs(notifications) do
         lia.administrator.notifyAdmin(notification)
@@ -689,7 +689,7 @@ When a user group needs to be granted a new permission
 | `silent` | **boolean** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -741,7 +741,7 @@ When a user group should no longer have a specific permission
 | `silent` | **boolean** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -791,7 +791,7 @@ When administrator data needs to be sent to clients after changes
 | `c` | **Player** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -823,14 +823,41 @@ Server
         local success, err = pcall(function()
             lia.administrator.sync(client)
         end)
-    if not success then
-        lia.log.add(nil, "syncError", err)
-        return false
-    end
-    return true
+        if not success then
+            lia.log.add(nil, "syncError", err)
+            return false
+        end
+        return true
     end
     if safeSync(player) then
         print("Administrator data synced successfully")
+    end
+
+```
+
+---
+
+### lia.administrator.hasChanges
+
+#### 📋 Purpose
+Checks if administrator data has changed since the last sync operation
+
+#### ⏰ When Called
+Called during hot reload to determine if admin data needs to be re-synced
+
+#### ↩️ Returns
+* boolean
+true if privileges or groups have changed since last sync, false otherwise
+
+#### 🌐 Realm
+Server
+
+#### 💡 Example Usage
+
+```lua
+    -- Check if admin data needs syncing
+    if lia.administrator.hasChanges() then
+        lia.administrator.sync()
     end
 
 ```
@@ -854,7 +881,7 @@ When a player's user group needs to be changed
 | `source` | **string** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -879,9 +906,9 @@ Server
 ```lua
     -- High: Batch group changes with validation
     local groupChanges = {
-    {player = player1, group = "moderator", source = "promotion"},
-    {player = player2, group = "helper", source = "demotion"},
-    {player = player3, group = "vip", source = "donation"}
+        {player = player1, group = "moderator", source = "promotion"},
+        {player = player2, group = "helper", source = "demotion"},
+        {player = player3, group = "vip", source = "donation"}
     }
     for _, change in ipairs(groupChanges) do
         if IsValid(change.player) then
@@ -911,7 +938,7 @@ When a Steam ID's user group needs to be changed (for offline players)
 | `source` | **string** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -936,9 +963,9 @@ Server
 ```lua
     -- High: Batch Steam ID group changes with validation
     local steamGroupChanges = {
-    {steamid = "STEAM_0:1:123456789", group = "moderator", source = "promotion"},
-    {steamid = "STEAM_0:1:987654321", group = "helper", source = "demotion"},
-    {steamid = "STEAM_0:1:555555555", group = "vip", source = "donation"}
+        {steamid = "STEAM_0:1:123456789", group = "moderator", source = "promotion"},
+        {steamid = "STEAM_0:1:987654321", group = "helper", source = "demotion"},
+        {steamid = "STEAM_0:1:555555555", group = "vip", source = "donation"}
     }
     for _, change in ipairs(steamGroupChanges) do
         if change.steamid and change.steamid ~= "" then
@@ -1001,11 +1028,11 @@ Server
     }
     for _, command in ipairs(commands) do
         local success = lia.administrator.serverExecCommand(
-        command.cmd,
-        command.target,
-        command.duration,
-        command.reason,
-        admin
+            command.cmd,
+            command.target,
+            command.duration,
+            command.reason,
+            admin
         )
         if success then
             print("Command executed: " .. command.cmd)
@@ -1065,10 +1092,10 @@ Client
     }
     for _, command in ipairs(commands) do
         local success = lia.administrator.execCommand(
-        command.cmd,
-        command.target,
-        command.duration,
-        command.reason
+            command.cmd,
+            command.target,
+            command.duration,
+            command.reason
         )
         if success then
             print("Command sent: " .. command.cmd)

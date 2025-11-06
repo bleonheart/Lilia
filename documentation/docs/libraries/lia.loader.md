@@ -694,66 +694,65 @@ Shared
 
 ---
 
-### lia.GM:Initialize
+### lia.loader.initializeGamemode
 
 #### 📋 Purpose
-Registers and includes all entity types (entities, weapons, tools, effects) from a specified path
+Initializes or re-initializes the Lilia gamemode, including modules, config, factions, and compatibility files
 
 #### ⏰ When Called
-During framework initialization to register all custom entities, weapons, and tools
+Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM:OnReloaded)
 
 #### ⚙️ Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
+| `isReload` | **boolean** |  |
 
 #### ↩️ Returns
-* None
+* void
 
 #### 🌐 Realm
 Shared
 
 #### 💡 Example Usage
 
-#### 🔰 Low Complexity
 ```lua
-    -- Simple: Include entities from the default gamemode path
-    lia.loader.includeEntities("lilia/gamemode/entities")
+    -- Initial gamemode startup
+    lia.loader.initializeGamemode(false)
+    -- Hot reload
+    lia.loader.initializeGamemode(true)
 
 ```
 
-#### 📊 Medium Complexity
-```lua
-    -- Medium: Include entities from multiple paths with error handling
-    local entityPaths = {
-    "lilia/gamemode/entities",
-    "custom/entities"
-    }
-    for _, path in ipairs(entityPaths) do
-        if file.Exists(path, "LUA") then
-            lia.loader.includeEntities(path)
-            else
-                lia.warning("Entity path not found: " .. path)
-            end
-        end
+---
 
-```
+### lia.GM:Initialize
 
-#### ⚙️ High Complexity
+#### 📋 Purpose
+Initializes or re-initializes the Lilia gamemode, including modules, config, factions, and compatibility files
+
+#### ⏰ When Called
+Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM:OnReloaded)
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `isReload` | **boolean** |  |
+
+#### ↩️ Returns
+* void
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
 ```lua
-    -- High: Include entities with custom registration and validation
-    local function safeEntityInclusion(path)
-        local success, err = pcall(function()
-        lia.loader.includeEntities(path)
-    end)
-    if not success then
-        lia.error("Failed to include entities from " .. path .. ": " .. tostring(err))
-        else
-            lia.information("Successfully loaded entities from " .. path)
-        end
-    end
-    safeEntityInclusion("lilia/gamemode/entities")
+    -- Initial gamemode startup
+    lia.loader.initializeGamemode(false)
+    -- Hot reload
+    lia.loader.initializeGamemode(true)
 
 ```
 
@@ -762,63 +761,30 @@ Shared
 ### lia.GM:OnReloaded
 
 #### 📋 Purpose
-Registers and includes all entity types (entities, weapons, tools, effects) from a specified path
+Initializes or re-initializes the Lilia gamemode, including modules, config, factions, and compatibility files
 
 #### ⏰ When Called
-During framework initialization to register all custom entities, weapons, and tools
+Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM:OnReloaded)
 
 #### ⚙️ Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
+| `isReload` | **boolean** |  |
 
 #### ↩️ Returns
-* None
+* void
 
 #### 🌐 Realm
 Shared
 
 #### 💡 Example Usage
 
-#### 🔰 Low Complexity
 ```lua
-    -- Simple: Include entities from the default gamemode path
-    lia.loader.includeEntities("lilia/gamemode/entities")
-
-```
-
-#### 📊 Medium Complexity
-```lua
-    -- Medium: Include entities from multiple paths with error handling
-    local entityPaths = {
-    "lilia/gamemode/entities",
-    "custom/entities"
-    }
-    for _, path in ipairs(entityPaths) do
-        if file.Exists(path, "LUA") then
-            lia.loader.includeEntities(path)
-            else
-                lia.warning("Entity path not found: " .. path)
-            end
-        end
-
-```
-
-#### ⚙️ High Complexity
-```lua
-    -- High: Include entities with custom registration and validation
-    local function safeEntityInclusion(path)
-        local success, err = pcall(function()
-        lia.loader.includeEntities(path)
-    end)
-    if not success then
-        lia.error("Failed to include entities from " .. path .. ": " .. tostring(err))
-        else
-            lia.information("Successfully loaded entities from " .. path)
-        end
-    end
-    safeEntityInclusion("lilia/gamemode/entities")
+    -- Initial gamemode startup
+    lia.loader.initializeGamemode(false)
+    -- Hot reload
+    lia.loader.initializeGamemode(true)
 
 ```
 

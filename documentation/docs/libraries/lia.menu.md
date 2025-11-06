@@ -251,7 +251,7 @@ Client
             print("Invalid menu index")
             return false
         end
-        if not callback or type(callback) ~= "function" then
+        if not callback or not isfunction(callback) then
             print("Invalid callback function")
             return false
         end

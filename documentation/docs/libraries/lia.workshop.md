@@ -22,7 +22,7 @@ Called when modules or addons need specific workshop content
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **string/number** | The Steam Workshop ID of the addon to add |
+| `id` | **string/number** |  |
 
 #### ↩️ Returns
 * None
@@ -123,7 +123,7 @@ Called when a player requests workshop content or during initial spawn
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ply` | **Player** | The player to send workshop IDs to |
+| `ply` | **Player** |  |
 
 #### ↩️ Returns
 * None

@@ -291,7 +291,7 @@ Shared
 ```lua
     -- Medium: Set configuration with validation
     local function setConfigWithValidation(key, value, min, max)
-        if type(value) == "number" and value >= min and value <= max then
+        if isnumber(value) and value >= min and value <= max then
             lia.config.set(key, value)
         else
             print("Invalid value for " .. key)
@@ -516,7 +516,7 @@ When a client connects, when configurations change, or when manually syncing con
 | `client` | **Player, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -577,7 +577,7 @@ Saves all changed configuration values to the database using transaction-based o
 When configuration values change, during server shutdown, or when manually saving configurations
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -634,7 +634,7 @@ Resets all configuration values to their default values and synchronizes changes
 When resetting server configurations, during maintenance, or when reverting to defaults
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server

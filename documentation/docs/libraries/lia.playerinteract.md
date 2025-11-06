@@ -495,7 +495,7 @@ Server
 #### 🔰 Low Complexity
 ```lua
     -- Simple: Sync all interactions to all clients
-    lia.playerinteract.sync()
+    lia.playerinteract.sync ()
 
 ```
 
@@ -505,7 +505,7 @@ Server
     hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
         timer.Simple(2, function() -- Wait for client to fully load
             if IsValid(client) then
-                lia.playerinteract.sync(client)
+                lia.playerinteract.sync (client)
             end
         end)
     end)
@@ -575,7 +575,7 @@ Server
 #### 🔰 Low Complexity
 ```lua
     -- Simple: Sync all interactions to all clients
-    lia.playerinteract.sync()
+    lia.playerinteract.sync ()
 
 ```
 
@@ -585,7 +585,7 @@ Server
     hook.Add("PlayerInitialSpawn", "SyncInteractions", function(client)
         timer.Simple(2, function() -- Wait for client to fully load
             if IsValid(client) then
-                lia.playerinteract.sync(client)
+                lia.playerinteract.sync (client)
             end
         end)
     end)
@@ -624,6 +624,33 @@ Server
         end
         lia.net.writeBigTable(client, "liaPlayerInteractSync", filteredData)
         lia.net.writeBigTable(client, "liaPlayerInteractCategories", lia.playerinteract.categories)
+    end
+
+```
+
+---
+
+### lia.playerinteract.hasChanges
+
+#### 📋 Purpose
+Checks if player interaction data has changed since the last sync operation
+
+#### ⏰ When Called
+Called during hot reload to determine if interaction data needs to be re-synced
+
+#### ↩️ Returns
+* boolean
+true if interactions or categories have changed since last sync, false otherwise
+
+#### 🌐 Realm
+Server
+
+#### 💡 Example Usage
+
+```lua
+    -- Check if interaction data needs syncing
+    if lia.playerinteract.hasChanges() then
+        lia.playerinteract.sync()
     end
 
 ```

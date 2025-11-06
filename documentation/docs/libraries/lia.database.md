@@ -298,7 +298,7 @@ Server
     local function safeConvert(value, fieldName)
         if value == nil then
             return "NULL"
-        elseif type(value) == "table" then
+        elseif istable(value) then
             local success, json = pcall(util.TableToJSON, value)
             if success then
                 return "'" .. lia.db.escape(json) .. "'"
@@ -1530,7 +1530,7 @@ Server
     local function safeEscapeIdentifiers(identifiers)
         local escaped = {}
         for _, id in ipairs(identifiers) do
-            if type(id) == "string" and id:match("^[a-zA-Z_][a-zA-Z0-9_]*$") then
+            if isstring(id) and id:match("^[a-zA-Z_][a-zA-Z0-9_]*$") then
                 table.insert(escaped, lia.db.escapeIdentifier(id))
             else
                 lia.log.add("Invalid identifier: " .. tostring(id))

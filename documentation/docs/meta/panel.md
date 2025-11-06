@@ -22,8 +22,7 @@ When a UI panel needs to respond to inventory modifications, typically during pa
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **unknown** | The inventory object to listen for changes on |
-| `inventory` | **unknown** | The inventory object to listen for changes on |
+| `inventory` | **Inventory** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -75,7 +74,7 @@ When a panel no longer needs to listen to inventory changes, during cleanup, or 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **optional** | The specific inventory ID to remove hooks for, or nil to remove all hooks |
+| `id` | **number** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -128,10 +127,8 @@ When positioning UI elements that need to adapt to different screen resolutions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `x` | **unknown** | The horizontal position value to be scaled |
-| `x` | **unknown** | The horizontal position value to be scaled |
-| `y` | **unknown** | The vertical position value to be scaled |
-| `y` | **unknown** | The vertical position value to be scaled |
+| `x` | **number** |  |
+| `y` | **number** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -188,10 +185,8 @@ When sizing UI elements that need to adapt to different screen resolutions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `w` | **unknown** | The width value to be scaled |
-| `w` | **unknown** | The width value to be scaled |
-| `h` | **unknown** | The height value to be scaled |
-| `h` | **unknown** | The height value to be scaled |
+| `w` | **number** |  |
+| `h` | **number** |  |
 
 #### ↩️ Returns
 * Nothing

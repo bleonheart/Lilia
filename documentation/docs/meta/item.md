@@ -492,13 +492,9 @@ When executing item functions that need player/entity context
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `method` | **unknown** | String name of the method to call |
-| `method` | **unknown** | String name of the method to call |
-| `client` | **unknown** | Player entity to set as context |
-| `client` | **unknown** | Player entity to set as context |
-| `entity` | **unknown** | Entity to set as context |
-| `entity` | **unknown** | Entity to set as context |
-| `...` | **unknown** | Additional arguments to pass to the method |
+| `method` | **string** |  |
+| `client` | **Player** |  |
+| `entity` | **Entity** |  |
 
 #### ↩️ Returns
 * The return values from the called method
@@ -608,10 +604,8 @@ When accessing item-specific data or configuration
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key to retrieve |
-| `key` | **unknown** | The data key to retrieve |
-| `default` | **unknown** | Optional default value if key doesn't exist |
-| `default` | **unknown** | Optional default value if key doesn't exist |
+| `key` | **string** |  |
+| `default` | **any** |  |
 
 #### ↩️ Returns
 * The data value or default value if key doesn't exist
@@ -719,10 +713,8 @@ During item configuration to add custom behavior
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **unknown** | String name of the hook (e.g., "use", "drop") |
-| `name` | **unknown** | String name of the hook (e.g., "use", "drop") |
-| `func` | **unknown** | Function to call when the hook is triggered |
-| `func` | **unknown** | Function to call when the hook is triggered |
+| `name` | **string** |  |
+| `func` | **function** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -782,10 +774,8 @@ During item configuration to add cleanup or follow-up behavior
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **unknown** | String name of the hook (e.g., "use", "drop") |
-| `name` | **unknown** | String name of the hook (e.g., "use", "drop") |
-| `func` | **unknown** | Function to call after the hook is triggered |
-| `func` | **unknown** | Function to call after the hook is triggered |
+| `name` | **string** |  |
+| `func` | **function** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -1088,8 +1078,7 @@ For debugging or logging item state
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `detail` | **unknown** | Optional boolean to show detailed information |
-| `detail` | **unknown** | Optional boolean to show detailed information |
+| `detail` | **boolean** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -1284,8 +1273,7 @@ When transferring items between inventories or temporarily removing them
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `preserveItem` | **unknown** | Optional boolean to preserve item data in database |
-| `preserveItem` | **unknown** | Optional boolean to preserve item data in database |
+| `preserveItem` | **boolean** |  |
 
 #### ↩️ Returns
 * Deferred object that resolves when removal is complete
@@ -1350,7 +1338,7 @@ Server
 #### 📊 Medium Complexity
 ```lua
     item:delete():next(function()
-    print("Item permanently deleted")
+        print("Item permanently deleted")
     end)
 
 ```
@@ -1402,7 +1390,7 @@ Server
 #### 📊 Medium Complexity
 ```lua
     item:remove():next(function()
-    player:notify("Item consumed")
+        player:notify("Item consumed")
     end)
 
 ```
@@ -1801,10 +1789,8 @@ When dropping items or spawning them in the world
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `position` | **unknown** | Position to spawn the item (Vector, table, or Player entity) |
-| `position` | **unknown** | Position to spawn the item (Vector, table, or Player entity) |
-| `angles` | **unknown** | Optional angles for the spawned item |
-| `angles` | **unknown** | Optional angles for the spawned item |
+| `position` | **Vector|table|Player** |  |
+| `angles` | **Angle** |  |
 
 #### ↩️ Returns
 * The created entity
@@ -1831,18 +1817,18 @@ Server
     local function dropItemWithPhysics(item, player, force)
         -- Remove from inventory
         item:removeFromInventory(true):next(function()
-        -- Spawn with physics
-        local entity = item:spawn(player:GetPos() + Vector(0, 50, 0))
-        if entity and IsValid(entity:GetPhysicsObject()) then
-            -- Apply throw force
-            local phys = entity:GetPhysicsObject()
-            phys:ApplyForceCenter(player:GetAimVector() * force)
-            -- Add some spin
-            phys:AddAngleVelocity(VectorRand() * 100)
-            -- Log the drop
-            lia.log.add(player, "item_dropped", item:getID(), item:getName())
-        end
-    end)
+            -- Spawn with physics
+            local entity = item:spawn(player:GetPos() + Vector(0, 50, 0))
+            if entity and IsValid(entity:GetPhysicsObject()) then
+                -- Apply throw force
+                local phys = entity:GetPhysicsObject()
+                phys:ApplyForceCenter(player:GetAimVector() * force)
+                -- Add some spin
+                phys:AddAngleVelocity(VectorRand() * 100)
+                -- Log the drop
+                lia.log.add(player, "item_dropped", item:getID(), item:getName())
+            end
+        end)
     end
     dropItemWithPhysics(myItem, player, 1000)
 
@@ -1862,10 +1848,8 @@ When moving items between inventories (trading, storing, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newInventory` | **unknown** | The inventory to transfer the item to |
-| `newInventory` | **unknown** | The inventory to transfer the item to |
-| `bBypass` | **unknown** | Optional boolean to bypass access control checks |
-| `bBypass` | **unknown** | Optional boolean to bypass access control checks |
+| `newInventory` | **Inventory** |  |
+| `bBypass` | **boolean** |  |
 
 #### ↩️ Returns
 * Boolean indicating if transfer was successful
@@ -1894,10 +1878,10 @@ Server
     local function tradeItems(player1, player2, itemID, payment)
         local item = player1:getInventory():getItems()[itemID]
         if not item then return false, "Item not found" end
-            -- Check if player2 has enough money
-            if player2:getMoney() < payment then
-                return false, "Insufficient funds"
-            end
+        -- Check if player2 has enough money
+        if player2:getMoney() < payment then
+            return false, "Insufficient funds"
+        end
         -- Transfer item
         if item:transfer(player2:getInventory()) then
             -- Handle payment
@@ -1972,7 +1956,7 @@ Server
         elseif self.category == "armor" then
             self:setData("protection", self:getData("maxProtection", 50))
         end
-        end
+    end
 
 ```
 
@@ -2033,7 +2017,7 @@ Server
         elseif self.category == "armor" then
             self:setData("protection", self:getData("maxProtection", 50))
         end
-        end
+    end
 
 ```
 
@@ -2094,7 +2078,7 @@ Server
         elseif self.category == "armor" then
             self:setData("protection", self:getData("maxProtection", 50))
         end
-        end
+    end
 
 ```
 
@@ -2155,7 +2139,7 @@ Server
         elseif self.category == "armor" then
             self:setData("protection", self:getData("maxProtection", 50))
         end
-        end
+    end
 
 ```
 
@@ -2173,8 +2157,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **unknown** | Optional specific client to sync to |
-| `recipient` | **unknown** | Optional specific client to sync to |
+| `recipient` | **Player** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2214,20 +2197,20 @@ Server
         -- Only send sensitive data to item owner
         if recipient == self:getOwner() then
             dataToSend = self:getAllData()
-            else
-                -- Filter out sensitive data for other players
-                for key, value in pairs(self:getAllData()) do
-                    if not self.sensitiveDataKeys[key] then
-                        dataToSend[key] = value
-                    end
+        else
+            -- Filter out sensitive data for other players
+            for key, value in pairs(self:getAllData()) do
+                if not self.sensitiveDataKeys[key] then
+                    dataToSend[key] = value
                 end
             end
-            -- Send filtered data
-            net.Start("FilteredItemData")
-            net.WriteType(self:getID())
-            net.WriteTable(dataToSend)
-            net.Send(recipient)
         end
+        -- Send filtered data
+        net.Start("FilteredItemData")
+        net.WriteType(self:getID())
+        net.WriteTable(dataToSend)
+        net.Send(recipient)
+    end
 
 ```
 
@@ -2245,8 +2228,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **unknown** | Optional specific client to sync to |
-| `recipient` | **unknown** | Optional specific client to sync to |
+| `recipient` | **Player** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2286,20 +2268,20 @@ Server
         -- Only send sensitive data to item owner
         if recipient == self:getOwner() then
             dataToSend = self:getAllData()
-            else
-                -- Filter out sensitive data for other players
-                for key, value in pairs(self:getAllData()) do
-                    if not self.sensitiveDataKeys[key] then
-                        dataToSend[key] = value
-                    end
+        else
+            -- Filter out sensitive data for other players
+            for key, value in pairs(self:getAllData()) do
+                if not self.sensitiveDataKeys[key] then
+                    dataToSend[key] = value
                 end
             end
-            -- Send filtered data
-            net.Start("FilteredItemData")
-            net.WriteType(self:getID())
-            net.WriteTable(dataToSend)
-            net.Send(recipient)
         end
+        -- Send filtered data
+        net.Start("FilteredItemData")
+        net.WriteType(self:getID())
+        net.WriteTable(dataToSend)
+        net.Send(recipient)
+    end
 
 ```
 
@@ -2317,8 +2299,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **unknown** | Optional specific client to sync to |
-| `recipient` | **unknown** | Optional specific client to sync to |
+| `recipient` | **Player** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2358,20 +2339,20 @@ Server
         -- Only send sensitive data to item owner
         if recipient == self:getOwner() then
             dataToSend = self:getAllData()
-            else
-                -- Filter out sensitive data for other players
-                for key, value in pairs(self:getAllData()) do
-                    if not self.sensitiveDataKeys[key] then
-                        dataToSend[key] = value
-                    end
+        else
+            -- Filter out sensitive data for other players
+            for key, value in pairs(self:getAllData()) do
+                if not self.sensitiveDataKeys[key] then
+                    dataToSend[key] = value
                 end
             end
-            -- Send filtered data
-            net.Start("FilteredItemData")
-            net.WriteType(self:getID())
-            net.WriteTable(dataToSend)
-            net.Send(recipient)
         end
+        -- Send filtered data
+        net.Start("FilteredItemData")
+        net.WriteType(self:getID())
+        net.WriteTable(dataToSend)
+        net.Send(recipient)
+    end
 
 ```
 
@@ -2389,8 +2370,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **unknown** | Optional specific client to sync to |
-| `recipient` | **unknown** | Optional specific client to sync to |
+| `recipient` | **Player** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2430,20 +2410,20 @@ Server
         -- Only send sensitive data to item owner
         if recipient == self:getOwner() then
             dataToSend = self:getAllData()
-            else
-                -- Filter out sensitive data for other players
-                for key, value in pairs(self:getAllData()) do
-                    if not self.sensitiveDataKeys[key] then
-                        dataToSend[key] = value
-                    end
+        else
+            -- Filter out sensitive data for other players
+            for key, value in pairs(self:getAllData()) do
+                if not self.sensitiveDataKeys[key] then
+                    dataToSend[key] = value
                 end
             end
-            -- Send filtered data
-            net.Start("FilteredItemData")
-            net.WriteType(self:getID())
-            net.WriteTable(dataToSend)
-            net.Send(recipient)
         end
+        -- Send filtered data
+        net.Start("FilteredItemData")
+        net.WriteType(self:getID())
+        net.WriteTable(dataToSend)
+        net.Send(recipient)
+    end
 
 ```
 
@@ -2701,8 +2681,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **unknown** | The inventory this item belongs to |
-| `inventory` | **unknown** | The inventory this item belongs to |
+| `inventory` | **Inventory** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2778,8 +2757,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **unknown** | The inventory this item belongs to |
-| `inventory` | **unknown** | The inventory this item belongs to |
+| `inventory` | **Inventory** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2855,8 +2833,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **unknown** | The inventory this item belongs to |
-| `inventory` | **unknown** | The inventory this item belongs to |
+| `inventory` | **Inventory** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2932,8 +2909,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **unknown** | The inventory this item belongs to |
-| `inventory` | **unknown** | The inventory this item belongs to |
+| `inventory` | **Inventory** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -3009,8 +2985,7 @@ When item data needs to be sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **unknown** | Optional specific client to sync to, broadcasts if nil |
-| `recipient` | **unknown** | Optional specific client to sync to, broadcasts if nil |
+| `recipient` | **Player** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -3066,16 +3041,11 @@ When item data needs to be updated and persisted
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key to set |
-| `key` | **unknown** | The data key to set |
-| `value` | **unknown** | The value to set |
-| `value` | **unknown** | The value to set |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `noSave` | **unknown** | Optional boolean to skip database saving |
-| `noSave` | **unknown** | Optional boolean to skip database saving |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity data sync |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity data sync |
+| `key` | **string** |  |
+| `value` | **any** |  |
+| `receivers` | **table** |  |
+| `noSave` | **boolean** |  |
+| `noCheckEntity` | **boolean** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -3136,12 +3106,9 @@ When increasing item stack size
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `quantity` | **unknown** | Amount to add to the quantity |
-| `quantity` | **unknown** | Amount to add to the quantity |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity sync |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity sync |
+| `quantity` | **number** |  |
+| `receivers` | **table** |  |
+| `noCheckEntity` | **boolean** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -3202,12 +3169,9 @@ When changing item stack size or count
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `quantity` | **unknown** | New quantity value |
-| `quantity` | **unknown** | New quantity value |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `receivers` | **unknown** | Optional specific clients to notify |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity sync |
-| `noCheckEntity` | **unknown** | Optional boolean to skip entity sync |
+| `quantity` | **number** |  |
+| `receivers` | **table** |  |
+| `noCheckEntity` | **boolean** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -3268,14 +3232,10 @@ When a player attempts to interact with an item
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `action` | **unknown** | The interaction action (e.g., "use", "drop") |
-| `action` | **unknown** | The interaction action (e.g., "use", "drop") |
-| `client` | **unknown** | The player performing the action |
-| `client` | **unknown** | The player performing the action |
-| `entity` | **unknown** | Optional entity involved in the interaction |
-| `entity` | **unknown** | Optional entity involved in the interaction |
-| `data` | **unknown** | Optional additional data for the interaction |
-| `data` | **unknown** | Optional additional data for the interaction |
+| `action` | **string** |  |
+| `client` | **Player** |  |
+| `entity` | **Entity** |  |
+| `data` | **any** |  |
 
 #### ↩️ Returns
 * Boolean indicating if the interaction was successful

@@ -223,7 +223,7 @@ When you need to send large amounts of data that exceed normal network limits
 | `chunkSize` | **number, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -317,7 +317,7 @@ When you need to send large amounts of data that exceed normal network limits
 | `chunkSize` | **number, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -411,7 +411,7 @@ When you need to send large amounts of data that exceed normal network limits
 | `chunkSize` | **number, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -505,7 +505,7 @@ When you need to send large amounts of data that exceed normal network limits
 | `chunkSize` | **number, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server
@@ -599,7 +599,7 @@ When you need to send large amounts of data that exceed normal network limits
 | `chunkSize` | **number, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server

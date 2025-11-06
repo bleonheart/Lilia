@@ -151,10 +151,10 @@ Called when sending notifications to players in DarkRP-compatible systems
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The player to send the notification to |
-| `_` | **any** | Unused parameter (DarkRP compatibility) |
-| `_` | **any** | Unused parameter (DarkRP compatibility) |
-| `message` | **string** | The localized message key to send |
+| `client` | **Player** |  |
+| `_` | **any** |  |
+| `_` | **any** |  |
+| `message` | **string** |  |
 
 #### ↩️ Returns
 * nil
@@ -205,9 +205,9 @@ Called when displaying text in UI elements that need to fit within width constra
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** | The text to wrap |
-| `fontName` | **string** | The font name to use for width calculations |
-| `maxLineWidth` | **number** | The maximum width in pixels for each line |
+| `text` | **string** |  |
+| `fontName` | **string** |  |
+| `maxLineWidth` | **number** |  |
 
 #### ↩️ Returns
 * string - The wrapped text with line breaks inserted
@@ -273,7 +273,7 @@ Called when displaying money amounts in UI or chat messages
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** | The numeric amount to format |
+| `amount` | **number** |  |
 
 #### ↩️ Returns
 * string - The formatted currency string
@@ -328,14 +328,8 @@ Called when registering DarkRP entities for compatibility with existing addons
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** | The display name of the entity |
-| `data` | **table** | Table containing entity configuration data |
-| `cmd` | **string, optional** |  |
-| `model` | **string, optional** |  |
-| `desc` | **string, optional** |  |
-| `category` | **string, optional** |  |
-| `ent` | **string, optional** |  |
-| `price` | **number, optional** |  |
+| `name` | **string** |  |
+| `data` | **table** |  |
 
 #### ↩️ Returns
 * nil

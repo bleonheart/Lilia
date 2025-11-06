@@ -243,10 +243,10 @@ Shared
         espColor = lia.option.get("espColor", Color(255, 0, 0))
     }
     -- Validate and apply configuration
-    if type(config.showHUD) == "boolean" then
+    if isbool(config.showHUD) then
         hook.Run("HUDVisibilityChanged", config.showHUD)
     end
-    if type(config.volume) == "number" and config.volume >= 0 and config.volume <= 1 then
+    if isnumber(config.volume) and config.volume >= 0 and config.volume <= 1 then
         RunConsoleCommand("volume", tostring(config.volume))
     end
 
@@ -373,9 +373,9 @@ Client
                         if lia.option.stored[key] then
                             local option = lia.option.stored[key]
                             -- Type validation
-                            if option.type == "Boolean" and type(value) ~= "boolean" then
+                            if option.type == "Boolean" and not isbool(value) then
                                 value = tobool(value)
-                            elseif option.type == "Int" and type(value) ~= "number" then
+                            elseif option.type == "Int" and not isnumber(value) then
                                 value = tonumber(value) or option.default
                             end
                             option.value = value

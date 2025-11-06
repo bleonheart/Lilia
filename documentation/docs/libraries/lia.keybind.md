@@ -22,10 +22,10 @@ During initialization of modules or when registering custom keybinds for gamepla
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `k` | **string|number** | Either the action name (string) or key code (number) depending on parameter format |
-| `d` | **table|string** | Either configuration table with keyBind, desc, onPress, etc. or action name (string) |
-| `desc` | **string, optional** | Description of the keybind action (used when d is action name) |
-| `cb` | **table, optional** | Callback table with onPress, onRelease, shouldRun, serverOnly functions (used when d is action name) |
+| `k` | **string|number** |  |
+| `d` | **table|string** |  |
+| `desc` | **string, optional** |  |
+| `cb` | **table, optional** |  |
 
 #### ↩️ Returns
 * None
@@ -39,12 +39,12 @@ Shared
 ```lua
     -- Simple: Add a basic keybind with table configuration
     lia.keybind.add("openInventory", {
-    keyBind = KEY_I,
-    desc = "openInventoryDesc",
-    onPress = function()
-    local f1Menu = vgui.Create("liaMenu")
-    f1Menu:setActiveTab(L("inv"))
-    end
+        keyBind = KEY_I,
+        desc = "openInventoryDesc",
+        onPress = function()
+            local f1Menu = vgui.Create("liaMenu")
+            f1Menu:setActiveTab(L("inv"))
+        end
     })
 
 ```
@@ -53,17 +53,17 @@ Shared
 ```lua
     -- Medium: Add keybind with conditional execution and server-only flag
     lia.keybind.add("adminMode", {
-    keyBind = KEY_F1,
-    desc = "adminModeDesc",
-    serverOnly = true,
-    onPress = function(client)
-    if not IsValid(client) then return end
-        client:ChatPrint(L("adminModeToggle"))
-        -- Admin mode logic here
-    end,
-    shouldRun = function(client)
-    return client:IsAdmin()
-    end
+        keyBind = KEY_F1,
+        desc = "adminModeDesc",
+        serverOnly = true,
+        onPress = function(client)
+            if not IsValid(client) then return end
+            client:ChatPrint(L("adminModeToggle"))
+            -- Admin mode logic here
+        end,
+        shouldRun = function(client)
+            return client:IsAdmin()
+        end
     })
 
 ```
@@ -72,21 +72,21 @@ Shared
 ```lua
     -- High: Add keybind with multiple callbacks and complex validation
     lia.keybind.add("convertEntity", {
-    keyBind = KEY_E,
-    desc = "convertEntityDesc",
-    onPress = function(client)
-    if not IsValid(client) or not client:getChar() then return end
-        local trace = client:GetEyeTrace()
-        local targetEntity = trace.Entity
-        -- Complex entity conversion logic
-    end,
-    onRelease = function(client)
-    -- Handle key release if needed
-    end,
-    shouldRun = function(client)
-    return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
-    end,
-    serverOnly = true
+        keyBind = KEY_E,
+        desc = "convertEntityDesc",
+        onPress = function(client)
+            if not IsValid(client) or not client:getChar() then return end
+            local trace = client:GetEyeTrace()
+            local targetEntity = trace.Entity
+            -- Complex entity conversion logic
+        end,
+        onRelease = function(client)
+            -- Handle key release if needed
+        end,
+        shouldRun = function(client)
+            return client:getChar() ~= nil and client:GetEyeTrace().Entity:IsValid()
+        end,
+        serverOnly = true
     })
 
 ```
@@ -105,8 +105,8 @@ When checking what key is currently bound to an action, typically in UI or valid
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `a` | **string** | The action name to get the key for |
-| `df` | **number, optional** | Default key code to return if no key is bound |
+| `a` | **string** |  |
+| `df` | **number, optional** |  |
 
 #### ↩️ Returns
 * number - The key code bound to the action, or the default value if none is set
@@ -130,9 +130,9 @@ Client
     local adminKey = lia.keybind.get("adminMode", KEY_F1)
     if adminKey == KEY_NONE then
         print("Admin mode not bound to any key")
-        else
-            print("Admin mode bound to:", input.GetKeyName(adminKey))
-        end
+    else
+        print("Admin mode bound to:", input.GetKeyName(adminKey))
+    end
 
 ```
 
@@ -145,8 +145,8 @@ Client
         local key = lia.keybind.get(action, KEY_NONE)
         if key ~= KEY_NONE then
             boundKeys[action] = {
-            key = key,
-            name = input.GetKeyName(key) or "Unknown"
+                key = key,
+                name = input.GetKeyName(key) or "Unknown"
             }
         end
     end
@@ -184,10 +184,10 @@ Client
     -- Medium: Save keybinds with validation
     local function saveKeybindsSafely()
         local success = pcall(function()
-        lia.keybind.save()
-    end)
-    if success then
-        print("Keybinds saved successfully")
+            lia.keybind.save()
+        end)
+        if success then
+            print("Keybinds saved successfully")
         else
             print("Failed to save keybinds")
         end
@@ -209,15 +209,15 @@ Client
         end
         -- Save new settings
         local success = pcall(function()
-        lia.keybind.save()
-    end)
-    if not success then
-        -- Restore from backup if save failed
-        if file.Exists(backupPath, "DATA") then
-            local backupData = file.Read(backupPath, "DATA")
-            file.Write(currentPath, backupData)
+            lia.keybind.save()
+        end)
+        if not success then
+            -- Restore from backup if save failed
+            if file.Exists(backupPath, "DATA") then
+                local backupData = file.Read(backupPath, "DATA")
+                file.Write(currentPath, backupData)
+            end
         end
-    end
     end
     saveKeybindsWithBackup()
 
@@ -253,11 +253,11 @@ Client
     -- Medium: Load keybinds with validation and fallback
     local function loadKeybindsSafely()
         local success = pcall(function()
-        lia.keybind.load()
-    end)
-    if success then
-        print("Keybinds loaded successfully")
-        hook.Run("KeybindsLoaded")
+            lia.keybind.load()
+        end)
+        if success then
+            print("Keybinds loaded successfully")
+            hook.Run("KeybindsLoaded")
         else
             print("Failed to load keybinds, using defaults")
             -- Reset to default keybinds
@@ -288,30 +288,30 @@ Client
         end
         -- Load with error handling
         local success = pcall(function()
-        lia.keybind.load()
-    end)
-    if not success then
-        -- Create default keybind file
-        local defaultKeybinds = {}
-        for action, data in pairs(lia.keybind.stored) do
-            if istable(data) and data.default then
-                defaultKeybinds[action] = data.default
-            end
-        end
-        local json = util.TableToJSON(defaultKeybinds, true)
-        if json then
-            file.Write(keybindPath, json)
             lia.keybind.load()
-        end
-    end
-    -- Validate loaded keybinds
-    for action, data in pairs(lia.keybind.stored) do
-        if istable(data) and data.value then
-            if not KeybindKeys[data.value] and data.value ~= KEY_NONE then
-                data.value = data.default or KEY_NONE
+        end)
+        if not success then
+            -- Create default keybind file
+            local defaultKeybinds = {}
+            for action, data in pairs(lia.keybind.stored) do
+                if istable(data) and data.default then
+                    defaultKeybinds[action] = data.default
+                end
+            end
+            local json = util.TableToJSON(defaultKeybinds, true)
+            if json then
+                file.Write(keybindPath, json)
+                lia.keybind.load()
             end
         end
-    end
+        -- Validate loaded keybinds
+        for action, data in pairs(lia.keybind.stored) do
+            if istable(data) and data.value then
+                if not KeybindKeys[data.value] and data.value ~= KEY_NONE then
+                    data.value = data.default or KEY_NONE
+                end
+            end
+        end
     end
     loadKeybindsWithMigration()
 

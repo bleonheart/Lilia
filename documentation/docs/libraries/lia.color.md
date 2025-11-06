@@ -26,7 +26,7 @@ When defining custom colors or extending the color palette
 | `color` | **table** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Client
@@ -341,7 +341,7 @@ When switching themes or initializing the color system
 | `useTransition` | **boolean, optional** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Client
@@ -455,7 +455,7 @@ When previewing theme changes or testing transitions
 | `themeName` | **string** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Client
@@ -513,7 +513,7 @@ When applying themes with transition animation enabled
 | `name` | **string** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Client

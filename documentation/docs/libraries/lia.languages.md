@@ -22,7 +22,7 @@ During gamemode initialization or when manually loading language files
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** | The directory path containing language files |
+| `directory` | **string** |  |
 
 #### ↩️ Returns
 * None
@@ -53,9 +53,9 @@ Shared
 ```lua
     -- High: Load languages from multiple directories with validation
     local languageDirs = {
-    "lilia/gamemode/languages",
-    "lilia/gamemode/modules/custom/languages",
-    "addons/mycustomaddon/languages"
+        "lilia/gamemode/languages",
+        "lilia/gamemode/modules/custom/languages",
+        "addons/mycustomaddon/languages"
     }
     for _, dir in ipairs(languageDirs) do
         if file.Exists(dir, "LUA") then
@@ -79,7 +79,8 @@ When manually adding language strings or when modules need to register their own
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** | The language name/key, tbl (table) - Table containing key-value pairs of translations |
+| `name` | **string** |  |
+| `tbl` | **table** |  |
 
 #### ↩️ Returns
 * None
@@ -93,8 +94,8 @@ Shared
 ```lua
     -- Simple: Add basic language strings
     lia.lang.addTable("english", {
-    hello = "Hello",
-    goodbye = "Goodbye"
+        hello = "Hello",
+        goodbye = "Goodbye"
     })
 
 ```
@@ -103,9 +104,9 @@ Shared
 ```lua
     -- Medium: Add module-specific language strings
     local moduleLang = {
-    moduleTitle = "My Module",
-    moduleDescription = "This is a custom module",
-    moduleError = "An error occurred: %s"
+        moduleTitle = "My Module",
+        moduleDescription = "This is a custom module",
+        moduleError = "An error occurred: %s"
     }
     lia.lang.addTable("english", moduleLang)
 
@@ -115,12 +116,12 @@ Shared
 ```lua
     -- High: Add multiple language tables with validation
     local languages = {
-    english = { title = "Title", desc = "Description" },
-    spanish = { title = "Título", desc = "Descripción" },
-    french = { title = "Titre", desc = "Description" }
+        english = { title = "Title", desc = "Description" },
+        spanish = { title = "Título", desc = "Descripción" },
+        french = { title = "Titre", desc = "Description" }
     }
     for lang, strings in pairs(languages) do
-        if type(strings) == "table" then
+        if istable(strings) then
             lia.lang.addTable(lang, strings)
         end
     end
@@ -179,11 +180,11 @@ Shared
         end
         if found then
             lia.config.set("Language", langName:lower())
-            else
-                lia.notice.add("Invalid language selected, using English", NOTIFY_ERROR)
-                lia.config.set("Language", "english")
-            end
+        else
+            lia.notice.add("Invalid language selected, using English", NOTIFY_ERROR)
+            lia.config.set("Language", "english")
         end
+    end
 
 ```
 
@@ -201,7 +202,7 @@ When displaying text to users or when any localized string is needed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** | The language key to look up, ... (variadic) - Parameters for string formatting |
+| `key` | **string** |  |
 
 #### ↩️ Returns
 * string - The localized and formatted string, or the key if not found
@@ -238,10 +239,10 @@ Shared
         if template then
             local message = lia.lang.getLocalizedString("itemInfo", itemName, "No description available")
             lia.notice.add(message, NOTIFY_GENERIC)
-            else
-                lia.notice.add("Item: " .. itemName .. " x" .. quantity .. " - $" .. price, NOTIFY_GENERIC)
-            end
+        else
+            lia.notice.add("Item: " .. itemName .. " x" .. quantity .. " - $" .. price, NOTIFY_GENERIC)
         end
+    end
 
 ```
 

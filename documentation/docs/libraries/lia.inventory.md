@@ -986,19 +986,13 @@ Server
 ### lia.inventory.getAllTrunks
 
 #### 📋 Purpose
-Retrieves all registered storage configurations with optional trunk filtering
+Retrieves all registered vehicle trunk configurations
 
 #### ⏰ When Called
-When needing to iterate through all available storage containers
-
-#### ⚙️ Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `includeTrunks` | **boolean, optional** |  |
+When needing to iterate through all available vehicle trunks
 
 #### ↩️ Returns
-* Table containing all storage configurations indexed by model/class
+* Table containing all trunk configurations indexed by vehicle class
 
 #### 🌐 Realm
 Server
@@ -1073,75 +1067,6 @@ Server
         end
         return categorized
     end
-
-```
-
-#### 🔰 Low Complexity
-```lua
-    -- Simple: Get all storage (including trunks)
-    local allStorage = lia.inventory.getAllStorage()
-    for key, data in pairs(allStorage) do
-        print("Storage:", key, "Name:", data.name)
-    end
-
-```
-
-#### 📊 Medium Complexity
-```lua
-    -- Medium: Get storage excluding trunks
-    local function getStorageContainers()
-        local storageOnly = lia.inventory.getAllStorage(false)
-        local containers = {}
-        for model, data in pairs(storageOnly) do
-            table.insert(containers, {
-            model = model,
-            name = data.name,
-            type = data.invType,
-            size = data.invData.w * data.invData.h
-            })
-        end
-        return containers
-    end
-
-```
-
-#### ⚙️ High Complexity
-```lua
-    -- High: Get storage with comprehensive categorization and validation
-    local function getCategorizedStorage(includeTrunks)
-        local allStorage = lia.inventory.getAllStorage(includeTrunks)
-        local categorized = {
-        containers = {},
-        trunks = {},
-        invalid = {}
-        }
-        for key, data in pairs(allStorage) do
-            if not data or not data.name or not data.invData then
-                table.insert(categorized.invalid, {key = key, reason = "Invalid data structure"})
-                goto continue
-            end
-            local storageInfo = {
-            key = key,
-            name = data.name,
-            type = data.invType,
-            width = data.invData.w,
-            height = data.invData.h,
-            maxWeight = data.invData.maxWeight,
-            isTrunk = data.isTrunk or false
-            }
-            if data.isTrunk then
-                table.insert(categorized.trunks, storageInfo)
-                else
-                    table.insert(categorized.containers, storageInfo)
-                end
-                ::continue::
-            end
-            lia.log("Categorized " .. #categorized.containers .. " containers and " .. #categorized.trunks .. " trunks")
-            if #categorized.invalid > 0 then
-                lia.warning("Found " .. #categorized.invalid .. " invalid storage entries")
-            end
-            return categorized
-        end
 
 ```
 
@@ -1171,77 +1096,6 @@ Server
 
 #### 🔰 Low Complexity
 ```lua
-    -- Simple: Get all trunks
-    local trunks = lia.inventory.getAllTrunks()
-    for vehicleClass, trunkData in pairs(trunks) do
-        print("Vehicle:", vehicleClass, "Trunk:", trunkData.name)
-    end
-
-```
-
-#### 📊 Medium Complexity
-```lua
-    -- Medium: Get trunks with processing
-    local function getAllTrunkInfo()
-        local trunks = lia.inventory.getAllTrunks()
-        local trunkList = {}
-        for vehicleClass, trunkData in pairs(trunks) do
-            table.insert(trunkList, {
-                vehicleClass = vehicleClass,
-                name         = trunkData.name,
-                size         = trunkData.invData.w * trunkData.invData.h
-            })
-        end
-        return trunkList
-    end
-
-```
-
-#### ⚙️ High Complexity
-```lua
-    -- High: Get trunks with comprehensive validation and categorization
-    local function getCategorizedTrunks()
-        local trunks = lia.inventory.getAllTrunks()
-        local categorized = {
-            civilian  = {},
-            emergency = {},
-            military  = {},
-            other     = {}
-        }
-        for vehicleClass, trunkData in pairs(trunks) do
-            if not trunkData or not trunkData.name or not trunkData.invData then
-                lia.warning("Invalid trunk data for vehicle: " .. vehicleClass)
-                goto continue
-            end
-            local trunkInfo = {
-                vehicleClass = vehicleClass,
-                name         = trunkData.name,
-                type         = trunkData.invType,
-                width        = trunkData.invData.w,
-                height       = trunkData.invData.h,
-                maxWeight    = trunkData.invData.maxWeight,
-                restricted   = trunkData.invData.restricted or false
-            }
-            -- Categorize based on vehicle class
-            local lowerClass = vehicleClass:lower()
-            if string.find(lowerClass, "police") or string.find(lowerClass, "ambulance") then
-                table.insert(categorized.emergency, trunkInfo)
-            elseif string.find(lowerClass, "military") or string.find(lowerClass, "tank") then
-                table.insert(categorized.military, trunkInfo)
-            elseif string.find(lowerClass, "civilian") or string.find(lowerClass, "jeep") then
-                table.insert(categorized.civilian, trunkInfo)
-            else
-                table.insert(categorized.other, trunkInfo)
-            end
-            ::continue::
-        end
-        return categorized
-    end
-
-```
-
-#### 🔰 Low Complexity
-```lua
     -- Simple: Get all storage (including trunks)
     local allStorage = lia.inventory.getAllStorage()
     for key, data in pairs(allStorage) do
@@ -1258,10 +1112,10 @@ Server
         local containers = {}
         for model, data in pairs(storageOnly) do
             table.insert(containers, {
-            model = model,
-            name = data.name,
-            type = data.invType,
-            size = data.invData.w * data.invData.h
+                model = model,
+                name = data.name,
+                type = data.invType,
+                size = data.invData.w * data.invData.h
             })
         end
         return containers
@@ -1275,9 +1129,9 @@ Server
     local function getCategorizedStorage(includeTrunks)
         local allStorage = lia.inventory.getAllStorage(includeTrunks)
         local categorized = {
-        containers = {},
-        trunks = {},
-        invalid = {}
+            containers = {},
+            trunks = {},
+            invalid = {}
         }
         for key, data in pairs(allStorage) do
             if not data or not data.name or not data.invData then
@@ -1285,27 +1139,27 @@ Server
                 goto continue
             end
             local storageInfo = {
-            key = key,
-            name = data.name,
-            type = data.invType,
-            width = data.invData.w,
-            height = data.invData.h,
-            maxWeight = data.invData.maxWeight,
-            isTrunk = data.isTrunk or false
+                key = key,
+                name = data.name,
+                type = data.invType,
+                width = data.invData.w,
+                height = data.invData.h,
+                maxWeight = data.invData.maxWeight,
+                isTrunk = data.isTrunk or false
             }
             if data.isTrunk then
                 table.insert(categorized.trunks, storageInfo)
-                else
-                    table.insert(categorized.containers, storageInfo)
-                end
-                ::continue::
+            else
+                table.insert(categorized.containers, storageInfo)
             end
-            lia.log("Categorized " .. #categorized.containers .. " containers and " .. #categorized.trunks .. " trunks")
-            if #categorized.invalid > 0 then
-                lia.warning("Found " .. #categorized.invalid .. " invalid storage entries")
-            end
-            return categorized
+            ::continue::
         end
+        lia.log("Categorized " .. #categorized.containers .. " containers and " .. #categorized.trunks .. " trunks")
+        if #categorized.invalid > 0 then
+            lia.warning("Found " .. #categorized.invalid .. " invalid storage entries")
+        end
+        return categorized
+    end
 
 ```
 
@@ -1388,10 +1242,10 @@ Client
         closeBtn:SetPos(panel:GetWide() - 80, 10)
         closeBtn:SetSize(70, 25)
         closeBtn.DoClick = function()
-        panel:Remove()
-    end
-    lia.log("Successfully displayed inventory panel for inventory " .. inventory.id)
-    return panel
+            panel:Remove()
+        end
+        lia.log("Successfully displayed inventory panel for inventory " .. inventory.id)
+        return panel
     end
 
 ```
@@ -1475,10 +1329,10 @@ Client
         closeBtn:SetPos(panel:GetWide() - 80, 10)
         closeBtn:SetSize(70, 25)
         closeBtn.DoClick = function()
-        panel:Remove()
-    end
-    lia.log("Successfully displayed inventory panel for inventory " .. inventory.id)
-    return panel
+            panel:Remove()
+        end
+        lia.log("Successfully displayed inventory panel for inventory " .. inventory.id)
+        return panel
     end
 
 ```

@@ -22,10 +22,8 @@ Whenever inventory data needs to be accessed with a safe default value
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key to retrieve |
-| `key` | **unknown** | The data key to retrieve |
-| `default` | **unknown** | Optional default value if key doesn't exist |
-| `default` | **unknown** | Optional default value if key doesn't exist |
+| `key` | **string** |  |
+| `default` | **any** |  |
 
 #### ↩️ Returns
 * The data value or default value if key doesn't exist
@@ -77,8 +75,7 @@ During inventory type registration to create specialized inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `className` | **unknown** | The name of the class to extend |
-| `className` | **unknown** | The name of the class to extend |
+| `className` | **string** |  |
 
 #### ↩️ Returns
 * The extended class with Inventory functionality
@@ -126,8 +123,7 @@ During inventory type registration to create specialized inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `className` | **unknown** | The name of the class to extend |
-| `className` | **unknown** | The name of the class to extend |
+| `className` | **string** |  |
 
 #### ↩️ Returns
 * The extended class with Inventory functionality
@@ -363,10 +359,8 @@ During inventory configuration to set up data change callbacks
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key to monitor for changes |
-| `key` | **unknown** | The data key to monitor for changes |
-| `onChange` | **unknown** | Function to call when the data changes (oldValue, newValue) |
-| `onChange` | **unknown** | Function to call when the data changes (oldValue, newValue) |
+| `key` | **string** |  |
+| `onChange` | **function** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -420,10 +414,8 @@ When you need to find all instances of a particular item type
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **unknown** | The uniqueID of the item type to find |
-| `uniqueID` | **unknown** | The uniqueID of the item type to find |
-| `onlyMain` | **unknown** | Optional boolean to only return items in main inventory slots |
-| `onlyMain` | **unknown** | Optional boolean to only return items in main inventory slots |
+| `uniqueID` | **string** |  |
+| `onlyMain` | **boolean** |  |
 
 #### ↩️ Returns
 * Table of items matching the uniqueID
@@ -475,8 +467,7 @@ During inventory type definition to make it available for use
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `typeID` | **unknown** | String identifier for this inventory type |
-| `typeID` | **unknown** | String identifier for this inventory type |
+| `typeID` | **string** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -644,12 +635,9 @@ Automatically when setData is called and data changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key that changed |
-| `key` | **unknown** | The data key that changed |
-| `oldValue` | **unknown** | The previous value |
-| `oldValue` | **unknown** | The previous value |
-| `newValue` | **unknown** | The new value |
-| `newValue` | **unknown** | The new value |
+| `key` | **string** |  |
+| `oldValue` | **any** |  |
+| `newValue` | **any** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -707,12 +695,9 @@ Automatically when setData is called and data changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key that changed |
-| `key` | **unknown** | The data key that changed |
-| `oldValue` | **unknown** | The previous value |
-| `oldValue` | **unknown** | The previous value |
-| `newValue` | **unknown** | The new value |
-| `newValue` | **unknown** | The new value |
+| `key` | **string** |  |
+| `oldValue` | **any** |  |
+| `newValue` | **any** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -770,12 +755,9 @@ Automatically when setData is called and data changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key that changed |
-| `key` | **unknown** | The data key that changed |
-| `oldValue` | **unknown** | The previous value |
-| `oldValue` | **unknown** | The previous value |
-| `newValue` | **unknown** | The new value |
-| `newValue` | **unknown** | The new value |
+| `key` | **string** |  |
+| `oldValue` | **any** |  |
+| `newValue` | **any** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -881,8 +863,7 @@ When you need items of a particular type for processing
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemType` | **unknown** | The uniqueID of the item type to find |
-| `itemType` | **unknown** | The uniqueID of the item type to find |
+| `itemType` | **string** |  |
 
 #### ↩️ Returns
 * Table of items matching the specified type
@@ -934,8 +915,7 @@ When you need any single item of a type (efficiency over getting all)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemType` | **unknown** | The uniqueID of the item type to find |
-| `itemType` | **unknown** | The uniqueID of the item type to find |
+| `itemType` | **string** |  |
 
 #### ↩️ Returns
 * The first item found of the specified type, or nil if none found
@@ -990,8 +970,7 @@ For quick boolean checks before performing actions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemType` | **unknown** | The uniqueID of the item type to check for |
-| `itemType` | **unknown** | The uniqueID of the item type to check for |
+| `itemType` | **string** |  |
 
 #### ↩️ Returns
 * Boolean indicating if the item type exists in inventory
@@ -1043,8 +1022,7 @@ When you need to know how many of a particular item type exist
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemType` | **unknown** | Optional uniqueID of item type to count, nil for all items |
-| `itemType` | **unknown** | Optional uniqueID of item type to count, nil for all items |
+| `itemType` | **string** |  |
 
 #### ↩️ Returns
 * Number representing total quantity of specified item type
@@ -1138,10 +1116,8 @@ When items need to be added to an inventory instance
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **unknown** | The item instance to add |
-| `item` | **unknown** | The item instance to add |
-| `noReplicate` | **unknown** | Optional boolean to skip network synchronization |
-| `noReplicate` | **unknown** | Optional boolean to skip network synchronization |
+| `item` | **Item** |  |
+| `noReplicate` | **boolean** |  |
 
 #### ↩️ Returns
 * The inventory instance for method chaining
@@ -1192,8 +1168,7 @@ Alternative method name for adding items
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **unknown** | The item instance to add |
-| `item` | **unknown** | The item instance to add |
+| `item` | **Item** |  |
 
 #### ↩️ Returns
 * The inventory instance for method chaining
@@ -1239,8 +1214,7 @@ Automatically called when items are added to inventory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **unknown** | The item that was added |
-| `item` | **unknown** | The item that was added |
+| `item` | **Item** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -1293,8 +1267,7 @@ When creating new persistent inventories
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `initialData` | **unknown** | Initial data to store with the inventory |
-| `initialData` | **unknown** | Initial data to store with the inventory |
+| `initialData` | **table** |  |
 
 #### ↩️ Returns
 * Deferred object that resolves when storage is initialized
@@ -1539,10 +1512,8 @@ When items need to be removed from inventory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **unknown** | The ID of the item to remove |
-| `itemID` | **unknown** | The ID of the item to remove |
-| `preserveItem` | **unknown** | Optional boolean to preserve item data in database |
-| `preserveItem` | **unknown** | Optional boolean to preserve item data in database |
+| `itemID` | **number** |  |
+| `preserveItem` | **boolean** |  |
 
 #### ↩️ Returns
 * Deferred object that resolves when removal is complete
@@ -1593,8 +1564,7 @@ Alternative method name for removing items
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **unknown** | The ID of the item to remove |
-| `itemID` | **unknown** | The ID of the item to remove |
+| `itemID` | **number** |  |
 
 #### ↩️ Returns
 * Deferred object that resolves when removal is complete
@@ -1643,10 +1613,8 @@ When inventory data needs to be updated
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key to set |
-| `key` | **unknown** | The data key to set |
-| `value` | **unknown** | The value to set for the key |
-| `value` | **unknown** | The value to set for the key |
+| `key` | **string** |  |
+| `value` | **any** |  |
 
 #### ↩️ Returns
 * The inventory instance for method chaining
@@ -1695,10 +1663,8 @@ Before performing actions that require access control
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `action` | **unknown** | The action to check (e.g., "repl", "add", "remove") |
-| `action` | **unknown** | The action to check (e.g., "repl", "add", "remove") |
-| `context` | **unknown** | Optional context table with additional information |
-| `context` | **unknown** | Optional context table with additional information |
+| `action` | **string** |  |
+| `context` | **table** |  |
 
 #### ↩️ Returns
 * Boolean indicating if action is allowed, and optional reason string
@@ -1755,10 +1721,8 @@ During inventory configuration to set up access control
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rule` | **unknown** | Function that takes (inventory, action, context) and returns bool, string |
-| `rule` | **unknown** | Function that takes (inventory, action, context) and returns bool, string |
-| `priority` | **unknown** | Optional priority number for rule evaluation order |
-| `priority` | **unknown** | Optional priority number for rule evaluation order |
+| `rule` | **function** |  |
+| `priority` | **number** |  |
 
 #### ↩️ Returns
 * The inventory instance for method chaining
@@ -1824,8 +1788,7 @@ When access rules need to be removed or updated
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rule` | **unknown** | The rule function to remove |
-| `rule` | **unknown** | The rule function to remove |
+| `rule` | **function** |  |
 
 #### ↩️ Returns
 * The inventory instance for method chaining
@@ -2440,8 +2403,7 @@ Automatically after loadItems completes successfully
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `items` | **unknown** | Table of loaded items |
-| `items` | **unknown** | Table of loaded items |
+| `items` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2507,8 +2469,7 @@ Automatically after loadItems completes successfully
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `items` | **unknown** | Table of loaded items |
-| `items` | **unknown** | Table of loaded items |
+| `items` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2574,8 +2535,7 @@ Automatically after loadItems completes successfully
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `items` | **unknown** | Table of loaded items |
-| `items` | **unknown** | Table of loaded items |
+| `items` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2641,8 +2601,7 @@ Automatically after loadItems completes successfully
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `items` | **unknown** | Table of loaded items |
-| `items` | **unknown** | Table of loaded items |
+| `items` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2708,8 +2667,7 @@ When creating configured inventory instances
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `initialData` | **unknown** | Initial data for the inventory instance |
-| `initialData` | **unknown** | Initial data for the inventory instance |
+| `initialData` | **table** |  |
 
 #### ↩️ Returns
 * New inventory instance
@@ -2776,10 +2734,8 @@ When inventory data changes and needs to be replicated
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **unknown** | The data key that changed |
-| `key` | **unknown** | The data key that changed |
-| `recipients` | **unknown** | Optional specific clients to send to, defaults to all recipients |
-| `recipients` | **unknown** | Optional specific clients to send to, defaults to all recipients |
+| `key` | **string** |  |
+| `recipients` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2832,8 +2788,7 @@ When clients need full inventory state (initial load, resync)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipients` | **unknown** | Optional specific clients to send to, defaults to all recipients |
-| `recipients` | **unknown** | Optional specific clients to send to, defaults to all recipients |
+| `recipients` | **table** |  |
 
 #### ↩️ Returns
 * Nothing
@@ -2993,8 +2948,7 @@ When player opens inventory interface
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `parent` | **unknown** | Optional parent panel for the inventory UI |
-| `parent` | **unknown** | Optional parent panel for the inventory UI |
+| `parent` | **Panel** |  |
 
 #### ↩️ Returns
 * The created inventory panel

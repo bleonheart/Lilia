@@ -22,7 +22,7 @@ During gamemode initialization or when loading attribute modules
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** | The directory path to search for attribute files |
+| `directory` | **string** |  |
 
 #### ↩️ Returns
 * None (modifies lia.attribs.list)
@@ -77,10 +77,10 @@ When a client spawns or when their character is created
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The client whose character attributes need to be set up |
+| `client` | **Player** |  |
 
 #### ↩️ Returns
-* None
+* nil
 
 #### 🌐 Realm
 Server

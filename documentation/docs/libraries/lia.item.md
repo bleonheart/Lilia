@@ -22,7 +22,7 @@ When you need to get an item definition for registration, instantiation, or refe
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `identifier` | **string** | The unique identifier of the item to retrieve |
+| `identifier` | **string** |  |
 
 #### ↩️ Returns
 * table - The item definition table, or nil if not found
@@ -74,7 +74,7 @@ When you need to find an item instance and know where it's located (inventory or
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** | The unique ID of the item instance |
+| `itemID` | **number** |  |
 
 #### ↩️ Returns
 * table - Contains 'item' (the item instance) and 'location' (string: "inventory", "world", or "unknown"), or nil, error message
@@ -140,7 +140,7 @@ When you only need the item instance and don't care about its location
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** | The unique ID of the item instance |
+| `itemID` | **number** |  |
 
 #### ↩️ Returns
 * table - The item instance, or nil, error message
@@ -204,7 +204,7 @@ When you need to access the custom data stored in an item instance
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** | The unique ID of the item instance |
+| `itemID` | **number** |  |
 
 #### ↩️ Returns
 * table - The item's data table, or nil, error message
@@ -246,7 +246,7 @@ Shared
     if data then
         local customData = data.customData or {}
         for key, value in pairs(customData) do
-            if type(value) == "table" then
+            if istable(value) then
                 print("Complex data for", key, ":", util.TableToJSON(value))
             else
                 print("Simple data for", key, ":", value)
@@ -274,7 +274,9 @@ During item loading process, typically called by lia.item.loadFromDir
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** | The file path to the item definition, baseID (string, optional) - Base item to inherit from, isBaseItem (boolean, optional) - Whether this is a base item |
+| `path` | **string** |  |
+| `baseID` | **string, optional** |  |
+| `isBaseItem` | **boolean, optional** |  |
 
 #### ↩️ Returns
 * void
@@ -320,7 +322,7 @@ When you need to validate that an object is an item before performing operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `object` | **any** | The object to check |
+| `object` | **any** |  |
 
 #### ↩️ Returns
 * boolean - True if the object is an item, false otherwise
@@ -382,7 +384,7 @@ When you need to access an inventory instance for item operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `invID` | **number** | The unique ID of the inventory |
+| `invID` | **number** |  |
 
 #### ↩️ Returns
 * table - The inventory instance, or nil if not found
@@ -436,7 +438,11 @@ During item loading or when creating custom items programmatically
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** | Unique identifier for the item, baseID (string, optional) - Base item to inherit from, isBaseItem (boolean, optional) - Whether this is a base item, path (string, optional) - File path for loading, luaGenerated (boolean, optional) - Whether this is generated from Lua code |
+| `uniqueID` | **string** |  |
+| `baseID` | **string, optional** |  |
+| `isBaseItem` | **boolean, optional** |  |
+| `path` | **string, optional** |  |
+| `luaGenerated` | **boolean, optional** |  |
 
 #### ↩️ Returns
 * table - The registered item definition
@@ -495,8 +501,8 @@ When you need to modify an existing item's behavior without modifying core files
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** | The unique identifier of the item to override |
-| `overrides` | **table** | Table containing function/property overrides |
+| `uniqueID` | **string** |  |
+| `overrides` | **table** |  |
 
 #### ↩️ Returns
 * table - The item definition with overrides applied
@@ -567,7 +573,7 @@ During gamemode initialization to load all items from the items directory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** | The directory path to load items from |
+| `directory` | **string** |  |
 
 #### ↩️ Returns
 * void
@@ -621,7 +627,8 @@ When you need to create a specific instance of an item with a unique ID
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** | The unique identifier of the item definition, id (number) - The unique ID for this item instance |
+| `uniqueID` | **string** |  |
+| `id` | **number** |  |
 
 #### ↩️ Returns
 * table - The new item instance, or error if item definition not found
@@ -676,7 +683,9 @@ During initialization to register custom inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `invType` | **string** | The inventory type identifier, w (number) - Width of the inventory, h (number) - Height of the inventory |
+| `invType` | **string** |  |
+| `w` | **number** |  |
+| `h` | **number** |  |
 
 #### ↩️ Returns
 * void
@@ -728,7 +737,9 @@ During initialization to register custom inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `invType` | **string** | The inventory type identifier, w (number) - Width of the inventory, h (number) - Height of the inventory |
+| `invType` | **string** |  |
+| `w` | **number** |  |
+| `h` | **number** |  |
 
 #### ↩️ Returns
 * void
@@ -780,7 +791,9 @@ During initialization to register custom inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `invType` | **string** | The inventory type identifier, w (number) - Width of the inventory, h (number) - Height of the inventory |
+| `invType` | **string** |  |
+| `w` | **number** |  |
+| `h` | **number** |  |
 
 #### ↩️ Returns
 * void
@@ -832,7 +845,9 @@ When you need to create a new inventory instance for a player or entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `owner` | **number** | The character ID of the owner, invType (string) - The inventory type, callback (function, optional) - Function to call when inventory is created |
+| `owner` | **number** |  |
+| `invType` | **string** |  |
+| `callback` | **function, optional** |  |
 
 #### ↩️ Returns
 * void
@@ -884,7 +899,9 @@ When you need to create a custom inventory with specific dimensions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `w` | **number** | Width of the inventory, h (number) - Height of the inventory, id (number) - The ID for the inventory |
+| `w` | **number** |  |
+| `h` | **number** |  |
+| `id` | **number** |  |
 
 #### ↩️ Returns
 * table - The created inventory instance
@@ -939,7 +956,8 @@ Before calling lia.item.generateWeapons to customize weapon properties
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `className` | **string** | The weapon class name, data (table) - Override data containing name, desc, model, etc. |
+| `className` | **string** |  |
+| `data` | **table** |  |
 
 #### ↩️ Returns
 * void
@@ -1011,7 +1029,7 @@ Before calling lia.item.generateWeapons to exclude specific weapons
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `className` | **string** | The weapon class name to blacklist |
+| `className` | **string** |  |
 
 #### ↩️ Returns
 * void
@@ -1185,7 +1203,12 @@ When you need to modify item data from server-side code
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** | The unique ID of the item instance, key (string) - The data key to set, value (any) - The value to set, receivers (table, optional) - Players to sync to, noSave (boolean, optional) - Whether to skip database save, noCheckEntity (boolean, optional) - Whether to skip entity validation |
+| `itemID` | **number** |  |
+| `key` | **string** |  |
+| `value` | **any** |  |
+| `receivers` | **table, optional** |  |
+| `noSave` | **boolean, optional** |  |
+| `noCheckEntity` | **boolean, optional** |  |
 
 #### ↩️ Returns
 * boolean, string - Success status and error message if failed
@@ -1245,7 +1268,12 @@ When you need to create a new item instance that will be saved to the database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `index` | **string/number** | Inventory ID or character ID, uniqueID (string) - Item definition ID, itemData (table, optional) - Initial item data, x (number, optional) - X position in inventory, y (number, optional) - Y position in inventory, callback (function, optional) - Function to call when item is created |
+| `index` | **string/number** |  |
+| `uniqueID` | **string** |  |
+| `itemData` | **table, optional** |  |
+| `x` | **number, optional** |  |
+| `y` | **number, optional** |  |
+| `callback` | **function, optional** |  |
 
 #### ↩️ Returns
 * Promise - Resolves with the created item instance
@@ -1303,7 +1331,7 @@ When you need to permanently remove an item from the game
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** | The unique ID of the item instance to delete |
+| `id` | **number** |  |
 
 #### ↩️ Returns
 * void
@@ -1362,7 +1390,7 @@ During server startup or when specific items need to be restored from database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemIndex` | **number/table** | Single item ID or table of item IDs to load |
+| `itemIndex` | **number/table** |  |
 
 #### ↩️ Returns
 * void
@@ -1424,7 +1452,11 @@ When you need to create an item that exists as a world entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** | The item definition ID, position (Vector) - World position to spawn at, callback (function, optional) - Function to call when item is spawned, angles (Angle, optional) - Rotation angles for the entity, data (table, optional) - Initial item data |
+| `uniqueID` | **string** |  |
+| `position` | **Vector** |  |
+| `callback` | **function, optional** |  |
+| `angles` | **Angle, optional** |  |
+| `data` | **table, optional** |  |
 
 #### ↩️ Returns
 * Promise - Resolves with the spawned item instance
@@ -1485,7 +1517,10 @@ During server startup or when restoring inventories from database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `invID` | **number** | The inventory ID to restore, w (number) - Width of the inventory, h (number) - Height of the inventory, callback (function, optional) - Function to call when inventory is restored |
+| `invID` | **number** |  |
+| `w` | **number** |  |
+| `h` | **number** |  |
+| `callback` | **function, optional** |  |
 
 #### ↩️ Returns
 * void

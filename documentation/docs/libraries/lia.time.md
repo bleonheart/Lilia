@@ -22,7 +22,7 @@ When displaying relative timestamps, such as "last seen" times, message timestam
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `strTime` | **string|number** | Either a timestamp number or a date string in "YYYY-MM-DD" format |
+| `strTime` | **string|number** |  |
 
 #### ↩️ Returns
 * string - Localized string indicating time elapsed (e.g., "5 minutes ago", "2 hours ago", "3 days ago")
@@ -77,7 +77,7 @@ When converting date strings to structured data for further processing or valida
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `str` | **string, optional** | Date string in "YYYY-MM-DD HH:MM:SS" format, defaults to current time if nil |
+| `str` | **string, optional** |  |
 
 #### ↩️ Returns
 * table - Table containing year, month, day, hour, min, sec as numbers
@@ -190,7 +190,7 @@ When displaying durations, cooldowns, or time remaining in UI elements
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `seconds` | **number, optional** | Duration in seconds to format, defaults to 0 if nil |
+| `seconds` | **number, optional** |  |
 
 #### ↩️ Returns
 * string - Localized string showing days, hours, and minutes (e.g., "2 days, 5 hours, 30 minutes")
@@ -303,7 +303,7 @@ Shared
         local events = {}
         -- Parse hour for both formats
         local hourNum
-        if type(hour) == "string" then
+        if isstring(hour) then
             hourNum = tonumber(hour:match("%d+"))
             local isPM = hour:find("pm")
             if isPM and hourNum ~= 12 then

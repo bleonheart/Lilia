@@ -22,7 +22,7 @@ Automatically called when displaying chat messages if timestamps are enabled
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ooc` | **boolean** | Whether this is an OOC message (affects spacing format) |
+| `ooc` | **boolean** |  |
 
 #### ↩️ Returns
 * string - Formatted timestamp string or empty string if timestamps disabled
@@ -77,11 +77,11 @@ During module initialization to register custom chat types (IC, OOC, whisper, et
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** | Unique identifier for the chat type |
-| `data` | **table** | Configuration table containing chat type properties |
+| `chatType` | **string** |  |
+| `data` | **table** |  |
 
 #### ↩️ Returns
-* void
+* nil
 
 #### 🌐 Realm
 Shared
@@ -147,9 +147,9 @@ When a player sends a chat message, either from client input or server processin
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The player who sent the message |
-| `message` | **string** | The raw message text to parse |
-| `noSend` | **boolean, optional** | If true, prevents sending the message to other players |
+| `client` | **Player** |  |
+| `message` | **string** |  |
+| `noSend` | **boolean, optional** |  |
 
 #### ↩️ Returns
 * chatType (string), message (string), anonymous (boolean)
@@ -213,14 +213,14 @@ Server-side when distributing parsed chat messages to players
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** | The player who sent the message |
-| `chatType` | **string** | The type of chat message (ic, ooc, whisper, etc.) |
-| `text` | **string** | The message content to send |
-| `anonymous` | **boolean, optional** | Whether to hide the speaker's identity |
-| `receivers` | **table, optional** | Specific list of players to send to |
+| `speaker` | **Player** |  |
+| `chatType` | **string** |  |
+| `text` | **string** |  |
+| `anonymous` | **boolean, optional** |  |
+| `receivers` | **table, optional** |  |
 
 #### ↩️ Returns
-* void
+* nil
 
 #### 🌐 Realm
 Server

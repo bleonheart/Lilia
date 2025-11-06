@@ -73,35 +73,35 @@ When displaying a menu with selectable options (interactions, actions, or custom
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rawOptions` | **table** |  |
-| `config` | **table, optional** |  |
-| `mode` | **string, optional** |  |
-| `title` | **string, optional** |  |
-| `closeKey` | **number, optional** |  |
-| `netMsg` | **string, optional** |  |
-| `preFiltered` | **boolean, optional** |  |
-| `entity` | **Entity, optional** |  |
-| `resolveEntity` | **boolean, optional** |  |
-| `emitHooks` | **boolean, optional** |  |
-| `registryKey` | **string, optional** |  |
-| `fadeSpeed` | **number, optional** |  |
-| `frameW` | **number, optional** |  |
-| `frameH` | **number, optional** |  |
-| `entryH` | **number, optional** |  |
-| `maxHeight` | **number, optional** |  |
-| `titleHeight` | **number, optional** |  |
-| `titleOffsetY` | **number, optional** |  |
-| `verticalGap` | **number, optional** |  |
-| `screenPadding` | **number, optional** |  |
-| `x` | **number, optional** |  |
-| `y` | **number, optional** |  |
-| `titleFont` | **string, optional** |  |
-| `titleColor` | **Color, optional** |  |
-| `buttonFont` | **string, optional** |  |
-| `buttonTextColor` | **Color, optional** |  |
-| `closeOnSelect` | **boolean, optional** |  |
-| `timerName` | **string, optional** |  |
-| `autoCloseDelay` | **number, optional** |  |
+| `rawOptions` | **table** | Options to display. Can be: |
+| `config` | **table, optional** | Configuration options including: |
+| `mode` | **string, optional** | "interaction", "action", or "custom" (defaults to "custom") |
+| `title` | **string, optional** | Menu title text |
+| `closeKey` | **number, optional** | Key code that closes menu when released |
+| `netMsg` | **string, optional** | Network message name for server-only options |
+| `preFiltered` | **boolean, optional** | Whether options are already filtered (defaults to false) |
+| `entity` | **Entity, optional** | Target entity for interaction mode |
+| `resolveEntity` | **boolean, optional** | Whether to resolve traced entity (defaults to true for non-custom modes) |
+| `emitHooks` | **boolean, optional** | Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes) |
+| `registryKey` | **string, optional** | Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu") |
+| `fadeSpeed` | **number, optional** | Animation fade speed in seconds (defaults to 0.05) |
+| `frameW` | **number, optional** | Frame width in pixels (defaults to 450) |
+| `frameH` | **number, optional** | Frame height in pixels (auto-calculated if not provided) |
+| `entryH` | **number, optional** | Height of each option button (defaults to 30) |
+| `maxHeight` | **number, optional** | Maximum frame height (defaults to 60% of screen height) |
+| `titleHeight` | **number, optional** | Title label height (defaults to 36 or 16 based on mode) |
+| `titleOffsetY` | **number, optional** | Y offset for title (defaults to 2) |
+| `verticalGap` | **number, optional** | Vertical spacing between title and scroll area (defaults to 24) |
+| `screenPadding` | **number, optional** | Screen padding for frame positioning (defaults to 15% of screen width) |
+| `x` | **number, optional** | Custom X position (auto-calculated if not provided) |
+| `y` | **number, optional** | Custom Y position (auto-calculated if not provided) |
+| `titleFont` | **string, optional** | Font for title text (defaults to "liaSmallFont") |
+| `titleColor` | **Color, optional** | Color for title text (defaults to color_white) |
+| `buttonFont` | **string, optional** | Font for option buttons (defaults to "liaSmallFont") |
+| `buttonTextColor` | **Color, optional** | Color for button text (defaults to color_white) |
+| `closeOnSelect` | **boolean, optional** | Whether to close menu when option is selected (defaults to true) |
+| `timerName` | **string, optional** | Name for auto-close timer |
+| `autoCloseDelay` | **number, optional** | Seconds until auto-close (defaults to 30, 0 to disable) |
 
 #### ↩️ Returns
 * Panel - The created menu frame, or nil if no valid options or invalid client
@@ -115,8 +115,8 @@ Client
 ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
-    {name = "Option 1", callback = function() print("Selected 1") end},
-    {name = "Option 2", callback = function() print("Selected 2") end}
+        {name = "Option 1", callback = function() print("Selected 1") end},
+        {name = "Option 2", callback = function() print("Selected 2") end}
     })
 
 ```
@@ -125,27 +125,27 @@ Client
 ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
-    {
-    name = "Save Game",
-    description = "Save your current progress",
-    callback = function() saveGame() end
-    },
-    {
-    name = "Load Game",
-    description = "Load a previously saved game",
-    callback = function() loadGame() end
-    },
-    {
-    name = "Settings",
-    description = "Open game settings",
-    callback = function() openSettings() end
-    }
+        {
+            name = "Save Game",
+            description = "Save your current progress",
+            callback = function() saveGame() end
+        },
+        {
+            name = "Load Game",
+            description = "Load a previously saved game",
+            callback = function() loadGame() end
+        },
+        {
+            name = "Settings",
+            description = "Open game settings",
+            callback = function() openSettings() end
+        }
     }, {
-    title = "Main Menu",
-    x = ScrW() / 2 - 225,
-    y = ScrH() / 2 - 150,
-    frameW = 450,
-    closeOnSelect = false
+        title = "Main Menu",
+        x = ScrW() / 2 - 225,
+        y = ScrH() / 2 - 150,
+        frameW = 450,
+        closeOnSelect = false
     })
 
 ```
@@ -154,45 +154,45 @@ Client
 ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
-    {
-    name = "Radio Preset 1",
-    description = "Switch to preset frequency 1",
-    callback = function(client, entity, entry, frame)
-    -- Custom callback with context
-    lia.radio.setFrequency(100.0)
-    client:notify("Switched to radio preset 1")
-    end,
-    passContext = true -- Pass client, entity, entry, frame to callback
-    },
-    {
-    name = "Radio Preset 2",
-    description = "Switch to preset frequency 2",
-    serverOnly = true,
-    netMessage = "liaRadioSetPreset",
-    networkID = "preset2"
-    },
-    {
-    name = "Custom Frequency",
-    description = "Enter a custom frequency",
-    callback = function()
-    -- Open frequency input dialog
-    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-    local numFreq = tonumber(freq)
-    if numFreq and numFreq >= 80 and numFreq <= 200 then
-        lia.radio.setFrequency(numFreq)
-        client:notify("Frequency set to " .. freq .. " MHz")
-        else
-            client:notify("Invalid frequency range (80-200 MHz)")
-        end
-    end)
-    end
-    }
+        {
+            name = "Radio Preset 1",
+            description = "Switch to preset frequency 1",
+            callback = function(client, entity, entry, frame)
+                -- Custom callback with context
+                lia.radio.setFrequency(100.0)
+                client:notify("Switched to radio preset 1")
+            end,
+            passContext = true -- Pass client, entity, entry, frame to callback
+        },
+        {
+            name = "Radio Preset 2",
+            description = "Switch to preset frequency 2",
+            serverOnly = true,
+            netMessage = "liaRadioSetPreset",
+            networkID = "preset2"
+        },
+        {
+            name = "Custom Frequency",
+            description = "Enter a custom frequency",
+            callback = function()
+                -- Open frequency input dialog
+                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                    local numFreq = tonumber(freq)
+                    if numFreq and numFreq >= 80 and numFreq <= 200 then
+                        lia.radio.setFrequency(numFreq)
+                        client:notify("Frequency set to " .. freq .. " MHz")
+                    else
+                        client:notify("Invalid frequency range (80-200 MHz)")
+                    end
+                end)
+            end
+        }
     }, {
-    title = "Radio Presets",
-    mode = "custom",
-    closeKey = KEY_R,
-    fadeSpeed = 0.1,
-    autoCloseDelay = 60
+        title = "Radio Presets",
+        mode = "custom",
+        closeKey = KEY_R,
+        fadeSpeed = 0.1,
+        autoCloseDelay = 60
     })
 
 ```
@@ -211,35 +211,35 @@ When displaying a menu with selectable options (interactions, actions, or custom
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rawOptions` | **table** |  |
-| `config` | **table, optional** |  |
-| `mode` | **string, optional** |  |
-| `title` | **string, optional** |  |
-| `closeKey` | **number, optional** |  |
-| `netMsg` | **string, optional** |  |
-| `preFiltered` | **boolean, optional** |  |
-| `entity` | **Entity, optional** |  |
-| `resolveEntity` | **boolean, optional** |  |
-| `emitHooks` | **boolean, optional** |  |
-| `registryKey` | **string, optional** |  |
-| `fadeSpeed` | **number, optional** |  |
-| `frameW` | **number, optional** |  |
-| `frameH` | **number, optional** |  |
-| `entryH` | **number, optional** |  |
-| `maxHeight` | **number, optional** |  |
-| `titleHeight` | **number, optional** |  |
-| `titleOffsetY` | **number, optional** |  |
-| `verticalGap` | **number, optional** |  |
-| `screenPadding` | **number, optional** |  |
-| `x` | **number, optional** |  |
-| `y` | **number, optional** |  |
-| `titleFont` | **string, optional** |  |
-| `titleColor` | **Color, optional** |  |
-| `buttonFont` | **string, optional** |  |
-| `buttonTextColor` | **Color, optional** |  |
-| `closeOnSelect` | **boolean, optional** |  |
-| `timerName` | **string, optional** |  |
-| `autoCloseDelay` | **number, optional** |  |
+| `rawOptions` | **table** | Options to display. Can be: |
+| `config` | **table, optional** | Configuration options including: |
+| `mode` | **string, optional** | "interaction", "action", or "custom" (defaults to "custom") |
+| `title` | **string, optional** | Menu title text |
+| `closeKey` | **number, optional** | Key code that closes menu when released |
+| `netMsg` | **string, optional** | Network message name for server-only options |
+| `preFiltered` | **boolean, optional** | Whether options are already filtered (defaults to false) |
+| `entity` | **Entity, optional** | Target entity for interaction mode |
+| `resolveEntity` | **boolean, optional** | Whether to resolve traced entity (defaults to true for non-custom modes) |
+| `emitHooks` | **boolean, optional** | Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes) |
+| `registryKey` | **string, optional** | Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu") |
+| `fadeSpeed` | **number, optional** | Animation fade speed in seconds (defaults to 0.05) |
+| `frameW` | **number, optional** | Frame width in pixels (defaults to 450) |
+| `frameH` | **number, optional** | Frame height in pixels (auto-calculated if not provided) |
+| `entryH` | **number, optional** | Height of each option button (defaults to 30) |
+| `maxHeight` | **number, optional** | Maximum frame height (defaults to 60% of screen height) |
+| `titleHeight` | **number, optional** | Title label height (defaults to 36 or 16 based on mode) |
+| `titleOffsetY` | **number, optional** | Y offset for title (defaults to 2) |
+| `verticalGap` | **number, optional** | Vertical spacing between title and scroll area (defaults to 24) |
+| `screenPadding` | **number, optional** | Screen padding for frame positioning (defaults to 15% of screen width) |
+| `x` | **number, optional** | Custom X position (auto-calculated if not provided) |
+| `y` | **number, optional** | Custom Y position (auto-calculated if not provided) |
+| `titleFont` | **string, optional** | Font for title text (defaults to "liaSmallFont") |
+| `titleColor` | **Color, optional** | Color for title text (defaults to color_white) |
+| `buttonFont` | **string, optional** | Font for option buttons (defaults to "liaSmallFont") |
+| `buttonTextColor` | **Color, optional** | Color for button text (defaults to color_white) |
+| `closeOnSelect` | **boolean, optional** | Whether to close menu when option is selected (defaults to true) |
+| `timerName` | **string, optional** | Name for auto-close timer |
+| `autoCloseDelay` | **number, optional** | Seconds until auto-close (defaults to 30, 0 to disable) |
 
 #### ↩️ Returns
 * Panel - The created menu frame, or nil if no valid options or invalid client
@@ -253,8 +253,8 @@ Client
 ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
-    {name = "Option 1", callback = function() print("Selected 1") end},
-    {name = "Option 2", callback = function() print("Selected 2") end}
+        {name = "Option 1", callback = function() print("Selected 1") end},
+        {name = "Option 2", callback = function() print("Selected 2") end}
     })
 
 ```
@@ -263,27 +263,27 @@ Client
 ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
-    {
-    name = "Save Game",
-    description = "Save your current progress",
-    callback = function() saveGame() end
-    },
-    {
-    name = "Load Game",
-    description = "Load a previously saved game",
-    callback = function() loadGame() end
-    },
-    {
-    name = "Settings",
-    description = "Open game settings",
-    callback = function() openSettings() end
-    }
+        {
+            name = "Save Game",
+            description = "Save your current progress",
+            callback = function() saveGame() end
+        },
+        {
+            name = "Load Game",
+            description = "Load a previously saved game",
+            callback = function() loadGame() end
+        },
+        {
+            name = "Settings",
+            description = "Open game settings",
+            callback = function() openSettings() end
+        }
     }, {
-    title = "Main Menu",
-    x = ScrW() / 2 - 225,
-    y = ScrH() / 2 - 150,
-    frameW = 450,
-    closeOnSelect = false
+        title = "Main Menu",
+        x = ScrW() / 2 - 225,
+        y = ScrH() / 2 - 150,
+        frameW = 450,
+        closeOnSelect = false
     })
 
 ```
@@ -292,45 +292,45 @@ Client
 ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
-    {
-    name = "Radio Preset 1",
-    description = "Switch to preset frequency 1",
-    callback = function(client, entity, entry, frame)
-    -- Custom callback with context
-    lia.radio.setFrequency(100.0)
-    client:notify("Switched to radio preset 1")
-    end,
-    passContext = true -- Pass client, entity, entry, frame to callback
-    },
-    {
-    name = "Radio Preset 2",
-    description = "Switch to preset frequency 2",
-    serverOnly = true,
-    netMessage = "liaRadioSetPreset",
-    networkID = "preset2"
-    },
-    {
-    name = "Custom Frequency",
-    description = "Enter a custom frequency",
-    callback = function()
-    -- Open frequency input dialog
-    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-    local numFreq = tonumber(freq)
-    if numFreq and numFreq >= 80 and numFreq <= 200 then
-        lia.radio.setFrequency(numFreq)
-        client:notify("Frequency set to " .. freq .. " MHz")
-        else
-            client:notify("Invalid frequency range (80-200 MHz)")
-        end
-    end)
-    end
-    }
+        {
+            name = "Radio Preset 1",
+            description = "Switch to preset frequency 1",
+            callback = function(client, entity, entry, frame)
+                -- Custom callback with context
+                lia.radio.setFrequency(100.0)
+                client:notify("Switched to radio preset 1")
+            end,
+            passContext = true -- Pass client, entity, entry, frame to callback
+        },
+        {
+            name = "Radio Preset 2",
+            description = "Switch to preset frequency 2",
+            serverOnly = true,
+            netMessage = "liaRadioSetPreset",
+            networkID = "preset2"
+        },
+        {
+            name = "Custom Frequency",
+            description = "Enter a custom frequency",
+            callback = function()
+                -- Open frequency input dialog
+                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                    local numFreq = tonumber(freq)
+                    if numFreq and numFreq >= 80 and numFreq <= 200 then
+                        lia.radio.setFrequency(numFreq)
+                        client:notify("Frequency set to " .. freq .. " MHz")
+                    else
+                        client:notify("Invalid frequency range (80-200 MHz)")
+                    end
+                end)
+            end
+        }
     }, {
-    title = "Radio Presets",
-    mode = "custom",
-    closeKey = KEY_R,
-    fadeSpeed = 0.1,
-    autoCloseDelay = 60
+        title = "Radio Presets",
+        mode = "custom",
+        closeKey = KEY_R,
+        fadeSpeed = 0.1,
+        autoCloseDelay = 60
     })
 
 ```
@@ -349,35 +349,35 @@ When displaying a menu with selectable options (interactions, actions, or custom
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rawOptions` | **table** |  |
-| `config` | **table, optional** |  |
-| `mode` | **string, optional** |  |
-| `title` | **string, optional** |  |
-| `closeKey` | **number, optional** |  |
-| `netMsg` | **string, optional** |  |
-| `preFiltered` | **boolean, optional** |  |
-| `entity` | **Entity, optional** |  |
-| `resolveEntity` | **boolean, optional** |  |
-| `emitHooks` | **boolean, optional** |  |
-| `registryKey` | **string, optional** |  |
-| `fadeSpeed` | **number, optional** |  |
-| `frameW` | **number, optional** |  |
-| `frameH` | **number, optional** |  |
-| `entryH` | **number, optional** |  |
-| `maxHeight` | **number, optional** |  |
-| `titleHeight` | **number, optional** |  |
-| `titleOffsetY` | **number, optional** |  |
-| `verticalGap` | **number, optional** |  |
-| `screenPadding` | **number, optional** |  |
-| `x` | **number, optional** |  |
-| `y` | **number, optional** |  |
-| `titleFont` | **string, optional** |  |
-| `titleColor` | **Color, optional** |  |
-| `buttonFont` | **string, optional** |  |
-| `buttonTextColor` | **Color, optional** |  |
-| `closeOnSelect` | **boolean, optional** |  |
-| `timerName` | **string, optional** |  |
-| `autoCloseDelay` | **number, optional** |  |
+| `rawOptions` | **table** | Options to display. Can be: |
+| `config` | **table, optional** | Configuration options including: |
+| `mode` | **string, optional** | "interaction", "action", or "custom" (defaults to "custom") |
+| `title` | **string, optional** | Menu title text |
+| `closeKey` | **number, optional** | Key code that closes menu when released |
+| `netMsg` | **string, optional** | Network message name for server-only options |
+| `preFiltered` | **boolean, optional** | Whether options are already filtered (defaults to false) |
+| `entity` | **Entity, optional** | Target entity for interaction mode |
+| `resolveEntity` | **boolean, optional** | Whether to resolve traced entity (defaults to true for non-custom modes) |
+| `emitHooks` | **boolean, optional** | Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes) |
+| `registryKey` | **string, optional** | Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu") |
+| `fadeSpeed` | **number, optional** | Animation fade speed in seconds (defaults to 0.05) |
+| `frameW` | **number, optional** | Frame width in pixels (defaults to 450) |
+| `frameH` | **number, optional** | Frame height in pixels (auto-calculated if not provided) |
+| `entryH` | **number, optional** | Height of each option button (defaults to 30) |
+| `maxHeight` | **number, optional** | Maximum frame height (defaults to 60% of screen height) |
+| `titleHeight` | **number, optional** | Title label height (defaults to 36 or 16 based on mode) |
+| `titleOffsetY` | **number, optional** | Y offset for title (defaults to 2) |
+| `verticalGap` | **number, optional** | Vertical spacing between title and scroll area (defaults to 24) |
+| `screenPadding` | **number, optional** | Screen padding for frame positioning (defaults to 15% of screen width) |
+| `x` | **number, optional** | Custom X position (auto-calculated if not provided) |
+| `y` | **number, optional** | Custom Y position (auto-calculated if not provided) |
+| `titleFont` | **string, optional** | Font for title text (defaults to "liaSmallFont") |
+| `titleColor` | **Color, optional** | Color for title text (defaults to color_white) |
+| `buttonFont` | **string, optional** | Font for option buttons (defaults to "liaSmallFont") |
+| `buttonTextColor` | **Color, optional** | Color for button text (defaults to color_white) |
+| `closeOnSelect` | **boolean, optional** | Whether to close menu when option is selected (defaults to true) |
+| `timerName` | **string, optional** | Name for auto-close timer |
+| `autoCloseDelay` | **number, optional** | Seconds until auto-close (defaults to 30, 0 to disable) |
 
 #### ↩️ Returns
 * Panel - The created menu frame, or nil if no valid options or invalid client
@@ -391,8 +391,8 @@ Client
 ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
-    {name = "Option 1", callback = function() print("Selected 1") end},
-    {name = "Option 2", callback = function() print("Selected 2") end}
+        {name = "Option 1", callback = function() print("Selected 1") end},
+        {name = "Option 2", callback = function() print("Selected 2") end}
     })
 
 ```
@@ -401,27 +401,27 @@ Client
 ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
-    {
-    name = "Save Game",
-    description = "Save your current progress",
-    callback = function() saveGame() end
-    },
-    {
-    name = "Load Game",
-    description = "Load a previously saved game",
-    callback = function() loadGame() end
-    },
-    {
-    name = "Settings",
-    description = "Open game settings",
-    callback = function() openSettings() end
-    }
+        {
+            name = "Save Game",
+            description = "Save your current progress",
+            callback = function() saveGame() end
+        },
+        {
+            name = "Load Game",
+            description = "Load a previously saved game",
+            callback = function() loadGame() end
+        },
+        {
+            name = "Settings",
+            description = "Open game settings",
+            callback = function() openSettings() end
+        }
     }, {
-    title = "Main Menu",
-    x = ScrW() / 2 - 225,
-    y = ScrH() / 2 - 150,
-    frameW = 450,
-    closeOnSelect = false
+        title = "Main Menu",
+        x = ScrW() / 2 - 225,
+        y = ScrH() / 2 - 150,
+        frameW = 450,
+        closeOnSelect = false
     })
 
 ```
@@ -430,45 +430,45 @@ Client
 ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
-    {
-    name = "Radio Preset 1",
-    description = "Switch to preset frequency 1",
-    callback = function(client, entity, entry, frame)
-    -- Custom callback with context
-    lia.radio.setFrequency(100.0)
-    client:notify("Switched to radio preset 1")
-    end,
-    passContext = true -- Pass client, entity, entry, frame to callback
-    },
-    {
-    name = "Radio Preset 2",
-    description = "Switch to preset frequency 2",
-    serverOnly = true,
-    netMessage = "liaRadioSetPreset",
-    networkID = "preset2"
-    },
-    {
-    name = "Custom Frequency",
-    description = "Enter a custom frequency",
-    callback = function()
-    -- Open frequency input dialog
-    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-    local numFreq = tonumber(freq)
-    if numFreq and numFreq >= 80 and numFreq <= 200 then
-        lia.radio.setFrequency(numFreq)
-        client:notify("Frequency set to " .. freq .. " MHz")
-        else
-            client:notify("Invalid frequency range (80-200 MHz)")
-        end
-    end)
-    end
-    }
+        {
+            name = "Radio Preset 1",
+            description = "Switch to preset frequency 1",
+            callback = function(client, entity, entry, frame)
+                -- Custom callback with context
+                lia.radio.setFrequency(100.0)
+                client:notify("Switched to radio preset 1")
+            end,
+            passContext = true -- Pass client, entity, entry, frame to callback
+        },
+        {
+            name = "Radio Preset 2",
+            description = "Switch to preset frequency 2",
+            serverOnly = true,
+            netMessage = "liaRadioSetPreset",
+            networkID = "preset2"
+        },
+        {
+            name = "Custom Frequency",
+            description = "Enter a custom frequency",
+            callback = function()
+                -- Open frequency input dialog
+                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                    local numFreq = tonumber(freq)
+                    if numFreq and numFreq >= 80 and numFreq <= 200 then
+                        lia.radio.setFrequency(numFreq)
+                        client:notify("Frequency set to " .. freq .. " MHz")
+                    else
+                        client:notify("Invalid frequency range (80-200 MHz)")
+                    end
+                end)
+            end
+        }
     }, {
-    title = "Radio Presets",
-    mode = "custom",
-    closeKey = KEY_R,
-    fadeSpeed = 0.1,
-    autoCloseDelay = 60
+        title = "Radio Presets",
+        mode = "custom",
+        closeKey = KEY_R,
+        fadeSpeed = 0.1,
+        autoCloseDelay = 60
     })
 
 ```
@@ -487,35 +487,35 @@ When displaying a menu with selectable options (interactions, actions, or custom
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `rawOptions` | **table** |  |
-| `config` | **table, optional** |  |
-| `mode` | **string, optional** |  |
-| `title` | **string, optional** |  |
-| `closeKey` | **number, optional** |  |
-| `netMsg` | **string, optional** |  |
-| `preFiltered` | **boolean, optional** |  |
-| `entity` | **Entity, optional** |  |
-| `resolveEntity` | **boolean, optional** |  |
-| `emitHooks` | **boolean, optional** |  |
-| `registryKey` | **string, optional** |  |
-| `fadeSpeed` | **number, optional** |  |
-| `frameW` | **number, optional** |  |
-| `frameH` | **number, optional** |  |
-| `entryH` | **number, optional** |  |
-| `maxHeight` | **number, optional** |  |
-| `titleHeight` | **number, optional** |  |
-| `titleOffsetY` | **number, optional** |  |
-| `verticalGap` | **number, optional** |  |
-| `screenPadding` | **number, optional** |  |
-| `x` | **number, optional** |  |
-| `y` | **number, optional** |  |
-| `titleFont` | **string, optional** |  |
-| `titleColor` | **Color, optional** |  |
-| `buttonFont` | **string, optional** |  |
-| `buttonTextColor` | **Color, optional** |  |
-| `closeOnSelect` | **boolean, optional** |  |
-| `timerName` | **string, optional** |  |
-| `autoCloseDelay` | **number, optional** |  |
+| `rawOptions` | **table** | Options to display. Can be: |
+| `config` | **table, optional** | Configuration options including: |
+| `mode` | **string, optional** | "interaction", "action", or "custom" (defaults to "custom") |
+| `title` | **string, optional** | Menu title text |
+| `closeKey` | **number, optional** | Key code that closes menu when released |
+| `netMsg` | **string, optional** | Network message name for server-only options |
+| `preFiltered` | **boolean, optional** | Whether options are already filtered (defaults to false) |
+| `entity` | **Entity, optional** | Target entity for interaction mode |
+| `resolveEntity` | **boolean, optional** | Whether to resolve traced entity (defaults to true for non-custom modes) |
+| `emitHooks` | **boolean, optional** | Whether to emit InteractionMenuOpened/Closed hooks (defaults to true for non-custom modes) |
+| `registryKey` | **string, optional** | Key for storing menu in lia.gui (defaults to "InteractionMenu" or "OptionsMenu") |
+| `fadeSpeed` | **number, optional** | Animation fade speed in seconds (defaults to 0.05) |
+| `frameW` | **number, optional** | Frame width in pixels (defaults to 450) |
+| `frameH` | **number, optional** | Frame height in pixels (auto-calculated if not provided) |
+| `entryH` | **number, optional** | Height of each option button (defaults to 30) |
+| `maxHeight` | **number, optional** | Maximum frame height (defaults to 60% of screen height) |
+| `titleHeight` | **number, optional** | Title label height (defaults to 36 or 16 based on mode) |
+| `titleOffsetY` | **number, optional** | Y offset for title (defaults to 2) |
+| `verticalGap` | **number, optional** | Vertical spacing between title and scroll area (defaults to 24) |
+| `screenPadding` | **number, optional** | Screen padding for frame positioning (defaults to 15% of screen width) |
+| `x` | **number, optional** | Custom X position (auto-calculated if not provided) |
+| `y` | **number, optional** | Custom Y position (auto-calculated if not provided) |
+| `titleFont` | **string, optional** | Font for title text (defaults to "liaSmallFont") |
+| `titleColor` | **Color, optional** | Color for title text (defaults to color_white) |
+| `buttonFont` | **string, optional** | Font for option buttons (defaults to "liaSmallFont") |
+| `buttonTextColor` | **Color, optional** | Color for button text (defaults to color_white) |
+| `closeOnSelect` | **boolean, optional** | Whether to close menu when option is selected (defaults to true) |
+| `timerName` | **string, optional** | Name for auto-close timer |
+| `autoCloseDelay` | **number, optional** | Seconds until auto-close (defaults to 30, 0 to disable) |
 
 #### ↩️ Returns
 * Panel - The created menu frame, or nil if no valid options or invalid client
@@ -529,8 +529,8 @@ Client
 ```lua
     -- Simple: Display a basic custom options menu
     lia.derma.optionsMenu({
-    {name = "Option 1", callback = function() print("Selected 1") end},
-    {name = "Option 2", callback = function() print("Selected 2") end}
+        {name = "Option 1", callback = function() print("Selected 1") end},
+        {name = "Option 2", callback = function() print("Selected 2") end}
     })
 
 ```
@@ -539,27 +539,27 @@ Client
 ```lua
     -- Medium: Custom menu with descriptions and custom positioning
     lia.derma.optionsMenu({
-    {
-    name = "Save Game",
-    description = "Save your current progress",
-    callback = function() saveGame() end
-    },
-    {
-    name = "Load Game",
-    description = "Load a previously saved game",
-    callback = function() loadGame() end
-    },
-    {
-    name = "Settings",
-    description = "Open game settings",
-    callback = function() openSettings() end
-    }
+        {
+            name = "Save Game",
+            description = "Save your current progress",
+            callback = function() saveGame() end
+        },
+        {
+            name = "Load Game",
+            description = "Load a previously saved game",
+            callback = function() loadGame() end
+        },
+        {
+            name = "Settings",
+            description = "Open game settings",
+            callback = function() openSettings() end
+        }
     }, {
-    title = "Main Menu",
-    x = ScrW() / 2 - 225,
-    y = ScrH() / 2 - 150,
-    frameW = 450,
-    closeOnSelect = false
+        title = "Main Menu",
+        x = ScrW() / 2 - 225,
+        y = ScrH() / 2 - 150,
+        frameW = 450,
+        closeOnSelect = false
     })
 
 ```
@@ -568,45 +568,45 @@ Client
 ```lua
     -- High: Advanced menu with custom callbacks and network messaging
     lia.derma.optionsMenu({
-    {
-    name = "Radio Preset 1",
-    description = "Switch to preset frequency 1",
-    callback = function(client, entity, entry, frame)
-    -- Custom callback with context
-    lia.radio.setFrequency(100.0)
-    client:notify("Switched to radio preset 1")
-    end,
-    passContext = true -- Pass client, entity, entry, frame to callback
-    },
-    {
-    name = "Radio Preset 2",
-    description = "Switch to preset frequency 2",
-    serverOnly = true,
-    netMessage = "liaRadioSetPreset",
-    networkID = "preset2"
-    },
-    {
-    name = "Custom Frequency",
-    description = "Enter a custom frequency",
-    callback = function()
-    -- Open frequency input dialog
-    lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
-    local numFreq = tonumber(freq)
-    if numFreq and numFreq >= 80 and numFreq <= 200 then
-        lia.radio.setFrequency(numFreq)
-        client:notify("Frequency set to " .. freq .. " MHz")
-        else
-            client:notify("Invalid frequency range (80-200 MHz)")
-        end
-    end)
-    end
-    }
+        {
+            name = "Radio Preset 1",
+            description = "Switch to preset frequency 1",
+            callback = function(client, entity, entry, frame)
+                -- Custom callback with context
+                lia.radio.setFrequency(100.0)
+                client:notify("Switched to radio preset 1")
+            end,
+            passContext = true -- Pass client, entity, entry, frame to callback
+        },
+        {
+            name = "Radio Preset 2",
+            description = "Switch to preset frequency 2",
+            serverOnly = true,
+            netMessage = "liaRadioSetPreset",
+            networkID = "preset2"
+        },
+        {
+            name = "Custom Frequency",
+            description = "Enter a custom frequency",
+            callback = function()
+                -- Open frequency input dialog
+                lia.derma.textBox("Enter Frequency", "Enter radio frequency (MHz):", function(freq)
+                    local numFreq = tonumber(freq)
+                    if numFreq and numFreq >= 80 and numFreq <= 200 then
+                        lia.radio.setFrequency(numFreq)
+                        client:notify("Frequency set to " .. freq .. " MHz")
+                    else
+                        client:notify("Invalid frequency range (80-200 MHz)")
+                    end
+                end)
+            end
+        }
     }, {
-    title = "Radio Presets",
-    mode = "custom",
-    closeKey = KEY_R,
-    fadeSpeed = 0.1,
-    autoCloseDelay = 60
+        title = "Radio Presets",
+        mode = "custom",
+        closeKey = KEY_R,
+        fadeSpeed = 0.1,
+        autoCloseDelay = 60
     })
 
 ```
@@ -640,7 +640,7 @@ Client
 ```lua
     -- Simple: Open color picker with callback
     lia.derma.colorPicker(function(color)
-    print("Selected color:", color.r, color.g, color.b)
+        print("Selected color:", color.r, color.g, color.b)
     end)
 
 ```
@@ -650,7 +650,7 @@ Client
     -- Medium: Open color picker with default color
     local defaultColor = Color(255, 0, 0)
     lia.derma.colorPicker(function(color)
-    myPanel:SetColor(color)
+        myPanel:SetColor(color)
     end, defaultColor)
 
 ```
@@ -660,11 +660,11 @@ Client
     -- High: Color picker with validation and multiple callbacks
     local currentColor = settings:GetColor("theme_color")
     lia.derma.colorPicker(function(color)
-    if color:Distance(currentColor) > 50 then
-        settings:SetColor("theme_color", color)
-        updateTheme(color)
-        notify("Theme color updated!")
-    end
+        if color:Distance(currentColor) > 50 then
+            settings:SetColor("theme_color", color)
+            updateTheme(color)
+            notify("Theme color updated!")
+        end
     end, currentColor)
 
 ```
@@ -766,7 +766,7 @@ Client
 ```lua
     -- Simple: Open player selector with callback
     lia.derma.playerSelector(function(player)
-    print("Selected player:", player:Name())
+        print("Selected player:", player:Name())
     end)
 
 ```
@@ -775,9 +775,9 @@ Client
 ```lua
     -- Medium: Player selector with validation
     lia.derma.playerSelector(function(player)
-    if IsValid(player) and player:IsPlayer() then
-        sendMessage(player, "Hello!")
-    end
+        if IsValid(player) and player:IsPlayer() then
+            sendMessage(player, "Hello!")
+        end
     end)
 
 ```
@@ -786,7 +786,7 @@ Client
 ```lua
     -- High: Player selector with admin checks and multiple actions
     lia.derma.playerSelector(function(player)
-    if not IsValid(player) then return end
+        if not IsValid(player) then return end
         local menu = lia.derma.dermaMenu()
         menu:AddOption("Teleport", function() teleportToPlayer(player) end)
         menu:AddOption("Spectate", function() spectatePlayer(player) end)
@@ -828,7 +828,7 @@ Client
 ```lua
     -- Simple: Open text input dialog
     lia.derma.textBox("Enter Name", "Type your name here", function(text)
-    print("Entered:", text)
+        print("Entered:", text)
     end)
 
 ```
@@ -837,8 +837,8 @@ Client
 ```lua
     -- Medium: Text input with validation
     lia.derma.textBox("Set Password", "Enter new password", function(text)
-    if string.len(text) >= 6 then
-        setPassword(text)
+        if string.len(text) >= 6 then
+            setPassword(text)
         else
             notify("Password too short!")
         end
@@ -850,7 +850,7 @@ Client
 ```lua
     -- High: Text input with multiple validations and processing
     lia.derma.textBox("Create Item", "Enter item name", function(text)
-    if not text or text == "" then return end
+        if not text or text == "" then return end
         local cleanText = string.Trim(text)
         if string.len(cleanText) < 3 then
             notify("Name too short!")
@@ -896,7 +896,7 @@ Client
 ```lua
     -- Simple: Open text input dialog
     lia.derma.textBox("Enter Name", "Type your name here", function(text)
-    print("Entered:", text)
+        print("Entered:", text)
     end)
 
 ```
@@ -905,8 +905,8 @@ Client
 ```lua
     -- Medium: Text input with validation
     lia.derma.textBox("Set Password", "Enter new password", function(text)
-    if string.len(text) >= 6 then
-        setPassword(text)
+        if string.len(text) >= 6 then
+            setPassword(text)
         else
             notify("Password too short!")
         end
@@ -918,7 +918,7 @@ Client
 ```lua
     -- High: Text input with multiple validations and processing
     lia.derma.textBox("Create Item", "Enter item name", function(text)
-    if not text or text == "" then return end
+        if not text or text == "" then return end
         local cleanText = string.Trim(text)
         if string.len(cleanText) < 3 then
             notify("Name too short!")
@@ -964,7 +964,7 @@ Client
 ```lua
     -- Simple: Open text input dialog
     lia.derma.textBox("Enter Name", "Type your name here", function(text)
-    print("Entered:", text)
+        print("Entered:", text)
     end)
 
 ```
@@ -973,8 +973,8 @@ Client
 ```lua
     -- Medium: Text input with validation
     lia.derma.textBox("Set Password", "Enter new password", function(text)
-    if string.len(text) >= 6 then
-        setPassword(text)
+        if string.len(text) >= 6 then
+            setPassword(text)
         else
             notify("Password too short!")
         end
@@ -986,7 +986,7 @@ Client
 ```lua
     -- High: Text input with multiple validations and processing
     lia.derma.textBox("Create Item", "Enter item name", function(text)
-    if not text or text == "" then return end
+        if not text or text == "" then return end
         local cleanText = string.Trim(text)
         if string.len(cleanText) < 3 then
             notify("Name too short!")
@@ -1473,9 +1473,17 @@ When rendering UI elements that need blur effects
 | `h` | **number** | Height |
 | `flags` | **number, optional** | Drawing flags for customization |
 | `tl` | **number, optional** | Top-left corner radius |
+| `Top` | **unknown** | left corner radius |
+| `Top` | **unknown** | left corner radius |
 | `tr` | **number, optional** | Top-right corner radius |
+| `Top` | **unknown** | right corner radius |
+| `Top` | **unknown** | right corner radius |
 | `bl` | **number, optional** | Bottom-left corner radius |
+| `Bottom` | **unknown** | left corner radius |
+| `Bottom` | **unknown** | left corner radius |
 | `br` | **number, optional** | Bottom-right corner radius |
+| `Bottom` | **unknown** | right corner radius |
+| `Bottom` | **unknown** | right corner radius |
 | `thickness` | **number, optional** | Outline thickness |
 
 #### ↩️ Returns
@@ -1533,9 +1541,17 @@ When rendering UI elements that need shadow effects
 | `col` | **Color, optional** | Shadow color |
 | `flags` | **number, optional** | Drawing flags for customization |
 | `tl` | **number, optional** | Top-left corner radius |
+| `Top` | **unknown** | left corner radius |
+| `Top` | **unknown** | left corner radius |
 | `tr` | **number, optional** | Top-right corner radius |
+| `Top` | **unknown** | right corner radius |
+| `Top` | **unknown** | right corner radius |
 | `bl` | **number, optional** | Bottom-left corner radius |
+| `Bottom` | **unknown** | left corner radius |
+| `Bottom` | **unknown** | left corner radius |
 | `br` | **number, optional** | Bottom-right corner radius |
+| `Bottom` | **unknown** | right corner radius |
+| `Bottom` | **unknown** | right corner radius |
 | `spread` | **number, optional** | Shadow spread distance (default: 30) |
 | `intensity` | **number, optional** | Shadow intensity (default: spread * 1.2) |
 | `thickness` | **number, optional** | Outline thickness |
@@ -1722,10 +1738,10 @@ Client
 ```lua
     -- Medium: Create rectangle with multiple properties
     lia.derma.rect(50, 50, 300, 150)
-    :Color(Color(0, 255, 0, 200))
-    :Rad(12)
-    :Shape(lia.derma.SHAPE_IOS)
-    :Draw()
+        :Color(Color(0, 255, 0, 200))
+        :Rad(12)
+        :Shape(lia.derma.SHAPE_IOS)
+        :Draw()
 
 ```
 
@@ -1733,11 +1749,11 @@ Client
 ```lua
     -- High: Complex rectangle with shadows and clipping
     lia.derma.rect(x, y, w, h)
-    :Color(backgroundColor)
-    :Radii(16, 8, 16, 8)
-    :Shadow(20, 25)
-    :Clip(parentPanel)
-    :Draw()
+        :Color(backgroundColor)
+        :Radii(16, 8, 16, 8)
+        :Shadow(20, 25)
+        :Clip(parentPanel)
+        :Draw()
 
 ```
 
@@ -1778,9 +1794,9 @@ Client
 ```lua
     -- Medium: Create circle with multiple properties
     lia.derma.circle(200, 200, 75)
-    :Color(Color(0, 255, 0, 200))
-    :Outline(2)
-    :Draw()
+        :Color(Color(0, 255, 0, 200))
+        :Outline(2)
+        :Draw()
 
 ```
 
@@ -1788,11 +1804,11 @@ Client
 ```lua
     -- High: Complex circle with shadows and textures
     lia.derma.circle(x, y, radius)
-    :Color(circleColor)
-    :Texture(circleTexture)
-    :Shadow(15, 20)
-    :Blur(1.5)
-    :Draw()
+        :Color(circleColor)
+        :Texture(circleTexture)
+        :Shadow(15, 20)
+        :Blur(1.5)
+        :Draw()
 
 ```
 
@@ -1833,9 +1849,9 @@ Client
 ```lua
     -- Medium: Create circle with multiple properties
     lia.derma.circle(200, 200, 75)
-    :Color(Color(0, 255, 0, 200))
-    :Outline(2)
-    :Draw()
+        :Color(Color(0, 255, 0, 200))
+        :Outline(2)
+        :Draw()
 
 ```
 
@@ -1843,11 +1859,11 @@ Client
 ```lua
     -- High: Complex circle with shadows and textures
     lia.derma.circle(x, y, radius)
-    :Color(circleColor)
-    :Texture(circleTexture)
-    :Shadow(15, 20)
-    :Blur(1.5)
-    :Draw()
+        :Color(circleColor)
+        :Texture(circleTexture)
+        :Shadow(15, 20)
+        :Blur(1.5)
+        :Draw()
 
 ```
 
@@ -1888,9 +1904,9 @@ Client
 ```lua
     -- Medium: Create circle with multiple properties
     lia.derma.circle(200, 200, 75)
-    :Color(Color(0, 255, 0, 200))
-    :Outline(2)
-    :Draw()
+        :Color(Color(0, 255, 0, 200))
+        :Outline(2)
+        :Draw()
 
 ```
 
@@ -1898,11 +1914,11 @@ Client
 ```lua
     -- High: Complex circle with shadows and textures
     lia.derma.circle(x, y, radius)
-    :Color(circleColor)
-    :Texture(circleTexture)
-    :Shadow(15, 20)
-    :Blur(1.5)
-    :Draw()
+        :Color(circleColor)
+        :Texture(circleTexture)
+        :Shadow(15, 20)
+        :Blur(1.5)
+        :Draw()
 
 ```
 
@@ -2337,12 +2353,12 @@ Client
     local targetY = isHovered and hoverY or normalY
     local targetScale = isHovered and 1.1 or 1.0
     panel:SetPos(
-    lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
-    lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
+        lia.derma.approachExp(panel:GetPos(), targetX, 6, dt),
+        lia.derma.approachExp(panel:GetPos(), targetY, 6, dt)
     )
     panel:SetSize(
-    lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
-    lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
+        lia.derma.approachExp(panel:GetWide(), targetW * targetScale, 4, dt),
+        lia.derma.approachExp(panel:GetTall(), targetH * targetScale, 4, dt)
     )
 
 ```
@@ -2394,12 +2410,12 @@ Client
     local progress = math.Clamp((CurTime() - startTime) / duration, 0, 1)
     local eased = lia.derma.easeOutCubic(progress)
     panel:SetPos(
-    startX + (endX - startX) * eased,
-    startY + (endY - startY) * eased
+        startX + (endX - startX) * eased,
+        startY + (endY - startY) * eased
     )
     panel:SetSize(
-    startW + (endW - startW) * eased,
-    startH + (endH - startH) * eased
+        startW + (endW - startW) * eased,
+        startH + (endH - startH) * eased
     )
     panel:SetAlpha(startAlpha + (endAlpha - startAlpha) * eased)
 
@@ -2454,12 +2470,12 @@ Client
     local eased = lia.derma.easeInOutCubic(progress)
     -- Animate position, size, and rotation
     panel:SetPos(
-    startX + (endX - startX) * eased,
-    startY + (endY - startY) * eased
+        startX + (endX - startX) * eased,
+        startY + (endY - startY) * eased
     )
     panel:SetSize(
-    startW + (endW - startW) * eased,
-    startH + (endH - startH) * eased
+        startW + (endW - startW) * eased,
+        startH + (endH - startH) * eased
     )
     panel:SetRotation(startRotation + (endRotation - startRotation) * eased)
 
@@ -2506,7 +2522,7 @@ Client
 ```lua
     -- Medium: Animate with custom duration and callback
     lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-    print("Animation completed!")
+        print("Animation completed!")
     end)
 
 ```
@@ -2520,10 +2536,10 @@ Client
         local duration = isExpanded and 0.25 or 0.15
         local scaleFactor = isExpanded and 0.9 or 0.7
         lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-        if IsValid(animPanel) then
-            onAnimationComplete(animPanel)
-        end
-    end, scaleFactor)
+            if IsValid(animPanel) then
+                onAnimationComplete(animPanel)
+            end
+        end, scaleFactor)
     end
 
 ```
@@ -2569,7 +2585,7 @@ Client
 ```lua
     -- Medium: Animate with custom duration and callback
     lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-    print("Animation completed!")
+        print("Animation completed!")
     end)
 
 ```
@@ -2583,10 +2599,10 @@ Client
         local duration = isExpanded and 0.25 or 0.15
         local scaleFactor = isExpanded and 0.9 or 0.7
         lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-        if IsValid(animPanel) then
-            onAnimationComplete(animPanel)
-        end
-    end, scaleFactor)
+            if IsValid(animPanel) then
+                onAnimationComplete(animPanel)
+            end
+        end, scaleFactor)
     end
 
 ```
@@ -2632,7 +2648,7 @@ Client
 ```lua
     -- Medium: Animate with custom duration and callback
     lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-    print("Animation completed!")
+        print("Animation completed!")
     end)
 
 ```
@@ -2646,10 +2662,10 @@ Client
         local duration = isExpanded and 0.25 or 0.15
         local scaleFactor = isExpanded and 0.9 or 0.7
         lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-        if IsValid(animPanel) then
-            onAnimationComplete(animPanel)
-        end
-    end, scaleFactor)
+            if IsValid(animPanel) then
+                onAnimationComplete(animPanel)
+            end
+        end, scaleFactor)
     end
 
 ```
@@ -2695,7 +2711,7 @@ Client
 ```lua
     -- Medium: Animate with custom duration and callback
     lia.derma.animateAppearance(myPanel, 400, 300, 0.3, 0.2, function(panel)
-    print("Animation completed!")
+        print("Animation completed!")
     end)
 
 ```
@@ -2709,10 +2725,10 @@ Client
         local duration = isExpanded and 0.25 or 0.15
         local scaleFactor = isExpanded and 0.9 or 0.7
         lia.derma.animateAppearance(panel, targetW, targetH, duration, duration * 0.8, function(animPanel)
-        if IsValid(animPanel) then
-            onAnimationComplete(animPanel)
-        end
-    end, scaleFactor)
+            if IsValid(animPanel) then
+                onAnimationComplete(animPanel)
+            end
+        end, scaleFactor)
     end
 
 ```
@@ -2908,14 +2924,14 @@ Client
 ```lua
     -- Simple: Request basic arguments
     local argTypes = {
-    name = "string",
-    age = "number",
-    isActive = "boolean"
+        name = "string",
+        age = "number",
+        isActive = "boolean"
     }
     lia.derma.requestArguments("User Info", argTypes, function(success, results)
-    if success then
-        print("Name:", results.name, "Age:", results.age)
-    end
+        if success then
+            print("Name:", results.name, "Age:", results.age)
+        end
     end)
 
 ```
@@ -2924,9 +2940,9 @@ Client
 ```lua
     -- Medium: Request with dropdown and defaults
     local argTypes = {
-    {name = "player", type = "player"},
-    {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-    {name = "reason", type = "string"}
+        {name = "player", type = "player"},
+        {name = "action", type = "table", data = {"kick", "ban", "mute"}},
+        {name = "reason", type = "string"}
     }
     local defaults = {reason = "No reason provided"}
     lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
@@ -2937,15 +2953,15 @@ Client
 ```lua
     -- High: Complex argument validation with ordered fields
     local argTypes = {
-    {name = "itemName", type = "string"},
-    {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-    {name = "quantity", type = "number"},
-    {name = "isStackable", type = "boolean"}
+        {name = "itemName", type = "string"},
+        {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
+        {name = "quantity", type = "number"},
+        {name = "isStackable", type = "boolean"}
     }
     lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-    if success and validateItemData(results) then
-        createItem(results)
-    end
+        if success and validateItemData(results) then
+            createItem(results)
+        end
     end)
 
 ```
@@ -2981,14 +2997,14 @@ Client
 ```lua
     -- Simple: Request basic arguments
     local argTypes = {
-    name = "string",
-    age = "number",
-    isActive = "boolean"
+        name = "string",
+        age = "number",
+        isActive = "boolean"
     }
     lia.derma.requestArguments("User Info", argTypes, function(success, results)
-    if success then
-        print("Name:", results.name, "Age:", results.age)
-    end
+        if success then
+            print("Name:", results.name, "Age:", results.age)
+        end
     end)
 
 ```
@@ -2997,9 +3013,9 @@ Client
 ```lua
     -- Medium: Request with dropdown and defaults
     local argTypes = {
-    {name = "player", type = "player"},
-    {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-    {name = "reason", type = "string"}
+        {name = "player", type = "player"},
+        {name = "action", type = "table", data = {"kick", "ban", "mute"}},
+        {name = "reason", type = "string"}
     }
     local defaults = {reason = "No reason provided"}
     lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
@@ -3010,15 +3026,15 @@ Client
 ```lua
     -- High: Complex argument validation with ordered fields
     local argTypes = {
-    {name = "itemName", type = "string"},
-    {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-    {name = "quantity", type = "number"},
-    {name = "isStackable", type = "boolean"}
+        {name = "itemName", type = "string"},
+        {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
+        {name = "quantity", type = "number"},
+        {name = "isStackable", type = "boolean"}
     }
     lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-    if success and validateItemData(results) then
-        createItem(results)
-    end
+        if success and validateItemData(results) then
+            createItem(results)
+        end
     end)
 
 ```
@@ -3054,14 +3070,14 @@ Client
 ```lua
     -- Simple: Request basic arguments
     local argTypes = {
-    name = "string",
-    age = "number",
-    isActive = "boolean"
+        name = "string",
+        age = "number",
+        isActive = "boolean"
     }
     lia.derma.requestArguments("User Info", argTypes, function(success, results)
-    if success then
-        print("Name:", results.name, "Age:", results.age)
-    end
+        if success then
+            print("Name:", results.name, "Age:", results.age)
+        end
     end)
 
 ```
@@ -3070,9 +3086,9 @@ Client
 ```lua
     -- Medium: Request with dropdown and defaults
     local argTypes = {
-    {name = "player", type = "player"},
-    {name = "action", type = "table", data = {"kick", "ban", "mute"}},
-    {name = "reason", type = "string"}
+        {name = "player", type = "player"},
+        {name = "action", type = "table", data = {"kick", "ban", "mute"}},
+        {name = "reason", type = "string"}
     }
     local defaults = {reason = "No reason provided"}
     lia.derma.requestArguments("Admin Action", argTypes, onSubmit, defaults)
@@ -3083,15 +3099,15 @@ Client
 ```lua
     -- High: Complex argument validation with ordered fields
     local argTypes = {
-    {name = "itemName", type = "string"},
-    {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
-    {name = "quantity", type = "number"},
-    {name = "isStackable", type = "boolean"}
+        {name = "itemName", type = "string"},
+        {name = "itemType", type = "table", data = {{"Weapon", "weapon"}, {"Tool", "tool"}}},
+        {name = "quantity", type = "number"},
+        {name = "isStackable", type = "boolean"}
     }
     lia.derma.requestArguments("Create Item", argTypes, function(success, results)
-    if success and validateItemData(results) then
-        createItem(results)
-    end
+        if success and validateItemData(results) then
+            createItem(results)
+        end
     end)
 
 ```

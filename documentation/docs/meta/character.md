@@ -742,8 +742,8 @@ When accessing stored character-specific data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string, optional** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** |  |
+| `default` | **any** |  |
 
 #### ↩️ Returns
 * any - The data value, all data table, or default value
@@ -849,7 +849,7 @@ When establishing recognition between characters
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `character` | **number|character** |  |
-| `name` | **string, optional** |  |
+| `name` | **string** |  |
 
 #### ↩️ Returns
 * boolean - True if recognition was successful
@@ -1385,7 +1385,7 @@ When persisting character changes to the database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function, optional** |  |
+| `callback` | **function** |  |
 
 #### ↩️ Returns
 * None

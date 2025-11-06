@@ -84,7 +84,8 @@ When registering commands during gamemode initialization or module loading
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** | The command name, data (table) - Command configuration including onRun, arguments, privilege, etc. |
+| `command` | **string** | The command name |
+| `data` | **table** | Command configuration including onRun, arguments, privilege, etc. |
 
 #### ↩️ Returns
 * void
@@ -165,7 +166,9 @@ Before command execution to verify player permissions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The player attempting to use the command, command (string) - Command name, data (table, optional) - Command data table |
+| `client` | **Player** | The player attempting to use the command |
+| `command` | **string** | Command name |
+| `data` | **table, optional** | Command data table |
 
 #### ↩️ Returns
 * boolean, string - Access granted status and privilege name
@@ -282,7 +285,9 @@ When a command needs to be executed after parsing and access validation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The player executing the command, command (string) - Command name, arguments (table) - Command arguments |
+| `client` | **Player** | The player executing the command |
+| `command` | **string** | Command name |
+| `arguments` | **table** | Command arguments |
 
 #### ↩️ Returns
 * void
@@ -339,7 +344,14 @@ When processing player chat input or console commands that start with "/"
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** | The player executing the command, text (string) - Full command text, realCommand (string, optional) - Pre-parsed command name, arguments (table, optional) - Pre-parsed arguments |
+| `client` | **Player** | The player executing the command |
+| `text` | **string** | Full command text |
+| `realCommand` | **string, optional** | Pre-parsed command name |
+| `Pre` | **unknown** | parsed command name |
+| `Pre` | **unknown** | parsed command name |
+| `arguments` | **table, optional** | Pre-parsed arguments |
+| `Pre` | **unknown** | parsed arguments |
+| `Pre` | **unknown** | parsed arguments |
 
 #### ↩️ Returns
 * boolean - True if command was processed, false if not a command
@@ -398,7 +410,9 @@ When a command is executed with missing required arguments
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmdKey` | **string** | Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments |
+| `cmdKey` | **string** | Command name |
+| `missing` | **table** | Array of missing argument names |
+| `prefix` | **table** | Already provided arguments |
 
 #### ↩️ Returns
 * void
@@ -450,7 +464,9 @@ When a command is executed with missing required arguments
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmdKey` | **string** | Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments |
+| `cmdKey` | **string** | Command name |
+| `missing` | **table** | Array of missing argument names |
+| `prefix` | **table** | Already provided arguments |
 
 #### ↩️ Returns
 * void
@@ -502,7 +518,9 @@ When a command is executed with missing required arguments
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmdKey` | **string** | Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments |
+| `cmdKey` | **string** | Command name |
+| `missing` | **table** | Array of missing argument names |
+| `prefix` | **table** | Already provided arguments |
 
 #### ↩️ Returns
 * void
@@ -554,7 +572,9 @@ When a command is executed with missing required arguments
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmdKey` | **string** | Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments |
+| `cmdKey` | **string** | Command name |
+| `missing` | **table** | Array of missing argument names |
+| `prefix` | **table** | Already provided arguments |
 
 #### ↩️ Returns
 * void
@@ -606,7 +626,9 @@ When a command is executed with missing required arguments
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmdKey` | **string** | Command name, missing (table) - Array of missing argument names, prefix (table) - Already provided arguments |
+| `cmdKey` | **string** | Command name |
+| `missing` | **table** | Array of missing argument names |
+| `prefix` | **table** | Already provided arguments |
 
 #### ↩️ Returns
 * void
@@ -658,7 +680,7 @@ When client needs to execute a command on the server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** | Command name, ... (vararg) - Command arguments |
+| `command` | **string** | Command name |
 
 #### ↩️ Returns
 * void
@@ -692,6 +714,134 @@ Client
     local duration = 300
     lia.command.send("ban", target, reason, duration)
     -- Sends ban command with all parameters
+
+```
+
+---
+
+### lia.PANEL:OnRemove
+
+#### 📋 Purpose
+Alias for lia.util.findPlayer - finds a player by name, SteamID, or partial match
+
+#### ⏰ When Called
+When commands need to resolve player names to player entities
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `client` | **Player** | The player executing the command |
+| `name` | **string** | Player name or identifier to find |
+
+#### ↩️ Returns
+* Player or nil - Found player entity or nil if not found
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Find player by exact name
+    local target = lia.command.findPlayer(client, "John")
+    if IsValid(target) then
+        client:notify("Found player: " .. target:Name())
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Find player with error handling
+    local target = lia.command.findPlayer(client, "John")
+    if not IsValid(target) then
+        client:notifyError("Player not found!")
+        return
+    end
+    -- Use target player
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Find player with multiple fallback methods
+    local identifier = arguments[1] -- Could be name, SteamID, or partial match
+    local target = lia.command.findPlayer(client, identifier)
+    if not IsValid(target) then
+        client:notifyError("Player '" .. identifier .. "' not found!")
+        return
+    elseif target == client then
+        client:notifyError("You cannot target yourself!")
+        return
+    end
+    -- Execute command on target
+    target:Kick("Banned by " .. client:Name())
+
+```
+
+---
+
+### lia.PANEL:OnClose
+
+#### 📋 Purpose
+Alias for lia.util.findPlayer - finds a player by name, SteamID, or partial match
+
+#### ⏰ When Called
+When commands need to resolve player names to player entities
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `client` | **Player** | The player executing the command |
+| `name` | **string** | Player name or identifier to find |
+
+#### ↩️ Returns
+* Player or nil - Found player entity or nil if not found
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Find player by exact name
+    local target = lia.command.findPlayer(client, "John")
+    if IsValid(target) then
+        client:notify("Found player: " .. target:Name())
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Find player with error handling
+    local target = lia.command.findPlayer(client, "John")
+    if not IsValid(target) then
+        client:notifyError("Player not found!")
+        return
+    end
+    -- Use target player
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Find player with multiple fallback methods
+    local identifier = arguments[1] -- Could be name, SteamID, or partial match
+    local target = lia.command.findPlayer(client, identifier)
+    if not IsValid(target) then
+        client:notifyError("Player '" .. identifier .. "' not found!")
+        return
+    elseif target == client then
+        client:notifyError("You cannot target yourself!")
+        return
+    end
+    -- Execute command on target
+    target:Kick("Banned by " .. client:Name())
 
 ```
 
