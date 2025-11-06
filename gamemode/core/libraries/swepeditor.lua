@@ -122,7 +122,7 @@ if SERVER then
         ```lua
         -- High: Load data with error handling and logging
         local function loadWeaponData(weaponClass)
-            lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = %s", lia.db.escape(weaponClass)), function(results)
+            lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = '%s'", string.gsub(weaponClass, "'", "''")), function(results)
                 if results and results[1] then
                     local saveData = util.JSONToTable(results[1].data)
                     if saveData then
@@ -144,7 +144,7 @@ if SERVER then
         ```
 ]]
     function lia.swepeditor.loadData(class)
-        lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = %s", lia.db.escape(class)), function(results)
+        lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = '%s'", string.gsub(class, "'", "''")), function(results)
             if results and results[1] then
                 local saveData = util.JSONToTable(results[1].data)
                 if saveData then
@@ -257,7 +257,7 @@ if SERVER then
     net.Receive("liaSwepeditorLoad", function(_, ply)
         local weaponClass = net.ReadString()
         if weaponClass and weaponClass ~= "" then
-            lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = %s", lia.db.escape(weaponClass)), function(results)
+            lia.db.query(string.format("SELECT * FROM lia_swepeditor WHERE class = '%s'", string.gsub(weaponClass, "'", "''")), function(results)
                 if results and results[1] then
                     local saveData = util.JSONToTable(results[1].data)
                     if saveData and lia.swepeditor.NetworkData[weaponClass] then
