@@ -168,88 +168,74 @@ def parse_comment_block(comment_text):
         elif current_section == 'parameters':
             # Parse parameter lines (various formats)
             if line.strip() and not line.startswith('--'):
-                # First check if this is a new section header (even if indented)
-                # Commit any pending parameter before switching sections
-                if pending_parameter:
-                    parsed['parameters'].append({
-                        'name': pending_parameter['name'],
-                        'type': pending_parameter['type'],
-                        'description': ''
-                    })
-                    pending_parameter = None
-                
                 if line.startswith('Returns:'):
                     finalize_current_section()
+                    if pending_parameter:
+                        parsed['parameters'].append({
+                            'name': pending_parameter['name'],
+                            'type': pending_parameter['type'],
+                            'description': ''
+                        })
+                        pending_parameter = None
                     current_section = 'returns'
                     inline_content = line[8:].strip()
                     if inline_content:
                         section_content.append(inline_content)
                 elif line.startswith('Realm:'):
                     finalize_current_section()
+                    if pending_parameter:
+                        parsed['parameters'].append({
+                            'name': pending_parameter['name'],
+                            'type': pending_parameter['type'],
+                            'description': ''
+                        })
+                        pending_parameter = None
                     current_section = 'realm'
                     inline_content = line[6:].strip()
                     if inline_content:
                         section_content.append(inline_content)
                 elif line.startswith('Example Usage:'):
+                    finalize_current_section()
+                    if pending_parameter:
+                        parsed['parameters'].append({
+                            'name': pending_parameter['name'],
+                            'type': pending_parameter['type'],
+                            'description': ''
+                        })
+                        pending_parameter = None
                     current_section = 'examples'
                 # Check if this line is indented (parameter) or a new section header
-                elif original_line.startswith('    ') or original_line.startswith('\t'):
-                    # Check if we have a pending parameter (from previous iteration) and this is its description
-                    if pending_parameter:
-                        current_indent = len(original_line) - len(original_line.lstrip())
-                        prev_indent = pending_parameter.get('indent', 0)
-                        # If this line is more indented than the parameter line, it's the description
-                        if current_indent > prev_indent and line.strip() and not line.startswith('--'):
-                            parsed['parameters'].append({
-                                'name': pending_parameter['name'],
-                                'type': pending_parameter['type'],
-                                'description': line.strip()
-                            })
-                            pending_parameter = None
-                            continue
-                        else:
-                            # Not a description, commit pending parameter without description
+                elif len(original_line) > len(original_line.lstrip()):
+                    # Check for parameter patterns first
+                    m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*$', original_line)
+                    if m:
+                        # Found parameter name and type - commit any pending parameter first
+                        if pending_parameter:
                             parsed['parameters'].append({
                                 'name': pending_parameter['name'],
                                 'type': pending_parameter['type'],
                                 'description': ''
                             })
-                            pending_parameter = None
-                    
-                    # NEW FORMAT: Check for "parameterName (type)" pattern with description on next line
-                    # This handles the new format: parameterName (type) on one line, description on next
-                    m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*$', original_line)
-                    if m:
-                        # Found parameter name and type, store it and check next line for description
-                        param_name = m.group(1).strip()
-                        param_type = m.group(2).strip()
-                        param_indent = len(original_line) - len(original_line.lstrip())
-                        pending_parameter = {'name': param_name, 'type': param_type, 'indent': param_indent}
-                        # Don't add it yet, wait for next line to see if there's a description
+                        pending_parameter = {'name': m.group(1).strip(), 'type': m.group(2).strip()}
                     else:
-                        # OLD FORMAT: Indented format: name (Type) - Description (common in hooks)
-                        m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*-\s*(.+)', original_line)
-                        if m:
-                            parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
+                        # Not a parameter pattern - check if it's a description for pending parameter
+                        if pending_parameter:
+                            desc = line.strip()
+                            parsed['parameters'].append({
+                                'name': pending_parameter['name'],
+                                'type': pending_parameter['type'],
+                                'description': desc
+                            })
                             pending_parameter = None
-                        else:
-                            # Fallback for indented lines without parentheses
-                            m = re.match(r'^\s+([A-Za-z_][\w]*)\s*-\s*(.+)', original_line)
+                            # OLD FORMAT: Indented format: name (Type) - Description (common in hooks)
+                            m = re.match(r'^\s+([A-Za-z_][\w]*)\s*\(([^)]+)\)\s*-\s*(.+)', original_line)
                             if m:
-                                parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
-                                pending_parameter = None
+                                parsed['parameters'].append({'name': m.group(1).strip(), 'type': m.group(2).strip(), 'description': m.group(3).strip()})
                             else:
-                                # Check if this is a description line for a pending parameter
-                                if pending_parameter:
-                                    current_indent = len(original_line) - len(original_line.lstrip())
-                                    if current_indent > pending_parameter['indent'] and line.strip():
-                                        parsed['parameters'].append({
-                                            'name': pending_parameter['name'],
-                                            'type': pending_parameter['type'],
-                                            'description': line.strip()
-                                        })
-                                        pending_parameter = None
-                                        continue
+                                # Fallback for indented lines without parentheses
+                                m = re.match(r'^\s+([A-Za-z_][\w]*)\s*-\s*(.+)', original_line)
+                                if m:
+                                    parsed['parameters'].append({'name': m.group(1).strip(), 'type': 'unknown', 'description': m.group(2).strip()})
                 else:
                     # Not indented, might be a new section - reset current_section
                     current_section = None
