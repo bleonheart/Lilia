@@ -32,7 +32,7 @@ function PANEL:Init()
     self.vendorPanel.items = self.vendorPanel:Add("liaScrollPanel")
     self.vendorPanel.items:Dock(FILL)
     self.vendorPanel.items:DockPadding(8, 8, 8, 8)
-    self.vendorPanel.Paint = function(s, w, h)
+    self.vendorPanel.Paint = function(_, w, h)
         -- Draw main panel background with rounded corners
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.background_alpha or Color(34, 34, 34, 240)):Draw()
     end
@@ -43,7 +43,7 @@ function PANEL:Init()
     self.mePanel.items = self.mePanel:Add("liaScrollPanel")
     self.mePanel.items:Dock(FILL)
     self.mePanel.items:DockPadding(8, 8, 8, 8)
-    self.mePanel.Paint = function(s, w, h)
+    self.mePanel.Paint = function(_, w, h)
         -- Draw main panel background with rounded corners
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.background_alpha or Color(34, 34, 34, 240)):Draw()
     end
@@ -143,13 +143,13 @@ function PANEL:createCategoryDropdown()
         menu = vgui.Create("liaSemiTransparentDPanel", self)
         menu:SetSize(btn:GetWide(), math.min(#sorted * 32 + 8, sh * 0.4))
         menu:SetPos(btn.x, btn.y + btn:GetTall() + 4)
-        menu.Paint = function(s, w, h)
+        menu.Paint = function(_, w, h)
             lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.background_alpha or Color(34, 34, 34, 250)):Draw()
         end
         local scroll = menu:Add("liaScrollPanel")
         scroll:Dock(FILL)
         scroll:DockPadding(4, 4, 4, 4)
-        for i, cat in ipairs(sorted) do
+        for _, cat in ipairs(sorted) do
             local text = cat:gsub("^%l", string.upper)
             local item = scroll:Add("liaButton")
             item:SetSize(scroll:GetWide() - 8, 28)
@@ -501,7 +501,7 @@ function PANEL:Init()
     self.hoverAlpha = 0
     self.background = self:Add("DPanel")
     self.background:Dock(FILL)
-    self.background.Paint = function(s, w, h)
+    self.background.Paint = function(_, w, h)
         -- Draw rounded background with hover effect
         local theme = lia.color.theme
         local bgColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50, 240)
@@ -531,7 +531,7 @@ function PANEL:Init()
     self.iconFrame:Dock(LEFT)
     self.iconFrame:DockMargin(10, 10, 10, 10)
     self.iconFrame.ExtraPaint = function() end
-    self.iconFrame.Paint = function(s, w, h)
+    self.iconFrame.Paint = function(_, w, h)
         -- Draw icon frame background with subtle shadow
         lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.panel and lia.color.theme.panel[2] or Color(30, 30, 30, 200)):Draw()
         self.iconFrame:ExtraPaint(w, h)
@@ -568,7 +568,7 @@ function PANEL:Init()
     self.priceBadge:Dock(RIGHT)
     self.priceBadge:SetWide(120)
     self.priceBadge:SetPaintBackground(false)
-    self.priceBadge.Paint = function(s, w, h)
+    self.priceBadge.Paint = function(_, w, h)
         local theme = lia.color.theme
         local priceColor = theme and theme.theme or Color(100, 150, 200)
         lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(priceColor, 20)):Draw()
@@ -588,7 +588,7 @@ function PANEL:Init()
     self.quantityBadge:SetWide(60)
     self.quantityBadge:DockMargin(0, 0, 8, 0)
     self.quantityBadge:SetPaintBackground(false)
-    self.quantityBadge.Paint = function(s, w, h)
+    self.quantityBadge.Paint = function(_, w, h)
         local theme = lia.color.theme
         local qtyColor = theme and theme.panel and theme.panel[2] or Color(60, 60, 60, 150)
         lia.derma.rect(0, 0, w, h):Rad(4):Color(qtyColor):Draw()
