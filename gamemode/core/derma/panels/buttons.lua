@@ -1,4 +1,8 @@
 ﻿local animDuration = 0.3
+-- Cache gradient material to avoid recreating on every paint/reload
+local GRADIENT_MAT = Material("vgui/gradient-d")
+-- Cache default button shadow color
+local DEFAULT_BUTTON_SHADOW = Color(18, 32, 32, 35)
 local PANEL = {}
 function PANEL:Init()
     self._activeShadowTimer = 0
@@ -115,8 +119,9 @@ function PANEL:Paint(w, h)
 
     draw.RoundedBox(self.radius, 0, 0, w, h, self.col)
     if self.bool_gradient then
-        surface.SetDrawColor((lia.color.theme and lia.color.theme.button_shadow) or Color(18, 32, 32, 35))
-        surface.SetMaterial(Material("vgui/gradient-d"))
+        local shadowCol = (lia.color.theme and lia.color.theme.button_shadow) or DEFAULT_BUTTON_SHADOW
+        surface.SetDrawColor(shadowCol)
+        surface.SetMaterial(GRADIENT_MAT)
         surface.DrawTexturedRect(0, 0, w, h)
     end
 
