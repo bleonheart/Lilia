@@ -496,6 +496,17 @@ function MODULE:PopulateAdminTabs(pages)
                             propPanel.propertyValue = newValue
                         end
 
+                        -- Auto-save: immediately save the property change
+                        if selectedWeapon then
+                            net.Start("liaSwepeditorUpdate")
+                            net.WriteTable({[key] = newValue})
+                            net.WriteString(selectedWeapon)
+                            net.SendToServer()
+                            originalValues[key] = newValue
+                            modifiedValues[key] = nil
+                            LocalPlayer():notify(L("propertySaved", key))
+                        end
+
                         UpdateButtonStates()
                     end
 
@@ -562,8 +573,19 @@ function MODULE:PopulateAdminTabs(pages)
                                 propPanel.lastChange = CurTime()
                                 modifiedValues[key] = checked
                                 propPanel.propertyValue = checked
+                                -- Auto-save: immediately save the property change
+                                if selectedWeapon then
+                                    net.Start("liaSwepeditorUpdate")
+                                    net.WriteTable({[key] = checked})
+                                    net.WriteString(selectedWeapon)
+                                    net.SendToServer()
+                                    originalValues[key] = checked
+                                    modifiedValues[key] = nil
+                                    LocalPlayer():notify(L("propertySaved", key))
+                                else
+                                    LocalPlayer():notify(L("propertyModified", key))
+                                end
                                 UpdateButtonStates()
-                                LocalPlayer():notify(L("propertyModified", key))
                             end
 
                             propPanel.valueCheckbox = valueControl
@@ -587,8 +609,19 @@ function MODULE:PopulateAdminTabs(pages)
                                 if newValue ~= nil then
                                     modifiedValues[key] = newValue
                                     propPanel.propertyValue = newValue
+                                    -- Auto-save: immediately save the property change
+                                    if selectedWeapon then
+                                        net.Start("liaSwepeditorUpdate")
+                                        net.WriteTable({[key] = newValue})
+                                        net.WriteString(selectedWeapon)
+                                        net.SendToServer()
+                                        originalValues[key] = newValue
+                                        modifiedValues[key] = nil
+                                        LocalPlayer():notify(L("propertySaved", key))
+                                    else
+                                        LocalPlayer():notify(L("propertyModified", key))
+                                    end
                                     UpdateButtonStates()
-                                    LocalPlayer():notify(L("propertyModified", key))
                                     s:SetTextColor(originalTextColor)
                                 else
                                     s:SetText(FormatValue(propPanel.propertyValue, propType))
