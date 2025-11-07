@@ -1040,7 +1040,7 @@ local math_min = math.min
 local math_max = math.max
 local DisableClipping = DisableClipping
 local SHADERS_VERSION = "1761484375"
-local SHADERS_GMA = [========[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]========]
+local SHADERS_GMA = [========[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]========]
 -- Initialize GMA file only once
 do
     local mountedVersions = _G.RNDX_GMA_MOUNTED or {}
@@ -1051,7 +1051,7 @@ do
         if not file.Exists("data/" .. gma_filename, "GAME") then
             local DECODED_SHADERS_GMA = util.Base64Decode(SHADERS_GMA)
             if not DECODED_SHADERS_GMA or #DECODED_SHADERS_GMA == 0 then
-                print("[RNDX] Failed to load shaders!")
+                print("[RNDX] Failed to load shaders!") -- this shouldn't happen
                 return
             end
 
@@ -1071,19 +1071,33 @@ local function getShader(name)
     return SHADERS_VERSION:gsub("%.", "_") .. "_" .. name
 end
 
-local blurRt = GetRenderTargetEx("lia.derma" .. SHADERS_VERSION .. SysTime(), 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), 0, IMAGE_FORMAT_BGRA8888)
-local newFlag
+local BLUR_RT_NAME = "RNDX" .. SHADERS_VERSION
+do
+    local rtCache = _G.RNDX_RT_CACHE or {}
+    _G.RNDX_RT_CACHE = rtCache
+    if not rtCache[BLUR_RT_NAME] then
+        rtCache[BLUR_RT_NAME] = GetRenderTargetEx(BLUR_RT_NAME, 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), --[[4, 8 is clamp_s + clamp-t]]
+            0, IMAGE_FORMAT_BGRA8888)
+
+        print("[RNDX] Created blur render target: " .. BLUR_RT_NAME)
+    else
+        print("[RNDX] Reusing cached blur render target: " .. BLUR_RT_NAME)
+    end
+
+    BLUR_RT = rtCache[BLUR_RT_NAME]
+end
+local NEW_FLAG
 do
     local flags_n = -1
-    function newFlag()
+    function NEW_FLAG()
         flags_n = flags_n + 1
         return 2 ^ flags_n
     end
 end
 
-local NO_TL, NO_TR, NO_BL, NO_BR = newFlag(), newFlag(), newFlag(), newFlag()
-local SHAPE_CIRCLE, SHAPE_FIGMA, SHAPE_IOS = newFlag(), newFlag(), newFlag()
-local BLUR = newFlag()
+local NO_TL, NO_TR, NO_BL, NO_BR = NEW_FLAG(), NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
+local SHAPE_CIRCLE, SHAPE_FIGMA, SHAPE_IOS = NEW_FLAG(), NEW_FLAG(), NEW_FLAG()
+local BLUR = NEW_FLAG()
 local shader_mat = [==[
 screenspace_general
 {
@@ -1111,8 +1125,21 @@ screenspace_general
 }
 ]==]
 local matrixes = {}
+local MATERIAL_CACHE = {}
 local function createShaderMat(name, opts)
-    assert(name and isstring(name), L("createShaderMatTexMustBeString"))
+    assert(name and isstring(name), "createShaderMat: tex must be a string")
+    local mat_name = "rndx_shaders1" .. name .. SHADERS_VERSION
+    -- Check cache first
+    if MATERIAL_CACHE[mat_name] then return MATERIAL_CACHE[mat_name] end
+    -- Try to get existing material from engine
+    local existing_mat = Material(mat_name)
+    if existing_mat and not existing_mat:IsError() then
+        MATERIAL_CACHE[mat_name] = existing_mat
+        if not matrixes[existing_mat] then matrixes[existing_mat] = Matrix() end
+        return existing_mat
+    end
+
+    -- Create new material
     local key_values = util.KeyValuesToTable(shader_mat, false, true)
     if opts then
         for k, v in pairs(opts) do
@@ -1120,8 +1147,9 @@ local function createShaderMat(name, opts)
         end
     end
 
-    local mat = CreateMaterial("rndx_shaders1" .. name .. SysTime(), "screenspace_general", key_values)
+    local mat = CreateMaterial(mat_name, "screenspace_general", key_values)
     matrixes[mat] = Matrix()
+    MATERIAL_CACHE[mat_name] = mat
     return mat
 end
 
@@ -1140,7 +1168,7 @@ local blurVertical = "$c0_x"
 local roundedBlurMat = createShaderMat("blur_horizontal", {
     ["$pixshader"] = getShader("rndx_rounded_blur_ps30"),
     ["$vertexshader"] = getShader("rndx_vertex_vs30"),
-    ["$basetexture"] = blurRt:GetName(),
+    ["$basetexture"] = BLUR_RT:GetName(),
     ["$texture1"] = "_rt_FullFrameFB",
 })
 
@@ -1152,7 +1180,7 @@ local shadowsMat = createShaderMat("rounded_shadows", {
 local shadowsBlurMat = createShaderMat("shadows_blur_horizontal", {
     ["$pixshader"] = getShader("rndx_shadows_blur_ps30"),
     ["$vertexshader"] = getShader("rndx_vertex_vs30"),
-    ["$basetexture"] = blurRt:GetName(),
+    ["$basetexture"] = BLUR_RT:GetName(),
     ["$texture1"] = "_rt_FullFrameFB",
 })
 
@@ -1223,7 +1251,7 @@ local function setupDraw()
     surface_SetMaterial(MAT)
 end
 
-local manualColor = newFlag()
+local MANUAL_COLOR = NEW_FLAG()
 local defaultDrawFlags = defaultShape
 local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thickness)
     if col and col.a == 0 then return end
@@ -1242,7 +1270,7 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
     TL, TR, BL, BR = bit_band(flags, NO_TL) == 0 and tl or 0, bit_band(flags, NO_TR) == 0 and tr or 0, bit_band(flags, NO_BL) == 0 and bl or 0, bit_band(flags, NO_BR) == 0 and br or 0
     SHAPE = shapes[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or shapes[defaultShape]
     OUTLINE_THICKNESS = thickness
-    if bit_band(flags, manualColor) ~= 0 and not col then
+    if bit_band(flags, MANUAL_COLOR) ~= 0 then
         COL_R = nil
     elseif col then
         COL_R, COL_G, COL_B, COL_A = col.r, col.g, col.b, col.a
@@ -1730,10 +1758,10 @@ local function drawBlur()
 
     COL_R, COL_G, COL_B, COL_A = 255, 255, 255, 255
     setupDraw()
-    render_CopyRenderTargetToTexture(blurRt)
+    render_CopyRenderTargetToTexture(BLUR_RT)
     materialSetFloat(MAT, blurVertical, 0)
     surface_DrawTexturedRect(X, Y, W, H)
-    render_CopyRenderTargetToTexture(blurRt)
+    render_CopyRenderTargetToTexture(BLUR_RT)
     materialSetFloat(MAT, blurVertical, 1)
     surface_DrawTexturedRect(X, Y, W, H)
 end
@@ -2323,7 +2351,7 @@ lia.derma.SHAPE_CIRCLE = SHAPE_CIRCLE
 lia.derma.SHAPE_FIGMA = SHAPE_FIGMA
 lia.derma.SHAPE_IOS = SHAPE_IOS
 lia.derma.BLUR = BLUR
-lia.derma.MANUAL_COLOR = manualColor
+lia.derma.MANUAL_COLOR = MANUAL_COLOR
 function lia.derma.setFlag(flags, flag, bool)
     flag = lia.derma[flag] or flag
     if tobool(bool) then
