@@ -513,9 +513,10 @@ def extract_function_name_from_comment(comment_text, file_path):
     return filename
 
 
-def find_functions_in_file(file_path):
+def find_functions_in_file(file_path, is_library=False):
     """
     Find all function definitions in a Lua file with their line numbers.
+    For library files, only include functions that are part of the public API (start with 'lia.').
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -537,6 +538,10 @@ def find_functions_in_file(file_path):
     for match in re.finditer(func_pattern, content):
         func_name = match.group(1)
         func_line = content[:match.start()].count('\n') + 1
+
+        # For library files, only include functions that are part of the public API
+        if is_library and not func_name.startswith('lia.'):
+            continue
 
         # Find the preceding comment block (closest one before this function)
         preceding_comment = None
@@ -666,7 +671,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False):
     print(f"Processing {file_path}")
 
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
-    functions = find_functions_in_file(file_path)
+    functions = find_functions_in_file(file_path, is_library)
 
     if not functions:
         print(f"  No structured functions found in {file_path}")
@@ -1067,7 +1072,7 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path) -> 
     output_path = output_dir / output_filename
 
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
-    functions = find_functions_in_file(file_path)
+    functions = find_functions_in_file(file_path, is_library=False)
     if not functions:
         print(f"  No hooks found in {file_path}")
         return
