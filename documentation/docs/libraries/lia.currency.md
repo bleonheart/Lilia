@@ -25,7 +25,7 @@ When displaying currency amounts in UI, chat messages, or any text output.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format. |
 
 #### ↩️ Returns
 * string
@@ -83,9 +83,9 @@ When spawning money drops, creating money rewards, or placing currency in the wo
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pos` | **Vector** |  |
-| `amount` | **number** |  |
-| `angle` | **Angle, optional** |  |
+| `pos` | **Vector** | The position where the money entity should be spawned. |
+| `amount` | **number** | The amount of money the entity should contain (will be rounded and made positive). |
+| `angle` | **Angle, optional** | The rotation angle for the money entity (defaults to angle_zero). |
 
 #### ↩️ Returns
 * Entity

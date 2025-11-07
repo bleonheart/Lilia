@@ -543,8 +543,8 @@ When a player tries to join a faction that might be at capacity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `client` | **Player** |  |
+| `character` | **Character** | The character trying to join |
+| `client` | **Player** | The player whose character is joining |
 
 #### ↩️ Returns
 * true if limit reached, false if not
@@ -582,7 +582,7 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player transferring to this faction |
 
 #### 💡 Example Usage
 
@@ -612,7 +612,7 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player spawning |
 
 #### 💡 Example Usage
 

@@ -22,10 +22,10 @@ When you need to fetch an image from the internet and store it locally
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `n` | **string** |  |
-| `u` | **string, optional** |  |
-| `cb` | **function, optional** |  |
-| `flags` | **string, optional** |  |
+| `n` | **string** | Name/identifier for the image |
+| `u` | **string, optional** | URL to download from (uses stored URL if not provided) |
+| `cb` | **function, optional** | Callback function called when download completes |
+| `flags` | **string, optional** | Material flags for the downloaded image |
 
 #### ↩️ Returns
 * None (uses callback for results)
@@ -94,10 +94,10 @@ When you want to store an image URL and download it for later use
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `n` | **string** |  |
-| `u` | **string** |  |
-| `cb` | **function, optional** |  |
-| `flags` | **string, optional** |  |
+| `n` | **string** | Name/identifier for the image |
+| `u` | **string** | URL to download from |
+| `cb` | **function, optional** | Callback function called when download completes |
+| `flags` | **string, optional** | Material flags for the downloaded image |
 
 #### ↩️ Returns
 * None
@@ -163,8 +163,8 @@ When you need to get a material that has already been downloaded and cached
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `n` | **string** |  |
-| `flags` | **string, optional** |  |
+| `n` | **string** | Name/identifier of the image or URL |
+| `flags` | **string, optional** | Material flags to apply to the material |
 
 #### ↩️ Returns
 * Material object if found, nil otherwise
@@ -235,8 +235,8 @@ When you need to get a material that has already been downloaded and cached
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `n` | **string** |  |
-| `flags` | **string, optional** |  |
+| `n` | **string** | Name/identifier of the image or URL |
+| `flags` | **string, optional** | Material flags to apply to the material |
 
 #### ↩️ Returns
 * Material object if found, nil otherwise
@@ -307,8 +307,8 @@ When you need to get a material that has already been downloaded and cached
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `n` | **string** |  |
-| `flags` | **string, optional** |  |
+| `n` | **string** | Name/identifier of the image or URL |
+| `flags` | **string, optional** | Material flags to apply to the material |
 
 #### ↩️ Returns
 * Material object if found, nil otherwise

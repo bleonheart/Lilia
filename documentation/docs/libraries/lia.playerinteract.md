@@ -22,9 +22,9 @@ Called when determining if an interaction should be available to a player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `customRange` | **number, optional** |  |
+| `client` | **Player** | The player attempting the interaction |
+| `entity` | **Entity** | The target entity to check distance against |
+| `customRange` | **number, optional** | Custom range override (defaults to 250 units) |
 
 #### ↩️ Returns
 * boolean - true if within range, false otherwise
@@ -79,7 +79,7 @@ Called when opening interaction menu or checking available interactions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player, optional** |  |
+| `client` | **Player, optional** | The player to get interactions for (defaults to LocalPlayer()) |
 
 #### ↩️ Returns
 * table - Dictionary of available interactions indexed by interaction name
@@ -141,7 +141,7 @@ Called when opening personal actions menu or checking available actions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player, optional** |  |
+| `client` | **Player, optional** | The player to get actions for (defaults to LocalPlayer()) |
 
 #### ↩️ Returns
 * table - Dictionary of available actions indexed by action name
@@ -203,7 +203,7 @@ Called when preparing options for display in the interaction menu
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `options` | **table** |  |
+| `options` | **table** | Dictionary of options to prepare |
 
 #### ↩️ Returns
 * table - Array of options for flat display
@@ -264,18 +264,18 @@ Called during module initialization or when registering custom interactions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `data` | **table** |  |
-| `serverOnly` | **boolean, optional** |  |
-| `shouldShow` | **function, optional** |  |
-| `onRun` | **function** |  |
-| `range` | **number, optional** |  |
-| `category` | **string, optional** |  |
-| `target` | **string, optional** |  |
-| `timeToComplete` | **number, optional** |  |
-| `actionText` | **string, optional** |  |
-| `targetActionText` | **string, optional** |  |
-| `categoryColor` | **Color, optional** |  |
+| `name` | **string** | Unique identifier for the interaction |
+| `data` | **table** | Interaction configuration table containing: |
+| `serverOnly` | **boolean, optional** | Whether interaction runs server-side only |
+| `shouldShow` | **function, optional** | Function to determine if interaction should be visible |
+| `onRun` | **function** | Function to execute when interaction is triggered |
+| `range` | **number, optional** | Interaction range in units (defaults to 250) |
+| `category` | **string, optional** | Category for UI organization |
+| `target` | **string, optional** | Target type - "player", "entity", or "any" (defaults to "player") |
+| `timeToComplete` | **number, optional** | Time in seconds for timed interactions |
+| `actionText` | **string, optional** | Text shown to performing player during timed action |
+| `targetActionText` | **string, optional** | Text shown to target player during timed action |
+| `categoryColor` | **Color, optional** | Color for category display |
 
 #### ↩️ Returns
 * void
@@ -365,17 +365,17 @@ Called during module initialization or when registering custom personal actions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `data` | **table** |  |
-| `serverOnly` | **boolean, optional** |  |
-| `shouldShow` | **function, optional** |  |
-| `onRun` | **function** |  |
-| `range` | **number, optional** |  |
-| `category` | **string, optional** |  |
-| `timeToComplete` | **number, optional** |  |
-| `actionText` | **string, optional** |  |
-| `targetActionText` | **string, optional** |  |
-| `categoryColor` | **Color, optional** |  |
+| `name` | **string** | Unique identifier for the action |
+| `data` | **table** | Action configuration table containing: |
+| `serverOnly` | **boolean, optional** | Whether action runs server-side only |
+| `shouldShow` | **function, optional** | Function to determine if action should be visible |
+| `onRun` | **function** | Function to execute when action is triggered |
+| `range` | **number, optional** | Action range in units (defaults to 250) |
+| `category` | **string, optional** | Category for UI organization |
+| `timeToComplete` | **number, optional** | Time in seconds for timed actions |
+| `actionText` | **string, optional** | Text shown to performing player during timed action |
+| `targetActionText` | **string, optional** | Text shown to target player during timed action |
+| `categoryColor` | **Color, optional** | Color for category display |
 
 #### ↩️ Returns
 * void
@@ -482,7 +482,7 @@ Called when interactions/actions are added or when clients connect
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player, optional** |  |
+| `client` | **Player, optional** | Specific client to sync to (if nil, syncs to all players) |
 
 #### ↩️ Returns
 * void
@@ -562,7 +562,7 @@ Called when interactions/actions are added or when clients connect
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player, optional** |  |
+| `client` | **Player, optional** | Specific client to sync to (if nil, syncs to all players) |
 
 #### ↩️ Returns
 * void
@@ -669,12 +669,12 @@ Called when player presses interaction keybind or requests menu
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `options` | **table** |  |
-| `isInteraction` | **boolean** |  |
-| `titleText` | **string** |  |
-| `closeKey` | **number** |  |
-| `netMsg` | **string** |  |
-| `preFiltered` | **boolean, optional** |  |
+| `options` | **table** | Dictionary of available options to display |
+| `isInteraction` | **boolean** | Whether this is an interaction menu (true) or action menu (false) |
+| `titleText` | **string** | Title text to display at top of menu |
+| `closeKey` | **number** | Key code that closes the menu when released |
+| `netMsg` | **string** | Network message name for server-only interactions |
+| `preFiltered` | **boolean, optional** | Whether options are already filtered (defaults to false) |
 
 #### ↩️ Returns
 * Panel - The created menu frame (returns from lia.derma.optionsMenu)

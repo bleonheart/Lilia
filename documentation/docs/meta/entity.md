@@ -22,13 +22,13 @@ When an entity needs to play a sound effect or audio
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `soundName` | **string** |  |
-| `soundLevel` | **number, optional** |  |
-| `pitchPercent` | **number, optional** |  |
-| `volume` | **number, optional** |  |
-| `channel` | **number, optional** |  |
-| `flags` | **number, optional** |  |
-| `dsp` | **number, optional** |  |
+| `soundName` | **string** | The sound file path, URL, or websound identifier |
+| `soundLevel` | **number, optional** | Sound level/distance (default: 100) |
+| `pitchPercent` | **number, optional** | Pitch adjustment percentage |
+| `volume` | **number, optional** | Volume level (default: 100) |
+| `channel` | **number, optional** | Sound channel |
+| `flags` | **number, optional** | Sound flags |
+| `dsp` | **number, optional** | DSP effect |
 
 #### ↩️ Returns
 * boolean - True if sound was played successfully
@@ -273,8 +273,8 @@ When you need to verify if a player can access a door
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `access` | **number, optional** |  |
+| `client` | **Player** | The player to check access for |
+| `access` | **number, optional** | The required access level (default: DOOR_GUEST) |
 
 #### ↩️ Returns
 * boolean - True if the client has access, false otherwise
@@ -332,7 +332,7 @@ When a player becomes the owner of a vehicle
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player to set as the owner |
 
 #### ↩️ Returns
 * None
@@ -636,7 +636,7 @@ When an entity needs to drop an item at a specific location
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `offset` | **number, optional** |  |
+| `offset` | **number, optional** | Distance to trace forward from entity (default: 64) |
 
 #### ↩️ Returns
 * Vector, Angle - The drop position and angle
@@ -747,8 +747,8 @@ When you need to check proximity between entities
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `radius` | **number, optional** |  |
-| `otherEntity` | **Entity, optional** |  |
+| `radius` | **number, optional** | Search radius in units (default: 96) |
+| `otherEntity` | **Entity, optional** | Specific entity to check for proximity |
 
 #### ↩️ Returns
 * boolean - True if near another entity, false otherwise
@@ -857,8 +857,8 @@ When you need to synchronize entity data with clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `receiver` | **Player, optional** |  |
+| `key` | **string** | The network variable key to send |
+| `receiver` | **Player, optional** | Specific player to send to, or nil for all players |
 
 #### ↩️ Returns
 * None
@@ -906,7 +906,7 @@ When you need to remove all network data from an entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `receiver` | **Player, optional** |  |
+| `receiver` | **Player, optional** | Specific player to notify, or nil for all players |
 
 #### ↩️ Returns
 * None
@@ -999,7 +999,7 @@ When you need to lock or unlock an entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `state` | **boolean** |  |
+| `state` | **boolean** | True to lock, false to unlock |
 
 #### ↩️ Returns
 * None
@@ -1047,7 +1047,7 @@ When you need to make a vehicle non-ownable or ownable
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `state` | **boolean** |  |
+| `state` | **boolean** | True to make non-ownable, false to make ownable |
 
 #### ↩️ Returns
 * None
@@ -1143,9 +1143,9 @@ When you need to store and sync data on an entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `receiver` | **Player, optional** |  |
+| `key` | **string** | The network variable key |
+| `value` | **any** | The value to store |
+| `receiver` | **Player, optional** | Specific player to send to, or nil for all players |
 
 #### ↩️ Returns
 * None
@@ -1193,8 +1193,8 @@ When you need to retrieve synchronized data from an entity on the server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** | The network variable key to retrieve |
+| `default` | **any, optional** | Default value if the key doesn't exist |
 
 #### ↩️ Returns
 * any - The network variable value or default
@@ -1292,8 +1292,8 @@ When you need to retrieve synchronized data from an entity on the client
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** | The network variable key to retrieve |
+| `default` | **any, optional** | Default value if the key doesn't exist |
 
 #### ↩️ Returns
 * any - The network variable value or default
@@ -1343,15 +1343,15 @@ When you need to play a sound that moves with an entity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `soundPath` | **string** |  |
-| `volume` | **number, optional** |  |
-| `shouldFollow` | **boolean, optional** |  |
-| `maxDistance` | **number, optional** |  |
-| `startDelay` | **number, optional** |  |
-| `minDistance` | **number, optional** |  |
-| `pitch` | **number, optional** |  |
-| `_` | **any, optional** |  |
-| `dsp` | **number, optional** |  |
+| `soundPath` | **string** | Path to the sound file or URL |
+| `volume` | **number, optional** | Volume level (0-1, default: 1) |
+| `shouldFollow` | **boolean, optional** | Whether sound should follow entity (default: true) |
+| `maxDistance` | **number, optional** | Maximum audible distance (default: 1200) |
+| `startDelay` | **number, optional** | Delay before playing (default: 0) |
+| `minDistance` | **number, optional** | Minimum distance for full volume (default: 0) |
+| `pitch` | **number, optional** | Pitch multiplier (default: 1) |
+| `_` | **any, optional** | Unused parameter |
+| `dsp` | **number, optional** | DSP effect ID (default: 0) |
 
 #### ↩️ Returns
 * None

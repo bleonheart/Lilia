@@ -66,7 +66,7 @@ When checking if two character references point to the same character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `other` | **character** |  |
+| `other` | **character** | The other character object to compare with |
 
 #### ↩️ Returns
 * boolean - True if both characters have the same ID, false otherwise
@@ -220,7 +220,7 @@ When displaying character names to other players
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The client who is viewing the character |
 
 #### ↩️ Returns
 * string - The name to display (real name, fake name, or "unknown")
@@ -272,7 +272,7 @@ Before processing purchases, payments, or money transfers
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to check for |
 
 #### ↩️ Returns
 * boolean - True if character has sufficient funds, false otherwise
@@ -331,7 +331,7 @@ When checking permissions or access rights for a character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flagStr` | **string** |  |
+| `flagStr` | **string** | String containing flags to check for |
 
 #### ↩️ Returns
 * boolean - True if character has any of the specified flags, false otherwise
@@ -389,7 +389,7 @@ When validating weapon usage or checking equipped items
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requireEquip` | **boolean** |  |
+| `requireEquip` | **boolean** | Whether to check if item is equipped (default: true) |
 
 #### ↩️ Returns
 * boolean - True if character has the weapon item, false otherwise
@@ -447,8 +447,8 @@ When checking character stats or calculating bonuses
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **number** |  |
+| `key` | **string** | The attribute key to retrieve |
+| `default` | **number** | Default value if attribute doesn't exist (default: 0) |
 
 #### ↩️ Returns
 * number - The attribute value with boosts applied
@@ -503,7 +503,7 @@ When checking or modifying attribute boosts
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `attribID` | **string** |  |
+| `attribID` | **string** | The attribute ID to get boosts for |
 
 #### ↩️ Returns
 * table - Table containing boost values for the attribute
@@ -562,7 +562,7 @@ When determining if one character knows another character's identity
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number|character** |  |
+| `id` | **number|character** | Character ID or character object to check recognition for |
 
 #### ↩️ Returns
 * boolean - True if character recognizes the other, false otherwise
@@ -622,7 +622,7 @@ When determining if character knows a fake name for another character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number|character** |  |
+| `id` | **number|character** | Character ID or character object to check fake recognition for |
 
 #### ↩️ Returns
 * boolean - True if character has fake recognition, false otherwise
@@ -682,10 +682,10 @@ When storing character-specific data that needs persistence
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `k` | **string|table** |  |
-| `v` | **any** |  |
-| `noReplication` | **boolean** |  |
-| `receiver` | **Player** |  |
+| `k` | **string|table** | Key to set or table of key-value pairs |
+| `v` | **any** | Value to set (ignored if k is table) |
+| `noReplication` | **boolean** | Skip client replication (default: false) |
+| `receiver` | **Player** | Specific client to send to (default: character owner) |
 
 #### ↩️ Returns
 * None
@@ -742,8 +742,8 @@ When accessing stored character-specific data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any** |  |
+| `key` | **string** | The data key to retrieve |
+| `default` | **any** | Default value if key doesn't exist |
 
 #### ↩️ Returns
 * any - The data value, all data table, or default value
@@ -848,8 +848,8 @@ When establishing recognition between characters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **number|character** |  |
-| `name` | **string** |  |
+| `character` | **number|character** | Character ID or character object to recognize |
+| `name` | **string** | Optional fake name to assign (default: nil) |
 
 #### ↩️ Returns
 * boolean - True if recognition was successful
@@ -903,8 +903,8 @@ When changing character class or job within their faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **string** |  |
-| `isForced` | **boolean** |  |
+| `class` | **string** | The class name to join |
+| `isForced` | **boolean** | Whether to force the class change (default: false) |
 
 #### ↩️ Returns
 * boolean - True if class change was successful, false otherwise
@@ -1008,8 +1008,8 @@ When modifying character stats through gameplay or admin actions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **number** |  |
+| `key` | **string** | The attribute key to update |
+| `value` | **number** | The amount to add to the current attribute value |
 
 #### ↩️ Returns
 * None
@@ -1063,8 +1063,8 @@ When setting character stats to exact values
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **number** |  |
+| `key` | **string** | The attribute key to set |
+| `value` | **number** | The exact value to set the attribute to |
 
 #### ↩️ Returns
 * None
@@ -1118,9 +1118,9 @@ When applying temporary stat bonuses from items, spells, or effects
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `boostID` | **string** |  |
-| `attribID` | **string** |  |
-| `boostAmount` | **number** |  |
+| `boostID` | **string** | Unique identifier for this boost |
+| `attribID` | **string** | The attribute to boost |
+| `boostAmount` | **number** | The amount to boost the attribute by |
 
 #### ↩️ Returns
 * boolean - True if boost was added successfully
@@ -1174,8 +1174,8 @@ When removing temporary stat bonuses from items, spells, or effects
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `boostID` | **string** |  |
-| `attribID` | **string** |  |
+| `boostID` | **string** | Unique identifier for the boost to remove |
+| `attribID` | **string** | The attribute the boost was applied to |
 
 #### ↩️ Returns
 * boolean - True if boost was removed successfully
@@ -1229,7 +1229,7 @@ When changing character permissions or access rights
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags string to set |
 
 #### ↩️ Returns
 * None
@@ -1281,7 +1281,7 @@ When granting additional permissions to a character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags to add to the character |
 
 #### ↩️ Returns
 * None
@@ -1333,7 +1333,7 @@ When revoking permissions or access rights from a character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags to remove from the character |
 
 #### ↩️ Returns
 * None
@@ -1385,7 +1385,7 @@ When persisting character changes to the database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function** |  |
+| `callback` | **function** | Optional callback function to execute after save |
 
 #### ↩️ Returns
 * None
@@ -1439,7 +1439,7 @@ When updating character information on client side
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `receiver` | **Player** |  |
+| `receiver` | **Player** | Specific client to sync to (default: all players) |
 
 #### ↩️ Returns
 * None
@@ -1489,7 +1489,7 @@ When loading a character for a player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `noNetworking` | **boolean** |  |
+| `noNetworking` | **boolean** | Skip networking setup (default: false) |
 
 #### ↩️ Returns
 * None
@@ -1584,7 +1584,7 @@ When applying a ban to a character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `time` | **number** |  |
+| `time` | **number** | Ban duration in seconds (nil for permanent ban) |
 
 #### ↩️ Returns
 * None
@@ -1724,7 +1724,7 @@ When adding money to a character's account
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to give |
 
 #### ↩️ Returns
 * boolean - True if money was given successfully
@@ -1775,7 +1775,7 @@ When removing money from a character's account
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to take |
 
 #### ↩️ Returns
 * boolean - True if money was taken successfully

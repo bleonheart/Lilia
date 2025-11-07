@@ -71,8 +71,8 @@ Called when defining new fonts for UI elements or during font initialization
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fontName` | **string** |  |
-| `fontData` | **table** |  |
+| `fontName` | **string** | The unique identifier for the font |
+| `fontData` | **table** | Font configuration table containing font properties (font, size, weight, etc.) |
 
 #### ↩️ Returns
 * None (calls lia.error if parameters are invalid)
@@ -192,7 +192,7 @@ Used when registering bold font variants or dynamically generating bold fonts
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fontName` | **string** |  |
+| `fontName` | **string** | The base font name to convert to bold |
 
 #### ↩️ Returns
 * (string)
@@ -256,7 +256,7 @@ Called during initialization and when the font configuration changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fontName` | **string, optional** |  |
+| `fontName` | **string, optional** | The base font name to use. If not provided, uses the configured font setting |
 
 #### ↩️ Returns
 * None
@@ -313,7 +313,7 @@ Called during initialization and when the font configuration changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fontName` | **string, optional** |  |
+| `fontName` | **string, optional** | The base font name to use. If not provided, uses the configured font setting |
 
 #### ↩️ Returns
 * None

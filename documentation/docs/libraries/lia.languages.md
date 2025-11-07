@@ -22,7 +22,7 @@ During gamemode initialization or when manually loading language files
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** |  |
+| `directory` | **string** | The directory path containing language files |
 
 #### ↩️ Returns
 * None
@@ -79,8 +79,8 @@ When manually adding language strings or when modules need to register their own
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `tbl` | **table** |  |
+| `name` | **string** | The language name/key |
+| `tbl` | **table** | Table containing key-value pairs of translations |
 
 #### ↩️ Returns
 * None
@@ -202,7 +202,7 @@ When displaying text to users or when any localized string is needed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The language key to look up |
 
 #### ↩️ Returns
 * string - The localized and formatted string, or the key if not found

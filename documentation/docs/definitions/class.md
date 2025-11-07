@@ -500,7 +500,7 @@ When a player attempts to join this class
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player trying to join |
 
 #### ↩️ Returns
 * true to allow, false to deny
@@ -549,7 +549,7 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player joining the class |
 
 #### 💡 Example Usage
 
@@ -577,8 +577,8 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `oldClass` | **table** |  |
+| `client` | **Player** | The player switching classes |
+| `oldClass` | **table** | The previous class data |
 
 #### 💡 Example Usage
 
@@ -608,7 +608,7 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player spawning |
 
 #### 💡 Example Usage
 
@@ -638,7 +638,7 @@ Server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player leaving |
 
 #### 💡 Example Usage
 

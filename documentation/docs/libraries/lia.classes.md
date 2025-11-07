@@ -22,8 +22,8 @@ During gamemode initialization or when dynamically creating classes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `data` | **table** |  |
+| `uniqueID` | **string** | Unique identifier for the class |
+| `data` | **table** | Table containing class properties (name, desc, limit, faction, etc.) |
 
 #### ↩️ Returns
 * The registered class table
@@ -95,7 +95,7 @@ During gamemode initialization to load classes from files
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** |  |
+| `directory` | **string** | Path to directory containing class files |
 
 #### ↩️ Returns
 * nil
@@ -150,8 +150,8 @@ When a player attempts to join a class or when checking class availability
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `class` | **number** |  |
+| `client` | **Player** | The player attempting to join the class |
+| `class` | **number** | The class index to check |
 
 #### ↩️ Returns
 * boolean, string - Whether the player can join and reason if they cannot
@@ -223,7 +223,7 @@ When needing to access class information or properties
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `identifier` | **number/string** |  |
+| `identifier` | **number/string** | Class index or uniqueID to retrieve |
 
 #### ↩️ Returns
 * table - The class data table or nil if not found
@@ -296,7 +296,7 @@ When needing to find players in a particular class or check class population
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **number** |  |
+| `class` | **number** | The class index to get players for |
 
 #### ↩️ Returns
 * table - Array of player entities in the specified class
@@ -373,7 +373,7 @@ When needing to check class population without retrieving player objects
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **number** |  |
+| `class` | **number** | The class index to count players for |
 
 #### ↩️ Returns
 * number - Number of players in the specified class
@@ -442,7 +442,7 @@ When needing to find a class by name or partial identifier
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **string** |  |
+| `class` | **string** | String to match against class uniqueID or name |
 
 #### ↩️ Returns
 * number - The class index if found, nil otherwise
@@ -509,7 +509,7 @@ When checking if a class requires special permissions or whitelist access
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **number** |  |
+| `class` | **number** | The class index to check for whitelist |
 
 #### ↩️ Returns
 * boolean - True if the class has whitelist restrictions, false otherwise
@@ -588,7 +588,7 @@ When displaying available classes to a player or checking joinable options
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player to check joinable classes for (optional, defaults to LocalPlayer on client) |
 
 #### ↩️ Returns
 * table - Array of class tables that the client can join

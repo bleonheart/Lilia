@@ -27,13 +27,13 @@ When an administrative action needs to be taken against a player for rule violat
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `infraction` | **string** |  |
-| `kick` | **boolean** |  |
-| `ban` | **boolean** |  |
-| `time` | **number** |  |
-| `kickKey` | **string** |  |
-| `banKey` | **string** |  |
+| `client` | **Player** | The player to punish |
+| `infraction` | **string** | Description of the infraction committed |
+| `kick` | **boolean** | Whether to kick the player |
+| `ban` | **boolean** | Whether to ban the player |
+| `time` | **number** | Ban duration in minutes (0 = permanent) |
+| `kickKey` | **string** | Language key for kick message (optional) |
+| `banKey` | **string** | Language key for ban message (optional) |
 
 #### ↩️ Returns
 * nil
@@ -86,8 +86,8 @@ When permission validation is needed before allowing access to features or comma
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ply` | **Player|string** |  |
-| `privilege` | **string** |  |
+| `ply` | **Player|string** | Player entity or user group name to check |
+| `privilege` | **string** | The privilege identifier to check access for |
 
 #### ↩️ Returns
 * boolean - true if access is granted, false otherwise
@@ -147,7 +147,7 @@ When administrator data needs to be persisted to the database after changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `noNetwork` | **boolean** |  |
+| `noNetwork` | **boolean** | If true, skips network synchronization (optional) |
 
 #### ↩️ Returns
 * nil
@@ -208,11 +208,11 @@ When a new privilege needs to be added to the system for permission checking
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `priv` | **table** |  |
-| `ID` | **string** |  |
-| `Name` | **string** |  |
-| `MinAccess` | **string** |  |
-| `Category` | **string** |  |
+| `priv` | **table** | Privilege definition table containing: |
+| `ID` | **string** | Unique identifier for the privilege |
+| `Name` | **string** | Display name for the privilege (optional) |
+| `MinAccess` | **string** | Minimum access level required (default: "user") |
+| `Category` | **string** | Category for organizing privileges (optional) |
 
 #### ↩️ Returns
 * nil
@@ -273,7 +273,7 @@ When a privilege is no longer needed and should be completely removed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **string** |  |
+| `id` | **string** | The privilege identifier to remove |
 
 #### ↩️ Returns
 * nil
@@ -328,7 +328,7 @@ When a user group's inheritance needs to be recalculated after changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `groupName` | **string** |  |
+| `groupName` | **string** | The name of the user group to apply inheritance to |
 
 #### ↩️ Returns
 * nil
@@ -442,9 +442,9 @@ When a new user group needs to be added to the administrator system
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `groupName` | **string** |  |
-| `info` | **table** |  |
-| `_info` | **table** |  |
+| `groupName` | **string** | The name of the new user group |
+| `info` | **table** | Group configuration table containing: |
+| `_info` | **table** | Group metadata with inheritance and types (optional) |
 
 #### ↩️ Returns
 * nil
@@ -506,7 +506,7 @@ When a user group is no longer needed and should be deleted
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `groupName` | **string** |  |
+| `groupName` | **string** | The name of the user group to remove |
 
 #### ↩️ Returns
 * nil
@@ -563,8 +563,8 @@ When a user group needs to be renamed for organizational purposes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldName` | **string** |  |
-| `newName` | **string** |  |
+| `oldName` | **string** | The current name of the user group |
+| `newName` | **string** | The new name for the user group |
 
 #### ↩️ Returns
 * nil
@@ -625,7 +625,7 @@ When administrative notifications need to be broadcast to qualified players
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `notification` | **table** |  |
+| `notification` | **table** | Notification data to send to players |
 
 #### ↩️ Returns
 * nil
@@ -684,9 +684,9 @@ When a user group needs to be granted a new permission
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `groupName` | **string** |  |
-| `permission` | **string** |  |
-| `silent` | **boolean** |  |
+| `groupName` | **string** | The name of the user group |
+| `permission` | **string** | The permission identifier to add |
+| `silent` | **boolean** | If true, skips network synchronization (optional) |
 
 #### ↩️ Returns
 * nil
@@ -736,9 +736,9 @@ When a user group should no longer have a specific permission
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `groupName` | **string** |  |
-| `permission` | **string** |  |
-| `silent` | **boolean** |  |
+| `groupName` | **string** | The name of the user group |
+| `permission` | **string** | The permission identifier to remove |
+| `silent` | **boolean** | If true, skips network synchronization (optional) |
 
 #### ↩️ Returns
 * nil
@@ -788,7 +788,7 @@ When administrator data needs to be sent to clients after changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `c` | **Player** |  |
+| `c` | **Player** | Specific client to sync with (optional, syncs all if nil) |
 
 #### ↩️ Returns
 * nil
@@ -876,9 +876,9 @@ When a player's user group needs to be changed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ply` | **Player** |  |
-| `newGroup` | **string** |  |
-| `source` | **string** |  |
+| `ply` | **Player** | The player whose group should be changed |
+| `newGroup` | **string** | The new user group name |
+| `source` | **string** | Source identifier for CAMI events (optional) |
 
 #### ↩️ Returns
 * nil
@@ -933,9 +933,9 @@ When a Steam ID's user group needs to be changed (for offline players)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `steamId` | **string** |  |
-| `newGroup` | **string** |  |
-| `source` | **string** |  |
+| `steamId` | **string** | The Steam ID whose group should be changed |
+| `newGroup` | **string** | The new user group name |
+| `source` | **string** | Source identifier for CAMI events (optional) |
 
 #### ↩️ Returns
 * nil
@@ -990,11 +990,11 @@ When administrative commands need to be executed with proper validation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmd` | **string** |  |
-| `victim` | **Player|string** |  |
-| `dur` | **number** |  |
-| `reason` | **string** |  |
-| `admin` | **Player** |  |
+| `cmd` | **string** | The command to execute |
+| `victim` | **Player|string** | Target player or Steam ID |
+| `dur` | **number** | Duration parameter for timed commands (optional) |
+| `reason` | **string** | Reason for the command (optional) |
+| `admin` | **Player** | The admin executing the command |
 
 #### ↩️ Returns
 * boolean - true if command was executed successfully, false otherwise
@@ -1055,10 +1055,10 @@ When administrative commands need to be executed from the client side
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `cmd` | **string** |  |
-| `victim` | **Player|string** |  |
-| `dur` | **number** |  |
-| `reason` | **string** |  |
+| `cmd` | **string** | The command to execute |
+| `victim` | **Player|string** | Target player or Steam ID |
+| `dur` | **number** | Duration parameter for timed commands (optional) |
+| `reason` | **string** | Reason for the command (optional) |
 
 #### ↩️ Returns
 * boolean - true if command was executed successfully, false otherwise

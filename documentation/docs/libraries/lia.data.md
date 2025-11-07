@@ -22,7 +22,7 @@ Automatically called during data serialization before database storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **any** |  |
+| `value` | **any** | The value to encode (vector, angle, color table, or regular table) |
 
 #### ↩️ Returns
 * table or any - Encoded representation suitable for JSON serialization
@@ -77,7 +77,7 @@ Automatically called during data deserialization after database retrieval
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **any** |  |
+| `value` | **any** | The encoded value to decode (table, string, or raw data) |
 
 #### ↩️ Returns
 * any - Decoded value with proper data types restored
@@ -132,7 +132,7 @@ Called before storing data in the database to ensure proper serialization
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **any** |  |
+| `value` | **any** | The data to serialize (tables, vectors, angles, colors, etc.) |
 
 #### ↩️ Returns
 * string - JSON string representation of the encoded data
@@ -186,7 +186,7 @@ Called after retrieving data from database to restore original data types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `raw` | **string|table** |  |
+| `raw` | **string|table** | Serialized data from database (JSON string or table) |
 
 #### ↩️ Returns
 * any - Deserialized data with proper types restored, or nil if invalid
@@ -236,7 +236,7 @@ Called when specifically needing to decode vector data from database or serializ
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `raw` | **any** |  |
+| `raw` | **any** | Raw data that should contain vector information |
 
 #### ↩️ Returns
 * Vector or any - Decoded Vector object, or original data if not vector format
@@ -286,7 +286,7 @@ Called when specifically needing to decode angle data from database or serialize
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `raw` | **any** |  |
+| `raw` | **any** | Raw data that should contain angle information |
 
 #### ↩️ Returns
 * Angle or any - Decoded Angle object, or original data if not angle format
@@ -336,10 +336,10 @@ Called when storing persistent data that should survive server restarts
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `global` | **boolean, optional** |  |
-| `ignoreMap` | **boolean, optional** |  |
+| `key` | **string** | Unique identifier for the data |
+| `value` | **any** | Data to store |
+| `global` | **boolean, optional** | Store globally across all gamemodes/maps |
+| `ignoreMap` | **boolean, optional** | Store for all maps in current gamemode |
 
 #### ↩️ Returns
 * string - Database path where data was stored
@@ -392,9 +392,9 @@ Called when removing persistent data that should no longer be stored
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `global` | **boolean, optional** |  |
-| `ignoreMap` | **boolean, optional** |  |
+| `key` | **string** | Unique identifier for the data to delete |
+| `global` | **boolean, optional** | Delete from global scope |
+| `ignoreMap` | **boolean, optional** | Delete from all maps in current gamemode |
 
 #### ↩️ Returns
 * boolean - Always returns true
@@ -538,7 +538,7 @@ Called during server shutdown or periodic saves to persist entity states
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entities` | **table** |  |
+| `entities` | **table** | Array of entity data tables to save |
 
 #### ↩️ Returns
 * None
@@ -610,7 +610,7 @@ Called during server startup to restore persisted entities
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function, optional** |  |
+| `callback` | **function, optional** | Function to call with loaded entity data |
 
 #### ↩️ Returns
 * Promise - Database operation promise
@@ -677,8 +677,8 @@ Called when accessing stored persistent data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** | Unique identifier for the data |
+| `default` | **any, optional** | Default value if key not found |
 
 #### ↩️ Returns
 * any - Stored data or default value if not found

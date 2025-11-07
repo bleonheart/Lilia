@@ -760,7 +760,7 @@ When the tool needs to access server configuration values
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `property` | **string** |  |
+| `property` | **string** | The name of the ConVar property to retrieve |
 
 #### ↩️ Returns
 * ConVar - The server ConVar object for the specified property
@@ -873,7 +873,7 @@ When the tool needs to access client configuration values from the owner
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `property` | **string** |  |
+| `property` | **string** | The name of the ConVar property to retrieve |
 
 #### ↩️ Returns
 * string - The current value of the client's ConVar for the specified property
@@ -931,8 +931,8 @@ When the tool needs numeric client configuration values with fallback defaults
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `property` | **string** |  |
-| `default` | **number** |  |
+| `property` | **string** | The name of the ConVar property to retrieve |
+| `default` | **number** | Default value if ConVar is not found or invalid |
 
 #### ↩️ Returns
 * number - The numeric value of the client's ConVar or the default value

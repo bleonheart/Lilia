@@ -22,8 +22,8 @@ During module initialization or when defining custom inventory types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `typeID` | **string** |  |
-| `invTypeStruct` | **table** |  |
+| `typeID` | **string** | Unique identifier for the inventory type |
+| `invTypeStruct` | **table** | Structure containing inventory type configuration |
 
 #### ↩️ Returns
 * nil
@@ -99,7 +99,7 @@ When creating inventory instances for players, storage containers, or vehicles
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `typeID` | **string** |  |
+| `typeID` | **string** | The inventory type identifier to create an instance of |
 
 #### ↩️ Returns
 * Inventory instance (table) with items and config properties
@@ -150,8 +150,8 @@ When accessing an existing inventory that may be cached or needs to be loaded fr
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
-| `noCache` | **boolean, optional** |  |
+| `id` | **number** | The inventory ID to load |
+| `noCache` | **boolean, optional** | If true, bypasses cache and forces reload from storage |
 
 #### ↩️ Returns
 * Deferred promise that resolves to inventory instance
@@ -215,8 +215,8 @@ When loadByID cannot find a custom loader and needs to use default storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
-| `noCache` | **boolean, optional** |  |
+| `id` | **number** | The inventory ID to load from database |
+| `noCache` | **boolean, optional** | If true, bypasses cache and forces reload from database |
 
 #### ↩️ Returns
 * Deferred promise that resolves to inventory instance
@@ -285,8 +285,8 @@ When creating new inventories that need to be persisted to database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `typeID` | **string** |  |
-| `initialData` | **table, optional** |  |
+| `typeID` | **string** | The inventory type identifier |
+| `initialData` | **table, optional** | Initial data to store with the inventory |
 
 #### ↩️ Returns
 * Deferred promise that resolves to the created inventory instance
@@ -355,7 +355,7 @@ When a character logs in or when accessing all character inventories
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
+| `charID` | **number** | The character ID to load inventories for |
 
 #### ↩️ Returns
 * Deferred promise that resolves to array of inventory instances
@@ -433,7 +433,7 @@ When removing inventories that are no longer needed or during cleanup operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
+| `id` | **number** | The inventory ID to delete |
 
 #### ↩️ Returns
 * nil
@@ -512,7 +512,7 @@ When a character is deleted or during character cleanup operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **table** |  |
+| `character` | **table** | The character object containing inventory references |
 
 #### ↩️ Returns
 * nil
@@ -584,10 +584,10 @@ When an inventory's dimensions are reduced and items may no longer fit
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inv` | **table** |  |
-| `character` | **table** |  |
-| `oldW` | **number** |  |
-| `oldH` | **number** |  |
+| `inv` | **table** | The inventory instance to check for overflow |
+| `character` | **table** | The character object to store overflow items with |
+| `oldW` | **number** | The previous width of the inventory |
+| `oldH` | **number** | The previous height of the inventory |
 
 #### ↩️ Returns
 * Boolean indicating whether overflow items were found and stored
@@ -642,8 +642,8 @@ During module initialization to register storage containers like crates, lockers
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
-| `data` | **table** |  |
+| `model` | **string** | The model path of the storage container |
+| `data` | **table** | Configuration data containing name, invType, and invData |
 
 #### ↩️ Returns
 * The registered storage data table
@@ -727,7 +727,7 @@ When checking if a model has registered storage or accessing storage configurati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
+| `model` | **string** | The model path to look up storage data for |
 
 #### ↩️ Returns
 * Storage data table if found, nil otherwise
@@ -813,8 +813,8 @@ During module initialization to register vehicle trunks
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `vehicleClass` | **string** |  |
-| `data` | **table** |  |
+| `vehicleClass` | **string** | The vehicle class name |
+| `data` | **table** | Configuration data containing name, invType, and invData |
 
 #### ↩️ Returns
 * The registered trunk data table
@@ -907,7 +907,7 @@ When checking if a vehicle has a trunk or accessing trunk configuration
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `vehicleClass` | **string** |  |
+| `vehicleClass` | **string** | The vehicle class name to look up trunk data for |
 
 #### ↩️ Returns
 * Trunk data table if found, nil otherwise
@@ -1084,7 +1084,7 @@ When needing to iterate through all available storage containers
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `includeTrunks` | **boolean, optional** |  |
+| `includeTrunks` | **boolean, optional** | If false, excludes vehicle trunks from results |
 
 #### ↩️ Returns
 * Table containing all storage configurations indexed by model/class
@@ -1177,8 +1177,8 @@ When a player opens an inventory (player inventory, storage container, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **table** |  |
-| `parent` | **panel, optional** |  |
+| `inventory` | **table** | The inventory instance to display |
+| `parent` | **panel, optional** | Parent panel to attach the inventory panel to |
 
 #### ↩️ Returns
 * The created inventory panel
@@ -1264,8 +1264,8 @@ When a player opens an inventory (player inventory, storage container, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **table** |  |
-| `parent` | **panel, optional** |  |
+| `inventory` | **table** | The inventory instance to display |
+| `parent` | **panel, optional** | Parent panel to attach the inventory panel to |
 
 #### ↩️ Returns
 * The created inventory panel

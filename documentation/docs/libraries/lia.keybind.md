@@ -22,10 +22,10 @@ During initialization of modules or when registering custom keybinds for gamepla
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `k` | **string|number** |  |
-| `d` | **table|string** |  |
-| `desc` | **string, optional** |  |
-| `cb` | **table, optional** |  |
+| `k` | **string|number** | Either the action name (string) or key code (number) depending on parameter format |
+| `d` | **table|string** | Either configuration table with keyBind, desc, onPress, etc. or action name (string) |
+| `desc` | **string, optional** | Description of the keybind action (used when d is action name) |
+| `cb` | **table, optional** | Callback table with onPress, onRelease, shouldRun, serverOnly functions (used when d is action name) |
 
 #### ↩️ Returns
 * None
@@ -105,8 +105,8 @@ When checking what key is currently bound to an action, typically in UI or valid
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `a` | **string** |  |
-| `df` | **number, optional** |  |
+| `a` | **string** | The action name to get the key for |
+| `df` | **number, optional** | Default key code to return if no key is bound |
 
 #### ↩️ Returns
 * number - The key code bound to the action, or the default value if none is set

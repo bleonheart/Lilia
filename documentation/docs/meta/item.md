@@ -492,9 +492,9 @@ When executing item functions that need player/entity context
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `method` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
+| `method` | **string** | String name of the method to call |
+| `client` | **Player** | Player entity to set as context |
+| `entity` | **Entity** | Entity to set as context |
 
 #### ↩️ Returns
 * The return values from the called method
@@ -604,8 +604,8 @@ When accessing item-specific data or configuration
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any** |  |
+| `key` | **string** | The data key to retrieve |
+| `default` | **any** | Optional default value if key doesn't exist |
 
 #### ↩️ Returns
 * The data value or default value if key doesn't exist
@@ -713,8 +713,8 @@ During item configuration to add custom behavior
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `func` | **function** |  |
+| `name` | **string** | String name of the hook (e.g., "use", "drop") |
+| `func` | **function** | Function to call when the hook is triggered |
 
 #### ↩️ Returns
 * Nothing
@@ -774,8 +774,8 @@ During item configuration to add cleanup or follow-up behavior
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `func` | **function** |  |
+| `name` | **string** | String name of the hook (e.g., "use", "drop") |
+| `func` | **function** | Function to call after the hook is triggered |
 
 #### ↩️ Returns
 * Nothing
@@ -1078,7 +1078,7 @@ For debugging or logging item state
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `detail` | **boolean** |  |
+| `detail` | **boolean** | Optional boolean to show detailed information |
 
 #### ↩️ Returns
 * Nothing
@@ -1273,7 +1273,7 @@ When transferring items between inventories or temporarily removing them
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `preserveItem` | **boolean** |  |
+| `preserveItem` | **boolean** | Optional boolean to preserve item data in database |
 
 #### ↩️ Returns
 * Deferred object that resolves when removal is complete
@@ -1789,8 +1789,8 @@ When dropping items or spawning them in the world
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `position` | **Vector|table|Player** |  |
-| `angles` | **Angle** |  |
+| `position` | **Vector|table|Player** | Position to spawn the item (Vector, table, or Player entity) |
+| `angles` | **Angle** | Optional angles for the spawned item |
 
 #### ↩️ Returns
 * The created entity
@@ -1848,8 +1848,8 @@ When moving items between inventories (trading, storing, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newInventory` | **Inventory** |  |
-| `bBypass` | **boolean** |  |
+| `newInventory` | **Inventory** | The inventory to transfer the item to |
+| `bBypass` | **boolean** | Optional boolean to bypass access control checks |
 
 #### ↩️ Returns
 * Boolean indicating if transfer was successful
@@ -2157,7 +2157,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **Player** |  |
+| `recipient` | **Player** | Optional specific client to sync to |
 
 #### ↩️ Returns
 * Nothing
@@ -2228,7 +2228,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **Player** |  |
+| `recipient` | **Player** | Optional specific client to sync to |
 
 #### ↩️ Returns
 * Nothing
@@ -2299,7 +2299,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **Player** |  |
+| `recipient` | **Player** | Optional specific client to sync to |
 
 #### ↩️ Returns
 * Nothing
@@ -2370,7 +2370,7 @@ Automatically when item data is sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **Player** |  |
+| `recipient` | **Player** | Optional specific client to sync to |
 
 #### ↩️ Returns
 * Nothing
@@ -2681,7 +2681,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory this item belongs to |
 
 #### ↩️ Returns
 * Nothing
@@ -2757,7 +2757,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory this item belongs to |
 
 #### ↩️ Returns
 * Nothing
@@ -2833,7 +2833,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory this item belongs to |
 
 #### ↩️ Returns
 * Nothing
@@ -2909,7 +2909,7 @@ Automatically when item data is restored from storage
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory this item belongs to |
 
 #### ↩️ Returns
 * Nothing
@@ -2985,7 +2985,7 @@ When item data needs to be sent to clients
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `recipient` | **Player** |  |
+| `recipient` | **Player** | Optional specific client to sync to, broadcasts if nil |
 
 #### ↩️ Returns
 * Nothing
@@ -3041,11 +3041,11 @@ When item data needs to be updated and persisted
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `receivers` | **table** |  |
-| `noSave` | **boolean** |  |
-| `noCheckEntity` | **boolean** |  |
+| `key` | **string** | The data key to set |
+| `value` | **any** | The value to set |
+| `receivers` | **table** | Optional specific clients to notify |
+| `noSave` | **boolean** | Optional boolean to skip database saving |
+| `noCheckEntity` | **boolean** | Optional boolean to skip entity data sync |
 
 #### ↩️ Returns
 * Nothing
@@ -3106,9 +3106,9 @@ When increasing item stack size
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `quantity` | **number** |  |
-| `receivers` | **table** |  |
-| `noCheckEntity` | **boolean** |  |
+| `quantity` | **number** | Amount to add to the quantity |
+| `receivers` | **table** | Optional specific clients to notify |
+| `noCheckEntity` | **boolean** | Optional boolean to skip entity sync |
 
 #### ↩️ Returns
 * Nothing
@@ -3169,9 +3169,9 @@ When changing item stack size or count
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `quantity` | **number** |  |
-| `receivers` | **table** |  |
-| `noCheckEntity` | **boolean** |  |
+| `quantity` | **number** | New quantity value |
+| `receivers` | **table** | Optional specific clients to notify |
+| `noCheckEntity` | **boolean** | Optional boolean to skip entity sync |
 
 #### ↩️ Returns
 * Nothing
@@ -3232,10 +3232,10 @@ When a player attempts to interact with an item
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `action` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `data` | **any** |  |
+| `action` | **string** | The interaction action (e.g., "use", "drop") |
+| `client` | **Player** | The player performing the action |
+| `entity` | **Entity** | Optional entity involved in the interaction |
+| `data` | **any** | Optional additional data for the interaction |
 
 #### ↩️ Returns
 * Boolean indicating if the interaction was successful

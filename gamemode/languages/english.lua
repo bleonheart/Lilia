@@ -278,6 +278,7 @@ LANGUAGE = {
     classRequirementsNotMet = "You do not meet the class requirements or this class isn't default.",
     discord = "Discord",
     cannotDeleteChar = "You cannot delete this character!",
+    characterDeleted = "Character '%s' has been deleted.",
     alreadyUsingCharacter = "You are already using this character",
     permaKilledCharacter = "This character was perma killed",
     alreadyHaveGrenade = "You already have this type of grenade.",

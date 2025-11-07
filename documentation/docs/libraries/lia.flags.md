@@ -22,9 +22,9 @@ During module initialization or when registering new permission flags
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flag` | **string** |  |
-| `desc` | **string, optional** |  |
-| `callback` | **function, optional** |  |
+| `flag` | **string** | Single character flag identifier (e.g., "C", "p", "t") |
+| `desc` | **string, optional** | Localized description key for the flag |
+| `callback` | **function, optional** | Function to execute when flag is granted/removed |
 
 #### ↩️ Returns
 * None
@@ -85,7 +85,7 @@ Automatically called when a character spawns on the server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose character is spawning |
 
 #### ↩️ Returns
 * None

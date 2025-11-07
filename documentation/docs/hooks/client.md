@@ -22,12 +22,12 @@ When the HUD bars are being initialized or updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `sectionName` | **string** |  |
-| `fieldName` | **string** |  |
-| `labelText` | **string** |  |
-| `minFunc` | **function** |  |
-| `maxFunc` | **function** |  |
-| `valueFunc` | **function** |  |
+| `sectionName` | **string** | The name of the section to add the field to. |
+| `fieldName` | **string** | The unique name of the field. |
+| `labelText` | **string** | The display text for the field. |
+| `minFunc` | **function** | Function that returns the minimum value. |
+| `maxFunc` | **function** | Function that returns the maximum value. |
+| `valueFunc` | **function** | Function that returns the current value. |
 
 #### ↩️ Returns
 * nil
@@ -101,10 +101,10 @@ When the HUD bars are being initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `sectionName` | **string** |  |
-| `color` | **Color** |  |
-| `priority` | **number** |  |
-| `location` | **string** |  |
+| `sectionName` | **string** | The unique name of the section. |
+| `color` | **Color** | The color of the section. |
+| `priority` | **number** | The display priority/order of the section. |
+| `location` | **string** | The location where the section should be displayed. |
 
 #### ↩️ Returns
 * nil
@@ -173,10 +173,10 @@ When the HUD bars are being initialized or updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `sectionName` | **string** |  |
-| `fieldName` | **string** |  |
-| `labelText` | **string** |  |
-| `valueFunc` | **function** |  |
+| `sectionName` | **string** | The name of the section to add the field to. |
+| `fieldName` | **string** | The unique name of the field. |
+| `labelText` | **string** | The display text for the field. |
+| `valueFunc` | **function** | Function that returns the current value. |
 
 #### ↩️ Returns
 * nil
@@ -266,9 +266,9 @@ When displaying admin stick information for a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
-| `information` | **table** |  |
+| `client` | **Player** | The admin viewing the information. |
+| `target` | **Player** | The player being viewed. |
+| `information` | **table** | Table containing information to display. |
 
 #### ↩️ Returns
 * nil
@@ -373,9 +373,9 @@ When displaying admin stick information for a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
-| `information` | **table** |  |
+| `client` | **Player** | The admin viewing the information. |
+| `target` | **Player** | The player being viewed. |
+| `information` | **table** | Table containing information to display. |
 
 #### ↩️ Returns
 * nil
@@ -480,9 +480,9 @@ When displaying admin stick information for a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
-| `information` | **table** |  |
+| `client` | **Player** | The admin viewing the information. |
+| `target` | **Player** | The player being viewed. |
+| `information` | **table** | Table containing information to display. |
 
 #### ↩️ Returns
 * nil
@@ -587,9 +587,9 @@ When displaying admin stick information for a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
-| `information` | **table** |  |
+| `client` | **Player** | The admin viewing the information. |
+| `target` | **Player** | The player being viewed. |
+| `information` | **table** | Table containing information to display. |
 
 #### ↩️ Returns
 * nil
@@ -694,8 +694,8 @@ When a PAC3 part is being attached to a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `id` | **string** |  |
+| `client` | **Player** | The player attaching the part. |
+| `id` | **string** | The PAC3 part ID. |
 
 #### ↩️ Returns
 * nil
@@ -826,8 +826,8 @@ When a PAC3 part is being attached to a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `id` | **string** |  |
+| `client` | **Player** | The player attaching the part. |
+| `id` | **string** | The PAC3 part ID. |
 
 #### ↩️ Returns
 * nil
@@ -958,8 +958,8 @@ When a PAC3 part is being attached to a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `id` | **string** |  |
+| `client` | **Player** | The player attaching the part. |
+| `id` | **string** | The PAC3 part ID. |
 
 #### ↩️ Returns
 * nil
@@ -1090,8 +1090,8 @@ When a PAC3 part is being attached to a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `id` | **string** |  |
+| `client` | **Player** | The player attaching the part. |
+| `id` | **string** | The PAC3 part ID. |
 
 #### ↩️ Returns
 * nil
@@ -1222,7 +1222,7 @@ When a player attempts to open a bag inventory.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The bag item. |
 
 #### ↩️ Returns
 * boolean
@@ -1379,7 +1379,7 @@ When a player attempts to open a bag inventory.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The bag item. |
 
 #### ↩️ Returns
 * boolean
@@ -1536,7 +1536,7 @@ When a player attempts to open a bag inventory.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The bag item. |
 
 #### ↩️ Returns
 * boolean
@@ -1693,7 +1693,7 @@ When a player attempts to open a bag inventory.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The bag item. |
 
 #### ↩️ Returns
 * boolean
@@ -1850,9 +1850,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -1943,9 +1943,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -2036,9 +2036,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -2129,9 +2129,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -2222,9 +2222,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -2321,9 +2321,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -2420,9 +2420,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -2519,9 +2519,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -2618,9 +2618,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -2718,9 +2718,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -2818,9 +2818,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -2918,9 +2918,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -3018,8 +3018,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -3128,8 +3128,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -3238,8 +3238,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -3348,8 +3348,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -3458,7 +3458,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -3589,7 +3589,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -3720,7 +3720,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -3851,7 +3851,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -3982,8 +3982,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -4105,8 +4105,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -4228,8 +4228,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -4351,8 +4351,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -4474,8 +4474,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -4597,8 +4597,8 @@ When player HUD information needs to be updated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `hudInfos` | **table** |  |
+| `client` | **Player** | The player whose HUD to update. |
+| `hudInfos` | **table** | Table of HUD information to display. |
 
 #### ↩️ Returns
 * nil
@@ -5104,7 +5104,7 @@ When a player attempts to open the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to open the scoreboard. |
 
 #### ↩️ Returns
 * boolean
@@ -5214,7 +5214,7 @@ When a player attempts to open the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to open the scoreboard. |
 
 #### ↩️ Returns
 * boolean
@@ -5324,7 +5324,7 @@ When a player attempts to open the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to open the scoreboard. |
 
 #### ↩️ Returns
 * boolean
@@ -5434,7 +5434,7 @@ When a player attempts to open the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to open the scoreboard. |
 
 #### ↩️ Returns
 * boolean
@@ -5544,7 +5544,7 @@ When attempting to display inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to view inventory. |
 
 #### ↩️ Returns
 * boolean
@@ -5715,7 +5715,7 @@ When attempting to display inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to view inventory. |
 
 #### ↩️ Returns
 * boolean
@@ -5886,7 +5886,7 @@ When attempting to display inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to view inventory. |
 
 #### ↩️ Returns
 * boolean
@@ -6057,7 +6057,7 @@ When attempting to display inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player attempting to view inventory. |
 
 #### ↩️ Returns
 * boolean
@@ -8593,7 +8593,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -8870,7 +8870,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -9147,7 +9147,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -9424,7 +9424,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -9701,7 +9701,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -9978,7 +9978,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -10255,7 +10255,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -10532,7 +10532,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -10809,7 +10809,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -11086,7 +11086,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -11363,7 +11363,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -11640,7 +11640,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -11917,7 +11917,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12194,7 +12194,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12471,7 +12471,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12748,7 +12748,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -13025,7 +13025,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -13302,7 +13302,7 @@ After character data is received from the server and processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The loaded character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13389,7 +13389,7 @@ After character data is received from the server and processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The loaded character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13476,7 +13476,7 @@ After character data is received from the server and processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The loaded character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13563,7 +13563,7 @@ After character data is received from the server and processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The loaded character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13650,7 +13650,7 @@ After character data is received from the server and processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The loaded character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13737,8 +13737,8 @@ When character data is updated after the initial load (e.g., when a character is
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list data. |
+| `newCharList` | **table** | The updated character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13835,8 +13835,8 @@ When character data is updated after the initial load (e.g., when a character is
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list data. |
+| `newCharList` | **table** | The updated character list data. |
 
 #### ↩️ Returns
 * nil
@@ -13933,8 +13933,8 @@ When character data is updated after the initial load (e.g., when a character is
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list data. |
+| `newCharList` | **table** | The updated character list data. |
 
 #### ↩️ Returns
 * nil
@@ -14031,8 +14031,8 @@ When character data is updated after the initial load (e.g., when a character is
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list data. |
+| `newCharList` | **table** | The updated character list data. |
 
 #### ↩️ Returns
 * nil
@@ -14129,8 +14129,8 @@ When character data is updated after the initial load (e.g., when a character is
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list data. |
+| `newCharList` | **table** | The updated character list data. |
 
 #### ↩️ Returns
 * nil
@@ -14227,7 +14227,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14313,7 +14313,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14399,7 +14399,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14485,7 +14485,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14571,7 +14571,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14657,7 +14657,7 @@ When chat messages are processed and added to the chatbox.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **table** |  |
+| `markup` | **table** | The markup object containing chat text data. |
 
 #### ↩️ Returns
 * table
@@ -14761,7 +14761,7 @@ When chat messages are processed and added to the chatbox.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **table** |  |
+| `markup` | **table** | The markup object containing chat text data. |
 
 #### ↩️ Returns
 * table
@@ -14865,7 +14865,7 @@ When chat messages are processed and added to the chatbox.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **table** |  |
+| `markup` | **table** | The markup object containing chat text data. |
 
 #### ↩️ Returns
 * table
@@ -14969,7 +14969,7 @@ When chat messages are processed and added to the chatbox.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **table** |  |
+| `markup` | **table** | The markup object containing chat text data. |
 
 #### ↩️ Returns
 * table
@@ -15073,7 +15073,7 @@ When chat messages are processed and added to the chatbox.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **table** |  |
+| `markup` | **table** | The markup object containing chat text data. |
 
 #### ↩️ Returns
 * table
@@ -15177,7 +15177,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -15661,7 +15661,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -16145,7 +16145,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -16629,7 +16629,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -17113,7 +17113,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -17597,7 +17597,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -18081,7 +18081,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -18565,7 +18565,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -19049,7 +19049,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -19533,7 +19533,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -20017,7 +20017,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -20501,7 +20501,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -20985,7 +20985,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -21469,7 +21469,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -21953,7 +21953,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -22437,7 +22437,7 @@ When setting up the character creation UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character creation panel. |
 
 #### ↩️ Returns
 * nil
@@ -23426,7 +23426,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -23555,7 +23555,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -23684,7 +23684,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -23813,7 +23813,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -23942,7 +23942,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -24071,7 +24071,7 @@ When setting up information UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | Table of page information. |
 
 #### ↩️ Returns
 * nil
@@ -24200,8 +24200,8 @@ When inventory UI needs to be created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `inventory` | **Inventory** | The inventory to display. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -24317,8 +24317,8 @@ When inventory UI needs to be created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `inventory` | **Inventory** | The inventory to display. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -24434,8 +24434,8 @@ When inventory UI needs to be created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `inventory` | **Inventory** | The inventory to display. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -24551,8 +24551,8 @@ When inventory UI needs to be created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `inventory` | **Inventory** | The inventory to display. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -24668,7 +24668,7 @@ When setting up menu UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tabs` | **table** |  |
+| `tabs` | **table** | Table of tab information. |
 
 #### ↩️ Returns
 * nil
@@ -24828,7 +24828,7 @@ When setting up menu UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tabs` | **table** |  |
+| `tabs` | **table** | Table of tab information. |
 
 #### ↩️ Returns
 * nil
@@ -24988,7 +24988,7 @@ When setting up menu UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tabs` | **table** |  |
+| `tabs` | **table** | Table of tab information. |
 
 #### ↩️ Returns
 * nil
@@ -25148,7 +25148,7 @@ When setting up menu UI buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tabs` | **table** |  |
+| `tabs` | **table** | Table of tab information. |
 
 #### ↩️ Returns
 * nil
@@ -25308,7 +25308,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -25425,7 +25425,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -25542,7 +25542,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -25659,7 +25659,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -25776,7 +25776,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -25893,7 +25893,7 @@ When the UI skin is changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newSkin` | **string** |  |
+| `newSkin` | **string** | The new skin name. |
 
 #### ↩️ Returns
 * nil
@@ -26010,9 +26010,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -26103,9 +26103,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -26196,9 +26196,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -26289,9 +26289,9 @@ When character information needs to be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `character` | **Character** |  |
-| `info` | **table** |  |
+| `player` | **Player** | The player whose character info to draw. |
+| `character` | **Character** | The character data. |
+| `info` | **table** | Information to display. |
 
 #### ↩️ Returns
 * nil
@@ -26382,9 +26382,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -26481,9 +26481,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -26580,9 +26580,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -26679,9 +26679,9 @@ When door information needs to be displayed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `infoTexts` | **table** |  |
-| `alphaOverride` | **number** |  |
+| `entity` | **Entity** | The door entity. |
+| `infoTexts` | **table** | Table of information text to display. |
+| `alphaOverride` | **number** | Optional alpha override value. |
 
 #### ↩️ Returns
 * nil
@@ -26778,9 +26778,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -26878,9 +26878,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -26978,9 +26978,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -27078,9 +27078,9 @@ When entity information should be drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `alpha` | **number** |  |
-| `position` | **Vector** |  |
+| `entity` | **Entity** | The entity to draw info for. |
+| `alpha` | **number** | The alpha/transparency value. |
+| `position` | **Vector** | The position to draw at. |
 
 #### ↩️ Returns
 * nil
@@ -27178,8 +27178,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -27288,8 +27288,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -27398,8 +27398,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -27508,8 +27508,8 @@ When a model view needs to be drawn in a panel.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `entity` | **Entity** |  |
+| `panel` | **Panel** | The panel containing the model view. |
+| `entity` | **Entity** | The entity being displayed. |
 
 #### ↩️ Returns
 * nil
@@ -27618,7 +27618,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -27709,7 +27709,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -27800,7 +27800,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -27891,7 +27891,7 @@ When a player ragdoll needs to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The ragdoll entity. |
 
 #### ↩️ Returns
 * nil
@@ -28650,7 +28650,7 @@ When the F1 help menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `menuPanel` | **Panel** |  |
+| `menuPanel` | **Panel** | The F1 menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -28744,7 +28744,7 @@ When the F1 help menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `menuPanel` | **Panel** |  |
+| `menuPanel` | **Panel** | The F1 menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -28838,7 +28838,7 @@ When the F1 help menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `menuPanel` | **Panel** |  |
+| `menuPanel` | **Panel** | The F1 menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -28932,7 +28932,7 @@ When the F1 help menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `menuPanel` | **Panel** |  |
+| `menuPanel` | **Panel** | The F1 menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -29026,9 +29026,9 @@ When door information is being prepared for display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `doorData` | **table** |  |
-| `doorInfo` | **table** |  |
+| `entity` | **Entity** | The door entity. |
+| `doorData` | **table** | The door data. |
+| `doorInfo` | **table** | The door information to filter. |
 
 #### ↩️ Returns
 * nil
@@ -29152,9 +29152,9 @@ When door information is being prepared for display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `doorData` | **table** |  |
-| `doorInfo` | **table** |  |
+| `entity` | **Entity** | The door entity. |
+| `doorData` | **table** | The door data. |
+| `doorInfo` | **table** | The door information to filter. |
 
 #### ↩️ Returns
 * nil
@@ -29278,9 +29278,9 @@ When door information is being prepared for display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `doorData` | **table** |  |
-| `doorInfo` | **table** |  |
+| `entity` | **Entity** | The door entity. |
+| `doorData` | **table** | The door data. |
+| `doorInfo` | **table** | The door information to filter. |
 
 #### ↩️ Returns
 * nil
@@ -29404,9 +29404,9 @@ When door information is being prepared for display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `doorData` | **table** |  |
-| `doorInfo` | **table** |  |
+| `entity` | **Entity** | The door entity. |
+| `doorData` | **table** | The door data. |
+| `doorInfo` | **table** | The door information to filter. |
 
 #### ↩️ Returns
 * nil
@@ -29530,7 +29530,7 @@ When determining where to position the main menu.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * Vector
@@ -29619,7 +29619,7 @@ When determining where to position the main menu.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * Vector
@@ -29708,7 +29708,7 @@ When determining where to position the main menu.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * Vector
@@ -29797,7 +29797,7 @@ When determining where to position the main menu.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * Vector
@@ -30190,7 +30190,7 @@ When the interaction menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frame` | **Panel** |  |
+| `frame` | **Panel** | The interaction menu frame. |
 
 #### ↩️ Returns
 * nil
@@ -30306,7 +30306,7 @@ When the interaction menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frame` | **Panel** |  |
+| `frame` | **Panel** | The interaction menu frame. |
 
 #### ↩️ Returns
 * nil
@@ -30422,7 +30422,7 @@ When the interaction menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frame` | **Panel** |  |
+| `frame` | **Panel** | The interaction menu frame. |
 
 #### ↩️ Returns
 * nil
@@ -30538,7 +30538,7 @@ When the interaction menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frame` | **Panel** |  |
+| `frame` | **Panel** | The interaction menu frame. |
 
 #### ↩️ Returns
 * nil
@@ -30654,9 +30654,9 @@ When an item icon is clicked.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemIcon` | **Panel** |  |
-| `keyCode` | **number** |  |
+| `panel` | **Panel** | The panel containing the icon. |
+| `itemIcon` | **Panel** | The item icon panel. |
+| `keyCode` | **number** | The key code of the click. |
 
 #### ↩️ Returns
 * nil
@@ -30775,9 +30775,9 @@ When an item icon is clicked.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemIcon` | **Panel** |  |
-| `keyCode` | **number** |  |
+| `panel` | **Panel** | The panel containing the icon. |
+| `itemIcon` | **Panel** | The item icon panel. |
+| `keyCode` | **number** | The key code of the click. |
 
 #### ↩️ Returns
 * nil
@@ -30896,9 +30896,9 @@ When an item icon is clicked.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemIcon` | **Panel** |  |
-| `keyCode` | **number** |  |
+| `panel` | **Panel** | The panel containing the icon. |
+| `itemIcon` | **Panel** | The item icon panel. |
+| `keyCode` | **number** | The key code of the click. |
 
 #### ↩️ Returns
 * nil
@@ -31017,9 +31017,9 @@ When an item icon is clicked.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemIcon` | **Panel** |  |
-| `keyCode` | **number** |  |
+| `panel` | **Panel** | The panel containing the icon. |
+| `itemIcon` | **Panel** | The item icon panel. |
+| `keyCode` | **number** | The key code of the click. |
 
 #### ↩️ Returns
 * nil
@@ -31138,8 +31138,8 @@ When an inventory UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -31230,8 +31230,8 @@ When an inventory UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -31322,8 +31322,8 @@ When an inventory UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -31414,8 +31414,8 @@ When an inventory UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -31506,9 +31506,9 @@ When creating inventory item icons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `icon` | **Panel** |  |
-| `item` | **Item** |  |
-| `panel` | **Panel** |  |
+| `icon` | **Panel** | The icon panel. |
+| `item` | **Item** | The item. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -31634,9 +31634,9 @@ When creating inventory item icons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `icon` | **Panel** |  |
-| `item` | **Item** |  |
-| `panel` | **Panel** |  |
+| `icon` | **Panel** | The icon panel. |
+| `item` | **Item** | The item. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -31762,9 +31762,9 @@ When creating inventory item icons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `icon` | **Panel** |  |
-| `item` | **Item** |  |
-| `panel` | **Panel** |  |
+| `icon` | **Panel** | The icon panel. |
+| `item` | **Item** | The item. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -31890,9 +31890,9 @@ When creating inventory item icons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `icon` | **Panel** |  |
-| `item` | **Item** |  |
-| `panel` | **Panel** |  |
+| `icon` | **Panel** | The icon panel. |
+| `item` | **Item** | The item. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -32018,8 +32018,8 @@ When an inventory UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -32113,8 +32113,8 @@ When an inventory UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -32208,8 +32208,8 @@ When an inventory UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -32303,8 +32303,8 @@ When an inventory UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -32398,9 +32398,9 @@ When creating inventory UI panels.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -32520,9 +32520,9 @@ When creating inventory UI panels.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -32642,9 +32642,9 @@ When creating inventory UI panels.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -32764,9 +32764,9 @@ When creating inventory UI panels.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `inventory` | **Inventory** |  |
-| `parent` | **Panel** |  |
+| `panel` | **Panel** | The inventory panel. |
+| `inventory` | **Inventory** | The inventory. |
+| `parent` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -32886,8 +32886,8 @@ When dragging items from inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `item` | **Item** |  |
+| `client` | **Player** | The player dragging the item. |
+| `item` | **Item** | The item being dragged. |
 
 #### ↩️ Returns
 * nil
@@ -32990,8 +32990,8 @@ When dragging items from inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `item` | **Item** |  |
+| `client` | **Player** | The player dragging the item. |
+| `item` | **Item** | The item being dragged. |
 
 #### ↩️ Returns
 * nil
@@ -33094,8 +33094,8 @@ When dragging items from inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `item` | **Item** |  |
+| `client` | **Player** | The player dragging the item. |
+| `item` | **Item** | The item being dragged. |
 
 #### ↩️ Returns
 * nil
@@ -33198,8 +33198,8 @@ When dragging items from inventory UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `item` | **Item** |  |
+| `client` | **Player** | The player dragging the item. |
+| `item` | **Item** | The item being dragged. |
 
 #### ↩️ Returns
 * nil
@@ -33302,10 +33302,10 @@ When rendering item overlays in the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemTable` | **table** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `panel` | **Panel** | The panel being painted. |
+| `itemTable` | **table** | The item table. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -33411,10 +33411,10 @@ When rendering item overlays in the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemTable` | **table** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `panel` | **Panel** | The panel being painted. |
+| `itemTable` | **table** | The item table. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -33520,10 +33520,10 @@ When rendering item overlays in the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemTable` | **table** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `panel` | **Panel** | The panel being painted. |
+| `itemTable` | **table** | The item table. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -33629,10 +33629,10 @@ When rendering item overlays in the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemTable` | **table** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `panel` | **Panel** | The panel being painted. |
+| `itemTable` | **table** | The item table. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -33738,7 +33738,7 @@ When right-clicking on item entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * nil
@@ -33851,7 +33851,7 @@ When right-clicking on item entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * nil
@@ -33964,7 +33964,7 @@ When right-clicking on item entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * nil
@@ -34077,7 +34077,7 @@ When right-clicking on item entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * nil
@@ -34790,8 +34790,8 @@ When loading main menu data.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `info` | **table** |  |
-| `character` | **Character** |  |
+| `info` | **table** | The information table. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -34886,8 +34886,8 @@ When loading main menu data.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `info` | **table** |  |
-| `character` | **Character** |  |
+| `info` | **table** | The information table. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -34982,8 +34982,8 @@ When loading main menu data.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `info` | **table** |  |
-| `character` | **Character** |  |
+| `info` | **table** | The information table. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35078,8 +35078,8 @@ When loading main menu data.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `info` | **table** |  |
-| `character` | **Character** |  |
+| `info` | **table** | The information table. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35174,8 +35174,8 @@ When rendering character models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `character` | **Character** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35269,8 +35269,8 @@ When rendering character models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `character` | **Character** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35364,8 +35364,8 @@ When rendering character models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `character` | **Character** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35459,8 +35459,8 @@ When rendering character models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `character` | **Character** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * nil
@@ -35554,8 +35554,8 @@ When rendering player models on the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `player` | **Player** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * nil
@@ -35651,8 +35651,8 @@ When rendering player models on the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `player` | **Player** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * nil
@@ -35748,8 +35748,8 @@ When rendering player models on the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `player` | **Player** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * nil
@@ -35845,8 +35845,8 @@ When rendering player models on the scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `player` | **Player** |  |
+| `entity` | **Entity** | The entity being rendered. |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * nil
@@ -35942,9 +35942,9 @@ When displaying voice chat indicators.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `voiceText` | **string** |  |
-| `voiceType` | **string** |  |
+| `client` | **Player** | The speaking player. |
+| `voiceText` | **string** | The voice text. |
+| `voiceType` | **string** | The voice type. |
 
 #### ↩️ Returns
 * nil
@@ -36020,9 +36020,9 @@ When displaying voice chat indicators.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `voiceText` | **string** |  |
-| `voiceType` | **string** |  |
+| `client` | **Player** | The speaking player. |
+| `voiceText` | **string** | The voice text. |
+| `voiceType` | **string** | The voice type. |
 
 #### ↩️ Returns
 * nil
@@ -36098,9 +36098,9 @@ When displaying voice chat indicators.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `voiceText` | **string** |  |
-| `voiceType` | **string** |  |
+| `client` | **Player** | The speaking player. |
+| `voiceText` | **string** | The voice text. |
+| `voiceType` | **string** | The voice type. |
 
 #### ↩️ Returns
 * nil
@@ -36176,9 +36176,9 @@ When displaying voice chat indicators.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `voiceText` | **string** |  |
-| `voiceType` | **string** |  |
+| `client` | **Player** | The speaking player. |
+| `voiceText` | **string** | The voice text. |
+| `voiceType` | **string** | The voice type. |
 
 #### ↩️ Returns
 * nil
@@ -36254,9 +36254,9 @@ When an item interaction menu is being created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `menu` | **Panel** |  |
-| `itemTable` | **table** |  |
+| `panel` | **Panel** | The parent panel. |
+| `menu` | **Panel** | The menu panel. |
+| `itemTable` | **table** | The item table. |
 
 #### ↩️ Returns
 * nil
@@ -36349,9 +36349,9 @@ When an item interaction menu is being created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `menu` | **Panel** |  |
-| `itemTable` | **table** |  |
+| `panel` | **Panel** | The parent panel. |
+| `menu` | **Panel** | The menu panel. |
+| `itemTable` | **table** | The item table. |
 
 #### ↩️ Returns
 * nil
@@ -36444,9 +36444,9 @@ When an item interaction menu is being created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `menu` | **Panel** |  |
-| `itemTable` | **table** |  |
+| `panel` | **Panel** | The parent panel. |
+| `menu` | **Panel** | The menu panel. |
+| `itemTable` | **table** | The item table. |
 
 #### ↩️ Returns
 * nil
@@ -36539,9 +36539,9 @@ When an item interaction menu is being created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `menu` | **Panel** |  |
-| `itemTable` | **table** |  |
+| `panel` | **Panel** | The parent panel. |
+| `menu` | **Panel** | The menu panel. |
+| `itemTable` | **table** | The item table. |
 
 #### ↩️ Returns
 * nil
@@ -36634,9 +36634,9 @@ When storage UI panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `localInvPanel` | **Panel** |  |
-| `storageInvPanel` | **Panel** |  |
-| `storage` | **table** |  |
+| `localInvPanel` | **Panel** | The local inventory panel. |
+| `storageInvPanel` | **Panel** | The storage inventory panel. |
+| `storage` | **table** | The storage data. |
 
 #### ↩️ Returns
 * nil
@@ -36721,9 +36721,9 @@ When storage UI panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `localInvPanel` | **Panel** |  |
-| `storageInvPanel` | **Panel** |  |
-| `storage` | **table** |  |
+| `localInvPanel` | **Panel** | The local inventory panel. |
+| `storageInvPanel` | **Panel** | The storage inventory panel. |
+| `storage` | **table** | The storage data. |
 
 #### ↩️ Returns
 * nil
@@ -36808,9 +36808,9 @@ When storage UI panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `localInvPanel` | **Panel** |  |
-| `storageInvPanel` | **Panel** |  |
-| `storage` | **table** |  |
+| `localInvPanel` | **Panel** | The local inventory panel. |
+| `storageInvPanel` | **Panel** | The storage inventory panel. |
+| `storage` | **table** | The storage data. |
 
 #### ↩️ Returns
 * nil
@@ -36895,9 +36895,9 @@ When storage UI panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `localInvPanel` | **Panel** |  |
-| `storageInvPanel` | **Panel** |  |
-| `storage` | **table** |  |
+| `localInvPanel` | **Panel** | The local inventory panel. |
+| `storageInvPanel` | **Panel** | The storage inventory panel. |
+| `storage` | **table** | The storage data. |
 
 #### ↩️ Returns
 * nil
@@ -36982,8 +36982,8 @@ After a death sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The player who died. |
+| `deathSound` | **string** | The death sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37067,8 +37067,8 @@ After a death sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The player who died. |
+| `deathSound` | **string** | The death sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37152,8 +37152,8 @@ After a death sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The player who died. |
+| `deathSound` | **string** | The death sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37237,8 +37237,8 @@ After a death sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The player who died. |
+| `deathSound` | **string** | The death sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37322,8 +37322,8 @@ When a vendor interface is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `vendor` | **Entity** |  |
+| `panel` | **Panel** | The vendor panel. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * nil
@@ -37420,8 +37420,8 @@ When a vendor interface is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `vendor` | **Entity** |  |
+| `panel` | **Panel** | The vendor panel. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * nil
@@ -37518,8 +37518,8 @@ When a vendor interface is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `vendor` | **Entity** |  |
+| `panel` | **Panel** | The vendor panel. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * nil
@@ -37616,8 +37616,8 @@ When a vendor interface is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `vendor` | **Entity** |  |
+| `panel` | **Panel** | The vendor panel. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * nil
@@ -37714,8 +37714,8 @@ After a pain sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The player who was hurt. |
+| `painSound` | **string** | The pain sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37805,8 +37805,8 @@ After a pain sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The player who was hurt. |
+| `painSound` | **string** | The pain sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37896,8 +37896,8 @@ After a pain sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The player who was hurt. |
+| `painSound` | **string** | The pain sound played. |
 
 #### ↩️ Returns
 * nil
@@ -37987,8 +37987,8 @@ After a pain sound is played for feedback.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The player who was hurt. |
+| `painSound` | **string** | The pain sound played. |
 
 #### ↩️ Returns
 * nil
@@ -38078,11 +38078,11 @@ When item transfers are requested through the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemID` | **number** |  |
-| `inventoryID` | **number** |  |
-| `x` | **number** |  |
-| `y` | **number** |  |
+| `panel` | **Panel** | The UI panel. |
+| `itemID` | **number** | The item ID. |
+| `inventoryID` | **number** | The destination inventory ID. |
+| `x` | **number** | The X position. |
+| `y` | **number** | The Y position. |
 
 #### ↩️ Returns
 * nil
@@ -38177,11 +38177,11 @@ When item transfers are requested through the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemID` | **number** |  |
-| `inventoryID` | **number** |  |
-| `x` | **number** |  |
-| `y` | **number** |  |
+| `panel` | **Panel** | The UI panel. |
+| `itemID` | **number** | The item ID. |
+| `inventoryID` | **number** | The destination inventory ID. |
+| `x` | **number** | The X position. |
+| `y` | **number** | The Y position. |
 
 #### ↩️ Returns
 * nil
@@ -38276,11 +38276,11 @@ When item transfers are requested through the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemID` | **number** |  |
-| `inventoryID` | **number** |  |
-| `x` | **number** |  |
-| `y` | **number** |  |
+| `panel` | **Panel** | The UI panel. |
+| `itemID` | **number** | The item ID. |
+| `inventoryID` | **number** | The destination inventory ID. |
+| `x` | **number** | The X position. |
+| `y` | **number** | The Y position. |
 
 #### ↩️ Returns
 * nil
@@ -38375,11 +38375,11 @@ When item transfers are requested through the UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `itemID` | **number** |  |
-| `inventoryID` | **number** |  |
-| `x` | **number** |  |
-| `y` | **number** |  |
+| `panel` | **Panel** | The UI panel. |
+| `itemID` | **number** | The item ID. |
+| `inventoryID` | **number** | The destination inventory ID. |
+| `x` | **number** | The X position. |
+| `y` | **number** | The Y position. |
 
 #### ↩️ Returns
 * nil
@@ -38474,8 +38474,8 @@ When UI themes are switched.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string** |  |
-| `useTransition` | **boolean** |  |
+| `themeName` | **string** | The new theme name. |
+| `useTransition` | **boolean** | Whether to use transition effects. |
 
 #### ↩️ Returns
 * nil
@@ -38568,8 +38568,8 @@ When UI themes are switched.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string** |  |
-| `useTransition` | **boolean** |  |
+| `themeName` | **string** | The new theme name. |
+| `useTransition` | **boolean** | Whether to use transition effects. |
 
 #### ↩️ Returns
 * nil
@@ -38662,8 +38662,8 @@ When UI themes are switched.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string** |  |
-| `useTransition` | **boolean** |  |
+| `themeName` | **string** | The new theme name. |
+| `useTransition` | **boolean** | Whether to use transition effects. |
 
 #### ↩️ Returns
 * nil
@@ -38756,8 +38756,8 @@ When UI themes are switched.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string** |  |
-| `useTransition` | **boolean** |  |
+| `themeName` | **string** | The new theme name. |
+| `useTransition` | **boolean** | Whether to use transition effects. |
 
 #### ↩️ Returns
 * nil
@@ -38850,7 +38850,7 @@ When staff status information is received.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `staffData` | **table** |  |
+| `staffData` | **table** | The staff data. |
 
 #### ↩️ Returns
 * nil
@@ -38928,7 +38928,7 @@ When staff status information is received.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `staffData` | **table** |  |
+| `staffData` | **table** | The staff data. |
 
 #### ↩️ Returns
 * nil
@@ -39006,7 +39006,7 @@ When staff status information is received.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `staffData` | **table** |  |
+| `staffData` | **table** | The staff data. |
 
 #### ↩️ Returns
 * nil
@@ -39084,7 +39084,7 @@ When staff status information is received.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `staffData` | **table** |  |
+| `staffData` | **table** | The staff data. |
 
 #### ↩️ Returns
 * nil
@@ -39162,7 +39162,7 @@ When admin tools UI needs to be opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
+| `target` | **Player** | The target player. |
 
 #### ↩️ Returns
 * nil
@@ -39245,7 +39245,7 @@ When admin tools UI needs to be opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
+| `target` | **Player** | The target player. |
 
 #### ↩️ Returns
 * nil
@@ -39328,7 +39328,7 @@ When admin tools UI needs to be opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
+| `target` | **Player** | The target player. |
 
 #### ↩️ Returns
 * nil
@@ -39411,7 +39411,7 @@ When admin tools UI needs to be opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
+| `target` | **Player** | The target player. |
 
 #### ↩️ Returns
 * nil
@@ -39494,9 +39494,9 @@ When client receives option values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The receiving player. |
+| `key` | **string** | The option key. |
+| `value` | **any** | The option value. |
 
 #### ↩️ Returns
 * nil
@@ -39575,9 +39575,9 @@ When client receives option values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The receiving player. |
+| `key` | **string** | The option key. |
+| `value` | **any** | The option value. |
 
 #### ↩️ Returns
 * nil
@@ -39656,9 +39656,9 @@ When client receives option values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The receiving player. |
+| `key` | **string** | The option key. |
+| `value` | **any** | The option value. |
 
 #### ↩️ Returns
 * nil
@@ -39737,9 +39737,9 @@ When client receives option values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The receiving player. |
+| `key` | **string** | The option key. |
+| `value` | **any** | The option value. |
 
 #### ↩️ Returns
 * nil
@@ -39818,7 +39818,7 @@ When item UI elements need to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item to paint. |
 
 #### ↩️ Returns
 * nil
@@ -39902,7 +39902,7 @@ When item UI elements need to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item to paint. |
 
 #### ↩️ Returns
 * nil
@@ -39986,7 +39986,7 @@ When item UI elements need to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item to paint. |
 
 #### ↩️ Returns
 * nil
@@ -40070,7 +40070,7 @@ When item UI elements need to be rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item to paint. |
 
 #### ↩️ Returns
 * nil
@@ -40154,9 +40154,9 @@ When admin stick menus need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `currentMenu` | **Panel** |  |
-| `currentTarget` | **Player** |  |
-| `currentStores` | **table** |  |
+| `currentMenu` | **Panel** | The current menu. |
+| `currentTarget` | **Player** | The target player. |
+| `currentStores` | **table** | The current stores. |
 
 #### ↩️ Returns
 * nil
@@ -40262,9 +40262,9 @@ When admin stick menus need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `currentMenu` | **Panel** |  |
-| `currentTarget` | **Player** |  |
-| `currentStores` | **table** |  |
+| `currentMenu` | **Panel** | The current menu. |
+| `currentTarget` | **Player** | The target player. |
+| `currentStores` | **table** | The current stores. |
 
 #### ↩️ Returns
 * nil
@@ -40370,9 +40370,9 @@ When admin stick menus need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `currentMenu` | **Panel** |  |
-| `currentTarget` | **Player** |  |
-| `currentStores` | **table** |  |
+| `currentMenu` | **Panel** | The current menu. |
+| `currentTarget` | **Player** | The target player. |
+| `currentStores` | **table** | The current stores. |
 
 #### ↩️ Returns
 * nil
@@ -40478,9 +40478,9 @@ When admin stick menus need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `currentMenu` | **Panel** |  |
-| `currentTarget` | **Player** |  |
-| `currentStores` | **table** |  |
+| `currentMenu` | **Panel** | The current menu. |
+| `currentTarget` | **Player** | The target player. |
+| `currentStores` | **table** | The current stores. |
 
 #### ↩️ Returns
 * nil
@@ -40586,7 +40586,7 @@ When admin UI tabs need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `adminPages` | **table** |  |
+| `adminPages` | **table** | The admin pages. |
 
 #### ↩️ Returns
 * nil
@@ -40684,7 +40684,7 @@ When admin UI tabs need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `adminPages` | **table** |  |
+| `adminPages` | **table** | The admin pages. |
 
 #### ↩️ Returns
 * nil
@@ -40782,7 +40782,7 @@ When admin UI tabs need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `adminPages` | **table** |  |
+| `adminPages` | **table** | The admin pages. |
 
 #### ↩️ Returns
 * nil
@@ -40880,7 +40880,7 @@ When admin UI tabs need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `adminPages` | **table** |  |
+| `adminPages` | **table** | The admin pages. |
 
 #### ↩️ Returns
 * nil
@@ -40978,7 +40978,7 @@ When configuration UI buttons need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | The pages table. |
 
 #### ↩️ Returns
 * nil
@@ -41074,7 +41074,7 @@ When configuration UI buttons need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | The pages table. |
 
 #### ↩️ Returns
 * nil
@@ -41170,7 +41170,7 @@ When configuration UI buttons need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | The pages table. |
 
 #### ↩️ Returns
 * nil
@@ -41266,7 +41266,7 @@ When configuration UI buttons need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pages` | **table** |  |
+| `pages` | **table** | The pages table. |
 
 #### ↩️ Returns
 * nil
@@ -41362,8 +41362,8 @@ When inventory UI items need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pnlContent` | **Panel** |  |
-| `tree` | **Panel** |  |
+| `pnlContent` | **Panel** | The content panel. |
+| `tree` | **Panel** | The tree panel. |
 
 #### ↩️ Returns
 * nil
@@ -41461,8 +41461,8 @@ When inventory UI items need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pnlContent` | **Panel** |  |
-| `tree` | **Panel** |  |
+| `pnlContent` | **Panel** | The content panel. |
+| `tree` | **Panel** | The tree panel. |
 
 #### ↩️ Returns
 * nil
@@ -41560,8 +41560,8 @@ When inventory UI items need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pnlContent` | **Panel** |  |
-| `tree` | **Panel** |  |
+| `pnlContent` | **Panel** | The content panel. |
+| `tree` | **Panel** | The tree panel. |
 
 #### ↩️ Returns
 * nil
@@ -41659,8 +41659,8 @@ When inventory UI items need to be populated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pnlContent` | **Panel** |  |
-| `tree` | **Panel** |  |
+| `pnlContent` | **Panel** | The content panel. |
+| `tree` | **Panel** | The tree panel. |
 
 #### ↩️ Returns
 * nil
@@ -41758,8 +41758,8 @@ After inventory panels are drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainPanel` | **Panel** |  |
-| `parentPanel` | **Panel** |  |
+| `mainPanel` | **Panel** | The main inventory panel. |
+| `parentPanel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -41844,8 +41844,8 @@ After inventory panels are drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainPanel` | **Panel** |  |
-| `parentPanel` | **Panel** |  |
+| `mainPanel` | **Panel** | The main inventory panel. |
+| `parentPanel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -41930,8 +41930,8 @@ After inventory panels are drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainPanel` | **Panel** |  |
-| `parentPanel` | **Panel** |  |
+| `mainPanel` | **Panel** | The main inventory panel. |
+| `parentPanel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -42016,8 +42016,8 @@ After inventory panels are drawn.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainPanel` | **Panel** |  |
-| `parentPanel` | **Panel** |  |
+| `mainPanel` | **Panel** | The main inventory panel. |
+| `parentPanel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -42102,8 +42102,8 @@ After font loading is complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainFont` | **string** |  |
-| `configuredFont` | **string** |  |
+| `mainFont` | **string** | The main font. |
+| `configuredFont` | **string** | The configured font. |
 
 #### ↩️ Returns
 * nil
@@ -42194,8 +42194,8 @@ After font loading is complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainFont` | **string** |  |
-| `configuredFont` | **string** |  |
+| `mainFont` | **string** | The main font. |
+| `configuredFont` | **string** | The configured font. |
 
 #### ↩️ Returns
 * nil
@@ -42286,8 +42286,8 @@ After font loading is complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainFont` | **string** |  |
-| `configuredFont` | **string** |  |
+| `mainFont` | **string** | The main font. |
+| `configuredFont` | **string** | The configured font. |
 
 #### ↩️ Returns
 * nil
@@ -42378,8 +42378,8 @@ After font loading is complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mainFont` | **string** |  |
-| `configuredFont` | **string** |  |
+| `mainFont` | **string** | The main font. |
+| `configuredFont` | **string** | The configured font. |
 
 #### ↩️ Returns
 * nil
@@ -43050,8 +43050,8 @@ When PAC parts are removed from players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `partID` | **string** |  |
+| `client` | **Player** | The player removing the part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * nil
@@ -43140,8 +43140,8 @@ When PAC parts are removed from players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `partID` | **string** |  |
+| `client` | **Player** | The player removing the part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * nil
@@ -43230,8 +43230,8 @@ When PAC parts are removed from players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `partID` | **string** |  |
+| `client` | **Player** | The player removing the part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * nil
@@ -43320,8 +43320,8 @@ When PAC parts are removed from players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `partID` | **string** |  |
+| `client` | **Player** | The player removing the part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * nil
@@ -43734,7 +43734,7 @@ When scoreboard UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -43813,7 +43813,7 @@ When scoreboard UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -43892,7 +43892,7 @@ When scoreboard UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -43971,7 +43971,7 @@ When scoreboard UI is closed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -44050,7 +44050,7 @@ When scoreboard UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -44135,7 +44135,7 @@ When scoreboard UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -44220,7 +44220,7 @@ When scoreboard UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -44305,7 +44305,7 @@ When scoreboard UI is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The scoreboard panel. |
 
 #### ↩️ Returns
 * nil
@@ -44390,8 +44390,8 @@ When scoreboard player rows are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `slot` | **number** |  |
-| `player` | **Player** |  |
+| `slot` | **number** | The row slot. |
+| `player` | **Player** | The player for the row. |
 
 #### ↩️ Returns
 * nil
@@ -44482,8 +44482,8 @@ When scoreboard player rows are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `slot` | **number** |  |
-| `player` | **Player** |  |
+| `slot` | **number** | The row slot. |
+| `player` | **Player** | The player for the row. |
 
 #### ↩️ Returns
 * nil
@@ -44574,8 +44574,8 @@ When scoreboard player rows are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `slot` | **number** |  |
-| `player` | **Player** |  |
+| `slot` | **number** | The row slot. |
+| `player` | **Player** | The player for the row. |
 
 #### ↩️ Returns
 * nil
@@ -44666,8 +44666,8 @@ When scoreboard player rows are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `slot` | **number** |  |
-| `player` | **Player** |  |
+| `slot` | **number** | The row slot. |
+| `player` | **Player** | The player for the row. |
 
 #### ↩️ Returns
 * nil
@@ -44758,8 +44758,8 @@ When scoreboard player rows are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `player` | **Player** |  |
+| `panel` | **Panel** | The scoreboard panel. |
+| `player` | **Player** | The player whose row was removed. |
 
 #### ↩️ Returns
 * nil
@@ -44839,8 +44839,8 @@ When scoreboard player rows are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `player` | **Player** |  |
+| `panel` | **Panel** | The scoreboard panel. |
+| `player` | **Player** | The player whose row was removed. |
 
 #### ↩️ Returns
 * nil
@@ -44920,8 +44920,8 @@ When scoreboard player rows are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `player` | **Player** |  |
+| `panel` | **Panel** | The scoreboard panel. |
+| `player` | **Player** | The player whose row was removed. |
 
 #### ↩️ Returns
 * nil
@@ -45001,8 +45001,8 @@ When scoreboard player rows are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `player` | **Player** |  |
+| `panel` | **Panel** | The scoreboard panel. |
+| `player` | **Player** | The player whose row was removed. |
 
 #### ↩️ Returns
 * nil
@@ -45082,7 +45082,7 @@ When quick menu UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The quick menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -45224,7 +45224,7 @@ When quick menu UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The quick menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -45366,7 +45366,7 @@ When quick menu UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The quick menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -45508,7 +45508,7 @@ When quick menu UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The quick menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -45650,8 +45650,8 @@ When checking if scoreboard modifications are permitted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `overrideType` | **string** |  |
+| `player` | **Player** | The player viewing the scoreboard. |
+| `overrideType` | **string** | The type of override requested. |
 
 #### ↩️ Returns
 * boolean
@@ -45730,8 +45730,8 @@ When checking if scoreboard modifications are permitted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `overrideType` | **string** |  |
+| `player` | **Player** | The player viewing the scoreboard. |
+| `overrideType` | **string** | The type of override requested. |
 
 #### ↩️ Returns
 * boolean
@@ -45810,8 +45810,8 @@ When checking if scoreboard modifications are permitted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `overrideType` | **string** |  |
+| `player` | **Player** | The player viewing the scoreboard. |
+| `overrideType` | **string** | The type of override requested. |
 
 #### ↩️ Returns
 * boolean
@@ -45890,8 +45890,8 @@ When checking if scoreboard modifications are permitted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `overrideType` | **string** |  |
+| `player` | **Player** | The player viewing the scoreboard. |
+| `overrideType` | **string** | The type of override requested. |
 
 #### ↩️ Returns
 * boolean
@@ -45970,7 +45970,7 @@ When deciding whether to render HUD bars.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bar` | **table** |  |
+| `bar` | **table** | The bar data. |
 
 #### ↩️ Returns
 * boolean
@@ -46054,7 +46054,7 @@ When deciding whether to render HUD bars.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bar` | **table** |  |
+| `bar` | **table** | The bar data. |
 
 #### ↩️ Returns
 * boolean
@@ -46138,7 +46138,7 @@ When deciding whether to render HUD bars.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bar` | **table** |  |
+| `bar` | **table** | The bar data. |
 
 #### ↩️ Returns
 * boolean
@@ -46222,7 +46222,7 @@ When deciding whether to render HUD bars.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bar` | **table** |  |
+| `bar` | **table** | The bar data. |
 
 #### ↩️ Returns
 * boolean
@@ -46306,7 +46306,7 @@ When checking third person camera restrictions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -46394,7 +46394,7 @@ When checking third person camera restrictions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -46482,7 +46482,7 @@ When checking third person camera restrictions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -46570,7 +46570,7 @@ When checking third person camera restrictions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -46658,7 +46658,7 @@ When deciding whether to show ammo UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **Entity** |  |
+| `weapon` | **Entity** | The weapon. |
 
 #### ↩️ Returns
 * boolean
@@ -46744,7 +46744,7 @@ When deciding whether to show ammo UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **Entity** |  |
+| `weapon` | **Entity** | The weapon. |
 
 #### ↩️ Returns
 * boolean
@@ -46830,7 +46830,7 @@ When deciding whether to show ammo UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **Entity** |  |
+| `weapon` | **Entity** | The weapon. |
 
 #### ↩️ Returns
 * boolean
@@ -46916,7 +46916,7 @@ When deciding whether to show ammo UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **Entity** |  |
+| `weapon` | **Entity** | The weapon. |
 
 #### ↩️ Returns
 * boolean
@@ -47002,7 +47002,7 @@ When deciding whether to show entity information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity. |
 
 #### ↩️ Returns
 * boolean
@@ -47097,7 +47097,7 @@ When deciding whether to show entity information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity. |
 
 #### ↩️ Returns
 * boolean
@@ -47192,7 +47192,7 @@ When deciding whether to show entity information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity. |
 
 #### ↩️ Returns
 * boolean
@@ -47287,7 +47287,7 @@ When deciding whether to show entity information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity. |
 
 #### ↩️ Returns
 * boolean
@@ -47382,7 +47382,7 @@ When deciding whether to show player information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47473,7 +47473,7 @@ When deciding whether to show player information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47564,7 +47564,7 @@ When deciding whether to show player information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47655,7 +47655,7 @@ When deciding whether to show player information overlays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47746,7 +47746,7 @@ When deciding whether to show weapon selection UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47834,7 +47834,7 @@ When deciding whether to show weapon selection UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -47922,7 +47922,7 @@ When deciding whether to show weapon selection UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -48010,7 +48010,7 @@ When deciding whether to show weapon selection UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -48446,7 +48446,7 @@ When deciding whether to display menu buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `buttonType` | **string** |  |
+| `buttonType` | **string** | The button type. |
 
 #### ↩️ Returns
 * boolean
@@ -48557,7 +48557,7 @@ When deciding whether to display menu buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `buttonType` | **string** |  |
+| `buttonType` | **string** | The button type. |
 
 #### ↩️ Returns
 * boolean
@@ -48668,7 +48668,7 @@ When deciding whether to display menu buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `buttonType` | **string** |  |
+| `buttonType` | **string** | The button type. |
 
 #### ↩️ Returns
 * boolean
@@ -48779,7 +48779,7 @@ When deciding whether to display menu buttons.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `buttonType` | **string** |  |
+| `buttonType` | **string** | The button type. |
 
 #### ↩️ Returns
 * boolean
@@ -48890,8 +48890,8 @@ When deciding whether to play death audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The dying player. |
+| `deathSound` | **string** | The death sound. |
 
 #### ↩️ Returns
 * boolean
@@ -48993,8 +48993,8 @@ When deciding whether to play death audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The dying player. |
+| `deathSound` | **string** | The death sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49096,8 +49096,8 @@ When deciding whether to play death audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The dying player. |
+| `deathSound` | **string** | The death sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49199,8 +49199,8 @@ When deciding whether to play death audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `deathSound` | **string** |  |
+| `client` | **Player** | The dying player. |
+| `deathSound` | **string** | The death sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49302,8 +49302,8 @@ When deciding whether to play pain audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The injured player. |
+| `painSound` | **string** | The pain sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49405,8 +49405,8 @@ When deciding whether to play pain audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The injured player. |
+| `painSound` | **string** | The pain sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49508,8 +49508,8 @@ When deciding whether to play pain audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The injured player. |
+| `painSound` | **string** | The pain sound. |
 
 #### ↩️ Returns
 * boolean
@@ -49611,8 +49611,8 @@ When deciding whether to play pain audio.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `painSound` | **string** |  |
+| `client` | **Player** | The injured player. |
+| `painSound` | **string** | The pain sound. |
 
 #### ↩️ Returns
 * boolean
@@ -50066,7 +50066,7 @@ When deciding whether to display class on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `clsData` | **table** |  |
+| `clsData` | **table** | The class data. |
 
 #### ↩️ Returns
 * boolean
@@ -50157,7 +50157,7 @@ When deciding whether to display class on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `clsData` | **table** |  |
+| `clsData` | **table** | The class data. |
 
 #### ↩️ Returns
 * boolean
@@ -50248,7 +50248,7 @@ When deciding whether to display class on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `clsData` | **table** |  |
+| `clsData` | **table** | The class data. |
 
 #### ↩️ Returns
 * boolean
@@ -50339,7 +50339,7 @@ When deciding whether to display class on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `clsData` | **table** |  |
+| `clsData` | **table** | The class data. |
 
 #### ↩️ Returns
 * boolean
@@ -50430,7 +50430,7 @@ When deciding whether to display faction on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -50539,7 +50539,7 @@ When deciding whether to display faction on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -50648,7 +50648,7 @@ When deciding whether to display faction on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -50757,7 +50757,7 @@ When deciding whether to display faction on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -50866,7 +50866,7 @@ When deciding whether to display player on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -50977,7 +50977,7 @@ When deciding whether to display player on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -51088,7 +51088,7 @@ When deciding whether to display player on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -51199,7 +51199,7 @@ When deciding whether to display player on scoreboard.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
+| `player` | **Player** | The player. |
 
 #### ↩️ Returns
 * boolean
@@ -51710,8 +51710,8 @@ When displaying player interaction options.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `initialOptions` | **table** |  |
+| `player` | **Player** | The target player. |
+| `initialOptions` | **table** | The initial options. |
 
 #### ↩️ Returns
 * nil
@@ -51912,8 +51912,8 @@ When displaying player interaction options.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `initialOptions` | **table** |  |
+| `player` | **Player** | The target player. |
+| `initialOptions` | **table** | The initial options. |
 
 #### ↩️ Returns
 * nil
@@ -52114,8 +52114,8 @@ When displaying player interaction options.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `initialOptions` | **table** |  |
+| `player` | **Player** | The target player. |
+| `initialOptions` | **table** | The initial options. |
 
 #### ↩️ Returns
 * nil
@@ -52316,8 +52316,8 @@ When displaying player interaction options.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `player` | **Player** |  |
-| `initialOptions` | **table** |  |
+| `player` | **Player** | The target player. |
+| `initialOptions` | **table** | The initial options. |
 
 #### ↩️ Returns
 * nil
@@ -52518,7 +52518,7 @@ When prompting for storage unlock.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The storage entity. |
 
 #### ↩️ Returns
 * nil
@@ -52680,7 +52680,7 @@ When prompting for storage unlock.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The storage entity. |
 
 #### ↩️ Returns
 * nil
@@ -52842,7 +52842,7 @@ When prompting for storage unlock.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The storage entity. |
 
 #### ↩️ Returns
 * nil
@@ -53004,7 +53004,7 @@ When prompting for storage unlock.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The storage entity. |
 
 #### ↩️ Returns
 * nil
@@ -53166,7 +53166,7 @@ When third person camera mode changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newValue` | **boolean** |  |
+| `newValue` | **boolean** | The new third person state. |
 
 #### ↩️ Returns
 * nil
@@ -53320,7 +53320,7 @@ When third person camera mode changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newValue` | **boolean** |  |
+| `newValue` | **boolean** | The new third person state. |
 
 #### ↩️ Returns
 * nil
@@ -53474,7 +53474,7 @@ When third person camera mode changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newValue` | **boolean** |  |
+| `newValue` | **boolean** | The new third person state. |
 
 #### ↩️ Returns
 * nil
@@ -53628,7 +53628,7 @@ When third person camera mode changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newValue` | **boolean** |  |
+| `newValue` | **boolean** | The new third person state. |
 
 #### ↩️ Returns
 * nil
@@ -53782,9 +53782,9 @@ When showing support ticket UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requester` | **Player** |  |
-| `message` | **string** |  |
-| `claimed` | **boolean** |  |
+| `requester` | **Player** | The ticket requester. |
+| `message` | **string** | The ticket message. |
+| `claimed` | **boolean** | Whether the ticket is claimed. |
 
 #### ↩️ Returns
 * nil
@@ -53993,9 +53993,9 @@ When showing support ticket UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requester` | **Player** |  |
-| `message` | **string** |  |
-| `claimed` | **boolean** |  |
+| `requester` | **Player** | The ticket requester. |
+| `message` | **string** | The ticket message. |
+| `claimed` | **boolean** | Whether the ticket is claimed. |
 
 #### ↩️ Returns
 * nil
@@ -54204,9 +54204,9 @@ When showing support ticket UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requester` | **Player** |  |
-| `message` | **string** |  |
-| `claimed` | **boolean** |  |
+| `requester` | **Player** | The ticket requester. |
+| `message` | **string** | The ticket message. |
+| `claimed` | **boolean** | Whether the ticket is claimed. |
 
 #### ↩️ Returns
 * nil
@@ -54415,9 +54415,9 @@ When showing support ticket UI.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requester` | **Player** |  |
-| `message` | **string** |  |
-| `claimed` | **boolean** |  |
+| `requester` | **Player** | The ticket requester. |
+| `message` | **string** | The ticket message. |
+| `claimed` | **boolean** | Whether the ticket is claimed. |
 
 #### ↩️ Returns
 * nil
@@ -54626,8 +54626,8 @@ When tooltip panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `panel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -54701,8 +54701,8 @@ When tooltip panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `panel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -54776,8 +54776,8 @@ When tooltip panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `panel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -54851,8 +54851,8 @@ When tooltip panels are created.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `panel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `panel` | **Panel** | The parent panel. |
 
 #### ↩️ Returns
 * nil
@@ -54926,7 +54926,7 @@ When tooltip panels are positioned.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
 
 #### ↩️ Returns
 * nil
@@ -54992,7 +54992,7 @@ When tooltip panels are positioned.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
 
 #### ↩️ Returns
 * nil
@@ -55058,7 +55058,7 @@ When tooltip panels are positioned.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
 
 #### ↩️ Returns
 * nil
@@ -55124,7 +55124,7 @@ When tooltip panels are positioned.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
 
 #### ↩️ Returns
 * nil
@@ -55190,9 +55190,9 @@ When tooltip panels are rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -55252,9 +55252,9 @@ When tooltip panels are rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -55314,9 +55314,9 @@ When tooltip panels are rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -55376,9 +55376,9 @@ When tooltip panels are rendered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tooltipPanel` | **Panel** |  |
-| `width` | **number** |  |
-| `height` | **number** |  |
+| `tooltipPanel` | **Panel** | The tooltip panel. |
+| `width` | **number** | The panel width. |
+| `height` | **number** | The panel height. |
 
 #### ↩️ Returns
 * nil
@@ -55438,7 +55438,7 @@ When item transfer UI is activated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** |  |
+| `itemID` | **number** | The item ID. |
 
 #### ↩️ Returns
 * nil
@@ -55514,7 +55514,7 @@ When item transfer UI is activated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** |  |
+| `itemID` | **number** | The item ID. |
 
 #### ↩️ Returns
 * nil
@@ -55590,7 +55590,7 @@ When item transfer UI is activated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** |  |
+| `itemID` | **number** | The item ID. |
 
 #### ↩️ Returns
 * nil
@@ -55666,7 +55666,7 @@ When item transfer UI is activated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemID` | **number** |  |
+| `itemID` | **number** | The item ID. |
 
 #### ↩️ Returns
 * nil
@@ -55742,7 +55742,7 @@ When attempting to view item models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to view. |
 
 #### ↩️ Returns
 * nil
@@ -55820,7 +55820,7 @@ When attempting to view item models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to view. |
 
 #### ↩️ Returns
 * nil
@@ -55898,7 +55898,7 @@ When attempting to view item models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to view. |
 
 #### ↩️ Returns
 * nil
@@ -55976,7 +55976,7 @@ When attempting to view item models.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to view. |
 
 #### ↩️ Returns
 * nil
@@ -56510,7 +56510,7 @@ When voice chat state changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `enabled` | **boolean** |  |
+| `enabled` | **boolean** | Whether voice is enabled. |
 
 #### ↩️ Returns
 * nil
@@ -56589,7 +56589,7 @@ When voice chat state changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `enabled` | **boolean** |  |
+| `enabled` | **boolean** | Whether voice is enabled. |
 
 #### ↩️ Returns
 * nil
@@ -56668,7 +56668,7 @@ When voice chat state changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `enabled` | **boolean** |  |
+| `enabled` | **boolean** | Whether voice is enabled. |
 
 #### ↩️ Returns
 * nil
@@ -56747,7 +56747,7 @@ When voice chat state changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `enabled` | **boolean** |  |
+| `enabled` | **boolean** | Whether voice is enabled. |
 
 #### ↩️ Returns
 * nil
@@ -57275,6 +57275,278 @@ Client
 ---
 
 ### WeaponSelectSound
+
+#### 📋 Purpose
+Called when weapon select sound plays.
+
+#### ⏰ When Called
+When weapons are selected.
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Client
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Play default select sound
+    function MODULE:WeaponSelectSound()
+        surface.PlaySound("weapons/smg1/switch_single.wav")
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Play sound based on current weapon
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        local weapon = client:GetActiveWeapon()
+        if IsValid(weapon) then
+            local soundPath = weapon.SelectSound or "weapons/smg1/switch_single.wav"
+            surface.PlaySound(soundPath)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced weapon selection with custom sounds and effects
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        local weapon = client:GetActiveWeapon()
+        local char = client:getChar()
+        if IsValid(weapon) then
+            -- Get custom sound based on weapon type and character
+            local soundPath = MODULE.GetWeaponSelectSound(weapon:GetClass(), char) or "weapons/smg1/switch_single.wav"
+            -- Apply sound modifications
+            local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+            local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+            -- Play the sound
+            surface.PlaySound(soundPath)
+            -- Add visual effects
+            MODULE.AddWeaponSelectEffect(client, weapon)
+            -- Update weapon statistics
+            MODULE.UpdateWeaponSelectStats(client, weapon:GetClass())
+            -- Log weapon selection
+            MODULE.LogWeaponSelect(client, weapon:GetClass())
+        end
+    end
+
+```
+
+---
+
+### SWEPEditorValueUpdated
+
+#### 📋 Purpose
+Called when weapon select sound plays.
+
+#### ⏰ When Called
+When weapons are selected.
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Client
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Play default select sound
+    function MODULE:WeaponSelectSound()
+        surface.PlaySound("weapons/smg1/switch_single.wav")
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Play sound based on current weapon
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        local weapon = client:GetActiveWeapon()
+        if IsValid(weapon) then
+            local soundPath = weapon.SelectSound or "weapons/smg1/switch_single.wav"
+            surface.PlaySound(soundPath)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced weapon selection with custom sounds and effects
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        local weapon = client:GetActiveWeapon()
+        local char = client:getChar()
+        if IsValid(weapon) then
+            -- Get custom sound based on weapon type and character
+            local soundPath = MODULE.GetWeaponSelectSound(weapon:GetClass(), char) or "weapons/smg1/switch_single.wav"
+            -- Apply sound modifications
+            local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+            local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+            -- Play the sound
+            surface.PlaySound(soundPath)
+            -- Add visual effects
+            MODULE.AddWeaponSelectEffect(client, weapon)
+            -- Update weapon statistics
+            MODULE.UpdateWeaponSelectStats(client, weapon:GetClass())
+            -- Log weapon selection
+            MODULE.LogWeaponSelect(client, weapon:GetClass())
+        end
+    end
+
+```
+
+---
+
+### SWEPEditorValueUpdated
+
+#### 📋 Purpose
+Called when weapon select sound plays.
+
+#### ⏰ When Called
+When weapons are selected.
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Client
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Play default select sound
+    function MODULE:WeaponSelectSound()
+        surface.PlaySound("weapons/smg1/switch_single.wav")
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Play sound based on current weapon
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        local weapon = client:GetActiveWeapon()
+        if IsValid(weapon) then
+            local soundPath = weapon.SelectSound or "weapons/smg1/switch_single.wav"
+            surface.PlaySound(soundPath)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced weapon selection with custom sounds and effects
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        local weapon = client:GetActiveWeapon()
+        local char = client:getChar()
+        if IsValid(weapon) then
+            -- Get custom sound based on weapon type and character
+            local soundPath = MODULE.GetWeaponSelectSound(weapon:GetClass(), char) or "weapons/smg1/switch_single.wav"
+            -- Apply sound modifications
+            local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+            local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+            -- Play the sound
+            surface.PlaySound(soundPath)
+            -- Add visual effects
+            MODULE.AddWeaponSelectEffect(client, weapon)
+            -- Update weapon statistics
+            MODULE.UpdateWeaponSelectStats(client, weapon:GetClass())
+            -- Log weapon selection
+            MODULE.LogWeaponSelect(client, weapon:GetClass())
+        end
+    end
+
+```
+
+---
+
+### SWEPEditorValueUpdated
+
+#### 📋 Purpose
+Called when weapon select sound plays.
+
+#### ⏰ When Called
+When weapons are selected.
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Client
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Play default select sound
+    function MODULE:WeaponSelectSound()
+        surface.PlaySound("weapons/smg1/switch_single.wav")
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Play sound based on current weapon
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        local weapon = client:GetActiveWeapon()
+        if IsValid(weapon) then
+            local soundPath = weapon.SelectSound or "weapons/smg1/switch_single.wav"
+            surface.PlaySound(soundPath)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced weapon selection with custom sounds and effects
+    function MODULE:WeaponSelectSound()
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        local weapon = client:GetActiveWeapon()
+        local char = client:getChar()
+        if IsValid(weapon) then
+            -- Get custom sound based on weapon type and character
+            local soundPath = MODULE.GetWeaponSelectSound(weapon:GetClass(), char) or "weapons/smg1/switch_single.wav"
+            -- Apply sound modifications
+            local volume = MODULE.GetWeaponSoundVolume(char, weapon)
+            local pitch = MODULE.GetWeaponSoundPitch(char, weapon)
+            -- Play the sound
+            surface.PlaySound(soundPath)
+            -- Add visual effects
+            MODULE.AddWeaponSelectEffect(client, weapon)
+            -- Update weapon statistics
+            MODULE.UpdateWeaponSelectStats(client, weapon:GetClass())
+            -- Log weapon selection
+            MODULE.LogWeaponSelect(client, weapon:GetClass())
+        end
+    end
+
+```
+
+---
+
+### SWEPEditorValueUpdated
 
 #### 📋 Purpose
 Called when weapon select sound plays.

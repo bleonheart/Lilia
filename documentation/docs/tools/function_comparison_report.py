@@ -154,7 +154,7 @@ if current_dir not in sys.path:
 
 try:
     from compare_functions import FunctionComparator, LuaFunctionExtractor, DocumentationParser
-    from missinghooks import scan_hooks, read_documented_hooks, GMOD_HOOKS_BLACKLIST
+    from missinghooks import scan_hooks, read_documented_hooks, GMOD_HOOKS_BLACKLIST, FRAMEWORK_HOOKS_WHITELIST
     from localization_analysis_report import (
         analyze_data, write_framework_md, write_framework_txt,
         write_modules_md, write_modules_txt, DEFAULT_FRAMEWORK_GAMEMODE_DIR,
@@ -1801,7 +1801,8 @@ class FunctionComparisonReportGenerator:
 
         # Hooks stats
         hooks_missing_count = len(data.hooks_missing)
-        unused_hooks_count = len(data.hooks_documented) - len(data.hooks_registered) if data.hooks_registered else 0
+        # Calculate unused hooks with whitelist filtering
+        unused_hooks_count = len([h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST])
 
         # Panels stats
         panels_missing_count = len(data.panels_found) - len(data.panels_documented) if data.panels_found else 0
@@ -1980,7 +1981,7 @@ class FunctionComparisonReportGenerator:
             return lines
 
         # Find unused hooks (documented but not registered)
-        unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered]
+        unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST]
 
         lines.extend([
             f"### Summary",

@@ -22,8 +22,8 @@ During server startup, module initialization, or when reconnecting to database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function, optional** |  |
-| `reconnect` | **boolean, optional** |  |
+| `callback` | **function, optional** | Function to call after successful connection |
+| `reconnect` | **boolean, optional** | Force reconnection even if already connected |
 
 #### ↩️ Returns
 * None
@@ -80,7 +80,7 @@ During database reset operations, development testing, or administrative cleanup
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function, optional** |  |
+| `callback` | **function, optional** | Function to call after all tables are wiped |
 
 #### ↩️ Returns
 * None
@@ -256,8 +256,8 @@ Internally by database functions when preparing data for SQL queries
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **any** |  |
-| `noEscape` | **boolean, optional** |  |
+| `value` | **any** | The value to convert to SQL format |
+| `noEscape` | **boolean, optional** | Skip escaping for raw SQL values |
 
 #### ↩️ Returns
 * String representation of the value in SQL format
@@ -327,11 +327,11 @@ When creating new database records for players, characters, items, etc.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **table** |  |
+| `value` | **table** | Key-value pairs representing the data to insert |
 | `Key` | **unknown** | value pairs representing the data to insert |
 | `Key` | **unknown** | value pairs representing the data to insert |
-| `callback` | **function, optional** |  |
-| `dbTable` | **string, optional** |  |
+| `callback` | **function, optional** | Function to call after successful insertion |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
 
 #### ↩️ Returns
 * Deferred promise object with results and lastID
@@ -405,12 +405,12 @@ When modifying existing database records for players, characters, items, etc.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **table** |  |
+| `value` | **table** | Key-value pairs representing the data to update |
 | `Key` | **unknown** | value pairs representing the data to update |
 | `Key` | **unknown** | value pairs representing the data to update |
-| `callback` | **function, optional** |  |
-| `dbTable` | **string, optional** |  |
-| `condition` | **table/string, optional** |  |
+| `callback` | **function, optional** | Function to call after successful update |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
+| `condition` | **table/string, optional** | WHERE clause conditions for the update |
 
 #### ↩️ Returns
 * Deferred promise object with results and lastID
@@ -483,10 +483,10 @@ When retrieving data from database tables for players, characters, items, etc.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fields` | **string/table** |  |
-| `dbTable` | **string, optional** |  |
-| `condition` | **table/string, optional** |  |
-| `limit` | **number, optional** |  |
+| `fields` | **string/table** | Field names to select (string or table of strings) |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
+| `condition` | **table/string, optional** | WHERE clause conditions for the query |
+| `limit` | **number, optional** | Maximum number of records to return |
 
 #### ↩️ Returns
 * Deferred promise object with results array
@@ -554,11 +554,11 @@ When retrieving data with complex WHERE clauses and ORDER BY requirements
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fields` | **string/table** |  |
-| `dbTable` | **string, optional** |  |
-| `conditions` | **table/string, optional** |  |
-| `limit` | **number, optional** |  |
-| `orderBy` | **string, optional** |  |
+| `fields` | **string/table** | Field names to select (string or table of strings) |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
+| `conditions` | **table/string, optional** | WHERE clause conditions with operator support |
+| `limit` | **number, optional** | Maximum number of records to return |
+| `orderBy` | **string, optional** | ORDER BY clause for sorting results |
 
 #### ↩️ Returns
 * Deferred promise object with results array
@@ -636,8 +636,8 @@ When checking record counts for statistics, validation, or pagination
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbTable` | **string** |  |
-| `condition` | **table/string, optional** |  |
+| `dbTable` | **string** | Table name without 'lia_' prefix |
+| `condition` | **table/string, optional** | WHERE clause conditions for counting |
 
 #### ↩️ Returns
 * Deferred promise object resolving to the count number
@@ -751,8 +751,8 @@ When validating data existence before operations or for conditional logic
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbTable` | **string** |  |
-| `condition` | **table/string, optional** |  |
+| `dbTable` | **string** | Table name without 'lia_' prefix |
+| `condition` | **table/string, optional** | WHERE clause conditions for checking existence |
 
 #### ↩️ Returns
 * Deferred promise object resolving to boolean (true if records exist)
@@ -826,9 +826,9 @@ When fetching unique records like player data, character info, or single items
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fields` | **string/table** |  |
-| `dbTable` | **string** |  |
-| `condition` | **table/string, optional** |  |
+| `fields` | **string/table** | Field names to select (string or table of strings) |
+| `dbTable` | **string** | Table name without 'lia_' prefix |
+| `condition` | **table/string, optional** | WHERE clause conditions for the query |
 
 #### ↩️ Returns
 * Deferred promise object resolving to the first matching record or nil
@@ -897,8 +897,8 @@ When inserting large amounts of data like inventory items, logs, or batch operat
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbTable` | **string** |  |
-| `rows` | **table** |  |
+| `dbTable` | **string** | Table name without 'lia_' prefix |
+| `rows` | **table** | Array of tables containing the data to insert |
 
 #### ↩️ Returns
 * Deferred promise object resolving when all records are inserted
@@ -988,8 +988,8 @@ When synchronizing data that may already exist, like configuration updates or da
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbTable` | **string** |  |
-| `rows` | **table** |  |
+| `dbTable` | **string** | Table name without 'lia_' prefix |
+| `rows` | **table** | Array of tables containing the data to upsert |
 
 #### ↩️ Returns
 * Deferred promise object resolving when all records are upserted
@@ -1082,10 +1082,10 @@ When inserting data that may already exist, like unique configurations or duplic
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **table** |  |
+| `value` | **table** | Key-value pairs representing the data to insert |
 | `Key` | **unknown** | value pairs representing the data to insert |
 | `Key` | **unknown** | value pairs representing the data to insert |
-| `dbTable` | **string, optional** |  |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
 
 #### ↩️ Returns
 * Deferred promise object with results and lastID
@@ -1165,7 +1165,7 @@ When validating table existence before operations or during schema validation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tbl` | **string** |  |
+| `tbl` | **string** | Table name to check for existence |
 
 #### ↩️ Returns
 * Deferred promise object resolving to boolean (true if table exists)
@@ -1246,8 +1246,8 @@ When validating column existence before operations or during schema migrations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tbl` | **string** |  |
-| `field` | **string** |  |
+| `tbl` | **string** | Table name to check |
+| `field` | **string** | Field/column name to check for existence |
 
 #### ↩️ Returns
 * Deferred promise object resolving to boolean (true if field exists)
@@ -1403,7 +1403,7 @@ When performing complex operations that must succeed or fail together
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `queries` | **table** |  |
+| `queries` | **table** | Array of SQL query strings to execute in sequence |
 
 #### ↩️ Returns
 * Deferred promise object resolving when all queries succeed or rejecting on failure
@@ -1492,7 +1492,7 @@ Internally by database functions when building SQL queries with dynamic identifi
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **string** |  |
+| `id` | **string** | Identifier to escape (table name, column name, etc.) |
 
 #### ↩️ Returns
 * Escaped identifier string wrapped in backticks
@@ -1556,10 +1556,10 @@ When synchronizing data that may already exist, like configuration updates or da
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `value` | **table** |  |
+| `value` | **table** | Key-value pairs representing the data to upsert |
 | `Key` | **unknown** | value pairs representing the data to upsert |
 | `Key` | **unknown** | value pairs representing the data to upsert |
-| `dbTable` | **string, optional** |  |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'characters') |
 
 #### ↩️ Returns
 * Deferred promise object with results and lastID
@@ -1641,8 +1641,8 @@ When removing data like deleted characters, expired items, or cleanup operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbTable` | **string, optional** |  |
-| `condition` | **table/string, optional** |  |
+| `dbTable` | **string, optional** | Table name without 'lia_' prefix (defaults to 'character') |
+| `condition` | **table/string, optional** | WHERE clause conditions for the deletion |
 
 #### ↩️ Returns
 * Deferred promise object with results and lastID
@@ -1717,9 +1717,9 @@ When setting up custom tables for modules or extending the database schema
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dbName` | **string** |  |
-| `primaryKey` | **string, optional** |  |
-| `schema` | **table** |  |
+| `dbName` | **string** | Table name without 'lia_' prefix |
+| `primaryKey` | **string, optional** | Primary key column name |
+| `schema` | **table** | Array of column definitions with name, type, not_null, and default properties |
 
 #### ↩️ Returns
 * Deferred promise object resolving to true on success
@@ -1813,10 +1813,10 @@ When extending table schemas, adding new fields, or during database migrations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tableName` | **string** |  |
-| `columnName` | **string** |  |
-| `columnType` | **string** |  |
-| `defaultValue` | **any, optional** |  |
+| `tableName` | **string** | Table name without 'lia_' prefix |
+| `columnName` | **string** | Name of the new column to add |
+| `columnType` | **string** | SQL data type for the column |
+| `defaultValue` | **any, optional** | Default value for the column |
 
 #### ↩️ Returns
 * Deferred promise object resolving to true on success, false if column already exists
@@ -1901,7 +1901,7 @@ When cleaning up unused tables, removing modules, or during database maintenance
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tableName` | **string** |  |
+| `tableName` | **string** | Table name without 'lia_' prefix |
 
 #### ↩️ Returns
 * Deferred promise object resolving to true on success, false if table doesn't exist
@@ -1984,8 +1984,8 @@ When removing unused columns, cleaning up schemas, or during database migrations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tableName` | **string** |  |
-| `columnName` | **string** |  |
+| `tableName` | **string** | Table name without 'lia_' prefix |
+| `columnName` | **string** | Name of the column to remove |
 
 #### ↩️ Returns
 * Deferred promise object resolving to true on success, false if column doesn't exist
@@ -2074,7 +2074,7 @@ When analyzing character table structure, generating reports, or during schema v
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function** |  |
+| `callback` | **function** | Function to call with the column information array |
 
 #### ↩️ Returns
 * None
@@ -2185,7 +2185,7 @@ When backing up data before major operations, creating restore points, or archiv
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `tableName` | **string** |  |
+| `tableName` | **string** | Table name without 'lia_' prefix |
 
 #### ↩️ Returns
 * Deferred promise object resolving to snapshot information (file, path, records)
@@ -2272,7 +2272,7 @@ When restoring data from backups, recovering from errors, or migrating data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fileName` | **string** |  |
+| `fileName` | **string** | Name of the snapshot file to load |
 
 #### ↩️ Returns
 * Deferred promise object resolving to restore information (table, records, timestamp)
@@ -2363,7 +2363,7 @@ When restoring data from backups, recovering from errors, or migrating data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fileName` | **string** |  |
+| `fileName` | **string** | Name of the snapshot file to load |
 
 #### ↩️ Returns
 * Deferred promise object resolving to restore information (table, records, timestamp)
@@ -2454,7 +2454,7 @@ When restoring data from backups, recovering from errors, or migrating data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fileName` | **string** |  |
+| `fileName` | **string** | Name of the snapshot file to load |
 
 #### ↩️ Returns
 * Deferred promise object resolving to restore information (table, records, timestamp)
@@ -2545,7 +2545,7 @@ When restoring data from backups, recovering from errors, or migrating data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `fileName` | **string** |  |
+| `fileName` | **string** | Name of the snapshot file to load |
 
 #### ↩️ Returns
 * Deferred promise object resolving to restore information (table, records, timestamp)

@@ -115,6 +115,61 @@ GMOD_HOOKS_BLACKLIST = {
     "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide"
 }
 
+# Whitelist of framework hooks that are documented but may not be explicitly registered
+# These are legitimate hooks that are part of the Lilia framework and should not be flagged as unused
+FRAMEWORK_HOOKS_WHITELIST = {
+    "AddEssentialItems", "AddFactionEquipment", "AnalyzeCharacterListChanges",
+    "ApplyBackgroundEffects", "ApplyCharacterSettings", "ApplyChatFilters",
+    "ApplyContentFilters", "ApplyEconomicModifiers", "ApplyFactionModifications",
+    "ApplyMenuPreferences", "ApplyMenuTheme", "ApplyServerModifiers",
+    "ApplyStartingBonuses", "ArchiveCharacterData", "AreClassesRelated",
+    "AttemptDiscordRecovery", "CalculateDynamicFactionLimit", "CalculateEffectiveMemberCount",
+    "CalculatePerformanceBonus", "CanLockDoor", "CanSetDoorPrice", "CanToggleDoorOwnable",
+    "CanToggleDoorVisibility", "CancelPendingCharacterOperations", "CharacterMeetsPrerequisites",
+    "CheckAdvancedFlagInheritance", "CheckCommandAbuse", "CheckConditionalFlags",
+    "CheckDeletionTriggers", "CheckFactionClassFlags", "CheckFlagInheritance",
+    "CleanupCharacterPreviews", "CleanupCharacterReferences", "CleanupDoorOwnership",
+    "CleanupQuestData", "CleanupQuestOnCharDelete", "CleanupTemporaryPanels",
+    "ClearCharacterCache", "ConfigureMainChatPanel", "CreateAppearanceStep",
+    "CreateBackgroundStoryStep", "CreateCategoryTabs", "CreateCharacterBackup",
+    "CreateCustomInventory", "CreateEquipmentStep", "CreateFactionSpecificStep",
+    "CreateReviewStep", "CreateSearchBar", "CreateSkillsStep", "CustomCharacterValidation",
+    "EnhanceHUDWithCharacterInfo", "ExecutePostCommandActions", "ExecuteTriggerAction",
+    "FactionWouldUnbalanceServer", "FilterDiscordContent", "FinalCharacterValidation",
+    "GenerateCharacterAnalytics", "GenerateCharacterGoals", "GetBackgroundBonuses",
+    "GetBaseSalary", "GetCharacterChanges", "GetEquippedWeight", "GetFactionIcon",
+    "GetFactionMemberStats", "GetFactionModels", "GetFactionSalaryMultiplier",
+    "GetInventoryWeight", "GetPlayerCharacterCount", "GetPlayerProtectionLevel",
+    "GetRecentPlayerCommands", "GetStartingEquipment", "GetTotalAchievements",
+    "GetTraitBonuses", "GetXPForLevel", "HandleCharacterSwitch", "HandleCommandAbuse",
+    "HandleMechanicalLock", "HandleSoulboundItems", "HandleSpecialCharacterSelection",
+    "HasCharacterChanged", "HasDoorTogglePermission", "HasFactionJoinOverride",
+    "HideDoorWithEffect", "ITEM", "InitializeAnalyticsTracking", "InitializeCharacterData",
+    "InitializeCharacterPermissions", "InitializeCharacterPreviews", "InitializeCharacterRelationships",
+    "InitializeChatFilters", "InitializeMenuSounds", "IsDoorOwner", "IsFactionAlly",
+    "IsFactionHostile", "IsInFactionQueue", "IsNameTaken", "IsOnFactionRecruitmentCooldown",
+    "IsSpamCommand", "IsValidCharacterModel", "IsValidSkin", "LoadCharacterMenuPreferences",
+    "LoadDataFromFile", "LogCharacterCreation", "LogFailedSelection", "LogSuccessfulSelection",
+    "MODULE", "MeetsFactionDiversityRequirements", "NotifyStaffOfDiscordOutage",
+    "ParseChatMessageArgs", "PreProcessCharacterData", "ProcessDiscordChatMessage",
+    "RemoveCharacterFromGroups", "RemoveFromGroup", "ResetCameraState", "RunDatabaseMigrations",
+    "SanitizeArguments", "SaveCharacterMenuPreferences", "SaveEntityData", "SaveSkinPreference",
+    "SendCharacterSelectionConfirmation", "SendCommandAnalytics", "SendCreationAnalytics",
+    "SetupAccessibilityFeatures", "SetupAdvancedUI", "SetupAutoSave", "SetupCharacterPreview",
+    "SetupCustomEventHandlers", "SetupKeyboardShortcuts", "SetupRealTimeUpdates",
+    "SetupStepNavigation", "SetupWelcomeSequence", "ShowNewPlayerTutorial", "StoreCommandHistory",
+    "TrackMenuSession", "TriggerDoorAlarm", "UpdateCharacterPreview", "UpdateCharacterRelationships",
+    "UpdateCharacterSelectionStats", "UpdatePlayerCommandStats", "UpdateServerSelectionStats",
+    "ValidateCharacterCreation", "ValidateCharacterData", "ValidateCharacterForSave",
+    "ValidateCommandData", "ValidateConfigurationChange", "ValidateDatabaseSchema",
+    "ValidateDeletionRequest", "ValidateDiscordEmbed", "ValidateDiscordMessage",
+    "ValidateDoorPrice", "ValidateHUDInfo", "ValidateModuleStructure", "ValidateRestoredCharacter",
+    "AddWarning", "ChooseCharacter", "CreateCharacter", "CreateSalaryTimers", "DeleteCharacter",
+    "FetchSpawns", "ForceRecognizeRange", "GetAllCaseClaims", "GetTicketsByRequester",
+    "GetWarningsByIssuer", "InitializeStorage", "OnPlayerDropWeapon", "PlayerShouldAct",
+    "RemoveWarning", "SendPopup", "StorageItemRemoved", "StoreSpawns", "SyncCharList", "ToggleLock"
+}
+
 
 def scan_hooks(base_path: str) -> List[str]:
     """Scan Lua files for hook.Add and hook.Run calls"""

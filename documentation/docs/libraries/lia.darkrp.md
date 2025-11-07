@@ -16,8 +16,8 @@ Called when checking spawn positions, entity placement, or any position validati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `position` | **Vector** |  |
-| `entitiesToIgnore` | **table, optional** |  |
+| `position` | **Vector** | The world position to check |
+| `entitiesToIgnore` | **table, optional** | Table of entities to ignore during the check |
 
 #### ↩️ Returns
 * boolean - true if the position is empty, false otherwise
@@ -80,11 +80,11 @@ Called when spawning entities or players and the initial position is occupied
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `startPos` | **Vector** |  |
-| `entitiesToIgnore` | **table, optional** |  |
-| `maxDistance` | **number** |  |
-| `searchStep` | **number** |  |
-| `checkArea` | **Vector** |  |
+| `startPos` | **Vector** | The starting position to search from |
+| `entitiesToIgnore` | **table, optional** | Table of entities to ignore during the search |
+| `maxDistance` | **number** | Maximum distance to search from the starting position |
+| `searchStep` | **number** | Step size for the search radius |
+| `checkArea` | **Vector** | Additional area to check around each position |
 
 #### ↩️ Returns
 * Vector - The nearest empty position found, or the original position if none found
@@ -151,10 +151,10 @@ Called when sending notifications to players in DarkRP-compatible systems
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `_` | **any** |  |
-| `_` | **any** |  |
-| `message` | **string** |  |
+| `client` | **Player** | The player to send the notification to |
+| `_` | **any** | Unused parameter (DarkRP compatibility) |
+| `_` | **any** | Unused parameter (DarkRP compatibility) |
+| `message` | **string** | The localized message key to send |
 
 #### ↩️ Returns
 * nil
@@ -205,9 +205,9 @@ Called when displaying text in UI elements that need to fit within width constra
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `fontName` | **string** |  |
-| `maxLineWidth` | **number** |  |
+| `text` | **string** | The text to wrap |
+| `fontName` | **string** | The font name to use for width calculations |
+| `maxLineWidth` | **number** | The maximum width in pixels for each line |
 
 #### ↩️ Returns
 * string - The wrapped text with line breaks inserted
@@ -273,7 +273,7 @@ Called when displaying money amounts in UI or chat messages
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format |
 
 #### ↩️ Returns
 * string - The formatted currency string
@@ -328,8 +328,8 @@ Called when registering DarkRP entities for compatibility with existing addons
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `data` | **table** |  |
+| `name` | **string** | The display name of the entity |
+| `data` | **table** | Table containing entity configuration data |
 
 #### ↩️ Returns
 * nil

@@ -13717,3 +13717,235 @@ end
 ]]
 function DoModuleIncludes(path, MODULE)
 end
+
+--[=[
+    Purpose:
+        Called when an item is overridden with new properties or functions.
+
+    When Called:
+        After an item's properties, functions, or hooks have been overridden during module loading.
+
+    Parameters:
+        item (table)
+            The item table that was overridden.
+
+        overrides (table)
+            The table containing the override data that was applied.
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Log item overrides
+        function MODULE:OnItemOverridden(item, overrides)
+            print("Item " .. item.name .. " was overridden")
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Track and validate item overrides
+        function MODULE:OnItemOverridden(item, overrides)
+            -- Log the override
+            lia.log.add("Item '" .. item.uniqueID .. "' overridden with " .. table.Count(overrides) .. " properties")
+
+            -- Validate critical overrides
+            if overrides.functions then
+                self:ValidateItemFunctions(item, overrides.functions)
+            end
+
+            -- Update item cache
+            self.itemCache = self.itemCache or {}
+            self.itemCache[item.uniqueID] = true
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- Advanced: Handle complex item modifications and dependencies
+        function MODULE:OnItemOverridden(item, overrides)
+            -- Track override history
+            item.overrideHistory = item.overrideHistory or {}
+            table.insert(item.overrideHistory, {
+                timestamp = os.time(),
+                overrides = overrides,
+                source = self.name
+            })
+
+            -- Handle special override types
+            if overrides.functions then
+                self:ProcessFunctionOverrides(item, overrides.functions)
+            end
+
+            if overrides.hooks then
+                self:RegisterOverrideHooks(item, overrides.hooks)
+            end
+
+            if overrides.postHooks then
+                self:SetupPostHooks(item, overrides.postHooks)
+            end
+
+            -- Check for dependency conflicts
+            self:CheckOverrideConflicts(item, overrides)
+
+            -- Update dependent systems
+            self:UpdateItemDependencies(item)
+            self:RefreshItemUI(item.uniqueID)
+        end
+        ```
+]=]
+function OnItemOverridden(item, overrides)
+end
+
+--[=[
+    Purpose:
+        Retrieves stored data for a module.
+
+    When Called:
+        When a module needs to access its persistent data.
+
+    Parameters:
+        default (any)
+            The default value to return if no data is found.
+
+    Returns:
+        any
+            The stored data value, or the default value if no data exists.
+
+    Realm:
+        Shared
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get module configuration
+        local config = self:getData({})
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Get module settings with fallback
+        function MODULE:GetSetting(key, fallback)
+            local data = self:getData({})
+            return data[key] or fallback
+        end
+
+        -- Usage
+        local maxPlayers = self:GetSetting("maxPlayers", 32)
+        ```
+
+    High Complexity:
+        ```lua
+        -- Advanced: Complex data retrieval with validation
+        function MODULE:GetValidatedData()
+            local data = self:getData({
+                enabled = true,
+                settings = {},
+                cache = {}
+            })
+
+            -- Validate data structure
+            if not istable(data.settings) then
+                data.settings = {}
+                self:setData(data)
+            end
+
+            -- Ensure cache exists
+            if not istable(data.cache) then
+                data.cache = {}
+                self:setData(data)
+            end
+
+            return data
+        end
+        ```
+]=]
+function getData(default)
+end
+
+--[=[
+    Purpose:
+        Stores data persistently for a module.
+
+    When Called:
+        When a module needs to save persistent data across server restarts.
+
+    Parameters:
+        value (any)
+            The data value to store.
+
+        global (boolean)
+            Whether the data should be global across all maps.
+
+        ignoreMap (boolean)
+            Whether to ignore the current map when storing the data.
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Save module configuration
+        self:setData({enabled = true, version = "1.0"})
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Save settings with map-specific data
+        function MODULE:SaveSettings(settings, global)
+            self:setData(settings, global, false)
+            lia.log.add("Settings saved for module: " .. self.name)
+        end
+
+        -- Usage
+        self:SaveSettings({maxPlayers = 64, debug = true}, false)
+        ```
+
+    High Complexity:
+        ```lua
+        -- Advanced: Complex data persistence with validation and backup
+        function MODULE:SaveComplexData(data, options)
+            options = options or {}
+
+            -- Validate data before saving
+            local validationResult = self:ValidateDataStructure(data)
+            if not validationResult.valid then
+                lia.log.add("Data validation failed: " .. validationResult.error, FLAG_ERROR)
+                return false
+            end
+
+            -- Create backup of current data
+            local currentData = self:getData()
+            if currentData then
+                self.backupData = table.Copy(currentData)
+            end
+
+            -- Save with specified options
+            self:setData(data, options.global or false, options.ignoreMap or false)
+
+            -- Log the save operation
+            lia.log.add("Complex data saved for " .. self.name ..
+                       " (global: " .. tostring(options.global) ..
+                       ", ignoreMap: " .. tostring(options.ignoreMap) .. ")")
+
+            -- Trigger post-save hooks
+            hook.Run("ModuleDataSaved", self.name, data, options)
+
+            return true
+        end
+        ```
+]=]
+function setData(value, global, ignoreMap)
+end

@@ -22,8 +22,8 @@ During initialization or when defining custom item rarities for vendors
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `color` | **Color** |  |
+| `name` | **string** | The name of the rarity (e.g., "common", "rare", "legendary") |
+| `color` | **Color** | The color associated with this rarity |
 
 #### ↩️ Returns
 * nil
@@ -78,8 +78,8 @@ During initialization or when defining vendor templates with specific item sets
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `items` | **table** |  |
+| `name` | **string** | The name of the preset |
+| `items` | **table** | Table containing item types as keys and their configuration as values |
 
 #### ↩️ Returns
 * nil
@@ -138,7 +138,7 @@ When applying presets to vendors or checking if a preset exists
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | The name of the preset to retrieve |
 
 #### ↩️ Returns
 * table or nil - The preset data table if found, nil otherwise

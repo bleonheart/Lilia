@@ -22,8 +22,8 @@ During framework initialization, module loading, or when manually including file
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `realm` | **string, optional** |  |
+| `path` | **string** | The file path to include (e.g., "lilia/gamemode/core/libraries/util.lua") |
+| `realm` | **string, optional** | The realm to load the file in ("client", "server", "shared") |
 
 #### ↩️ Returns
 * None
@@ -78,10 +78,10 @@ During framework initialization to load entire directories of files
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dir` | **string** |  |
-| `raw` | **boolean, optional** |  |
-| `deep` | **boolean, optional** |  |
-| `realm` | **string, optional** |  |
+| `dir` | **string** | The directory path to scan for Lua files |
+| `raw` | **boolean, optional** | If true, uses the exact path; if false, resolves relative to gamemode/schema |
+| `deep` | **boolean, optional** | If true, recursively searches subdirectories |
+| `realm` | **string, optional** | The realm to load files in ("client", "server", "shared") |
 
 #### ↩️ Returns
 * None
@@ -133,10 +133,10 @@ During framework initialization to load files with automatic realm detection
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `dir` | **string** |  |
-| `raw` | **boolean, optional** |  |
-| `recursive` | **boolean, optional** |  |
-| `forceRealm` | **string, optional** |  |
+| `dir` | **string** | The directory path to scan for Lua files |
+| `raw` | **boolean, optional** | If true, uses the exact path; if false, resolves relative to gamemode/schema |
+| `recursive` | **boolean, optional** | If true, recursively searches subdirectories |
+| `forceRealm` | **string, optional** | Forces all files to be loaded in this realm instead of auto-detection |
 
 #### ↩️ Returns
 * None
@@ -244,7 +244,7 @@ When critical errors occur during framework operation or module loading
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `msg` | **string** |  |
+| `msg` | **string** | The error message to display |
 
 #### ↩️ Returns
 * None
@@ -309,7 +309,7 @@ When non-critical issues occur that should be brought to attention
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `msg` | **string** |  |
+| `msg` | **string** | The warning message to display |
 
 #### ↩️ Returns
 * None
@@ -373,7 +373,7 @@ When providing general information about framework operations or status updates
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `msg` | **string** |  |
+| `msg` | **string** | The informational message to display |
 
 #### ↩️ Returns
 * None
@@ -433,8 +433,8 @@ During framework initialization to report progress of different bootstrap phases
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `section` | **string** |  |
-| `msg` | **string** |  |
+| `section` | **string** | The bootstrap section name (e.g., "Database", "Modules", "HotReload") |
+| `msg` | **string** | The bootstrap message to display |
 
 #### ↩️ Returns
 * None
@@ -492,7 +492,7 @@ When logging important events or sending notifications to Discord channels
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `embed` | **table** |  |
+| `embed` | **table** | Discord embed object containing message data (title, description, color, fields, etc.) |
 
 #### ↩️ Returns
 * None
@@ -576,7 +576,7 @@ During framework initialization to register all custom entities, weapons, and to
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
+| `path` | **string** | The base path containing entity folders (e.g., "lilia/gamemode/entities") |
 
 #### ↩️ Returns
 * None
@@ -641,7 +641,7 @@ During framework initialization to register all custom entities, weapons, and to
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
+| `path` | **string** | The base path containing entity folders (e.g., "lilia/gamemode/entities") |
 
 #### ↩️ Returns
 * None
@@ -706,7 +706,7 @@ Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `isReload` | **boolean** |  |
+| `isReload` | **boolean** | true if this is a hot reload, false if this is initial gamemode startup |
 
 #### ↩️ Returns
 * void
@@ -738,7 +738,7 @@ Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `isReload` | **boolean** |  |
+| `isReload` | **boolean** | true if this is a hot reload, false if this is initial gamemode startup |
 
 #### ↩️ Returns
 * void
@@ -770,7 +770,7 @@ Called during initial gamemode startup (GM:Initialize) or during hot reloads (GM
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `isReload` | **boolean** |  |
+| `isReload` | **boolean** | true if this is a hot reload, false if this is initial gamemode startup |
 
 #### ↩️ Returns
 * void

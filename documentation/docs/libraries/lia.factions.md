@@ -22,8 +22,8 @@ During faction initialization, module loading, or when creating custom factions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `data` | **table** |  |
+| `uniqueID` | **string** | Unique identifier for the faction |
+| `data` | **table** | Faction data containing name, desc, color, models, etc. |
 
 #### ↩️ Returns
 * index (number)
@@ -99,7 +99,7 @@ Automatically called during faction registration, or manually when adding models
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `models` | **table** |  |
+| `models` | **table** | Table of model data (strings or tables with model paths) |
 
 #### ↩️ Returns
 * nil
@@ -159,7 +159,7 @@ During gamemode initialization to load faction files from modules or custom dire
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `directory` | **string** |  |
+| `directory` | **string** | Path to the directory containing faction files |
 
 #### ↩️ Returns
 * nil
@@ -217,7 +217,7 @@ When you need to get faction data by either team index or unique ID
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `identifier` | **number/string** |  |
+| `identifier` | **number/string** | Either the faction's team index or unique ID |
 
 #### ↩️ Returns
 * faction (table)
@@ -283,7 +283,7 @@ When you need to convert a faction's unique ID to its team index
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
+| `uniqueID` | **string** | The faction's unique identifier |
 
 #### ↩️ Returns
 * index (number)
@@ -348,7 +348,7 @@ When you need to retrieve all classes associated with a faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * classes (table)
@@ -422,7 +422,7 @@ When you need to retrieve all players belonging to a faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * players (table)
@@ -495,7 +495,7 @@ When you need to know how many players are in a faction without getting the actu
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * count (number)
@@ -561,8 +561,8 @@ When you need to check if a faction is part of a group of related factions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
-| `categoryFactions` | **table** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
+| `categoryFactions` | **table** | Table of faction identifiers to check against |
 
 #### ↩️ Returns
 * isCategory (boolean)
@@ -635,11 +635,11 @@ For backward compatibility with older faction systems or when creating simple fa
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `index` | **number** |  |
-| `name` | **string** |  |
-| `color` | **Color** |  |
-| `default` | **boolean** |  |
-| `models` | **table** |  |
+| `index` | **number** | The team index for the faction |
+| `name` | **string** | The faction's display name |
+| `color` | **Color** | The faction's team color |
+| `default` | **boolean** | Whether this is a default faction |
+| `models` | **table** | Optional table of models for the faction |
 
 #### ↩️ Returns
 * faction (table)
@@ -752,7 +752,7 @@ When you need to retrieve the model categories available for a faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `teamName` | **string** |  |
+| `teamName` | **string** | The faction's unique ID |
 
 #### ↩️ Returns
 * categories (table)
@@ -823,8 +823,8 @@ When you need to retrieve models from a specific category of a faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `teamName` | **string** |  |
-| `category` | **string** |  |
+| `teamName` | **string** | The faction's unique ID |
+| `category` | **string** | The category name to get models from |
 
 #### ↩️ Returns
 * models (table)
@@ -898,7 +898,7 @@ When you need to find the default class that players spawn as in a faction
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **string/number** |  |
+| `id` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * defaultClass (table)
@@ -979,7 +979,7 @@ When checking if a player can access a faction based on whitelist status
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * hasWhitelist (boolean)
@@ -1048,7 +1048,7 @@ When checking if a faction has whitelist restrictions on the server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string/number** |  |
+| `faction` | **string/number** | The faction's unique ID or team index |
 
 #### ↩️ Returns
 * hasWhitelist (boolean)

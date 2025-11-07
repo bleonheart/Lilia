@@ -22,8 +22,8 @@ When defining custom colors or extending the color palette
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `color` | **table** |  |
+| `name` | **string** | The name identifier for the color |
+| `color` | **table** | Color table with r, g, b, a values or array format |
 
 #### ↩️ Returns
 * nil
@@ -75,11 +75,11 @@ When creating color variations or adjusting existing colors
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `color` | **Color** |  |
-| `rOffset` | **number** |  |
-| `gOffset` | **number** |  |
-| `bOffset` | **number** |  |
-| `aOffset` | **number, optional** |  |
+| `color` | **Color** | The base color to adjust |
+| `rOffset` | **number** | Red channel offset (-255 to 255) |
+| `gOffset` | **number** | Green channel offset (-255 to 255) |
+| `bOffset` | **number** | Blue channel offset (-255 to 255) |
+| `aOffset` | **number, optional** | Alpha channel offset (-255 to 255) |
 
 #### ↩️ Returns
 * Color - New adjusted color with clamped values
@@ -134,8 +134,8 @@ When creating darker variations of colors for shadows or depth
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `color` | **Color** |  |
-| `factor` | **number, optional** |  |
+| `color` | **Color** | The color to darken |
+| `factor` | **number, optional** | Darkening factor (0-1), defaults to 0.1 |
 
 #### ↩️ Returns
 * Color - New darkened color with preserved alpha
@@ -337,8 +337,8 @@ When switching themes or initializing the color system
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string, optional** |  |
-| `useTransition` | **boolean, optional** |  |
+| `themeName` | **string, optional** | Name of theme to apply, defaults to current theme |
+| `useTransition` | **boolean, optional** | Whether to use smooth transition animation |
 
 #### ↩️ Returns
 * nil
@@ -452,7 +452,7 @@ When previewing theme changes or testing transitions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `themeName` | **string** |  |
+| `themeName` | **string** | Name of theme to test transition to |
 
 #### ↩️ Returns
 * nil
@@ -510,7 +510,7 @@ When applying themes with transition animation enabled
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | Name of the theme to transition to |
 
 #### ↩️ Returns
 * nil
@@ -574,7 +574,7 @@ When validating color data or processing theme transitions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `v` | **any** |  |
+| `v` | **any** | Value to check if it's a color |
 
 #### ↩️ Returns
 * boolean - True if value is a valid color, false otherwise
@@ -707,9 +707,9 @@ During theme transitions to smoothly blend between colors
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frac` | **number** |  |
-| `col1` | **Color** |  |
-| `col2` | **Color** |  |
+| `frac` | **number** | Interpolation factor/speed multiplier |
+| `col1` | **Color** | Starting color |
+| `col2` | **Color** | Target color |
 
 #### ↩️ Returns
 * Color - Interpolated color between col1 and col2
@@ -775,9 +775,9 @@ During theme transitions to smoothly blend between colors
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `frac` | **number** |  |
-| `col1` | **Color** |  |
-| `col2` | **Color** |  |
+| `frac` | **number** | Interpolation factor/speed multiplier |
+| `col1` | **Color** | Starting color |
+| `col2` | **Color** | Target color |
 
 #### ↩️ Returns
 * Color - Interpolated color between col1 and col2
@@ -843,8 +843,8 @@ When creating custom themes or extending the theme system
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `themeData` | **table** |  |
+| `name` | **string** | Name of the theme to register |
+| `themeData` | **table** | Table containing color definitions for the theme |
 
 #### ↩️ Returns
 * nil

@@ -22,9 +22,9 @@ When a character needs to be accessed by ID, either from server or client
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
-| `client` | **Player** |  |
-| `callback` | **function** |  |
+| `charID` | **number** | The unique identifier of the character |
+| `client` | **Player** | The player requesting the character (optional) |
+| `callback` | **function** | Function to call when character is loaded (optional) |
 
 #### ↩️ Returns
 * Character object if found/loaded, nil otherwise
@@ -149,7 +149,7 @@ Before attempting to access a character to avoid unnecessary loading
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
+| `charID` | **number** | The unique identifier of the character to check |
 
 #### ↩️ Returns
 * Boolean - true if character is loaded, false otherwise
@@ -215,8 +215,8 @@ When a character is loaded from database or created, to make it available in mem
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
-| `character` | **Character** |  |
+| `id` | **number** | The unique identifier of the character |
+| `character` | **Character** | The character object to add to cache |
 
 #### ↩️ Returns
 * nil
@@ -279,7 +279,7 @@ When a character needs to be unloaded from memory (cleanup, deletion, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
+| `id` | **number** | The unique identifier of the character to remove |
 
 #### ↩️ Returns
 * nil
@@ -346,10 +346,10 @@ When creating a new character instance from database data or character creation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `data` | **table** |  |
-| `id` | **number** |  |
-| `client` | **Player** |  |
-| `steamID` | **string** |  |
+| `data` | **table** | Character data containing all character variables |
+| `id` | **number** | The unique identifier for the character (optional) |
+| `client` | **Player** | The player who owns this character (optional) |
+| `steamID` | **string** | Steam ID of the character owner (optional, used when client is invalid) |
 
 #### ↩️ Returns
 * Character object with proper metatable and initialized variables
@@ -429,9 +429,9 @@ When you need to add custom behavior when a character variable changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `varName` | **string** |  |
-| `hookName` | **string** |  |
-| `func` | **function** |  |
+| `varName` | **string** | The name of the character variable to hook |
+| `hookName` | **string** | The name/identifier for this hook |
+| `func` | **function** | The function to call when the variable changes |
 
 #### ↩️ Returns
 * nil
@@ -514,8 +514,8 @@ During gamemode initialization to define character variables and their behavior
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `data` | **table** |  |
+| `key` | **string** | The unique identifier for the character variable |
+| `data` | **table** | Configuration table containing variable properties and callbacks |
 
 #### ↩️ Returns
 * nil
@@ -622,8 +622,8 @@ When you need to access character data directly from the database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
-| `key` | **string** |  |
+| `charID` | **number** | The unique identifier of the character |
+| `key` | **string** | Specific data key to retrieve (optional) |
 
 #### ↩️ Returns
 * Table of character data or specific value if key provided
@@ -687,8 +687,8 @@ When you need unprocessed character data or want to handle decoding manually
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
-| `key` | **string** |  |
+| `charID` | **number** | The unique identifier of the character |
+| `key` | **string** | Specific data key to retrieve (optional) |
 
 #### ↩️ Returns
 * Raw decoded data or specific value if key provided
@@ -755,7 +755,7 @@ When you need to find which player is using a specific character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ID` | **number** |  |
+| `ID` | **number** | The unique identifier of the character |
 
 #### ↩️ Returns
 * Player object if found, nil otherwise
@@ -823,7 +823,7 @@ When you need to find a character using the player's Steam ID
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `steamID` | **string** |  |
+| `steamID` | **string** | Steam ID of the character owner (supports both formats) |
 
 #### ↩️ Returns
 * Character object if found, nil otherwise
@@ -892,7 +892,7 @@ When you need to determine the appropriate color for a player's team/class
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player to get the team color for |
 
 #### ↩️ Returns
 * Color object representing the team/class color
@@ -956,8 +956,8 @@ When a player creates a new character through character creation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `data` | **table** |  |
-| `callback` | **function** |  |
+| `data` | **table** | Character data containing name, description, faction, model, etc. |
+| `callback` | **function** | Function to call when character creation is complete |
 
 #### ↩️ Returns
 * nil (uses callback for result)
@@ -1063,9 +1063,9 @@ When a player connects and needs their characters loaded
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `callback` | **function** |  |
-| `id` | **number** |  |
+| `client` | **Player** | The player to restore characters for |
+| `callback` | **function** | Function to call when restoration is complete |
+| `id` | **number** | Specific character ID to restore (optional) |
 
 #### ↩️ Returns
 * nil (uses callback for result)
@@ -1160,7 +1160,7 @@ When a player disconnects to free up memory and save data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player to clean up characters for |
 
 #### ↩️ Returns
 * nil
@@ -1239,8 +1239,8 @@ When a character needs to be permanently removed (admin action, etc.)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | **number** |  |
-| `client` | **Player** |  |
+| `id` | **number** | The unique identifier of the character to delete |
+| `client` | **Player** | The player who owns the character (optional) |
 
 #### ↩️ Returns
 * nil
@@ -1320,7 +1320,7 @@ When you need to check if a character is banned
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
+| `charID` | **number** | The unique identifier of the character |
 
 #### ↩️ Returns
 * Number representing ban timestamp (0 if not banned)
@@ -1394,9 +1394,9 @@ When character data needs to be saved to the database
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
-| `field` | **string** |  |
-| `value` | **any** |  |
+| `charID` | **number** | The unique identifier of the character |
+| `field` | **string** | The field name to set |
+| `value` | **any** | The value to set for the field |
 
 #### ↩️ Returns
 * Boolean indicating success
@@ -1477,7 +1477,7 @@ When a character needs to be removed from memory to free up resources
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
+| `charID` | **number** | The unique identifier of the character to unload |
 
 #### ↩️ Returns
 * Boolean indicating success
@@ -1565,8 +1565,8 @@ When a player switches characters or to free up memory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `activeCharID` | **number** |  |
+| `client` | **Player** | The player to unload unused characters for |
+| `activeCharID` | **number** | The ID of the character to keep loaded |
 
 #### ↩️ Returns
 * Number of characters unloaded
@@ -1641,9 +1641,9 @@ When a specific character needs to be loaded on demand
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `charID` | **number** |  |
-| `client` | **Player** |  |
-| `callback` | **function** |  |
+| `charID` | **number** | The unique identifier of the character to load |
+| `client` | **Player** | The player requesting the character (optional) |
+| `callback` | **function** | Function to call when loading is complete |
 
 #### ↩️ Returns
 * nil (uses callback for result)

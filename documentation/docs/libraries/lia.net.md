@@ -22,8 +22,8 @@ During initialization or when setting up network message handlers
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `callback` | **function** |  |
+| `name` | **string** | The name identifier for the network message |
+| `callback` | **function** | Function to call when this message is received |
 
 #### ↩️ Returns
 * boolean - true if registration successful, false if invalid arguments
@@ -83,8 +83,8 @@ When you need to send data from server to client(s) or client to server
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `target` | **Player/table/nil** |  |
+| `name` | **string** | The registered message name to send |
+| `target` | **Player/table/nil** | Target player(s) - nil broadcasts to all, table sends to multiple players |
 
 #### ↩️ Returns
 * boolean - true if message sent successfully, false if invalid name or target
@@ -142,8 +142,8 @@ During initialization to set up handlers for receiving large data transfers
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `netStr` | **string** |  |
-| `callback` | **function** |  |
+| `netStr` | **string** | The network string identifier for the message |
+| `callback` | **function** | Function to call when all chunks are received and data is reconstructed |
 
 #### ↩️ Returns
 * nil
@@ -217,10 +217,10 @@ When you need to send large amounts of data that exceed normal network limits
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targets` | **Player/table/nil** |  |
-| `netStr` | **string** |  |
-| `tbl` | **table** |  |
-| `chunkSize` | **number, optional** |  |
+| `targets` | **Player/table/nil** | Target player(s) - nil sends to all players |
+| `netStr` | **string** | The network string identifier for the message |
+| `tbl` | **table** | The table data to send |
+| `chunkSize` | **number, optional** | Size of each chunk in bytes (default: 2048, 512 during reload) |
 
 #### ↩️ Returns
 * nil
@@ -311,10 +311,10 @@ When you need to send large amounts of data that exceed normal network limits
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targets` | **Player/table/nil** |  |
-| `netStr` | **string** |  |
-| `tbl` | **table** |  |
-| `chunkSize` | **number, optional** |  |
+| `targets` | **Player/table/nil** | Target player(s) - nil sends to all players |
+| `netStr` | **string** | The network string identifier for the message |
+| `tbl` | **table** | The table data to send |
+| `chunkSize` | **number, optional** | Size of each chunk in bytes (default: 2048, 512 during reload) |
 
 #### ↩️ Returns
 * nil
@@ -405,10 +405,10 @@ When you need to send large amounts of data that exceed normal network limits
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targets` | **Player/table/nil** |  |
-| `netStr` | **string** |  |
-| `tbl` | **table** |  |
-| `chunkSize` | **number, optional** |  |
+| `targets` | **Player/table/nil** | Target player(s) - nil sends to all players |
+| `netStr` | **string** | The network string identifier for the message |
+| `tbl` | **table** | The table data to send |
+| `chunkSize` | **number, optional** | Size of each chunk in bytes (default: 2048, 512 during reload) |
 
 #### ↩️ Returns
 * nil
@@ -499,10 +499,10 @@ When you need to send large amounts of data that exceed normal network limits
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targets` | **Player/table/nil** |  |
-| `netStr` | **string** |  |
-| `tbl` | **table** |  |
-| `chunkSize` | **number, optional** |  |
+| `targets` | **Player/table/nil** | Target player(s) - nil sends to all players |
+| `netStr` | **string** | The network string identifier for the message |
+| `tbl` | **table** | The table data to send |
+| `chunkSize` | **number, optional** | Size of each chunk in bytes (default: 2048, 512 during reload) |
 
 #### ↩️ Returns
 * nil
@@ -593,10 +593,10 @@ When you need to send large amounts of data that exceed normal network limits
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targets` | **Player/table/nil** |  |
-| `netStr` | **string** |  |
-| `tbl` | **table** |  |
-| `chunkSize` | **number, optional** |  |
+| `targets` | **Player/table/nil** | Target player(s) - nil sends to all players |
+| `netStr` | **string** | The network string identifier for the message |
+| `tbl` | **table** | The table data to send |
+| `chunkSize` | **number, optional** | Size of each chunk in bytes (default: 2048, 512 during reload) |
 
 #### ↩️ Returns
 * nil

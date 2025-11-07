@@ -22,9 +22,9 @@ When modules or external systems need to add custom log types
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `logType` | **string** |  |
-| `func` | **function** |  |
-| `category` | **string** |  |
+| `logType` | **string** | Unique identifier for the log type |
+| `func` | **function** | Function that formats the log message, receives client and additional parameters |
+| `category` | **string** | Category name for organizing log entries |
 
 #### ↩️ Returns
 * None
@@ -80,8 +80,8 @@ Internally by lia.log.add() or when manually retrieving log messages
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `logType` | **string** |  |
+| `client` | **Player** | The player who triggered the log event (can be nil for system events) |
+| `logType` | **string** | The log type identifier to format |
 
 #### ↩️ Returns
 * result (string)
@@ -143,8 +143,8 @@ When any significant player action or system event occurs that needs logging
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `logType` | **string** |  |
+| `client` | **Player** | The player who triggered the log event (can be nil for system events) |
+| `logType` | **string** | The log type identifier to use for formatting |
 
 #### ↩️ Returns
 * None

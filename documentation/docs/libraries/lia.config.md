@@ -22,11 +22,11 @@ During gamemode initialization, module loading, or when registering new config o
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `name` | **string** |  |
-| `value` | **any** |  |
-| `callback` | **function, optional** |  |
-| `data` | **table** |  |
+| `key` | **string** | Unique identifier for the configuration option |
+| `name` | **string** | Display name for the configuration option |
+| `value` | **any** | Default value for the configuration option |
+| `callback` | **function, optional** | Function to call when the option value changes |
+| `data` | **table** | Configuration metadata including type, description, category, and constraints |
 
 #### ↩️ Returns
 * nil
@@ -96,7 +96,7 @@ When building UI elements for configuration options, particularly dropdown menus
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The configuration key to get options for |
 
 #### ↩️ Returns
 * table - Array of available options for the configuration
@@ -157,8 +157,8 @@ During configuration updates, module reloads, or when default values need to be 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `key` | **string** | The configuration key to update the default for |
+| `value` | **any** | The new default value to set |
 
 #### ↩️ Returns
 * nil
@@ -213,9 +213,9 @@ During initialization, module loading, or when bypassing normal configuration up
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `noSave` | **boolean, optional** |  |
+| `key` | **string** | The configuration key to set |
+| `value` | **any** | The value to set |
+| `noSave` | **boolean, optional** | If true, prevents automatic saving of the configuration |
 
 #### ↩️ Returns
 * nil
@@ -269,8 +269,8 @@ When users change configuration values through UI, commands, or programmatic upd
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `key` | **string** | The configuration key to set |
+| `value` | **any** | The value to set |
 
 #### ↩️ Returns
 * nil
@@ -332,8 +332,8 @@ When reading configuration values for gameplay logic, UI updates, or module func
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** | The configuration key to retrieve |
+| `default` | **any, optional** | Fallback value if configuration doesn't exist |
 
 #### ↩️ Returns
 * any - The current configuration value, default value, or provided fallback
@@ -513,7 +513,7 @@ When a client connects, when configurations change, or when manually syncing con
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player, optional** |  |
+| `client` | **Player, optional** | Specific client to send to, or nil to send to all clients |
 
 #### ↩️ Returns
 * nil

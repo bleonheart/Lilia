@@ -22,7 +22,7 @@ During weapon initialization on server startup, or when syncing weapon data
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `class` | **string** |  |
+| `class` | **string** | The weapon class name to load data for (e.g., "weapon_pistol") |
 
 #### ↩️ Returns
 * None - Data is loaded asynchronously and applied to the weapon
@@ -61,7 +61,7 @@ Server
                     for k, v in pairs(saveData) do
                         lia.swepeditor.adjustValue(weaponClass, k, v)
                     end
-                    hook.Run("DWeaponsValueUpdated", weaponClass, saveData)
+                    hook.Run("SWEPEditorValueUpdated", weaponClass, saveData)
                 else
                     print("[SWEP Editor] Failed to parse data for " .. weaponClass)
                 end
@@ -88,7 +88,7 @@ When a player joins the server, when weapon data is updated, or when syncing dat
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ply` | **Player, optional** |  |
+| `ply` | **Player, optional** | The player to sync data with. If nil, syncs with all players |
 
 #### ↩️ Returns
 * None - Data is sent asynchronously via network messages
@@ -168,9 +168,9 @@ When applying SWEP editor changes or hardcoded overrides to weapon properties
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **string** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `weapon` | **string** | The weapon class name to modify |
+| `key` | **string** | The hierarchical key path (e.g., "Primary | Damage" or "Primary | RPM") |
+| `value` | **any** | The value to set for the specified key |
 
 #### ↩️ Returns
 * None
@@ -253,8 +253,8 @@ When storing weapon default values or creating override copies to prevent refere
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `obj` | **table** |  |
-| `seen` | **table, optional** |  |
+| `obj` | **table** | The table to copy |
+| `seen` | **table, optional** | Internal parameter for tracking circular references |
 
 #### ↩️ Returns
 * table - A deep copy of the original table
@@ -333,8 +333,8 @@ During weapon initialization or when setting up weapon modifications
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weaponClass` | **string** |  |
-| `overrideTable` | **table** |  |
+| `weaponClass` | **string** | The weapon class name to override (e.g., "weapon_pistol") |
+| `overrideTable` | **table** | Table containing the override values in nested structure |
 
 #### ↩️ Returns
 * boolean - True if override was applied successfully, false otherwise
@@ -476,8 +476,8 @@ During weapon initialization or when setting up weapon modifications
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weaponClass` | **string** |  |
-| `overrideTable` | **table** |  |
+| `weaponClass` | **string** | The weapon class name to override (e.g., "weapon_pistol") |
+| `overrideTable` | **table** | Table containing the override values in nested structure |
 
 #### ↩️ Returns
 * boolean - True if override was applied successfully, false otherwise

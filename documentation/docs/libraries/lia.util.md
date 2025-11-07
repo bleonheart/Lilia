@@ -22,8 +22,8 @@ When you need to find players in a specific rectangular area for operations like
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `mins` | **Vector** |  |
-| `maxs` | **Vector** |  |
+| `mins` | **Vector** | The minimum corner coordinates of the box |
+| `maxs` | **Vector** | The maximum corner coordinates of the box |
 
 #### ↩️ Returns
 * Table of player entities found within the box area
@@ -80,7 +80,7 @@ When you need to locate a specific player using their Steam identification for o
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `steamID` | **string** |  |
+| `steamID` | **string** | The Steam ID (STEAM_0:0:123456) or Steam ID 64 to search for |
 
 #### ↩️ Returns
 * Player entity if found with a valid character, nil otherwise
@@ -141,8 +141,8 @@ When you need to find players in a circular area for proximity-based operations 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `origin` | **Vector** |  |
-| `radius` | **number** |  |
+| `origin` | **Vector** | The center point of the sphere |
+| `radius` | **number** | The radius of the sphere in units |
 
 #### ↩️ Returns
 * Table of player entities found within the spherical area
@@ -208,8 +208,8 @@ When you need to locate a specific player using flexible identification methods 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `identifier` | **string** |  |
+| `client` | **Player** | The player requesting the search (for notifications and special selectors) |
+| `identifier` | **string** | The identifier to search for (Steam ID, Steam ID 64, player name, "^" for self, "@" for looked-at player) |
 
 #### ↩️ Returns
 * Player entity if found, nil otherwise with appropriate error notifications
@@ -277,7 +277,7 @@ When you need to locate dropped items or spawned entities created by a particula
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose created items should be found |
 
 #### ↩️ Returns
 * Table of item entities created by the specified player
@@ -336,8 +336,8 @@ When you need to locate specific types of items created by a player for targeted
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `class` | **string** |  |
+| `client` | **Player** | The player whose created items should be found |
+| `class` | **string** | The item class/type to filter by (e.g., "weapon_ar2", "item_healthkit") |
 
 #### ↩️ Returns
 * Table of item entities of the specified class created by the player
@@ -397,8 +397,8 @@ When you need to locate entities spawned by a player for management, cleanup, or
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `class` | **string** |  |
+| `client` | **Player** | The player whose entities should be found |
+| `class` | **string** | Optional class name to filter entities (e.g., "prop_physics", "npc_zombie") |
 
 #### ↩️ Returns
 * Table of entities created by or associated with the specified player
@@ -462,8 +462,8 @@ When you need to compare strings with flexible matching for search functionality
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `a` | **string** |  |
-| `b` | **string** |  |
+| `a` | **string** | The first string to compare |
+| `b` | **string** | The second string to compare (the search pattern) |
 
 #### ↩️ Returns
 * Boolean indicating if the strings match using any of the comparison methods
@@ -582,7 +582,7 @@ When you need to locate a player using their Steam ID 64 for database operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `SteamID64` | **string** |  |
+| `SteamID64` | **string** | The Steam ID 64 to search for |
 
 #### ↩️ Returns
 * Player entity if found, nil otherwise
@@ -641,7 +641,7 @@ When you need to locate a player using their Steam ID for admin actions, bans, o
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `SteamID` | **string** |  |
+| `SteamID` | **string** | The Steam ID to search for (STEAM_0:0:123456 format) |
 
 #### ↩️ Returns
 * Player entity if found, nil otherwise
@@ -705,10 +705,10 @@ When you need to validate if an entity can be placed at a location for spawning,
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pos` | **Vector** |  |
-| `mins` | **Vector** |  |
-| `maxs` | **Vector** |  |
-| `filter` | **Entity/Table** |  |
+| `pos` | **Vector** | The position to check for entity placement |
+| `mins` | **Vector** | Optional minimum bounding box coordinates (defaults to Vector(16, 16, 0)) |
+| `maxs` | **Vector** | Optional maximum bounding box coordinates (defaults to mins value) |
+| `filter` | **Entity/Table** | Optional entity or table of entities to ignore in collision detection |
 
 #### ↩️ Returns
 * Boolean indicating if the position is clear (true) or obstructed (false)
@@ -774,8 +774,8 @@ When you need to find players in a circular area for proximity-based operations 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `pos` | **Vector** |  |
-| `dist` | **number** |  |
+| `pos` | **Vector** | The center position to check from |
+| `dist` | **number** | The radius distance to check within |
 
 #### ↩️ Returns
 * Table of player entities found within the specified radius
@@ -843,7 +843,7 @@ When you need to format strings with named parameters for localization, templati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `format` | **string** |  |
+| `format` | **string** | The format string containing {placeholder} patterns |
 
 #### ↩️ Returns
 * String with placeholders replaced by provided values
@@ -905,8 +905,8 @@ When you need to load and cache materials for rendering, UI elements, or visual 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `materialPath` | **string** |  |
-| `materialParameters` | **string** |  |
+| `materialPath` | **string** | The file path to the material (e.g., "materials/effects/blur.vmt") |
+| `materialParameters` | **string** | Optional parameters for material creation |
 
 #### ↩️ Returns
 * IMaterial object for the specified material path
@@ -970,8 +970,8 @@ When you need to locate faction information for player assignment, permissions, 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `name` | **string** |  |
+| `client` | **Player** | The player requesting the faction (for error notifications) |
+| `name` | **string** | The faction name or unique ID to search for |
 
 #### ↩️ Returns
 * Faction table if found, nil otherwise with error notification
@@ -1037,8 +1037,8 @@ When you need to locate faction information for player assignment, permissions, 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `name` | **string** |  |
+| `client` | **Player** | The player requesting the faction (for error notifications) |
+| `name` | **string** | The faction name or unique ID to search for |
 
 #### ↩️ Returns
 * Faction table if found, nil otherwise with error notification
@@ -1104,8 +1104,8 @@ When you need to create random character names for NPCs, testing, or procedural 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `firstNames` | **table** |  |
-| `lastNames` | **table** |  |
+| `firstNames` | **table** | Optional table of first names to choose from |
+| `lastNames` | **table** | Optional table of last names to choose from |
 
 #### ↩️ Returns
 * String containing a randomly generated full name (FirstName LastName)
@@ -1171,12 +1171,12 @@ When you need to display tabular data to a player, such as inventories, player l
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `title` | **string** |  |
-| `columns` | **table** |  |
-| `data` | **table** |  |
-| `options` | **table** |  |
-| `characterID` | **number** |  |
+| `client` | **Player** | The player to send the table UI to |
+| `title` | **string** | The title of the table window |
+| `columns` | **table** | Array of column definitions with name, width, and other properties |
+| `data` | **table** | Array of row data to display in the table |
+| `options` | **table** | Optional configuration options for the table UI |
+| `characterID` | **number** | Optional character ID for character-specific data |
 
 #### ↩️ Returns
 * Nothing (sends network message to client)
@@ -1260,12 +1260,12 @@ When you need to find valid locations to spawn entities, NPCs, or items around a
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `filter` | **Entity/Table** |  |
-| `spacing` | **number** |  |
-| `size` | **number** |  |
-| `height` | **number** |  |
-| `tolerance` | **number** |  |
+| `entity` | **Entity** | The central entity to search around |
+| `filter` | **Entity/Table** | Optional entity or table of entities to ignore in collision detection |
+| `spacing` | **number** | Distance between each tested position (default: 32) |
+| `size` | **number** | Grid size to search in (default: 3, meaning -3 to +3 in both x and y) |
+| `height` | **number** | Height of the area to check for collisions (default: 36) |
+| `tolerance` | **number** | Additional clearance above ground (default: 5) |
 
 #### ↩️ Returns
 * Table of valid Vector positions sorted by distance from the entity
@@ -1338,13 +1338,13 @@ When you need to create smooth entrance animations for UI panels, menus, or dial
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `target_w` | **number** |  |
-| `target_h` | **number** |  |
-| `duration` | **number** |  |
-| `alpha_dur` | **number** |  |
-| `callback` | **function** |  |
-| `scale_factor` | **number** |  |
+| `panel` | **Panel** | The DPanel to animate |
+| `target_w` | **number** | Target width for the animation |
+| `target_h` | **number** | Target height for the animation |
+| `duration` | **number** | Duration of size/position animation in seconds (default: 0.18) |
+| `alpha_dur` | **number** | Duration of alpha animation in seconds (default: same as duration) |
+| `callback` | **function** | Optional callback function to execute when animation completes |
+| `scale_factor` | **number** | Scale factor for initial size (default: 0.8) |
 
 #### ↩️ Returns
 * Nothing (modifies panel directly)
@@ -1419,7 +1419,7 @@ When you need to ensure menus and panels stay visible and don't overlap with imp
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The DPanel whose position should be clamped |
 
 #### ↩️ Returns
 * Nothing (modifies panel position directly)
@@ -1519,14 +1519,14 @@ When you need to create gradient backgrounds for UI elements, panels, or visual 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `_x` | **number** |  |
-| `_y` | **number** |  |
-| `_w` | **number** |  |
-| `_h` | **number** |  |
-| `direction` | **number** |  |
-| `color_shadow` | **Color** |  |
-| `radius` | **number** |  |
-| `flags` | **number** |  |
+| `_x` | **number** | X position to draw the gradient |
+| `_y` | **number** | Y position to draw the gradient |
+| `_w` | **number** | Width of the gradient area |
+| `_h` | **number** | Height of the gradient area |
+| `direction` | **number** | Gradient direction (1=up, 2=down, 3=left, 4=right) |
+| `color_shadow` | **Color** | Color for the gradient shadow effect |
+| `radius` | **number** | Corner radius for rounded gradients (default: 0) |
+| `flags` | **number** | Material flags for rendering |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)
@@ -1593,9 +1593,9 @@ When you need to display text that might be too long for a UI element, ensuring 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `width` | **number** |  |
-| `font` | **string** |  |
+| `text` | **string** | The text to wrap |
+| `width` | **number** | Maximum width in pixels for the text |
+| `font` | **string** | Font to use for text measurement (default: "LiliaFont.16") |
 
 #### ↩️ Returns
 * Table of wrapped text lines, Number: Maximum width of any line
@@ -1676,10 +1676,10 @@ When you need to create a blurred background effect for UI elements like menus o
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `amount` | **number** |  |
-| `_` | **any** |  |
-| `alpha` | **number** |  |
+| `panel` | **Panel** | The panel to draw blur behind |
+| `amount` | **number** | Intensity of the blur effect (default: 5) |
+| `_` | **any** | Unused parameter (legacy) |
+| `alpha` | **number** | Alpha transparency of the blur effect (default: 255) |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)
@@ -1760,11 +1760,11 @@ When you need to create a darker, more opaque blurred background effect for UI e
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
-| `amount` | **number** |  |
-| `passes` | **number** |  |
-| `alpha` | **number** |  |
-| `darkAlpha` | **number** |  |
+| `panel` | **Panel** | The panel to draw blur behind |
+| `amount` | **number** | Intensity of the blur effect (default: 6) |
+| `passes` | **number** | Number of blur passes for quality (default: 5, minimum: 1) |
+| `alpha` | **number** | Alpha transparency of the blur effect (default: 255) |
+| `darkAlpha` | **number** | Alpha transparency of the dark overlay (default: 220) |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)
@@ -1840,13 +1840,13 @@ When you need to apply blur effects to specific screen areas for HUD elements or
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `x` | **number** |  |
-| `y` | **number** |  |
-| `w` | **number** |  |
-| `h` | **number** |  |
-| `amount` | **number** |  |
-| `passes` | **number** |  |
-| `alpha` | **number** |  |
+| `x` | **number** | X position to draw the blur |
+| `y` | **number** | Y position to draw the blur |
+| `w` | **number** | Width of the blur area |
+| `h` | **number** | Height of the blur area |
+| `amount` | **number** | Intensity of the blur effect (default: 5) |
+| `passes` | **number** | Number of blur passes (default: 0.2) |
+| `alpha` | **number** | Alpha transparency of the blur effect (default: 255) |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)
@@ -1906,11 +1906,11 @@ When you need to display tabular data with sorting, actions, and interactive opt
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `columns` | **table** |  |
-| `data` | **table** |  |
-| `options` | **table** |  |
-| `charID` | **number** |  |
+| `title` | **string** | Title for the table window |
+| `columns` | **table** | Array of column definitions |
+| `data` | **table** | Array of row data to display |
+| `options` | **table** | Optional action buttons and configurations |
+| `charID` | **number** | Character ID for character-specific data |
 
 #### ↩️ Returns
 * Frame, ListView: The created frame and list view objects
@@ -1971,8 +1971,8 @@ When you need to present a list of options or actions to the user in a popup men
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `options` | **table** |  |
+| `title` | **string** | Title for the options menu |
+| `options` | **table** | Array of option objects or key-value pairs with name and callback properties |
 
 #### ↩️ Returns
 * Frame: The created options menu frame
@@ -2046,10 +2046,10 @@ When you need to display information or labels above entities in the 3D world
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ent` | **Entity** |  |
-| `text` | **string** |  |
-| `posY` | **number** |  |
-| `alphaOverride` | **number** |  |
+| `ent` | **Entity** | The entity to draw text above |
+| `text` | **string** | The text to display |
+| `posY` | **number** | Vertical offset for text positioning (default: 0) |
+| `alphaOverride` | **number** | Optional alpha override for manual control |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)
@@ -2124,10 +2124,10 @@ When you need to display contextual information at the location the player is lo
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `posY` | **number** |  |
-| `alphaOverride` | **number** |  |
-| `maxDist` | **number** |  |
+| `text` | **string** | The text to display |
+| `posY` | **number** | Vertical offset for text positioning (default: 0) |
+| `alphaOverride` | **number** | Optional alpha override for manual control |
+| `maxDist` | **number** | Maximum distance to display text (default: 380) |
 
 #### ↩️ Returns
 * Nothing (draws directly to screen)

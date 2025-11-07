@@ -173,9 +173,9 @@ When triggering player animations for roleplay, emotes, or visual effects
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `a` | **number** |  |
-| `b` | **number** |  |
-| `c` | **boolean** |  |
+| `a` | **number** | Gesture slot (0-15) |
+| `b` | **number** | Gesture weight (0-255) |
+| `c` | **boolean** | Whether to restart the gesture |
 
 #### ↩️ Returns
 * None
@@ -227,7 +227,7 @@ When validating player permissions for commands, features, or access control
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilegeName` | **string** |  |
+| `privilegeName` | **string** | The name of the privilege to check |
 
 #### ↩️ Returns
 * boolean - True if player has the privilege, false otherwise
@@ -381,8 +381,8 @@ When implementing proximity-based features, interaction systems, or distance val
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `radius` | **number** |  |
-| `entity` | **Entity** |  |
+| `radius` | **number** | The maximum distance to check |
+| `entity` | **Entity** | The entity to check distance against |
 
 #### ↩️ Returns
 * boolean - True if player is within radius, false otherwise
@@ -437,8 +437,8 @@ When implementing area-of-effect systems, proximity detection, or entity scannin
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `radius` | **number** |  |
-| `playerOnly` | **boolean, optional** |  |
+| `radius` | **number** | The radius to search within |
+| `playerOnly` | **boolean, optional** | If true, only returns player entities |
 
 #### ↩️ Returns
 * table - Array of entities within the radius
@@ -762,7 +762,7 @@ When implementing interaction systems, targeting, or line-of-sight detection
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `distance` | **number, optional** |  |
+| `distance` | **number, optional** | Maximum trace distance (default: 96) |
 
 #### ↩️ Returns
 * Entity|nil - The traced entity if found, nil otherwise
@@ -822,7 +822,7 @@ When implementing collision detection, surface analysis, or spatial queries
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `distance` | **number, optional** |  |
+| `distance` | **number, optional** | Maximum trace distance (default: 200) |
 
 #### ↩️ Returns
 * table - Trace result containing hit information, position, and entity data
@@ -886,7 +886,7 @@ When implementing precise targeting, interaction systems, or line-of-sight detec
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `distance` | **number, optional** |  |
+| `distance` | **number, optional** | Maximum distance to check (default: 150) |
 
 #### ↩️ Returns
 * Entity|nil - The entity if within distance, nil otherwise
@@ -946,8 +946,8 @@ When displaying messages, alerts, or status updates to the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
-| `notifType` | **string, optional** |  |
+| `message` | **string** | The message to display |
+| `notifType` | **string, optional** | The type of notification (default: "default") |
 
 #### ↩️ Returns
 * None
@@ -1000,8 +1000,8 @@ When displaying translated messages, alerts, or status updates to the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
-| `notifType` | **string, optional** |  |
+| `message` | **string** | The localization key for the message |
+| `notifType` | **string, optional** | The type of notification (default: "default") |
 
 #### ↩️ Returns
 * None
@@ -1050,7 +1050,7 @@ When displaying error messages, failures, or critical alerts to the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The error message to display |
 
 #### ↩️ Returns
 * None
@@ -1104,7 +1104,7 @@ When displaying warning messages, cautions, or important alerts to the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The warning message to display |
 
 #### ↩️ Returns
 * None
@@ -1157,7 +1157,7 @@ When displaying informational messages, tips, or general updates to the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The informational message to display |
 
 #### ↩️ Returns
 * None
@@ -1207,7 +1207,7 @@ When displaying success messages, achievements, or positive feedback to the play
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The success message to display |
 
 #### ↩️ Returns
 * None
@@ -1258,7 +1258,7 @@ When displaying financial transactions, currency changes, or economic updates to
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The money-related message to display |
 
 #### ↩️ Returns
 * None
@@ -1310,7 +1310,7 @@ When displaying administrative messages, system alerts, or admin-specific inform
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `message` | **string** |  |
+| `message` | **string** | The admin message to display |
 
 #### ↩️ Returns
 * None
@@ -1359,7 +1359,7 @@ When displaying translated error messages, failures, or critical alerts to the p
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the error message |
 
 #### ↩️ Returns
 * None
@@ -1413,7 +1413,7 @@ When displaying translated warning messages, cautions, or important alerts to th
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the warning message |
 
 #### ↩️ Returns
 * None
@@ -1467,7 +1467,7 @@ When displaying translated informational messages, tips, or general updates to t
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the informational message |
 
 #### ↩️ Returns
 * None
@@ -1517,7 +1517,7 @@ When displaying translated success messages, achievements, or positive feedback 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the success message |
 
 #### ↩️ Returns
 * None
@@ -1568,7 +1568,7 @@ When displaying translated financial transactions, currency changes, or economic
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the money-related message |
 
 #### ↩️ Returns
 * None
@@ -1619,7 +1619,7 @@ When displaying translated administrative messages, system alerts, or admin-spec
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
+| `key` | **string** | The localization key for the admin message |
 
 #### ↩️ Returns
 * None
@@ -1668,7 +1668,7 @@ When validating vendor editing permissions, implementing vendor management syste
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `vendor` | **Entity** |  |
+| `vendor` | **Entity** | The vendor entity to check edit permissions for |
 
 #### ↩️ Returns
 * boolean - True if player can edit the vendor, false otherwise
@@ -1886,7 +1886,7 @@ When validating faction access, implementing whitelist systems, or character cre
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `faction` | **string** |  |
+| `faction` | **string** | The faction unique ID to check whitelist for |
 
 #### ↩️ Returns
 * boolean - True if player has whitelist access, false otherwise
@@ -1998,7 +1998,7 @@ When implementing DarkRP compatibility, accessing player money, or legacy system
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `var` | **string** |  |
+| `var` | **string** | The variable name to get (currently only "money" is supported) |
 
 #### ↩️ Returns
 * number|nil - The money amount if var is "money", nil otherwise
@@ -2111,7 +2111,7 @@ When validating purchases, implementing economic systems, or checking financial 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to check if player can afford |
 
 #### ↩️ Returns
 * boolean - True if player can afford the amount, false otherwise
@@ -2173,8 +2173,8 @@ When validating skill requirements, implementing skill-based features, or charac
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `skill` | **string** |  |
-| `level` | **number** |  |
+| `skill` | **string** | The skill name to check |
+| `level` | **number** | The minimum skill level required |
 
 #### ↩️ Returns
 * boolean - True if player has the required skill level, false otherwise
@@ -2238,7 +2238,7 @@ When validating complex skill requirements, implementing multi-skill features, o
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `requiredSkillLevels` | **table** |  |
+| `requiredSkillLevels` | **table** | Table of skill names and required levels {skill = level, ...} |
 
 #### ↩️ Returns
 * boolean - True if player meets all requirements, false otherwise
@@ -2302,10 +2302,10 @@ When implementing cutscenes, animations, or scripted sequences for the player
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `sequenceName` | **string** |  |
-| `callback` | **function, optional** |  |
-| `time` | **number, optional** |  |
-| `noFreeze` | **boolean, optional** |  |
+| `sequenceName` | **string** | The name of the animation sequence to play |
+| `callback` | **function, optional** | Function to call when sequence completes |
+| `time` | **number, optional** | Duration of the sequence (default: sequence duration) |
+| `noFreeze` | **boolean, optional** | Whether to freeze the player during sequence |
 
 #### ↩️ Returns
 * None
@@ -2451,7 +2451,7 @@ When granting character flags, implementing flag-based permissions, or character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags to give to the character |
 
 #### ↩️ Returns
 * None
@@ -2507,7 +2507,7 @@ When removing character flags, implementing flag-based permissions, or character
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags to take from the character |
 
 #### ↩️ Returns
 * None
@@ -2563,8 +2563,8 @@ When implementing custom animations, bone manipulation, or visual effects for th
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `active` | **boolean** |  |
-| `boneData` | **table** |  |
+| `active` | **boolean** | Whether the animation is active |
+| `boneData` | **table** | Table of bone names and angles {boneName = angle, ...} |
 
 #### ↩️ Returns
 * None
@@ -2673,10 +2673,10 @@ When implementing navigation systems, quest objectives, or location guidance for
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `vector` | **Vector** |  |
-| `logo` | **string, optional** |  |
-| `onReach` | **function, optional** |  |
+| `name` | **string** | The name of the waypoint |
+| `vector` | **Vector** | The position of the waypoint |
+| `logo` | **string, optional** | The material path for the waypoint icon |
+| `onReach` | **function, optional** | Function to call when waypoint is reached |
 
 #### ↩️ Returns
 * None
@@ -2728,8 +2728,8 @@ When accessing player data storage, implementing data management, or retrieving 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `default` | **any, optional** |  |
+| `key` | **string** | The data key to retrieve |
+| `default` | **any, optional** | The default value to return if key doesn't exist |
 
 #### ↩️ Returns
 * any - The data value or default if not found
@@ -2785,7 +2785,7 @@ When validating flag-based permissions, implementing access control, or characte
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `flags` | **string** |  |
+| `flags` | **string** | The flags to check for (any one flag will return true) |
 
 #### ↩️ Returns
 * boolean - True if player has any of the specified flags, false otherwise
@@ -2845,7 +2845,7 @@ When implementing time-based features, veteran rewards, or play time validation
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `time` | **number** |  |
+| `time` | **number** | The minimum play time required in seconds |
 
 #### ↩️ Returns
 * boolean - True if player's play time is greater than the specified time, false otherwise
@@ -2902,11 +2902,11 @@ When implementing interactive menus, choice systems, or user input dialogs for t
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `subTitle` | **string** |  |
-| `options` | **table** |  |
-| `limit` | **number, optional** |  |
-| `callback` | **function, optional** |  |
+| `title` | **string** | The title of the options dialog |
+| `subTitle` | **string** | The subtitle or description of the options |
+| `options` | **table** | Array of option strings to choose from |
+| `limit` | **number, optional** | Maximum number of options that can be selected (default: 1) |
+| `callback` | **function, optional** | Function to call when player makes a selection |
 
 #### ↩️ Returns
 * None
@@ -2968,10 +2968,10 @@ When implementing text input systems, name entry, or string-based user input for
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `subTitle` | **string** |  |
-| `callback` | **function** |  |
-| `default` | **string, optional** |  |
+| `title` | **string** | The title of the string input dialog |
+| `subTitle` | **string** | The subtitle or description of the input |
+| `callback` | **function** | Function to call when player submits the string |
+| `default` | **string, optional** | Default value to pre-fill in the input field |
 
 #### ↩️ Returns
 * deferred|nil - A deferred object if no callback provided, nil otherwise
@@ -3033,9 +3033,9 @@ When implementing complex input systems, command interfaces, or multi-parameter 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `argTypes` | **table** |  |
-| `callback` | **function** |  |
+| `title` | **string** | The title of the arguments input dialog |
+| `argTypes` | **table** | Array of argument type specifications |
+| `callback` | **function** | Function to call when player submits the arguments |
 
 #### ↩️ Returns
 * deferred|nil - A deferred object if no callback provided, nil otherwise
@@ -3105,11 +3105,11 @@ When implementing yes/no dialogs, confirmation prompts, or binary choice systems
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `question` | **string** |  |
-| `option1` | **string** |  |
-| `option2` | **string** |  |
-| `manualDismiss` | **boolean, optional** |  |
-| `callback` | **function, optional** |  |
+| `question` | **string** | The question to ask the player |
+| `option1` | **string** | The first option (usually "Yes" or "Accept") |
+| `option2` | **string** | The second option (usually "No" or "Cancel") |
+| `manualDismiss` | **boolean, optional** | Whether the player can manually dismiss the dialog |
+| `callback` | **function, optional** | Function to call when player makes a choice |
 
 #### ↩️ Returns
 * None
@@ -3174,8 +3174,8 @@ When implementing custom action menus, button interfaces, or interactive dialogs
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `buttons` | **table** |  |
+| `title` | **string** | The title of the button dialog |
+| `buttons` | **table** | Array of button data {text = "Button Text", callback = function() end} or {text, callback} |
 
 #### ↩️ Returns
 * None
@@ -3247,10 +3247,10 @@ When implementing selection menus, choice systems, or dropdown interfaces for th
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `title` | **string** |  |
-| `subTitle` | **string** |  |
-| `options` | **table** |  |
-| `callback` | **function, optional** |  |
+| `title` | **string** | The title of the dropdown dialog |
+| `subTitle` | **string** | The subtitle or description of the selection |
+| `options` | **table** | Array of option strings to choose from |
+| `callback` | **function, optional** | Function to call when player makes a selection |
 
 #### ↩️ Returns
 * None
@@ -3440,7 +3440,7 @@ When a player equips a new PAC accessory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `partID` | **string** |  |
+| `partID` | **string** | The unique identifier of the PAC part to add |
 
 #### ↩️ Returns
 * None
@@ -3515,7 +3515,7 @@ When a player unequips a PAC accessory
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `partID` | **string** |  |
+| `partID` | **string** | The unique identifier of the PAC part to remove |
 
 #### ↩️ Returns
 * None
@@ -3668,7 +3668,7 @@ When implementing stamina recovery, rest systems, or character healing for the p
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of stamina to restore |
 
 #### ↩️ Returns
 * None
@@ -3724,7 +3724,7 @@ When implementing stamina usage, movement costs, or action requirements for the 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of stamina to consume |
 
 #### ↩️ Returns
 * None
@@ -3786,7 +3786,7 @@ When implementing economic systems, rewards, or financial transactions for the p
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to add |
 
 #### ↩️ Returns
 * boolean - True if money was added successfully, false otherwise
@@ -3843,7 +3843,7 @@ When implementing economic systems, penalties, or financial transactions for the
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The amount of money to take |
 
 #### ↩️ Returns
 * None
@@ -3906,7 +3906,7 @@ When initializing player data, loading saved information, or database operations
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `callback` | **function, optional** |  |
+| `callback` | **function, optional** | Function to call when data is loaded |
 
 #### ↩️ Returns
 * None
@@ -4011,10 +4011,10 @@ When storing player data, implementing data management, or updating player infor
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `noNetworking` | **boolean, optional** |  |
-| `noSave` | **boolean, optional** |  |
+| `key` | **string** | The data key to set |
+| `value` | **any** | The value to store |
+| `noNetworking` | **boolean, optional** | Whether to skip networking the change |
+| `noSave` | **boolean, optional** | Whether to skip saving to database |
 
 #### ↩️ Returns
 * None
@@ -4063,9 +4063,9 @@ When implementing administrative actions, moderation systems, or player punishme
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `reason` | **string, optional** |  |
-| `duration` | **number, optional** |  |
-| `banner` | **Player, optional** |  |
+| `reason` | **string, optional** | The reason for the ban (default: generic reason) |
+| `duration` | **number, optional** | The duration of the ban in seconds (0 for permanent) |
+| `banner` | **Player, optional** | The player who issued the ban |
 
 #### ↩️ Returns
 * None
@@ -4115,9 +4115,9 @@ When implementing player actions, progress bars, or timed activities for the pla
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `time` | **number, optional** |  |
-| `callback` | **function, optional** |  |
+| `text` | **string** | The action text to display |
+| `time` | **number, optional** | The duration of the action in seconds |
+| `callback` | **function, optional** | Function to call when action completes |
 
 #### ↩️ Returns
 * None
@@ -4171,11 +4171,11 @@ When implementing interaction systems, examination mechanics, or focused actions
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `callback` | **function** |  |
-| `time` | **number** |  |
-| `onCancel` | **function, optional** |  |
-| `distance` | **number, optional** |  |
+| `entity` | **Entity** | The entity to stare at |
+| `callback` | **function** | Function to call when action completes |
+| `time` | **number** | The duration to stare at the entity |
+| `onCancel` | **function, optional** | Function to call if action is cancelled |
+| `distance` | **number, optional** | Maximum distance to check (default: 96) |
 
 #### ↩️ Returns
 * None
@@ -4376,8 +4376,8 @@ When implementing death systems, ragdoll creation, or player state changes
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `freeze` | **boolean, optional** |  |
-| `isDead` | **boolean, optional** |  |
+| `freeze` | **boolean, optional** | Whether to freeze the ragdoll |
+| `isDead` | **boolean, optional** | Whether the player is dead (affects ragdoll storage) |
 
 #### ↩️ Returns
 * Entity - The created ragdoll entity
@@ -4432,10 +4432,10 @@ When implementing knockdown systems, unconsciousness, or player state management
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `state` | **boolean** |  |
-| `baseTime` | **number, optional** |  |
-| `getUpGrace` | **number, optional** |  |
-| `getUpMessage` | **string, optional** |  |
+| `state` | **boolean** | Whether to ragdoll the player (true) or stand them up (false) |
+| `baseTime` | **number, optional** | Base time for ragdoll duration (default: 10) |
+| `getUpGrace` | **number, optional** | Grace period for getting up |
+| `getUpMessage` | **string, optional** | Message to display when getting up (default: "Waking up") |
 
 #### ↩️ Returns
 * None
@@ -4536,8 +4536,8 @@ When updating player state, implementing networked properties, or when other pla
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `key` | **string** | The network variable key |
+| `value` | **any** | The value to set |
 
 #### ↩️ Returns
 * None

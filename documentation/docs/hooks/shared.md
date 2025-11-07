@@ -22,7 +22,7 @@ When displaying currency amounts in UI, chat messages, or any text output.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format. |
 
 #### ↩️ Returns
 * string
@@ -97,7 +97,7 @@ When displaying currency amounts in UI, chat messages, or any text output.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format. |
 
 #### ↩️ Returns
 * string
@@ -172,7 +172,7 @@ When displaying currency amounts in UI, chat messages, or any text output.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format. |
 
 #### ↩️ Returns
 * string
@@ -247,7 +247,7 @@ When displaying currency amounts in UI, chat messages, or any text output.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The numeric amount to format. |
 
 #### ↩️ Returns
 * string
@@ -322,10 +322,10 @@ During character creation process.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `data` | **table** |  |
-| `newData` | **table** |  |
-| `originalData` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `data` | **table** | The character creation data. |
+| `newData` | **table** | The adjusted data. |
+| `originalData` | **table** | The original unmodified data. |
 
 #### ↩️ Returns
 * nil
@@ -435,10 +435,10 @@ During character creation process.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `data` | **table** |  |
-| `newData` | **table** |  |
-| `originalData` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `data` | **table** | The character creation data. |
+| `newData` | **table** | The adjusted data. |
+| `originalData` | **table** | The original unmodified data. |
 
 #### ↩️ Returns
 * nil
@@ -548,10 +548,10 @@ During character creation process.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `data` | **table** |  |
-| `newData` | **table** |  |
-| `originalData` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `data` | **table** | The character creation data. |
+| `newData` | **table** | The adjusted data. |
+| `originalData` | **table** | The original unmodified data. |
 
 #### ↩️ Returns
 * nil
@@ -661,10 +661,10 @@ During character creation process.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `data` | **table** |  |
-| `newData` | **table** |  |
-| `originalData` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `data` | **table** | The character creation data. |
+| `newData` | **table** | The adjusted data. |
+| `originalData` | **table** | The original unmodified data. |
 
 #### ↩️ Returns
 * nil
@@ -774,9 +774,9 @@ When PAC3 part data is being processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `id` | **string** |  |
-| `data` | **table** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `id` | **string** | The PAC part ID. |
+| `data` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -909,9 +909,9 @@ When PAC3 part data is being processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `id` | **string** |  |
-| `data` | **table** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `id` | **string** | The PAC part ID. |
+| `data` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -1044,9 +1044,9 @@ When PAC3 part data is being processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `id` | **string** |  |
-| `data` | **table** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `id` | **string** | The PAC part ID. |
+| `data` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -1179,9 +1179,9 @@ When PAC3 part data is being processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `id` | **string** |  |
-| `data` | **table** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `id` | **string** | The PAC part ID. |
+| `data` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -1314,8 +1314,8 @@ When calculating stamina changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `offset` | **number** |  |
+| `client` | **Player** | The player whose stamina is being adjusted. |
+| `offset` | **number** | The stamina offset value. |
 
 #### ↩️ Returns
 * nil
@@ -1465,8 +1465,8 @@ When calculating stamina changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `offset` | **number** |  |
+| `client` | **Player** | The player whose stamina is being adjusted. |
+| `offset` | **number** | The stamina offset value. |
 
 #### ↩️ Returns
 * nil
@@ -1616,8 +1616,8 @@ When calculating stamina changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `offset` | **number** |  |
+| `client` | **Player** | The player whose stamina is being adjusted. |
+| `offset` | **number** | The stamina offset value. |
 
 #### ↩️ Returns
 * nil
@@ -1767,8 +1767,8 @@ When calculating stamina changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `offset` | **number** |  |
+| `client` | **Player** | The player whose stamina is being adjusted. |
+| `offset` | **number** | The stamina offset value. |
 
 #### ↩️ Returns
 * nil
@@ -1918,8 +1918,8 @@ When a bag inventory has been initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2025,8 +2025,8 @@ When a bag inventory has been initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2132,8 +2132,8 @@ When a bag inventory has been initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2239,8 +2239,8 @@ When a bag inventory has been initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2346,8 +2346,8 @@ When a bag inventory is being removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2458,8 +2458,8 @@ When a bag inventory is being removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2570,8 +2570,8 @@ When a bag inventory is being removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2682,8 +2682,8 @@ When a bag inventory is being removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `bagItem` | **Item** |  |
-| `inventory` | **Inventory** |  |
+| `bagItem` | **Item** | The bag item. |
+| `inventory` | **Inventory** | The bag's inventory. |
 
 #### ↩️ Returns
 * nil
@@ -2794,7 +2794,7 @@ When attempting to display character information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | The character name. |
 
 #### ↩️ Returns
 * boolean
@@ -2949,7 +2949,7 @@ When attempting to display character information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | The character name. |
 
 #### ↩️ Returns
 * boolean
@@ -3104,7 +3104,7 @@ When attempting to display character information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | The character name. |
 
 #### ↩️ Returns
 * boolean
@@ -3259,7 +3259,7 @@ When attempting to display character information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
+| `name` | **string** | The character name. |
 
 #### ↩️ Returns
 * boolean
@@ -3414,8 +3414,8 @@ When a player attempts to access a vendor.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `vendor` | **Entity** |  |
+| `activator` | **Player** | The player attempting access. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * boolean
@@ -3570,8 +3570,8 @@ When a player attempts to access a vendor.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `vendor` | **Entity** |  |
+| `activator` | **Player** | The player attempting access. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * boolean
@@ -3726,8 +3726,8 @@ When a player attempts to access a vendor.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `vendor` | **Entity** |  |
+| `activator` | **Player** | The player attempting access. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * boolean
@@ -3882,8 +3882,8 @@ When a player attempts to access a vendor.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `vendor` | **Entity** |  |
+| `activator` | **Player** | The player attempting access. |
+| `vendor` | **Entity** | The vendor entity. |
 
 #### ↩️ Returns
 * boolean
@@ -4038,8 +4038,8 @@ When a player attempts to pick up money.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `moneyEntity` | **Entity** |  |
+| `activator` | **Player** | The player attempting to pick up money. |
+| `moneyEntity` | **Entity** | The money entity. |
 
 #### ↩️ Returns
 * boolean
@@ -4205,8 +4205,8 @@ When a player attempts to pick up money.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `moneyEntity` | **Entity** |  |
+| `activator` | **Player** | The player attempting to pick up money. |
+| `moneyEntity` | **Entity** | The money entity. |
 
 #### ↩️ Returns
 * boolean
@@ -4372,8 +4372,8 @@ When a player attempts to pick up money.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `moneyEntity` | **Entity** |  |
+| `activator` | **Player** | The player attempting to pick up money. |
+| `moneyEntity` | **Entity** | The money entity. |
 
 #### ↩️ Returns
 * boolean
@@ -4539,8 +4539,8 @@ When a player attempts to pick up money.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `activator` | **Player** |  |
-| `moneyEntity` | **Entity** |  |
+| `activator` | **Player** | The player attempting to pick up money. |
+| `moneyEntity` | **Entity** | The money entity. |
 
 #### ↩️ Returns
 * boolean
@@ -4706,7 +4706,7 @@ When stamina values need to be calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose stamina is being calculated. |
 
 #### ↩️ Returns
 * number
@@ -4803,7 +4803,7 @@ When stamina values need to be calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose stamina is being calculated. |
 
 #### ↩️ Returns
 * number
@@ -4900,7 +4900,7 @@ When stamina values need to be calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose stamina is being calculated. |
 
 #### ↩️ Returns
 * number
@@ -4997,7 +4997,7 @@ When stamina values need to be calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose stamina is being calculated. |
 
 #### ↩️ Returns
 * number
@@ -5094,10 +5094,10 @@ When server configuration is modified through admin commands or interfaces.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key that was changed. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -5222,10 +5222,10 @@ When server configuration is modified through admin commands or interfaces.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key that was changed. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -5350,10 +5350,10 @@ When server configuration is modified through admin commands or interfaces.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key that was changed. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -5478,10 +5478,10 @@ When server configuration is modified through admin commands or interfaces.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key that was changed. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -5606,10 +5606,10 @@ When server configuration is modified through admin commands or interfaces.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key that was changed. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -5734,10 +5734,10 @@ When chat messages are being processed before display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player sending the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * string, string, boolean
@@ -5838,10 +5838,10 @@ When chat messages are being processed before display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player sending the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * string, string, boolean
@@ -5942,10 +5942,10 @@ When chat messages are being processed before display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player sending the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * string, string, boolean
@@ -6046,10 +6046,10 @@ When chat messages are being processed before display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player sending the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * string, string, boolean
@@ -6150,10 +6150,10 @@ When chat messages are being processed before display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player sending the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * string, string, boolean
@@ -6664,7 +6664,7 @@ When setting up character list columns.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `columns` | **table** |  |
+| `columns` | **table** | Table of column definitions. |
 
 #### ↩️ Returns
 * nil
@@ -6887,7 +6887,7 @@ When setting up character list columns.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `columns` | **table** |  |
+| `columns` | **table** | Table of column definitions. |
 
 #### ↩️ Returns
 * nil
@@ -7110,7 +7110,7 @@ When setting up character list columns.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `columns` | **table** |  |
+| `columns` | **table** | Table of column definitions. |
 
 #### ↩️ Returns
 * nil
@@ -7333,7 +7333,7 @@ When setting up character list columns.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `columns` | **table** |  |
+| `columns` | **table** | Table of column definitions. |
 
 #### ↩️ Returns
 * nil
@@ -7556,7 +7556,7 @@ When setting up character list columns.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `columns` | **table** |  |
+| `columns` | **table** | Table of column definitions. |
 
 #### ↩️ Returns
 * nil
@@ -7779,8 +7779,8 @@ When creating character list entries.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entry` | **table** |  |
-| `row` | **Panel** |  |
+| `entry` | **table** | The character entry data. |
+| `row` | **Panel** | The row panel. |
 
 #### ↩️ Returns
 * nil
@@ -7979,8 +7979,8 @@ When creating character list entries.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entry` | **table** |  |
-| `row` | **Panel** |  |
+| `entry` | **table** | The character entry data. |
+| `row` | **Panel** | The row panel. |
 
 #### ↩️ Returns
 * nil
@@ -8179,8 +8179,8 @@ When creating character list entries.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entry` | **table** |  |
-| `row` | **Panel** |  |
+| `entry` | **table** | The character entry data. |
+| `row` | **Panel** | The row panel. |
 
 #### ↩️ Returns
 * nil
@@ -8379,8 +8379,8 @@ When creating character list entries.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entry` | **table** |  |
-| `row` | **Panel** |  |
+| `entry` | **table** | The character entry data. |
+| `row` | **Panel** | The row panel. |
 
 #### ↩️ Returns
 * nil
@@ -8579,9 +8579,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -8782,9 +8782,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -8985,9 +8985,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -9188,9 +9188,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -9391,9 +9391,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -9594,9 +9594,9 @@ When displaying character list information.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `entry` | **table** |  |
-| `stored` | **table** |  |
+| `client` | **Player** | The player viewing the list. |
+| `entry` | **table** | The character entry. |
+| `stored` | **table** | Stored character data. |
 
 #### ↩️ Returns
 * nil
@@ -9797,7 +9797,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -9923,7 +9923,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10049,7 +10049,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10175,7 +10175,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10301,7 +10301,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10427,7 +10427,7 @@ After character list data is loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `newCharList` | **table** |  |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10553,8 +10553,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10715,8 +10715,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -10877,8 +10877,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -11039,8 +11039,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -11201,8 +11201,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -11363,8 +11363,8 @@ When character list changes.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `oldCharList` | **table** |  |
-| `newCharList` | **table** |  |
+| `oldCharList` | **table** | The previous character list. |
+| `newCharList` | **table** | The new character list. |
 
 #### ↩️ Returns
 * nil
@@ -11525,7 +11525,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -11628,7 +11628,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -11731,7 +11731,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -11834,7 +11834,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -12261,7 +12261,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12355,7 +12355,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12449,7 +12449,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12543,7 +12543,7 @@ When the character selection menu is opened.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The character menu panel. |
 
 #### ↩️ Returns
 * nil
@@ -12637,7 +12637,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -12722,7 +12722,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -12807,7 +12807,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -12892,7 +12892,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -12977,7 +12977,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -13077,7 +13077,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -13177,7 +13177,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -13277,7 +13277,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -13377,7 +13377,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -13478,7 +13478,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -13579,7 +13579,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -13680,7 +13680,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -13781,7 +13781,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -13847,7 +13847,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -13913,7 +13913,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -13979,7 +13979,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -14045,10 +14045,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -14133,10 +14133,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -14221,10 +14221,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -14309,10 +14309,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -14397,7 +14397,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14479,7 +14479,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14561,7 +14561,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14643,7 +14643,7 @@ When the chatbox UI is initialized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `panel` | **Panel** |  |
+| `panel` | **Panel** | The chatbox panel. |
 
 #### ↩️ Returns
 * nil
@@ -14725,7 +14725,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -14791,7 +14791,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -14857,7 +14857,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -14923,7 +14923,7 @@ When text is added to the chat display.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `markup` | **string** |  |
+| `markup` | **string** | The markup text to display. |
 
 #### ↩️ Returns
 * nil
@@ -14989,10 +14989,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -15077,10 +15077,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -15165,10 +15165,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -15253,10 +15253,10 @@ When chat messages are processed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `chatType` | **string** |  |
-| `message` | **string** |  |
-| `anonymous` | **boolean** |  |
+| `client` | **Player** | The player who sent the message. |
+| `chatType` | **string** | The type of chat message. |
+| `message` | **string** | The chat message content. |
+| `anonymous` | **boolean** | Whether the message is anonymous. |
 
 #### ↩️ Returns
 * nil
@@ -15621,8 +15621,8 @@ When a new command is registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** |  |
-| `data` | **table** |  |
+| `command` | **string** | The command name. |
+| `data` | **table** | Command data and configuration. |
 
 #### ↩️ Returns
 * nil
@@ -15720,8 +15720,8 @@ When a new command is registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** |  |
-| `data` | **table** |  |
+| `command` | **string** | The command name. |
+| `data` | **table** | Command data and configuration. |
 
 #### ↩️ Returns
 * nil
@@ -15819,8 +15819,8 @@ When a new command is registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** |  |
-| `data` | **table** |  |
+| `command` | **string** | The command name. |
+| `data` | **table** | Command data and configuration. |
 
 #### ↩️ Returns
 * nil
@@ -15918,8 +15918,8 @@ When a new command is registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `command` | **string** |  |
-| `data` | **table** |  |
+| `command` | **string** | The command name. |
+| `data` | **table** | Command data and configuration. |
 
 #### ↩️ Returns
 * nil
@@ -16017,10 +16017,10 @@ When config values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -16110,10 +16110,10 @@ When config values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -16203,10 +16203,10 @@ When config values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -16296,10 +16296,10 @@ When config values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `oldValue` | **any** |  |
-| `client` | **Player** |  |
+| `key` | **string** | The configuration key. |
+| `value` | **any** | The new value. |
+| `oldValue` | **any** | The previous value. |
+| `client` | **Player** | The player who made the change (if applicable). |
 
 #### ↩️ Returns
 * nil
@@ -16713,7 +16713,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -16795,7 +16795,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -16877,7 +16877,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -16959,7 +16959,7 @@ After a character is loaded from the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
+| `characterID` | **number** | The ID of the loaded character. |
 
 #### ↩️ Returns
 * nil
@@ -17041,7 +17041,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -17120,7 +17120,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -17199,7 +17199,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -17278,7 +17278,7 @@ After character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character that was saved. |
 
 #### ↩️ Returns
 * nil
@@ -17357,7 +17357,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -17433,7 +17433,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -17509,7 +17509,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -17585,7 +17585,7 @@ Before character data is saved to the database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character being saved. |
 
 #### ↩️ Returns
 * nil
@@ -17661,7 +17661,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -17762,7 +17762,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -17863,7 +17863,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -17964,7 +17964,7 @@ When a character is restored from a backup or previous state.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The restored character. |
 
 #### ↩️ Returns
 * nil
@@ -18065,8 +18065,8 @@ When modules are being loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The module path. |
+| `MODULE` | **table** | The module table. |
 
 #### ↩️ Returns
 * nil
@@ -18168,8 +18168,8 @@ When modules are being loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The module path. |
+| `MODULE` | **table** | The module table. |
 
 #### ↩️ Returns
 * nil
@@ -18271,8 +18271,8 @@ When modules are being loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The module path. |
+| `MODULE` | **table** | The module table. |
 
 #### ↩️ Returns
 * nil
@@ -18374,8 +18374,8 @@ When modules are being loaded.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The module path. |
+| `MODULE` | **table** | The module table. |
 
 #### ↩️ Returns
 * nil
@@ -18477,10 +18477,10 @@ When character models are being filtered for selection.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `faction` | **table** |  |
-| `modelData` | **table** |  |
-| `index` | **number** |  |
+| `client` | **Player** | The player selecting a character. |
+| `faction` | **table** | The faction data. |
+| `modelData` | **table** | The model data to filter. |
+| `index` | **number** | The model index. |
 
 #### ↩️ Returns
 * nil
@@ -18602,10 +18602,10 @@ When character models are being filtered for selection.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `faction` | **table** |  |
-| `modelData` | **table** |  |
-| `index` | **number** |  |
+| `client` | **Player** | The player selecting a character. |
+| `faction` | **table** | The faction data. |
+| `modelData` | **table** | The model data to filter. |
+| `index` | **number** | The model index. |
 
 #### ↩️ Returns
 * nil
@@ -18727,10 +18727,10 @@ When character models are being filtered for selection.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `faction` | **table** |  |
-| `modelData` | **table** |  |
-| `index` | **number** |  |
+| `client` | **Player** | The player selecting a character. |
+| `faction` | **table** | The faction data. |
+| `modelData` | **table** | The model data to filter. |
+| `index` | **number** | The model index. |
 
 #### ↩️ Returns
 * nil
@@ -18852,10 +18852,10 @@ When character models are being filtered for selection.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `faction` | **table** |  |
-| `modelData` | **table** |  |
-| `index` | **number** |  |
+| `client` | **Player** | The player selecting a character. |
+| `faction` | **table** | The faction data. |
+| `modelData` | **table** | The model data to filter. |
+| `index` | **number** | The model index. |
 
 #### ↩️ Returns
 * nil
@@ -18977,8 +18977,8 @@ When PAC part data needs to be adjusted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `partID` | **string** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * table
@@ -19102,8 +19102,8 @@ When PAC part data needs to be adjusted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `partID` | **string** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * table
@@ -19227,8 +19227,8 @@ When PAC part data needs to be adjusted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `partID` | **string** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * table
@@ -19352,8 +19352,8 @@ When PAC part data needs to be adjusted.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `wearer` | **Player** |  |
-| `partID` | **string** |  |
+| `wearer` | **Player** | The player wearing the PAC part. |
+| `partID` | **string** | The PAC part ID. |
 
 #### ↩️ Returns
 * table
@@ -19477,8 +19477,8 @@ When calculating attribute maximums.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
-| `attrKey` | **string** |  |
+| `target` | **Player** | The player whose attribute max to get. |
+| `attrKey` | **string** | The attribute key. |
 
 #### ↩️ Returns
 * number
@@ -19583,8 +19583,8 @@ When calculating attribute maximums.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
-| `attrKey` | **string** |  |
+| `target` | **Player** | The player whose attribute max to get. |
+| `attrKey` | **string** | The attribute key. |
 
 #### ↩️ Returns
 * number
@@ -19689,8 +19689,8 @@ When calculating attribute maximums.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
-| `attrKey` | **string** |  |
+| `target` | **Player** | The player whose attribute max to get. |
+| `attrKey` | **string** | The attribute key. |
 
 #### ↩️ Returns
 * number
@@ -19795,8 +19795,8 @@ When calculating attribute maximums.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `target` | **Player** |  |
-| `attrKey` | **string** |  |
+| `target` | **Player** | The player whose attribute max to get. |
+| `attrKey` | **string** | The attribute key. |
 
 #### ↩️ Returns
 * number
@@ -19901,8 +19901,8 @@ When initializing attribute values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `attribute` | **table** |  |
+| `client` | **Player** | The player. |
+| `attribute` | **table** | The attribute data. |
 
 #### ↩️ Returns
 * number
@@ -19981,8 +19981,8 @@ When initializing attribute values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `attribute` | **table** |  |
+| `client` | **Player** | The player. |
+| `attribute` | **table** | The attribute data. |
 
 #### ↩️ Returns
 * number
@@ -20061,8 +20061,8 @@ When initializing attribute values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `attribute` | **table** |  |
+| `client` | **Player** | The player. |
+| `attribute` | **table** | The attribute data. |
 
 #### ↩️ Returns
 * number
@@ -20141,8 +20141,8 @@ When initializing attribute values.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `attribute` | **table** |  |
+| `client` | **Player** | The player. |
+| `attribute` | **table** | The attribute data. |
 
 #### ↩️ Returns
 * number
@@ -20221,7 +20221,7 @@ When calculating character stamina limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -20336,7 +20336,7 @@ When calculating character stamina limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -20451,7 +20451,7 @@ When calculating character stamina limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -20566,7 +20566,7 @@ When calculating character stamina limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -20681,9 +20681,9 @@ When damage is being calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * number
@@ -20795,9 +20795,9 @@ When damage is being calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * number
@@ -20909,9 +20909,9 @@ When damage is being calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * number
@@ -21023,9 +21023,9 @@ When damage is being calculated.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * number
@@ -21137,9 +21137,9 @@ When generating default character descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21232,9 +21232,9 @@ When generating default character descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21327,9 +21327,9 @@ When generating default character descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21422,9 +21422,9 @@ When generating default character descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21517,9 +21517,9 @@ When generating default character names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21624,9 +21624,9 @@ When generating default character names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21731,9 +21731,9 @@ When generating default character names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21838,9 +21838,9 @@ When generating default character names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `factionIndex` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The player creating the character. |
+| `factionIndex` | **number** | The faction index. |
+| `context` | **table** | Additional context data. |
 
 #### ↩️ Returns
 * string
@@ -21945,8 +21945,8 @@ When setting up character inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -22042,8 +22042,8 @@ When setting up character inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -22139,8 +22139,8 @@ When setting up character inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -22236,8 +22236,8 @@ When setting up character inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * number
@@ -22333,7 +22333,7 @@ When determining inventory types.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * string
@@ -22420,7 +22420,7 @@ When determining inventory types.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * string
@@ -22507,7 +22507,7 @@ When determining inventory types.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * string
@@ -22594,7 +22594,7 @@ When determining inventory types.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
+| `character` | **Character** | The character. |
 
 #### ↩️ Returns
 * string
@@ -22681,8 +22681,8 @@ When displaying player descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isHUD` | **boolean** |  |
+| `client` | **Player** | The player. |
+| `isHUD` | **boolean** | Whether this is for HUD display. |
 
 #### ↩️ Returns
 * string
@@ -22778,8 +22778,8 @@ When displaying player descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isHUD` | **boolean** |  |
+| `client` | **Player** | The player. |
+| `isHUD` | **boolean** | Whether this is for HUD display. |
 
 #### ↩️ Returns
 * string
@@ -22875,8 +22875,8 @@ When displaying player descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isHUD` | **boolean** |  |
+| `client` | **Player** | The player. |
+| `isHUD` | **boolean** | Whether this is for HUD display. |
 
 #### ↩️ Returns
 * string
@@ -22972,8 +22972,8 @@ When displaying player descriptions.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isHUD` | **boolean** |  |
+| `client` | **Player** | The player. |
+| `isHUD` | **boolean** | Whether this is for HUD display. |
 
 #### ↩️ Returns
 * string
@@ -23069,8 +23069,8 @@ When displaying speaker names in chat.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
-| `chatType` | **string** |  |
+| `speaker` | **Player** | The speaker. |
+| `chatType` | **string** | The type of chat. |
 
 #### ↩️ Returns
 * string
@@ -23174,8 +23174,8 @@ When displaying speaker names in chat.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
-| `chatType` | **string** |  |
+| `speaker` | **Player** | The speaker. |
+| `chatType` | **string** | The type of chat. |
 
 #### ↩️ Returns
 * string
@@ -23279,8 +23279,8 @@ When displaying speaker names in chat.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
-| `chatType` | **string** |  |
+| `speaker` | **Player** | The speaker. |
+| `chatType` | **string** | The type of chat. |
 
 #### ↩️ Returns
 * string
@@ -23384,8 +23384,8 @@ When displaying speaker names in chat.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
-| `chatType` | **string** |  |
+| `speaker` | **Player** | The speaker. |
+| `chatType` | **string** | The type of chat. |
 
 #### ↩️ Returns
 * string
@@ -23489,8 +23489,8 @@ When calculating fist attack speed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `defaultDelay` | **number** |  |
+| `client` | **Player** | The player. |
+| `defaultDelay` | **number** | The default attack delay. |
 
 #### ↩️ Returns
 * number
@@ -23595,8 +23595,8 @@ When calculating fist attack speed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `defaultDelay` | **number** |  |
+| `client` | **Player** | The player. |
+| `defaultDelay` | **number** | The default attack delay. |
 
 #### ↩️ Returns
 * number
@@ -23701,8 +23701,8 @@ When calculating fist attack speed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `defaultDelay` | **number** |  |
+| `client` | **Player** | The player. |
+| `defaultDelay` | **number** | The default attack delay. |
 
 #### ↩️ Returns
 * number
@@ -23807,8 +23807,8 @@ When calculating fist attack speed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `defaultDelay` | **number** |  |
+| `client` | **Player** | The player. |
+| `defaultDelay` | **number** | The default attack delay. |
 
 #### ↩️ Returns
 * number
@@ -23913,7 +23913,7 @@ When displaying injury status.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The injured player. |
 
 #### ↩️ Returns
 * string
@@ -24022,7 +24022,7 @@ When displaying injury status.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The injured player. |
 
 #### ↩️ Returns
 * string
@@ -24131,7 +24131,7 @@ When displaying injury status.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The injured player. |
 
 #### ↩️ Returns
 * string
@@ -24240,7 +24240,7 @@ When displaying injury status.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The injured player. |
 
 #### ↩️ Returns
 * string
@@ -24349,8 +24349,8 @@ When determining what model to use for dropped items.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemTable` | **table** |  |
-| `itemEntity` | **Entity** |  |
+| `itemTable` | **table** | The item table. |
+| `itemEntity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * string
@@ -24455,8 +24455,8 @@ When determining what model to use for dropped items.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemTable` | **table** |  |
-| `itemEntity` | **Entity** |  |
+| `itemTable` | **table** | The item table. |
+| `itemEntity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * string
@@ -24561,8 +24561,8 @@ When determining what model to use for dropped items.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemTable` | **table** |  |
-| `itemEntity` | **Entity** |  |
+| `itemTable` | **table** | The item table. |
+| `itemEntity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * string
@@ -24667,8 +24667,8 @@ When determining what model to use for dropped items.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `itemTable` | **table** |  |
-| `itemEntity` | **Entity** |  |
+| `itemTable` | **table** | The item table. |
+| `itemEntity` | **Entity** | The item entity. |
 
 #### ↩️ Returns
 * string
@@ -24773,7 +24773,7 @@ When determining item stackability.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item. |
 
 #### ↩️ Returns
 * string
@@ -24871,7 +24871,7 @@ When determining item stackability.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item. |
 
 #### ↩️ Returns
 * string
@@ -24969,7 +24969,7 @@ When determining item stackability.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item. |
 
 #### ↩️ Returns
 * string
@@ -25067,7 +25067,7 @@ When determining item stackability.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item. |
 
 #### ↩️ Returns
 * string
@@ -25165,7 +25165,7 @@ When processing inventory stacks.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * table
@@ -25267,7 +25267,7 @@ When processing inventory stacks.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * table
@@ -25369,7 +25369,7 @@ When processing inventory stacks.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * table
@@ -25471,7 +25471,7 @@ When processing inventory stacks.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * table
@@ -25573,8 +25573,8 @@ When calculating starting attribute limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `count` | **number** |  |
+| `client` | **Player** | The player. |
+| `count` | **number** | The current point count. |
 
 #### ↩️ Returns
 * number
@@ -25666,8 +25666,8 @@ When calculating starting attribute limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `count` | **number** |  |
+| `client` | **Player** | The player. |
+| `count` | **number** | The current point count. |
 
 #### ↩️ Returns
 * number
@@ -25759,8 +25759,8 @@ When calculating starting attribute limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `count` | **number** |  |
+| `client` | **Player** | The player. |
+| `count` | **number** | The current point count. |
 
 #### ↩️ Returns
 * number
@@ -25852,8 +25852,8 @@ When calculating starting attribute limits.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `count` | **number** |  |
+| `client` | **Player** | The player. |
+| `count` | **number** | The current point count. |
 
 #### ↩️ Returns
 * number
@@ -25945,7 +25945,7 @@ When determining model gender.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
+| `model` | **string** | The model path. |
 
 #### ↩️ Returns
 * string
@@ -26034,7 +26034,7 @@ When determining model gender.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
+| `model` | **string** | The model path. |
 
 #### ↩️ Returns
 * string
@@ -26123,7 +26123,7 @@ When determining model gender.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
+| `model` | **string** | The model path. |
 
 #### ↩️ Returns
 * string
@@ -26212,7 +26212,7 @@ When determining model gender.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model` | **string** |  |
+| `model` | **string** | The model path. |
 
 #### ↩️ Returns
 * string
@@ -26301,7 +26301,7 @@ When determining what model to use for money entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The money amount. |
 
 #### ↩️ Returns
 * string
@@ -26380,7 +26380,7 @@ When determining what model to use for money entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The money amount. |
 
 #### ↩️ Returns
 * string
@@ -26459,7 +26459,7 @@ When determining what model to use for money entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The money amount. |
 
 #### ↩️ Returns
 * string
@@ -26538,7 +26538,7 @@ When determining what model to use for money entities.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `amount` | **number** |  |
+| `amount` | **number** | The money amount. |
 
 #### ↩️ Returns
 * string
@@ -26617,7 +26617,7 @@ When calculating OOC chat delays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
+| `speaker` | **Player** | The speaker. |
 
 #### ↩️ Returns
 * number
@@ -26709,7 +26709,7 @@ When calculating OOC chat delays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
+| `speaker` | **Player** | The speaker. |
 
 #### ↩️ Returns
 * number
@@ -26801,7 +26801,7 @@ When calculating OOC chat delays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
+| `speaker` | **Player** | The speaker. |
 
 #### ↩️ Returns
 * number
@@ -26893,7 +26893,7 @@ When calculating OOC chat delays.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `speaker` | **Player** |  |
+| `speaker` | **Player** | The speaker. |
 
 #### ↩️ Returns
 * number
@@ -26985,8 +26985,8 @@ When a player dies and needs a death sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The dying player. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27101,8 +27101,8 @@ When a player dies and needs a death sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The dying player. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27217,8 +27217,8 @@ When a player dies and needs a death sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The dying player. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27333,8 +27333,8 @@ When a player dies and needs a death sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The dying player. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27449,9 +27449,9 @@ When a player takes damage and needs a pain sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `paintype` | **string** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The damaged player. |
+| `paintype` | **string** | The type of pain. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27571,9 +27571,9 @@ When a player takes damage and needs a pain sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `paintype` | **string** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The damaged player. |
+| `paintype` | **string** | The type of pain. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27693,9 +27693,9 @@ When a player takes damage and needs a pain sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `paintype` | **string** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The damaged player. |
+| `paintype` | **string** | The type of pain. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27815,9 +27815,9 @@ When a player takes damage and needs a pain sound.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `paintype` | **string** |  |
-| `isFemale` | **boolean** |  |
+| `client` | **Player** | The damaged player. |
+| `paintype` | **string** | The type of pain. |
+| `isFemale` | **boolean** | Whether the player is female. |
 
 #### ↩️ Returns
 * string
@@ -27937,9 +27937,9 @@ When calculating fist damage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `damage` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The punching player. |
+| `damage` | **number** | The base damage. |
+| `context` | **table** | Additional context. |
 
 #### ↩️ Returns
 * number
@@ -28050,9 +28050,9 @@ When calculating fist damage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `damage` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The punching player. |
+| `damage` | **number** | The base damage. |
+| `context` | **table** | Additional context. |
 
 #### ↩️ Returns
 * number
@@ -28163,9 +28163,9 @@ When calculating fist damage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `damage` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The punching player. |
+| `damage` | **number** | The base damage. |
+| `context` | **table** | Additional context. |
 
 #### ↩️ Returns
 * number
@@ -28276,9 +28276,9 @@ When calculating fist damage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `damage` | **number** |  |
-| `context` | **table** |  |
+| `client` | **Player** | The punching player. |
+| `damage` | **number** | The base damage. |
+| `context` | **table** | Additional context. |
 
 #### ↩️ Returns
 * number
@@ -28389,8 +28389,8 @@ When calculating punch ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
+| `client` | **Player** | The punching player. |
+| `target` | **Player** | The target being punched. |
 
 #### ↩️ Returns
 * number
@@ -28483,8 +28483,8 @@ When calculating punch ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
+| `client` | **Player** | The punching player. |
+| `target` | **Player** | The target being punched. |
 
 #### ↩️ Returns
 * number
@@ -28577,8 +28577,8 @@ When calculating punch ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
+| `client` | **Player** | The punching player. |
+| `target` | **Player** | The target being punched. |
 
 #### ↩️ Returns
 * number
@@ -28671,8 +28671,8 @@ When calculating punch ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `target` | **Player** |  |
+| `client` | **Player** | The punching player. |
+| `target` | **Player** | The target being punched. |
 
 #### ↩️ Returns
 * number
@@ -28765,8 +28765,8 @@ When determining ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `time` | **number** |  |
+| `entity` | **Entity** | The entity. |
+| `time` | **number** | The base time. |
 
 #### ↩️ Returns
 * number
@@ -28868,8 +28868,8 @@ When determining ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `time` | **number** |  |
+| `entity` | **Entity** | The entity. |
+| `time` | **number** | The base time. |
 
 #### ↩️ Returns
 * number
@@ -28971,8 +28971,8 @@ When determining ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `time` | **number** |  |
+| `entity` | **Entity** | The entity. |
+| `time` | **number** | The base time. |
 
 #### ↩️ Returns
 * number
@@ -29074,8 +29074,8 @@ When determining ragdoll duration.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `time` | **number** |  |
+| `entity` | **Entity** | The entity. |
+| `time` | **number** | The base time. |
 
 #### ↩️ Returns
 * number
@@ -29177,7 +29177,7 @@ When displaying weapon names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **string** |  |
+| `weapon` | **string** | The weapon class. |
 
 #### ↩️ Returns
 * string
@@ -29275,7 +29275,7 @@ When displaying weapon names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **string** |  |
+| `weapon` | **string** | The weapon class. |
 
 #### ↩️ Returns
 * string
@@ -29373,7 +29373,7 @@ When displaying weapon names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **string** |  |
+| `weapon` | **string** | The weapon class. |
 
 #### ↩️ Returns
 * string
@@ -29471,7 +29471,7 @@ When displaying weapon names.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `weapon` | **string** |  |
+| `weapon` | **string** | The weapon class. |
 
 #### ↩️ Returns
 * string
@@ -31385,10 +31385,10 @@ When inventory data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `instance` | **Inventory** | The inventory instance. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -31484,10 +31484,10 @@ When inventory data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `instance` | **Inventory** | The inventory instance. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -31583,10 +31583,10 @@ When inventory data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `instance` | **Inventory** | The inventory instance. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -31682,10 +31682,10 @@ When inventory data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `instance` | **Inventory** | The inventory instance. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -31781,7 +31781,7 @@ When an inventory is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -31875,7 +31875,7 @@ When an inventory is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -31969,7 +31969,7 @@ When an inventory is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32063,7 +32063,7 @@ When an inventory is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32157,7 +32157,7 @@ When an inventory is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32253,7 +32253,7 @@ When an inventory is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32349,7 +32349,7 @@ When an inventory is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32445,7 +32445,7 @@ When an inventory is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Inventory** |  |
+| `instance` | **Inventory** | The inventory instance. |
 
 #### ↩️ Returns
 * nil
@@ -32541,8 +32541,8 @@ When items are added to inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item added. |
 
 #### ↩️ Returns
 * nil
@@ -32648,8 +32648,8 @@ When items are added to inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item added. |
 
 #### ↩️ Returns
 * nil
@@ -32755,8 +32755,8 @@ When items are added to inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item added. |
 
 #### ↩️ Returns
 * nil
@@ -32862,8 +32862,8 @@ When items are added to inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item added. |
 
 #### ↩️ Returns
 * nil
@@ -32969,11 +32969,11 @@ When item data in inventory is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
-| `inventory` | **Inventory** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -33067,11 +33067,11 @@ When item data in inventory is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
-| `inventory` | **Inventory** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -33165,11 +33165,11 @@ When item data in inventory is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
-| `inventory` | **Inventory** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -33263,11 +33263,11 @@ When item data in inventory is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
-| `inventory` | **Inventory** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
+| `inventory` | **Inventory** | The inventory. |
 
 #### ↩️ Returns
 * nil
@@ -33361,9 +33361,9 @@ When items are removed from inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
-| `preserveItem` | **boolean** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item removed. |
+| `preserveItem` | **boolean** | Whether the item should be preserved. |
 
 #### ↩️ Returns
 * nil
@@ -33467,9 +33467,9 @@ When items are removed from inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
-| `preserveItem` | **boolean** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item removed. |
+| `preserveItem` | **boolean** | Whether the item should be preserved. |
 
 #### ↩️ Returns
 * nil
@@ -33573,9 +33573,9 @@ When items are removed from inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
-| `preserveItem` | **boolean** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item removed. |
+| `preserveItem` | **boolean** | Whether the item should be preserved. |
 
 #### ↩️ Returns
 * nil
@@ -33679,9 +33679,9 @@ When items are removed from inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `inventory` | **Inventory** |  |
-| `item` | **Item** |  |
-| `preserveItem` | **boolean** |  |
+| `inventory` | **Inventory** | The inventory. |
+| `item` | **Item** | The item removed. |
+| `preserveItem` | **boolean** | Whether the item should be preserved. |
 
 #### ↩️ Returns
 * nil
@@ -33785,8 +33785,8 @@ When checking fake character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -33871,8 +33871,8 @@ When checking fake character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -33957,8 +33957,8 @@ When checking fake character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34043,8 +34043,8 @@ When checking fake character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34129,8 +34129,8 @@ When checking fake character recognition (disguises, etc.).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34214,8 +34214,8 @@ When checking fake character recognition (disguises, etc.).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34299,8 +34299,8 @@ When checking fake character recognition (disguises, etc.).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34384,8 +34384,8 @@ When checking fake character recognition (disguises, etc.).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34469,8 +34469,8 @@ When checking character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34563,8 +34563,8 @@ When checking character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34657,8 +34657,8 @@ When checking character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34751,8 +34751,8 @@ When checking character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `characterID` | **number** |  |
+| `character` | **Character** | The character checking recognition. |
+| `characterID` | **number** | The target character ID. |
 
 #### ↩️ Returns
 * boolean
@@ -34845,7 +34845,7 @@ When determining if chat requires recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type. |
 
 #### ↩️ Returns
 * boolean
@@ -34921,7 +34921,7 @@ When determining if chat requires recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type. |
 
 #### ↩️ Returns
 * boolean
@@ -34997,7 +34997,7 @@ When determining if chat requires recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type. |
 
 #### ↩️ Returns
 * boolean
@@ -35073,7 +35073,7 @@ When determining if chat requires recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type. |
 
 #### ↩️ Returns
 * boolean
@@ -35149,7 +35149,7 @@ When determining if chat messages require character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35250,7 +35250,7 @@ When determining if chat messages require character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35351,7 +35351,7 @@ When determining if chat messages require character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35452,7 +35452,7 @@ When determining if chat messages require character recognition.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `chatType` | **string** |  |
+| `chatType` | **string** | The chat type to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35553,7 +35553,7 @@ When determining if vehicles can have trunk storage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35648,7 +35648,7 @@ When determining if vehicles can have trunk storage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35743,7 +35743,7 @@ When determining if vehicles can have trunk storage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35838,7 +35838,7 @@ When determining if vehicles can have trunk storage.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
+| `entity` | **Entity** | The entity to check. |
 
 #### ↩️ Returns
 * boolean
@@ -35933,10 +35933,10 @@ When item data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36039,10 +36039,10 @@ When item data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36145,10 +36145,10 @@ When item data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36251,10 +36251,10 @@ When item data is modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item. |
+| `key` | **string** | The data key. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36357,10 +36357,10 @@ When item data keys are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item whose data changed. |
+| `key` | **string** | The data key that changed. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36451,10 +36451,10 @@ When item data keys are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item whose data changed. |
+| `key` | **string** | The data key that changed. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36545,10 +36545,10 @@ When item data keys are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item whose data changed. |
+| `key` | **string** | The data key that changed. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36639,10 +36639,10 @@ When item data keys are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `newValue` | **any** |  |
+| `item` | **Item** | The item whose data changed. |
+| `key` | **string** | The data key that changed. |
+| `oldValue` | **any** | The old value. |
+| `newValue` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -36733,7 +36733,7 @@ When setting up item function defaults.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `functions` | **table** |  |
+| `functions` | **table** | The functions table. |
 
 #### ↩️ Returns
 * nil
@@ -36805,7 +36805,7 @@ When setting up item function defaults.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `functions` | **table** |  |
+| `functions` | **table** | The functions table. |
 
 #### ↩️ Returns
 * nil
@@ -36877,7 +36877,7 @@ When setting up item function defaults.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `functions` | **table** |  |
+| `functions` | **table** | The functions table. |
 
 #### ↩️ Returns
 * nil
@@ -36949,7 +36949,7 @@ When setting up item function defaults.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `functions` | **table** |  |
+| `functions` | **table** | The functions table. |
 
 #### ↩️ Returns
 * nil
@@ -37021,7 +37021,7 @@ When an item instance is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item instance. |
 
 #### ↩️ Returns
 * nil
@@ -37105,7 +37105,7 @@ When an item instance is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item instance. |
 
 #### ↩️ Returns
 * nil
@@ -37189,7 +37189,7 @@ When an item instance is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item instance. |
 
 #### ↩️ Returns
 * nil
@@ -37273,7 +37273,7 @@ When an item instance is removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item instance. |
 
 #### ↩️ Returns
 * nil
@@ -37357,7 +37357,7 @@ When items are removed from the game.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item being deleted. |
 
 #### ↩️ Returns
 * nil
@@ -37456,7 +37456,7 @@ When items are removed from the game.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item being deleted. |
 
 #### ↩️ Returns
 * nil
@@ -37555,7 +37555,7 @@ When items are removed from the game.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item being deleted. |
 
 #### ↩️ Returns
 * nil
@@ -37654,7 +37654,7 @@ When items are removed from the game.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instance` | **Item** |  |
+| `instance` | **Item** | The item being deleted. |
 
 #### ↩️ Returns
 * nil
@@ -37753,11 +37753,11 @@ When item methods are called.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `method` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `results` | **any** |  |
+| `item` | **Item** | The item. |
+| `method` | **string** | The method name. |
+| `client` | **Player** | The player calling the method. |
+| `entity` | **Entity** | The entity involved. |
+| `results` | **any** | The method results. |
 
 #### ↩️ Returns
 * nil
@@ -37864,11 +37864,11 @@ When item methods are called.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `method` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `results` | **any** |  |
+| `item` | **Item** | The item. |
+| `method` | **string** | The method name. |
+| `client` | **Player** | The player calling the method. |
+| `entity` | **Entity** | The entity involved. |
+| `results` | **any** | The method results. |
 
 #### ↩️ Returns
 * nil
@@ -37975,11 +37975,11 @@ When item methods are called.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `method` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `results` | **any** |  |
+| `item` | **Item** | The item. |
+| `method` | **string** | The method name. |
+| `client` | **Player** | The player calling the method. |
+| `entity` | **Entity** | The entity involved. |
+| `results` | **any** | The method results. |
 
 #### ↩️ Returns
 * nil
@@ -38086,11 +38086,11 @@ When item methods are called.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `method` | **string** |  |
-| `client` | **Player** |  |
-| `entity` | **Entity** |  |
-| `results` | **any** |  |
+| `item` | **Item** | The item. |
+| `method` | **string** | The method name. |
+| `client` | **Player** | The player calling the method. |
+| `entity` | **Entity** | The entity involved. |
+| `results` | **any** | The method results. |
 
 #### ↩️ Returns
 * nil
@@ -38197,7 +38197,7 @@ When an item instance is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38297,7 +38297,7 @@ When an item instance is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38397,7 +38397,7 @@ When an item instance is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38497,7 +38497,7 @@ When an item instance is created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38597,7 +38597,7 @@ When items are first created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38704,7 +38704,7 @@ When items are first created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38811,7 +38811,7 @@ When items are first created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -38918,7 +38918,7 @@ When items are first created and set up.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
+| `item` | **Item** | The item being initialized. |
 
 #### ↩️ Returns
 * nil
@@ -39025,9 +39025,9 @@ When item stack sizes are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `oldValue` | **number** |  |
-| `quantity` | **number** |  |
+| `item` | **Item** | The item. |
+| `oldValue` | **number** | The old quantity. |
+| `quantity` | **number** | The new quantity. |
 
 #### ↩️ Returns
 * nil
@@ -39128,9 +39128,9 @@ When item stack sizes are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `oldValue` | **number** |  |
-| `quantity` | **number** |  |
+| `item` | **Item** | The item. |
+| `oldValue` | **number** | The old quantity. |
+| `quantity` | **number** | The new quantity. |
 
 #### ↩️ Returns
 * nil
@@ -39231,9 +39231,9 @@ When item stack sizes are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `oldValue` | **number** |  |
-| `quantity` | **number** |  |
+| `item` | **Item** | The item. |
+| `oldValue` | **number** | The old quantity. |
+| `quantity` | **number** | The new quantity. |
 
 #### ↩️ Returns
 * nil
@@ -39334,9 +39334,9 @@ When item stack sizes are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `item` | **Item** |  |
-| `oldValue` | **number** |  |
-| `quantity` | **number** |  |
+| `item` | **Item** | The item. |
+| `oldValue` | **number** | The old quantity. |
+| `quantity` | **number** | The new quantity. |
 
 #### ↩️ Returns
 * nil
@@ -39437,7 +39437,7 @@ When items are moved between inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context. |
 
 #### ↩️ Returns
 * nil
@@ -39558,7 +39558,7 @@ When items are moved between inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context. |
 
 #### ↩️ Returns
 * nil
@@ -39679,7 +39679,7 @@ When items are moved between inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context. |
 
 #### ↩️ Returns
 * nil
@@ -39800,7 +39800,7 @@ When items are moved between inventories.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context. |
 
 #### ↩️ Returns
 * nil
@@ -39921,7 +39921,7 @@ When items are moved between inventories or locations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context containing transfer details. |
 
 #### ↩️ Returns
 * nil
@@ -40028,7 +40028,7 @@ When items are moved between inventories or locations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context containing transfer details. |
 
 #### ↩️ Returns
 * nil
@@ -40135,7 +40135,7 @@ When items are moved between inventories or locations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context containing transfer details. |
 
 #### ↩️ Returns
 * nil
@@ -40242,7 +40242,7 @@ When items are moved between inventories or locations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `context` | **table** |  |
+| `context` | **table** | The transfer context containing transfer details. |
 
 #### ↩️ Returns
 * nil
@@ -40349,8 +40349,8 @@ When a player is forced out of a character.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
-| `isCurrentChar` | **boolean** |  |
+| `characterID` | **number** | The character ID. |
+| `isCurrentChar` | **boolean** | Whether this was the current character. |
 
 #### ↩️ Returns
 * nil
@@ -40451,8 +40451,8 @@ When a player is forced out of a character.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
-| `isCurrentChar` | **boolean** |  |
+| `characterID` | **number** | The character ID. |
+| `isCurrentChar` | **boolean** | Whether this was the current character. |
 
 #### ↩️ Returns
 * nil
@@ -40553,8 +40553,8 @@ When a player is forced out of a character.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
-| `isCurrentChar` | **boolean** |  |
+| `characterID` | **number** | The character ID. |
+| `isCurrentChar` | **boolean** | Whether this was the current character. |
 
 #### ↩️ Returns
 * nil
@@ -40655,8 +40655,8 @@ When a player is forced out of a character.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `characterID` | **number** |  |
-| `isCurrentChar` | **boolean** |  |
+| `characterID` | **number** | The character ID. |
+| `isCurrentChar` | **boolean** | Whether this was the current character. |
 
 #### ↩️ Returns
 * nil
@@ -41517,10 +41517,10 @@ When entity NetVars are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `entity` | **Entity** | The entity. |
+| `key` | **string** | The NetVar key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -41614,10 +41614,10 @@ When entity NetVars are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `entity` | **Entity** | The entity. |
+| `key` | **string** | The NetVar key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -41711,10 +41711,10 @@ When entity NetVars are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `entity` | **Entity** | The entity. |
+| `key` | **string** | The NetVar key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -41808,10 +41808,10 @@ When entity NetVars are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `entity` | **Entity** |  |
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `entity` | **Entity** | The entity. |
+| `key` | **string** | The NetVar key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -41905,11 +41905,11 @@ When attribute boosts are applied.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `attribID` | **string** |  |
-| `boostID` | **string** |  |
-| `boostAmount` | **number** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `attribID` | **string** | The attribute ID. |
+| `boostID` | **string** | The boost ID. |
+| `boostAmount` | **number** | The boost amount. |
 
 #### ↩️ Returns
 * nil
@@ -42008,11 +42008,11 @@ When attribute boosts are applied.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `attribID` | **string** |  |
-| `boostID` | **string** |  |
-| `boostAmount` | **number** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `attribID` | **string** | The attribute ID. |
+| `boostID` | **string** | The boost ID. |
+| `boostAmount` | **number** | The boost amount. |
 
 #### ↩️ Returns
 * nil
@@ -42111,11 +42111,11 @@ When attribute boosts are applied.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `attribID` | **string** |  |
-| `boostID` | **string** |  |
-| `boostAmount` | **number** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `attribID` | **string** | The attribute ID. |
+| `boostID` | **string** | The boost ID. |
+| `boostAmount` | **number** | The boost amount. |
 
 #### ↩️ Returns
 * nil
@@ -42214,11 +42214,11 @@ When attribute boosts are applied.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `attribID` | **string** |  |
-| `boostID` | **string** |  |
-| `boostAmount` | **number** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `attribID` | **string** | The attribute ID. |
+| `boostID` | **string** | The boost ID. |
+| `boostAmount` | **number** | The boost amount. |
 
 #### ↩️ Returns
 * nil
@@ -42317,10 +42317,10 @@ When character attributes change.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `key` | **string** | The attribute key. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42426,10 +42426,10 @@ When character attributes change.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `key` | **string** | The attribute key. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42535,10 +42535,10 @@ When character attributes change.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `key` | **string** | The attribute key. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42644,10 +42644,10 @@ When character attributes change.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `value` | **any** |  |
+| `client` | **Player** | The player. |
+| `character` | **Character** | The character. |
+| `key` | **string** | The attribute key. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42753,10 +42753,10 @@ When character network variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `oldVar` | **any** |  |
-| `value` | **any** |  |
+| `character` | **Character** | The character. |
+| `key` | **string** | The NetVar key. |
+| `oldVar` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42856,10 +42856,10 @@ When character network variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `oldVar` | **any** |  |
-| `value` | **any** |  |
+| `character` | **Character** | The character. |
+| `key` | **string** | The NetVar key. |
+| `oldVar` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -42959,10 +42959,10 @@ When character network variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `oldVar` | **any** |  |
-| `value` | **any** |  |
+| `character` | **Character** | The character. |
+| `key` | **string** | The NetVar key. |
+| `oldVar` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43062,10 +43062,10 @@ When character network variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `key` | **string** |  |
-| `oldVar` | **any** |  |
-| `value` | **any** |  |
+| `character` | **Character** | The character. |
+| `key` | **string** | The NetVar key. |
+| `oldVar` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43165,8 +43165,8 @@ When character recognition occurs.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `charID` | **number** |  |
+| `client` | **Player** | The recognizing player. |
+| `charID` | **number** | The recognized character ID. |
 
 #### ↩️ Returns
 * nil
@@ -43252,8 +43252,8 @@ When character recognition occurs.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `charID` | **number** |  |
+| `client` | **Player** | The recognizing player. |
+| `charID` | **number** | The recognized character ID. |
 
 #### ↩️ Returns
 * nil
@@ -43339,8 +43339,8 @@ When character recognition occurs.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `charID` | **number** |  |
+| `client` | **Player** | The recognizing player. |
+| `charID` | **number** | The recognized character ID. |
 
 #### ↩️ Returns
 * nil
@@ -43426,8 +43426,8 @@ When character recognition occurs.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `charID` | **number** |  |
+| `client` | **Player** | The recognizing player. |
+| `charID` | **number** | The recognized character ID. |
 
 #### ↩️ Returns
 * nil
@@ -43513,10 +43513,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43610,10 +43610,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43707,10 +43707,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43804,10 +43804,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -43901,10 +43901,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character whose variable changed. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44007,10 +44007,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character whose variable changed. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44113,10 +44113,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character whose variable changed. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44219,10 +44219,10 @@ When character variables are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `character` | **Character** |  |
-| `varName` | **string** |  |
-| `oldVar` | **any** |  |
-| `newVar` | **any** |  |
+| `character` | **Character** | The character whose variable changed. |
+| `varName` | **string** | The variable name. |
+| `oldVar` | **any** | The old value. |
+| `newVar` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44325,9 +44325,9 @@ When config values are changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The config key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44415,9 +44415,9 @@ When config values are changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The config key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44505,9 +44505,9 @@ When config values are changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The config key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44595,9 +44595,9 @@ When config values are changed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `oldValue` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The config key. |
+| `oldValue` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -44685,10 +44685,10 @@ When map or gamemode data is set.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `gamemode` | **string** |  |
-| `map` | **string** |  |
+| `key` | **string** | The data key. |
+| `value` | **any** | The data value. |
+| `gamemode` | **string** | The gamemode. |
+| `map` | **string** | The map name. |
 
 #### ↩️ Returns
 * nil
@@ -44787,10 +44787,10 @@ When map or gamemode data is set.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `gamemode` | **string** |  |
-| `map` | **string** |  |
+| `key` | **string** | The data key. |
+| `value` | **any** | The data value. |
+| `gamemode` | **string** | The gamemode. |
+| `map` | **string** | The map name. |
 
 #### ↩️ Returns
 * nil
@@ -44889,10 +44889,10 @@ When map or gamemode data is set.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `gamemode` | **string** |  |
-| `map` | **string** |  |
+| `key` | **string** | The data key. |
+| `value` | **any** | The data value. |
+| `gamemode` | **string** | The gamemode. |
+| `map` | **string** | The map name. |
 
 #### ↩️ Returns
 * nil
@@ -44991,10 +44991,10 @@ When map or gamemode data is set.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `value` | **any** |  |
-| `gamemode` | **string** |  |
-| `map` | **string** |  |
+| `key` | **string** | The data key. |
+| `value` | **any** | The data value. |
+| `gamemode` | **string** | The gamemode. |
+| `map` | **string** | The map name. |
 
 #### ↩️ Returns
 * nil
@@ -45385,7 +45385,7 @@ When item definitions are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ITEM` | **table** |  |
+| `ITEM` | **table** | The item definition table. |
 
 #### ↩️ Returns
 * nil
@@ -45471,7 +45471,7 @@ When item definitions are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ITEM` | **table** |  |
+| `ITEM` | **table** | The item definition table. |
 
 #### ↩️ Returns
 * nil
@@ -45557,7 +45557,7 @@ When item definitions are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ITEM` | **table** |  |
+| `ITEM` | **table** | The item definition table. |
 
 #### ↩️ Returns
 * nil
@@ -45643,7 +45643,7 @@ When item definitions are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ITEM` | **table** |  |
+| `ITEM` | **table** | The item definition table. |
 
 #### ↩️ Returns
 * nil
@@ -46033,7 +46033,7 @@ When PAC parts are transferred between players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `part` | **table** |  |
+| `part` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -46117,7 +46117,7 @@ When PAC parts are transferred between players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `part` | **table** |  |
+| `part` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -46201,7 +46201,7 @@ When PAC parts are transferred between players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `part` | **table** |  |
+| `part` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -46285,7 +46285,7 @@ When PAC parts are transferred between players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `part` | **table** |  |
+| `part` | **table** | The PAC part data. |
 
 #### ↩️ Returns
 * nil
@@ -46369,7 +46369,7 @@ When admin privileges are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46457,7 +46457,7 @@ When admin privileges are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46545,7 +46545,7 @@ When admin privileges are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46633,7 +46633,7 @@ When admin privileges are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46721,7 +46721,7 @@ When admin privileges are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46797,7 +46797,7 @@ When admin privileges are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46873,7 +46873,7 @@ When admin privileges are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -46949,7 +46949,7 @@ When admin privileges are removed.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `privilege` | **table** |  |
+| `privilege` | **table** | The privilege data. |
 
 #### ↩️ Returns
 * nil
@@ -47025,8 +47025,8 @@ When options are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `option` | **table** |  |
+| `key` | **string** | The option key. |
+| `option` | **table** | The option data. |
 
 #### ↩️ Returns
 * nil
@@ -47110,8 +47110,8 @@ When options are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `option` | **table** |  |
+| `key` | **string** | The option key. |
+| `option` | **table** | The option data. |
 
 #### ↩️ Returns
 * nil
@@ -47195,8 +47195,8 @@ When options are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `option` | **table** |  |
+| `key` | **string** | The option key. |
+| `option` | **table** | The option data. |
 
 #### ↩️ Returns
 * nil
@@ -47280,8 +47280,8 @@ When options are registered.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `option` | **table** |  |
+| `key` | **string** | The option key. |
+| `option` | **table** | The option data. |
 
 #### ↩️ Returns
 * nil
@@ -47365,9 +47365,9 @@ When option values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `old` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The option key. |
+| `old` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -47460,9 +47460,9 @@ When option values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `old` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The option key. |
+| `old` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -47555,9 +47555,9 @@ When option values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `old` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The option key. |
+| `old` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -47650,9 +47650,9 @@ When option values are modified.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `key` | **string** |  |
-| `old` | **any** |  |
-| `value` | **any** |  |
+| `key` | **string** | The option key. |
+| `old` | **any** | The old value. |
+| `value` | **any** | The new value. |
 
 #### ↩️ Returns
 * nil
@@ -47745,8 +47745,8 @@ When faction descriptions need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentDesc` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentDesc` | **string** | The current description. |
 
 #### ↩️ Returns
 * string
@@ -47835,8 +47835,8 @@ When faction descriptions need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentDesc` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentDesc` | **string** | The current description. |
 
 #### ↩️ Returns
 * string
@@ -47925,8 +47925,8 @@ When faction descriptions need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentDesc` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentDesc` | **string** | The current description. |
 
 #### ↩️ Returns
 * string
@@ -48015,8 +48015,8 @@ When faction descriptions need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentDesc` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentDesc` | **string** | The current description. |
 
 #### ↩️ Returns
 * string
@@ -48105,8 +48105,8 @@ When faction models need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentModels` | **table** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentModels` | **table** | The current models. |
 
 #### ↩️ Returns
 * table
@@ -48196,8 +48196,8 @@ When faction models need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentModels` | **table** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentModels` | **table** | The current models. |
 
 #### ↩️ Returns
 * table
@@ -48287,8 +48287,8 @@ When faction models need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentModels` | **table** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentModels` | **table** | The current models. |
 
 #### ↩️ Returns
 * table
@@ -48378,8 +48378,8 @@ When faction models need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentModels` | **table** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentModels` | **table** | The current models. |
 
 #### ↩️ Returns
 * table
@@ -48469,8 +48469,8 @@ When faction names need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentName` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentName` | **string** | The current name. |
 
 #### ↩️ Returns
 * string
@@ -48555,8 +48555,8 @@ When faction names need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentName` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentName` | **string** | The current name. |
 
 #### ↩️ Returns
 * string
@@ -48641,8 +48641,8 @@ When faction names need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentName` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentName` | **string** | The current name. |
 
 #### ↩️ Returns
 * string
@@ -48727,8 +48727,8 @@ When faction names need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `uniqueID` | **string** |  |
-| `currentName` | **string** |  |
+| `uniqueID` | **string** | The faction unique ID. |
+| `currentName` | **string** | The current name. |
 
 #### ↩️ Returns
 * string
@@ -48813,8 +48813,8 @@ When spawn times need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `respawnTime` | **number** |  |
+| `client` | **Player** | The player spawning. |
+| `respawnTime` | **number** | The base respawn time. |
 
 #### ↩️ Returns
 * number
@@ -48914,8 +48914,8 @@ When spawn times need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `respawnTime` | **number** |  |
+| `client` | **Player** | The player spawning. |
+| `respawnTime` | **number** | The base respawn time. |
 
 #### ↩️ Returns
 * number
@@ -49015,8 +49015,8 @@ When spawn times need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `respawnTime` | **number** |  |
+| `client` | **Player** | The player spawning. |
+| `respawnTime` | **number** | The base respawn time. |
 
 #### ↩️ Returns
 * number
@@ -49116,8 +49116,8 @@ When spawn times need to be customized.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `respawnTime` | **number** |  |
+| `client` | **Player** | The player spawning. |
+| `respawnTime` | **number** | The base respawn time. |
 
 #### ↩️ Returns
 * number
@@ -49217,7 +49217,7 @@ When player data is loaded from database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose data was loaded. |
 
 #### ↩️ Returns
 * nil
@@ -49296,7 +49296,7 @@ When player data is loaded from database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose data was loaded. |
 
 #### ↩️ Returns
 * nil
@@ -49375,7 +49375,7 @@ When player data is loaded from database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose data was loaded. |
 
 #### ↩️ Returns
 * nil
@@ -49454,7 +49454,7 @@ When player data is loaded from database.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
+| `client` | **Player** | The player whose data was loaded. |
 
 #### ↩️ Returns
 * nil
@@ -49533,9 +49533,9 @@ When characters are loaded for players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `currentChar` | **boolean** |  |
+| `client` | **Player** | The player loading the character. |
+| `character` | **Character** | The loaded character. |
+| `currentChar` | **boolean** | Whether this is the current character. |
 
 #### ↩️ Returns
 * nil
@@ -49631,9 +49631,9 @@ When characters are loaded for players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `currentChar` | **boolean** |  |
+| `client` | **Player** | The player loading the character. |
+| `character` | **Character** | The loaded character. |
+| `currentChar` | **boolean** | Whether this is the current character. |
 
 #### ↩️ Returns
 * nil
@@ -49729,9 +49729,9 @@ When characters are loaded for players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `currentChar` | **boolean** |  |
+| `client` | **Player** | The player loading the character. |
+| `character` | **Character** | The loaded character. |
+| `currentChar` | **boolean** | Whether this is the current character. |
 
 #### ↩️ Returns
 * nil
@@ -49827,9 +49827,9 @@ When characters are loaded for players.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player** |  |
-| `character` | **Character** |  |
-| `currentChar` | **boolean** |  |
+| `client` | **Player** | The player loading the character. |
+| `character` | **Character** | The loaded character. |
+| `currentChar` | **boolean** | Whether this is the current character. |
 
 #### ↩️ Returns
 * nil
@@ -49925,9 +49925,9 @@ After damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The scaled damage value. |
 
 #### ↩️ Returns
 * nil
@@ -50028,9 +50028,9 @@ After damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The scaled damage value. |
 
 #### ↩️ Returns
 * nil
@@ -50131,9 +50131,9 @@ After damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The scaled damage value. |
 
 #### ↩️ Returns
 * nil
@@ -50234,9 +50234,9 @@ After damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The scaled damage value. |
 
 #### ↩️ Returns
 * nil
@@ -50597,9 +50597,9 @@ Before damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * nil
@@ -50694,9 +50694,9 @@ Before damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * nil
@@ -50791,9 +50791,9 @@ Before damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * nil
@@ -50888,9 +50888,9 @@ Before damage scaling calculations.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hitgroup` | **number** |  |
-| `dmgInfo` | **CTakeDamageInfo** |  |
-| `damageScale` | **number** |  |
+| `hitgroup` | **number** | The hitgroup number. |
+| `dmgInfo` | **CTakeDamageInfo** | The damage info. |
+| `damageScale` | **number** | The current damage scale. |
 
 #### ↩️ Returns
 * nil
@@ -51281,8 +51281,8 @@ When web image downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The image name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51378,8 +51378,8 @@ When web image downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The image name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51475,8 +51475,8 @@ When web image downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The image name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51572,8 +51572,8 @@ When web image downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The image name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51669,8 +51669,8 @@ When web sound downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The sound name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51770,8 +51770,8 @@ When web sound downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The sound name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51871,8 +51871,8 @@ When web sound downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The sound name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -51972,8 +51972,8 @@ When web sound downloads complete.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `name` | **string** |  |
-| `path` | **string** |  |
+| `name` | **string** | The sound name. |
+| `path` | **string** | The local file path. |
 
 #### ↩️ Returns
 * nil
@@ -52073,8 +52073,8 @@ When the framework loads and includes module files.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
 
 #### ↩️ Returns
 * nil
@@ -52191,8 +52191,8 @@ When the framework loads and includes module files.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
 
 #### ↩️ Returns
 * nil
@@ -52309,8 +52309,8 @@ When the framework loads and includes module files.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
 
 #### ↩️ Returns
 * nil
@@ -52427,8 +52427,8 @@ When the framework loads and includes module files.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
 
 #### ↩️ Returns
 * nil
@@ -52545,8 +52545,1188 @@ When the framework loads and includes module files.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `path` | **string** |  |
-| `MODULE` | **table** |  |
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### OnItemOverridden
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### OnItemOverridden
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### OnItemOverridden
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### OnItemOverridden
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### GetSetting
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### GetValidatedData
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### getData
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### SaveSettings
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### SaveComplexData
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
+
+#### ↩️ Returns
+* nil
+
+#### 🌐 Realm
+Shared
+
+#### 💡 Example Usage
+
+#### 🔰 Low Complexity
+```lua
+    -- Simple: Log module inclusion
+    function MODULE:DoModuleIncludes(path, MODULE)
+        print("Including module from: " .. path)
+    end
+
+```
+
+#### 📊 Medium Complexity
+```lua
+    -- Medium: Track module loading
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Initialize module tracking if needed
+        self.loadedModules = self.loadedModules or {}
+        -- Record module information
+        self.loadedModules[MODULE.name or path] = {
+            path = path,
+            loadedAt = CurTime(),
+            version = MODULE.version or "unknown"
+        }
+        -- Log module loading
+        lia.log.add("Module loaded from path: " .. path, FLAG_NORMAL)
+        -- Validate module structure
+        if not MODULE.name then
+            lia.log.add("Warning: Module loaded from " .. path .. " has no name", FLAG_WARNING)
+        end
+    end
+
+```
+
+#### ⚙️ High Complexity
+```lua
+    -- High: Advanced module loading with dependency management
+    function MODULE:DoModuleIncludes(path, MODULE)
+        -- Validate module before loading
+        if not self:ValidateModuleStructure(MODULE, path) then
+            lia.log.add("Invalid module structure in: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Check module dependencies
+        if not self:CheckModuleDependencies(MODULE) then
+            lia.log.add("Module dependency check failed for: " .. path, FLAG_ERROR)
+            return
+        end
+        -- Register module with framework
+        self:RegisterModule(MODULE, path)
+        -- Initialize module-specific systems
+        self:InitializeModuleSystems(MODULE)
+        -- Load module configuration
+        self:LoadModuleConfiguration(MODULE, path)
+        -- Set up module hooks and events
+        self:SetupModuleHooks(MODULE)
+        -- Register module commands
+        self:RegisterModuleCommands(MODULE)
+        -- Initialize module database tables if needed
+        self:InitializeModuleDatabase(MODULE)
+        -- Load module languages
+        self:LoadModuleLanguages(MODULE, path)
+        -- Set up module networking
+        self:SetupModuleNetworking(MODULE)
+        -- Initialize module permissions
+        self:InitializeModulePermissions(MODULE)
+        -- Log comprehensive module loading
+        lia.log.add(string.format("Module loaded successfully - Name: %s, Path: %s, Version: %s",
+            MODULE.name or "Unknown",
+            path,
+            MODULE.version or "Unknown"), FLAG_NORMAL)
+        -- Trigger post-module load hooks
+        hook.Run("OnModuleLoaded", MODULE, path)
+        -- Update module loading statistics
+        self:UpdateModuleStatistics(MODULE)
+    end
+    -- Helper function to validate module structure
+    function MODULE:ValidateModuleStructure(moduleTable, path)
+        -- Check for required fields
+        local required = {"name", "author"}
+        for _, field in ipairs(required) do
+            if not moduleTable[field] then
+                lia.log.add("Module missing required field '" .. field .. "' in: " .. path, FLAG_ERROR)
+                return false
+            end
+        end
+        -- Validate module name format
+        if not string.match(moduleTable.name, "^[a-zA-Z0-9_-]+$") then
+            lia.log.add("Invalid module name format in: " .. path, FLAG_ERROR)
+            return false
+        end
+        return true
+    end
+
+```
+
+---
+
+### setData
+
+#### 📋 Purpose
+Called when module files are being included.
+
+#### ⏰ When Called
+When the framework loads and includes module files.
+
+#### ⚙️ Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `path` | **string** | The path to the module files. |
+| `MODULE` | **table** | The module table being loaded. |
 
 #### ↩️ Returns
 * nil

@@ -22,9 +22,9 @@ When server needs to display a notification to player(s)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player|nil** |  |
-| `message` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **Player|nil** | Target player to send notification to, or nil for all players |
+| `message` | **string** | The notification message text to display |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -79,9 +79,9 @@ When server needs to display a localized notification with parameter substitutio
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **Player|nil** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **Player|nil** | Target player to send notification to, or nil for all players |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -382,9 +382,9 @@ When client needs to display a notification without server communication
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `_` | **any** |  |
-| `message` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `_` | **any** | Ignored parameter (for compatibility with server version) |
+| `message` | **string** | The notification message text to display |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -437,9 +437,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -498,9 +498,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -559,9 +559,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -620,9 +620,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -681,9 +681,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -742,9 +742,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -803,9 +803,9 @@ When client needs to display a localized notification without server communicati
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `client` | **any** |  |
-| `key` | **string** |  |
-| `notifType` | **string|nil** |  |
+| `client` | **any** | Ignored parameter (for compatibility with server version) |
+| `key` | **string** | Localization key for the message |
+| `notifType` | **string|nil** | Type of notification ("default", "error", "success", "info", etc.) |
 
 #### ↩️ Returns
 * None
@@ -864,8 +864,8 @@ When legacy notification functions are used (e.g., notification.AddLegacy)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `typeId` | **number** |  |
+| `text` | **string** | The notification message text to display |
+| `typeId` | **number** | Legacy notification type ID (0=info, 1=error, 2=success) |
 
 #### ↩️ Returns
 * None
@@ -924,8 +924,8 @@ When legacy notification functions are used (e.g., notification.AddLegacy)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `typeId` | **number** |  |
+| `text` | **string** | The notification message text to display |
+| `typeId` | **number** | Legacy notification type ID (0=info, 1=error, 2=success) |
 
 #### ↩️ Returns
 * None

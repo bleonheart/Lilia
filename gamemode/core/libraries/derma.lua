@@ -1931,7 +1931,7 @@ function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread,
     OUTLINE_THICKNESS = thickness
     setupShadows()
     USING_BLUR = bit_band(flags, BLUR) ~= 0
-    if bit_band(flags, manualColor) == 0 then drawShadows(col and col.r or 0, col and col.g or 0, col and col.b or 0, col and col.a or 255) end
+    if bit_band(flags, MANUAL_COLOR) == 0 then drawShadows(col and col.r or 0, col and col.g or 0, col and col.b or 0, col and col.a or 255) end
     DisableClipping(OLD_CLIPPING_STATE)
 end
 
@@ -2128,7 +2128,7 @@ lia.derma.baseFuncs = {
         local shape_flag = bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)
         if shape_flag ~= 0 then SHAPE = shapes[shape_flag] or shapes[defaultShape] end
         if bit_band(flags, BLUR) ~= 0 then USING_BLUR, BLUR_INTENSITY = true, 1.0 end
-        if bit_band(flags, manualColor) ~= 0 then COL_R = nil end
+        if bit_band(flags, MANUAL_COLOR) ~= 0 then COL_R = nil end
         return self
     end,
 }

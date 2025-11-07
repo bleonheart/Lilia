@@ -22,7 +22,7 @@ When you need to access or modify an existing bar's properties
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `identifier` | **string** |  |
+| `identifier` | **string** | The unique identifier of the bar to retrieve |
 
 #### ↩️ Returns
 * table|nil - The bar object if found, nil otherwise
@@ -83,10 +83,10 @@ When creating custom bars or adding new progress indicators to the HUD
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `getValue` | **function** |  |
-| `color` | **Color** |  |
-| `priority` | **number** |  |
-| `identifier` | **string** |  |
+| `getValue` | **function** | Function that returns the current value (0-1) for the bar |
+| `color` | **Color** | Color of the bar fill (optional, defaults to random color) |
+| `priority` | **number** | Display priority, lower numbers appear first (optional) |
+| `identifier` | **string** | Unique identifier for the bar (optional) |
 
 #### ↩️ Returns
 * number - The priority assigned to the bar
@@ -153,7 +153,7 @@ When you need to remove a specific bar from the HUD or clean up bars
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `identifier` | **string** |  |
+| `identifier` | **string** | The unique identifier of the bar to remove |
 
 #### ↩️ Returns
 * nil
@@ -207,13 +207,13 @@ Internally by the bars system or when manually drawing custom bars
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `x` | **number** |  |
-| `y` | **number** |  |
-| `w` | **number** |  |
-| `h` | **number** |  |
-| `pos` | **number** |  |
-| `max` | **number** |  |
-| `color` | **Color** |  |
+| `x` | **number** | X coordinate for the bar position |
+| `y` | **number** | Y coordinate for the bar position |
+| `w` | **number** | Width of the bar |
+| `h` | **number** | Height of the bar |
+| `pos` | **number** | Current progress value (0-max) |
+| `max` | **number** | Maximum value for the bar |
+| `color` | **Color** | Color of the bar fill |
 
 #### ↩️ Returns
 * nil
@@ -267,8 +267,8 @@ When displaying progress for actions like reloading, healing, or other timed act
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `text` | **string** |  |
-| `duration` | **number** |  |
+| `text` | **string** | Text to display above the progress bar |
+| `duration` | **number** | Duration in seconds for the action to complete |
 
 #### ↩️ Returns
 * nil
