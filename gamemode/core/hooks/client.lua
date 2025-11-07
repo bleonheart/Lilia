@@ -522,18 +522,20 @@ end
 function GM:OnContextMenuOpen()
     self.BaseClass:OnContextMenuOpen()
     if hook.Run("ShouldShowQuickMenu") == false then return end
-    if not IsValid(lia.gui.quick) then
-        lia.gui.quick = vgui.Create("liaQuick")
-    else
-        lia.gui.quick:SetVisible(true)
-        lia.gui.quick:MakePopup()
-        if lia.gui.quick.forceRepopulate then lia.gui.quick:populateOptions() end
+    if IsValid(lia.gui.quick) then
+        lia.gui.quick:Remove()
+        lia.gui.quick = nil
     end
+
+    lia.gui.quick = vgui.Create("liaQuick")
 end
 
 function GM:OnContextMenuClose()
     self.BaseClass:OnContextMenuClose()
-    if IsValid(lia.gui.quick) then lia.gui.quick:SetVisible(false) end
+    if IsValid(lia.gui.quick) then
+        lia.gui.quick:Remove()
+        lia.gui.quick = nil
+    end
 end
 
 function GM:CharListLoaded()
