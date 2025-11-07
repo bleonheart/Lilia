@@ -1067,7 +1067,7 @@ do
     end
 end
 
-local function getShader(name)
+local function GET_SHADER(name)
     return SHADERS_VERSION:gsub("%.", "_") .. "_" .. name
 end
 
@@ -1086,6 +1086,7 @@ do
 
     BLUR_RT = rtCache[BLUR_RT_NAME]
 end
+
 local NEW_FLAG
 do
     local flags_n = -1
@@ -1124,10 +1125,10 @@ screenspace_general
 	$linearread_texture3       1
 }
 ]==]
-local matrixes = {}
+local MATRIXES = {}
 local MATERIAL_CACHE = {}
-local function createShaderMat(name, opts)
-    assert(name and isstring(name), "createShaderMat: tex must be a string")
+local function create_shader_mat(name, opts)
+    assert(name and isstring(name), "create_shader_mat: tex must be a string")
     local mat_name = "rndx_shaders1" .. name .. SHADERS_VERSION
     -- Check cache first
     if MATERIAL_CACHE[mat_name] then return MATERIAL_CACHE[mat_name] end
@@ -1135,7 +1136,7 @@ local function createShaderMat(name, opts)
     local existing_mat = Material(mat_name)
     if existing_mat and not existing_mat:IsError() then
         MATERIAL_CACHE[mat_name] = existing_mat
-        if not matrixes[existing_mat] then matrixes[existing_mat] = Matrix() end
+        if not MATRIXES[existing_mat] then MATRIXES[existing_mat] = Matrix() end
         return existing_mat
     end
 
@@ -1148,53 +1149,53 @@ local function createShaderMat(name, opts)
     end
 
     local mat = CreateMaterial(mat_name, "screenspace_general", key_values)
-    matrixes[mat] = Matrix()
+    MATRIXES[mat] = Matrix()
     MATERIAL_CACHE[mat_name] = mat
     return mat
 end
 
-local roundedMat = createShaderMat("rounded", {
-    ["$pixshader"] = getShader("rndx_rounded_ps30"),
-    ["$vertexshader"] = getShader("rndx_vertex_vs30"),
+local ROUNDED_MAT = create_shader_mat("rounded", {
+    ["$pixshader"] = GET_SHADER("rndx_rounded_ps30"),
+    ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
 })
 
-local roundedTextureMat = createShaderMat("rounded_texture", {
-    ["$pixshader"] = getShader("rndx_rounded_ps30"),
-    ["$vertexshader"] = getShader("rndx_vertex_vs30"),
-    ["$basetexture"] = "vgui/white",
+local ROUNDED_TEXTURE_MAT = create_shader_mat("rounded_texture", {
+    ["$pixshader"] = GET_SHADER("rndx_rounded_ps30"),
+    ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
+    ["$basetexture"] = "loveyoumom", -- if there is no base texture, you can't change it later
 })
 
-local blurVertical = "$c0_x"
-local roundedBlurMat = createShaderMat("blur_horizontal", {
-    ["$pixshader"] = getShader("rndx_rounded_blur_ps30"),
-    ["$vertexshader"] = getShader("rndx_vertex_vs30"),
+local BLUR_VERTICAL = "$c0_x"
+local ROUNDED_BLUR_MAT = create_shader_mat("blur_horizontal", {
+    ["$pixshader"] = GET_SHADER("rndx_rounded_blur_ps30"),
+    ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
     ["$basetexture"] = BLUR_RT:GetName(),
     ["$texture1"] = "_rt_FullFrameFB",
 })
 
-local shadowsMat = createShaderMat("rounded_shadows", {
-    ["$pixshader"] = getShader("rndx_shadows_ps30"),
-    ["$vertexshader"] = getShader("rndx_vertex_vs30"),
+local SHADOWS_MAT = create_shader_mat("rounded_shadows", {
+    ["$pixshader"] = GET_SHADER("rndx_shadows_ps30"),
+    ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
 })
 
-local shadowsBlurMat = createShaderMat("shadows_blur_horizontal", {
-    ["$pixshader"] = getShader("rndx_shadows_blur_ps30"),
-    ["$vertexshader"] = getShader("rndx_vertex_vs30"),
+local SHADOWS_BLUR_MAT = create_shader_mat("shadows_blur_horizontal", {
+    ["$pixshader"] = GET_SHADER("rndx_shadows_blur_ps30"),
+    ["$vertexshader"] = GET_SHADER("rndx_vertex_vs30"),
     ["$basetexture"] = BLUR_RT:GetName(),
     ["$texture1"] = "_rt_FullFrameFB",
 })
 
-local shapes = {
+local SHAPES = {
     [SHAPE_CIRCLE] = 2,
     [SHAPE_FIGMA] = 2.2,
     [SHAPE_IOS] = 4,
 }
 
-local defaultShape = SHAPE_FIGMA
-local materialSetTexture = roundedMat.SetTexture
-local materialSetMatrix = roundedMat.SetMatrix
-local materialSetFloat = roundedMat.SetFloat
-local matrixSetUnpacked = Matrix().SetUnpacked
+local DEFAULT_SHAPE = SHAPE_FIGMA
+local MATERIAL_SetTexture = ROUNDED_MAT.SetTexture
+local MATERIAL_SetMatrix = ROUNDED_MAT.SetMatrix
+local MATERIAL_SetFloat = ROUNDED_MAT.SetFloat
+local MATRIX_SetUnpacked = Matrix().SetUnpacked
 local MAT
 local X, Y, W, H
 local TL, TR, BL, BR
@@ -1205,14 +1206,14 @@ local SHAPE, OUTLINE_THICKNESS
 local START_ANGLE, END_ANGLE, ROTATION
 local CLIP_PANEL
 local SHADOW_ENABLED, SHADOW_SPREAD, SHADOW_INTENSITY
-local function resetParams()
+local function RESET_PARAMS()
     MAT = nil
     X, Y, W, H = 0, 0, 0, 0
     TL, TR, BL, BR = 0, 0, 0, 0
     TEXTURE = nil
     USING_BLUR, BLUR_INTENSITY = false, 1.0
     COL_R, COL_G, COL_B, COL_A = 255, 255, 255, 255
-    SHAPE, OUTLINE_THICKNESS = shapes[defaultShape], -1
+    SHAPE, OUTLINE_THICKNESS = SHAPES[DEFAULT_SHAPE], -1
     START_ANGLE, END_ANGLE, ROTATION = 0, 360, 0
     CLIP_PANEL = nil
     SHADOW_ENABLED, SHADOW_SPREAD, SHADOW_INTENSITY = false, 0, 0
@@ -1231,7 +1232,7 @@ do
         return x < 0 and 0 or x
     end
 
-    function normalizeCornerRadii()
+    function normalize_corner_radii()
         local tl, tr, bl, br = nzr(TL), nzr(TR), nzr(BL), nzr(BR)
         local k = math_max(1, (tl + tr) / W, (bl + br) / W, (tl + bl) / H, (tr + br) / H)
         if k > 1 then
@@ -1242,33 +1243,33 @@ do
     end
 end
 
-local function setupDraw()
-    local tl, tr, bl, br = normalizeCornerRadii()
-    local matrix = matrixes[MAT]
-    matrixSetUnpacked(matrix, bl, W, OUTLINE_THICKNESS or -1, END_ANGLE, br, H, SHADOW_INTENSITY, ROTATION, tr, SHAPE, BLUR_INTENSITY or 1.0, 0, tl, TEXTURE and 1 or 0, START_ANGLE, 0)
-    materialSetMatrix(MAT, "$viewprojmat", matrix)
+local function SetupDraw()
+    local TL, TR, BL, BR = normalize_corner_radii()
+    local matrix = MATRIXES[MAT]
+    MATRIX_SetUnpacked(matrix, BL, W, OUTLINE_THICKNESS or -1, END_ANGLE, BR, H, SHADOW_INTENSITY, ROTATION, TR, SHAPE, BLUR_INTENSITY or 1.0, 0, TL, TEXTURE and 1 or 0, START_ANGLE, 0)
+    MATERIAL_SetMatrix(MAT, "$viewprojmat", matrix)
     if COL_R then surface_SetDrawColor(COL_R, COL_G, COL_B, COL_A) end
     surface_SetMaterial(MAT)
 end
 
 local MANUAL_COLOR = NEW_FLAG()
-local defaultDrawFlags = defaultShape
-local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thickness)
+local DEFAULT_DRAW_FLAGS = DEFAULT_SHAPE
+local function draw_rounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thickness)
     if col and col.a == 0 then return end
-    resetParams()
-    if not flags then flags = defaultDrawFlags end
+    RESET_PARAMS()
+    if not flags then flags = DEFAULT_DRAW_FLAGS end
     local using_blur = bit_band(flags, BLUR) ~= 0
     if using_blur then return lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness) end
-    MAT = roundedMat
+    MAT = ROUNDED_MAT
     if texture then
-        MAT = roundedTextureMat
-        materialSetTexture(MAT, "$basetexture", texture)
+        MAT = ROUNDED_TEXTURE_MAT
+        MATERIAL_SetTexture(MAT, "$basetexture", texture)
         TEXTURE = texture
     end
 
     W, H = w, h
     TL, TR, BL, BR = bit_band(flags, NO_TL) == 0 and tl or 0, bit_band(flags, NO_TR) == 0 and tr or 0, bit_band(flags, NO_BL) == 0 and bl or 0, bit_band(flags, NO_BR) == 0 and br or 0
-    SHAPE = shapes[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or shapes[defaultShape]
+    SHAPE = SHAPES[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or SHAPES[DEFAULT_SHAPE]
     OUTLINE_THICKNESS = thickness
     if bit_band(flags, MANUAL_COLOR) ~= 0 then
         COL_R = nil
@@ -1278,7 +1279,7 @@ local function drawRounded(x, y, w, h, col, flags, tl, tr, bl, br, texture, thic
         COL_R, COL_G, COL_B, COL_A = 255, 255, 255, 255
     end
 
-    setupDraw()
+    SetupDraw()
     return surface_DrawTexturedRectUV(x, y, w, h, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
@@ -1336,7 +1337,7 @@ end
     ```
 ]]
 function lia.derma.draw(radius, x, y, w, h, col, flags)
-    return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius)
+    return draw_rounded(x, y, w, h, col, flags, radius, radius, radius, radius)
 end
 
 --[[
@@ -1394,7 +1395,7 @@ end
     ```
 ]]
 function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
-    return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius, nil, thickness or 1)
+    return draw_rounded(x, y, w, h, col, flags, radius, radius, radius, radius, nil, thickness or 1)
 end
 
 --[[
@@ -1454,7 +1455,7 @@ end
     ```
 ]]
 function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
-    return drawRounded(x, y, w, h, col, flags, radius, radius, radius, radius, texture)
+    return draw_rounded(x, y, w, h, col, flags, radius, radius, radius, radius, texture)
 end
 
 --[[
@@ -1748,21 +1749,21 @@ function lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)
     return lia.derma.drawMaterial(radius / 2, x - radius / 2, y - radius / 2, radius, radius, col, mat, (flags or 0) + SHAPE_CIRCLE)
 end
 
-local useShadowsBlur = false
-local function drawBlur()
-    if useShadowsBlur then
-        MAT = shadowsBlurMat
+local USE_SHADOWS_BLUR = false
+local function draw_blur()
+    if USE_SHADOWS_BLUR then
+        MAT = SHADOWS_BLUR_MAT
     else
-        MAT = roundedBlurMat
+        MAT = ROUNDED_BLUR_MAT
     end
 
     COL_R, COL_G, COL_B, COL_A = 255, 255, 255, 255
-    setupDraw()
+    SetupDraw()
     render_CopyRenderTargetToTexture(BLUR_RT)
-    materialSetFloat(MAT, blurVertical, 0)
+    MATERIAL_SetFloat(MAT, BLUR_VERTICAL, 0)
     surface_DrawTexturedRect(X, Y, W, H)
     render_CopyRenderTargetToTexture(BLUR_RT)
-    materialSetFloat(MAT, blurVertical, 1)
+    MATERIAL_SetFloat(MAT, BLUR_VERTICAL, 1)
     surface_DrawTexturedRect(X, Y, W, H)
 end
 
@@ -1827,17 +1828,17 @@ end
     ```
 ]]
 function lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
-    resetParams()
-    if not flags then flags = defaultDrawFlags end
+    RESET_PARAMS()
+    if not flags then flags = DEFAULT_DRAW_FLAGS end
     X, Y = x, y
     W, H = w, h
     TL, TR, BL, BR = bit_band(flags, NO_TL) == 0 and tl or 0, bit_band(flags, NO_TR) == 0 and tr or 0, bit_band(flags, NO_BL) == 0 and bl or 0, bit_band(flags, NO_BR) == 0 and br or 0
-    SHAPE = shapes[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or shapes[defaultShape]
+    SHAPE = SHAPES[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or SHAPES[DEFAULT_SHAPE]
     OUTLINE_THICKNESS = thickness
-    drawBlur()
+    draw_blur()
 end
 
-local function setupShadows()
+local function setup_shadows()
     X = X - SHADOW_SPREAD
     Y = Y - SHADOW_SPREAD
     W = W + (SHADOW_SPREAD * 2)
@@ -1848,21 +1849,21 @@ local function setupShadows()
     BR = BR + (SHADOW_SPREAD * 2)
 end
 
-local function drawShadows(r, g, b, a)
+local function draw_shadows(r, g, b, a)
     if USING_BLUR then
-        useShadowsBlur = true
-        drawBlur()
-        useShadowsBlur = false
+        USE_SHADOWS_BLUR = true
+        draw_blur()
+        USE_SHADOWS_BLUR = false
     end
 
-    MAT = shadowsMat
+    MAT = SHADOWS_MAT
     if r == false then
         COL_R = nil
     else
         COL_R, COL_G, COL_B, COL_A = r, g, b, a
     end
 
-    setupDraw()
+    SetupDraw()
     surface_DrawTexturedRectUV(X, Y, W, H, -0.015625, -0.015625, 1.015625, 1.015625)
 end
 
@@ -1912,13 +1913,13 @@ end
     Low Complexity:
     ```lua
     -- Simple: Draw basic shadow
-    lia.derma.drawShadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100))
+    lia.derma.draw_shadowsEx(100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
     ```lua
     -- Medium: Draw with custom spread and intensity
-    lia.derma.drawShadowsEx(50, 50, 300, 150, Color(0, 0, 0, 150), flags, 12, 12, 12, 12, 20, 25)
+    lia.derma.draw_shadowsEx(50, 50, 300, 150, Color(0, 0, 0, 150), flags, 12, 12, 12, 12, 20, 25)
     ```
 
     High Complexity:
@@ -1926,24 +1927,24 @@ end
     -- High: Dynamic shadow with different corner radii
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-    lia.derma.drawShadowsEx(x, y, w, h, shadowColor, flags, tl, tr, bl, br, spread, intensity, thickness)
+    lia.derma.draw_shadowsEx(x, y, w, h, shadowColor, flags, tl, tr, bl, br, spread, intensity, thickness)
     ```
 ]]
-function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
+function lia.derma.draw_shadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
     if col and col.a == 0 then return end
     local OLD_CLIPPING_STATE = DisableClipping(true)
-    resetParams()
-    if not flags then flags = defaultDrawFlags end
+    RESET_PARAMS()
+    if not flags then flags = DEFAULT_DRAW_FLAGS end
     X, Y = x, y
     W, H = w, h
     SHADOW_SPREAD = spread or 30
     SHADOW_INTENSITY = intensity or SHADOW_SPREAD * 1.2
     TL, TR, BL, BR = bit_band(flags, NO_TL) == 0 and tl or 0, bit_band(flags, NO_TR) == 0 and tr or 0, bit_band(flags, NO_BL) == 0 and bl or 0, bit_band(flags, NO_BR) == 0 and br or 0
-    SHAPE = shapes[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or shapes[defaultShape]
+    SHAPE = SHAPES[bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)] or SHAPES[DEFAULT_SHAPE]
     OUTLINE_THICKNESS = thickness
-    setupShadows()
+    setup_shadows()
     USING_BLUR = bit_band(flags, BLUR) ~= 0
-    if bit_band(flags, MANUAL_COLOR) == 0 then drawShadows(col and col.r or 0, col and col.g or 0, col and col.b or 0, col and col.a or 255) end
+    if bit_band(flags, MANUAL_COLOR) == 0 then draw_shadows(col and col.r or 0, col and col.g or 0, col and col.b or 0, col and col.a or 255) end
     DisableClipping(OLD_CLIPPING_STATE)
 end
 
@@ -1985,13 +1986,13 @@ end
     Low Complexity:
     ```lua
     -- Simple: Draw basic shadow with uniform radius
-    lia.derma.drawShadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
+    lia.derma.draw_shadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
     ```lua
     -- Medium: Draw with custom spread and intensity
-    lia.derma.drawShadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
+    lia.derma.draw_shadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
     ```
 
     High Complexity:
@@ -2000,11 +2001,11 @@ end
     local radius = isHovered and 16 or 8
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-    lia.derma.drawShadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
+    lia.derma.draw_shadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
     ```
 ]]
-function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)
-    return lia.derma.drawShadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity)
+function lia.derma.draw_shadows(radius, x, y, w, h, col, spread, intensity, flags)
+    return lia.derma.draw_shadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity)
 end
 
 --[[
@@ -2047,13 +2048,13 @@ end
     Low Complexity:
     ```lua
     -- Simple: Draw outlined shadow
-    lia.derma.drawShadowsOutlined(8, 100, 100, 200, 100, Color(0, 0, 0, 100), 2)
+    lia.derma.draw_shadowsOutlined(8, 100, 100, 200, 100, Color(0, 0, 0, 100), 2)
     ```
 
     Medium Complexity:
     ```lua
     -- Medium: Draw with custom thickness and spread
-    lia.derma.drawShadowsOutlined(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 3, 20, 25)
+    lia.derma.draw_shadowsOutlined(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 3, 20, 25)
     ```
 
     High Complexity:
@@ -2062,14 +2063,14 @@ end
     local thickness = isHovered and 3 or 1
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-    lia.derma.drawShadowsOutlined(radius, x, y, w, h, shadowColor, thickness, spread, intensity, flags)
+    lia.derma.draw_shadowsOutlined(radius, x, y, w, h, shadowColor, thickness, spread, intensity, flags)
     ```
 ]]
-function lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)
-    return lia.derma.drawShadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity, thickness or 1)
+function lia.derma.draw_shadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)
+    return lia.derma.draw_shadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity, thickness or 1)
 end
 
-lia.derma.baseFuncs = {
+local BASE_FUNCS = {
     Rad = function(self, rad)
         TL, TR, BL, BR = rad, rad, rad, rad
         return self
@@ -2094,11 +2095,11 @@ lia.derma.baseFuncs = {
         return self
     end,
     Shape = function(self, shape)
-        SHAPE = shapes[shape] or 2.2
+        SHAPE = SHAPES[shape] or 2.2
         return self
     end,
     Color = function(self, col_or_r, g, b, a)
-        if isnumber(col_or_r) then
+        if type(col_or_r) == "number" then
             COL_R, COL_G, COL_B, COL_A = col_or_r, g or 255, b or 255, a or 255
         else
             COL_R, COL_G, COL_B, COL_A = col_or_r.r, col_or_r.g, col_or_r.b, col_or_r.a
@@ -2133,33 +2134,39 @@ lia.derma.baseFuncs = {
     end,
     Flags = function(self, flags)
         flags = flags or 0
+        -- Corner flags
         if bit_band(flags, NO_TL) ~= 0 then TL = 0 end
         if bit_band(flags, NO_TR) ~= 0 then TR = 0 end
         if bit_band(flags, NO_BL) ~= 0 then BL = 0 end
         if bit_band(flags, NO_BR) ~= 0 then BR = 0 end
+        -- Shape flags
         local shape_flag = bit_band(flags, SHAPE_CIRCLE + SHAPE_FIGMA + SHAPE_IOS)
-        if shape_flag ~= 0 then SHAPE = shapes[shape_flag] or shapes[defaultShape] end
-        if bit_band(flags, BLUR) ~= 0 then USING_BLUR, BLUR_INTENSITY = true, 1.0 end
+        if shape_flag ~= 0 then SHAPE = SHAPES[shape_flag] or SHAPES[DEFAULT_SHAPE] end
+        -- Blur flag
+        if bit_band(flags, BLUR) ~= 0 then BASE_FUNCS.Blur(self) end
+        -- Manual color flag
         if bit_band(flags, MANUAL_COLOR) ~= 0 then COL_R = nil end
         return self
     end,
 }
 
-lia.derma.Rect = {
-    Rad = lia.derma.baseFuncs.Rad,
-    Radii = lia.derma.baseFuncs.Radii,
-    Texture = lia.derma.baseFuncs.Texture,
-    Material = lia.derma.baseFuncs.Material,
-    Outline = lia.derma.baseFuncs.Outline,
-    Shape = lia.derma.baseFuncs.Shape,
-    Color = lia.derma.baseFuncs.Color,
-    Blur = lia.derma.baseFuncs.Blur,
-    Rotation = lia.derma.baseFuncs.Rotation,
-    StartAngle = lia.derma.baseFuncs.StartAngle,
-    EndAngle = lia.derma.baseFuncs.EndAngle,
-    Clip = lia.derma.baseFuncs.Clip,
-    Shadow = lia.derma.baseFuncs.Shadow,
-    Flags = lia.derma.baseFuncs.Flags,
+lia.derma.baseFuncs = BASE_FUNCS
+
+local RECT = {
+    Rad = BASE_FUNCS.Rad,
+    Radii = BASE_FUNCS.Radii,
+    Texture = BASE_FUNCS.Texture,
+    Material = BASE_FUNCS.Material,
+    Outline = BASE_FUNCS.Outline,
+    Shape = BASE_FUNCS.Shape,
+    Color = BASE_FUNCS.Color,
+    Blur = BASE_FUNCS.Blur,
+    Rotation = BASE_FUNCS.Rotation,
+    StartAngle = BASE_FUNCS.StartAngle,
+    EndAngle = BASE_FUNCS.EndAngle,
+    Clip = BASE_FUNCS.Clip,
+    Shadow = BASE_FUNCS.Shadow,
+    Flags = BASE_FUNCS.Flags,
     Draw = function()
         if START_ANGLE == END_ANGLE then return end
         local OLD_CLIPPING_STATE
@@ -2171,17 +2178,17 @@ lia.derma.Rect = {
         end
 
         if SHADOW_ENABLED then
-            setupShadows()
-            drawShadows(COL_R, COL_G, COL_B, COL_A)
+            setup_shadows()
+            draw_shadows(COL_R, COL_G, COL_B, COL_A)
         elseif USING_BLUR then
-            drawBlur()
+            draw_blur()
         else
             if TEXTURE then
-                MAT = roundedTextureMat
-                materialSetTexture(MAT, "$basetexture", TEXTURE)
+                MAT = ROUNDED_TEXTURE_MAT
+                MATERIAL_SetTexture(MAT, "$basetexture", TEXTURE)
             end
 
-            setupDraw()
+            SetupDraw()
             surface_DrawTexturedRectUV(X, Y, W, H, -0.015625, -0.015625, 1.015625, 1.015625)
         end
 
@@ -2191,46 +2198,50 @@ lia.derma.Rect = {
     GetMaterial = function()
         if SHADOW_ENABLED or USING_BLUR then error(L("shadowedBlurredRectangleError")) end
         if TEXTURE then
-            MAT = roundedTextureMat
-            materialSetTexture(MAT, "$basetexture", TEXTURE)
+            MAT = ROUNDED_TEXTURE_MAT
+            MATERIAL_SetTexture(MAT, "$basetexture", TEXTURE)
         end
 
-        setupDraw()
+        SetupDraw()
         return MAT
     end,
 }
 
-lia.derma.Circle = {
-    Texture = lia.derma.baseFuncs.Texture,
-    Material = lia.derma.baseFuncs.Material,
-    Outline = lia.derma.baseFuncs.Outline,
-    Color = lia.derma.baseFuncs.Color,
-    Blur = lia.derma.baseFuncs.Blur,
-    Rotation = lia.derma.baseFuncs.Rotation,
-    StartAngle = lia.derma.baseFuncs.StartAngle,
-    EndAngle = lia.derma.baseFuncs.EndAngle,
-    Clip = lia.derma.baseFuncs.Clip,
-    Shadow = lia.derma.baseFuncs.Shadow,
-    Flags = lia.derma.baseFuncs.Flags,
-    Draw = lia.derma.Rect.Draw,
-    GetMaterial = lia.derma.Rect.GetMaterial,
+lia.derma.Rect = RECT
+
+local CIRCLE = {
+    Texture = BASE_FUNCS.Texture,
+    Material = BASE_FUNCS.Material,
+    Outline = BASE_FUNCS.Outline,
+    Color = BASE_FUNCS.Color,
+    Blur = BASE_FUNCS.Blur,
+    Rotation = BASE_FUNCS.Rotation,
+    StartAngle = BASE_FUNCS.StartAngle,
+    EndAngle = BASE_FUNCS.EndAngle,
+    Clip = BASE_FUNCS.Clip,
+    Shadow = BASE_FUNCS.Shadow,
+    Flags = BASE_FUNCS.Flags,
+    Draw = RECT.Draw,
+    GetMaterial = RECT.GetMaterial,
 }
+
+lia.derma.Circle = CIRCLE
 
 lia.derma.Types = {
     Rect = function(x, y, w, h)
-        resetParams()
-        MAT = roundedMat
+        RESET_PARAMS()
+        MAT = ROUNDED_MAT
         X, Y, W, H = x, y, w, h
-        return lia.derma.Rect
+        return RECT
     end,
     Circle = function(x, y, r)
-        resetParams()
-        MAT = roundedMat
-        SHAPE = shapes[SHAPE_CIRCLE]
+        RESET_PARAMS()
+        MAT = ROUNDED_MAT
+        SHAPE = SHAPES[SHAPE_CIRCLE]
         X, Y, W, H = x - r / 2, y - r / 2, r, r
         r = r / 2
         TL, TR, BL, BR = r, r, r, r
-        return lia.derma.Circle
+        return CIRCLE
     end
 }
 
@@ -2362,8 +2373,8 @@ function lia.derma.setFlag(flags, flag, bool)
 end
 
 function lia.derma.setDefaultShape(shape)
-    defaultShape = shape or SHAPE_FIGMA
-    defaultDrawFlags = defaultShape
+    DEFAULT_SHAPE = shape or SHAPE_FIGMA
+    DEFAULT_DRAW_FLAGS = DEFAULT_SHAPE
 end
 
 --[[
