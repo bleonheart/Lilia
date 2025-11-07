@@ -1169,8 +1169,10 @@ if SERVER then
             return
         end
 
-        lia.db.wipeTables()
-        lia.information(L("dbWiped"))
+        lia.db.wipeTables(function()
+            lia.information(L("dbWiped"))
+            RunConsoleCommand("changelevel", game.GetMap())
+        end)
     end)
 
     concommand.Add("lia_resetconfig", function(client)
