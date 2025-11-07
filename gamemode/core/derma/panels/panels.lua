@@ -228,7 +228,7 @@ function QuickPanel:addCheck(text, cb, checked)
     row:SetTall(36)
     row:Dock(TOP)
     row:DockMargin(0, 1, 0, 0)
-    row.Paint = function(_, w, h)
+    row.Paint = function(_, _, h)
         local theme = lia.color.theme
         local textColor = theme and theme.text or Color(255, 255, 255)
         draw.SimpleText(text, "LiliaFont.20", 8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
