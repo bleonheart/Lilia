@@ -641,6 +641,315 @@ function MODULE:PopulateAdminTabs(pages)
             end
         })
     end
+
+    if client:hasPrivilege("manageCharacters") then
+        table.insert(pages, {
+            name = "swepeditor",
+            icon = "icon16/gun.png",
+            drawFunc = function(panel)
+                panel:Clear()
+                panel:DockPadding(10, 10, 10, 10)
+                panel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                local container = panel:Add("DPanel")
+                container:Dock(FILL)
+                container:DockPadding(10, 10, 10, 10)
+                container.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                local weaponListPanel = container:Add("liaScrollPanel")
+                weaponListPanel:Dock(LEFT)
+                weaponListPanel:SetWide(300)
+                weaponListPanel:DockMargin(10, 10, 10, 10)
+                weaponListPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(6):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[2]) or Color(38, 66, 66)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                local weaponListHeader = weaponListPanel:Add("DLabel")
+                weaponListHeader:Dock(TOP)
+                weaponListHeader:DockMargin(10, 10, 10, 5)
+                weaponListHeader:SetTall(25)
+                weaponListHeader:SetText(L("weapons"))
+                weaponListHeader:SetFont("liaMediumFont")
+                weaponListHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
+                local editorPanel = container:Add("DPanel")
+                editorPanel:Dock(FILL)
+                editorPanel:DockMargin(10, 10, 10, 10)
+                editorPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(6):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[2]) or Color(38, 66, 66)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                local propertyScrollPanel = editorPanel:Add("liaScrollPanel")
+                propertyScrollPanel:Dock(FILL)
+                propertyScrollPanel:DockMargin(10, 40, 10, 60)
+                propertyScrollPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[3]) or Color(50, 110, 110)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                local propertyPanels = {}
+                local weaponHeader = editorPanel:Add("DLabel")
+                weaponHeader:Dock(TOP)
+                weaponHeader:DockMargin(10, 10, 10, 5)
+                weaponHeader:SetTall(25)
+                weaponHeader:SetText(L("selectWeaponToEdit"))
+                weaponHeader:SetFont("liaMediumFont")
+                weaponHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
+                local weaponButtons = {}
+                local selectedWeapon = nil
+
+                local function FormatValue(value, valueType)
+                    if value == nil then return L("none") end
+                    if valueType == "boolean" then
+                        return value and L("yes") or L("no")
+                    elseif valueType == "vector" then
+                        return string.format("Vector(%s, %s, %s)", value.x, value.y, value.z)
+                    elseif valueType == "angle" then
+                        return string.format("Angle(%s, %s, %s)", value.p, value.y, value.r)
+                    elseif valueType == "number" then
+                        return tostring(value)
+                    else
+                        return tostring(value)
+                    end
+                end
+
+                local function GetNestedValue(tbl, keyPath)
+                    local keys = string.Explode(" | ", keyPath)
+                    local current = tbl
+                    for _, key in ipairs(keys) do
+                        if current and type(current) == "table" then
+                            current = current[key]
+                        else
+                            return nil
+                        end
+                    end
+                    return current
+                end
+
+                local function SetNestedValue(tbl, keyPath, value)
+                    local keys = string.Explode(" | ", keyPath)
+                    local current = tbl
+                    for i = 1, #keys - 1 do
+                        local key = keys[i]
+                        if not current[key] or type(current[key]) ~= "table" then
+                            current[key] = {}
+                        end
+                        current = current[key]
+                    end
+                    current[keys[#keys]] = value
+                end
+
+                local function SelectWeapon(weaponClass)
+                    selectedWeapon = weaponClass
+                    for _, btn in pairs(weaponButtons) do
+                        if IsValid(btn) then
+                            btn:SetSelected(btn.weaponClass == weaponClass)
+                        end
+                    end
+
+                    net.Start("liaRequestWeaponData")
+                    net.WriteString(weaponClass)
+                    net.SendToServer()
+                end
+
+                local function LoadWeaponData(data)
+                    for _, pnl in pairs(propertyPanels) do
+                        if IsValid(pnl) then pnl:Remove() end
+                    end
+
+                    propertyPanels = {}
+                    local weaponData = data
+                    if not weaponData then return end
+                    local editableProperties = {{"PrintName", "string"}, {"Author", "string"}, {"Contact", "string"}, {"Purpose", "string"}, {"Instructions", "string"}, {"Category", "string"}, {"ViewModel", "string"}, {"WorldModel", "string"}, {"ViewModelFOV", "number"}, {"ViewModelFlip", "boolean"}, {"UseHands", "boolean"}, {"DrawAmmo", "boolean"}, {"DrawCrosshair", "boolean"}, {"IsAlwaysRaised", "boolean"}, {"IsAlwaysLowered", "boolean"}, {"FireWhenLowered", "boolean"}, {"BobScale", "number"}, {"SwayScale", "number"}, {"HoldType", "string"}, {"Weight", "number"}, {"Slot", "number"}, {"SlotPos", "number"}, {"IronSightsPos", "vector"}, {"IronSightsAng", "angle"}, {"Spawnable", "boolean"}, {"AdminOnly", "boolean"}, {"Primary | Damage", "number"}, {"Primary | Delay", "number"}, {"Primary | ClipSize", "number"}, {"Primary | DefaultClip", "number"}, {"Primary | Automatic", "boolean"}, {"Primary | Ammo", "string"}, {"Primary | Recoil", "number"}, {"Primary | Cone", "number"}, {"Primary | Spread", "number"}, {"Primary | NumShots", "number"}, {"Primary | Tracer", "number"}, {"Primary | Force", "number"}, {"Primary | RPM", "number"}, {"Primary | TracerName", "string"}, {"Secondary | Damage", "number"}, {"Secondary | Delay", "number"}, {"Secondary | ClipSize", "number"}, {"Secondary | DefaultClip", "number"}, {"Secondary | Automatic", "boolean"}, {"Secondary | Ammo", "string"}, {"Secondary | Recoil", "number"}, {"Secondary | Cone", "number"}, {"Secondary | Spread", "number"}, {"Secondary | NumShots", "number"}, {"Secondary | Tracer", "number"}, {"Secondary | Force", "number"}, {"Secondary | RPM", "number"}, {"Secondary | TracerName", "string"}}
+
+                    for _, propData in ipairs(editableProperties) do
+                        local key, propType = propData[1], propData[2]
+                        local value = GetNestedValue(weaponData, key)
+                        if value == nil and lia.swepeditor.DefaultSweps[selectedWeapon] then value = GetNestedValue(lia.swepeditor.DefaultSweps[selectedWeapon], key) end
+                        local displayValue = FormatValue(value, propType)
+                        local propPanel = propertyScrollPanel:Add("DPanel")
+                        propPanel:Dock(TOP)
+                        propPanel:DockMargin(2, 2, 2, 2)
+                        propPanel:SetTall(30)
+                        propPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(3):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
+                        propPanel.PerformLayout = function(s, w, _)
+                            if IsValid(s.nameLabel) and IsValid(s.valueControl) then
+                                local nameWidth = math.floor(w * 0.25) - 20
+                                local valueWidth = math.floor(w * 0.7) - 10
+                                s.nameLabel:SetWide(nameWidth)
+                                s.valueControl:SetWide(valueWidth)
+                                s.valueControl:SetPos(nameWidth + 30, 2)
+                            end
+                        end
+
+                        local nameLabel = propPanel:Add("DLabel")
+                        propPanel.nameLabel = nameLabel
+                        nameLabel:Dock(LEFT)
+                        nameLabel:DockMargin(5, 0, 5, 0)
+                        nameLabel:SetText(key)
+                        nameLabel:SetFont("liaSmallFont")
+                        nameLabel:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
+                        nameLabel:SizeToContents()
+
+                        local valueControl
+                        if propType == "boolean" then
+                            valueControl = propPanel:Add("DCheckBox")
+                            valueControl:SetValue(value or false)
+                            valueControl.OnChange = function(s, val)
+                                SetNestedValue(weaponData, key, val)
+                            end
+                        elseif propType == "number" then
+                            valueControl = propPanel:Add("DNumberWang")
+                            valueControl:SetValue(value or 0)
+                            valueControl:SetMinMax(-999999, 999999)
+                            valueControl.OnValueChanged = function(s, val)
+                                SetNestedValue(weaponData, key, val)
+                            end
+                        elseif propType == "vector" then
+                            valueControl = propPanel:Add("DTextEntry")
+                            valueControl:SetText(displayValue)
+                            valueControl:SetPlaceholderText("Vector(x, y, z)")
+                            valueControl.OnEnter = function(s)
+                                local text = s:GetValue()
+                                local x, y, z = string.match(text, "Vector%(([%d.-]+),%s*([%d.-]+),%s*([%d.-]+)%)")
+                                if x and y and z then
+                                    SetNestedValue(weaponData, key, Vector(tonumber(x), tonumber(y), tonumber(z)))
+                                end
+                            end
+                        elseif propType == "angle" then
+                            valueControl = propPanel:Add("DTextEntry")
+                            valueControl:SetText(displayValue)
+                            valueControl:SetPlaceholderText("Angle(p, y, r)")
+                            valueControl.OnEnter = function(s)
+                                local text = s:GetValue()
+                                local p, y, r = string.match(text, "Angle%(([%d.-]+),%s*([%d.-]+),%s*([%d.-]+)%)")
+                                if p and y and r then
+                                    SetNestedValue(weaponData, key, Angle(tonumber(p), tonumber(y), tonumber(r)))
+                                end
+                            end
+                        else
+                            valueControl = propPanel:Add("DTextEntry")
+                            valueControl:SetText(tostring(value or ""))
+                            valueControl.OnEnter = function(s)
+                                SetNestedValue(weaponData, key, s:GetValue())
+                            end
+                        end
+
+                        propPanel.valueControl = valueControl
+                        table.insert(propertyPanels, propPanel)
+                    end
+
+                    local buttonPanel = editorPanel:Add("DPanel")
+                    buttonPanel:Dock(BOTTOM)
+                    buttonPanel:SetTall(50)
+                    buttonPanel:DockMargin(10, 5, 10, 10)
+                    buttonPanel.Paint = nil
+
+                    local saveBtn = buttonPanel:Add("liaButton")
+                    saveBtn:Dock(LEFT)
+                    saveBtn:SetWide(100)
+                    saveBtn:DockMargin(0, 0, 10, 0)
+                    saveBtn:SetText(L("save"))
+                    saveBtn:SetFont("liaMediumFont")
+
+                    local refreshBtn = buttonPanel:Add("liaButton")
+                    refreshBtn:Dock(LEFT)
+                    refreshBtn:SetWide(100)
+                    refreshBtn:DockMargin(0, 0, 10, 0)
+                    refreshBtn:SetText(L("refresh"))
+                    refreshBtn:SetFont("liaMediumFont")
+
+                    local resetBtn = buttonPanel:Add("liaButton")
+                    resetBtn:Dock(LEFT)
+                    resetBtn:SetWide(100)
+                    resetBtn:DockMargin(0, 0, 10, 0)
+                    resetBtn:SetText(L("reset"))
+                    resetBtn:SetFont("liaMediumFont")
+
+                    local resetAllBtn = buttonPanel:Add("liaButton")
+                    resetAllBtn:Dock(LEFT)
+                    resetAllBtn:SetWide(120)
+                    resetAllBtn:DockMargin(0, 0, 10, 0)
+                    resetAllBtn:SetText(L("resetAll"))
+                    resetAllBtn:SetFont("liaMediumFont")
+
+                    local function SaveChanges()
+                        if not selectedWeapon or not weaponData then return end
+                        lia.swepeditor.adjustValue(selectedWeapon, "", weaponData)
+                        LocalPlayer():notify(L("weaponUpdated", selectedWeapon))
+                    end
+
+                    saveBtn.DoClick = SaveChanges
+                    refreshBtn.DoClick = function()
+                        PopulateWeaponList()
+                        if selectedWeapon then SelectWeapon(selectedWeapon) end
+                    end
+
+                    resetBtn.DoClick = function()
+                        if not selectedWeapon then return end
+                        lia.swepeditor.NetworkData[selectedWeapon] = nil
+                        local stored = weapons.GetStored(selectedWeapon)
+                        if stored and lia.swepeditor.DefaultSweps[selectedWeapon] then
+                            for k, v in pairs(lia.swepeditor.DefaultSweps[selectedWeapon]) do
+                                stored[k] = v
+                            end
+                        end
+
+                        lia.db.query("DELETE FROM lia_swepeditor WHERE class = '" .. selectedWeapon .. "'", function()
+                            LocalPlayer():notify(L("weaponReset", selectedWeapon))
+                            PopulateWeaponList()
+                            if selectedWeapon then SelectWeapon(selectedWeapon) end
+                        end)
+                    end
+
+                    resetAllBtn.DoClick = function()
+                        if not selectedWeapon then return end
+                        for _, weaponData in pairs(weapons.GetList()) do
+                            if weaponData and weaponData.ClassName then
+                                lia.swepeditor.NetworkData[weaponData.ClassName] = nil
+                                local stored = weapons.GetStored(weaponData.ClassName)
+                                if stored and lia.swepeditor.DefaultSweps[weaponData.ClassName] then
+                                    for k, v in pairs(lia.swepeditor.DefaultSweps[weaponData.ClassName]) do
+                                        stored[k] = v
+                                    end
+                                end
+                            end
+                        end
+
+                        lia.db.query("DELETE FROM lia_swepeditor", function()
+                            LocalPlayer():notify(L("allWeaponsReset"))
+                            PopulateWeaponList()
+                            if selectedWeapon then SelectWeapon(selectedWeapon) end
+                        end)
+                    end
+                end
+
+                local function PopulateWeaponList()
+                    for _, btn in pairs(weaponButtons) do
+                        if IsValid(btn) then btn:Remove() end
+                    end
+
+                    weaponButtons = {}
+                    local sortedWeapons = {}
+                    for _, weaponData in pairs(weapons.GetList()) do
+                        if weaponData and weaponData.ClassName then table.insert(sortedWeapons, weaponData) end
+                    end
+
+                    table.sort(sortedWeapons, function(a, b) return (a.PrintName or a.ClassName) < (b.PrintName or b.ClassName) end)
+
+                    for _, weaponData in ipairs(sortedWeapons) do
+                        local weaponBtn = weaponListPanel:Add("liaButton")
+                        weaponBtn:Dock(TOP)
+                        weaponBtn:DockMargin(5, 5, 5, 0)
+                        weaponBtn:SetTall(40)
+                        weaponBtn:SetText((weaponData.PrintName or weaponData.ClassName) .. "\n" .. weaponData.ClassName)
+                        weaponBtn:SetFont("liaSmallFont")
+                        weaponBtn.weaponClass = weaponData.ClassName
+                        weaponBtn.DoClick = function()
+                            SelectWeapon(weaponData.ClassName)
+                        end
+
+                        table.insert(weaponButtons, weaponBtn)
+                    end
+                end
+
+                PopulateWeaponList()
+
+                net.Receive("liaSendWeaponData", function()
+                    local data = net.ReadTable()
+                    local class = net.ReadString()
+                    if selectedWeapon == class then LoadWeaponData(data) end
+                end)
+            end
+        })
+    end
 end
 
 net.Receive("liaPksCount", function()

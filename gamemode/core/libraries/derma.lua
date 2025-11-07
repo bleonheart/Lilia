@@ -1986,13 +1986,13 @@ end
     Low Complexity:
     ```lua
     -- Simple: Draw basic shadow with uniform radius
-    lia.derma.draw_shadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
+    lia.derma.drawShadows(8, 100, 100, 200, 100, Color(0, 0, 0, 100))
     ```
 
     Medium Complexity:
     ```lua
     -- Medium: Draw with custom spread and intensity
-    lia.derma.draw_shadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
+    lia.derma.drawShadows(12, 50, 50, 300, 150, Color(0, 0, 0, 150), 20, 25)
     ```
 
     High Complexity:
@@ -2001,10 +2001,10 @@ end
     local radius = isHovered and 16 or 8
     local spread = isHovered and 40 or 20
     local intensity = spread * 1.5
-    lia.derma.draw_shadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
+    lia.derma.drawShadows(radius, x, y, w, h, shadowColor, spread, intensity, flags)
     ```
 ]]
-function lia.derma.draw_shadows(radius, x, y, w, h, col, spread, intensity, flags)
+function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)
     return lia.derma.draw_shadowsEx(x, y, w, h, col, flags, radius, radius, radius, radius, spread, intensity)
 end
 
