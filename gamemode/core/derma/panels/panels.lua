@@ -228,7 +228,6 @@ function QuickPanel:addCheck(text, cb, checked)
     row:SetTall(36)
     row:Dock(TOP)
     row:DockMargin(0, 1, 0, 0)
-    row:SetMouseInputEnabled(false)
     row.Paint = function(_, w, h)
         local theme = lia.color.theme
         local textColor = theme and theme.text or Color(255, 255, 255)
@@ -238,7 +237,6 @@ function QuickPanel:addCheck(text, cb, checked)
     local chk = vgui.Create("liaCheckbox", row)
     chk:SetChecked(checked)
     chk:SetSize(22, 22)
-    chk:SetMouseInputEnabled(true)
     chk.OnChange = function(_, v) if cb then cb(row, v) end end
     row.PerformLayout = function(_, w, h) chk:SetPos(w - chk:GetWide() - 8, math.floor((h - chk:GetTall()) * 0.5)) end
     self.items[#self.items + 1] = row
