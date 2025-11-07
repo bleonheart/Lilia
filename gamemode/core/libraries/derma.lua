@@ -1047,14 +1047,23 @@ do
     _G.RNDX_GMA_MOUNTED = mountedVersions
     if not mountedVersions[SHADERS_VERSION] then
         local gma_filename = "rndx_shaders_" .. SHADERS_VERSION .. ".gma"
+        print("[RNDX] Mounting shader GMA for version: " .. SHADERS_VERSION)
         if not file.Exists("data/" .. gma_filename, "GAME") then
             local DECODED_SHADERS_GMA = util.Base64Decode(SHADERS_GMA)
-            if not DECODED_SHADERS_GMA or #DECODED_SHADERS_GMA == 0 then return end
+            if not DECODED_SHADERS_GMA or #DECODED_SHADERS_GMA == 0 then
+                print("[RNDX] Failed to load shaders!") -- this shouldn't happen
+                return
+            end
+
             file.Write(gma_filename, DECODED_SHADERS_GMA)
+            print("[RNDX] Wrote shader GMA file: " .. gma_filename)
         end
 
         game.MountGMA("data/" .. gma_filename)
         mountedVersions[SHADERS_VERSION] = true
+        print("[RNDX] Successfully mounted shader GMA: " .. gma_filename)
+    else
+        print("[RNDX] Shader GMA already mounted for version: " .. SHADERS_VERSION .. " (skipping remount)")
     end
 end
 
@@ -1069,11 +1078,14 @@ do
     if not rtCache[BLUR_RT_NAME] then
         rtCache[BLUR_RT_NAME] = GetRenderTargetEx(BLUR_RT_NAME, 1024, 1024, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_SEPARATE, bit.bor(2, 256, 4, 8), --[[4, 8 is clamp_s + clamp-t]]
             0, IMAGE_FORMAT_BGRA8888)
+
+        print("[RNDX] Created blur render target: " .. BLUR_RT_NAME)
+    else
+        print("[RNDX] Reusing cached blur render target: " .. BLUR_RT_NAME)
     end
 
     BLUR_RT = rtCache[BLUR_RT_NAME]
 end
-
 local NEW_FLAG
 do
     local flags_n = -1
