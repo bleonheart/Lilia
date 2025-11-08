@@ -647,7 +647,6 @@ function MODULE:PopulateAdminTabs(pages)
             name = "swepEditor",
             icon = "icon16/gun.png",
             drawFunc = function(panel)
-                -- Local state (must come first because functions below depend on them)
                 local selectedWeapon = nil
                 local originalValues = {}
                 local modifiedValues = {}
@@ -659,7 +658,6 @@ function MODULE:PopulateAdminTabs(pages)
                 local saveBtn = nil
                 local resetAllBtn = nil
                 local refreshBtn
-                -- Local helper: Format value for display
                 local function FormatValue(value, propType)
                     if value == nil then
                         return "Not set"
@@ -677,7 +675,6 @@ function MODULE:PopulateAdminTabs(pages)
                     return tostring(value)
                 end
 
-                -- Local helper: Get nested property value
                 local function GetNestedValue(data, key)
                     if not data then return nil end
                     local parts = string.Explode(" | ", key)
@@ -696,7 +693,6 @@ function MODULE:PopulateAdminTabs(pages)
                     return data[key] or data[string.lower(key)]
                 end
 
-                -- Local helper: Get display name for a property
                 local function GetPropertyDisplayName(key)
                     local localized = L(key)
                     if localized ~= key then return localized end
@@ -705,7 +701,6 @@ function MODULE:PopulateAdminTabs(pages)
                     return displayName
                 end
 
-                -- Local: Update button states
                 local function UpdateButtonStates()
                     if not IsValid(saveBtn) or not IsValid(resetAllBtn) then return end
                     local hasChanges = false
@@ -720,7 +715,6 @@ function MODULE:PopulateAdminTabs(pages)
                     resetAllBtn:SetDisabled(not selectedWeapon)
                 end
 
-                -- Local: Save changes for selected weapon
                 local function SaveChanges()
                     if not selectedWeapon or table.Count(modifiedValues) == 0 then return end
                     net.Start("liaSwepeditorUpdate")
@@ -736,7 +730,6 @@ function MODULE:PopulateAdminTabs(pages)
                     LocalPlayer():notify(L("weaponUpdated", selectedWeapon))
                 end
 
-                -- Local: Load property values for selected weapon from server or table
                 local function LoadWeaponData(data)
                     for key, value in pairs(data) do
                         modifiedValues[key] = value
@@ -754,7 +747,6 @@ function MODULE:PopulateAdminTabs(pages)
                     UpdateButtonStates()
                 end
 
-                -- Local: Edit property from right-click menu
                 local function EditProperty(key, currentValue, propType)
                     local function onValueEntered(newValue)
                         modifiedValues[key] = newValue
@@ -782,7 +774,6 @@ function MODULE:PopulateAdminTabs(pages)
                     end
                 end
 
-                -- Local: Load editable properties for this weapon into the panel
                 local function LoadWeaponProperties(weaponClass)
                     if not IsValid(propertyScrollPanel) then return end
                     local weaponData = weapons.GetStored(weaponClass)
@@ -912,12 +903,9 @@ function MODULE:PopulateAdminTabs(pages)
                         originalValues[key] = value
                     end
 
-                    if IsValid(saveBtn) then
-                        saveBtn:SetDisabled(true)
-                    end
+                    if IsValid(saveBtn) then saveBtn:SetDisabled(true) end
                 end
 
-                -- Local: Select a weapon for editing
                 local function SelectWeapon(weaponClass)
                     selectedWeapon = weaponClass
                     for class, btn in pairs(weaponButtons) do
@@ -930,9 +918,7 @@ function MODULE:PopulateAdminTabs(pages)
                         end
                     end
 
-                    if IsValid(weaponHeader) then
-                        weaponHeader:SetText(string.format("%s (%s)", weapons.GetStored(weaponClass).PrintName or weaponClass, weaponClass))
-                    end
+                    if IsValid(weaponHeader) then weaponHeader:SetText(string.format("%s (%s)", weapons.GetStored(weaponClass).PrintName or weaponClass, weaponClass)) end
                     for _, propertyPanel in pairs(propertyPanels) do
                         if IsValid(propertyPanel) then propertyPanel:Remove() end
                     end
@@ -946,7 +932,6 @@ function MODULE:PopulateAdminTabs(pages)
                     LoadWeaponProperties(weaponClass)
                 end
 
-                -- Local: Populate the weapon list panel
                 local function PopulateWeaponList()
                     if not IsValid(weaponListPanel) then return end
                     for _, btn in pairs(weaponButtons) do
@@ -972,7 +957,6 @@ function MODULE:PopulateAdminTabs(pages)
                     end
                 end
 
-                -- UI Initialization
                 panel:Clear()
                 panel:DockPadding(10, 10, 10, 10)
                 panel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
@@ -1028,7 +1012,6 @@ function MODULE:PopulateAdminTabs(pages)
                 refreshBtn:Dock(LEFT)
                 refreshBtn:SetWide(100)
                 refreshBtn:SetTxt(L("refresh"))
-                -- Button Events
                 saveBtn.DoClick = SaveChanges
                 resetAllBtn.DoClick = function()
                     if not selectedWeapon then return end
@@ -1056,14 +1039,12 @@ function MODULE:PopulateAdminTabs(pages)
                     if selectedWeapon then SelectWeapon(selectedWeapon) end
                 end
 
-                -- Sync: listen for server property loads
                 net.Receive("liaSwepeditorLoad", function()
                     local data = net.ReadTable()
                     local class = net.ReadString()
                     if selectedWeapon == class then LoadWeaponData(data) end
                 end)
 
-                -- Populate initial UI
                 PopulateWeaponList()
             end,
         })
