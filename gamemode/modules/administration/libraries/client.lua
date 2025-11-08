@@ -798,7 +798,7 @@ function MODULE:PopulateAdminTabs(pages)
                         propPanel:DockMargin(2, 2, 2, 2)
                         propPanel:SetTall(30)
                         propPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(3):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw() end
-                        propPanel.PerformLayout = function(self, w, h)
+                        propPanel.PerformLayout = function(self, w)
                             if IsValid(self.nameLabel) and IsValid(self.valueControl) then
                                 local nameWidth = math.floor(w * 0.25) - 20
                                 local valueWidth = math.floor(w * 0.7) - 10
@@ -828,7 +828,7 @@ function MODULE:PopulateAdminTabs(pages)
                             valueControl:DockMargin(0, 5, 10, 5)
                             valueControl:SetWide(math.min(20, 150))
                             valueControl:SetChecked(value or false)
-                            valueControl.OnChange = function(self, checked)
+                            valueControl.OnChange = function(_, checked)
                                 if propPanel.lastChange and (CurTime() - propPanel.lastChange) < 0.1 then return end
                                 propPanel.lastChange = CurTime()
                                 modifiedValues[key] = checked
