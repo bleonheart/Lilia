@@ -25,6 +25,10 @@ def should_check_function(func_name):
     FUNCTIONS_NOT_TO_CHECK = {
         # Derma/UI related functions that are internal callbacks
         "lia.derma.menuPlayerSelector.btn_close.DoClick",
+
+        # GUI library functions - these are internal and don't need documentation
+        "lia.gui.*",
+
         # Add other functions here as needed
     }
     
@@ -40,12 +44,17 @@ def should_check_function(func_name):
     # First check if it's explicitly in the "not to check" list
     if func_name in FUNCTIONS_NOT_TO_CHECK:
         return False
-    
+
+    # Check if it matches any pattern in the "not to check" list
+    for pattern in FUNCTIONS_NOT_TO_CHECK:
+        if pattern.endswith("*") and func_name.startswith(pattern[:-1]):
+            return False
+
     # Then check if it matches any pattern in the "to check" list
     for pattern in FUNCTIONS_TO_CHECK:
         if func_name.startswith(pattern.replace("*", "")):
             return True
-    
+
     # Default behavior: check the function
     return True
 

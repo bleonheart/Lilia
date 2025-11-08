@@ -171,6 +171,9 @@ FUNCTIONS_NOT_TO_CHECK = {
     # Derma/UI related functions that are internal callbacks
     "lia.derma.menuPlayerSelector.btn_close.DoClick",
 
+    # GUI library functions - these are internal and don't need documentation
+    "lia.gui.*",
+
     # Add other functions here as needed
     # Examples:
     # "internal.helperFunction",
@@ -202,6 +205,11 @@ def should_check_function(function_name):
     # First check if it's explicitly in the "not to check" list
     if function_name in FUNCTIONS_NOT_TO_CHECK:
         return False
+
+    # Check if it matches any pattern in the "not to check" list
+    for pattern in FUNCTIONS_NOT_TO_CHECK:
+        if pattern.endswith("*") and function_name.startswith(pattern[:-1]):
+            return False
 
     # Then check if it matches any pattern in the "to check" list
     for pattern in FUNCTIONS_TO_CHECK:
@@ -972,17 +980,23 @@ class FunctionComparisonReportGenerator:
         return documented_hooks
 
     def _remove_lua_comments(self, content: str) -> str:
-        """Remove Lua comments from content to avoid detecting commented-out code.
+        """Remove Lua comments and documentation code blocks from content to avoid detecting commented-out or example code.
 
         Handles:
         - Single line comments: -- comment
         - Multi-line comments: --[[ comment ]]
         - Long string comments: --[=[ comment ]=]
+        - Markdown code blocks: ```lua ... ```
         """
         # First, handle long string comments (--[=[...]=], --[[...]], etc.)
         # Pattern matches --[ followed by optional = signs, then content until matching ]=]
         long_comment_pattern = r'--\[(=*)\[.*?\]\1\]'
         content = re.sub(long_comment_pattern, '', content, flags=re.DOTALL)
+
+        # Remove markdown code blocks (```lua ... ``` or ``` ... ```)
+        # Match from opening ``` to closing ``` including all content
+        code_block_pattern = r'```.*?```'
+        content = re.sub(code_block_pattern, '', content, flags=re.DOTALL | re.IGNORECASE)
 
         # Handle single-line comments (-- comment)
         # Split into lines, remove comments from each line
@@ -1042,7 +1056,7 @@ class FunctionComparisonReportGenerator:
 
         for lua_file in lua_files:
             # Skip certain directories
-            if any(skip in str(lua_file) for skip in ['languages', 'documentation', 'docs']):
+            if 'docs' in lua_file.parts or 'documentation' in lua_file.parts or 'languages' in lua_file.parts:
                 continue
 
             try:
@@ -1247,7 +1261,7 @@ class FunctionComparisonReportGenerator:
 
         for lua_file in lua_files:
             # Skip certain directories
-            if any(skip in str(lua_file) for skip in ['languages', 'documentation', 'docs']):
+            if 'docs' in lua_file.parts or 'documentation' in lua_file.parts or 'languages' in lua_file.parts:
                 continue
 
             try:
@@ -1480,14 +1494,18 @@ class FunctionComparisonReportGenerator:
                                 if name not in documented_functions and name not in documented_module_functions:
                                     undoc_functions.add(name)
 
-                        # Hooks via hook.Add / hook.Run literals in module, filtered by documented core hooks
+                        # Hooks via hook.Add / hook.Run literals in module, filtered by documented core hooks and GMOD built-ins
                         for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
-                            if hook_name not in documented_hooks and hook_name not in documented_module_hooks:
+                            if (hook_name not in documented_hooks and
+                                hook_name not in documented_module_hooks and
+                                hook_name not in GMOD_HOOKS_BLACKLIST):
                                 undoc_hooks.add(hook_name)
                         for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
-                            if hook_name not in documented_hooks and hook_name not in documented_module_hooks:
+                            if (hook_name not in documented_hooks and
+                                hook_name not in documented_module_hooks and
+                                hook_name not in GMOD_HOOKS_BLACKLIST):
                                 undoc_hooks.add(hook_name)
 
                 results.append({

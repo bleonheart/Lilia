@@ -112,7 +112,9 @@ GMOD_HOOKS_BLACKLIST = {
     "VC_canAfford", "VC_canRemoveMoney", "ULibGroupAccessChanged", "SAM.CanRunCommand",
     "SAM.RankPermissionGiven", "SAM.RankPermissionTaken", "PAC3RegisterEvents",
     "PermaProps.CanPermaProp", "PermaProps.OnEntityCreated", "PermaProps.OnEntitySaved",
-    "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide"
+    "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide",
+    # Example hooks from documentation that should not be counted as documented
+    "GetSetting", "GetValidatedData", "SaveComplexData", "SaveSettings"
 }
 
 # Whitelist of framework hooks that are documented but may not be explicitly registered
@@ -242,13 +244,23 @@ def read_documented_hooks(hooks_doc_path: str) -> List[str]:
 
     lines = content.split('\n')
 
+    in_code_block = False
     for line in lines:
+        # Check if we're entering or leaving a code block
+        if line.strip().startswith('```'):
+            in_code_block = not in_code_block
+            continue
+
+        # Skip processing lines inside code blocks
+        if in_code_block:
+            continue
+
         # Look for hook names in backticks - be more specific about what constitutes a hook name
         # Only match backticks that contain what looks like a hook name (starts with capital letter, contains only alphanumeric and underscores)
         hook_match = re.search(r'`([A-Z][A-Za-z0-9_]+)`', line)
         if hook_match:
             hook_name = hook_match.group(1).strip()
-            if hook_name and len(hook_name) > 2:  # Filter out very short matches
+            if hook_name and len(hook_name) > 2 and hook_name not in GMOD_HOOKS_BLACKLIST:  # Filter out very short matches and blacklisted hooks
                 documented_hooks.add(hook_name)
 
         # Check for markdown headers that look like hook names
@@ -257,7 +269,9 @@ def read_documented_hooks(hooks_doc_path: str) -> List[str]:
         if header_match:
             header_text = header_match.group(1).strip()
             # Only add if it looks like a hook name (starts with capital, reasonable length)
-            if len(header_text) > 2 and re.search(r'^[A-Z][A-Za-z0-9_]+$', header_text):
+            # and is not in the blacklist
+            if (len(header_text) > 2 and re.search(r'^[A-Z][A-Za-z0-9_]+$', header_text)
+                and header_text not in GMOD_HOOKS_BLACKLIST):
                 documented_hooks.add(header_text)
 
     return sorted(list(documented_hooks))
