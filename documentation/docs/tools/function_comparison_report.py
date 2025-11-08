@@ -1469,6 +1469,12 @@ class FunctionComparisonReportGenerator:
                     print(f"Skipping disabled module: {module_dir}")
                     continue
 
+                # Detect submodules (subdirectories with module.lua)
+                submodules = []
+                for item in module_dir.iterdir():
+                    if item.is_dir() and (item / "module.lua").exists():
+                        submodules.append(item)
+
                 # Read module-level docs if present
                 documented_module_hooks, documented_module_functions = self._read_module_docs(module_dir)
 
@@ -1476,6 +1482,14 @@ class FunctionComparisonReportGenerator:
                 undoc_hooks: Set[str] = set()
 
                 for root, _, files in os.walk(module_dir):
+                    # Skip directories named 'addons' and any subdirectories within them
+                    if 'addons' in Path(root).parts:
+                        continue
+                    # Skip submodule directories - they will be scanned separately
+                    root_path = Path(root)
+                    is_submodule_path = any(root_path.is_relative_to(submod) or root_path == submod for submod in submodules)
+                    if is_submodule_path:
+                        continue
                     for fname in files:
                         if not fname.lower().endswith('.lua'):
                             continue
@@ -1513,6 +1527,54 @@ class FunctionComparisonReportGenerator:
                     'undoc_hooks': sorted(undoc_hooks, key=str.lower),
                     'undoc_functions': sorted(undoc_functions, key=str.lower),
                 })
+
+                # Scan submodules separately
+                for submod_dir in submodules:
+                    submod_documented_hooks, submod_documented_functions = self._read_module_docs(submod_dir)
+                    submod_undoc_functions: Set[str] = set()
+                    submod_undoc_hooks: Set[str] = set()
+
+                    for root, _, files in os.walk(submod_dir):
+                        # Skip directories named 'addons' and any subdirectories within them
+                        if 'addons' in Path(root).parts:
+                            continue
+                        for fname in files:
+                            if not fname.lower().endswith('.lua'):
+                                continue
+                            fpath = Path(root) / fname
+                            try:
+                                with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                                    content = f.read()
+                            except Exception:
+                                continue
+
+                            import re
+                            # lia.* dotted functions declared in submodule
+                            for m in re.finditer(r'\b(function\s+([A-Za-z_][\w\.]*?)\s*\(|([A-Za-z_][\w\.]*?)\s*=\s*function\s*\()', content):
+                                name = m.group(2) or m.group(3)
+                                if name and name.startswith('lia.') and name.count('.') >= 2:
+                                    if name not in documented_functions and name not in submod_documented_functions:
+                                        submod_undoc_functions.add(name)
+
+                            # Hooks via hook.Add / hook.Run literals in submodule
+                            for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                                hook_name = m.group(2)
+                                if (hook_name not in documented_hooks and
+                                    hook_name not in submod_documented_hooks and
+                                    hook_name not in GMOD_HOOKS_BLACKLIST):
+                                    submod_undoc_hooks.add(hook_name)
+                            for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                                hook_name = m.group(2)
+                                if (hook_name not in documented_hooks and
+                                    hook_name not in submod_documented_hooks and
+                                    hook_name not in GMOD_HOOKS_BLACKLIST):
+                                    submod_undoc_hooks.add(hook_name)
+
+                    results.append({
+                        'module_path': str(submod_dir),
+                        'undoc_hooks': sorted(submod_undoc_hooks, key=str.lower),
+                        'undoc_functions': sorted(submod_undoc_functions, key=str.lower),
+                    })
 
         return results
 
@@ -1685,11 +1747,25 @@ class FunctionComparisonReportGenerator:
 
                 docs_dir = module_dir / 'docs'
 
+                # Detect submodules (subdirectories with module.lua)
+                submodules = []
+                for item in module_dir.iterdir():
+                    if item.is_dir() and (item / "module.lua").exists():
+                        submodules.append(item)
+
                 # Scan module lua files for dotted functions and hooks
                 dotted_functions = []
                 hooks_found = set()
 
                 for root, _, files in os.walk(module_dir):
+                    # Skip directories named 'addons' and any subdirectories within them
+                    if 'addons' in Path(root).parts:
+                        continue
+                    # Skip submodule directories - they will be processed separately
+                    root_path = Path(root)
+                    is_submodule_path = any(root_path.is_relative_to(submod) or root_path == submod for submod in submodules)
+                    if is_submodule_path:
+                        continue
                     for fname in files:
                         if not fname.lower().endswith('.lua'):
                             continue
@@ -1721,86 +1797,178 @@ class FunctionComparisonReportGenerator:
                             if hook_name not in documented_hooks:
                                 hooks_found.add(hook_name)
 
-        # If any entries exist, create docs folder and write files
-        if dotted_functions or hooks_found:
-            docs_dir.mkdir(parents=True, exist_ok=True)
+                # If any entries exist, create docs folder and write files for parent module
+                if dotted_functions or hooks_found:
+                    docs_dir.mkdir(parents=True, exist_ok=True)
 
-            # Write libraries.md if dotted functions found (always overwrite)
-            if dotted_functions:
-                lib_md_path = docs_dir / 'libraries.md'
-                with open(lib_md_path, 'w', encoding='utf-8') as f:
-                    f.write('# Module Libraries\n\n')
-                    f.write('Detected dotted functions in this module.\n\n')
-                    for name in sorted(set(dotted_functions)):
-                        f.write(f'## {name}\n\n')
-                        f.write('**Purpose**\n\n')
-                        f.write('Function description goes here.\n\n')
-                        f.write('**Parameters**\n\n')
-                        f.write('* `param1` (*type*): Description\n\n')
-                        f.write('**Returns**\n\n')
-                        f.write('* `return` (*type*): Description\n\n')
-                        f.write('**Realm**\n\n')
-                        f.write('Shared.\n\n')
-                        f.write('**Example Usage**\n\n')
-                        f.write('```lua\n')
-                        f.write(f'-- Example usage of {name}\n')
-                        f.write(f'local result = {name}()\n')
-                        f.write('```\n\n')
-                        f.write('---\n\n')
+                    # Write libraries.md if dotted functions found (always overwrite)
+                    if dotted_functions:
+                        lib_md_path = docs_dir / 'libraries.md'
+                        with open(lib_md_path, 'w', encoding='utf-8') as f:
+                            f.write('# Module Libraries\n\n')
+                            f.write('Detected dotted functions in this module.\n\n')
+                            for name in sorted(set(dotted_functions)):
+                                f.write(f'## {name}\n\n')
+                                f.write('**Purpose**\n\n')
+                                f.write('Function description goes here.\n\n')
+                                f.write('**Parameters**\n\n')
+                                f.write('* `param1` (*type*): Description\n\n')
+                                f.write('**Returns**\n\n')
+                                f.write('* `return` (*type*): Description\n\n')
+                                f.write('**Realm**\n\n')
+                                f.write('Shared.\n\n')
+                                f.write('**Example Usage**\n\n')
+                                f.write('```lua\n')
+                                f.write(f'-- Example usage of {name}\n')
+                                f.write(f'local result = {name}()\n')
+                                f.write('```\n\n')
+                                f.write('---\n\n')
 
-            # Handle hooks.md - always overwrite the main file
-            hooks_md_path = docs_dir / 'hooks.md'
+                    # Handle hooks.md - always overwrite the main file
+                    hooks_md_path = docs_dir / 'hooks.md'
 
-            # Read existing hooks from hooks.md to compare
-            existing_hooks = set()
-            if hooks_md_path.exists():
-                try:
-                    with open(hooks_md_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        # Extract existing hook names from markdown headers
-                        import re
-                        for match in re.finditer(r'^##+\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', content, re.MULTILINE):
-                            existing_hooks.add(match.group(1).strip())
-                except Exception:
+                    # Read existing hooks from hooks.md to compare
                     existing_hooks = set()
+                    if hooks_md_path.exists():
+                        try:
+                            with open(hooks_md_path, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                                # Extract existing hook names from markdown headers
+                                import re
+                                for match in re.finditer(r'^##+\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', content, re.MULTILINE):
+                                    existing_hooks.add(match.group(1).strip())
+                        except Exception:
+                            existing_hooks = set()
 
-            # Determine new hooks (hooks that weren't in the previous file)
-            new_hooks = hooks_found - existing_hooks
+                    # Determine new hooks (hooks that weren't in the previous file)
+                    new_hooks = hooks_found - existing_hooks
 
-            # Always update hooks.md with current status
-            with open(hooks_md_path, 'w', encoding='utf-8') as f:
-                f.write('# Module Hooks\n\n')
-                f.write('This document describes the hooks available in this module.\n\n')
-                f.write('---\n\n')
-                if hooks_found:
-                    for name in sorted(hooks_found, key=str.lower):
-                        f.write(f'## {name}\n\n')
-                        f.write('**Purpose**\n\n')
-                        f.write('Called when [description goes here].\n\n')
-                        f.write('**Parameters**\n\n')
-                        f.write('* `param1` (*type*): Description\n\n')
-                        f.write('**Realm**\n\n')
-                        f.write('Server.\n\n')
-                        f.write('**When Called**\n\n')
-                        f.write('This hook is triggered when [description goes here].\n\n')
-                        f.write('**Example Usage**\n\n')
-                        f.write('```lua\n')
-                        f.write(f'hook.Add("{name}", "MyHookName", function(param1)\n')
-                        f.write('    -- Hook logic here\n')
-                        f.write('end)\n')
-                        f.write('```\n\n')
+                    # Always update hooks.md with current status
+                    with open(hooks_md_path, 'w', encoding='utf-8') as f:
+                        f.write('# Module Hooks\n\n')
+                        f.write('This document describes the hooks available in this module.\n\n')
                         f.write('---\n\n')
-                else:
-                    f.write('All hooks used in this module are already documented in the main hooks documentation.\n\n')
+                        if hooks_found:
+                            for name in sorted(hooks_found, key=str.lower):
+                                f.write(f'## {name}\n\n')
+                                f.write('**Purpose**\n\n')
+                                f.write('Called when [description goes here].\n\n')
+                                f.write('**Parameters**\n\n')
+                                f.write('* `param1` (*type*): Description\n\n')
+                                f.write('**Realm**\n\n')
+                                f.write('Server.\n\n')
+                                f.write('**When Called**\n\n')
+                                f.write('This hook is triggered when [description goes here].\n\n')
+                                f.write('**Example Usage**\n\n')
+                                f.write('```lua\n')
+                                f.write(f'hook.Add("{name}", "MyHookName", function(param1)\n')
+                                f.write('    -- Hook logic here\n')
+                                f.write('end)\n')
+                                f.write('```\n\n')
+                                f.write('---\n\n')
+                        else:
+                            f.write('All hooks used in this module are already documented in the main hooks documentation.\n\n')
 
-            # Create hooks_new.md only if there are truly new hooks
-            if new_hooks:
-                hooks_new_path = docs_dir / 'hooks_new.md'
-                with open(hooks_new_path, 'w', encoding='utf-8') as f:
-                    f.write('# New Module Hooks\n\n')
-                    f.write('New hooks detected in this module that were not in the previous hooks.md:\n\n')
-                    for name in sorted(new_hooks, key=str.lower):
-                        f.write(f'- `{name}`\n')
+                    # Create hooks_new.md only if there are truly new hooks
+                    if new_hooks:
+                        hooks_new_path = docs_dir / 'hooks_new.md'
+                        with open(hooks_new_path, 'w', encoding='utf-8') as f:
+                            f.write('# New Module Hooks\n\n')
+                            f.write('New hooks detected in this module that were not in the previous hooks.md:\n\n')
+                            for name in sorted(new_hooks, key=str.lower):
+                                f.write(f'- `{name}`\n')
+
+                # Process submodules separately (outside parent module file writing)
+                for submod_dir in submodules:
+                    submod_docs_dir = submod_dir / 'docs'
+                    submod_dotted_functions = []
+                    submod_hooks_found = set()
+
+                    for root, _, files in os.walk(submod_dir):
+                        # Skip directories named 'addons' and any subdirectories within them
+                        if 'addons' in Path(root).parts:
+                            continue
+                        for fname in files:
+                            if not fname.lower().endswith('.lua'):
+                                continue
+                            fpath = Path(root) / fname
+                            try:
+                                with open(fpath, 'r', encoding='utf-8', errors='ignore') as f:
+                                    content = f.read()
+                            except Exception:
+                                continue
+
+                            # Dotted functions - only lia.xxxxxx.xxxx pattern
+                            import re
+                            for m in re.finditer(r'\b(function\s+([A-Za-z_][\w\.]*?)\s*\(|([A-Za-z_][\w\.]*?)\s*=\s*function\s*\()', content):
+                                name = m.group(2) or m.group(3)
+                                if (name and name.startswith('lia.') and name.count('.') >= 2
+                                    and name not in documented_functions):
+                                    submod_dotted_functions.append(name)
+
+                            # Hooks via hook.Add / hook.Run literals in submodule
+                            for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*([\"\"])\s*([^\"\']+)\1', content):
+                                hook_name = m.group(2)
+                                if hook_name not in documented_hooks:
+                                    submod_hooks_found.add(hook_name)
+                            for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*([\"\"])\s*([^\"\']+)\1', content):
+                                hook_name = m.group(2)
+                                if hook_name not in documented_hooks:
+                                    submod_hooks_found.add(hook_name)
+
+                    # If any entries exist, create docs folder and write files for submodule
+                    if submod_dotted_functions or submod_hooks_found:
+                        submod_docs_dir.mkdir(parents=True, exist_ok=True)
+
+                        # Write libraries.md for submodule
+                        if submod_dotted_functions:
+                            submod_lib_md_path = submod_docs_dir / 'libraries.md'
+                            with open(submod_lib_md_path, 'w', encoding='utf-8') as f:
+                                f.write('# Module Libraries\n\n')
+                                f.write('Detected dotted functions in this module.\n\n')
+                                for name in sorted(set(submod_dotted_functions)):
+                                    f.write(f'## {name}\n\n')
+                                    f.write('**Purpose**\n\n')
+                                    f.write('Function description goes here.\n\n')
+                                    f.write('**Parameters**\n\n')
+                                    f.write('* `param1` (*type*): Description\n\n')
+                                    f.write('**Returns**\n\n')
+                                    f.write('* `return` (*type*): Description\n\n')
+                                    f.write('**Realm**\n\n')
+                                    f.write('Shared.\n\n')
+                                    f.write('**Example Usage**\n\n')
+                                    f.write('```lua\n')
+                                    f.write(f'-- Example usage of {name}\n')
+                                    f.write(f'local result = {name}()\n')
+                                    f.write('```\n\n')
+                                    f.write('---\n\n')
+
+                        # Write hooks.md for submodule
+                        submod_hooks_md_path = submod_docs_dir / 'hooks.md'
+                        with open(submod_hooks_md_path, 'w', encoding='utf-8') as f:
+                            f.write('# Module Hooks\n\n')
+                            f.write('This document describes the hooks available in this module.\n\n')
+                            f.write('---\n\n')
+                            if submod_hooks_found:
+                                for name in sorted(submod_hooks_found, key=str.lower):
+                                    f.write(f'## {name}\n\n')
+                                    f.write('**Purpose**\n\n')
+                                    f.write('Called when [description goes here].\n\n')
+                                    f.write('**Parameters**\n\n')
+                                    f.write('* `param1` (*type*): Description\n\n')
+                                    f.write('**Realm**\n\n')
+                                    f.write('Server.\n\n')
+                                    f.write('**When Called**\n\n')
+                                    f.write('This hook is triggered when [description goes here].\n\n')
+                                    f.write('**Example Usage**\n\n')
+                                    f.write('```lua\n')
+                                    f.write(f'hook.Add("{name}", "MyHookName", function(param1)\n')
+                                    f.write('    -- Hook logic here\n')
+                                    f.write('end)\n')
+                                    f.write('```\n\n')
+                                    f.write('---\n\n')
+                            else:
+                                f.write('All hooks used in this module are already documented in the main hooks documentation.\n\n')
 
     def _generate_executive_summary(self, data: CombinedReportData) -> List[str]:
         """Generate executive summary section"""

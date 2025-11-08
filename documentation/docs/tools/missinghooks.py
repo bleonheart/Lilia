@@ -113,6 +113,14 @@ GMOD_HOOKS_BLACKLIST = {
     "SAM.RankPermissionGiven", "SAM.RankPermissionTaken", "PAC3RegisterEvents",
     "PermaProps.CanPermaProp", "PermaProps.OnEntityCreated", "PermaProps.OnEntitySaved",
     "simfphysUse", "CheckValidSit", "simfphysPhysicsCollide",
+    # ArcCW addon hooks
+    "ArcCW_PlayerCanShoot", "ArcCW_PlayerReload", "ArcCW_PlayerShoot",
+    # Bonemerge module hooks (lowercase variants and custom hooks)
+    "player_disconnect", "player_spawn", "PlayerAccessorChanged",
+    # Lockpicking and property-related hooks
+    "canDarkRPUse", "canLockpick", "InputMouseAppl_", "lockpickCompleted",
+    "onKeysMenuOpened", "playerBoughtCustomEntity", "playerBuyDoor",
+    "YorkshireRP_PropertyPurchased", "zlockpick_success",
     # Example hooks from documentation that should not be counted as documented
     "GetSetting", "GetValidatedData", "SaveComplexData", "SaveSettings"
 }
