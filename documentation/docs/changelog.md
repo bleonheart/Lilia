@@ -1,5 +1,255 @@
 # Changelog
 
+## Version 6.994 (November 08, 2025)
+
+### Changes
+
+- Update panels.lua
+- Update derma.lua
+- Successfully updated workshop Lilia to 6.991
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.989
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.987
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.985
+- Update derma.lua
+- Update server.lua
+- Successfully updated workshop Lilia to 6.982
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+
+## Version 6.991 (November 08, 2025)
+
+### Changes
+
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.989
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.987
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.985
+- Update derma.lua
+- Update server.lua
+- Successfully updated workshop Lilia to 6.982
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+
+## Version 6.989 (November 08, 2025)
+
+### Changes
+
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.987
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.985
+- Update derma.lua
+- Update server.lua
+- Successfully updated workshop Lilia to 6.982
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+
+## Version 6.987 (November 08, 2025)
+
+### Changes
+
+- Update panels.lua
+- Successfully updated workshop Lilia to 6.985
+- Update derma.lua
+- Update server.lua
+- Successfully updated workshop Lilia to 6.982
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+
+## Version 6.985 (November 08, 2025)
+
+### Changes
+
+- Update derma.lua
+- Update server.lua
+- Successfully updated workshop Lilia to 6.982
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+
+## Version 6.982 (November 08, 2025)
+
+### Changes
+
+- Update server.lua
+- Successfully updated workshop Lilia to 6.980
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+- Critical Workflow Error
+- Successfully updated workshop Lilia to 6.963
+- Update derma.lua
+
+## Version 6.980 (November 08, 2025)
+
+### Changes
+
+- Update derma.lua
+- Work around?
+- Successfully updated workshop Lilia to 6.977
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+- Critical Workflow Error
+- Successfully updated workshop Lilia to 6.963
+- Update derma.lua
+- Revert "Successfully updated workshop Lilia to 6.960"
+- Successfully updated workshop Lilia to 6.960
+
+## Version 6.977 (November 08, 2025)
+
+### Changes
+
+- Update derma.lua
+- More  docs
+- Successfully updated workshop Lilia to 6.974
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+- Critical Workflow Error
+- Successfully updated workshop Lilia to 6.963
+- Update derma.lua
+- Revert "Successfully updated workshop Lilia to 6.960"
+- Successfully updated workshop Lilia to 6.960
+- No more derma break
+- Revert "Ignore The Derma.lua"
+- Revert "Successfully updated workshop Lilia to 6.956"
+
+## Version 6.974 (November 08, 2025)
+
+### Changes
+
+- Fixed SWEP Editor and Spawning
+- Successfully updated workshop Lilia to 6.972
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+- Critical Workflow Error
+- Successfully updated workshop Lilia to 6.963
+- Update derma.lua
+- Revert "Successfully updated workshop Lilia to 6.960"
+- Successfully updated workshop Lilia to 6.960
+- No more derma break
+- Revert "Ignore The Derma.lua"
+- Revert "Successfully updated workshop Lilia to 6.956"
+- Successfully updated workshop Lilia to 6.956
+- Ignore The Derma.lua
+- Update derma.lua
+
+## Version 6.972 (November 07, 2025)
+
+### Changes
+
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.970
+- Update commands.lua
+- Successfully updated workshop Lilia to 6.968
+- Update creation.lua
+- Successfully updated workshop Lilia to 6.966
+- Fixing Error
+- Critical Workflow Error
+- Successfully updated workshop Lilia to 6.963
+- Update derma.lua
+- Revert "Successfully updated workshop Lilia to 6.960"
+- Successfully updated workshop Lilia to 6.960
+- No more derma break
+- Revert "Ignore The Derma.lua"
+- Revert "Successfully updated workshop Lilia to 6.956"
+- Successfully updated workshop Lilia to 6.956
+- Ignore The Derma.lua
+- Update derma.lua
+- Revert "Successfully updated workshop Lilia to 6.952"
+- Successfully updated workshop Lilia to 6.952
+
 ## Version 6.970 (November 07, 2025)
 
 ### Changes

@@ -54,6 +54,7 @@ function TransparentDFrame:Init()
     self:ShowCloseButton(true)
     self:SetDraggable(true)
     self:MakePopup()
+    self.m_bBackground = false
 end
 
 function TransparentDFrame:PerformLayout()
