@@ -8,6 +8,10 @@
         The panel meta table provides comprehensive functionality for managing VGUI panels, UI interactions, and panel operations in the Lilia framework. It handles panel event listening, inventory synchronization, UI updates, and panel-specific operations. The meta table operates primarily on the client side, with the server providing data that panels can listen to and display. It includes integration with the inventory system for inventory change notifications, character system for character data display, network system for data synchronization, and UI system for panel management. The meta table ensures proper panel event handling, inventory synchronization, UI updates, and comprehensive panel lifecycle management from creation to destruction.
 ]]
 local panelMeta = FindMetaTable("Panel")
+
+-- Store original functions before detouring for use in setScaledPos/setScaledSize
+local originalSetSize = panelMeta.SetSize
+local originalSetPos = panelMeta.SetPos
 --[[
     Purpose:
         Sets up event listeners for inventory changes on a panel
@@ -211,12 +215,13 @@ end
 ]]
 function panelMeta:setScaledPos(x, y)
     if not IsValid(self) then return end
-    if not self.SetPos then
+    if not originalSetPos then
         ErrorNoHalt("[Lilia] setScaledPos: Panel does not have SetPos method. Panel type: " .. tostring(self.ClassName or "Unknown") .. "\n")
         return
     end
 
-    self:SetPos(ScreenScale(x), ScreenScaleH(y))
+    -- Use original function directly to avoid double-scaling
+    originalSetPos(self, ScreenScale(x), ScreenScaleH(y))
 end
 
 --[[
@@ -273,10 +278,104 @@ end
 ]]
 function panelMeta:setScaledSize(w, h)
     if not IsValid(self) then return end
-    if not self.SetSize then
+    if not originalSetSize then
         lia.error("[Lilia] setScaledSize: Panel does not have SetSize method. Panel type: " .. tostring(self.ClassName or "Unknown") .. "\n")
         return
     end
 
-    self:SetSize(ScreenScale(w), ScreenScaleH(h))
+    -- Use original function directly to avoid double-scaling
+    originalSetSize(self, ScreenScale(w), ScreenScaleH(h))
+end
+
+-- Auto-scaling meta: Detours all derma functions that resize panels
+do
+    -- Store original functions (SetSize and SetPos already stored above)
+    local originalSetWide = panelMeta.SetWide
+    local originalSetTall = panelMeta.SetTall
+    local originalDockPadding = panelMeta.DockPadding
+    local originalDockMargin = panelMeta.DockMargin
+    local originalSetMinWidth = panelMeta.SetMinWidth
+    local originalSetMinHeight = panelMeta.SetMinHeight
+    local originalSetMaxWidth = panelMeta.SetMaxWidth
+    local originalSetMaxHeight = panelMeta.SetMaxHeight
+
+    -- Detour SetSize
+    function panelMeta:SetSize(w, h)
+        if IsValid(self) and w and h then
+            return originalSetSize(self, ScreenScale(w), ScreenScaleH(h))
+        end
+        return originalSetSize(self, w, h)
+    end
+
+    -- Detour SetPos
+    function panelMeta:SetPos(x, y)
+        if IsValid(self) and x and y then
+            return originalSetPos(self, ScreenScale(x), ScreenScaleH(y))
+        end
+        return originalSetPos(self, x, y)
+    end
+
+    -- Detour SetWide
+    function panelMeta:SetWide(w)
+        if IsValid(self) and w then
+            return originalSetWide(self, ScreenScale(w))
+        end
+        return originalSetWide(self, w)
+    end
+
+    -- Detour SetTall
+    function panelMeta:SetTall(h)
+        if IsValid(self) and h then
+            return originalSetTall(self, ScreenScaleH(h))
+        end
+        return originalSetTall(self, h)
+    end
+
+    -- Detour DockPadding
+    function panelMeta:DockPadding(left, top, right, bottom)
+        if IsValid(self) and left and top and right and bottom then
+            return originalDockPadding(self, ScreenScale(left), ScreenScaleH(top), ScreenScale(right), ScreenScaleH(bottom))
+        end
+        return originalDockPadding(self, left, top, right, bottom)
+    end
+
+    -- Detour DockMargin
+    function panelMeta:DockMargin(left, top, right, bottom)
+        if IsValid(self) and left and top and right and bottom then
+            return originalDockMargin(self, ScreenScale(left), ScreenScaleH(top), ScreenScale(right), ScreenScaleH(bottom))
+        end
+        return originalDockMargin(self, left, top, right, bottom)
+    end
+
+    -- Detour SetMinWidth
+    function panelMeta:SetMinWidth(w)
+        if IsValid(self) and w then
+            return originalSetMinWidth(self, ScreenScale(w))
+        end
+        return originalSetMinWidth(self, w)
+    end
+
+    -- Detour SetMinHeight
+    function panelMeta:SetMinHeight(h)
+        if IsValid(self) and h then
+            return originalSetMinHeight(self, ScreenScaleH(h))
+        end
+        return originalSetMinHeight(self, h)
+    end
+
+    -- Detour SetMaxWidth
+    function panelMeta:SetMaxWidth(w)
+        if IsValid(self) and w then
+            return originalSetMaxWidth(self, ScreenScale(w))
+        end
+        return originalSetMaxWidth(self, w)
+    end
+
+    -- Detour SetMaxHeight
+    function panelMeta:SetMaxHeight(h)
+        if IsValid(self) and h then
+            return originalSetMaxHeight(self, ScreenScaleH(h))
+        end
+        return originalSetMaxHeight(self, h)
+    end
 end
