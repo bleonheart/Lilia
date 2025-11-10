@@ -1210,7 +1210,7 @@ function lia.loader.includeEntities(path)
     })
 
     HandleEntityInclusion("tools", "TOOL", RegisterTool, {}, false, function(className)
-        TOOL = lia.meta.tool:Create()
+        TOOL = lia.meta.tool:create()
         TOOL.Mode = className
         TOOL:CreateConVars()
     end)
