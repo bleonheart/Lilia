@@ -1300,21 +1300,11 @@ function lia.loader.initializeGamemode(isReload)
             local adminHasChanges = lia.administrator.hasChanges()
             local playerInteractHasChanges = lia.playerinteract.hasChanges()
             local configHasChanges = lia.config.hasChanges()
-            timer.Simple(0.5, function()
-                if configHasChanges then lia.config.send() end
-            end)
-
-            timer.Simple(2.0, function()
-                if adminHasChanges then lia.administrator.sync() end
-            end)
-
-            timer.Simple(3.5, function()
-                if playerInteractHasChanges then lia.playerinteract.sync() end
-            end)
-
+            timer.Simple(0.5, function() if configHasChanges then lia.config.send() end end)
+            timer.Simple(2.0, function() if adminHasChanges then lia.administrator.sync() end end)
+            timer.Simple(3.5, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
             timer.Simple(5.0, function() lia.reloadInProgress = false end)
         else
-            -- Initial load: send all configs that differ from defaults and mark them as synced
             lia.config.send()
             lia.administrator.sync()
             lia.playerinteract.sync()

@@ -10,7 +10,7 @@
 local GM = GM or GAMEMODE
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
-lia.config._lastSyncedValues = lia.config._lastSyncedValues or {} -- Track what was last synced to clients
+lia.config._lastSyncedValues = lia.config._lastSyncedValues or {}
 --[[
     Purpose:
         Adds a new configuration option to the system with specified properties and validation
@@ -542,11 +542,8 @@ function lia.config.load()
             end
 
             local finalize = function()
-                -- Initialize last synced values from current config values after load
-                -- This ensures that on hot reload, we only detect actual changes, not all configs
                 for key, config in pairs(lia.config.stored) do
                     if config.value ~= nil then
-                        -- Deep copy the value to avoid reference issues
                         if istable(config.value) then
                             lia.config._lastSyncedValues[key] = util.TableToJSON(config.value) and util.JSONToTable(util.TableToJSON(config.value)) or config.value
                         else
@@ -554,8 +551,10 @@ function lia.config.load()
                         end
                     end
                 end
+
                 hook.Run("InitializedConfig")
             end
+
             if #inserts > 0 then
                 local ops = {}
                 for _, row in ipairs(inserts) do
@@ -635,21 +634,16 @@ if SERVER then
             ```
     ]]
     function lia.config.getChangedValues(includeDefaults)
-        -- If includeDefaults is true, include all configs that differ from defaults (for initial sync)
-        -- Otherwise, only include configs that differ from last synced values
         local data = {}
         for k, v in pairs(lia.config.stored) do
             local isDifferent
-
             if includeDefaults or lia.config._lastSyncedValues[k] == nil then
-                -- Compare against default (for initial sync or when explicitly requested)
                 if istable(v.default) and istable(v.value) then
                     isDifferent = util.TableToJSON(v.default) ~= util.TableToJSON(v.value)
                 else
                     isDifferent = v.default ~= v.value
                 end
             else
-                -- Compare against last synced value
                 local lastSynced = lia.config._lastSyncedValues[k]
                 if istable(lastSynced) and istable(v.value) then
                     isDifferent = util.TableToJSON(lastSynced) ~= util.TableToJSON(v.value)
@@ -687,7 +681,6 @@ if SERVER then
             ```
     ]]
     function lia.config.hasChanges()
-        -- Ensure _lastSyncedValues is initialized from current values if empty (safety for async load timing)
         if table.Count(lia.config._lastSyncedValues) == 0 and table.Count(lia.config.stored) > 0 then
             for key, config in pairs(lia.config.stored) do
                 if config.value ~= nil then
@@ -775,11 +768,7 @@ if SERVER then
 
         local targets = getTargets()
         if not istable(targets) or #targets == 0 then return end
-
-        -- Mark as synced before sending (since we're using timers, we mark now to avoid resending on quick reloads)
-        -- If a send fails, we'll resend on next change which is acceptable
         for key, value in pairs(data) do
-            -- Deep copy the value to avoid reference issues
             if istable(value) then
                 lia.config._lastSyncedValues[key] = util.TableToJSON(value) and util.JSONToTable(util.TableToJSON(value)) or value
             else
