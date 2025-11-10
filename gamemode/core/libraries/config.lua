@@ -541,7 +541,7 @@ function lia.config.load()
                 end
             end
 
-            local finalize = function() 
+            local finalize = function()
                 -- Initialize last synced values from current config values after load
                 -- This ensures that on hot reload, we only detect actual changes, not all configs
                 for key, config in pairs(lia.config.stored) do
@@ -554,7 +554,7 @@ function lia.config.load()
                         end
                     end
                 end
-                hook.Run("InitializedConfig") 
+                hook.Run("InitializedConfig")
             end
             if #inserts > 0 then
                 local ops = {}
@@ -639,8 +639,8 @@ if SERVER then
         -- Otherwise, only include configs that differ from last synced values
         local data = {}
         for k, v in pairs(lia.config.stored) do
-            local isDifferent = false
-            
+            local isDifferent
+
             if includeDefaults or lia.config._lastSyncedValues[k] == nil then
                 -- Compare against default (for initial sync or when explicitly requested)
                 if istable(v.default) and istable(v.value) then
@@ -657,7 +657,7 @@ if SERVER then
                     isDifferent = lastSynced ~= v.value
                 end
             end
-            
+
             if isDifferent then data[k] = v.value end
         end
         return data
@@ -699,7 +699,7 @@ if SERVER then
                 end
             end
         end
-        
+
         local changed = lia.config.getChangedValues()
         local count = table.Count(changed)
         return count > 0
@@ -775,7 +775,7 @@ if SERVER then
 
         local targets = getTargets()
         if not istable(targets) or #targets == 0 then return end
-        
+
         -- Mark as synced before sending (since we're using timers, we mark now to avoid resending on quick reloads)
         -- If a send fails, we'll resend on next change which is acceptable
         for key, value in pairs(data) do
@@ -786,7 +786,7 @@ if SERVER then
                 lia.config._lastSyncedValues[key] = value
             end
         end
-        
+
         local batchSize = 5
         local baseDelayPerBatch = 0.05
         local function sendTableStaggered(tbl, startDelay)
