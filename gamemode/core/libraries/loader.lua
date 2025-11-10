@@ -1305,7 +1305,7 @@ function lia.loader.initializeGamemode(isReload)
             timer.Simple(3.5, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
             timer.Simple(5.0, function() lia.reloadInProgress = false end)
         else
-            if lia.config.hasChanges() then lia.config.send() end
+            lia.config.send()
             lia.administrator.sync()
             lia.playerinteract.sync()
         end
