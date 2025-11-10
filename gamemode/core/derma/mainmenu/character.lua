@@ -790,7 +790,7 @@ function PANEL:Update()
     end
 end
 
-function PANEL:onCharListUpdated(oldCharList, newCharList)
+function PANEL:onCharListUpdated(_, newCharList)
     if not self.isLoadMode then return end
     self.availableCharacters = {}
     for _, charID in ipairs(newCharList or {}) do
