@@ -629,6 +629,34 @@ if SERVER then
 
     --[[
         Purpose:
+            Checks if there are any configuration changes that need to be synced to clients
+
+        When Called:
+            Before syncing configurations to determine if a sync is necessary
+
+        Parameters:
+            None
+
+        Returns:
+            boolean - True if there are changed values that differ from defaults
+
+        Realm:
+            Server
+
+        Example Usage:
+            ```lua
+            if lia.config.hasChanges() then
+                lia.config.send()
+            end
+            ```
+    ]]
+    function lia.config.hasChanges()
+        local changed = lia.config.getChangedValues()
+        return table.Count(changed) > 0
+    end
+
+    --[[
+        Purpose:
             Sends configuration data to clients with intelligent batching and rate limiting for large datasets
 
         When Called:
@@ -689,6 +717,7 @@ if SERVER then
     ]]
     function lia.config.send(client)
         local data = lia.config.getChangedValues()
+        if not client and table.Count(data) == 0 then return end
         local function getTargets()
             if IsValid(client) then return {client} end
             return player.GetHumans()
