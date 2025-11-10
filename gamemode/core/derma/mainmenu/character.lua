@@ -24,10 +24,7 @@ function PANEL:Init()
     self:AlphaTo(255, 0.2)
     self.charListUpdateHook = "liaCharacterCharListUpdate" .. tostring(self)
     hook.Add("CharListUpdated", self.charListUpdateHook, function(oldCharList, newCharList)
-        if not IsValid(self) then
-            return
-        end
-
+        if not IsValid(self) then return end
         self:onCharListUpdated(oldCharList, newCharList)
     end)
 
@@ -606,9 +603,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
             return
         end
 
-        vgui.Create("liaCharacterConfirm", self):setMessage(L("charDeletionAreYouSure") .. "\n" .. L("charDeletionCannotUndone")):onConfirm(function()
-            lia.module.get("mainmenu"):DeleteCharacter(charID)
-        end)
+        vgui.Create("liaCharacterConfirm", self):setMessage(L("charDeletionAreYouSure") .. "\n" .. L("charDeletionCannotUndone")):onConfirm(function() lia.module.get("mainmenu"):DeleteCharacter(charID) end)
     end
 end
 
@@ -796,10 +791,7 @@ function PANEL:Update()
 end
 
 function PANEL:onCharListUpdated(oldCharList, newCharList)
-    if not self.isLoadMode then
-        return
-    end
-
+    if not self.isLoadMode then return end
     self.availableCharacters = {}
     for _, charID in ipairs(newCharList or {}) do
         local character = lia.char.getCharacter(charID)
