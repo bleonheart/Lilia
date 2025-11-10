@@ -4,7 +4,10 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "mainMenuDescription"
 if SERVER then
     function MODULE:SyncCharList(client)
-        if not client.liaCharList then return end
+        if not client.liaCharList then
+            return
+        end
+
         net.Start("liaCharList")
         net.WriteUInt(#client.liaCharList, 32)
         for i = 1, #client.liaCharList do
@@ -22,9 +25,16 @@ else
     end
 
     function MODULE:ResetCharacterPanel()
-        if IsValid(lia.gui.character) then lia.gui.character:Remove() end
+        local charPanel = lia.gui.character
+        if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters then
+            return
+        end
+
+        if IsValid(charPanel) then charPanel:Remove() end
         local client = LocalPlayer()
-        if IsValid(client) and not client:getChar() then vgui.Create("liaCharacter") end
+        if IsValid(client) and not client:getChar() then
+            vgui.Create("liaCharacter")
+        end
     end
 
     function MODULE:ChooseCharacter(id)
