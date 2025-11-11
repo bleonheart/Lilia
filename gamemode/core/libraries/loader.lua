@@ -109,10 +109,6 @@ local FilesToLoad = {
         realm = "shared"
     },
     {
-        path = "lilia/gamemode/core/meta/tool.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/item.lua",
         realm = "shared"
     },
@@ -1192,11 +1188,6 @@ function lia.loader.includeEntities(path)
         end
     end
 
-    local function RegisterTool(tool, className)
-        local gmodTool = weapons.GetStored("gmod_tool")
-        if gmodTool then gmodTool.Tool[className] = tool end
-    end
-
     HandleEntityInclusion("entities", "ENT", scripted_ents.Register, {
         Type = "anim",
         Base = "base_gmodentity",
@@ -1208,12 +1199,6 @@ function lia.loader.includeEntities(path)
         Secondary = {},
         Base = "weapon_base"
     })
-
-    HandleEntityInclusion("tools", "TOOL", RegisterTool, {}, false, function(className)
-        TOOL = lia.meta.tool:create()
-        TOOL.Mode = className
-        TOOL:createConVars()
-    end)
 
     HandleEntityInclusion("effects", "EFFECT", effects and effects.Register, nil, true)
 end
