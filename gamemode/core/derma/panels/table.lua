@@ -227,7 +227,6 @@ function PANEL:RebuildRows()
         self:CreateRow(rowIndex, rowData)
     end
 
-    -- Size the content based on its children
     local contentWidth = math.max(totalWidth, self.scrollPanel:GetWide())
     local contentHeight = #self.rows * (self.rowHeight + 1)
     self.content:SetSize(contentWidth, contentHeight)
