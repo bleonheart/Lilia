@@ -16,9 +16,11 @@ function PANEL:Init()
     self.nameLabel = makeLabel("name")
     self.nameEntry = self:makeTextEntry("name")
     self.nameEntry:DockMargin(0, 8, 0, 12)
-    self.descLabel = makeLabel("desc")
-    self.descEntry = self:makeTextEntry("desc")
-    self.descEntry:DockMargin(0, 8, 0, 12)
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
+        self.descLabel = makeLabel("desc")
+        self.descEntry = self:makeTextEntry("desc")
+        self.descEntry:DockMargin(0, 8, 0, 12)
+    end
     self:addAttributes()
 end
 
@@ -124,8 +126,10 @@ end
 
 function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
-        local val = string.Trim(info[1]:GetValue() or "")
-        if val == "" then return false, L("requiredFieldError", info[2]) end
+        if IsValid(info[1]) then
+            local val = string.Trim(info[1]:GetValue() or "")
+            if val == "" then return false, L("requiredFieldError", info[2]) end
+        end
     end
 
     local factionID = self.factionCombo:GetSelectedData()
@@ -158,7 +162,7 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
         end
     end
 
-    if isstring(defaultDesc) and descOverride and IsValid(self.descEntry) then
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false and isstring(defaultDesc) and descOverride and IsValid(self.descEntry) then
         local currentDesc = string.Trim(self.descEntry:GetValue() or "")
         if currentDesc == "" or descOverride then
             timer.Simple(0.01, function()
@@ -173,7 +177,17 @@ end
 
 function PANEL:updateContext()
     if IsValid(self.nameEntry) then self:setContext("name", string.Trim(self.nameEntry:GetValue() or "")) end
-    if IsValid(self.descEntry) then self:setContext("desc", string.Trim(self.descEntry:GetValue() or "")) end
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
+        if IsValid(self.descEntry) then
+            self:setContext("desc", string.Trim(self.descEntry:GetValue() or ""))
+        end
+    else
+        -- Set default value when desc is hidden
+        local varData = lia.char.vars["desc"]
+        if varData and varData.default then
+            self:setContext("desc", varData.default)
+        end
+    end
     if IsValid(self.factionCombo) then
         local factionUniqueID = self.factionCombo:GetSelectedData()
         if factionUniqueID then
@@ -184,12 +198,13 @@ function PANEL:updateContext()
 end
 
 function PANEL:onDisplay()
-    local n, d = self.nameEntry:GetValue(), self.descEntry:GetValue()
+    local n = IsValid(self.nameEntry) and self.nameEntry:GetValue() or ""
+    local d = IsValid(self.descEntry) and self.descEntry:GetValue() or ""
     local f = self:getContext("faction")
     self:Clear()
     self:Init()
-    self.nameEntry:SetValue(n)
-    self.descEntry:SetValue(d)
+    if IsValid(self.nameEntry) then self.nameEntry:SetValue(n) end
+    if IsValid(self.descEntry) then self.descEntry:SetValue(d) end
     if f then
         self.factionCombo:ChooseOptionData(f)
         self:setContext("faction", f)
