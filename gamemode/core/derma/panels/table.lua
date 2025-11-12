@@ -73,7 +73,6 @@ function PANEL:CreateHeader()
         label:SetPos(xPos, 0)
         label.Paint = function(s, w, h)
             local isHovered = s:IsHovered() and column.sortable
-            local isActive = self.sortColumn == i
             if isHovered then lia.derma.rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw() end
             local textColor = lia.color.theme.text
             draw.SimpleText(column.name, self.font, w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
