@@ -13,7 +13,6 @@ function PANEL:Init()
     self.factionLabel = makeLabel("faction")
     self.factionCombo = self:makeFactionComboBox()
     self.factionCombo:DockMargin(0, 8, 0, 12)
-    self.factionCombo:SetTall(48)
     self.nameLabel = makeLabel("name")
     self.nameEntry = self:makeTextEntry("name")
     self.nameEntry:DockMargin(0, 8, 0, 12)
@@ -27,6 +26,9 @@ function PANEL:makeTextEntry(key)
     local entry = self:Add("liaEntry")
     entry:Dock(TOP)
     entry:DockMargin(0, 8, 0, 12)
+    entry:SetTall(40)
+    -- Use slightly smaller font than labels (liaMediumFont)
+    entry:SetFont("LiliaFont.18")
     entry.OnEnter = function() self:setContext(key, string.Trim(entry:GetValue())) end
     entry.OnLoseFocus = function() self:setContext(key, string.Trim(entry:GetValue())) end
     local saved = self:getContext(key)
@@ -39,7 +41,6 @@ function PANEL:makeFactionComboBox()
     combo:Dock(TOP)
     combo:PostInit()
     combo:DockMargin(0, 8, 0, 12)
-    combo:SetTall(48)
     combo.Paint = function(_, w, h)
         surface.SetDrawColor(0, 0, 0, 100)
         surface.DrawRect(0, 0, w, h)
@@ -73,6 +74,13 @@ function PANEL:makeFactionComboBox()
     end
 
     combo:FinishAddingOptions()
+    combo:SetTall(70)
+    -- Prevent AutoSize from overriding our custom height
+    local oldAutoSize = combo.AutoSize
+    combo.AutoSize = function(pnl)
+        if pnl.userSetHeight then return end
+        oldAutoSize(pnl)
+    end
     return combo
 end
 
