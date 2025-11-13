@@ -215,8 +215,6 @@ if SERVER then
     resource.AddWorkshop = lia.workshop.addWorkshop
 else
     local FORCE_ID = "3527535922"
-    local MOUNT_DELAY = 3
-    local queue, panel, totalDownloads, remainingDownloads = {}, nil, 0, 0
     lia.workshop.serverIds = lia.workshop.serverIds or {}
     local function formatSize(bytes)
         if not bytes or bytes <= 0 then return "0 B" end

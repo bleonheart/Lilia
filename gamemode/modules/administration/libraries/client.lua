@@ -998,7 +998,7 @@ function MODULE:PopulateAdminTabs(pages)
                 weaponListHeader:SetText(L("weapons"))
                 weaponListHeader:SetFont("LiliaFont.25")
                 weaponListHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
-                weaponListHeader.Paint = function(self, w, h) draw.SimpleText(self:GetText(), "LiliaFont.25", w / 2, h / 2, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                weaponListHeader.Paint = function(label, w, h) draw.SimpleText(label:GetText(), "LiliaFont.25", w / 2, h / 2, label:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 local editorPanel = container:Add("DPanel")
                 editorPanel:Dock(FILL)
                 editorPanel:DockMargin(10, 10, 10, 10)
@@ -1014,7 +1014,7 @@ function MODULE:PopulateAdminTabs(pages)
                 weaponHeader:SetText(L("selectWeaponToEdit"))
                 weaponHeader:SetFont("LiliaFont.25")
                 weaponHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
-                weaponHeader.Paint = function(self, w, h) draw.SimpleText(self:GetText(), "LiliaFont.25", w / 2, h / 2, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                weaponHeader.Paint = function(label, w, h) draw.SimpleText(label:GetText(), "LiliaFont.25", w / 2, h / 2, label:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 local buttonPanel = editorPanel:Add("DPanel")
                 buttonPanel:Dock(BOTTOM)
                 buttonPanel:SetTall(50)

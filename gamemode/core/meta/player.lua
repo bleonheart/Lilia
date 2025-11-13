@@ -3513,7 +3513,7 @@ function playerMeta:requestPopupQuestion(question, buttons)
         net.WriteUInt(id, 32)
         net.WriteString(question)
         net.WriteUInt(#buttons, 8)
-        for i, buttonInfo in ipairs(buttons) do
+        for _, buttonInfo in ipairs(buttons) do
             local buttonText = istable(buttonInfo) and buttonInfo[1] or tostring(buttonInfo)
             net.WriteString(buttonText)
         end

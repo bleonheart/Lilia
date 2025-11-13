@@ -4295,8 +4295,8 @@ function lia.derma.requestPopupQuestion(question, buttons)
     local buttonContainer = vgui.Create("Panel", frame)
     buttonContainer:Dock(FILL)
     buttonContainer:DockMargin(20, 0, 20, 20)
-    for i, buttonInfo in ipairs(buttons) do
-        local buttonText = ""
+    for _, buttonInfo in ipairs(buttons) do
+        local buttonText
         local buttonCallback = nil
         if istable(buttonInfo) then
             buttonText = buttonInfo[1] or tostring(buttonInfo)
