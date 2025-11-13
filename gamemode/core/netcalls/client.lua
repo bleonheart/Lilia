@@ -692,13 +692,17 @@ net.Receive("liaPopupQuestionRequest", function()
     local buttons = {}
     for i = 1, buttonCount do
         local buttonText = net.ReadString()
-        buttons[i] = {buttonText, function()
-            net.Start("liaPopupQuestionRequest")
-            net.WriteUInt(id, 32)
-            net.WriteUInt(i, 8)
-            net.SendToServer()
-        end}
+        buttons[i] = {
+            buttonText,
+            function()
+                net.Start("liaPopupQuestionRequest")
+                net.WriteUInt(id, 32)
+                net.WriteUInt(i, 8)
+                net.SendToServer()
+            end
+        }
     end
+
     lia.derma.requestPopupQuestion(question, buttons)
 end)
 

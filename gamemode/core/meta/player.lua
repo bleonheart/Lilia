@@ -3461,7 +3461,7 @@ function playerMeta:binaryQuestion(question, option1, option2, manualDismiss, ca
         net.WriteBool(manualDismiss)
         net.Send(self)
     else
-        lia.derma.requestBinaryQuestion(question, option1, option2, manualDismiss, callback)
+        lia.derma.binaryQuestion(question, option1, option2, manualDismiss, callback)
     end
 end
 
@@ -3505,10 +3505,9 @@ function playerMeta:requestPopupQuestion(question, buttons)
         self.liaPopupReqs = self.liaPopupReqs or {}
         local callbacks = {}
         for i, buttonInfo in ipairs(buttons) do
-            if istable(buttonInfo) then
-                callbacks[i] = buttonInfo[2]
-            end
+            if istable(buttonInfo) then callbacks[i] = buttonInfo[2] end
         end
+
         local id = table.insert(self.liaPopupReqs, callbacks)
         net.Start("liaPopupQuestionRequest")
         net.WriteUInt(id, 32)
@@ -3518,6 +3517,7 @@ function playerMeta:requestPopupQuestion(question, buttons)
             local buttonText = istable(buttonInfo) and buttonInfo[1] or tostring(buttonInfo)
             net.WriteString(buttonText)
         end
+
         net.Send(self)
     else
         lia.derma.requestPopupQuestion(question, buttons)

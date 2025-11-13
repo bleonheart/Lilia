@@ -21,6 +21,7 @@ function PANEL:Init()
         self.descEntry = self:makeTextEntry("desc")
         self.descEntry:DockMargin(0, 8, 0, 12)
     end
+
     self:addAttributes()
 end
 
@@ -178,16 +179,13 @@ end
 function PANEL:updateContext()
     if IsValid(self.nameEntry) then self:setContext("name", string.Trim(self.nameEntry:GetValue() or "")) end
     if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
-        if IsValid(self.descEntry) then
-            self:setContext("desc", string.Trim(self.descEntry:GetValue() or ""))
-        end
+        if IsValid(self.descEntry) then self:setContext("desc", string.Trim(self.descEntry:GetValue() or "")) end
     else
         -- Set default value when desc is hidden
         local varData = lia.char.vars["desc"]
-        if varData and varData.default then
-            self:setContext("desc", varData.default)
-        end
+        if varData and varData.default then self:setContext("desc", varData.default) end
     end
+
     if IsValid(self.factionCombo) then
         local factionUniqueID = self.factionCombo:GetSelectedData()
         if factionUniqueID then

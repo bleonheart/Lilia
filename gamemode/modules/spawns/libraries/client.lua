@@ -9,7 +9,6 @@ function MODULE:HUDPaint()
     local lastDeath = ply:getNetVar("lastDeathTime", os.time())
     local left = clamp(baseTime - (os.time() - lastDeath), 0, baseTime)
     if left >= baseTime and not ply:Alive() then left = baseTime end
-
     -- Safety check: if player has been dead for too long, force respawn attempt
     if not ply:Alive() and lastDeath > 0 and (os.time() - lastDeath) > (baseTime + 10) then
         net.Start("liaPlayerRespawn")
@@ -55,7 +54,6 @@ function MODULE:HUDPaint()
         local dx, dy = (ScrW() - dw) / 2, y + h + 10
         lia.util.drawText(text, dx + 1, dy + 1, Color(0, 0, 0, 255), 0, 0, "liaMediumFont")
         lia.util.drawText(text, dx, dy, Color(255, 255, 255, 255), 0, 0, "liaMediumFont")
-
         -- Show force respawn hint if player has been dead for 1.25x spawn time
         local timePassed = os.time() - lastDeath
         if timePassed >= (baseTime * 1.25) then

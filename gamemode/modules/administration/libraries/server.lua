@@ -33,6 +33,7 @@ function MODULE:PlayerSay(client, text)
         self:SendPopup(client, message)
         return ""
     end
+
     if client:getNetVar("liaGagged") then return "" end
 end
 

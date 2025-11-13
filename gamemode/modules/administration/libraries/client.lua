@@ -3159,82 +3159,57 @@ net.Receive("liaAllPks", function()
             local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
             local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
             if filter == "" or searchStr:lower():find(filter, 1, true) then
-                local line = list:AddLine(unpack(lineData))
-                line.steamID = c.steamID or ""
-                line.reason = c.reason or ""
-                line.evidence = c.evidence or ""
-                line.submitter = c.submitterName or ""
-                line.submitterSteamID = c.submitterSteamID or ""
-                line.charID = c.charID
+                -- Add extra data to the rowData array
+                lineData.steamID = c.steamID or ""
+                lineData.reason = c.reason or ""
+                lineData.evidence = c.evidence or ""
+                lineData.submitter = c.submitterName or ""
+                lineData.submitterSteamID = c.submitterSteamID or ""
+                lineData.charID = c.charID
+                list:AddLine(unpack(lineData))
             end
         end
     end
 
-    list:AddMenuOption(L("copySubmitter"), function(rowData)
-        local line = rowData._line
-        if line and line.submitter and line.submitterSteamID then SetClipboardText(string.format("%s (%s)", line.submitter, line.submitterSteamID)) end
-    end, "icon16/page_copy.png")
-
-    list:AddMenuOption(L("copyReason"), function(rowData)
-        local line = rowData._line
-        if line and line.reason then SetClipboardText(line.reason) end
-    end, "icon16/page_copy.png")
-
-    list:AddMenuOption(L("copyEvidence"), function(rowData)
-        local line = rowData._line
-        if line and line.evidence then SetClipboardText(line.evidence) end
-    end, "icon16/page_copy.png")
-
-    list:AddMenuOption(L("copySteamID"), function(rowData)
-        local line = rowData._line
-        if line and line.steamID then SetClipboardText(line.steamID) end
-    end, "icon16/page_copy.png")
-
-    list:AddMenuOption(L("viewEvidence"), function(rowData)
-        local line = rowData._line
-        if line and line.evidence and line.evidence:match("^https?://") then gui.OpenURL(line.evidence) end
-    end, "icon16/world.png")
-
+    list:AddMenuOption(L("copySubmitter"), function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyReason"), function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyEvidence"), function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("viewEvidence"), function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
     list:AddMenuOption(L("banCharacter"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
     list:AddMenuOption(L("wipeCharacter"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
     list:AddMenuOption(L("unbanCharacter"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
     list:AddMenuOption(L("banCharacterOffline"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
     list:AddMenuOption(L("wipeCharacterOffline"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
     list:AddMenuOption(L("unbanCharacterOffline"), function(rowData)
-        local line = rowData._line
-        if not line or not line.charID then return end
-        local owner = line.steamID and lia.util.getBySteamID(line.steamID)
-        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. line.charID .. '"') end
+        if not rowData.charID then return end
+        local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
+        if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
     search.OnChange = function() populate(search:GetValue()) end
@@ -3474,24 +3449,20 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             local ticketRequests = tonumber(v.ticketsRequested) or 0
             local ticketClaims = tonumber(v.ticketsClaimed) or 0
             if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
-                local line = list:AddLine(steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings)
-                line.steamID = v.steamID
-                line.ticketRequests = ticketRequests
-                line.ticketClaims = ticketClaims
+                local lineData = {steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings}
+                lineData.steamID = v.steamID
+                lineData.ticketRequests = ticketRequests
+                lineData.ticketClaims = ticketClaims
+                list:AddLine(unpack(lineData))
             end
         end
     end
 
+    list:AddMenuOption(L("openSteamProfile"), function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
+    list:AddMenuOption(L("viewWarnings"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
+    list:AddMenuOption(L("viewTicketRequests"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) or not line.steamID then return end
-        local menu = lia.derma.dermaMenu()
-        menu:AddOption(L("openSteamProfile"), function() gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(line.steamID)) end):SetIcon("icon16/world.png")
-        if lia.command.hasAccess(LocalPlayer(), "viewwarns") then menu:AddOption(L("viewWarnings"), function() LocalPlayer():ConCommand("say /viewwarns " .. line.steamID) end):SetIcon("icon16/error.png") end
-        if lia.command.hasAccess(LocalPlayer(), "viewtickets") then menu:AddOption(L("viewTicketRequests"), function() LocalPlayer():ConCommand("say /viewtickets " .. line.steamID) end):SetIcon("icon16/help.png") end
-        menu:Open()
-    end
 end)
 
 lia.net.readBigTable("liaFullCharList", function(data)
@@ -3951,15 +3922,7 @@ net.Receive("liaActiveTickets", function()
         end
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
-    populate("")
-    function list:OnRowRightClick(_, line)
-        if not IsValid(line) then return end
-        local menu = lia.derma.dermaMenu()
-        menu:AddOption(L("noOptionsAvailable"), function() end)
-        menu:Open()
-    end
-
+    list:AddMenuOption(L("noOptionsAvailable"), function() end)
     search.OnChange = function() populate(search:GetValue()) end
     populate("")
 end)

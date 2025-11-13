@@ -63,6 +63,7 @@ else
                 payload[key] = value
                 continue
             end
+
             local value = data[key]
             if isfunction(charVar.onValidate) then
                 local results = {charVar.onValidate(value, data, client)}

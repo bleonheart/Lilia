@@ -512,7 +512,6 @@ function PANEL:SortByColumn(columnIndex, desc)
     if not column or not column.sortable then return end
     self.sortColumn = columnIndex
     self.sortDesc = desc or false
-
     local function extractNumber(str)
         if not str then return nil end
         str = tostring(str)
@@ -532,11 +531,9 @@ function PANEL:SortByColumn(columnIndex, desc)
         -- Convert to strings for comparison
         local strA = a ~= nil and tostring(a) or ""
         local strB = b ~= nil and tostring(b) or ""
-
         -- Try to extract numbers from strings
         local numA = extractNumber(strA)
         local numB = extractNumber(strB)
-
         if numA and numB then
             -- Both have extractable numbers, sort numerically
             if self.sortDesc then

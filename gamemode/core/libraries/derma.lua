@@ -383,6 +383,7 @@ function lia.derma.optionsMenu(rawOptions, config)
         local panelColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50)
         draw.RoundedBox(8, 0, 0, w, h, panelColor)
     end
+
     local layout = vgui.Create("DListLayout", scroll)
     layout:Dock(FILL)
     local buttonFont = config.buttonFont or "liaSmallFont"
@@ -402,18 +403,14 @@ function lia.derma.optionsMenu(rawOptions, config)
                 local bgColor = theme and theme.category_header or Color(35, 45, 55, 180)
                 local accentColor = entry.color or (theme and theme.category_accent or Color(100, 150, 200, 255))
                 local textColor = theme and theme.text or color_white
-
                 -- Draw main background with more opacity
                 lia.derma.rect(0, 0, w, h):Rad(10):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-
                 -- Draw accent stripe (wider for more contrast)
                 surface.SetDrawColor(accentColor)
                 surface.DrawRect(0, 0, 4, h)
-
                 -- Add subtle border for more definition
                 surface.SetDrawColor(Color(255, 255, 255, 20))
                 surface.DrawOutlinedRect(0, 0, w, h, 1)
-
                 local displayText = entry.name or ""
                 local localized = L(displayText)
                 if localized and localized ~= "" then displayText = localized end
@@ -4383,7 +4380,6 @@ function lia.derma.requestPopupQuestion(question, buttons)
     frame:SetCenterTitle(L("question"))
     frame:ShowAnimation()
     frame:SetZPos(1000)
-
     local questionLabel = vgui.Create("DLabel", frame)
     questionLabel:Dock(TOP)
     questionLabel:DockMargin(20, 40, 20, 20)
@@ -4392,15 +4388,12 @@ function lia.derma.requestPopupQuestion(question, buttons)
     questionLabel:SetTextColor(lia.color.theme.text or color_white)
     questionLabel:SetContentAlignment(5)
     questionLabel:SizeToContents()
-
     local buttonContainer = vgui.Create("Panel", frame)
     buttonContainer:Dock(FILL)
     buttonContainer:DockMargin(20, 0, 20, 20)
-
     for i, buttonInfo in ipairs(buttons) do
         local buttonText = ""
         local buttonCallback = nil
-
         if istable(buttonInfo) then
             buttonText = buttonInfo[1] or tostring(buttonInfo)
             buttonCallback = buttonInfo[2]
@@ -4412,14 +4405,11 @@ function lia.derma.requestPopupQuestion(question, buttons)
         buttonPanel:Dock(TOP)
         buttonPanel:DockMargin(0, 5, 0, 5)
         buttonPanel:SetTall(40)
-
         local button = vgui.Create("liaButton", buttonPanel)
         button:Dock(FILL)
         button:SetTxt(buttonText)
         button.DoClick = function()
-            if buttonCallback and isfunction(buttonCallback) then
-                buttonCallback()
-            end
+            if buttonCallback and isfunction(buttonCallback) then buttonCallback() end
             frame:Remove()
         end
     end
