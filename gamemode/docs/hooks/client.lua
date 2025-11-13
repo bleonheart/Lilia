@@ -12836,7 +12836,7 @@ end
         if messageText:find(playerName, 1, true) then
             -- Play notification sound
             surface.PlaySound("buttons/blip1.wav")
-            
+
             -- Flash chat panel
             if IsValid(lia.gui.chat) then
                 lia.gui.chat:Flash()

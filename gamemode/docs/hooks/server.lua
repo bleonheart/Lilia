@@ -25512,7 +25512,7 @@ end
     hook.Add("AdjustCreationData", "AdvancedCreation", function(client, data, newData, originalData)
         local faction = data.faction
         local factionData = lia.faction.indices[faction]
-        
+
         -- Apply faction-specific starting values
         if factionData and factionData.startingData then
             for key, value in pairs(factionData.startingData) do
@@ -25672,7 +25672,7 @@ end
     -- Medium: Set up access rules
     hook.Add("BagInventoryReady", "BagAccess", function(self, inventory)
         hook.Run("SetupBagInventoryAccessRules", inventory)
-        
+
         -- Set custom access
         inventory:setAccessRule(function(client)
             local char = client:getChar()
@@ -25696,7 +25696,7 @@ end
             inventory:setAccessRule(function(client)
                 local char = client:getChar()
                 if not char then return false end
-                
+
                 -- Owner can always access
                 if char:getID() == ownerID then
                     return true
@@ -25771,7 +25771,7 @@ end
     hook.Add("BagInventoryRemoved", "DropItems", function(self, inv)
         local items = inv:getItems()
         local pos = self:getPlayer() and self:getPlayer():GetPos() or Vector(0, 0, 0)
-        
+
         for _, item in pairs(items) do
             item:spawn(pos)
         end
@@ -25791,7 +25791,7 @@ end
 
         -- Handle items based on removal reason
         local removalReason = self:getData("removalReason", "unknown")
-        
+
         if removalReason == "dropped" then
             -- Drop items at owner position
             local pos = owner and owner:GetPos() or Vector(0, 0, 0)
@@ -25877,16 +25877,16 @@ end
 
         local walkSpeed = lia.config.get("WalkSpeed", client:GetWalkSpeed())
         local offset
-        local draining = not (client:GetMoveType() == MOVETYPE_NOCLIP) and 
-                        client:KeyDown(IN_SPEED) and 
-                        (client:GetVelocity():LengthSqr() >= walkSpeed * walkSpeed or 
+        local draining = not (client:GetMoveType() == MOVETYPE_NOCLIP) and
+                        client:KeyDown(IN_SPEED) and
+                        (client:GetVelocity():LengthSqr() >= walkSpeed * walkSpeed or
                          client:InVehicle() and not client:OnGround())
 
         if draining then
             offset = -lia.config.get("StaminaDrain")
         else
-            offset = client:Crouching() and 
-                    lia.config.get("StaminaCrouchRegeneration") or 
+            offset = client:Crouching() and
+                    lia.config.get("StaminaCrouchRegeneration") or
                     lia.config.get("StaminaRegeneration")
         end
 
@@ -26065,8 +26065,8 @@ end
         local allowedFactions = self:getNetVar("allowedFactions", {})
         if #allowedFactions > 0 then
             if not table.HasValue(allowedFactions, char:getFaction()) then
-                activator:notifyErrorLocalized("vendorMessageFormat", 
-                    self:getNetVar("name"), 
+                activator:notifyErrorLocalized("vendorMessageFormat",
+                    self:getNetVar("name"),
                     L("vendorNoAccess", activator))
                 return false
             end
@@ -26201,7 +26201,7 @@ end
     -- Medium: Add multiple details
     hook.Add("CharListExtraDetails", "ExtraDetails", function(client, entry, stored)
         entry.extraDetails = entry.extraDetails or {}
-        
+
         if stored.warningCount then
             entry.extraDetails[#entry.extraDetails + 1] = "Warnings: " .. stored.warningCount
         end
@@ -26492,7 +26492,7 @@ end
 
         local baseMax = lia.config.get("MaxAttributePoints", 100)
         local faction = char:getFaction()
-        
+
         if faction == "athlete" and attrKey == "str" then
             return baseMax * 1.5
         end
@@ -26754,7 +26754,7 @@ end
     hook.Add("GetDamageScale", "AdvancedDamage", function(hitgroup, dmgInfo, damageScale)
         local attacker = dmgInfo:GetAttacker()
         local victim = dmgInfo:GetInflictor()
-        
+
         -- Get base scale from hitgroup
         if hitgroup == HITGROUP_HEAD then
             damageScale = lia.config.get("HeadShotDamage", 2.0)
@@ -28161,7 +28161,7 @@ end
     -- Medium: Clean up related data
     hook.Add("InventoryDeleted", "Cleanup", function(instance)
         local invID = instance:getID()
-        
+
         -- Remove from cache
         if myInventoryCache[invID] then
             myInventoryCache[invID] = nil
@@ -28486,7 +28486,7 @@ end
     -- Medium: Clean up related data
     hook.Add("ItemDeleted", "Cleanup", function(instance)
         local itemID = instance:getID()
-        
+
         -- Remove from cache
         if myItemCache[itemID] then
             myItemCache[itemID] = nil
@@ -28692,7 +28692,7 @@ end
         if fromInv and toInv then
             local fromChar = fromInv:getOwner()
             local toChar = toInv:getOwner()
-            
+
             if fromChar and toChar and fromChar ~= toChar then
                 hook.Run("OnItemTraded", item, fromChar, toChar, client)
             end
@@ -28869,7 +28869,7 @@ end
         local currentBoosts = character:getVar("boosts", {})
         local attribBoosts = currentBoosts[attribID] or {}
         local boostCount = table.Count(attribBoosts)
-        
+
         if boostCount > 5 then
             client:notify("Warning: You have " .. boostCount .. " boosts on " .. attribID)
         end
@@ -29976,7 +29976,7 @@ end
             local inv = character:getInv()
             local faction = character:getFaction()
             local factionData = lia.faction.indices[faction]
-            
+
             if factionData and factionData.startingItems then
                 for _, itemID in ipairs(factionData.startingItems) do
                     inv:add(itemID)
@@ -30046,7 +30046,7 @@ end
     hook.Add("PostScaleDamage", "DamageTracking", function(hitgroup, dmgInfo, damageScale)
         local attacker = dmgInfo:GetAttacker()
         local victim = dmgInfo:GetInflictor()
-        
+
         if IsValid(attacker) and attacker:IsPlayer() then
             local damage = dmgInfo:GetDamage()
             local stats = attacker:getData("damageStats", {})

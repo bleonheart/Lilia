@@ -704,14 +704,12 @@ function MODULE:PopulateAdminTabs(pages)
                 end
 
                 local function GetPropertyDisplayName(key)
-                    -- Convert "Primary | Damage" format to "primaryDamage" camelCase for localization lookup
                     local localizationKey = key
                     if string.find(key, " | ") then
                         local parts = string.Explode(" | ", key)
-                        if #parts == 2 then
-                            localizationKey = string.lower(parts[1]) .. parts[2]
-                        end
+                        if #parts == 2 then localizationKey = string.lower(parts[1]) .. parts[2] end
                     end
+
                     local localized = L(localizationKey)
                     if localized ~= localizationKey then return localized end
                     local displayName = string.gsub(key, " | ", " ")

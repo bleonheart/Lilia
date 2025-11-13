@@ -432,42 +432,6 @@ function lia.font.registerFonts(fontName)
     hook.Run("PostLoadFonts", mainFont, mainFont)
 end
 
---[[
-    Purpose:
-        Legacy compatibility function for obtaining font names by size.
-        DEPRECATED: Use LiliaFont.xxx directly instead (e.g., "LiliaFont.20" instead of liaSizeFont(20))
-
-    When Called:
-        Called by legacy code that uses the old liaSizeFont(size) pattern
-
-    Parameters:
-        size (number)
-            The font size to retrieve
-
-    Returns:
-        (string)
-            The font name in LiliaFont.xxx format
-
-    Realm:
-        Shared
-
-    Example Usage (DEPRECATED - DO NOT USE IN NEW CODE):
-        ```lua
-        -- OLD WAY (deprecated):
-        local font = liaSizeFont(20)
-        
-        -- NEW WAY (preferred):
-        local font = "LiliaFont.20"
-        ```
-]]]
-function liaSizeFont(size)
-    if not isnumber(size) then
-        lia.error("liaSizeFont: size must be a number")
-        return "LiliaFont.16"
-    end
-    return "LiliaFont." .. tostring(size)
-end
-
 if CLIENT then
     local oldSurfaceSetFont = surface.SetFont
     function surface.SetFont(font)
