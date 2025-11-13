@@ -627,21 +627,71 @@ end
 
 local lastRKeyState = false
 function GM:Think()
-    if not IsValid(lia.item.held) or not lia.item.held.itemTable then return end
+    local itemIcon, itemTable
+    -- Check for held item first (existing behavior)
+    if IsValid(lia.item.held) and lia.item.held.itemTable then
+        itemIcon = lia.item.held
+        itemTable = lia.item.held.itemTable
+    else
+        -- Check for hovered item (new behavior)
+        for _, panel in ipairs(vgui.GetAll()) do
+            if panel:GetName() == "liaGridInventoryPanel" and IsValid(panel.hoveredItem) then
+                itemIcon = panel.hoveredItem
+                itemTable = panel.hoveredItem.itemTable
+                break
+            end
+        end
+    end
+
+    if not itemTable then return end
     local rKeyPressed = input.IsKeyDown(KEY_R)
     if rKeyPressed and not lastRKeyState then
-        local item = lia.item.held.itemTable
-        local currentRotation = item:getData("rotated", false)
+        -- Check rotation conditions (same as item rotate function)
+        if IsValid(itemTable.entity) or itemTable.width == itemTable.height or itemTable:getData("equip", false) then
+            return -- Cannot rotate this item
+        end
+
+        -- Check if rotation would fit in inventory
+        local inv = lia.item.getInv(itemTable.invID)
+        local x, y = itemTable:getData("x"), itemTable:getData("y")
+        local newRot = not itemTable:getData("rotated", false)
+        if inv and x and y then
+            local w = newRot and (itemTable.height or 1) or itemTable.width or 1
+            local h = newRot and (itemTable.width or 1) or itemTable.height or 1
+            local invW, invH = inv:getSize()
+            if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
+                -- Item doesn't fit after rotation
+                return
+            end
+
+            for _, v in pairs(inv:getItems(true)) do
+                if v ~= itemTable then
+                    local ix, iy = v:getData("x"), v:getData("y")
+                    if ix and iy then
+                        local ix2 = ix + v:getWidth() - 1
+                        local iy2 = iy + v:getHeight() - 1
+                        local x2 = x + w - 1
+                        local y2 = y + h - 1
+                        if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
+                            -- Item overlaps with another item
+                            return
+                        end
+                    end
+                end
+            end
+        end
+
+        local currentRotation = itemTable:getData("rotated", false)
         local newRotation = not currentRotation
         -- Update local client data for immediate visual feedback
-        item.data = item.data or {}
-        item.data.rotated = newRotation
-        item.forceRender = true
-        -- Update the held item icon to reflect the rotation change
-        if IsValid(lia.item.held) then lia.item.held:setItem(item) end
+        itemTable.data = itemTable.data or {}
+        itemTable.data.rotated = newRotation
+        itemTable.forceRender = true
+        -- Update the item icon to reflect the rotation change
+        if IsValid(itemIcon) then itemIcon:setItem(itemTable) end
         -- Notify server of the rotation change (server will set the data)
         net.Start("liaItemRotate")
-        net.WriteUInt(item:getID(), 32)
+        net.WriteUInt(itemTable:getID(), 32)
         net.WriteBool(newRotation)
         net.SendToServer()
     end

@@ -2,11 +2,26 @@
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
+
     local baseTime = lia.config.get("SpawnTime", 5)
     baseTime = hook.Run("OverrideSpawnTime", client, baseTime) or baseTime
-    local lastDeath = client:getNetVar("lastDeathTime", os.time())
+
+    -- Get lastDeathTime with proper fallback
+    local lastDeath = client:getNetVar("lastDeathTime")
+    if not lastDeath or lastDeath == 0 then
+        -- If lastDeathTime is not set, allow immediate respawn as fallback
+        client:Spawn()
+        lia.log.add(client, "respawn", "Forced respawn due to missing lastDeathTime")
+        return
+    end
+
     local timePassed = os.time() - lastDeath
-    if timePassed >= baseTime then client:Spawn() end
+    if timePassed >= baseTime then
+        client:Spawn()
+    else
+        -- Log the attempt for debugging
+        lia.log.add(client, "respawn", "Respawn denied - timePassed: " .. timePassed .. " < baseTime: " .. baseTime)
+    end
 end)
 
 net.Receive("liaStringRequest", function(_, client)
@@ -573,6 +588,20 @@ end)
 net.Receive("liaBinaryQuestionRequestCancel", function(_, client)
     local id = net.ReadUInt(32)
     if client.liaBinaryReqs then client.liaBinaryReqs[id] = nil end
+end)
+
+net.Receive("liaPopupQuestionRequest", function(_, client)
+    local id = net.ReadUInt(32)
+    local buttonIndex = net.ReadUInt(8)
+    local callbacks = client.liaPopupReqs and client.liaPopupReqs[id]
+    if not callbacks or not callbacks[buttonIndex] then return end
+    if isfunction(callbacks[buttonIndex]) then callbacks[buttonIndex]() end
+    client.liaPopupReqs[id] = nil
+end)
+
+net.Receive("liaPopupQuestionRequestCancel", function(_, client)
+    local id = net.ReadUInt(32)
+    if client.liaPopupReqs then client.liaPopupReqs[id] = nil end
 end)
 
 net.Receive("liaButtonRequest", function(_, client)

@@ -4339,6 +4339,95 @@ function lia.derma.requestButtons(title, buttons, callback, description)
     return frame, buttonPanels
 end
 
+--[[
+    Purpose:
+        Creates a popup dialog with a question and multiple buttons with individual callbacks
+
+    When Called:
+        When user needs to make a choice from multiple options with custom actions
+
+    Parameters:
+        question (string) - The question text to display
+        buttons (table) - Array of button definitions {text, callback} where callback is executed when button is clicked
+
+    Returns:
+        frame (Panel) - The created dialog frame
+
+    Realm:
+        Client
+
+    Example Usage:
+    ```lua
+    lia.derma.requestPopupQuestion("Are you sure you want to delete this?", {
+        {"Yes", function()
+            print("User clicked Yes")
+        end},
+        {"No", function()
+            print("User clicked No")
+        end},
+        {"Maybe", function()
+            print("User clicked Maybe")
+        end}
+    })
+    ```
+]]
+function lia.derma.requestPopupQuestion(question, buttons)
+    if IsValid(lia.gui.menuRequestPopup) then lia.gui.menuRequestPopup:Remove() end
+    local buttonCount = #buttons
+    local frameHeight = 180 + (buttonCount * 45)
+    local frame = vgui.Create("liaFrame")
+    frame:SetSize(400, frameHeight)
+    frame:Center()
+    frame:MakePopup()
+    frame:SetTitle("")
+    frame:SetCenterTitle(L("question"))
+    frame:ShowAnimation()
+    frame:SetZPos(1000)
+
+    local questionLabel = vgui.Create("DLabel", frame)
+    questionLabel:Dock(TOP)
+    questionLabel:DockMargin(20, 40, 20, 20)
+    questionLabel:SetText(question or L("areYouSure"))
+    questionLabel:SetFont("liaMediumFont")
+    questionLabel:SetTextColor(lia.color.theme.text or color_white)
+    questionLabel:SetContentAlignment(5)
+    questionLabel:SizeToContents()
+
+    local buttonContainer = vgui.Create("Panel", frame)
+    buttonContainer:Dock(FILL)
+    buttonContainer:DockMargin(20, 0, 20, 20)
+
+    for i, buttonInfo in ipairs(buttons) do
+        local buttonText = ""
+        local buttonCallback = nil
+
+        if istable(buttonInfo) then
+            buttonText = buttonInfo[1] or tostring(buttonInfo)
+            buttonCallback = buttonInfo[2]
+        else
+            buttonText = tostring(buttonInfo)
+        end
+
+        local buttonPanel = vgui.Create("Panel", buttonContainer)
+        buttonPanel:Dock(TOP)
+        buttonPanel:DockMargin(0, 5, 0, 5)
+        buttonPanel:SetTall(40)
+
+        local button = vgui.Create("liaButton", buttonPanel)
+        button:Dock(FILL)
+        button:SetTxt(buttonText)
+        button.DoClick = function()
+            if buttonCallback and isfunction(buttonCallback) then
+                buttonCallback()
+            end
+            frame:Remove()
+        end
+    end
+
+    lia.gui.menuRequestPopup = frame
+    return frame
+end
+
 timer.Simple(0, function()
     if IsValid(lia.gui.menuDermaMenu) then lia.gui.menuDermaMenu:Remove() end
     if IsValid(lia.gui.menuTextBox) then lia.gui.menuTextBox:Remove() end
@@ -4350,6 +4439,7 @@ timer.Simple(0, function()
     if IsValid(lia.gui.menuRequestOptions) then lia.gui.menuRequestOptions:Remove() end
     if IsValid(lia.gui.menuRequestBinary) then lia.gui.menuRequestBinary:Remove() end
     if IsValid(lia.gui.menuRequestButtons) then lia.gui.menuRequestButtons:Remove() end
+    if IsValid(lia.gui.menuRequestPopup) then lia.gui.menuRequestPopup:Remove() end
     if IsValid(lia.gui.menuOpenOptions) then lia.gui.menuOpenOptions:Remove() end
     if IsValid(lia.gui.menuTableUI) then lia.gui.menuTableUI:Remove() end
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end

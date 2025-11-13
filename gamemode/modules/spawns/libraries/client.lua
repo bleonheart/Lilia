@@ -9,6 +9,14 @@ function MODULE:HUDPaint()
     local lastDeath = ply:getNetVar("lastDeathTime", os.time())
     local left = clamp(baseTime - (os.time() - lastDeath), 0, baseTime)
     if left >= baseTime and not ply:Alive() then left = baseTime end
+
+    -- Safety check: if player has been dead for too long, force respawn attempt
+    if not ply:Alive() and lastDeath > 0 and (os.time() - lastDeath) > (baseTime + 10) then
+        net.Start("liaPlayerRespawn")
+        net.SendToServer()
+        return
+    end
+
     if hook.Run("ShouldRespawnScreenAppear") == false then return end
     if ply:getChar() and ply:Alive() then
         if fade > 0 then
@@ -47,6 +55,17 @@ function MODULE:HUDPaint()
         local dx, dy = (ScrW() - dw) / 2, y + h + 10
         lia.util.drawText(text, dx + 1, dy + 1, Color(0, 0, 0, 255), 0, 0, "liaMediumFont")
         lia.util.drawText(text, dx, dy, Color(255, 255, 255, 255), 0, 0, "liaMediumFont")
+
+        -- Show force respawn hint if player has been dead for 1.25x spawn time
+        local timePassed = os.time() - lastDeath
+        if timePassed >= (baseTime * 1.25) then
+            surface.SetFont("liaSmallFont")
+            local hintText = L("forceRespawnHint")
+            local hw = select(1, surface.GetTextSize(hintText))
+            local hx, hy = (ScrW() - hw) / 2, dy + 25
+            lia.util.drawText(hintText, hx + 1, hy + 1, Color(0, 0, 0, 200), 0, 0, "liaSmallFont")
+            lia.util.drawText(hintText, hx, hy, Color(255, 255, 0, 200), 0, 0, "liaSmallFont")
+        end
     end
 end
 

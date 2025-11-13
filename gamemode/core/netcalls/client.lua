@@ -685,6 +685,23 @@ net.Receive("liaBinaryQuestionRequest", function()
     end)
 end)
 
+net.Receive("liaPopupQuestionRequest", function()
+    local id = net.ReadUInt(32)
+    local question = net.ReadString()
+    local buttonCount = net.ReadUInt(8)
+    local buttons = {}
+    for i = 1, buttonCount do
+        local buttonText = net.ReadString()
+        buttons[i] = {buttonText, function()
+            net.Start("liaPopupQuestionRequest")
+            net.WriteUInt(id, 32)
+            net.WriteUInt(i, 8)
+            net.SendToServer()
+        end}
+    end
+    lia.derma.requestPopupQuestion(question, buttons)
+end)
+
 net.Receive("liaButtonRequest", function()
     local id = net.ReadUInt(32)
     local titleKey = net.ReadString()

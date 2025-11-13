@@ -11,6 +11,7 @@ function PANEL:Init()
     self.icons = {}
     self:setGridSize(1, 1)
     self.occupied = {}
+    self.hoveredItem = nil
 end
 
 function PANEL:computeOccupied()
@@ -185,6 +186,8 @@ function PANEL:addItem(item)
         lia.item.held = nil
         lia.item.heldPanel = nil
     end
+    icon.OnCursorEntered = function() self.hoveredItem = icon end
+    icon.OnCursorExited = function() if self.hoveredItem == icon then self.hoveredItem = nil end end
 
     self.icons[id] = icon
     hook.Run("InventoryItemIconCreated", icon, item, self)
@@ -241,6 +244,7 @@ end
 
 function PANEL:OnCursorExited()
     if lia.item.heldPanel == self then lia.item.heldPanel = nil end
+    self.hoveredItem = nil
 end
 
 vgui.Register("liaGridInventoryPanel", PANEL, "DPanel")

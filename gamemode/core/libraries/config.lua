@@ -759,8 +759,20 @@ if SERVER then
             ```
     ]]
     function lia.config.send(client)
-        local data = lia.config.getChangedValues()
-        if not client and table.Count(data) == 0 then return end
+        -- For new clients, send ALL configs. For broadcasts, only send changed ones.
+        local data
+        if client then
+            -- New client connecting - send all configs
+            data = {}
+            for k, v in pairs(lia.config.stored) do
+                if v.value ~= nil then data[k] = v.value end
+            end
+        else
+            -- Broadcast - only send changed configs
+            data = lia.config.getChangedValues()
+            if table.Count(data) == 0 then return end
+        end
+
         local function getTargets()
             if IsValid(client) then return {client} end
             return player.GetHumans()
@@ -878,22 +890,27 @@ if SERVER then
             ```
     ]]
     function lia.config.save()
-        local changed = lia.config.getChangedValues()
-        local rows = {}
-        for k, v in pairs(changed) do
-            rows[#rows + 1] = {
-                key = k,
-                value = {v},
-            }
-        end
-
+        -- Save ALL configs, not just changed ones, to prevent loss of default values
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local queries = {"DELETE FROM lia_config WHERE schema = " .. lia.db.convertDataType(gamemode)}
-        for _, row in ipairs(rows) do
-            queries[#queries + 1] = "INSERT INTO lia_config (schema,key,value) VALUES (" .. lia.db.convertDataType(gamemode) .. ", " .. lia.db.convertDataType(row.key) .. ", " .. lia.db.convertDataType(row.value) .. ")"
+        local rows = {}
+        for k, v in pairs(lia.config.stored) do
+            if v.value ~= nil then
+                rows[#rows + 1] = {
+                    schema = gamemode,
+                    key = k,
+                    value = {v.value},
+                }
+            end
         end
 
-        lia.db.transaction(queries)
+        -- Use upsert for each config to properly handle value conversion
+        local ops = {}
+        for _, row in ipairs(rows) do
+            ops[#ops + 1] = lia.db.upsert(row, "config")
+        end
+
+        -- Wait for all upserts to complete
+        if #ops > 0 then deferred.all(ops) end
     end
 
     --[[
