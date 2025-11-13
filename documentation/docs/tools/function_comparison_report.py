@@ -258,6 +258,14 @@ class CombinedReportData:
     missing_library_functions: List[FunctionInfo]
     missing_hook_functions: List[FunctionInfo]
     missing_meta_functions: List[FunctionInfo]
+    # Font analysis data
+    fonts_registered: Set[str]
+    fonts_used: Set[str]
+    fonts_unregistered: Set[str]
+    fonts_default_gmod: Set[str]
+    fonts_variable: Set[str]
+    fonts_getfont_count: int
+    fonts_file_usages: Dict[str, Set[str]]  # file -> set of fonts used
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -804,6 +812,10 @@ class FunctionComparisonReportGenerator:
         print("Analyzing panel documentation...")
         panels_found, panels_documented = self._run_panels_analysis()
 
+        # 8. Font Analysis
+        print("Analyzing fonts...")
+        fonts_registered, fonts_used, fonts_unregistered, fonts_default_gmod, fonts_variable, fonts_getfont_count, fonts_file_usages = self._run_font_analysis()
+
         # Categorize missing functions by type
         missing_library_functions, missing_hook_functions, missing_meta_functions = self._categorize_missing_functions(function_results)
 
@@ -823,6 +835,13 @@ class FunctionComparisonReportGenerator:
             missing_library_functions=missing_library_functions,
             missing_hook_functions=missing_hook_functions,
             missing_meta_functions=missing_meta_functions,
+            fonts_registered=fonts_registered,
+            fonts_used=fonts_used,
+            fonts_unregistered=fonts_unregistered,
+            fonts_default_gmod=fonts_default_gmod,
+            fonts_variable=fonts_variable,
+            fonts_getfont_count=fonts_getfont_count,
+            fonts_file_usages=fonts_file_usages,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -1367,6 +1386,223 @@ class FunctionComparisonReportGenerator:
             print(f"Error in localization analysis: {e}")
             return {}, []
 
+    def _run_font_analysis(self) -> Tuple[Set[str], Set[str], Set[str], Set[str], Set[str], int, Dict[str, Set[str]]]:
+        """Run font analysis to find registered and used fonts"""
+        try:
+            # Font registration patterns
+            REGISTER_PATTERN = re.compile(
+                r'lia\.font\.register\s*\(\s*["\']([^"\']+)["\']\s*[,)]',
+                re.IGNORECASE
+            )
+            
+            # Font usage patterns
+            SURFACE_SETFONT_STRING_PATTERN = re.compile(
+                r'surface\.SetFont\s*\(\s*["\']([^"\']+)["\']',
+                re.IGNORECASE
+            )
+            PANEL_SETFONT_STRING_PATTERN = re.compile(
+                r':SetFont\s*\(\s*["\']([^"\']+)["\']',
+                re.IGNORECASE
+            )
+            SETFONT_STRING_PATTERN = re.compile(
+                r'SetFont\s*\(\s*["\']([^"\']+)["\']',
+                re.IGNORECASE
+            )
+            SURFACE_SETFONT_VAR_PATTERN = re.compile(
+                r'surface\.SetFont\s*\(\s*([a-zA-Z_][a-zA-Z0-9_.]*)',
+                re.IGNORECASE
+            )
+            PANEL_SETFONT_VAR_PATTERN = re.compile(
+                r':SetFont\s*\(\s*([a-zA-Z_][a-zA-Z0-9_.]*)',
+                re.IGNORECASE
+            )
+            GETFONT_PATTERN = re.compile(
+                r'\.GetFont\s*\(',
+                re.IGNORECASE
+            )
+            
+            all_registered = set()
+            all_used_string = set()
+            all_used_variables = set()
+            file_usages = defaultdict(set)
+            getfont_count = 0
+            
+            # Get workspace paths (base_path and modules_paths)
+            workspace_paths = [str(self.base_path)]
+            workspace_paths.extend(self.modules_paths)
+            
+            for workspace_path in workspace_paths:
+                workspace_path_obj = Path(workspace_path)
+                if not workspace_path_obj.exists():
+                    continue
+                
+                # Find all Lua files
+                lua_files = list(workspace_path_obj.rglob("*.lua"))
+                
+                for file_path in lua_files:
+                    # Skip certain directories
+                    if any(skip in str(file_path) for skip in ["addons", "workshop", "docs", "documentation", "languages"]):
+                        continue
+                    
+                    try:
+                        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        
+                        # Remove comments to avoid false positives
+                        content = self._remove_lua_comments(content)
+                        
+                        # Extract registered fonts
+                        registered = self._extract_registered_fonts_from_content(content)
+                        all_registered.update(registered)
+                        
+                        # Extract used fonts
+                        used_string, used_vars, file_getfont_count = self._extract_used_fonts_from_content(
+                            content, SURFACE_SETFONT_STRING_PATTERN, PANEL_SETFONT_STRING_PATTERN,
+                            SETFONT_STRING_PATTERN, SURFACE_SETFONT_VAR_PATTERN, PANEL_SETFONT_VAR_PATTERN,
+                            GETFONT_PATTERN
+                        )
+                        if used_string:
+                            all_used_string.update(used_string)
+                            file_usages[str(file_path)] = used_string
+                        if used_vars:
+                            all_used_variables.update(used_vars)
+                        getfont_count += file_getfont_count
+                        
+                    except Exception as e:
+                        print(f"Warning: Error reading {file_path}: {e}")
+                        continue
+            
+            # Find unregistered fonts
+            unregistered = all_used_string - all_registered
+            
+            # Known default Garry's Mod fonts that don't need registration
+            default_gmod_fonts = {"DermaDefault", "DermaDefaultBold", "DermaLarge", "Marlett"}
+            truly_unregistered = unregistered - default_gmod_fonts
+            default_fonts_used = unregistered & default_gmod_fonts
+            
+            return (all_registered, all_used_string, truly_unregistered, default_fonts_used,
+                    all_used_variables, getfont_count, file_usages)
+            
+        except Exception as e:
+            print(f"Error in font analysis: {e}")
+            return set(), set(), set(), set(), set(), 0, {}
+
+    def _extract_registered_fonts_from_content(self, content: str) -> Set[str]:
+        """Extract font names from lia.font.register calls in content"""
+        registered = set()
+        
+        REGISTER_PATTERN = re.compile(
+            r'lia\.font\.register\s*\(\s*["\']([^"\']+)["\']\s*[,)]',
+            re.IGNORECASE
+        )
+        
+        # Find string literal registrations
+        for match in REGISTER_PATTERN.finditer(content):
+            # Skip if this registration appears to be in multiline comment blocks
+            start_pos = match.start()
+            before_match = content[:start_pos]
+            
+            # Check if we're inside a multiline comment block (--[[ ... ]])
+            last_comment_start = before_match.rfind('--[[')
+            if last_comment_start != -1:
+                comment_end = content.find(']]', last_comment_start)
+                if comment_end != -1 and comment_end > start_pos:
+                    continue  # We're inside a comment block
+            
+            font_name = match.group(1)
+            registered.add(font_name)
+        
+        # Detect dynamic LiliaFont registrations
+        liliafont_pattern = re.compile(
+            r'lia\.font\.register\s*\(\s*["\']LiliaFont\.["\']\s*\.\.\s*size',
+            re.IGNORECASE
+        )
+        liliafont_match = liliafont_pattern.search(content)
+        if liliafont_match:
+            start_pos = liliafont_match.start()
+            before_match = content[:start_pos]
+            
+            last_comment_start = before_match.rfind('--[[')
+            skip_detection = False
+            if last_comment_start != -1:
+                comment_end = content.find(']]', last_comment_start)
+                if comment_end != -1 and comment_end > start_pos:
+                    skip_detection = True
+            
+            if not skip_detection:
+                sizes_match = re.search(r'local\s+fontSizes\s*=\s*\{([^}]+)\}', content, re.MULTILINE)
+                if not sizes_match:
+                    sizes_match = re.search(r'fontSizes\s*=\s*\{([^}]+)\}', content, re.MULTILINE)
+                
+                if sizes_match:
+                    sizes_str = sizes_match.group(1)
+                    sizes = [int(s) for s in re.findall(r'\d+', sizes_str)]
+                    for size in sizes:
+                        registered.add(f"LiliaFont.{size}")
+                        registered.add(f"LiliaFont.{size}b")
+                        registered.add(f"LiliaFont.{size}i")
+                else:
+                    default_sizes = [12, 14, 15, 16, 17, 18, 20, 22, 23, 24, 25, 26, 28, 30, 34, 36, 40, 48]
+                    for size in default_sizes:
+                        registered.add(f"LiliaFont.{size}")
+                        registered.add(f"LiliaFont.{size}b")
+                        registered.add(f"LiliaFont.{size}i")
+        
+        # Detect other dynamic patterns like "CustomFont" .. size
+        customfont_pattern = re.compile(
+            r'lia\.font\.register\s*\(\s*["\']CustomFont["\']\s*\.\.\s*size',
+            re.IGNORECASE
+        )
+        customfont_match = customfont_pattern.search(content)
+        if customfont_match:
+            start_pos = customfont_match.start()
+            before_match = content[:start_pos]
+            
+            last_comment_start = before_match.rfind('--[[')
+            skip_detection = False
+            if last_comment_start != -1:
+                comment_end = content.find(']]', last_comment_start)
+                if comment_end != -1 and comment_end > start_pos:
+                    skip_detection = True
+            
+            if not skip_detection:
+                sizes_match = re.search(r'local\s+sizes\s*=\s*\{([^}]+)\}', content)
+                if sizes_match:
+                    sizes_str = sizes_match.group(1)
+                    sizes = re.findall(r'\d+', sizes_str)
+                    for size in sizes:
+                        registered.add(f"CustomFont{size}")
+                        registered.add(f"CustomFont{size}Bold")
+        
+        return registered
+
+    def _extract_used_fonts_from_content(self, content: str, surface_string_pattern, panel_string_pattern,
+                                         setfont_string_pattern, surface_var_pattern, panel_var_pattern,
+                                         getfont_pattern) -> Tuple[Set[str], Set[str], int]:
+        """Extract font names from SetFont calls in content"""
+        string_fonts = set()
+        variable_fonts = set()
+        getfont_count = 0
+        
+        # Find string literal fonts
+        for pattern in [surface_string_pattern, panel_string_pattern, setfont_string_pattern]:
+            for match in pattern.finditer(content):
+                font_name = match.group(1)
+                string_fonts.add(font_name)
+        
+        # Find variable fonts
+        for pattern in [surface_var_pattern, panel_var_pattern]:
+            for match in pattern.finditer(content):
+                var_name = match.group(1)
+                # Skip common non-font variables
+                if var_name not in ['font', 'finalFont', 'topfont', 'bottomfont', 'buttonFont']:
+                    variable_fonts.add(var_name)
+        
+        # Count GetFont() calls
+        getfont_count = len(getfont_pattern.findall(content))
+        
+        return string_fonts, variable_fonts, getfont_count
+
     def generate_markdown_report(self, data: CombinedReportData) -> str:
         """Generate comprehensive markdown report"""
         report_lines = []
@@ -1383,6 +1619,9 @@ class FunctionComparisonReportGenerator:
 
         # Panels Documentation Section
         report_lines.extend(self._generate_panels_section(data))
+
+        # Font Analysis Section
+        report_lines.extend(self._generate_fonts_section(data))
 
         # Localization Section
         report_lines.extend(self._generate_localization_section(data))
@@ -2018,6 +2257,10 @@ class FunctionComparisonReportGenerator:
             f"- **Documented Panels:** {len(data.panels_documented)}",
             f"- **Missing Panels:** {panels_missing_count}",
             "",
+            "### Font Analysis",
+            f"- **Registered Fonts:** {len(data.fonts_registered)}",
+            f"- **Unregistered Fonts:** {len(data.fonts_unregistered)} (used but not registered)",
+            "",
             "### Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
             f"- **@xxxxx Patterns:** {at_patterns} unique",
@@ -2251,6 +2494,39 @@ class FunctionComparisonReportGenerator:
             lines.append("These panels are both registered in code and documented:")
             for panel in sorted(panels_properly_documented):
                 lines.append(f"- `{panel}()`")
+            lines.append("")
+
+        return lines
+
+    def _generate_fonts_section(self, data: CombinedReportData) -> List[str]:
+        """Generate font analysis section"""
+        lines = ["## Font Analysis", ""]
+
+        if not data.fonts_registered and not data.fonts_used:
+            lines.append("_No font analysis data available._")
+            lines.append("")
+            return lines
+
+        # Used But Not Registered Fonts
+        lines.append("### Used But Not Registered Fonts")
+        lines.append("")
+        if data.fonts_unregistered:
+            for font in sorted(data.fonts_unregistered):
+                lines.append(f"- `{font}`")
+            lines.append("")
+        else:
+            lines.append("None")
+            lines.append("")
+
+        # Registered Fonts
+        lines.append("### Registered Fonts")
+        lines.append("")
+        if data.fonts_registered:
+            for font in sorted(data.fonts_registered):
+                lines.append(f"- `{font}`")
+            lines.append("")
+        else:
+            lines.append("None")
             lines.append("")
 
         return lines

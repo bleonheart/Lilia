@@ -227,7 +227,7 @@ local function OpenFlagsPanel(panel, data)
         local noDataLabel = panel:Add("DLabel")
         noDataLabel:Dock(FILL)
         noDataLabel:SetText(L("flagsNoPlayersOnlineHelp"))
-        noDataLabel:SetFont("liaSmallFont")
+        noDataLabel:SetFont("LiliaFont.17")
         noDataLabel:SetTextColor(Color(150, 150, 150))
         noDataLabel:SetContentAlignment(5)
         noDataLabel:SetWrap(true)
@@ -704,8 +704,16 @@ function MODULE:PopulateAdminTabs(pages)
                 end
 
                 local function GetPropertyDisplayName(key)
-                    local localized = L(key)
-                    if localized ~= key then return localized end
+                    -- Convert "Primary | Damage" format to "primaryDamage" camelCase for localization lookup
+                    local localizationKey = key
+                    if string.find(key, " | ") then
+                        local parts = string.Explode(" | ", key)
+                        if #parts == 2 then
+                            localizationKey = string.lower(parts[1]) .. parts[2]
+                        end
+                    end
+                    local localized = L(localizationKey)
+                    if localized ~= localizationKey then return localized end
                     local displayName = string.gsub(key, " | ", " ")
                     displayName = string.gsub(displayName, "(%a)(%a*)", function(first, rest) return string.upper(first) .. string.lower(rest) end)
                     return displayName
@@ -820,7 +828,7 @@ function MODULE:PopulateAdminTabs(pages)
                         nameLabel:DockMargin(10, 0, 10, 0)
                         nameLabel:SetWide(200)
                         nameLabel:SetText(GetPropertyDisplayName(key))
-                        nameLabel:SetFont("liaSmallFont")
+                        nameLabel:SetFont("LiliaFont.17")
                         nameLabel:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
                         local valueControl
                         if propType == "boolean" then
@@ -845,7 +853,7 @@ function MODULE:PopulateAdminTabs(pages)
                             valueControl:DockMargin(0, 2, 10, 2)
                             valueControl:SetWide(150)
                             valueControl:SetText(displayValue)
-                            valueControl:SetFont("liaSmallFont")
+                            valueControl:SetFont("LiliaFont.17")
                             valueControl:SetDrawBackground(false)
                             valueControl:SetDrawBorder(false)
                             valueControl:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
@@ -990,8 +998,9 @@ function MODULE:PopulateAdminTabs(pages)
                 weaponListHeader:DockMargin(10, 10, 10, 5)
                 weaponListHeader:SetTall(25)
                 weaponListHeader:SetText(L("weapons"))
-                weaponListHeader:SetFont("liaMediumFont")
+                weaponListHeader:SetFont("LiliaFont.25")
                 weaponListHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
+                weaponListHeader.Paint = function(self, w, h) draw.SimpleText(self:GetText(), "LiliaFont.25", w / 2, h / 2, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 local editorPanel = container:Add("DPanel")
                 editorPanel:Dock(FILL)
                 editorPanel:DockMargin(10, 10, 10, 10)
@@ -1005,8 +1014,9 @@ function MODULE:PopulateAdminTabs(pages)
                 weaponHeader:DockMargin(10, 10, 10, 5)
                 weaponHeader:SetTall(25)
                 weaponHeader:SetText(L("selectWeaponToEdit"))
-                weaponHeader:SetFont("liaMediumFont")
+                weaponHeader:SetFont("LiliaFont.25")
                 weaponHeader:SetTextColor((lia.color.theme and lia.color.theme.text and lia.color.theme.text[1]) or Color(210, 235, 235))
+                weaponHeader.Paint = function(self, w, h) draw.SimpleText(self:GetText(), "LiliaFont.25", w / 2, h / 2, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
                 local buttonPanel = editorPanel:Add("DPanel")
                 buttonPanel:Dock(BOTTOM)
                 buttonPanel:SetTall(50)
@@ -1043,11 +1053,11 @@ function MODULE:PopulateAdminTabs(pages)
                         end
                     end
 
-                    lia.db.query("DELETE FROM lia_swepeditor", function()
-                        LocalPlayer():notify(L("allWeaponsReset"))
-                        PopulateWeaponList()
-                        if selectedWeapon then SelectWeapon(selectedWeapon) end
-                    end)
+                    net.Start("liaSwepeditorResetAll")
+                    net.SendToServer()
+                    LocalPlayer():notify(L("allWeaponsReset"))
+                    PopulateWeaponList()
+                    if selectedWeapon then SelectWeapon(selectedWeapon) end
                 end
 
                 refreshBtn.DoClick = function()
@@ -3159,7 +3169,6 @@ net.Receive("liaAllPks", function()
             local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
             local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
             if filter == "" or searchStr:lower():find(filter, 1, true) then
-                -- Add extra data to the rowData array
                 lineData.steamID = c.steamID or ""
                 lineData.reason = c.reason or ""
                 lineData.evidence = c.evidence or ""
@@ -3519,8 +3528,7 @@ function MODULE:HUDPaint()
                 local npcName = ent:getNetVar("NPCName", "Unconfigured NPC")
                 if uniqueID ~= "" then
                     kind = "npcs"
-                    label = uniqueID
-                    subLabel = npcName
+                    label = npcName
                     baseColor = lia.option.get("espEntitiesColor")
                 else
                     kind = L("entities")
@@ -3558,11 +3566,11 @@ function MODULE:HUDPaint()
         if not kind then continue end
         local screenPos = pos:ToScreen()
         if not screenPos.visible then continue end
-        surface.SetFont("liaMediumFont")
+        surface.SetFont("LiliaFont.18")
         local _, textHeight = surface.GetTextSize("W")
-        draw.SimpleTextOutlined(label, "liaMediumFont", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        draw.SimpleTextOutlined(label, "LiliaFont.18", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
         if subLabel and subLabel ~= label then
-            local subLabelFont = (kind == "npcs") and "liaSmallFont" or "liaMediumFont"
+            local subLabelFont = (kind == "npcs") and "LiliaFont.14" or "LiliaFont.18"
             draw.SimpleTextOutlined(subLabel, subLabelFont, screenPos.x, screenPos.y + textHeight, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
         end
 
@@ -3575,10 +3583,10 @@ function MODULE:HUDPaint()
             local hpFrac = math.Clamp(ent:Health() / ent:GetMaxHealth(), 0, 1)
             surface.SetDrawColor(183, 8, 0, 255)
             surface.DrawRect(barX + 2, barY + 2, (barW - 4) * hpFrac, barH - 4)
-            surface.SetFont("liaSmallFont")
+            surface.SetFont("LiliaFont.14")
             local healthX = barX + barW / 2
             local healthY = barY + barH / 2
-            draw.SimpleTextOutlined(ent:Health(), "liaSmallFont", healthX, healthY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+            draw.SimpleTextOutlined(ent:Health(), "LiliaFont.14", healthX, healthY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
             if ent:Armor() > 0 then
                 barY = barY + barH + 5
                 surface.SetDrawColor(0, 0, 0, 255)
@@ -3588,7 +3596,7 @@ function MODULE:HUDPaint()
                 surface.DrawRect(barX + 2, barY + 2, (barW - 4) * armorFrac, barH - 4)
                 local armorX = barX + barW / 2
                 local armorY = barY + barH / 2
-                draw.SimpleTextOutlined(ent:Armor(), "liaSmallFont", armorX, armorY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
+                draw.SimpleTextOutlined(ent:Armor(), "LiliaFont.14", armorX, armorY, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 255))
             end
 
             local wep = ent:GetActiveWeapon()
@@ -3596,7 +3604,7 @@ function MODULE:HUDPaint()
                 local ammo, reserve = wep:Clip1(), ent:GetAmmoCount(wep:GetPrimaryAmmoType())
                 local wepName = language.GetPhrase(wep:GetPrintName())
                 if ammo >= 0 and reserve >= 0 then wepName = wepName .. " [" .. ammo .. "/" .. reserve .. "]" end
-                draw.SimpleTextOutlined(wepName, "liaSmallFont", screenPos.x, barY + barH + 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255))
+                draw.SimpleTextOutlined(wepName, "LiliaFont.14", screenPos.x, barY + barH + 5, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, Color(0, 0, 0, 255))
             end
         end
     end

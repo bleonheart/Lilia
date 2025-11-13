@@ -157,7 +157,6 @@ function MODULE:PlayerDeath(client, _, attacker)
         local deathTime = os.time()
         client:setNetVar("IsDeadRestricted", true)
         client:setNetVar("lastDeathTime", deathTime)
-        -- Ensure lastDeathTime is set immediately and redundantly
         timer.Simple(0.1, function() if IsValid(client) and client:getChar() and not client:Alive() then client:setNetVar("lastDeathTime", deathTime) end end)
     else
         local spawnTime = lia.config.get("SpawnTime", 5)

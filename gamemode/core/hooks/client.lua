@@ -86,7 +86,7 @@ local function drawAmmo(wpn)
         surface.DrawRect(x, y, 64, 64)
         surface.SetDrawColor(255, 255, 255, 3)
         surface.DrawOutlinedRect(x, y, 64, 64)
-        lia.util.drawText(sec, x + 32, y + 32, nil, 1, 1, "liaBigFont")
+        lia.util.drawText(sec, x + 32, y + 32, nil, 1, 1, "LiliaFont.36")
     end
 
     if wpn:GetClass() ~= "weapon_slam" and (clip > 0 or count > 0) then
@@ -96,7 +96,7 @@ local function drawAmmo(wpn)
         surface.DrawRect(x, y, 128, 64)
         surface.SetDrawColor(255, 255, 255, 3)
         surface.DrawOutlinedRect(x, y, 128, 64)
-        lia.util.drawText(clip == -1 and count or clip .. "/" .. count, x + 64, y + 32, nil, 1, 1, "liaBigFont")
+        lia.util.drawText(clip == -1 and count or clip .. "/" .. count, x + 64, y + 32, nil, 1, 1, "LiliaFont.36")
     end
 end
 
@@ -245,7 +245,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if name ~= e.liaNameCache then
         e.liaNameCache = name
         if #name > 250 then name = name:sub(1, 250) .. "..." end
-        e.liaNameLines = lia.util.wrapText(name, ScrW() * width, "liaSmallFont")
+        e.liaNameLines = lia.util.wrapText(name, ScrW() * width, "LiliaFont.17")
     end
 
     for i = 1, #e.liaNameLines do
@@ -256,7 +256,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         if #desc > 250 then desc = desc:sub(1, 250) .. "..." end
-        e.liaDescLines = lia.util.wrapText(desc, ScrW() * width, "liaSmallFont")
+        e.liaDescLines = lia.util.wrapText(desc, ScrW() * width, "LiliaFont.17")
     end
 
     for i = 1, #e.liaDescLines do
@@ -266,7 +266,7 @@ function GM:DrawEntityInfo(e, a, pos)
     if ch then hook.Run("DrawCharInfo", e, ch, charInfo) end
     for i = 1, #charInfo do
         local info = charInfo[i]
-        local _, ty = lia.util.drawText(info[1]:gsub("#", "\226\128\139#"), x, y, ColorAlpha(info[2] or color_white, a), 1, 1, "liaSmallFont")
+        local _, ty = lia.util.drawText(info[1]:gsub("#", "\226\128\139#"), x, y, ColorAlpha(info[2] or color_white, a), 1, 1, "LiliaFont.17")
         y = y + ty
     end
 end
@@ -516,7 +516,7 @@ end
 function GM:HUDPaintBackground()
     lia.menu.drawAll()
     RenderEntities()
-    if BRANCH ~= "x86-64" then draw.SimpleText(L("switchTo64Bit"), "liaSmallFont", ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    if BRANCH ~= "x86-64" then draw.SimpleText(L("switchTo64Bit"), "LiliaFont.17", ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
 end
 
 function GM:OnContextMenuOpen()
@@ -628,12 +628,10 @@ end
 local lastRKeyState = false
 function GM:Think()
     local itemIcon, itemTable
-    -- Check for held item first (existing behavior)
     if IsValid(lia.item.held) and lia.item.held.itemTable then
         itemIcon = lia.item.held
         itemTable = lia.item.held.itemTable
     else
-        -- Check for hovered item (new behavior)
         for _, panel in ipairs(vgui.GetAll()) do
             if panel:GetName() == "liaGridInventoryPanel" and IsValid(panel.hoveredItem) then
                 itemIcon = panel.hoveredItem
@@ -646,12 +644,7 @@ function GM:Think()
     if not itemTable then return end
     local rKeyPressed = input.IsKeyDown(KEY_R)
     if rKeyPressed and not lastRKeyState then
-        -- Check rotation conditions (same as item rotate function)
-        if IsValid(itemTable.entity) or itemTable.width == itemTable.height or itemTable:getData("equip", false) then
-            return -- Cannot rotate this item
-        end
-
-        -- Check if rotation would fit in inventory
+        if IsValid(itemTable.entity) or itemTable.width == itemTable.height or itemTable:getData("equip", false) then return end
         local inv = lia.item.getInv(itemTable.invID)
         local x, y = itemTable:getData("x"), itemTable:getData("y")
         local newRot = not itemTable:getData("rotated", false)
@@ -659,11 +652,7 @@ function GM:Think()
             local w = newRot and (itemTable.height or 1) or itemTable.width or 1
             local h = newRot and (itemTable.width or 1) or itemTable.height or 1
             local invW, invH = inv:getSize()
-            if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
-                -- Item doesn't fit after rotation
-                return
-            end
-
+            if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then return end
             for _, v in pairs(inv:getItems(true)) do
                 if v ~= itemTable then
                     local ix, iy = v:getData("x"), v:getData("y")
@@ -672,10 +661,7 @@ function GM:Think()
                         local iy2 = iy + v:getHeight() - 1
                         local x2 = x + w - 1
                         local y2 = y + h - 1
-                        if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
-                            -- Item overlaps with another item
-                            return
-                        end
+                        if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then return end
                     end
                 end
             end
@@ -683,13 +669,10 @@ function GM:Think()
 
         local currentRotation = itemTable:getData("rotated", false)
         local newRotation = not currentRotation
-        -- Update local client data for immediate visual feedback
         itemTable.data = itemTable.data or {}
         itemTable.data.rotated = newRotation
         itemTable.forceRender = true
-        -- Update the item icon to reflect the rotation change
         if IsValid(itemIcon) then itemIcon:setItem(itemTable) end
-        -- Notify server of the rotation change (server will set the data)
         net.Start("liaItemRotate")
         net.WriteUInt(itemTable:getID(), 32)
         net.WriteBool(newRotation)

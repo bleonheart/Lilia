@@ -6,7 +6,7 @@ function PANEL:Init()
         lbl:Dock(TOP)
         lbl:DockMargin(0, 0, 0, 8)
         lbl:SetTall(32)
-        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "LiliaFont.25", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         return lbl
     end
 
@@ -30,7 +30,6 @@ function PANEL:makeTextEntry(key)
     entry:Dock(TOP)
     entry:DockMargin(0, 8, 0, 12)
     entry:SetTall(40)
-    -- Use slightly smaller font than labels (liaMediumFont)
     entry:SetFont("LiliaFont.18")
     entry.OnEnter = function() self:setContext(key, string.Trim(entry:GetValue())) end
     entry.OnLoseFocus = function() self:setContext(key, string.Trim(entry:GetValue())) end
@@ -78,7 +77,6 @@ function PANEL:makeFactionComboBox()
 
     combo:FinishAddingOptions()
     combo:SetTall(70)
-    -- Prevent AutoSize from overriding our custom height
     local oldAutoSize = combo.AutoSize
     combo.AutoSize = function(pnl)
         if pnl.userSetHeight then return end
@@ -93,7 +91,7 @@ function PANEL:addAttributes()
         lbl:Dock(TOP)
         lbl:DockMargin(0, 0, 0, 8)
         lbl:SetTall(32)
-        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "liaMediumFont", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
+        lbl.Paint = function(_, _, h) draw.SimpleText(L(key):upper(), "LiliaFont.25", 0, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER) end
         return lbl
     end
 
@@ -181,7 +179,6 @@ function PANEL:updateContext()
     if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false then
         if IsValid(self.descEntry) then self:setContext("desc", string.Trim(self.descEntry:GetValue() or "")) end
     else
-        -- Set default value when desc is hidden
         local varData = lia.char.vars["desc"]
         if varData and varData.default then self:setContext("desc", varData.default) end
     end

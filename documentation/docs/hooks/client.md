@@ -15195,7 +15195,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -15211,7 +15211,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -15236,7 +15236,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -15527,7 +15527,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -15679,7 +15679,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -15695,7 +15695,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -15720,7 +15720,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -16011,7 +16011,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -16163,7 +16163,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -16179,7 +16179,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -16204,7 +16204,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -16495,7 +16495,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -16647,7 +16647,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -16663,7 +16663,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -16688,7 +16688,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -16979,7 +16979,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -17131,7 +17131,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -17147,7 +17147,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -17172,7 +17172,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -17463,7 +17463,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -17615,7 +17615,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -17631,7 +17631,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -17656,7 +17656,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -17947,7 +17947,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -18099,7 +18099,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -18115,7 +18115,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -18140,7 +18140,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -18431,7 +18431,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -18583,7 +18583,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -18599,7 +18599,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -18624,7 +18624,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -18915,7 +18915,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -19067,7 +19067,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -19083,7 +19083,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -19108,7 +19108,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -19399,7 +19399,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -19551,7 +19551,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -19567,7 +19567,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -19592,7 +19592,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -19883,7 +19883,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -20035,7 +20035,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -20051,7 +20051,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -20076,7 +20076,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -20367,7 +20367,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -20519,7 +20519,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -20535,7 +20535,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -20560,7 +20560,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -20851,7 +20851,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -21003,7 +21003,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -21019,7 +21019,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -21044,7 +21044,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -21335,7 +21335,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -21487,7 +21487,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -21503,7 +21503,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -21528,7 +21528,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -21819,7 +21819,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -21971,7 +21971,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -21987,7 +21987,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -22012,7 +22012,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -22303,7 +22303,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -22455,7 +22455,7 @@ Client
         panel:AddStep("Welcome", function(stepPanel)
             local label = vgui.Create("DLabel", stepPanel)
             label:SetText("Welcome to character creation!")
-            label:SetFont("liaBigFont")
+            label:SetFont("LiliaFont.36")
             label:SizeToContents()
             label:Center()
         end)
@@ -22471,7 +22471,7 @@ Client
         panel:AddStep("Background", function(stepPanel)
             local backgroundLabel = vgui.Create("DLabel", stepPanel)
             backgroundLabel:SetText("Choose your character's background:")
-            backgroundLabel:SetFont("liaMediumFont")
+            backgroundLabel:SetFont("LiliaFont.25")
             backgroundLabel:SetPos(10, 10)
             backgroundLabel:SizeToContents()
             local backgroundCombo = vgui.Create("DComboBox", stepPanel)
@@ -22496,7 +22496,7 @@ Client
         panel:AddStep("Traits", function(stepPanel)
             local traitsLabel = vgui.Create("DLabel", stepPanel)
             traitsLabel:SetText("Select up to 2 traits:")
-            traitsLabel:SetFont("liaMediumFont")
+            traitsLabel:SetFont("LiliaFont.25")
             traitsLabel:SetPos(10, 10)
             traitsLabel:SizeToContents()
             local availableTraits = {"Lucky", "Tough", "Smart", "Charismatic", "Athletic", "Creative"}
@@ -22787,7 +22787,7 @@ Client
     function MODULE:CreateReviewStep(stepPanel, mainPanel)
         local reviewLabel = vgui.Create("DLabel", stepPanel)
         reviewLabel:SetText("Review your character:")
-        reviewLabel:SetFont("liaBigFont")
+        reviewLabel:SetFont("LiliaFont.36")
         reviewLabel:SetPos(10, 10)
         reviewLabel:SizeToContents()
         -- Character summary
@@ -23517,7 +23517,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -23646,7 +23646,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -23775,7 +23775,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -23904,7 +23904,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -24033,7 +24033,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -24162,7 +24162,7 @@ Client
         searchBar:Dock(TOP)
         searchBar:SetPlaceholderText("Search information...")
         searchBar:SetTall(30)
-        searchBar:SetFont("liaMediumFont")
+        searchBar:SetFont("LiliaFont.25")
         searchBar.OnChange = function(s)
             self:FilterButtons(s:GetValue())
         end
@@ -24263,7 +24263,7 @@ Client
         titleBar:DockMargin(0, 0, 0, 5)
         local title = vgui.Create("DLabel", titleBar)
         title:SetText("Inventory - " .. inventory:getName())
-        title:SetFont("liaBigFont")
+        title:SetFont("LiliaFont.36")
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
@@ -24380,7 +24380,7 @@ Client
         titleBar:DockMargin(0, 0, 0, 5)
         local title = vgui.Create("DLabel", titleBar)
         title:SetText("Inventory - " .. inventory:getName())
-        title:SetFont("liaBigFont")
+        title:SetFont("LiliaFont.36")
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
@@ -24497,7 +24497,7 @@ Client
         titleBar:DockMargin(0, 0, 0, 5)
         local title = vgui.Create("DLabel", titleBar)
         title:SetText("Inventory - " .. inventory:getName())
-        title:SetFont("liaBigFont")
+        title:SetFont("LiliaFont.36")
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
@@ -24614,7 +24614,7 @@ Client
         titleBar:DockMargin(0, 0, 0, 5)
         local title = vgui.Create("DLabel", titleBar)
         title:SetText("Inventory - " .. inventory:getName())
-        title:SetFont("liaBigFont")
+        title:SetFont("LiliaFont.36")
         title:Dock(LEFT)
         title:DockMargin(10, 0, 0, 0)
         title:SizeToContents()
@@ -24703,7 +24703,7 @@ Client
             button:SetSize(120, 40)
             button:SetPos(xOffset, 10)
             -- Style the button
-            button:SetFont("liaMediumFont")
+            button:SetFont("LiliaFont.25")
             button.Paint = function(s, w, h)
                 local color = s:IsHovered() and Color(70, 130, 180) or Color(50, 50, 50)
                 draw.RoundedBox(6, 0, 0, w, h, color)
@@ -24749,7 +24749,7 @@ Client
             -- Category label
             local categoryLabel = vgui.Create("DLabel", menuBar)
             categoryLabel:SetText(categoryName .. ":")
-            categoryLabel:SetFont("liaSmallFont")
+            categoryLabel:SetFont("LiliaFont.17")
             categoryLabel:SetTextColor(Color(200, 200, 200))
             categoryLabel:SetPos(currentX, 5)
             categoryLabel:SizeToContents()
@@ -24763,7 +24763,7 @@ Client
                     button:SetSize(math.max(80, tab.name:len() * 8), 35)
                     button:SetPos(currentX, 7)
                     -- Advanced button styling
-                    button:SetFont("liaMediumFont")
+                    button:SetFont("LiliaFont.25")
                     button.normalColor = tab.color or Color(60, 60, 60)
                     button.hoverColor = Color(
                         math.min(button.normalColor.r + 20, 255),
@@ -24863,7 +24863,7 @@ Client
             button:SetSize(120, 40)
             button:SetPos(xOffset, 10)
             -- Style the button
-            button:SetFont("liaMediumFont")
+            button:SetFont("LiliaFont.25")
             button.Paint = function(s, w, h)
                 local color = s:IsHovered() and Color(70, 130, 180) or Color(50, 50, 50)
                 draw.RoundedBox(6, 0, 0, w, h, color)
@@ -24909,7 +24909,7 @@ Client
             -- Category label
             local categoryLabel = vgui.Create("DLabel", menuBar)
             categoryLabel:SetText(categoryName .. ":")
-            categoryLabel:SetFont("liaSmallFont")
+            categoryLabel:SetFont("LiliaFont.17")
             categoryLabel:SetTextColor(Color(200, 200, 200))
             categoryLabel:SetPos(currentX, 5)
             categoryLabel:SizeToContents()
@@ -24923,7 +24923,7 @@ Client
                     button:SetSize(math.max(80, tab.name:len() * 8), 35)
                     button:SetPos(currentX, 7)
                     -- Advanced button styling
-                    button:SetFont("liaMediumFont")
+                    button:SetFont("LiliaFont.25")
                     button.normalColor = tab.color or Color(60, 60, 60)
                     button.hoverColor = Color(
                         math.min(button.normalColor.r + 20, 255),
@@ -25023,7 +25023,7 @@ Client
             button:SetSize(120, 40)
             button:SetPos(xOffset, 10)
             -- Style the button
-            button:SetFont("liaMediumFont")
+            button:SetFont("LiliaFont.25")
             button.Paint = function(s, w, h)
                 local color = s:IsHovered() and Color(70, 130, 180) or Color(50, 50, 50)
                 draw.RoundedBox(6, 0, 0, w, h, color)
@@ -25069,7 +25069,7 @@ Client
             -- Category label
             local categoryLabel = vgui.Create("DLabel", menuBar)
             categoryLabel:SetText(categoryName .. ":")
-            categoryLabel:SetFont("liaSmallFont")
+            categoryLabel:SetFont("LiliaFont.17")
             categoryLabel:SetTextColor(Color(200, 200, 200))
             categoryLabel:SetPos(currentX, 5)
             categoryLabel:SizeToContents()
@@ -25083,7 +25083,7 @@ Client
                     button:SetSize(math.max(80, tab.name:len() * 8), 35)
                     button:SetPos(currentX, 7)
                     -- Advanced button styling
-                    button:SetFont("liaMediumFont")
+                    button:SetFont("LiliaFont.25")
                     button.normalColor = tab.color or Color(60, 60, 60)
                     button.hoverColor = Color(
                         math.min(button.normalColor.r + 20, 255),
@@ -25183,7 +25183,7 @@ Client
             button:SetSize(120, 40)
             button:SetPos(xOffset, 10)
             -- Style the button
-            button:SetFont("liaMediumFont")
+            button:SetFont("LiliaFont.25")
             button.Paint = function(s, w, h)
                 local color = s:IsHovered() and Color(70, 130, 180) or Color(50, 50, 50)
                 draw.RoundedBox(6, 0, 0, w, h, color)
@@ -25229,7 +25229,7 @@ Client
             -- Category label
             local categoryLabel = vgui.Create("DLabel", menuBar)
             categoryLabel:SetText(categoryName .. ":")
-            categoryLabel:SetFont("liaSmallFont")
+            categoryLabel:SetFont("LiliaFont.17")
             categoryLabel:SetTextColor(Color(200, 200, 200))
             categoryLabel:SetPos(currentX, 5)
             categoryLabel:SizeToContents()
@@ -25243,7 +25243,7 @@ Client
                     button:SetSize(math.max(80, tab.name:len() * 8), 35)
                     button:SetPos(currentX, 7)
                     -- Advanced button styling
-                    button:SetFont("liaMediumFont")
+                    button:SetFont("LiliaFont.25")
                     button.normalColor = tab.color or Color(60, 60, 60)
                     button.hoverColor = Color(
                         math.min(button.normalColor.r + 20, 255),
@@ -36685,7 +36685,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(storageInvPanel:GetWide(), 40)
         header.Paint = function(self, w, h)
-            draw.SimpleText(storage.name or "Storage", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(storage.name or "Storage", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add sort button
         local sortBtn = vgui.Create("DButton", storageInvPanel)
@@ -36772,7 +36772,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(storageInvPanel:GetWide(), 40)
         header.Paint = function(self, w, h)
-            draw.SimpleText(storage.name or "Storage", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(storage.name or "Storage", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add sort button
         local sortBtn = vgui.Create("DButton", storageInvPanel)
@@ -36859,7 +36859,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(storageInvPanel:GetWide(), 40)
         header.Paint = function(self, w, h)
-            draw.SimpleText(storage.name or "Storage", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(storage.name or "Storage", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add sort button
         local sortBtn = vgui.Create("DButton", storageInvPanel)
@@ -36946,7 +36946,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(storageInvPanel:GetWide(), 40)
         header.Paint = function(self, w, h)
-            draw.SimpleText(storage.name or "Storage", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(storage.name or "Storage", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add sort button
         local sortBtn = vgui.Create("DButton", storageInvPanel)
@@ -37377,7 +37377,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(panel:GetWide(), 50)
         header.Paint = function(self, w, h)
-            draw.SimpleText(vendorData.name or "Vendor", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(vendorData.name or "Vendor", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add vendor info panel
         if vendorData.description then
@@ -37385,7 +37385,7 @@ Client
             infoPanel:SetPos(10, 60)
             infoPanel:SetSize(panel:GetWide() - 20, 60)
             infoPanel.Paint = function(self, w, h)
-                draw.SimpleText(vendorData.description, "liaMediumFont", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText(vendorData.description, "LiliaFont.25", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
         end
         -- Add custom buttons
@@ -37475,7 +37475,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(panel:GetWide(), 50)
         header.Paint = function(self, w, h)
-            draw.SimpleText(vendorData.name or "Vendor", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(vendorData.name or "Vendor", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add vendor info panel
         if vendorData.description then
@@ -37483,7 +37483,7 @@ Client
             infoPanel:SetPos(10, 60)
             infoPanel:SetSize(panel:GetWide() - 20, 60)
             infoPanel.Paint = function(self, w, h)
-                draw.SimpleText(vendorData.description, "liaMediumFont", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText(vendorData.description, "LiliaFont.25", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
         end
         -- Add custom buttons
@@ -37573,7 +37573,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(panel:GetWide(), 50)
         header.Paint = function(self, w, h)
-            draw.SimpleText(vendorData.name or "Vendor", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(vendorData.name or "Vendor", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add vendor info panel
         if vendorData.description then
@@ -37581,7 +37581,7 @@ Client
             infoPanel:SetPos(10, 60)
             infoPanel:SetSize(panel:GetWide() - 20, 60)
             infoPanel.Paint = function(self, w, h)
-                draw.SimpleText(vendorData.description, "liaMediumFont", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText(vendorData.description, "LiliaFont.25", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
         end
         -- Add custom buttons
@@ -37671,7 +37671,7 @@ Client
         header:SetPos(0, 0)
         header:SetSize(panel:GetWide(), 50)
         header.Paint = function(self, w, h)
-            draw.SimpleText(vendorData.name or "Vendor", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(vendorData.name or "Vendor", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
         -- Add vendor info panel
         if vendorData.description then
@@ -37679,7 +37679,7 @@ Client
             infoPanel:SetPos(10, 60)
             infoPanel:SetSize(panel:GetWide() - 20, 60)
             infoPanel.Paint = function(self, w, h)
-                draw.SimpleText(vendorData.description, "liaMediumFont", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+                draw.SimpleText(vendorData.description, "LiliaFont.25", 5, 5, Color(200, 200, 200), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
             end
         end
         -- Add custom buttons
@@ -39832,7 +39832,7 @@ Client
 ```lua
     -- Simple: Paint item with default style
     function MODULE:PaintItem(item)
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -39844,7 +39844,7 @@ Client
         if item:getData("rare", false) then
             draw.RoundedBox(4, 0, 0, 100, 100, Color(255, 215, 0, 100))
         end
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -39873,10 +39873,10 @@ Client
             surface.DrawTexturedRect(x + 10, y + 10, w - 20, h - 40)
         end
         -- Paint item name
-        draw.SimpleText(item.name, "liaMediumFont", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(item.name, "LiliaFont.25", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Paint quantity if stackable
         if item.isStackable and item:getData("quantity", 1) > 1 then
-            draw.SimpleText("x" .. item:getData("quantity", 1), "liaSmallFont", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+            draw.SimpleText("x" .. item:getData("quantity", 1), "LiliaFont.17", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
         end
         -- Paint glow effect for rare items
         if rarity == "legendary" then
@@ -39916,7 +39916,7 @@ Client
 ```lua
     -- Simple: Paint item with default style
     function MODULE:PaintItem(item)
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -39928,7 +39928,7 @@ Client
         if item:getData("rare", false) then
             draw.RoundedBox(4, 0, 0, 100, 100, Color(255, 215, 0, 100))
         end
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -39957,10 +39957,10 @@ Client
             surface.DrawTexturedRect(x + 10, y + 10, w - 20, h - 40)
         end
         -- Paint item name
-        draw.SimpleText(item.name, "liaMediumFont", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(item.name, "LiliaFont.25", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Paint quantity if stackable
         if item.isStackable and item:getData("quantity", 1) > 1 then
-            draw.SimpleText("x" .. item:getData("quantity", 1), "liaSmallFont", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+            draw.SimpleText("x" .. item:getData("quantity", 1), "LiliaFont.17", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
         end
         -- Paint glow effect for rare items
         if rarity == "legendary" then
@@ -40000,7 +40000,7 @@ Client
 ```lua
     -- Simple: Paint item with default style
     function MODULE:PaintItem(item)
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -40012,7 +40012,7 @@ Client
         if item:getData("rare", false) then
             draw.RoundedBox(4, 0, 0, 100, 100, Color(255, 215, 0, 100))
         end
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -40041,10 +40041,10 @@ Client
             surface.DrawTexturedRect(x + 10, y + 10, w - 20, h - 40)
         end
         -- Paint item name
-        draw.SimpleText(item.name, "liaMediumFont", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(item.name, "LiliaFont.25", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Paint quantity if stackable
         if item.isStackable and item:getData("quantity", 1) > 1 then
-            draw.SimpleText("x" .. item:getData("quantity", 1), "liaSmallFont", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+            draw.SimpleText("x" .. item:getData("quantity", 1), "LiliaFont.17", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
         end
         -- Paint glow effect for rare items
         if rarity == "legendary" then
@@ -40084,7 +40084,7 @@ Client
 ```lua
     -- Simple: Paint item with default style
     function MODULE:PaintItem(item)
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -40096,7 +40096,7 @@ Client
         if item:getData("rare", false) then
             draw.RoundedBox(4, 0, 0, 100, 100, Color(255, 215, 0, 100))
         end
-        draw.SimpleText(item.name, "liaMediumFont", 10, 10, color_white)
+        draw.SimpleText(item.name, "LiliaFont.25", 10, 10, color_white)
     end
 
 ```
@@ -40125,10 +40125,10 @@ Client
             surface.DrawTexturedRect(x + 10, y + 10, w - 20, h - 40)
         end
         -- Paint item name
-        draw.SimpleText(item.name, "liaMediumFont", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(item.name, "LiliaFont.25", x + w/2, y + h - 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         -- Paint quantity if stackable
         if item.isStackable and item:getData("quantity", 1) > 1 then
-            draw.SimpleText("x" .. item:getData("quantity", 1), "liaSmallFont", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+            draw.SimpleText("x" .. item:getData("quantity", 1), "LiliaFont.17", x + w - 10, y + 10, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
         end
         -- Paint glow effect for rare items
         if rarity == "legendary" then
@@ -40240,9 +40240,9 @@ Client
         infoPanel:SetPos(10, 200)
         infoPanel:SetSize(200, 100)
         infoPanel.Paint = function(self, w, h)
-            draw.SimpleText("Target: " .. targetChar:getName(), "liaMediumFont", 5, 5, color_white)
-            draw.SimpleText("Health: " .. currentTarget:Health(), "liaSmallFont", 5, 25, color_white)
-            draw.SimpleText("Armor: " .. currentTarget:Armor(), "liaSmallFont", 5, 40, color_white)
+            draw.SimpleText("Target: " .. targetChar:getName(), "LiliaFont.25", 5, 5, color_white)
+            draw.SimpleText("Health: " .. currentTarget:Health(), "LiliaFont.17", 5, 25, color_white)
+            draw.SimpleText("Armor: " .. currentTarget:Armor(), "LiliaFont.17", 5, 40, color_white)
         end
     end
 
@@ -40348,9 +40348,9 @@ Client
         infoPanel:SetPos(10, 200)
         infoPanel:SetSize(200, 100)
         infoPanel.Paint = function(self, w, h)
-            draw.SimpleText("Target: " .. targetChar:getName(), "liaMediumFont", 5, 5, color_white)
-            draw.SimpleText("Health: " .. currentTarget:Health(), "liaSmallFont", 5, 25, color_white)
-            draw.SimpleText("Armor: " .. currentTarget:Armor(), "liaSmallFont", 5, 40, color_white)
+            draw.SimpleText("Target: " .. targetChar:getName(), "LiliaFont.25", 5, 5, color_white)
+            draw.SimpleText("Health: " .. currentTarget:Health(), "LiliaFont.17", 5, 25, color_white)
+            draw.SimpleText("Armor: " .. currentTarget:Armor(), "LiliaFont.17", 5, 40, color_white)
         end
     end
 
@@ -40456,9 +40456,9 @@ Client
         infoPanel:SetPos(10, 200)
         infoPanel:SetSize(200, 100)
         infoPanel.Paint = function(self, w, h)
-            draw.SimpleText("Target: " .. targetChar:getName(), "liaMediumFont", 5, 5, color_white)
-            draw.SimpleText("Health: " .. currentTarget:Health(), "liaSmallFont", 5, 25, color_white)
-            draw.SimpleText("Armor: " .. currentTarget:Armor(), "liaSmallFont", 5, 40, color_white)
+            draw.SimpleText("Target: " .. targetChar:getName(), "LiliaFont.25", 5, 5, color_white)
+            draw.SimpleText("Health: " .. currentTarget:Health(), "LiliaFont.17", 5, 25, color_white)
+            draw.SimpleText("Armor: " .. currentTarget:Armor(), "LiliaFont.17", 5, 40, color_white)
         end
     end
 
@@ -40564,9 +40564,9 @@ Client
         infoPanel:SetPos(10, 200)
         infoPanel:SetSize(200, 100)
         infoPanel.Paint = function(self, w, h)
-            draw.SimpleText("Target: " .. targetChar:getName(), "liaMediumFont", 5, 5, color_white)
-            draw.SimpleText("Health: " .. currentTarget:Health(), "liaSmallFont", 5, 25, color_white)
-            draw.SimpleText("Armor: " .. currentTarget:Armor(), "liaSmallFont", 5, 40, color_white)
+            draw.SimpleText("Target: " .. targetChar:getName(), "LiliaFont.25", 5, 5, color_white)
+            draw.SimpleText("Health: " .. currentTarget:Health(), "LiliaFont.17", 5, 25, color_white)
+            draw.SimpleText("Armor: " .. currentTarget:Armor(), "LiliaFont.17", 5, 40, color_white)
         end
     end
 
@@ -40635,7 +40635,7 @@ Client
                 func = function(panel)
                     local label = panel:Add("DLabel")
                     label:SetText("Custom Admin Tools")
-                    label:SetFont("liaBigFont")
+                    label:SetFont("LiliaFont.36")
                     local btn = panel:Add("DButton")
                     btn:SetText("Custom Action")
                     btn:SetSize(200, 30)
@@ -40733,7 +40733,7 @@ Client
                 func = function(panel)
                     local label = panel:Add("DLabel")
                     label:SetText("Custom Admin Tools")
-                    label:SetFont("liaBigFont")
+                    label:SetFont("LiliaFont.36")
                     local btn = panel:Add("DButton")
                     btn:SetText("Custom Action")
                     btn:SetSize(200, 30)
@@ -40831,7 +40831,7 @@ Client
                 func = function(panel)
                     local label = panel:Add("DLabel")
                     label:SetText("Custom Admin Tools")
-                    label:SetFont("liaBigFont")
+                    label:SetFont("LiliaFont.36")
                     local btn = panel:Add("DButton")
                     btn:SetText("Custom Action")
                     btn:SetSize(200, 30)
@@ -40929,7 +40929,7 @@ Client
                 func = function(panel)
                     local label = panel:Add("DLabel")
                     label:SetText("Custom Admin Tools")
-                    label:SetFont("liaBigFont")
+                    label:SetFont("LiliaFont.36")
                     local btn = panel:Add("DButton")
                     btn:SetText("Custom Action")
                     btn:SetSize(200, 30)
@@ -41773,7 +41773,7 @@ Client
 ```lua
     -- Simple: Add overlay after inventory draw
     function MODULE:PostDrawInventory(mainPanel, parentPanel)
-        draw.SimpleText("Inventory", "liaBigFont", 10, 10, color_white)
+        draw.SimpleText("Inventory", "LiliaFont.36", 10, 10, color_white)
     end
 
 ```
@@ -41809,15 +41809,15 @@ Client
         statsPanel.Paint = function(self, w, h)
             draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 240))
             local items = inv:getItems()
-            draw.SimpleText("Items: " .. table.Count(items), "liaMediumFont", 5, 5, color_white)
+            draw.SimpleText("Items: " .. table.Count(items), "LiliaFont.25", 5, 5, color_white)
             local weight = 0
             for _, item in pairs(items) do
                 weight = weight + (item.weight or 0) * (item:getData("quantity", 1) or 1)
             end
-            draw.SimpleText("Weight: " .. weight .. "kg", "liaMediumFont", 5, 25, color_white)
+            draw.SimpleText("Weight: " .. weight .. "kg", "LiliaFont.25", 5, 25, color_white)
             local maxWeight = inv:getData("maxWeight", 100)
             local weightPercent = (weight / maxWeight) * 100
-            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "liaMediumFont", 5, 45, color_white)
+            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "LiliaFont.25", 5, 45, color_white)
             -- Draw weight bar
             local barWidth = w - 10
             local barHeight = 10
@@ -41859,7 +41859,7 @@ Client
 ```lua
     -- Simple: Add overlay after inventory draw
     function MODULE:PostDrawInventory(mainPanel, parentPanel)
-        draw.SimpleText("Inventory", "liaBigFont", 10, 10, color_white)
+        draw.SimpleText("Inventory", "LiliaFont.36", 10, 10, color_white)
     end
 
 ```
@@ -41895,15 +41895,15 @@ Client
         statsPanel.Paint = function(self, w, h)
             draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 240))
             local items = inv:getItems()
-            draw.SimpleText("Items: " .. table.Count(items), "liaMediumFont", 5, 5, color_white)
+            draw.SimpleText("Items: " .. table.Count(items), "LiliaFont.25", 5, 5, color_white)
             local weight = 0
             for _, item in pairs(items) do
                 weight = weight + (item.weight or 0) * (item:getData("quantity", 1) or 1)
             end
-            draw.SimpleText("Weight: " .. weight .. "kg", "liaMediumFont", 5, 25, color_white)
+            draw.SimpleText("Weight: " .. weight .. "kg", "LiliaFont.25", 5, 25, color_white)
             local maxWeight = inv:getData("maxWeight", 100)
             local weightPercent = (weight / maxWeight) * 100
-            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "liaMediumFont", 5, 45, color_white)
+            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "LiliaFont.25", 5, 45, color_white)
             -- Draw weight bar
             local barWidth = w - 10
             local barHeight = 10
@@ -41945,7 +41945,7 @@ Client
 ```lua
     -- Simple: Add overlay after inventory draw
     function MODULE:PostDrawInventory(mainPanel, parentPanel)
-        draw.SimpleText("Inventory", "liaBigFont", 10, 10, color_white)
+        draw.SimpleText("Inventory", "LiliaFont.36", 10, 10, color_white)
     end
 
 ```
@@ -41981,15 +41981,15 @@ Client
         statsPanel.Paint = function(self, w, h)
             draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 240))
             local items = inv:getItems()
-            draw.SimpleText("Items: " .. table.Count(items), "liaMediumFont", 5, 5, color_white)
+            draw.SimpleText("Items: " .. table.Count(items), "LiliaFont.25", 5, 5, color_white)
             local weight = 0
             for _, item in pairs(items) do
                 weight = weight + (item.weight or 0) * (item:getData("quantity", 1) or 1)
             end
-            draw.SimpleText("Weight: " .. weight .. "kg", "liaMediumFont", 5, 25, color_white)
+            draw.SimpleText("Weight: " .. weight .. "kg", "LiliaFont.25", 5, 25, color_white)
             local maxWeight = inv:getData("maxWeight", 100)
             local weightPercent = (weight / maxWeight) * 100
-            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "liaMediumFont", 5, 45, color_white)
+            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "LiliaFont.25", 5, 45, color_white)
             -- Draw weight bar
             local barWidth = w - 10
             local barHeight = 10
@@ -42031,7 +42031,7 @@ Client
 ```lua
     -- Simple: Add overlay after inventory draw
     function MODULE:PostDrawInventory(mainPanel, parentPanel)
-        draw.SimpleText("Inventory", "liaBigFont", 10, 10, color_white)
+        draw.SimpleText("Inventory", "LiliaFont.36", 10, 10, color_white)
     end
 
 ```
@@ -42067,15 +42067,15 @@ Client
         statsPanel.Paint = function(self, w, h)
             draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 240))
             local items = inv:getItems()
-            draw.SimpleText("Items: " .. table.Count(items), "liaMediumFont", 5, 5, color_white)
+            draw.SimpleText("Items: " .. table.Count(items), "LiliaFont.25", 5, 5, color_white)
             local weight = 0
             for _, item in pairs(items) do
                 weight = weight + (item.weight or 0) * (item:getData("quantity", 1) or 1)
             end
-            draw.SimpleText("Weight: " .. weight .. "kg", "liaMediumFont", 5, 25, color_white)
+            draw.SimpleText("Weight: " .. weight .. "kg", "LiliaFont.25", 5, 25, color_white)
             local maxWeight = inv:getData("maxWeight", 100)
             local weightPercent = (weight / maxWeight) * 100
-            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "liaMediumFont", 5, 45, color_white)
+            draw.SimpleText("Capacity: " .. math.Round(weightPercent) .. "%", "LiliaFont.25", 5, 45, color_white)
             -- Draw weight bar
             local barWidth = w - 10
             local barHeight = 10
@@ -42794,7 +42794,7 @@ Client
 ```lua
     -- Simple: Refresh fonts
     function MODULE:RefreshFonts()
-        surface.SetFont("liaGenericFont")
+        surface.SetFont("LiliaFont.16")
     end
 
 ```
@@ -42814,7 +42814,7 @@ Client
     -- High: Advanced font management with fallbacks
     function MODULE:RefreshFonts()
         local fontSizes = {12, 14, 16, 18, 20, 24, 32, 48}
-        local fontFamilies = {"liaGenericFont", "liaMediumFont", "liaBigFont"}
+        local fontFamilies = {"LiliaFont.16", "LiliaFont.25", "LiliaFont.36"}
         -- Recreate all fonts with current configuration
         for _, family in ipairs(fontFamilies) do
             for _, size in ipairs(fontSizes) do
@@ -42860,7 +42860,7 @@ Client
 ```lua
     -- Simple: Refresh fonts
     function MODULE:RefreshFonts()
-        surface.SetFont("liaGenericFont")
+        surface.SetFont("LiliaFont.16")
     end
 
 ```
@@ -42880,7 +42880,7 @@ Client
     -- High: Advanced font management with fallbacks
     function MODULE:RefreshFonts()
         local fontSizes = {12, 14, 16, 18, 20, 24, 32, 48}
-        local fontFamilies = {"liaGenericFont", "liaMediumFont", "liaBigFont"}
+        local fontFamilies = {"LiliaFont.16", "LiliaFont.25", "LiliaFont.36"}
         -- Recreate all fonts with current configuration
         for _, family in ipairs(fontFamilies) do
             for _, size in ipairs(fontSizes) do
@@ -42926,7 +42926,7 @@ Client
 ```lua
     -- Simple: Refresh fonts
     function MODULE:RefreshFonts()
-        surface.SetFont("liaGenericFont")
+        surface.SetFont("LiliaFont.16")
     end
 
 ```
@@ -42946,7 +42946,7 @@ Client
     -- High: Advanced font management with fallbacks
     function MODULE:RefreshFonts()
         local fontSizes = {12, 14, 16, 18, 20, 24, 32, 48}
-        local fontFamilies = {"liaGenericFont", "liaMediumFont", "liaBigFont"}
+        local fontFamilies = {"LiliaFont.16", "LiliaFont.25", "LiliaFont.36"}
         -- Recreate all fonts with current configuration
         for _, family in ipairs(fontFamilies) do
             for _, size in ipairs(fontSizes) do
@@ -42992,7 +42992,7 @@ Client
 ```lua
     -- Simple: Refresh fonts
     function MODULE:RefreshFonts()
-        surface.SetFont("liaGenericFont")
+        surface.SetFont("LiliaFont.16")
     end
 
 ```
@@ -43012,7 +43012,7 @@ Client
     -- High: Advanced font management with fallbacks
     function MODULE:RefreshFonts()
         local fontSizes = {12, 14, 16, 18, 20, 24, 32, 48}
-        local fontFamilies = {"liaGenericFont", "liaMediumFont", "liaBigFont"}
+        local fontFamilies = {"LiliaFont.16", "LiliaFont.25", "LiliaFont.36"}
         -- Recreate all fonts with current configuration
         for _, family in ipairs(fontFamilies) do
             for _, size in ipairs(fontSizes) do
@@ -44103,7 +44103,7 @@ Client
             header:SetPos(0, 0)
             header.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 200))
-                draw.SimpleText("Custom Server Scoreboard", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText("Custom Server Scoreboard", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             table.insert(MODULE.customScoreboardElements, header)
         end
@@ -44188,7 +44188,7 @@ Client
             header:SetPos(0, 0)
             header.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 200))
-                draw.SimpleText("Custom Server Scoreboard", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText("Custom Server Scoreboard", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             table.insert(MODULE.customScoreboardElements, header)
         end
@@ -44273,7 +44273,7 @@ Client
             header:SetPos(0, 0)
             header.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 200))
-                draw.SimpleText("Custom Server Scoreboard", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText("Custom Server Scoreboard", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             table.insert(MODULE.customScoreboardElements, header)
         end
@@ -44358,7 +44358,7 @@ Client
             header:SetPos(0, 0)
             header.Paint = function(self, w, h)
                 draw.RoundedBox(4, 0, 0, w, h, Color(30, 30, 40, 200))
-                draw.SimpleText("Custom Server Scoreboard", "liaBigFont", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText("Custom Server Scoreboard", "LiliaFont.36", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             table.insert(MODULE.customScoreboardElements, header)
         end
@@ -44435,7 +44435,7 @@ Client
             if faction then
                 local factionLabel = vgui.Create("DLabel", rowPanel)
                 factionLabel:SetText(faction.name)
-                factionLabel:SetFont("liaSmallFont")
+                factionLabel:SetFont("LiliaFont.17")
                 factionLabel:SetColor(faction.color or color_white)
                 factionLabel:SizeToContents()
                 factionLabel:SetPos(rowPanel:GetWide() - factionLabel:GetWide() - 10, 5)
@@ -44460,7 +44460,7 @@ Client
         local pingColor = ping < 50 and Color(0, 255, 0) or ping < 100 and Color(255, 255, 0) or Color(255, 0, 0)
         local pingLabel = vgui.Create("DLabel", rowPanel)
         pingLabel:SetText(ping .. "ms")
-        pingLabel:SetFont("liaSmallFont")
+        pingLabel:SetFont("LiliaFont.17")
         pingLabel:SetColor(pingColor)
         pingLabel:SizeToContents()
         pingLabel:SetPos(rowPanel:GetWide() - pingLabel:GetWide() - 10, rowPanel:GetTall() - pingLabel:GetTall() - 5)
@@ -44527,7 +44527,7 @@ Client
             if faction then
                 local factionLabel = vgui.Create("DLabel", rowPanel)
                 factionLabel:SetText(faction.name)
-                factionLabel:SetFont("liaSmallFont")
+                factionLabel:SetFont("LiliaFont.17")
                 factionLabel:SetColor(faction.color or color_white)
                 factionLabel:SizeToContents()
                 factionLabel:SetPos(rowPanel:GetWide() - factionLabel:GetWide() - 10, 5)
@@ -44552,7 +44552,7 @@ Client
         local pingColor = ping < 50 and Color(0, 255, 0) or ping < 100 and Color(255, 255, 0) or Color(255, 0, 0)
         local pingLabel = vgui.Create("DLabel", rowPanel)
         pingLabel:SetText(ping .. "ms")
-        pingLabel:SetFont("liaSmallFont")
+        pingLabel:SetFont("LiliaFont.17")
         pingLabel:SetColor(pingColor)
         pingLabel:SizeToContents()
         pingLabel:SetPos(rowPanel:GetWide() - pingLabel:GetWide() - 10, rowPanel:GetTall() - pingLabel:GetTall() - 5)
@@ -44619,7 +44619,7 @@ Client
             if faction then
                 local factionLabel = vgui.Create("DLabel", rowPanel)
                 factionLabel:SetText(faction.name)
-                factionLabel:SetFont("liaSmallFont")
+                factionLabel:SetFont("LiliaFont.17")
                 factionLabel:SetColor(faction.color or color_white)
                 factionLabel:SizeToContents()
                 factionLabel:SetPos(rowPanel:GetWide() - factionLabel:GetWide() - 10, 5)
@@ -44644,7 +44644,7 @@ Client
         local pingColor = ping < 50 and Color(0, 255, 0) or ping < 100 and Color(255, 255, 0) or Color(255, 0, 0)
         local pingLabel = vgui.Create("DLabel", rowPanel)
         pingLabel:SetText(ping .. "ms")
-        pingLabel:SetFont("liaSmallFont")
+        pingLabel:SetFont("LiliaFont.17")
         pingLabel:SetColor(pingColor)
         pingLabel:SizeToContents()
         pingLabel:SetPos(rowPanel:GetWide() - pingLabel:GetWide() - 10, rowPanel:GetTall() - pingLabel:GetTall() - 5)
@@ -44711,7 +44711,7 @@ Client
             if faction then
                 local factionLabel = vgui.Create("DLabel", rowPanel)
                 factionLabel:SetText(faction.name)
-                factionLabel:SetFont("liaSmallFont")
+                factionLabel:SetFont("LiliaFont.17")
                 factionLabel:SetColor(faction.color or color_white)
                 factionLabel:SizeToContents()
                 factionLabel:SetPos(rowPanel:GetWide() - factionLabel:GetWide() - 10, 5)
@@ -44736,7 +44736,7 @@ Client
         local pingColor = ping < 50 and Color(0, 255, 0) or ping < 100 and Color(255, 255, 0) or Color(255, 0, 0)
         local pingLabel = vgui.Create("DLabel", rowPanel)
         pingLabel:SetText(ping .. "ms")
-        pingLabel:SetFont("liaSmallFont")
+        pingLabel:SetFont("LiliaFont.17")
         pingLabel:SetColor(pingColor)
         pingLabel:SizeToContents()
         pingLabel:SetPos(rowPanel:GetWide() - pingLabel:GetWide() - 10, rowPanel:GetTall() - pingLabel:GetTall() - 5)
@@ -45194,7 +45194,7 @@ Client
                 btn.Paint = function(self, w, h)
                     local color = self:IsHovered() and Color(60, 60, 70) or Color(40, 40, 50)
                     draw.RoundedBox(4, 0, 0, w, h, color)
-                    draw.SimpleText(actionData.name, "liaMediumFont", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(actionData.name, "LiliaFont.25", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
             end
         end
@@ -45336,7 +45336,7 @@ Client
                 btn.Paint = function(self, w, h)
                     local color = self:IsHovered() and Color(60, 60, 70) or Color(40, 40, 50)
                     draw.RoundedBox(4, 0, 0, w, h, color)
-                    draw.SimpleText(actionData.name, "liaMediumFont", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(actionData.name, "LiliaFont.25", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
             end
         end
@@ -45478,7 +45478,7 @@ Client
                 btn.Paint = function(self, w, h)
                     local color = self:IsHovered() and Color(60, 60, 70) or Color(40, 40, 50)
                     draw.RoundedBox(4, 0, 0, w, h, color)
-                    draw.SimpleText(actionData.name, "liaMediumFont", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(actionData.name, "LiliaFont.25", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
             end
         end
@@ -45620,7 +45620,7 @@ Client
                 btn.Paint = function(self, w, h)
                     local color = self:IsHovered() and Color(60, 60, 70) or Color(40, 40, 50)
                     draw.RoundedBox(4, 0, 0, w, h, color)
-                    draw.SimpleText(actionData.name, "liaMediumFont", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(actionData.name, "LiliaFont.25", 35, h/2, color_white, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
                 end
             end
         end
@@ -53863,17 +53863,17 @@ Client
         local requesterLabel = vgui.Create("DLabel", headerPanel)
         requesterLabel:SetPos(10, 5)
         requesterLabel:SetText("Requester: " .. requester:Name())
-        requesterLabel:SetFont("liaSmallFont")
+        requesterLabel:SetFont("LiliaFont.17")
         requesterLabel:SizeToContents()
         local steamIDLabel = vgui.Create("DLabel", headerPanel)
         steamIDLabel:SetPos(10, 25)
         steamIDLabel:SetText("Steam ID: " .. requester:SteamID())
-        steamIDLabel:SetFont("liaSmallFont")
+        steamIDLabel:SetFont("LiliaFont.17")
         steamIDLabel:SizeToContents()
         local statusLabel = vgui.Create("DLabel", headerPanel)
         statusLabel:SetPos(10, 45)
         statusLabel:SetText("Status: " .. (claimed and "Claimed" or "Unclaimed"))
-        statusLabel:SetFont("liaSmallFont")
+        statusLabel:SetFont("LiliaFont.17")
         statusLabel:SetColor(claimed and Color(0, 255, 0) or Color(255, 255, 0))
         statusLabel:SizeToContents()
         -- Message display
@@ -53888,7 +53888,7 @@ Client
         messageLabel:SetSize(460, 130)
         messageLabel:SetText("Message:\n" .. message)
         messageLabel:SetWrap(true)
-        messageLabel:SetFont("liaSmallFont")
+        messageLabel:SetFont("LiliaFont.17")
         -- Action buttons
         local buttonY = 280
         local buttonWidth = 150
@@ -54074,17 +54074,17 @@ Client
         local requesterLabel = vgui.Create("DLabel", headerPanel)
         requesterLabel:SetPos(10, 5)
         requesterLabel:SetText("Requester: " .. requester:Name())
-        requesterLabel:SetFont("liaSmallFont")
+        requesterLabel:SetFont("LiliaFont.17")
         requesterLabel:SizeToContents()
         local steamIDLabel = vgui.Create("DLabel", headerPanel)
         steamIDLabel:SetPos(10, 25)
         steamIDLabel:SetText("Steam ID: " .. requester:SteamID())
-        steamIDLabel:SetFont("liaSmallFont")
+        steamIDLabel:SetFont("LiliaFont.17")
         steamIDLabel:SizeToContents()
         local statusLabel = vgui.Create("DLabel", headerPanel)
         statusLabel:SetPos(10, 45)
         statusLabel:SetText("Status: " .. (claimed and "Claimed" or "Unclaimed"))
-        statusLabel:SetFont("liaSmallFont")
+        statusLabel:SetFont("LiliaFont.17")
         statusLabel:SetColor(claimed and Color(0, 255, 0) or Color(255, 255, 0))
         statusLabel:SizeToContents()
         -- Message display
@@ -54099,7 +54099,7 @@ Client
         messageLabel:SetSize(460, 130)
         messageLabel:SetText("Message:\n" .. message)
         messageLabel:SetWrap(true)
-        messageLabel:SetFont("liaSmallFont")
+        messageLabel:SetFont("LiliaFont.17")
         -- Action buttons
         local buttonY = 280
         local buttonWidth = 150
@@ -54285,17 +54285,17 @@ Client
         local requesterLabel = vgui.Create("DLabel", headerPanel)
         requesterLabel:SetPos(10, 5)
         requesterLabel:SetText("Requester: " .. requester:Name())
-        requesterLabel:SetFont("liaSmallFont")
+        requesterLabel:SetFont("LiliaFont.17")
         requesterLabel:SizeToContents()
         local steamIDLabel = vgui.Create("DLabel", headerPanel)
         steamIDLabel:SetPos(10, 25)
         steamIDLabel:SetText("Steam ID: " .. requester:SteamID())
-        steamIDLabel:SetFont("liaSmallFont")
+        steamIDLabel:SetFont("LiliaFont.17")
         steamIDLabel:SizeToContents()
         local statusLabel = vgui.Create("DLabel", headerPanel)
         statusLabel:SetPos(10, 45)
         statusLabel:SetText("Status: " .. (claimed and "Claimed" or "Unclaimed"))
-        statusLabel:SetFont("liaSmallFont")
+        statusLabel:SetFont("LiliaFont.17")
         statusLabel:SetColor(claimed and Color(0, 255, 0) or Color(255, 255, 0))
         statusLabel:SizeToContents()
         -- Message display
@@ -54310,7 +54310,7 @@ Client
         messageLabel:SetSize(460, 130)
         messageLabel:SetText("Message:\n" .. message)
         messageLabel:SetWrap(true)
-        messageLabel:SetFont("liaSmallFont")
+        messageLabel:SetFont("LiliaFont.17")
         -- Action buttons
         local buttonY = 280
         local buttonWidth = 150
@@ -54496,17 +54496,17 @@ Client
         local requesterLabel = vgui.Create("DLabel", headerPanel)
         requesterLabel:SetPos(10, 5)
         requesterLabel:SetText("Requester: " .. requester:Name())
-        requesterLabel:SetFont("liaSmallFont")
+        requesterLabel:SetFont("LiliaFont.17")
         requesterLabel:SizeToContents()
         local steamIDLabel = vgui.Create("DLabel", headerPanel)
         steamIDLabel:SetPos(10, 25)
         steamIDLabel:SetText("Steam ID: " .. requester:SteamID())
-        steamIDLabel:SetFont("liaSmallFont")
+        steamIDLabel:SetFont("LiliaFont.17")
         steamIDLabel:SizeToContents()
         local statusLabel = vgui.Create("DLabel", headerPanel)
         statusLabel:SetPos(10, 45)
         statusLabel:SetText("Status: " .. (claimed and "Claimed" or "Unclaimed"))
-        statusLabel:SetFont("liaSmallFont")
+        statusLabel:SetFont("LiliaFont.17")
         statusLabel:SetColor(claimed and Color(0, 255, 0) or Color(255, 255, 0))
         statusLabel:SizeToContents()
         -- Message display
@@ -54521,7 +54521,7 @@ Client
         messageLabel:SetSize(460, 130)
         messageLabel:SetText("Message:\n" .. message)
         messageLabel:SetWrap(true)
-        messageLabel:SetFont("liaSmallFont")
+        messageLabel:SetFont("LiliaFont.17")
         -- Action buttons
         local buttonY = 280
         local buttonWidth = 150
@@ -54651,7 +54651,7 @@ Client
     -- Medium: Add basic styling
     function MODULE:TooltipInitialize(tooltipPanel, panel)
         if not IsValid(tooltipPanel) then return end
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5) -- Center
     end
@@ -54667,7 +54667,7 @@ Client
         local panelData = panel:GetTable()
         local tooltipText = panelData.tooltipText or "No information available"
         -- Set up tooltip appearance
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5)
         tooltipPanel:SetText(tooltipText)
@@ -54726,7 +54726,7 @@ Client
     -- Medium: Add basic styling
     function MODULE:TooltipInitialize(tooltipPanel, panel)
         if not IsValid(tooltipPanel) then return end
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5) -- Center
     end
@@ -54742,7 +54742,7 @@ Client
         local panelData = panel:GetTable()
         local tooltipText = panelData.tooltipText or "No information available"
         -- Set up tooltip appearance
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5)
         tooltipPanel:SetText(tooltipText)
@@ -54801,7 +54801,7 @@ Client
     -- Medium: Add basic styling
     function MODULE:TooltipInitialize(tooltipPanel, panel)
         if not IsValid(tooltipPanel) then return end
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5) -- Center
     end
@@ -54817,7 +54817,7 @@ Client
         local panelData = panel:GetTable()
         local tooltipText = panelData.tooltipText or "No information available"
         -- Set up tooltip appearance
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5)
         tooltipPanel:SetText(tooltipText)
@@ -54876,7 +54876,7 @@ Client
     -- Medium: Add basic styling
     function MODULE:TooltipInitialize(tooltipPanel, panel)
         if not IsValid(tooltipPanel) then return end
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5) -- Center
     end
@@ -54892,7 +54892,7 @@ Client
         local panelData = panel:GetTable()
         local tooltipText = panelData.tooltipText or "No information available"
         -- Set up tooltip appearance
-        tooltipPanel:SetFont("liaSmallFont")
+        tooltipPanel:SetFont("LiliaFont.17")
         tooltipPanel:SetTextColor(color_white)
         tooltipPanel:SetContentAlignment(5)
         tooltipPanel:SetText(tooltipText)

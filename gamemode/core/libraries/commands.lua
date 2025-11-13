@@ -721,7 +721,7 @@ else
         local scroll = vgui.Create("liaScrollPanel", frame)
         scroll:Dock(FILL)
         scroll:DockMargin(10, 10, 10, 10)
-        surface.SetFont("liaSmallFont")
+        surface.SetFont("LiliaFont.17")
         local controls = {}
         local watchers = {}
         local validate
@@ -784,11 +784,11 @@ else
                     ctrl = vgui.Create("liaCheckbox", panel)
                 else
                     ctrl = vgui.Create("liaEntry", panel)
-                    ctrl:SetFont("liaSmallFont")
+                    ctrl:SetFont("LiliaFont.17")
                 end
 
                 local label = vgui.Create("DLabel", panel)
-                label:SetFont("liaSmallFont")
+                label:SetFont("LiliaFont.17")
                 label:SetText(L(data.description or name))
                 label:SizeToContents()
                 panel.PerformLayout = function(_, w, h)
@@ -1532,7 +1532,7 @@ else
 
             local nameLabel = vgui.Create("DLabel", panel)
             nameLabel:SetText(soundName)
-            nameLabel:SetFont("liaSmallFont")
+            nameLabel:SetFont("LiliaFont.17")
             nameLabel:SetTextColor(Color(255, 255, 255))
             nameLabel:Dock(LEFT)
             nameLabel:DockMargin(10, 0, 0, 0)
@@ -1731,7 +1731,7 @@ else
             imagePreview:SetImage("data/" .. imagePath)
             local nameLabel = vgui.Create("DLabel", panel)
             nameLabel:SetText(imageName)
-            nameLabel:SetFont("liaSmallFont")
+            nameLabel:SetFont("LiliaFont.17")
             nameLabel:SetTextColor(Color(255, 255, 255))
             nameLabel:SetPos(120, 10)
             nameLabel:SetWide(300)
@@ -2041,7 +2041,7 @@ lia.command.add("demorequests", {
     onRun = function(client)
         if SERVER then
             client:notifyInfoLocalized("openingDemo")
-            client:binaryQuestion(L("demoQuestion"), L("yesShowMe"), L("noThanks"), false, function(confirmed)
+            client:requestBinaryQuestion(L("demoQuestion"), L("yesShowMe"), L("noThanks"), false, function(confirmed)
                 if confirmed then
                     client:requestDropdown(L("demoDropdownTitle"), L("chooseColor"), {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected ~= nil then

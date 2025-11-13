@@ -759,16 +759,13 @@ if SERVER then
             ```
     ]]
     function lia.config.send(client)
-        -- For new clients, send ALL configs. For broadcasts, only send changed ones.
         local data
         if client then
-            -- New client connecting - send all configs
             data = {}
             for k, v in pairs(lia.config.stored) do
                 if v.value ~= nil then data[k] = v.value end
             end
         else
-            -- Broadcast - only send changed configs
             data = lia.config.getChangedValues()
             if table.Count(data) == 0 then return end
         end
@@ -890,7 +887,6 @@ if SERVER then
             ```
     ]]
     function lia.config.save()
-        -- Save ALL configs, not just changed ones, to prevent loss of default values
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local rows = {}
         for k, v in pairs(lia.config.stored) do
@@ -903,13 +899,11 @@ if SERVER then
             end
         end
 
-        -- Use upsert for each config to properly handle value conversion
         local ops = {}
         for _, row in ipairs(rows) do
             ops[#ops + 1] = lia.db.upsert(row, "config")
         end
 
-        -- Wait for all upserts to complete
         if #ops > 0 then deferred.all(ops) end
     end
 
@@ -2160,7 +2154,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 end
 
                 button.DoClick = function()
-                    lia.derma.colorPicker(function(color)
+                    lia.derma.requestColorPicker(function(color)
                         local t = "ConfigChange_" .. key .. "_" .. os.time()
                         timer.Create(t, 0.5, 1, function()
                             net.Start("liaCfgSet")
@@ -2291,7 +2285,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 if IsValid(cat.Header) then
                     cat.Header:SetContentAlignment(5)
                     cat.Header:SetTall(30)
-                    cat.Header:SetFont("liaMediumFont")
+                    cat.Header:SetFont("LiliaFont.25")
                     cat.Header:SetTextColor(lia.color.theme.text)
                     cat.Header.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(50, 50, 60, 120)):Shape(lia.derma.SHAPE_IOS):Draw() end
                 end

@@ -1,24 +1,150 @@
-﻿lia.dialog = lia.dialog or {}
+﻿--[[
+    Dialog Library
+
+    Comprehensive NPC dialog management system for the Lilia framework.
+]]
+--[[
+    Overview:
+        The dialog library provides comprehensive functionality for managing NPC conversations and dialog systems in the Lilia framework. It handles NPC registration, conversation filtering, client synchronization, and provides both server-side data management and client-side UI interactions. The library supports complex conversation trees with conditional options, server-only callbacks, and dynamic NPC customization. It includes automatic data sanitization, conversation filtering based on player permissions, and seamless integration with the framework's networking system. The library ensures secure and efficient dialog handling across both server and client realms.
+]]
+lia.dialog = lia.dialog or {}
 lia.dialog.stored = lia.dialog.stored or {}
 if SERVER then
-    local function findOption(options, label, ply)
-        if isfunction(options) then options = options(ply) end
-        if not istable(options) then return nil end
-        for k, v in pairs(options) do
-            if k == label then return v end
-            if v.options then
-                local found = findOption(v.options, label, ply)
-                if found then return found end
+    --[[
+    Purpose:
+        Retrieves stored NPC dialog data for a specific NPC ID
+
+    When Called:
+        Used internally when accessing NPC conversation data from the server-side storage
+
+    Parameters:
+        npcID (string)
+            The unique identifier of the NPC to retrieve data for
+
+    Returns:
+        (table or nil)
+            The NPC dialog data table if found, nil otherwise
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get NPC data for interaction
+        local npcData = lia.dialog.getNPCData("foodie_dealer")
+        if npcData then
+            print("Found NPC: " .. npcData.PrintName)
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Check if NPC has specific conversation options
+        local npcData = lia.dialog.getNPCData("merchant")
+        if npcData and npcData.Conversation then
+            local hasTradeOption = npcData.Conversation["Trade"] ~= nil
+            if hasTradeOption then
+                -- Handle trade logic
             end
         end
-        return nil
-    end
+        ```
 
+    High Complexity:
+        ```lua
+        -- High: Validate and process NPC conversation data
+        local function validateNPCConversation(npcID)
+            local npcData = lia.dialog.getNPCData(npcID)
+            if not npcData then return false, "NPC not found" end
+            if not npcData.Conversation then return false, "No conversation data" end
+
+            local optionCount = 0
+            for optionName, optionData in pairs(npcData.Conversation) do
+                if type(optionData) == "table" and optionData.Callback then
+                    optionCount = optionCount + 1
+                end
+            end
+
+            return optionCount > 0, "NPC has " .. optionCount .. " valid options"
+        end
+        ```
+    ]]
     function lia.dialog.getNPCData(npcID)
         if lia.dialog.stored[npcID] then return lia.dialog.stored[npcID] end
         return nil
     end
 
+    --[[
+    Purpose:
+        Retrieves the original, unmodified NPC dialog data before any filtering or sanitization
+
+    When Called:
+        Used when opening dialogs to access the complete conversation data with all options and callbacks
+
+    Parameters:
+        npcID (string)
+            The unique identifier of the NPC to retrieve original data for
+
+    Returns:
+        (table or nil)
+            The original NPC dialog data table if found, nil otherwise
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get original NPC data for dialog processing
+        local originalData = lia.dialog.getOriginalNPCData("shopkeeper")
+        if originalData then
+            -- Process complete conversation tree
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Compare filtered vs original conversation options
+        local originalData = lia.dialog.getOriginalNPCData("quest_giver")
+        local filteredData = lia.dialog.getNPCData("quest_giver")
+
+        if originalData and filteredData then
+            local originalCount = table.Count(originalData.Conversation or {})
+            local filteredCount = table.Count(filteredData.Conversation or {})
+            print("Options: " .. filteredCount .. "/" .. originalCount .. " available")
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Analyze conversation structure for quest dependencies
+        local function analyzeQuestConversations(npcID)
+            local originalData = lia.dialog.getOriginalNPCData(npcID)
+            if not originalData or not originalData.Conversation then return {} end
+
+            local questOptions = {}
+            for optionName, optionData in pairs(originalData.Conversation) do
+                if type(optionData) == "table" then
+                    -- Check for quest-related callbacks or nested options
+                    if optionData.Callback and string.find(optionName, "quest") then
+                        questOptions[optionName] = true
+                    end
+                    if optionData.options then
+                        for subOption, subData in pairs(optionData.options) do
+                            if subData.Callback and string.find(subOption, "quest") then
+                                questOptions[subOption] = true
+                            end
+                        end
+                    end
+                end
+            end
+
+            return questOptions
+        end
+        ```
+    ]]
     function lia.dialog.getOriginalNPCData(npcID)
         if lia.dialog.originalData and lia.dialog.originalData[npcID] then return lia.dialog.originalData[npcID] end
         return nil
@@ -87,6 +213,69 @@ if SERVER then
         return filtered
     end
 
+    --[[
+    Purpose:
+        Synchronizes dialog data to clients, filtering conversations based on player permissions and sanitizing sensitive information
+
+    When Called:
+        Called during player spawn and when new NPCs are registered to ensure clients have up-to-date dialog information
+
+    Parameters:
+        client (Player, optional)
+            Specific client to sync to, or nil to sync to all clients
+
+    Returns:
+        None
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Sync all dialog data to all clients
+        lia.dialog.syncToClients()
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Sync data to a specific player after login
+        hook.Add("PlayerInitialSpawn", "SyncDialogData", function(ply)
+            if not ply:IsBot() then
+                lia.dialog.syncToClients(ply)
+            end
+        end)
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Selective sync after NPC registration with performance monitoring
+        local function registerAndSyncNPC(npcID, npcData)
+            local startTime = SysTime()
+
+            -- Register the NPC
+            local success = lia.dialog.registerNPC(npcID, npcData)
+            if not success then return false end
+
+            -- Sync to all clients
+            lia.dialog.syncToClients()
+
+            -- Log performance and notify admins
+            local syncTime = SysTime() - startTime
+            print("NPC '" .. npcID .. "' registered and synced in " .. string.format("%.3f", syncTime) .. " seconds")
+
+            -- Notify admins of new NPC availability
+            for _, ply in ipairs(player.GetAll()) do
+                if ply:IsAdmin() then
+                    ply:ChatPrint("New NPC '" .. (npcData.PrintName or npcID) .. "' is now available!")
+                end
+            end
+
+            return true
+        end
+        ```
+    ]]
     function lia.dialog.syncToClients(client)
         local targetClients = client and {client} or player.GetAll()
         for _, ply in ipairs(targetClients) do
@@ -103,6 +292,111 @@ if SERVER then
         end
     end
 
+    --[[
+    Purpose:
+        Registers a new NPC with conversation data in the dialog system
+
+    When Called:
+        Called during gamemode initialization or when adding new NPCs to register their conversation trees
+
+    Parameters:
+        uniqueID (string)
+            Unique identifier for the NPC
+        data (table)
+            NPC data table containing Conversation and other properties
+
+    Returns:
+        (boolean)
+            True if registration successful, false otherwise
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Register a basic NPC
+        local success = lia.dialog.registerNPC("shopkeeper", {
+            PrintName = "Shopkeeper",
+            Conversation = {
+                ["Trade"] = {Callback = function(ply) openShop(ply) end},
+                ["Bye"] = {Callback = function(ply) closeDialog(ply) end}
+            }
+        })
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Register NPC with conditional options
+        local questNPC = {
+            PrintName = "Quest Master",
+            Conversation = {
+                ["Available Quests"] = {
+                    ShouldShow = function(ply) return ply:GetLevel() >= 5 end,
+                    Callback = function(ply) showQuests(ply) end,
+                    options = {
+                        ["Accept Quest"] = {
+                            Callback = function(ply) acceptQuest(ply, "main") end,
+                            serverOnly = true
+                        }
+                    }
+                },
+                ["Training"] = {
+                    Callback = function(ply) openTraining(ply) end
+                }
+            }
+        }
+        lia.dialog.registerNPC("quest_master", questNPC)
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Register faction-based NPC with complex conversation tree
+        local function createFactionNPC(factionName, factionData)
+            local npcConfig = {
+                PrintName = factionName .. " Representative",
+                Conversation = {
+                    ["Greetings"] = {
+                        options = {
+                            ["Join " .. factionName] = {
+                                ShouldShow = function(ply)
+                                    return not ply:GetFaction() and ply:GetLevel() >= factionData.minLevel
+                                end,
+                                Callback = function(ply) joinFaction(ply, factionName) end,
+                                serverOnly = true
+                            },
+                            ["Faction Benefits"] = {
+                                ShouldShow = function(ply) return ply:GetFaction() == factionName end,
+                                Callback = function(ply) showBenefits(ply) end
+                            },
+                            ["Leave Faction"] = {
+                                ShouldShow = function(ply, npc)
+                                    return ply:GetFaction() == factionName and npc:GetFactionRank() >= 3
+                                end,
+                                Callback = function(ply) leaveFaction(ply) end,
+                                serverOnly = true
+                            }
+                        }
+                    },
+                    ["Quests"] = {
+                        ShouldShow = function(ply) return ply:GetFaction() == factionName end,
+                        options = factionData.quests
+                    },
+                    ["General Info"] = {
+                        Callback = function(ply) showFactionInfo(ply, factionName) end
+                    }
+                }
+            }
+
+            return lia.dialog.registerNPC(string.lower(factionName) .. "_rep", npcConfig)
+        end
+
+        -- Register multiple faction NPCs
+        createFactionNPC("Warriors", {minLevel = 10, quests = warriorQuests})
+        createFactionNPC("Mages", {minLevel = 8, quests = mageQuests})
+        ```
+    ]]
     function lia.dialog.registerNPC(uniqueID, data)
         if not uniqueID or not data then return false end
         if not data.Conversation then return false end
@@ -114,46 +408,119 @@ if SERVER then
         lia.dialog.syncToClients()
     end
 
-    lia.dialog.registerNPC("foodie_dealer", {
-        PrintName = "Foodie Dealer NPC",
+    lia.dialog.registerNPC("tutorial_guide", {
+        PrintName = "Tutorial Guide",
         Conversation = {
-            ["I want a snack"] = {
+            ["I'm new here, can you help me?"] = {
                 options = {
-                    ["Chips"] = {
+                    ["Tell me about factions"] = {
                         ShouldShow = function() return true end,
-                        Callback = function(clPly) clPly:ChatPrint("Enjoy your chips!") end,
-                    },
-                    ["Candy"] = {
-                        ShouldShow = function() return true end,
-                        Callback = function(clPly) clPly:ChatPrint("Enjoy your candy!") end,
-                        serverOnly = false,
-                    }
-                }
-            },
-            ["I want a meal"] = {
-                options = {
-                    ["Burger"] = {
-                        ShouldShow = function() return true end,
-                        Callback = function(clPly) clPly:ChatPrint("Enjoy your burger!") end,
-                    },
-                    ["Pizza"] = {
-                        ShouldShow = function() return true end,
-                        Callback = function(clPly) clPly:ChatPrint("Enjoy your pizza!") end,
-                        serverOnly = true,
+                        Callback = function(clPly) clPly:ChatPrint("Factions are the main groups in this roleplay world. Every character belongs to one!") end,
                         options = {
-                            ["Extra Cheese"] = {
+                            ["What factions are available?"] = {
                                 ShouldShow = function() return true end,
-                                Callback = function(clPly) clPly:ChatPrint("Extra cheese, coming right up!") end,
-                                serverOnly = true
+                                Callback = function(clPly) clPly:ChatPrint("Citizens are usually the default - regular people living their lives. There might be police, medical, or other specialized factions.") end,
+                                options = {
+                                    ["How do I join a faction?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Open your character menu (usually F1) and select 'Create Character'. Choose your faction from the dropdown menu.") end,
+                                    },
+                                    ["Are there faction limits?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Some factions have player limits to maintain balance. Popular factions like police might be restricted.") end,
+                                    }
+                                }
+                            },
+                            ["What's the difference between factions and classes?"] = {
+                                ShouldShow = function() return true end,
+                                Callback = function(clPly) clPly:ChatPrint("Factions are broad groups (like 'Police Department'), while classes are specialized roles within factions (like 'Detective' or 'SWAT').") end,
+                                options = {
+                                    ["Tell me more about classes"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Classes give you special equipment, abilities, or restrictions. For example, a SWAT class might have better armor and weapons but move slower.") end,
+                                    },
+                                    ["Can I have multiple classes?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Usually one class per character, but you can have multiple characters with different classes!") end,
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    ["How do I get started with items?"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Items are crucial! They include weapons, tools, food, and more.") end,
+                        options = {
+                            ["How do I open my inventory?"] = {
+                                ShouldShow = function() return true end,
+                                Callback = function(clPly) clPly:ChatPrint("Press F2 or the inventory key to open your inventory. You can drag items, equip them, or use them from there.") end,
+                            },
+                            ["Where can I buy items?"] = {
+                                ShouldShow = function() return true end,
+                                Callback = function(clPly) clPly:ChatPrint("Look for vendors (NPCs with shopping carts above their heads) or business owners. Some factions give starting items.") end,
+                                options = {
+                                    ["How does money work?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("You earn money through jobs, selling items, or roleplaying. Use /givemoney to give money to others, or drop it as an item.") end,
+                                    },
+                                    ["Can I trade items?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Yes! Drag items from your inventory to another player's inventory when they're nearby, or use the trade system if available.") end,
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    ["What about roleplaying?"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Roleplaying is the heart of this server! Stay in character, follow server rules, and have fun.") end,
+                        options = {
+                            ["How do I talk in character?"] = {
+                                ShouldShow = function() return true end,
+                                Callback = function(clPly) clPly:ChatPrint("Use /say or just type normally for local chat. /yell for shouting, /whisper for quiet talking, /me for actions, /it for environmental descriptions.") end,
+                            },
+                            ["What are the basic rules?"] = {
+                                ShouldShow = function() return true end,
+                                Callback = function(clPly) clPly:ChatPrint("No random deathmatching, respect other players' roleplay, follow faction rules, and don't metagame (using OOC info in IC situations).") end,
+                                options = {
+                                    ["What is metagaming?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Metagaming is using out-of-character knowledge in roleplay. For example, knowing someone's identity from their Steam name.") end,
+                                    },
+                                    ["How do I report rule breakers?"] = {
+                                        ShouldShow = function() return true end,
+                                        Callback = function(clPly) clPly:ChatPrint("Contact admins using @ or the admin chat. For serious issues, use /report or find an admin in-game.") end,
+                                    }
+                                }
                             }
                         }
                     }
                 }
             },
-            ["Bye"] = {
+            ["I need help with something specific"] = {
+                options = {
+                    ["I'm stuck or bugged"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Try relogging first. If that doesn't work, contact an admin with /admin or @. Include details about what happened.") end,
+                    },
+                    ["How do I change my character?"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Press F1 to open the character menu, then select 'Load Character' to switch between your characters.") end,
+                    },
+                    ["I lost my items"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Items save automatically. If you lost them due to a bug, contact an admin immediately with details about what you had.") end,
+                    },
+                    ["How do I get admin help?"] = {
+                        ShouldShow = function() return true end,
+                        Callback = function(clPly) clPly:ChatPrint("Use @ message or /admin command to contact admins. Be patient - they help when available!") end,
+                    }
+                }
+            },
+            ["I'm ready to explore!"] = {
                 ShouldShow = function() return true end,
                 Callback = function(clPly)
-                    clPly:ChatPrint("See you later, hungry one!")
+                    clPly:ChatPrint("Great! Remember: stay in character, respect others, and have fun. The character menu (F1) and inventory (F2) are your best friends!")
                     if CLIENT and IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end
                 end,
                 serverOnly = false
@@ -161,60 +528,111 @@ if SERVER then
         }
     })
 
-    net.Receive("liaNpcDialogServerCallback", function(_, ply)
-        local npc = net.ReadEntity()
-        local label = net.ReadString()
-        local npcData = lia.dialog.getOriginalNPCData(npc.uniqueID)
-        local conversationTable = npcData and npcData.Conversation
-        local option = findOption(conversationTable, label, ply)
-        if not IsValid(npc) or not option then return end
-        if option.ShouldShow and not option.ShouldShow(ply, npc) then return end
-        if option.Callback then option.Callback(ply, npc) end
-    end)
+    --[[
+    Purpose:
+        Opens a dialog interface for a player with a specific NPC, filtering conversation options based on player permissions
 
-    net.Receive("liaNpcCustomize", function(_, ply)
-        local npc = net.ReadEntity()
-        local customData = net.ReadTable()
-        if not IsValid(npc) or not ply:hasPrivilege("canManageProperties") then return end
-        if customData.name and customData.name ~= "" then npc.NPCName = customData.name end
-        if customData.model and customData.model ~= "" then npc:SetModel(customData.model) end
-        if customData.skin then npc:SetSkin(tonumber(customData.skin) or 0) end
-        if customData.bodygroups and istable(customData.bodygroups) then
-            for bodygroupIndex, value in pairs(customData.bodygroups) do
-                npc:SetBodygroup(tonumber(bodygroupIndex) or 0, tonumber(value) or 0)
+    When Called:
+        Called when a player interacts with an NPC to start a conversation
+
+    Parameters:
+        client (Player)
+            The player who is opening the dialog
+        npc (Entity)
+            The NPC entity being interacted with
+        npcID (string)
+            The unique identifier of the NPC type
+
+    Returns:
+        None
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Open dialog when player presses E on NPC
+        hook.Add("PlayerUse", "OpenNPCDialog", function(ply, ent)
+            if ent:GetClass() == "lia_npc" and ent.uniqueID then
+                lia.dialog.openDialog(ply, ent, ent.uniqueID)
+                return false -- Prevent default use
             end
-        end
+        end)
+        ```
 
-        if customData.animation and customData.animation ~= "auto" then
-            local sequenceIndex = npc:LookupSequence(customData.animation)
-            if sequenceIndex >= 0 then
-                npc.customAnimation = customData.animation
-                npc:ResetSequence(sequenceIndex)
+    Medium Complexity:
+        ```lua
+        -- Medium: Open dialog with distance and visibility checks
+        local function tryOpenDialog(ply, npc)
+            if not IsValid(npc) or npc:GetClass() ~= "lia_npc" then return false end
+            if ply:GetPos():Distance(npc:GetPos()) > 150 then
+                ply:ChatPrint("You're too far away!")
+                return false
             end
+
+            if not npc.uniqueID then
+                ply:ChatPrint("This NPC is not configured for dialog.")
+                return false
+            end
+
+            lia.dialog.openDialog(ply, npc, npc.uniqueID)
+            return true
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced dialog opening with faction restrictions and cooldowns
+        local dialogCooldowns = {} -- Track player dialog cooldowns
+
+        local function canOpenDialog(ply, npc, npcID)
+            -- Check cooldown
+            local cooldownKey = ply:SteamID() .. "_" .. npcID
+            if dialogCooldowns[cooldownKey] and dialogCooldowns[cooldownKey] > CurTime() then
+                ply:ChatPrint("You must wait before speaking to this NPC again.")
+                return false
+            end
+
+            -- Check faction restrictions
+            local npcData = lia.dialog.getOriginalNPCData(npcID)
+            if npcData and npcData.factionRestriction then
+                if ply:getChar():getFaction() ~= npcData.factionRestriction then
+                    ply:ChatPrint("This NPC won't speak to members of your faction.")
+                    return false
+                end
+            end
+
+            -- Check quest prerequisites
+            if npcData and npcData.requiredQuest then
+                if not ply:HasCompletedQuest(npcData.requiredQuest) then
+                    ply:ChatPrint("This NPC has nothing to say to you yet.")
+                    return false
+                end
+            end
+
+            return true
         end
 
-        local currentPos = npc:GetPos()
-        local currentAng = npc:GetAngles()
-        npc:SetMoveType(MOVETYPE_VPHYSICS)
-        npc:SetSolid(SOLID_OBB)
-        npc:PhysicsInit(SOLID_OBB)
-        npc:SetCollisionGroup(COLLISION_GROUP_WORLD)
-        npc:SetPos(currentPos)
-        npc:SetAngles(currentAng)
-        local physObj = npc:GetPhysicsObject()
-        if IsValid(physObj) then
-            physObj:EnableMotion(false)
-            physObj:Sleep()
+        local function openDialogWithChecks(ply, npc, npcID)
+            if not canOpenDialog(ply, npc, npcID) then return end
+
+            -- Set cooldown
+            local cooldownKey = ply:SteamID() .. "_" .. npcID
+            dialogCooldowns[cooldownKey] = CurTime() + 30 -- 30 second cooldown
+
+            -- Log interaction
+            print(ply:Nick() .. " opened dialog with " .. npcID)
+
+            -- Open the dialog
+            lia.dialog.openDialog(ply, npc, npcID)
+
+            -- Award achievement/progress if applicable
+            ply:AddNPCInteraction(npcID)
         end
-
-        npc:setAnim()
-        npc.customData = customData
-        npc:setNetVar("NPCName", npc.NPCName)
-        hook.Run("UpdateEntityPersistence", npc)
-        hook.Run("SaveData")
-        ply:notifySuccess("NPC customized successfully!")
-    end)
-
+        ```
+    ]]
     function lia.dialog.openDialog(client, npc, npcID)
         local npcData = lia.dialog.getOriginalNPCData(npcID)
         if not npcData then return end
@@ -226,139 +644,103 @@ if SERVER then
         net.WriteTable(filteredData)
         net.Send(client)
     end
-
-    function MODULE:PlayerInitialSpawn(ply)
-        if ply:IsBot() then return end
-        lia.dialog.syncToClients(ply)
-    end
-
-    function MODULE:GetEntitySaveData(ent)
-        if ent:GetClass() == "lia_npc" then
-            local saveData = {
-                uniqueID = ent.uniqueID or "",
-                npcName = ent.NPCName or ""
-            }
-
-            if ent.customData then saveData.customData = ent.customData end
-            return saveData
-        end
-    end
-
-    function MODULE:OnEntityLoaded(ent, data)
-        if ent:GetClass() == "lia_npc" and data and data.uniqueID and data.uniqueID ~= "" then
-            ent.uniqueID = data.uniqueID
-            ent.NPCName = data.npcName or "NPC"
-            local npcData = lia.dialog.getNPCData(data.uniqueID)
-            if npcData then
-                ent:SetModel("models/Barney.mdl")
-                if npcData.BodyGroups and istable(npcData.BodyGroups) then
-                    for bodygroup, value in pairs(npcData.BodyGroups) do
-                        local bgIndex = ent:FindBodygroupByName(bodygroup)
-                        if bgIndex > -1 then ent:SetBodygroup(bgIndex, value) end
-                    end
-                end
-
-                if npcData.Skin then ent:SetSkin(npcData.Skin) end
-            end
-
-            if data.data and data.data.customData and istable(data.data.customData) then
-                ent.customData = data.data.customData
-                if data.data.customData.name and data.data.customData.name ~= "" then ent.NPCName = data.data.customData.name end
-                if data.data.customData.model and data.data.customData.model ~= "" then ent:SetModel(data.data.customData.model) end
-                if data.data.customData.skin then ent:SetSkin(tonumber(data.data.customData.skin) or 0) end
-                if data.data.customData.bodygroups and istable(data.data.customData.bodygroups) then
-                    for bodygroupIndex, value in pairs(data.data.customData.bodygroups) do
-                        ent:SetBodygroup(tonumber(bodygroupIndex) or 0, tonumber(value) or 0)
-                    end
-                end
-            end
-
-            if data.data and data.data.customData and data.data.customData.animation and data.data.customData.animation ~= "auto" then ent.customAnimation = data.data.customData.animation end
-            ent:setNetVar("uniqueID", data.uniqueID)
-            ent:setNetVar("NPCName", ent.NPCName)
-            if not ent.NPCName or ent.NPCName == "" then ent.NPCName = ent:getNetVar("NPCName", "NPC") end
-            ent:SetMoveType(MOVETYPE_VPHYSICS)
-            ent:SetSolid(SOLID_OBB)
-            ent:PhysicsInit(SOLID_OBB)
-            ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-            local physObj = ent:GetPhysicsObject()
-            if IsValid(physObj) then
-                physObj:EnableMotion(false)
-                physObj:Sleep()
-            end
-
-            ent:setAnim()
-        end
-    end
-
-    local function setupNPCType(npc, npcType)
-        if not IsValid(npc) or not npcType then return end
-        local existingCustomData = npc.customData
-        npc.uniqueID = npcType
-        local npcData = lia.dialog.getNPCData(npcType)
-        if npcData then
-            local currentPos = npc:GetPos()
-            local currentAng = npc:GetAngles()
-            npc:SetModel("models/Barney.mdl")
-            if npcData.BodyGroups and istable(npcData.BodyGroups) then
-                for bodygroup, value in pairs(npcData.BodyGroups) do
-                    local bgIndex = npc:FindBodygroupByName(bodygroup)
-                    if bgIndex > -1 then npc:SetBodygroup(bgIndex, value) end
-                end
-            end
-
-            if npcData.Skin then npc:SetSkin(npcData.Skin) end
-            npc.NPCName = npcData.PrintName or "NPC"
-            npc:setNetVar("uniqueID", npcType)
-            npc:setNetVar("NPCName", npc.NPCName)
-            npc:SetMoveType(MOVETYPE_VPHYSICS)
-            npc:SetSolid(SOLID_OBB)
-            npc:PhysicsInit(SOLID_OBB)
-            npc:SetCollisionGroup(COLLISION_GROUP_WORLD)
-            npc:SetPos(currentPos)
-            npc:SetAngles(currentAng)
-            local physObj = npc:GetPhysicsObject()
-            if IsValid(physObj) then
-                physObj:EnableMotion(false)
-                physObj:Sleep()
-            end
-
-            npc:setAnim()
-            if existingCustomData then
-                if existingCustomData.name and existingCustomData.name ~= "" then npc.NPCName = existingCustomData.name end
-                if existingCustomData.model and existingCustomData.model ~= "" then npc:SetModel(existingCustomData.model) end
-                if existingCustomData.skin then npc:SetSkin(tonumber(existingCustomData.skin) or 0) end
-                if existingCustomData.bodygroups and istable(existingCustomData.bodygroups) then
-                    for bodygroupIndex, value in pairs(existingCustomData.bodygroups) do
-                        npc:SetBodygroup(tonumber(bodygroupIndex) or 0, tonumber(value) or 0)
-                    end
-                end
-
-                if existingCustomData.animation and existingCustomData.animation ~= "auto" then
-                    local sequenceIndex = npc:LookupSequence(existingCustomData.animation)
-                    if sequenceIndex >= 0 then
-                        npc.customAnimation = existingCustomData.animation
-                        npc:ResetSequence(sequenceIndex)
-                    end
-                end
-
-                npc.customData = existingCustomData
-            end
-
-            npc:setNetVar("NPCName", npc.NPCName)
-            hook.Run("UpdateEntityPersistence", npc)
-        end
-    end
-
-    net.Receive("liaRequestNPCSelection", function(_, client)
-        local npcEntity = net.ReadEntity()
-        local uniqueID = net.ReadString()
-        if IsValid(npcEntity) and IsValid(client) then
-            local character = client:getChar()
-            if character then setupNPCType(npcEntity, uniqueID) end
-        end
-    end)
 else
+    --[[
+    Purpose:
+        Retrieves stored NPC dialog data for a specific NPC ID on the client side
+
+    When Called:
+        Used internally when accessing NPC conversation data from the client-side storage
+
+    Parameters:
+        npcID (string)
+            The unique identifier of the NPC to retrieve data for
+
+    Returns:
+        (table or nil)
+            The NPC dialog data table if found, nil otherwise
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get NPC data for UI display
+        local npcData = lia.dialog.getNPCData("shopkeeper")
+        if npcData then
+            -- Display NPC information in UI
+        end
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Check conversation options before opening dialog
+        local npcData = lia.dialog.getNPCData("quest_giver")
+        if npcData and npcData.Conversation then
+            local optionCount = 0
+            for optionName, optionData in pairs(npcData.Conversation) do
+                if istable(optionData) then
+                    optionCount = optionCount + 1
+                end
+            end
+            print("NPC has " .. optionCount .. " conversation options available")
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Build dynamic UI based on NPC conversation structure
+        local function createConversationUI(npcID)
+            local npcData = lia.dialog.getNPCData(npcID)
+            if not npcData or not npcData.Conversation then return end
+
+            local frame = vgui.Create("DFrame")
+            frame:SetTitle(npcData.PrintName or "NPC Dialog")
+            frame:SetSize(400, 500)
+            frame:Center()
+            frame:MakePopup()
+
+            local scroll = vgui.Create("DScrollPanel", frame)
+            scroll:Dock(FILL)
+            scroll:DockMargin(10, 10, 10, 10)
+
+            local yPos = 0
+            for optionName, optionData in pairs(npcData.Conversation) do
+                if istable(optionData) then
+                    local button = vgui.Create("DButton", scroll)
+                    button:SetText(optionName)
+                    button:SetPos(0, yPos)
+                    button:SetSize(380, 30)
+                    button.DoClick = function()
+                        -- Handle conversation option selection
+                        if optionData.Callback then
+                            -- Note: Client-side callbacks are limited
+                            -- Server communication required for most actions
+                        end
+                        frame:Close()
+                    end
+                    yPos = yPos + 35
+
+                    -- Add sub-options if they exist
+                    if optionData.options then
+                        for subOption, subData in pairs(optionData.options) do
+                            local subButton = vgui.Create("DButton", scroll)
+                            subButton:SetText("  ? " .. subOption)
+                            subButton:SetPos(20, yPos)
+                            subButton:SetSize(360, 25)
+                            -- Handle sub-option logic
+                            yPos = yPos + 30
+                        end
+                    end
+                end
+            end
+
+            return frame
+        end
+        ```
+    ]]
     function lia.dialog.getNPCData(npcID)
         if lia.dialog.stored[npcID] then return lia.dialog.stored[npcID] end
         return nil
@@ -399,6 +781,100 @@ else
         end
     end)
 
+    --[[
+    Purpose:
+        Opens a comprehensive NPC customization interface allowing players with management privileges to modify NPC appearance, name, and animations
+
+    When Called:
+        Called when privileged players select the "Customize this NPC" option from an NPC dialog menu
+
+    Parameters:
+        npc (Entity)
+            The NPC entity to customize
+
+    Returns:
+        None
+
+    Realm:
+        Client
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Open customization for an NPC
+        local npc = ents.Create("lia_npc")
+        npc:Spawn()
+        lia.dialog.openCustomizationUI(npc)
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Open customization with validation
+        local function tryCustomizeNPC(npc)
+            if not IsValid(npc) then
+                LocalPlayer():notifyError("Invalid NPC entity")
+                return false
+            end
+
+            if not LocalPlayer():hasPrivilege("canManageProperties") then
+                LocalPlayer():notifyError("You don't have permission to customize NPCs")
+                return false
+            end
+
+            lia.dialog.openCustomizationUI(npc)
+            return true
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Advanced NPC customization with logging and rollback
+        local customizationHistory = {} -- Track changes for potential rollback
+
+        local function customizeNPCWithHistory(npc)
+            if not IsValid(npc) then return false end
+
+            -- Store original state
+            local originalState = {
+                name = npc:getNetVar("NPCName", npc.NPCName),
+                model = npc:GetModel(),
+                skin = npc:GetSkin(),
+                bodygroups = {},
+                animation = npc.customData and npc.customData.animation
+            }
+
+            for i = 0, npc:GetNumBodyGroups() - 1 do
+                originalState.bodygroups[i] = npc:GetBodygroup(i)
+            end
+
+            customizationHistory[npc:EntIndex()] = originalState
+
+            -- Log customization attempt
+            print(LocalPlayer():Nick() .. " opened customization for NPC: " .. (originalState.name or "Unknown"))
+
+            -- Override the apply function to add logging
+            local originalApply = lia.dialog.openCustomizationUI
+            lia.dialog.openCustomizationUI = function(targetNPC)
+                originalApply(targetNPC)
+
+                -- Find the apply button and add logging
+                timer.Simple(0.1, function()
+                    if not IsValid(targetNPC) then return end
+                    local frame = vgui.GetHoveredPanel()
+                    if IsValid(frame) and frame:GetTitle() == "Customize NPC" then
+                        -- This is a simplified example - actual implementation would need
+                        -- to hook into the apply button's DoClick event
+                        print("NPC customization applied by " .. LocalPlayer():Nick())
+                    end
+                end)
+            end
+
+            lia.dialog.openCustomizationUI(npc)
+            return true
+        end
+        ```
+    ]]
     function lia.dialog.openCustomizationUI(npc)
         if not IsValid(npc) then return end
         local frame = vgui.Create("liaFrame")
@@ -755,10 +1231,4 @@ else
         closeBtn:SetText("Cancel")
         closeBtn.DoClick = function() frame:Close() end
     end)
-
-    lia.font.register("liaDialogFont", {
-        font = lia.config.get("Font"),
-        extended = false,
-        size = 32
-    })
 end
