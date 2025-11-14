@@ -271,7 +271,6 @@ function PANEL:Init()
 
     local tabsPanel = topBar:Add("liaTabs")
     tabsPanel:Dock(FILL)
-    -- Leave space on the right for the Lilia logo (iconSize + margin = ~74px)
     tabsPanel:DockMargin(0, 5, 80, 5)
     self.tabs = tabsPanel
     local panel = self:Add("EditablePanel")
@@ -339,12 +338,9 @@ function PANEL:addTab(name, callback)
     local contentPanel = vgui.Create("EditablePanel")
     contentPanel:Dock(FILL)
     contentPanel.Paint = function() end
-
-    -- Create a wrapped callback that handles the F1 menu specific logic
     local wrappedCallback = function()
         if IsValid(lia.gui.info) then lia.gui.info:Remove() end
         if callback then
-            -- Use the main panel for content, not the individual tab panel
             local mainPanel = self.panel
             mainPanel:Clear()
             mainPanel:AlphaTo(255, 0.3, 0)
@@ -356,24 +352,20 @@ function PANEL:addTab(name, callback)
     end
 
     self.tabs:AddTab(L(name), contentPanel, nil, wrappedCallback)
-
     local tabData = {
         name = name,
         panel = contentPanel,
         callback = callback
     }
 
-    -- Store tab data for later reference
     if not self.tabList then self.tabList = {} end
     self.tabList[name] = tabData
-
     return tabData
 end
 
 function PANEL:setActiveTab(key)
     local tabData = self.tabList[key]
     if tabData and IsValid(tabData.panel) then
-        -- Find the tab index in the tabs array
         for i, tabInfo in ipairs(self.tabs.tabs) do
             if tabInfo.pan == tabData.panel then
                 self.tabs:SetActiveTab(i)
@@ -383,7 +375,6 @@ function PANEL:setActiveTab(key)
         return
     end
 
-    -- Fallback: try to find by localized name
     for i, tabInfo in ipairs(self.tabs.tabs) do
         if tabInfo.name == key or L(tabInfo.name) == key then
             self.tabs:SetActiveTab(i)
@@ -416,8 +407,6 @@ function PANEL:ApplyCurrentTheme()
 end
 
 function PANEL:UpdateTabColors()
-    -- liaTabs handles its own coloring automatically
-    -- This function is kept for compatibility but no longer needs to do anything
 end
 
 function PANEL:OnKeyCodePressed(key)

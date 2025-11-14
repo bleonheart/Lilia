@@ -281,10 +281,7 @@ function PANEL:SetActiveTab(tab)
         local button = self.panel_tabs:GetChild(tab)
         if IsValid(button) then self.m_pActiveTab = button end
         self:UpdateActiveTabVisual()
-        -- Execute callback if it exists
-        if self.tabs[tab] and self.tabs[tab].callback then
-            self.tabs[tab].callback()
-        end
+        if self.tabs[tab] and self.tabs[tab].callback then self.tabs[tab].callback() end
     else
         for searchId, data in ipairs(self.tabs) do
             if data.pan == tab or self.panel_tabs:GetChild(searchId) == tab then
