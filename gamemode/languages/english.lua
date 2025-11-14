@@ -164,6 +164,7 @@ LANGUAGE = {
     playerCharBelonging = "This item belongs to another one of your characters.",
     cantDropBagHasEquipped = "You can't drop a bag with equipped items inside.",
     tooLongMessage = "Your message is too long and has not been sent.",
+    configureNPC = "Configure NPC",
     criticalCondition = "Critical Condition",
     seriousInjury = "Serious Injury",
     moderateInjury = "Moderate Injury",
