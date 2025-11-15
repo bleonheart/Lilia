@@ -816,6 +816,7 @@ if SERVER then
         local filteredData = table.Copy(npcData)
         if filteredData.Conversation then filteredData.Conversation = filterConversationOptions(filteredData.Conversation, client, npc) end
         filteredData.UniqueID = npcID
+        hook.Run("OnNPCTypeSet", client, npc, npcID, filteredData)
         net.Start("liaOpenNpcDialog")
         net.WriteEntity(npc)
         net.WriteBool(client:hasPrivilege("canManageProperties"))
