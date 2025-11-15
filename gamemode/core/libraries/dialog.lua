@@ -280,12 +280,12 @@ if SERVER then
         if not istable(tbl) then return tbl end
         local cleaned = {}
         for k, v in pairs(tbl) do
-            if isfunction(v) then
-                -- Skip functions entirely
-            elseif istable(v) then
-                cleaned[k] = removeFunctions(v)
-            else
-                cleaned[k] = v
+            if not isfunction(v) then
+                if istable(v) then
+                    cleaned[k] = removeFunctions(v)
+                else
+                    cleaned[k] = v
+                end
             end
         end
         return cleaned
@@ -1432,7 +1432,7 @@ else
             separator:Dock(TOP)
             separator:SetTall(1)
             separator:DockMargin(0, 10, 0, 10)
-            separator.Paint = function(self, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(100, 100, 100, 100)) end
+            separator.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(100, 100, 100, 100)) end
             -- Add label for other configurations
             local otherLabel = vgui.Create("DLabel", scroll)
             otherLabel:Dock(TOP)

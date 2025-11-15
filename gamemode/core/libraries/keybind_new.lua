@@ -1,4 +1,4 @@
-        local function buildKeybinds(parent)
+        function buildKeybinds(parent)
             parent:Clear()
             local allowEdit = lia.config.get("AllowKeybindEditing", true)
 
