@@ -789,11 +789,61 @@ if CLIENT then
             end
             ```
     ]]
+    --[[
+        Purpose:
+            Calculates a negative/contrast color based on the main theme color for error/warning states
+
+        When Called:
+            When creating theme-appropriate colors for error states, cooldowns, warnings, etc.
+
+        Parameters:
+            mainColor (Color)
+                The main theme color to base the negative color on
+
+        Returns:
+            Color - A contrasting color suitable for error/warning states
+
+        Realm:
+            Client
+
+        Example Usage:
+
+        Low Complexity:
+            ```lua
+            -- Simple: Get negative color for current theme
+            local errorColor = lia.color.calculateNegativeColor(lia.color.getMainColor())
+            ```
+
+        Medium Complexity:
+            ```lua
+            -- Medium: Use in UI elements
+            local negativeColor = lia.color.calculateNegativeColor(lia.color.getMainColor())
+            draw.RoundedBox(4, 0, 0, w, h, negativeColor)
+            ```
+
+        High Complexity:
+            ```lua
+            -- High: Dynamic color calculation based on theme
+            hook.Add("OnThemeChanged", "UpdateNegativeColor", function()
+                local mainColor = lia.color.getMainColor()
+                local negativeColor = lia.color.calculateNegativeColor(mainColor)
+                -- Update UI elements that use negative color
+            end)
+            ```
+    ]]
+    function lia.color.calculateNegativeColor(mainColor)
+        -- For most themes, a bright red/pink provides good contrast and visibility
+        -- This works well across dark and light themes
+        return Color(255, 100, 100, 255)
+    end
+
     function lia.color.returnMainAdjustedColors()
         local base = lia.color.getMainColor()
         local background = lia.color.adjust(base, -20, -10, -50, 0)
         local brightness = background.r * 0.299 + background.g * 0.587 + background.b * 0.114
         local textColor = brightness > 128 and Color(30, 30, 30, 255) or Color(245, 245, 220, 255)
+        -- Calculate negative color based on main color for good contrast
+        local negativeColor = lia.color.calculateNegativeColor(base)
         return {
             background = background,
             sidebar = lia.color.adjust(base, -30, -15, -60, -55),
@@ -801,7 +851,8 @@ if CLIENT then
             text = textColor,
             hover = lia.color.adjust(base, -40, -25, -70, -35),
             border = Color(255, 255, 255, 255),
-            highlight = Color(255, 255, 255, 30)
+            highlight = Color(255, 255, 255, 30),
+            negative = negativeColor
         }
     end
 
