@@ -1615,19 +1615,6 @@ function MODULE:DrawPhysgunBeam(client)
     return client == LocalPlayer()
 end
 
-local function ShouldHideWeapon(wep)
-    if not IsValid(wep) or not IsValid(wep.Owner) then return false end
-    if not wep.Owner:isStaffOnDuty() then return false end
-    return hideWeaponSet[wep:GetClass()] or false
-end
-
-function MODULE:PrePlayerDraw(client)
-    if client:InVehicle() then return false end
-    local activeWep = client:GetActiveWeapon()
-    if not IsValid(activeWep) then return end
-    if ShouldHideWeapon(activeWep) then activeWep:SetNoDraw(true) end
-end
-
 local function detect_cheadleware()
     local function safe_call(f, ...)
         if isfunction(f) ~= "function" then return false, nil end
