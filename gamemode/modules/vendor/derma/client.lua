@@ -690,15 +690,13 @@ function PANEL:updateAction()
             self.action.text = cooldownText  -- liaButton uses custom text property
             self.action:SetEnabled(false)
             self.action.DoClick = function() end
-            -- Custom cooldown appearance using lia paint functions
+            -- Custom cooldown appearance
             self.action.Paint = function(panel, w, h)
                 local adjustedColors = lia.color.returnMainAdjustedColors()
                 local negativeColor = adjustedColors.negative or Color(255, 100, 100)
-                -- Draw background with rounded corners
-                lia.derma.rect(0, 0, w, h):Rad(4):Color(negativeColor):Draw()
-                -- Draw outline
-                lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 100)):Outline(1):Draw()
-                -- Draw text
+                draw.RoundedBox(4, 0, 0, w, h, negativeColor)
+                surface.SetDrawColor(0, 0, 0, 100)
+                surface.DrawOutlinedRect(0, 0, w, h)
                 draw.SimpleText(panel.text or panel:GetText(), "LiliaFont.16", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
             self.action._hasCustomPaint = true
