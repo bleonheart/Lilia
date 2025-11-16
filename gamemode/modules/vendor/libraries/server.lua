@@ -152,6 +152,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
                 cooldowns[itemType] = CurTime()
                 character:setData("vendorCooldowns", cooldowns)
             end
+
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
             client.vendorTransaction = nil
         end)

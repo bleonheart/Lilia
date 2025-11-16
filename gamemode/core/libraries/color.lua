@@ -832,22 +832,16 @@ if CLIENT then
             ```
     ]]
     function lia.color.calculateNegativeColor(mainColor)
-        if not mainColor then
-            mainColor = lia.color.getMainColor()
-        end
-        
+        if not mainColor then mainColor = lia.color.getMainColor() end
         -- Calculate a negative color with less contrast that blends with the theme
         -- Use a muted red/orange that harmonizes with the main color
         local r, g, b = mainColor.r, mainColor.g, mainColor.b
-        
         -- Calculate brightness of main color
         local brightness = r * 0.299 + g * 0.587 + b * 0.114
-        
         -- Create a muted red that blends with the theme
         -- For darker themes, use a slightly brighter muted red
         -- For lighter themes, use a darker muted red
         local negativeR, negativeG, negativeB
-        
         if brightness < 128 then
             -- Dark theme: use a muted red-orange that's not too bright
             negativeR = math.Clamp(r * 0.4 + 180, 140, 200)
@@ -859,12 +853,11 @@ if CLIENT then
             negativeG = math.Clamp(g * 0.2 + 60, 40, 100)
             negativeB = math.Clamp(b * 0.15 + 50, 30, 80)
         end
-        
+
         -- Blend with theme color slightly for better harmony (30% theme, 70% negative)
         negativeR = math.Clamp(negativeR * 0.7 + r * 0.3, 0, 255)
         negativeG = math.Clamp(negativeG * 0.7 + g * 0.3, 0, 255)
         negativeB = math.Clamp(negativeB * 0.7 + b * 0.3, 0, 255)
-        
         return Color(negativeR, negativeG, negativeB, 255)
     end
 

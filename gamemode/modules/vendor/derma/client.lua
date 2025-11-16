@@ -578,7 +578,7 @@ function PANEL:Init()
     self.action:SetFont("LiliaFont.16")
     self.action:SetEnabled(true)
     self.action:SetVisible(true)
-    self.action:SetText("")  -- Start with empty text
+    self.action:SetText("") -- Start with empty text
     -- Ensure liaButton text property is initialized
     self.action.text = ""
     -- Mark that we haven't set custom paint yet
@@ -623,7 +623,7 @@ function PANEL:updateAction()
     if not IsValid(liaVendorEnt) then
         local errorText = self.isSelling and L("vendorSellAction", "N/A") or L("vendorBuyAction", "N/A")
         self.action:SetText(errorText)
-        self.action.text = errorText  -- liaButton uses custom text property
+        self.action.text = errorText -- liaButton uses custom text property
         return
     end
 
@@ -639,29 +639,31 @@ function PANEL:updateAction()
     end
 
     if IsValid(self.priceLabel) then self.priceLabel:SetText(priceText) end
-
     -- Always enable button by default
     local buttonText = self.isSelling and L("sell") or L("buy")
     self.action:SetText(buttonText)
-    self.action.text = buttonText  -- liaButton uses custom text property
+    self.action.text = buttonText -- liaButton uses custom text property
     self.action:SetEnabled(true)
     self.action:SetVisible(true)
     -- Remove custom paint if it was set for cooldown, restore default liaButton paint
     if self.action._hasCustomPaint then
-        self.action.Paint = nil  -- This will restore the default Paint from vgui.Register
+        self.action.Paint = nil -- This will restore the default Paint from vgui.Register
         self.action._hasCustomPaint = false
         -- Restore original colors if they were stored
         if self.action._originalCol then
             self.action.col = self.action._originalCol
             self.action._originalCol = nil
         end
+
         if self.action._originalColHov then
             self.action.col_hov = self.action._originalColHov
             self.action._originalColHov = nil
         end
+
         -- Force a repaint
         self.action:InvalidateLayout()
     end
+
     self.action.DoClick = function()
         if self.isSelling then
             self:sellItemToVendor()
@@ -696,7 +698,7 @@ function PANEL:updateAction()
         if shouldShowCooldown then
             local cooldownText = "In Cooldown"
             self.action:SetText(cooldownText)
-            self.action.text = cooldownText  -- liaButton uses custom text property
+            self.action.text = cooldownText -- liaButton uses custom text property
             self.action:SetEnabled(false)
             self.action.DoClick = function() end
             -- Use liaButton paint style with cooldown colors
@@ -708,11 +710,7 @@ function PANEL:updateAction()
             -- Set cooldown colors with less contrast
             self.action.col = negativeColor
             -- Create a subtle hover color that's slightly darker but still harmonious
-            self.action.col_hov = Color(
-                math.Clamp(negativeColor.r * 0.85, 0, 255),
-                math.Clamp(negativeColor.g * 0.85, 0, 255),
-                math.Clamp(negativeColor.b * 0.85, 0, 255)
-            )
+            self.action.col_hov = Color(math.Clamp(negativeColor.r * 0.85, 0, 255), math.Clamp(negativeColor.g * 0.85, 0, 255), math.Clamp(negativeColor.b * 0.85, 0, 255))
             -- Custom paint that uses liaButton structure but with cooldown colors
             self.action.Paint = function(panel, w, h)
                 local math_clamp = math.Clamp
@@ -773,6 +771,7 @@ function PANEL:updateAction()
                     surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
                 end
             end
+
             self.action._hasCustomPaint = true
             self.action._originalCol = originalCol
             self.action._originalColHov = originalColHov

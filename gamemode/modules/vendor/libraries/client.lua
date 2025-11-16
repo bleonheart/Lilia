@@ -42,7 +42,6 @@ net.Receive("liaVendorOpen", function()
     end
 end)
 
-
 net.Receive("liaVendorExit", function()
     liaVendorEnt = nil
     hook.Run("VendorExited")
