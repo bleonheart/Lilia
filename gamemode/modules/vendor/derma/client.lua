@@ -650,6 +650,15 @@ function PANEL:updateAction()
     if self.action._hasCustomPaint then
         self.action.Paint = nil  -- This will restore the default Paint from vgui.Register
         self.action._hasCustomPaint = false
+        -- Restore original colors if they were stored
+        if self.action._originalCol then
+            self.action.col = self.action._originalCol
+            self.action._originalCol = nil
+        end
+        if self.action._originalColHov then
+            self.action.col_hov = self.action._originalColHov
+            self.action._originalColHov = nil
+        end
         -- Force a repaint
         self.action:InvalidateLayout()
     end
@@ -690,16 +699,78 @@ function PANEL:updateAction()
             self.action.text = cooldownText  -- liaButton uses custom text property
             self.action:SetEnabled(false)
             self.action.DoClick = function() end
-            -- Custom cooldown appearance
+            -- Use liaButton paint style with cooldown colors
+            local adjustedColors = lia.color.returnMainAdjustedColors()
+            local negativeColor = adjustedColors.negative or Color(255, 100, 100)
+            -- Store original colors temporarily
+            local originalCol = self.action.col
+            local originalColHov = self.action.col_hov
+            -- Set cooldown colors
+            self.action.col = negativeColor
+            self.action.col_hov = Color(negativeColor.r * 0.8, negativeColor.g * 0.8, negativeColor.b * 0.8)
+            -- Custom paint that uses liaButton structure but with cooldown colors
             self.action.Paint = function(panel, w, h)
-                local adjustedColors = lia.color.returnMainAdjustedColors()
-                local negativeColor = adjustedColors.negative or Color(255, 100, 100)
-                draw.RoundedBox(4, 0, 0, w, h, negativeColor)
-                surface.SetDrawColor(0, 0, 0, 100)
-                surface.DrawOutlinedRect(0, 0, w, h)
-                draw.SimpleText(panel.text or panel:GetText(), "LiliaFont.16", w * 0.5, h * 0.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                local math_clamp = math.Clamp
+                if panel:IsHovered() then
+                    panel.hover_status = math_clamp((panel.hover_status or 0) + 4 * FrameTime(), 0, 1)
+                else
+                    panel.hover_status = math_clamp((panel.hover_status or 0) - 8 * FrameTime(), 0, 1)
+                end
+
+                local isActive = (panel:IsDown() or panel.Depressed) and (panel.hover_status or 0) > 0.8
+                if isActive then panel._activeShadowTimer = SysTime() + (panel._activeShadowMinTime or 0.03) end
+                local showActiveShadow = isActive or ((panel._activeShadowTimer or 0) > SysTime())
+                local activeTarget = showActiveShadow and 10 or 0
+                local activeSpeed = (activeTarget > 0) and 7 or 3
+                panel._activeShadowLerp = Lerp(FrameTime() * activeSpeed, panel._activeShadowLerp or 0, activeTarget)
+                if panel._activeShadowLerp > 0 then
+                    local col = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, math.Clamp(panel.col_hov.a * 1.5, 0, 255))
+                    draw.RoundedBox(panel.radius or 16, 0, 0, w, h, col)
+                end
+
+                draw.RoundedBox(panel.radius or 16, 0, 0, w, h, panel.col)
+                if panel.bool_gradient ~= false then
+                    local shadowCol = (lia.color.theme and lia.color.theme.button_shadow) or Color(18, 32, 32, 35)
+                    surface.SetDrawColor(shadowCol)
+                    surface.SetMaterial(Material("vgui/gradient-d"))
+                    surface.DrawTexturedRect(0, 0, w, h)
+                end
+
+                if panel.bool_hover ~= false and (panel.hover_status or 0) > 0 then
+                    local hoverCol = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, (panel.hover_status or 0) * 255)
+                    draw.RoundedBox(panel.radius or 16, 0, 0, w, h, hoverCol)
+                end
+
+                if panel.click_alpha and panel.click_alpha > 0 then
+                    panel.click_alpha = math_clamp(panel.click_alpha - FrameTime() * (panel.ripple_speed or 4), 0, 1)
+                    local ripple_size = (1 - panel.click_alpha) * math.max(w, h) * 2
+                    local ripple_color = Color(255, 255, 255, 30 * panel.click_alpha)
+                    draw.RoundedBox(ripple_size * 0.5, (panel.click_x or w / 2) - ripple_size * 0.5, (panel.click_y or h / 2) - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
+                end
+
+                local iconSize = panel.icon_size or 16
+                if panel.text and panel.text ~= "" then
+                    draw.SimpleText(panel.text, panel.font or "LiliaFont.16", w * 0.5 + (panel.icon and panel.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                    if panel.icon and panel.icon ~= "" then
+                        surface.SetFont(panel.font or "LiliaFont.16")
+                        local textSize = surface.GetTextSize(panel.text)
+                        local posX = (w - textSize - iconSize) * 0.5 - 2
+                        local posY = (h - iconSize) * 0.5
+                        surface.SetMaterial(panel.icon)
+                        surface.SetDrawColor(color_white)
+                        surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+                    end
+                elseif panel.icon and panel.icon ~= "" then
+                    local posX = (w - iconSize) * 0.5
+                    local posY = (h - iconSize) * 0.5
+                    surface.SetMaterial(panel.icon)
+                    surface.SetDrawColor(color_white)
+                    surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+                end
             end
             self.action._hasCustomPaint = true
+            self.action._originalCol = originalCol
+            self.action._originalColHov = originalColHov
         end
     end
 end
