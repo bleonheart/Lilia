@@ -831,7 +831,7 @@ if CLIENT then
             end)
             ```
     ]]
-    function lia.color.calculateNegativeColor(mainColor)
+    function lia.color.calculateNegativeColor()
         -- For most themes, a bright red/pink provides good contrast and visibility
         -- This works well across dark and light themes
         return Color(255, 100, 100, 255)

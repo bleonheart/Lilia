@@ -1568,12 +1568,6 @@ local suspiciousFunctions = {
     ["RunConsoleCommand"] = true
 }
 
-local hideWeaponSet = {
-    ["weapon_gravitygun"] = true,
-    ["weapon_physgun"] = true,
-    ["gmod_tool"] = true
-}
-
 local function getEntityDisplayName(ent)
     if not IsValid(ent) then return L("unknownEntity") end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
