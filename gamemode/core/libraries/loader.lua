@@ -333,7 +333,6 @@ local ConditionalFiles = {
 ]]
 function lia.loader.include(path, realm)
     if not path then lia.error(L("missingFilePath")) end
-    -- Normalize path separators to forward slashes (Garry's Mod requires forward slashes)
     path = path:gsub("\\", "/")
     local resolved = realm
     if not resolved then

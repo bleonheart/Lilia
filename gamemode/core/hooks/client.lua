@@ -537,7 +537,6 @@ function GM:HUDShouldDraw(element)
     return not hidden[element]
 end
 
-
 function GM:PlayerStartVoice(client)
     if not IsValid(g_VoicePanelList) or not lia.config.get("IsVoiceEnabled", true) then return end
     if client:getNetVar("IsDeadRestricted", false) then return false end

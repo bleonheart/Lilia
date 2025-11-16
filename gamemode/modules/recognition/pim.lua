@@ -78,6 +78,8 @@ lia.playerinteract.addAction("recognizeInYellRange", {
 })
 
 lia.playerinteract.addInteraction("recognizeOption", {
+    name = L("giveRecognitionToPerson"),
+    category = L("categoryRecognition"),
     serverOnly = true,
     shouldShow = function(ply, tgt)
         if not canRecog(ply) then return false end

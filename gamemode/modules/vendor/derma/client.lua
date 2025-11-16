@@ -436,6 +436,15 @@ function PANEL:OnRemove()
     self:liaDeleteInventoryHooks()
 end
 
+function PANEL:OnFocusChanged(gained)
+    if not gained then
+        timer.Simple(0, function()
+            if not IsValid(self) then return end
+            self:MakePopup()
+        end)
+    end
+end
+
 function PANEL:OnKeyCodePressed()
     if input.LookupBinding("+use", true) then self:Remove() end
 end
