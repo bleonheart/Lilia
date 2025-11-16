@@ -873,7 +873,7 @@ if CLIENT then
         local background = lia.color.adjust(base, -20, -10, -50, 0)
         local brightness = background.r * 0.299 + background.g * 0.587 + background.b * 0.114
         local textColor = brightness > 128 and Color(30, 30, 30, 255) or Color(245, 245, 220, 255)
-        -- Calculate negative color based on main color for good contrast
+        -- Calculate negative color based on main color with less contrast for better theme harmony
         local negativeColor = lia.color.calculateNegativeColor(base)
         return {
             background = background,

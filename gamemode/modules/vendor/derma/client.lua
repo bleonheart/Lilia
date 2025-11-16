@@ -705,9 +705,14 @@ function PANEL:updateAction()
             -- Store original colors temporarily
             local originalCol = self.action.col
             local originalColHov = self.action.col_hov
-            -- Set cooldown colors
+            -- Set cooldown colors with less contrast
             self.action.col = negativeColor
-            self.action.col_hov = Color(negativeColor.r * 0.8, negativeColor.g * 0.8, negativeColor.b * 0.8)
+            -- Create a subtle hover color that's slightly darker but still harmonious
+            self.action.col_hov = Color(
+                math.Clamp(negativeColor.r * 0.85, 0, 255),
+                math.Clamp(negativeColor.g * 0.85, 0, 255),
+                math.Clamp(negativeColor.b * 0.85, 0, 255)
+            )
             -- Custom paint that uses liaButton structure but with cooldown colors
             self.action.Paint = function(panel, w, h)
                 local math_clamp = math.Clamp
