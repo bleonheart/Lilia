@@ -1622,6 +1622,7 @@ local function ShouldHideWeapon(wep)
 end
 
 function MODULE:PrePlayerDraw(client)
+    if client:InVehicle() then return false end
     local activeWep = client:GetActiveWeapon()
     if not IsValid(activeWep) then return end
     if ShouldHideWeapon(activeWep) then activeWep:SetNoDraw(true) end
