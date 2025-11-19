@@ -115,7 +115,7 @@ end
             onRun = function(client, arguments)
                 client:notify("Hello, " .. client:Name() .. "!")
             end,
-            desc = "Say hello"
+            desc = "helloDesc"
         })
         ```
 
@@ -134,7 +134,7 @@ end
                 client:notify("Kicked " .. target:Name())
             end,
             adminOnly = true,
-            desc = "Kick a player from the server"
+            desc = "kickDesc"
         })
         ```
 
@@ -158,7 +158,7 @@ end
                 return client:IsSuperAdmin() or client:hasPrivilege("moderation")
             end,
             privilege = "moderation",
-            desc = "Ban a player temporarily or permanently"
+            desc = "banDesc"
         })
         ```
 ]]
@@ -1349,8 +1349,8 @@ if SERVER then
     end)
 
     lia.command.add("testnotifications", {
-        desc = "Test all notification types",
-        onRun = function(client, arguments)
+        desc = "testnotificationsDesc",
+        onRun = function(client)
             client:notify("This is a default notification")
             timer.Simple(0.5, function() if IsValid(client) then client:notifyError("This is an error notification") end end)
             timer.Simple(1.0, function() if IsValid(client) then client:notifyWarning("This is a warning notification") end end)
@@ -7675,7 +7675,7 @@ lia.command.add("kickbots", {
 
 lia.command.add("npcchangetype", {
     adminOnly = true,
-    desc = "Change the type of a dialog NPC you are looking at.",
+    desc = "npcchangetypeDesc",
     onRun = function(client)
         if not client:hasPrivilege("Can Manage NPCs") then return client:notifyError("You lack permission to manage NPCs.") end
         local ent = client:getTracedEntity()
@@ -7797,7 +7797,7 @@ lia.command.add("forcerespawn", {
 })
 
 lia.command.add("resetvendorcooldowns", {
-    desc = "Reset vendor cooldowns for a player",
+    desc = "resetvendorcooldownsDesc",
     privilege = "canEditVendors",
     adminOnly = true,
     arguments = {

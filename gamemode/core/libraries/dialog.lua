@@ -266,21 +266,6 @@ if SERVER then
         return value
     end
 
-    local function removeFunctions(tbl)
-        if not istable(tbl) then return tbl end
-        local cleaned = {}
-        for k, v in pairs(tbl) do
-            if not isfunction(v) then
-                if istable(v) then
-                    cleaned[k] = removeFunctions(v)
-                else
-                    cleaned[k] = v
-                end
-            end
-        end
-        return cleaned
-    end
-
     local function normalizeResponseValue(response)
         if response == nil then return nil end
         if istable(response) then
@@ -870,7 +855,7 @@ if SERVER then
         local filteredData = table.Copy(npcData)
         if filteredData.Conversation then
             filteredData.Conversation = filterConversationOptions(filteredData.Conversation, client, npc)
-            for label, entry in pairs(filteredData.Conversation) do
+            for _, entry in pairs(filteredData.Conversation) do
                 if istable(entry) then
                     if isfunction(entry.GetOptions) then
                         local options = entry.GetOptions(client, npc)

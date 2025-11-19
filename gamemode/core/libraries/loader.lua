@@ -1296,7 +1296,6 @@ function lia.loader.initializeGamemode(isReload)
             timer.Create("liaReloadAdminSync", 2.0, 1, function() if adminHasChanges then lia.administrator.sync() end end)
             timer.Create("liaReloadPlayerInteractSync", 3.5, 1, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
             timer.Create("liaReloadComplete", 5.0, 1, function() lia.reloadInProgress = false end)
-        else
         end
     end
 
