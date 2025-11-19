@@ -2418,6 +2418,12 @@ lia.command.add("plykill", {
             type = "player"
         },
     },
+    AdminStick = {
+        Name = "adminStickKillPlayerName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/user_red.png"
+    },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("kill", arguments[1], nil, nil, client) end
 })
 
@@ -2490,6 +2496,12 @@ lia.command.add("plyrespawn", {
             type = "player"
         },
     },
+    AdminStick = {
+        Name = "adminStickRespawnPlayerName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/arrow_refresh.png"
+    },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("respawn", arguments[1], nil, nil, client) end
 })
 
@@ -2550,6 +2562,12 @@ lia.command.add("plyblindfade", {
             type = "string",
             optional = true
         },
+    },
+    AdminStick = {
+        Name = "adminStickBlindFadeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/eye.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -2733,6 +2751,12 @@ lia.command.add("plycloak", {
             type = "player"
         },
     },
+    AdminStick = {
+        Name = "adminStickCloakName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/status_offline.png"
+    },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("cloak", arguments[1], nil, nil, client) end
 })
 
@@ -2744,6 +2768,12 @@ lia.command.add("plyuncloak", {
             name = "name",
             type = "player"
         },
+    },
+    AdminStick = {
+        Name = "adminStickUncloakName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/status_online.png"
     },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("uncloak", arguments[1], nil, nil, client) end
 })
@@ -2757,6 +2787,12 @@ lia.command.add("plygod", {
             type = "player"
         },
     },
+    AdminStick = {
+        Name = "adminStickGodModeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/shield.png"
+    },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("god", arguments[1], nil, nil, client) end
 })
 
@@ -2768,6 +2804,12 @@ lia.command.add("plyungod", {
             name = "name",
             type = "player"
         },
+    },
+    AdminStick = {
+        Name = "adminStickRemoveGodModeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/shield_delete.png"
     },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("ungod", arguments[1], nil, nil, client) end
 })
@@ -2809,6 +2851,12 @@ lia.command.add("plystrip", {
             name = "name",
             type = "player"
         },
+    },
+    AdminStick = {
+        Name = "adminStickStripWeaponsName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/gun.png"
     },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("strip", arguments[1], nil, nil, client) end
 })
@@ -2936,6 +2984,12 @@ lia.command.add("plyspectate", {
             name = "name",
             type = "player"
         },
+    },
+    AdminStick = {
+        Name = "adminStickSpectateName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/zoom.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
@@ -6674,6 +6728,12 @@ lia.command.add("plyunwhitelist", {
             end
         }
     },
+    AdminStick = {
+        Name = "adminStickUnwhitelistName",
+        Category = "characterManagement",
+        SubCategory = "setFactionTitle",
+        Icon = "icon16/group_delete.png"
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -7596,6 +7656,12 @@ lia.command.add("recogwhisper", {
         },
     },
     desc = "recogWhisperDesc",
+    AdminStick = {
+        Name = "adminStickForceRecognitionWhisperName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/user_comment.png"
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
@@ -7612,6 +7678,12 @@ lia.command.add("recognormal", {
         },
     },
     desc = "recogNormalDesc",
+    AdminStick = {
+        Name = "adminStickForceRecognitionNormalName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/user_green.png"
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
@@ -7628,6 +7700,12 @@ lia.command.add("recogyell", {
         },
     },
     desc = "recogYellDesc",
+    AdminStick = {
+        Name = "adminStickForceRecognitionYellName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        Icon = "icon16/user_red.png"
+    },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) or not target:getChar() then return end
@@ -7844,6 +7922,12 @@ lia.command.add("resetvendorcooldowns", {
             type = "player",
             description = "The player to reset cooldowns for"
         }
+    },
+    AdminStick = {
+        Name = "adminStickResetVendorCooldownsName",
+        Category = "items",
+        SubCategory = "items",
+        Icon = "icon16/time_delete.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
