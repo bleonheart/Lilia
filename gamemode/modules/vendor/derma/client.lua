@@ -457,12 +457,32 @@ function PANEL:Init()
     self.hoverAlpha = 0
     -- Initialize local cooldown tracking
     self.localCooldowns = {}
+    self.purchaseAttempted = false
+    self.purchaseAttemptTime = nil
     -- Add cooldown refresh timer
     self.cooldownTimer = "vendorCooldown_" .. tostring(self)
+    print("[VENDOR COOLDOWN] Creating timer:", self.cooldownTimer)
     timer.Create(self.cooldownTimer, 1, 0, function()
-        if IsValid(self) then
-            self:updateAction()
+        if IsValid(self) and IsValid(self.action) then
+            print("[VENDOR COOLDOWN] Timer tick - calling updateCooldown")
+            -- For selling items, always update action first to ensure normal state
+            if self.isSelling then
+                self:updateAction()
+                self:updateCooldown()
+            else
+                self:updateCooldown()
+                self:updateAction()
+            end
+            -- Force a repaint of the entire panel to ensure UI updates
+            if IsValid(self) then
+                self:InvalidateLayout(true)
+                self:SetVisible(true)
+            end
+            if IsValid(self.action) then
+                self.action:InvalidateLayout(true)
+            end
         else
+            print("[VENDOR COOLDOWN] Timer: panel invalid, removing timer")
             timer.Remove(self.cooldownTimer)
         end
     end)
@@ -583,6 +603,10 @@ function PANEL:Init()
     self.action.text = ""
     -- Mark that we haven't set custom paint yet
     self.action._hasCustomPaint = false
+    -- Store the original Paint function so we can restore it later
+    if not self.action._originalPaint then
+        self.action._originalPaint = self.action.Paint
+    end
     self.isSelling = false
     self.suffix = ""
     self.currentPrice = 0
@@ -608,13 +632,336 @@ function PANEL:buyItemFromVendor()
     if not item then return end
     -- Mark as attempted purchase for cooldown tracking
     if item.Cooldown and item.Cooldown > 0 then
+        print("[VENDOR COOLDOWN] Purchase attempted! Item:", item.uniqueID, "Cooldown:", item.Cooldown)
         self.purchaseAttempted = true
         self.purchaseAttemptTime = os.time()
+        print("[VENDOR COOLDOWN] Set purchaseAttemptTime to:", self.purchaseAttemptTime)
+        -- Immediately trigger cooldown mode
+        timer.Simple(0.1, function()
+            if IsValid(self) then
+                print("[VENDOR COOLDOWN] Triggering immediate cooldown update after purchase")
+                self:updateCooldown()
+                -- Force immediate repaint
+                if IsValid(self.action) then
+                    self.action:InvalidateLayout(true)
+                end
+            end
+        end)
     end
 
     if IsValid(lia.gui.vendor) then
         lia.gui.vendor:buyItemFromVendor(item.uniqueID)
         clickEffects()
+    end
+end
+
+function PANEL:updateCooldown()
+    print("[VENDOR COOLDOWN] updateCooldown called, isSelling:", self.isSelling)
+    if not self.action or not self.item then
+        print("[VENDOR COOLDOWN] Early return: action=", self.action, "item=", self.item)
+        return
+    end
+    if self.isSelling then
+        print("[VENDOR COOLDOWN] Early return: isSelling=true (this is a sell panel)")
+        -- Explicitly clear any cooldown state for selling items
+        if self.action and self.action._hasCustomPaint then
+            print("[VENDOR COOLDOWN] Clearing cooldown state from sell panel")
+            if self._cooldownThinkAdded and self._cooldownHookName then
+                hook.Remove("Think", self._cooldownHookName)
+                self._cooldownThinkAdded = false
+                self._cooldownHookName = nil
+            end
+            -- Restore original Paint function
+            if self.action._originalPaint then
+                self.action.Paint = self.action._originalPaint
+            else
+                self.action.Paint = nil
+            end
+            self.action._hasCustomPaint = false
+            if self.action._originalCol then
+                self.action.col = self.action._originalCol
+                self.action._originalCol = nil
+            end
+            if self.action._originalColHov then
+                self.action.col_hov = self.action._originalColHov
+                self.action._originalColHov = nil
+            end
+            -- Ensure button is visible and has text
+            self.action:SetVisible(true)
+            self.action:SetText(L("sell"))
+            self.action.text = L("sell")
+            self.action:SetEnabled(true)
+            self.action:InvalidateLayout()
+        end
+        return
+    end
+    if not self.item.Cooldown or self.item.Cooldown <= 0 then
+        print("[VENDOR COOLDOWN] Early return: no cooldown, item.Cooldown=", self.item.Cooldown)
+        return
+    end
+
+    print("[VENDOR COOLDOWN] Item:", self.item.uniqueID, "Cooldown:", self.item.Cooldown)
+    local client = LocalPlayer()
+    local char = client:getChar()
+    local remainingTime = 0
+    local shouldShowCooldown = false
+
+    -- Check local tracking first (most reliable immediately after purchase)
+    if self.purchaseAttempted and self.purchaseAttemptTime then
+        print("[VENDOR COOLDOWN] Checking local purchase attempt")
+        local timeSinceAttempt = os.time() - self.purchaseAttemptTime
+        print("[VENDOR COOLDOWN] Time since attempt:", timeSinceAttempt, "Cooldown:", self.item.Cooldown)
+        if timeSinceAttempt < self.item.Cooldown then
+            remainingTime = math.max(0, math.ceil(self.item.Cooldown - timeSinceAttempt))
+            shouldShowCooldown = remainingTime > 0
+            print("[VENDOR COOLDOWN] Should show cooldown: TRUE (from local attempt), remaining:", remainingTime)
+        elseif timeSinceAttempt > self.item.Cooldown + 10 then
+            -- Clean up old attempts
+            self.purchaseAttempted = false
+            self.purchaseAttemptTime = nil
+        end
+    end
+
+    -- Calculate remaining cooldown time from character data (if local tracking didn't find anything)
+    if not shouldShowCooldown and char then
+        local cooldowns = char:getData("vendorCooldowns", {})
+        print("[VENDOR COOLDOWN] Character cooldowns type:", type(cooldowns))
+
+        local lastPurchase = 0
+        if istable(cooldowns) then
+            print("[VENDOR COOLDOWN] Character cooldowns (table):", util.TableToJSON(cooldowns))
+            lastPurchase = cooldowns[self.item.uniqueID] or 0
+        elseif isstring(cooldowns) then
+            print("[VENDOR COOLDOWN] Character cooldowns (string):", tostring(cooldowns))
+            -- Try to parse the string format: ['item1;timestamp1;item2;timestamp2;}
+            -- The format appears to be: item;hex_timestamp;item;hex_timestamp;
+            local itemPattern = self.item.uniqueID .. ";([^;]+);"
+            local hexTimestamp = string.match(cooldowns, itemPattern)
+            if hexTimestamp then
+                -- Try to parse hex timestamp (X prefix indicates hex)
+                if string.sub(hexTimestamp, 1, 1) == "X" then
+                    local hexValue = string.sub(hexTimestamp, 2)
+                    lastPurchase = tonumber(hexValue, 16) or 0
+                    print("[VENDOR COOLDOWN] Parsed hex timestamp:", hexValue, "->", lastPurchase)
+                else
+                    lastPurchase = tonumber(hexTimestamp) or 0
+                end
+            end
+        end
+
+        print("[VENDOR COOLDOWN] Last purchase for", self.item.uniqueID, ":", lastPurchase)
+        if lastPurchase > 0 then
+            local timeSincePurchase = os.time() - lastPurchase
+            print("[VENDOR COOLDOWN] Time since purchase:", timeSincePurchase, "Cooldown:", self.item.Cooldown)
+            remainingTime = math.max(0, math.ceil(self.item.Cooldown - timeSincePurchase))
+            print("[VENDOR COOLDOWN] Remaining time:", remainingTime)
+            if remainingTime > 0 then
+                shouldShowCooldown = true
+                print("[VENDOR COOLDOWN] Should show cooldown: TRUE (from char data)")
+            else
+                print("[VENDOR COOLDOWN] Should show cooldown: FALSE (cooldown expired)")
+            end
+        end
+    elseif not char then
+        print("[VENDOR COOLDOWN] No character!")
+    end
+
+    print("[VENDOR COOLDOWN] Final check - shouldShowCooldown:", shouldShowCooldown, "remainingTime:", remainingTime, "isSelling:", self.isSelling)
+    -- Only show cooldown for buying items, never for selling
+    if shouldShowCooldown and remainingTime > 0 and not self.isSelling then
+        print("[VENDOR COOLDOWN] SETTING COOLDOWN MODE! Remaining:", remainingTime, "seconds")
+        -- Format cooldown text with countdown - update every tick
+        local cooldownText = string.format("Cooldown: %ds", remainingTime)
+        self.action:SetText(cooldownText)
+        self.action.text = cooldownText -- liaButton uses custom text property
+        self.action:SetEnabled(false)
+        self.action.DoClick = function() end
+        -- Force text update and repaint - multiple methods to ensure it updates
+        self.action:InvalidateLayout()
+        self.action:SetText(cooldownText) -- Force update
+        self.action:InvalidateLayout(true) -- Force immediate layout update
+        if IsValid(self) then
+            self:InvalidateLayout()
+        end
+        -- Use liaButton paint style with cooldown colors
+        local adjustedColors = lia.color.returnMainAdjustedColors()
+        local negativeColor = adjustedColors.negative or Color(255, 100, 100)
+        -- Store original colors temporarily if not already stored
+        if not self.action._hasCustomPaint then
+            self.action._originalCol = self.action.col
+            self.action._originalColHov = self.action.col_hov
+        end
+
+        -- Set cooldown colors with less contrast
+        self.action.col = negativeColor
+        -- Create a subtle hover color that's slightly darker but still harmonious
+        self.action.col_hov = Color(math.Clamp(negativeColor.r * 0.85, 0, 255), math.Clamp(negativeColor.g * 0.85, 0, 255), math.Clamp(negativeColor.b * 0.85, 0, 255))
+        -- Custom paint that uses liaButton structure but with cooldown colors
+        -- Store reference to self for accessing item and cooldown data
+        local panelSelf = self
+        self.action.Paint = function(panel, w, h)
+            -- Recalculate remaining time every frame for real-time countdown
+            -- ONLY for buying items, never for selling items
+            if panelSelf and panelSelf.item and not panelSelf.isSelling and panelSelf.action._hasCustomPaint and panelSelf.item.Cooldown and panelSelf.item.Cooldown > 0 then
+                local paintRemainingTime = 0
+                local paintClient = LocalPlayer()
+                local paintChar = paintClient:getChar()
+
+                -- Check local tracking first
+                if panelSelf.purchaseAttempted and panelSelf.purchaseAttemptTime then
+                    local timeSinceAttempt = os.time() - panelSelf.purchaseAttemptTime
+                    if timeSinceAttempt < panelSelf.item.Cooldown then
+                        paintRemainingTime = math.max(0, math.ceil(panelSelf.item.Cooldown - timeSinceAttempt))
+                    end
+                end
+
+                -- Check character data if local tracking didn't find anything
+                if paintRemainingTime == 0 and paintChar then
+                    local cooldowns = paintChar:getData("vendorCooldowns", {})
+                    local lastPurchase = 0
+                    if istable(cooldowns) then
+                        lastPurchase = cooldowns[panelSelf.item.uniqueID] or 0
+                    elseif isstring(cooldowns) then
+                        local itemPattern = panelSelf.item.uniqueID .. ";([^;]+);"
+                        local hexTimestamp = string.match(cooldowns, itemPattern)
+                        local isHex = hexTimestamp and string.sub(hexTimestamp, 1, 1) == "X"
+                        local hexValue = hexTimestamp and (isHex and string.sub(hexTimestamp, 2) or hexTimestamp) or ""
+                        local base = isHex and 16 or 10
+                        lastPurchase = hexTimestamp and (tonumber(hexValue, base) or 0) or 0
+                    end
+
+                    if lastPurchase > 0 then
+                        local timeSincePurchase = os.time() - lastPurchase
+                        paintRemainingTime = math.max(0, math.ceil(panelSelf.item.Cooldown - timeSincePurchase))
+                    end
+                end
+
+                -- Update text every frame with current remaining time
+                if paintRemainingTime > 0 then
+                    local paintCooldownText = string.format("Cooldown: %ds", paintRemainingTime)
+                    panel.text = paintCooldownText
+                    panel:SetText(paintCooldownText)
+                end
+            end
+
+            local math_clamp = math.Clamp
+            if panel:IsHovered() then
+                panel.hover_status = math_clamp((panel.hover_status or 0) + 4 * FrameTime(), 0, 1)
+            else
+                panel.hover_status = math_clamp((panel.hover_status or 0) - 8 * FrameTime(), 0, 1)
+            end
+
+            local isActive = (panel:IsDown() or panel.Depressed) and (panel.hover_status or 0) > 0.8
+            if isActive then panel._activeShadowTimer = SysTime() + (panel._activeShadowMinTime or 0.03) end
+            local showActiveShadow = isActive or ((panel._activeShadowTimer or 0) > SysTime())
+            local activeTarget = showActiveShadow and 10 or 0
+            local activeSpeed = (activeTarget > 0) and 7 or 3
+            panel._activeShadowLerp = Lerp(FrameTime() * activeSpeed, panel._activeShadowLerp or 0, activeTarget)
+            if panel._activeShadowLerp > 0 then
+                local col = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, math.Clamp(panel.col_hov.a * 1.5, 0, 255))
+                draw.RoundedBox(panel.radius or 16, 0, 0, w, h, col)
+            end
+
+            draw.RoundedBox(panel.radius or 16, 0, 0, w, h, panel.col)
+            if panel.bool_gradient ~= false then
+                local shadowCol = (lia.color.theme and lia.color.theme.button_shadow) or Color(18, 32, 32, 35)
+                surface.SetDrawColor(shadowCol)
+                surface.SetMaterial(Material("vgui/gradient-d"))
+                surface.DrawTexturedRect(0, 0, w, h)
+            end
+
+            if panel.bool_hover ~= false and (panel.hover_status or 0) > 0 then
+                local hoverCol = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, (panel.hover_status or 0) * 255)
+                draw.RoundedBox(panel.radius or 16, 0, 0, w, h, hoverCol)
+            end
+
+            if panel.click_alpha and panel.click_alpha > 0 then
+                panel.click_alpha = math_clamp(panel.click_alpha - FrameTime() * (panel.ripple_speed or 4), 0, 1)
+                local ripple_size = (1 - panel.click_alpha) * math.max(w, h) * 2
+                local ripple_color = Color(255, 255, 255, 30 * panel.click_alpha)
+                draw.RoundedBox(ripple_size * 0.5, (panel.click_x or w / 2) - ripple_size * 0.5, (panel.click_y or h / 2) - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
+            end
+
+            local iconSize = panel.icon_size or 16
+            -- Always use panel.text for the button text (updated every tick by updateCooldown)
+            -- Get the latest text from panel.text which is updated every second
+            local displayText = panel.text or ""
+            -- If text is empty but we're in cooldown, try to get it from the panel's GetText
+            if displayText == "" then
+                displayText = panel:GetText() or ""
+            end
+            if displayText ~= "" then
+                draw.SimpleText(displayText, panel.font or "LiliaFont.16", w * 0.5 + (panel.icon and panel.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                if panel.icon and panel.icon ~= "" then
+                    surface.SetFont(panel.font or "LiliaFont.16")
+                    local textSize = surface.GetTextSize(displayText)
+                    local posX = (w - textSize - iconSize) * 0.5 - 2
+                    local posY = (h - iconSize) * 0.5
+                    surface.SetMaterial(panel.icon)
+                    surface.SetDrawColor(color_white)
+                    surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+                end
+            elseif panel.icon and panel.icon ~= "" then
+                local posX = (w - iconSize) * 0.5
+                local posY = (h - iconSize) * 0.5
+                surface.SetMaterial(panel.icon)
+                surface.SetDrawColor(color_white)
+                surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
+            end
+        end
+
+        self.action._hasCustomPaint = true
+        -- Add a Think hook to force updates every frame when in cooldown
+        if not self._cooldownThinkAdded then
+            self._cooldownThinkAdded = true
+            local hookName = "VendorCooldownUpdate_" .. tostring(self)
+            self._cooldownHookName = hookName
+            hook.Add("Think", hookName, function()
+                if not IsValid(self) or not IsValid(self.action) or not self.action._hasCustomPaint then
+                    hook.Remove("Think", hookName)
+                    if IsValid(self) then
+                        self._cooldownThinkAdded = false
+                        self._cooldownHookName = nil
+                    end
+                    return
+                end
+                -- Force a repaint every frame when in cooldown mode
+                self.action:InvalidateLayout()
+            end)
+        end
+        print("[VENDOR COOLDOWN] Cooldown mode set! Text:", cooldownText)
+    else
+        print("[VENDOR COOLDOWN] NOT in cooldown mode")
+        -- Cooldown expired or not active, restore normal state if it was in cooldown mode
+        if self.action._hasCustomPaint then
+            print("[VENDOR COOLDOWN] Restoring normal state")
+            -- Remove the Think hook
+            if self._cooldownThinkAdded and self._cooldownHookName then
+                hook.Remove("Think", self._cooldownHookName)
+                self._cooldownThinkAdded = false
+                self._cooldownHookName = nil
+            end
+            -- Restore original Paint function
+            if self.action._originalPaint then
+                self.action.Paint = self.action._originalPaint
+            else
+                self.action.Paint = nil
+            end
+            self.action._hasCustomPaint = false
+            -- Restore original colors if they were stored
+            if self.action._originalCol then
+                self.action.col = self.action._originalCol
+                self.action._originalCol = nil
+            end
+
+            if self.action._originalColHov then
+                self.action.col_hov = self.action._originalColHov
+                self.action._originalColHov = nil
+            end
+
+            -- Force a repaint
+            self.action:InvalidateLayout()
+        end
     end
 end
 
@@ -639,142 +986,90 @@ function PANEL:updateAction()
     end
 
     if IsValid(self.priceLabel) then self.priceLabel:SetText(priceText) end
-    -- Always enable button by default
-    local buttonText = self.isSelling and L("sell") or L("buy")
-    self.action:SetText(buttonText)
-    self.action.text = buttonText -- liaButton uses custom text property
-    self.action:SetEnabled(true)
+
+    -- Always ensure button is visible first
     self.action:SetVisible(true)
-    -- Remove custom paint if it was set for cooldown, restore default liaButton paint
-    if self.action._hasCustomPaint then
-        self.action.Paint = nil -- This will restore the default Paint from vgui.Register
-        self.action._hasCustomPaint = false
-        -- Restore original colors if they were stored
-        if self.action._originalCol then
-            self.action.col = self.action._originalCol
-            self.action._originalCol = nil
-        end
 
-        if self.action._originalColHov then
-            self.action.col_hov = self.action._originalColHov
-            self.action._originalColHov = nil
+    -- For selling items, ALWAYS set normal button state (never show cooldown)
+    if self.isSelling then
+        print("[VENDOR COOLDOWN] updateAction: Setting sell button state")
+        -- Clear any cooldown state FIRST before setting normal state
+        if self.action._hasCustomPaint then
+            print("[VENDOR COOLDOWN] updateAction: Clearing cooldown state from sell button")
+            if self._cooldownThinkAdded and self._cooldownHookName then
+                hook.Remove("Think", self._cooldownHookName)
+                self._cooldownThinkAdded = false
+                self._cooldownHookName = nil
+            end
+            -- Restore original Paint function
+            if self.action._originalPaint then
+                self.action.Paint = self.action._originalPaint
+            else
+                self.action.Paint = nil
+            end
+            self.action._hasCustomPaint = false
+            if self.action._originalCol then
+                self.action.col = self.action._originalCol
+                self.action._originalCol = nil
+            end
+            if self.action._originalColHov then
+                self.action.col_hov = self.action._originalColHov
+                self.action._originalColHov = nil
+            end
         end
-
-        -- Force a repaint
+        -- Now set normal button state
+        local buttonText = L("sell")
+        self.action:SetText(buttonText)
+        self.action.text = buttonText
+        self.action:SetEnabled(true)
+        self.action:SetVisible(true)
         self.action:InvalidateLayout()
-    end
-
-    self.action.DoClick = function()
-        if self.isSelling then
+        self.action.DoClick = function()
             self:sellItemToVendor()
-        else
-            self:buyItemFromVendor()
         end
+        print("[VENDOR COOLDOWN] updateAction: Sell button set, text:", buttonText, "visible:", self.action:IsVisible())
+        return -- Early return for selling items
     end
 
-    -- Only override for actual cooldown situations
-    if not self.isSelling and self.item.Cooldown and self.item.Cooldown > 0 then
-        local client = LocalPlayer()
-        local char = client:getChar()
-        local shouldShowCooldown = false
-        if char then
-            local cooldowns = char:getData("vendorCooldowns", {})
-            local lastPurchase = cooldowns[self.item.uniqueID] or 0
-            local timeSincePurchase = os.time() - lastPurchase
-            if timeSincePurchase < self.item.Cooldown then shouldShowCooldown = true end
-        end
+    -- For buying items, check if in cooldown mode
+    local isInCooldown = self.action._hasCustomPaint or false
 
-        -- Check local tracking for recent attempts
-        if not shouldShowCooldown and self.purchaseAttempted and self.purchaseAttemptTime then
-            local timeSinceAttempt = os.time() - self.purchaseAttemptTime
-            if timeSinceAttempt < 5 then
-                shouldShowCooldown = true
-            elseif timeSinceAttempt > 10 then
-                self.purchaseAttempted = false
-                self.purchaseAttemptTime = nil
+    -- Only set normal button state if not in cooldown mode
+    if not isInCooldown then
+        local buttonText = self.isSelling and L("sell") or L("buy")
+        self.action:SetText(buttonText)
+        self.action.text = buttonText -- liaButton uses custom text property
+        self.action:SetEnabled(true)
+        -- Remove custom paint if it was set for cooldown, restore default liaButton paint
+        if self.action._hasCustomPaint then
+            -- Restore original Paint function
+            if self.action._originalPaint then
+                self.action.Paint = self.action._originalPaint
+            else
+                self.action.Paint = nil
             end
-        end
-
-        if shouldShowCooldown then
-            local cooldownText = "In Cooldown"
-            self.action:SetText(cooldownText)
-            self.action.text = cooldownText -- liaButton uses custom text property
-            self.action:SetEnabled(false)
-            self.action.DoClick = function() end
-            -- Use liaButton paint style with cooldown colors
-            local adjustedColors = lia.color.returnMainAdjustedColors()
-            local negativeColor = adjustedColors.negative or Color(255, 100, 100)
-            -- Store original colors temporarily
-            local originalCol = self.action.col
-            local originalColHov = self.action.col_hov
-            -- Set cooldown colors with less contrast
-            self.action.col = negativeColor
-            -- Create a subtle hover color that's slightly darker but still harmonious
-            self.action.col_hov = Color(math.Clamp(negativeColor.r * 0.85, 0, 255), math.Clamp(negativeColor.g * 0.85, 0, 255), math.Clamp(negativeColor.b * 0.85, 0, 255))
-            -- Custom paint that uses liaButton structure but with cooldown colors
-            self.action.Paint = function(panel, w, h)
-                local math_clamp = math.Clamp
-                if panel:IsHovered() then
-                    panel.hover_status = math_clamp((panel.hover_status or 0) + 4 * FrameTime(), 0, 1)
-                else
-                    panel.hover_status = math_clamp((panel.hover_status or 0) - 8 * FrameTime(), 0, 1)
-                end
-
-                local isActive = (panel:IsDown() or panel.Depressed) and (panel.hover_status or 0) > 0.8
-                if isActive then panel._activeShadowTimer = SysTime() + (panel._activeShadowMinTime or 0.03) end
-                local showActiveShadow = isActive or ((panel._activeShadowTimer or 0) > SysTime())
-                local activeTarget = showActiveShadow and 10 or 0
-                local activeSpeed = (activeTarget > 0) and 7 or 3
-                panel._activeShadowLerp = Lerp(FrameTime() * activeSpeed, panel._activeShadowLerp or 0, activeTarget)
-                if panel._activeShadowLerp > 0 then
-                    local col = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, math.Clamp(panel.col_hov.a * 1.5, 0, 255))
-                    draw.RoundedBox(panel.radius or 16, 0, 0, w, h, col)
-                end
-
-                draw.RoundedBox(panel.radius or 16, 0, 0, w, h, panel.col)
-                if panel.bool_gradient ~= false then
-                    local shadowCol = (lia.color.theme and lia.color.theme.button_shadow) or Color(18, 32, 32, 35)
-                    surface.SetDrawColor(shadowCol)
-                    surface.SetMaterial(Material("vgui/gradient-d"))
-                    surface.DrawTexturedRect(0, 0, w, h)
-                end
-
-                if panel.bool_hover ~= false and (panel.hover_status or 0) > 0 then
-                    local hoverCol = Color(panel.col_hov.r, panel.col_hov.g, panel.col_hov.b, (panel.hover_status or 0) * 255)
-                    draw.RoundedBox(panel.radius or 16, 0, 0, w, h, hoverCol)
-                end
-
-                if panel.click_alpha and panel.click_alpha > 0 then
-                    panel.click_alpha = math_clamp(panel.click_alpha - FrameTime() * (panel.ripple_speed or 4), 0, 1)
-                    local ripple_size = (1 - panel.click_alpha) * math.max(w, h) * 2
-                    local ripple_color = Color(255, 255, 255, 30 * panel.click_alpha)
-                    draw.RoundedBox(ripple_size * 0.5, (panel.click_x or w / 2) - ripple_size * 0.5, (panel.click_y or h / 2) - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
-                end
-
-                local iconSize = panel.icon_size or 16
-                if panel.text and panel.text ~= "" then
-                    draw.SimpleText(panel.text, panel.font or "LiliaFont.16", w * 0.5 + (panel.icon and panel.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                    if panel.icon and panel.icon ~= "" then
-                        surface.SetFont(panel.font or "LiliaFont.16")
-                        local textSize = surface.GetTextSize(panel.text)
-                        local posX = (w - textSize - iconSize) * 0.5 - 2
-                        local posY = (h - iconSize) * 0.5
-                        surface.SetMaterial(panel.icon)
-                        surface.SetDrawColor(color_white)
-                        surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
-                    end
-                elseif panel.icon and panel.icon ~= "" then
-                    local posX = (w - iconSize) * 0.5
-                    local posY = (h - iconSize) * 0.5
-                    surface.SetMaterial(panel.icon)
-                    surface.SetDrawColor(color_white)
-                    surface.DrawTexturedRect(posX, posY, iconSize, iconSize)
-                end
+            self.action._hasCustomPaint = false
+            -- Restore original colors if they were stored
+            if self.action._originalCol then
+                self.action.col = self.action._originalCol
+                self.action._originalCol = nil
             end
 
-            self.action._hasCustomPaint = true
-            self.action._originalCol = originalCol
-            self.action._originalColHov = originalColHov
+            if self.action._originalColHov then
+                self.action.col_hov = self.action._originalColHov
+                self.action._originalColHov = nil
+            end
+
+            -- Force a repaint
+            self.action:InvalidateLayout()
+        end
+
+        self.action.DoClick = function()
+            if self.isSelling then
+                self:sellItemToVendor()
+            else
+                self:buyItemFromVendor()
+            end
         end
     end
 end
@@ -836,6 +1131,7 @@ function PANEL:setItemType(itemType)
 
     self:updateLabel()
     self:updateAction()
+    self:updateCooldown()
     local rarity = item.rarity or "Common"
     local nameColor = RarityColors[rarity] or color_white
     self.name:SetTextColor(nameColor)
@@ -845,6 +1141,7 @@ function PANEL:setIsSelling(isSelling)
     self.isSelling = isSelling
     self:updateLabel()
     self:updateAction()
+    self:updateCooldown()
 end
 
 function PANEL:updateLabel()
@@ -857,6 +1154,12 @@ end
 
 function PANEL:OnRemove()
     if self.cooldownTimer then timer.Remove(self.cooldownTimer) end
+    -- Remove Think hook if it exists
+    if self._cooldownThinkAdded and self._cooldownHookName then
+        hook.Remove("Think", self._cooldownHookName)
+        self._cooldownThinkAdded = false
+        self._cooldownHookName = nil
+    end
 end
 
 vgui.Register("liaVendorItem", PANEL, "DPanel")

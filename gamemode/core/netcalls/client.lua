@@ -502,7 +502,18 @@ net.Receive("liaStringRequest", function()
     end, default)
 end)
 
+-- Cache screen width to avoid repeated calls
+local cachedScrW = ScrW()
+local lastScrWCheck = 0
+
 local function OrganizeNotices()
+    -- Update cache only once per second
+    local now = CurTime()
+    if now - lastScrWCheck > 1 then
+        lastScrWCheck = now
+        cachedScrW = ScrW()
+    end
+    
     local baseY = 10
     local list = {}
     for _, n in ipairs(lia.notices) do
@@ -516,18 +527,27 @@ local function OrganizeNotices()
 
     local leftCount = #list > 3 and #list - 3 or 0
     for i, n in ipairs(list) do
-        local h = n:GetTall()
-        local x, y
-        if i <= leftCount then
-            x = 10
-            y = baseY + (i - 1) * (h + 5)
-        else
-            local idx = i - leftCount
-            x = ScrW() - n:GetWide() - 10
-            y = baseY + (idx - 1) * (h + 5)
-        end
+        if IsValid(n) then
+            local h = n:GetTall()
+            local x, y
+            if i <= leftCount then
+                x = 10
+                y = baseY + (i - 1) * (h + 5)
+            else
+                local idx = i - leftCount
+                x = cachedScrW - n:GetWide() - 10
+                y = baseY + (idx - 1) * (h + 5)
+            end
 
-        n:MoveTo(x, y, 0.15)
+            -- Only call MoveTo if position actually changed significantly
+            local currentX, currentY = n:GetPos()
+            if math.abs(currentX - x) > 2 or math.abs(currentY - y) > 2 then
+                n:MoveTo(x, y, 0.15)
+            else
+                -- Still set targetY for Think() function
+                n.targetY = y
+            end
+        end
     end
 end
 

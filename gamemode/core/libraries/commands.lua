@@ -1351,6 +1351,58 @@ if SERVER then
         lia.notices.notifySuccessLocalized("testNotificationSuccess")
     end)
 
+    lia.command.add("testnotifications", {
+        desc = "Test all notification types",
+        onRun = function(client, arguments)
+            -- Default notification
+            client:notify("This is a default notification")
+
+            -- Error notification
+            timer.Simple(0.5, function()
+                if IsValid(client) then
+                    client:notifyError("This is an error notification")
+                end
+            end)
+
+            -- Warning notification
+            timer.Simple(1.0, function()
+                if IsValid(client) then
+                    client:notifyWarning("This is a warning notification")
+                end
+            end)
+
+            -- Info notification
+            timer.Simple(1.5, function()
+                if IsValid(client) then
+                    client:notifyInfo("This is an info notification")
+                end
+            end)
+
+            -- Success notification
+            timer.Simple(2.0, function()
+                if IsValid(client) then
+                    client:notifySuccess("This is a success notification")
+                end
+            end)
+
+            -- Money notification
+            timer.Simple(2.5, function()
+                if IsValid(client) then
+                    client:notifyMoney("This is a money notification - You received $100!")
+                end
+            end)
+
+            -- Admin notification
+            timer.Simple(3.0, function()
+                if IsValid(client) then
+                    client:notifyAdmin("This is an admin notification")
+                end
+            end)
+
+            client:notifyInfo("All notification types will appear over the next few seconds...")
+        end
+    })
+
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
