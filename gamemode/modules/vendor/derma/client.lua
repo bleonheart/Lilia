@@ -636,10 +636,7 @@ function PANEL:buyItemFromVendor()
 end
 
 function PANEL:updateCooldown()
-    if not self.action or not self.item then
-        return
-    end
-
+    if not self.action or not self.item then return end
     if self.isSelling then
         if self.action and self.action._hasCustomPaint then
             if self._cooldownThinkAdded and self._cooldownHookName then
@@ -674,9 +671,7 @@ function PANEL:updateCooldown()
         return
     end
 
-    if not self.item.Cooldown or self.item.Cooldown <= 0 then
-        return
-    end
+    if not self.item.Cooldown or self.item.Cooldown <= 0 then return end
     local client = LocalPlayer()
     local char = client:getChar()
     local remainingTime = 0
@@ -713,11 +708,10 @@ function PANEL:updateCooldown()
         if lastPurchase > 0 then
             local timeSincePurchase = os.time() - lastPurchase
             remainingTime = math.max(0, math.ceil(self.item.Cooldown - timeSincePurchase))
-            if remainingTime > 0 then
-                shouldShowCooldown = true
-            end
+            if remainingTime > 0 then shouldShowCooldown = true end
         end
     end
+
     if shouldShowCooldown and remainingTime > 0 and not self.isSelling then
         local cooldownText = string.format("Cooldown: %ds", remainingTime)
         self.action:SetText(cooldownText)
