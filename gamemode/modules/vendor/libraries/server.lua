@@ -1,4 +1,4 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
+function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = vendor:getNetVar("name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
@@ -36,13 +36,12 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
     if not isSellingToVendor then
         local money = client:getChar():getMoney()
         if money < price then return false, L("canNotAfford") end
-        -- Check cooldown for buying items
         if item.Cooldown and item.Cooldown > 0 then
             local character = client:getChar()
             local cooldowns = character:getData("vendorCooldowns", {})
             local lastPurchase = cooldowns[itemType] or 0
-            if CurTime() - lastPurchase < item.Cooldown then
-                local remainingTime = math.ceil(item.Cooldown - (CurTime() - lastPurchase))
+            if os.time() - lastPurchase < item.Cooldown then
+                local remainingTime = math.ceil(item.Cooldown - (os.time() - lastPurchase))
                 return false, "vendorItemOnCooldown", remainingTime
             end
         end
@@ -149,7 +148,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
             local itemData = lia.item.list[itemType]
             if itemData and itemData.Cooldown and itemData.Cooldown > 0 then
                 local cooldowns = character:getData("vendorCooldowns", {})
-                cooldowns[itemType] = CurTime()
+                cooldowns[itemType] = os.time()
                 character:setData("vendorCooldowns", cooldowns)
             end
 
@@ -272,8 +271,8 @@ net.Receive("liaVendorTrade", function(_, client)
     local uniqueID = net.ReadString()
     local isSellingToVendor = net.ReadBool()
     if not client:getChar() or not client:getChar():getInv() then return end
-    if (client.liaVendorTry or 0) < CurTime() then
-        client.liaVendorTry = CurTime() + 0.1
+    if (client.liaVendorTry or 0) < os.time() then
+        client.liaVendorTry = os.time() + 0.1
     else
         return
     end

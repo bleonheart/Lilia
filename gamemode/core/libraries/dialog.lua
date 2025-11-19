@@ -332,13 +332,17 @@ if SERVER then
             local entry = {}
             if istable(info) then
                 for k, v in pairs(info) do
-                    entry[k] = deepCopy(v)
+                    if k == "options" and istable(v) then
+                        entry[k] = sanitizeConversationTable(v)
+                    elseif k ~= "options" then
+                        entry[k] = deepCopy(v)
+                    end
                 end
 
                 if entry.serverOnly then entry.Callback = nil end
                 entry.ShouldShow = nil
                 addResponseMetadata(entry, info)
-                if istable(entry.options) then entry.options = sanitizeConversationTable(entry.options) end
+                if info.options and istable(info.options) and not entry.options then entry.options = sanitizeConversationTable(info.options) end
                 out[label] = entry
             elseif not isfunction(info) then
                 entry = info
@@ -365,7 +369,11 @@ if SERVER then
             if shouldShow then
                 local entry = {}
                 for k, v in pairs(info) do
-                    entry[k] = deepCopy(v)
+                    if k == "GetOptions" and isfunction(v) then
+                        entry[k] = v
+                    else
+                        entry[k] = deepCopy(v)
+                    end
                 end
 
                 entry.ShouldShow = nil
@@ -860,11 +868,62 @@ if SERVER then
         end
 
         local filteredData = table.Copy(npcData)
-        if filteredData.Conversation then filteredData.Conversation = filterConversationOptions(filteredData.Conversation, client, npc) end
+        if filteredData.Conversation then
+            filteredData.Conversation = filterConversationOptions(filteredData.Conversation, client, npc)
+            for label, entry in pairs(filteredData.Conversation) do
+                if istable(entry) then
+                    if isfunction(entry.GetOptions) then
+                        local options = entry.GetOptions(client, npc)
+                        if istable(options) and table.Count(options) > 0 then
+                            local sanitizedOptions = {}
+                            for optLabel, optInfo in pairs(options) do
+                                if istable(optInfo) then
+                                    local responseText = optInfo.Response
+                                    if isfunction(responseText) then responseText = nil end
+                                    sanitizedOptions[optLabel] = {
+                                        serverOnly = optInfo.serverOnly or false,
+                                        Response = responseText or "",
+                                        vehicleID = optInfo.vehicleID,
+                                        closeDialog = optInfo.closeDialog or false,
+                                        keepOpen = optInfo.keepOpen,
+                                    }
+                                end
+                            end
+
+                            entry.options = sanitizedOptions
+                        end
+
+                        entry.GetOptions = nil
+                    end
+                end
+            end
+        end
+
         filteredData.UniqueID = npcID
         hook.Run("OnNPCTypeSet", client, npc, npcID, filteredData)
         if filteredData.Conversation then filteredData.Conversation = sanitizeConversationTable(filteredData.Conversation) end
-        filteredData = removeFunctions(filteredData)
+        local function safeRemoveFunctions(tbl, depth)
+            depth = depth or 0
+            if depth > 10 then return tbl end
+            if not istable(tbl) then return tbl end
+            local cleaned = {}
+            for k, v in pairs(tbl) do
+                if not isfunction(v) then
+                    if istable(v) then
+                        if k == "options" then
+                            cleaned[k] = v
+                        else
+                            cleaned[k] = safeRemoveFunctions(v, depth + 1)
+                        end
+                    else
+                        cleaned[k] = v
+                    end
+                end
+            end
+            return cleaned
+        end
+
+        filteredData = safeRemoveFunctions(filteredData)
         net.Start("liaOpenNpcDialog")
         net.WriteEntity(npc)
         net.WriteBool(client:hasPrivilege("canManageProperties"))

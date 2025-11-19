@@ -1,4 +1,4 @@
-﻿local sw, sh = ScrW(), ScrH()
+local sw, sh = ScrW(), ScrH()
 local COLS_MODE = 2
 local COLS_PRICE = 3
 local COLS_STOCK = 4
@@ -609,7 +609,7 @@ function PANEL:buyItemFromVendor()
     -- Mark as attempted purchase for cooldown tracking
     if item.Cooldown and item.Cooldown > 0 then
         self.purchaseAttempted = true
-        self.purchaseAttemptTime = CurTime()
+        self.purchaseAttemptTime = os.time()
     end
 
     if IsValid(lia.gui.vendor) then
@@ -680,13 +680,13 @@ function PANEL:updateAction()
         if char then
             local cooldowns = char:getData("vendorCooldowns", {})
             local lastPurchase = cooldowns[self.item.uniqueID] or 0
-            local timeSincePurchase = CurTime() - lastPurchase
+            local timeSincePurchase = os.time() - lastPurchase
             if timeSincePurchase < self.item.Cooldown then shouldShowCooldown = true end
         end
 
         -- Check local tracking for recent attempts
         if not shouldShowCooldown and self.purchaseAttempted and self.purchaseAttemptTime then
-            local timeSinceAttempt = CurTime() - self.purchaseAttemptTime
+            local timeSinceAttempt = os.time() - self.purchaseAttemptTime
             if timeSinceAttempt < 5 then
                 shouldShowCooldown = true
             elseif timeSinceAttempt > 10 then

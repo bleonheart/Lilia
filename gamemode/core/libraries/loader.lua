@@ -1286,7 +1286,7 @@ function lia.loader.initializeGamemode(isReload)
         if not isReload then hasInitializedModules = true end
     end
 
-    lia.config.load()
+    -- lia.config.load() -- Moved to run after database tables are loaded
     lia.faction.formatModelData()
     if SERVER then
         if isReload then
@@ -1298,9 +1298,7 @@ function lia.loader.initializeGamemode(isReload)
             timer.Create("liaReloadPlayerInteractSync", 3.5, 1, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
             timer.Create("liaReloadComplete", 5.0, 1, function() lia.reloadInProgress = false end)
         else
-            lia.config.send()
-            lia.administrator.sync()
-            lia.playerinteract.sync()
+            -- All sync operations now happen after respective data loading
         end
     end
 

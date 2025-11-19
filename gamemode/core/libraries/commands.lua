@@ -1171,7 +1171,17 @@ if SERVER then
 
         lia.db.wipeTables(function()
             lia.information(L("dbWiped"))
-            RunConsoleCommand("changelevel", game.GetMap())
+            -- Recreate tables immediately after wiping to prevent errors
+            lia.db.loadTables()
+            -- Wait for all data to be fully loaded before changing map
+            hook.Add("PostLoadData", "lia_wipedb_changemap", function()
+                hook.Remove("PostLoadData", "lia_wipedb_changemap")
+                -- Wait a bit longer to ensure all operations are fully complete
+                timer.Simple(2.5, function()
+                    lia.information("Database wipe complete. Changing map...")
+                    RunConsoleCommand("changelevel", game.GetMap())
+                end)
+            end)
         end)
     end)
 
@@ -1469,15 +1479,6 @@ else
             end
         end
 
-        print("[TestPanels] Total panels (including subpanels): " .. panelCount .. ", Visible: " .. visiblePanels)
-        for panelType, count in pairs(panelTypes) do
-            print("[TestPanels] " .. panelType .. ": " .. count)
-        end
-
-        print("[TestPanels] Hidden panels (including subpanels):")
-        for panelType, count in pairs(hiddenPanelTypes) do
-            print("[TestPanels] " .. panelType .. ": " .. count)
-        end
     end
 
     concommand.Add("lia_test_panels", function(_, _, args)
@@ -7782,5 +7783,36 @@ lia.command.add("forcerespawn", {
         client:notifySuccessLocalized("playerForceRespawned", target:Name())
         target:notifyLocalized("youWereForceRespawned")
         lia.log.add(client, "forceRespawn", target:Name())
+    end
+})
+
+lia.command.add("resetvendorcooldowns", {
+    desc = "Reset vendor cooldowns for a player",
+    privilege = "canEditVendors",
+    adminOnly = true,
+    arguments = {
+        {
+            name = "target",
+            type = "player",
+            description = "The player to reset cooldowns for"
+        }
+    },
+    onRun = function(client, arguments)
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not IsValid(target) then
+            client:notifyErrorLocalized("invalidTarget")
+            return
+        end
+
+        local character = target:getChar()
+        if not character then
+            client:notifyErrorLocalized("invalidTarget")
+            return
+        end
+
+        -- Clear vendor cooldowns
+        character:setData("vendorCooldowns", {})
+        client:notifyLocalized("vendorCooldownsReset", target:Name())
+        target:notifyLocalized("vendorCooldownsResetByAdmin")
     end
 })
