@@ -7890,7 +7890,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("forcerespawn", {
     desc = "forceRespawnDesc",
-    onRun = function(client, arguments)
+    onRun = function(client)
         if client:Alive() then
             client:notifyErrorLocalized("playerAlreadyAlive")
             return
