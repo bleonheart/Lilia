@@ -127,6 +127,12 @@ end
                 {type = "player", name = "target"},
                 {type = "string", name = "reason", optional = true}
             },
+            AdminStick = {
+                Name = "adminStickKickName",
+                Category = "moderation",
+                SubCategory = "adminStickSubCategoryBans",
+                Icon = "icon16/user_delete.png"
+            },
             onRun = function(client, arguments)
                 local target = arguments[1]
                 local reason = arguments[2] or "No reason provided"
@@ -2371,6 +2377,12 @@ lia.command.add("plyban", {
             type = "string"
         },
     },
+    AdminStick = {
+        Name = "adminStickBanName",
+        Category = "moderation",
+        SubCategory = "adminStickSubCategoryBans",
+        Icon = "icon16/lock.png"
+    },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("ban", arguments[1], arguments[2], arguments[3], client) end
 })
 
@@ -2387,6 +2399,12 @@ lia.command.add("plykick", {
             type = "string",
             optional = true
         },
+    },
+    AdminStick = {
+        Name = "adminStickKickPlayerName",
+        Category = "moderation",
+        SubCategory = "adminStickSubCategoryBans",
+        Icon = "icon16/user_delete.png"
     },
     onRun = function(client, arguments) lia.administrator.serverExecCommand("kick", arguments[1], nil, arguments[2], client) end
 })
@@ -7768,7 +7786,8 @@ lia.command.add("npcchangetype", {
     end
 })
 
-lia.command.add("forcerespawn", {
+-- Command for admins to respawn a specified player (even if they are alive or dead)
+lia.command.add("plyrespawn", {
     adminOnly = true,
     arguments = {
         {
@@ -7776,7 +7795,7 @@ lia.command.add("forcerespawn", {
             type = "player"
         }
     },
-    desc = "forceRespawnDesc",
+    desc = "plyRespawnDesc",
     onRun = function(client, arguments)
         local target = arguments[1]
         if not IsValid(target) then
@@ -7784,15 +7803,34 @@ lia.command.add("forcerespawn", {
             return
         end
 
-        if target:Alive() then
+        target:Spawn()
+        client:notifySuccessLocalized("playerForceRespawned", target:Name())
+        target:notifyLocalized("youWereForceRespawned")
+        lia.log.add(client, "plyrespawn", target:Name())
+    end
+})
+
+lia.command.add("forcerespawn", {
+    desc = "forceRespawnDesc",
+    onRun = function(client, arguments)
+        if client:Alive() then
             client:notifyErrorLocalized("playerAlreadyAlive")
             return
         end
 
-        target:Spawn()
-        client:notifySuccessLocalized("playerForceRespawned", target:Name())
-        target:notifyLocalized("youWereForceRespawned")
-        lia.log.add(client, "forceRespawn", target:Name())
+        local baseTime = lia.config.get("SpawnTime", 5)
+        baseTime = hook.Run("OverrideSpawnTime", client, baseTime) or baseTime
+        local lastDeath = client:getNetVar("lastDeathTime", os.time())
+        local timePassed = os.time() - lastDeath
+        if timePassed < baseTime then
+            client:notifyErrorLocalized("cannotRespawnYet", baseTime - timePassed)
+            return
+        end
+
+        client:Spawn()
+        client:notifySuccessLocalized("playerForceRespawned", client:Name())
+        client:notifyLocalized("youWereForceRespawned")
+        lia.log.add(client, "forcerespawn", client:Name())
     end
 })
 

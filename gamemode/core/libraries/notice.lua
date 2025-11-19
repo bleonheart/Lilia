@@ -558,27 +558,29 @@ end
     end
     ```
 ]]
-local cachedScrH = ScrH()
-local cachedScale = cachedScrH / 1080
-local lastScrHCheck = 0
-function OrganizeNotices()
-    local now = CurTime()
-    if now - lastScrHCheck > 1 then
-        lastScrHCheck = now
-        local newScrH = ScrH()
-        if newScrH ~= cachedScrH then
-            cachedScrH = newScrH
-            cachedScale = cachedScrH / 1080
+if CLIENT then
+    local cachedScrH = ScrH()
+    local cachedScale = cachedScrH / 1080
+    local lastScrHCheck = 0
+    function OrganizeNotices()
+        local now = CurTime()
+        if now - lastScrHCheck > 1 then
+            lastScrHCheck = now
+            local newScrH = ScrH()
+            if newScrH ~= cachedScrH then
+                cachedScrH = newScrH
+                cachedScale = cachedScrH / 1080
+            end
         end
-    end
 
-    local baseY = cachedScrH - 200 * cachedScale
-    local spacing = 4 * cachedScale
-    local y = baseY
-    for _, v in ipairs(lia.notices) do
-        if IsValid(v) then
-            v.targetY = y
-            y = y - (v:GetTall() + spacing)
+        local baseY = cachedScrH - 200 * cachedScale
+        local spacing = 4 * cachedScale
+        local y = baseY
+        for _, v in ipairs(lia.notices) do
+            if IsValid(v) then
+                v.targetY = y
+                y = y - (v:GetTall() + spacing)
+            end
         end
     end
 end
