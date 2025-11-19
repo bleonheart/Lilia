@@ -928,7 +928,6 @@ LANGUAGE = {
     plyFreezeDesc = "Friert einen Spieler fr eine optionale Dauer ein.",
     plyUnfreezeDesc = "Enteist einen Spieler.",
     plySlayDesc = "Ttet einen Spieler sofort.",
-    plyRespawnDesc = "Lsst einen Spieler respawnen.",
     plyBlindDesc = "Blendet einen Spieler mit einem schwarzen Bildschirm.",
     plyUnblindDesc = "Entfernt die Blindheit eines Spielers.",
     plyBlindFadeDesc = "Blendet den Bildschirm eines Spielers auf eine Farbe aus.",

@@ -913,7 +913,6 @@ LANGUAGE = {
     plyFreezeDesc = "Congela a un jugador por una duracin opcional.",
     plyUnfreezeDesc = "Descongela a un jugador.",
     plySlayDesc = "Mata instantneamente a un jugador.",
-    plyRespawnDesc = "Reaparece a un jugador.",
     plyBlindDesc = "Ciega a un jugador con una pantalla negra.",
     plyUnblindDesc = "Quita la ceguera de un jugador.",
     plyBlindFadeDesc = "Desvanece la pantalla de un jugador a un color.",

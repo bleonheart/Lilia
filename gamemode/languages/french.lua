@@ -957,7 +957,6 @@ LANGUAGE = {
     plyFreezeDesc = "Gle un joueur pour une dure optionnelle.",
     plyUnfreezeDesc = "Dgle un joueur.",
     plySlayDesc = "Tue instantanment un joueur.",
-    plyRespawnDesc = "Fait rapparatre un joueur.",
     plyBlindDesc = "Rend un joueur aveugle avec un cran noir.",
     plyUnblindDesc = "Rend la vue  un joueur.",
     plyBlindFadeDesc = "Fait fondre l'cran d'un joueur vers une couleur.",

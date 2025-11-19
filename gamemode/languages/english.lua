@@ -1002,7 +1002,6 @@ LANGUAGE = {
     plyFreezeDesc = "Freeze a player for an optional duration.",
     plyUnfreezeDesc = "Unfreeze a player.",
     plySlayDesc = "Slay a player instantly.",
-    plyRespawnDesc = "Respawn a player.",
     plyBlindDesc = "Blind a player with a black screen.",
     plyUnblindDesc = "Remove blindness from a player.",
     plyBlindFadeDesc = "Fade a player's screen to a color.",

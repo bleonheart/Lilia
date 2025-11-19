@@ -917,7 +917,6 @@ LANGUAGE = {
     plyFreezeDesc = "Congela um jogador por uma durao opcional.",
     plyUnfreezeDesc = "Descongela um jogador.",
     plySlayDesc = "Mata um jogador instantaneamente.",
-    plyRespawnDesc = "Renasce um jogador.",
     plyBlindDesc = "Cega um jogador com um ecr preto.",
     plyUnblindDesc = "Remove a cegueira de um jogador.",
     plyBlindFadeDesc = "Faz fade do ecr de um jogador para uma cor.",
