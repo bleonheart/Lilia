@@ -368,7 +368,6 @@ function PANEL:AddDialogOptions(options, npc)
             end
 
             if isBack and info.Callback and not info.serverOnly then
-                -- Execute callback immediately for Back/Return button before HandleResponse
                 info.Callback(ply, npc)
                 return
             end

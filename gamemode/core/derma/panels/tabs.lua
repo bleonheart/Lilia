@@ -121,7 +121,6 @@ end
 
 function PANEL:Rebuild()
     self.panel_tabs:Clear()
-    -- Don't set needs_navigation here - let PerformLayout determine it based on actual width
     if self.tab_style == "modern" then
         local tabWidths = {}
         local baseMargin = 6
@@ -211,7 +210,6 @@ function PANEL:PerformLayout()
         self.panel_tabs:DockMargin(0, 0, 0, 4)
         self.panel_tabs:SetTall(self.tab_height)
         if #self.tabs > 0 then
-            -- Calculate total width needed for all tabs at base width
             local totalMinRequiredWidth = 0
             for i = 1, #self.tabs do
                 totalMinRequiredWidth = totalMinRequiredWidth + (self._tabWidths[i] or 80)
@@ -219,34 +217,24 @@ function PANEL:PerformLayout()
 
             local totalMarginsForAll = self._baseMargin * (#self.tabs - 1)
             local totalWidthNeeded = totalMinRequiredWidth + totalMarginsForAll
-
-            -- Determine if navigation is needed
             local needsNavigation = totalWidthNeeded > self:GetWide()
-
-            -- Update navigation state if it changed
             if needsNavigation ~= self.needs_navigation then
                 self.needs_navigation = needsNavigation
                 self:CreateNavigationButtons()
             end
 
-            -- Calculate available width accounting for navigation buttons
             local navButtonWidth = (needsNavigation and self.nav_button_size * 2) or 0
             local availableWidth = math.max(self:GetWide() - navButtonWidth, 0)
-
-            -- Determine visible tab range
             local maxVisibleTabs = needsNavigation and self.max_visible_tabs or #self.tabs
             local visibleTabs = math.min(maxVisibleTabs, math.max(#self.tabs - self.scroll_offset, 0))
             local startIndex = self.scroll_offset + 1
             local endIndex = math.min(self.scroll_offset + visibleTabs, #self.tabs)
-
-            -- Get tab children (excluding navigation buttons)
             local children = self.panel_tabs:GetChildren()
             local tab_children = {}
             for _, child in ipairs(children) do
                 if child ~= self.btn_left and child ~= self.btn_right then table.insert(tab_children, child) end
             end
 
-            -- Calculate space distribution for visible tabs
             local visibleMargins = self._baseMargin * (visibleTabs - 1)
             local visibleMinWidth = 0
             for i = startIndex, endIndex do
@@ -255,16 +243,11 @@ function PANEL:PerformLayout()
 
             local visibleAvailable = math.max(availableWidth - visibleMargins, 0)
             local visibleExtraSpace = visibleAvailable - visibleMinWidth
-
-            -- Set widths and visibility for all tabs
             for i, child in ipairs(tab_children) do
                 local baseWidth = self._tabWidths[i] or 80
                 local finalWidth = baseWidth
-
                 if i >= startIndex and i <= endIndex then
-                    -- This tab is visible
                     if visibleExtraSpace > 0 then
-                        -- Distribute extra space among visible tabs
                         local extraPerVisibleTab = math.floor(visibleExtraSpace / visibleTabs)
                         local remainder = visibleExtraSpace % visibleTabs
                         local slotIndex = i - self.scroll_offset
@@ -275,7 +258,6 @@ function PANEL:PerformLayout()
                     local slotIndex = i - self.scroll_offset
                     child:DockMargin(0, 0, (slotIndex < visibleTabs) and self._baseMargin or 0, 0)
                 else
-                    -- This tab is not visible
                     child:SetVisible(false)
                 end
 

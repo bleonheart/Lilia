@@ -2412,5 +2412,4 @@ else
     end)
 end
 
--- Sync admin data to clients after it's loaded from database
 hook.Add("OnAdminSystemLoaded", "liaAdminSyncAfterLoad", function() lia.administrator.sync() end)

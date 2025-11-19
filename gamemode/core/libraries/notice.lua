@@ -558,13 +558,10 @@ end
     end
     ```
 ]]
--- Cache screen dimensions to avoid repeated calls
 local cachedScrH = ScrH()
 local cachedScale = cachedScrH / 1080
 local lastScrHCheck = 0
-
 function OrganizeNotices()
-    -- Update cache only once per second
     local now = CurTime()
     if now - lastScrHCheck > 1 then
         lastScrHCheck = now

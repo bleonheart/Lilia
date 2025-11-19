@@ -1171,12 +1171,9 @@ if SERVER then
 
         lia.db.wipeTables(function()
             lia.information(L("dbWiped"))
-            -- Recreate tables immediately after wiping to prevent errors
             lia.db.loadTables()
-            -- Wait for all data to be fully loaded before changing map
             hook.Add("PostLoadData", "lia_wipedb_changemap", function()
                 hook.Remove("PostLoadData", "lia_wipedb_changemap")
-                -- Wait a bit longer to ensure all operations are fully complete
                 timer.Simple(2.5, function()
                     lia.information("Database wipe complete. Changing map...")
                     RunConsoleCommand("changelevel", game.GetMap())
@@ -1354,51 +1351,13 @@ if SERVER then
     lia.command.add("testnotifications", {
         desc = "Test all notification types",
         onRun = function(client, arguments)
-            -- Default notification
             client:notify("This is a default notification")
-
-            -- Error notification
-            timer.Simple(0.5, function()
-                if IsValid(client) then
-                    client:notifyError("This is an error notification")
-                end
-            end)
-
-            -- Warning notification
-            timer.Simple(1.0, function()
-                if IsValid(client) then
-                    client:notifyWarning("This is a warning notification")
-                end
-            end)
-
-            -- Info notification
-            timer.Simple(1.5, function()
-                if IsValid(client) then
-                    client:notifyInfo("This is an info notification")
-                end
-            end)
-
-            -- Success notification
-            timer.Simple(2.0, function()
-                if IsValid(client) then
-                    client:notifySuccess("This is a success notification")
-                end
-            end)
-
-            -- Money notification
-            timer.Simple(2.5, function()
-                if IsValid(client) then
-                    client:notifyMoney("This is a money notification - You received $100!")
-                end
-            end)
-
-            -- Admin notification
-            timer.Simple(3.0, function()
-                if IsValid(client) then
-                    client:notifyAdmin("This is an admin notification")
-                end
-            end)
-
+            timer.Simple(0.5, function() if IsValid(client) then client:notifyError("This is an error notification") end end)
+            timer.Simple(1.0, function() if IsValid(client) then client:notifyWarning("This is a warning notification") end end)
+            timer.Simple(1.5, function() if IsValid(client) then client:notifyInfo("This is an info notification") end end)
+            timer.Simple(2.0, function() if IsValid(client) then client:notifySuccess("This is a success notification") end end)
+            timer.Simple(2.5, function() if IsValid(client) then client:notifyMoney("This is a money notification - You received $100!") end end)
+            timer.Simple(3.0, function() if IsValid(client) then client:notifyAdmin("This is an admin notification") end end)
             client:notifyInfo("All notification types will appear over the next few seconds...")
         end
     })
@@ -1530,7 +1489,6 @@ else
                 LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
             end
         end
-
     end
 
     concommand.Add("lia_test_panels", function(_, _, args)
@@ -7862,7 +7820,6 @@ lia.command.add("resetvendorcooldowns", {
             return
         end
 
-        -- Clear vendor cooldowns
         character:setData("vendorCooldowns", {})
         client:notifyLocalized("vendorCooldownsReset", target:Name())
         target:notifyLocalized("vendorCooldownsResetByAdmin")

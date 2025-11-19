@@ -76,15 +76,9 @@ function PANEL:SetType(t)
     self.ntype = NotifColors[t] and t or "default"
 end
 
-
 function PANEL:Think()
-    -- Cache screen height check - only check when needed
-    if not self._lastScrH then
-        self._lastScrH = ScrH()
-    end
-
+    if not self._lastScrH then self._lastScrH = ScrH() end
     local elapsed = CurTime() - self.startTime
-
     if elapsed > NotificationLifetime then
         local fadeProgress = math.Clamp((elapsed - NotificationLifetime) / NotificationFadeoutTime, 0, 1)
         self.alpha = Lerp(fadeProgress, 255, 0)
@@ -112,31 +106,15 @@ function PANEL:Think()
 end
 
 function PANEL:Paint(w, h)
-    -- Cache expensive operations
-    if not self._cachedTypeColor then
-        self._cachedTypeColor = NotifColors[self.ntype] or NotifColors.default
-    end
-
-    if not self._cachedIcon then
-        self._cachedIcon = GetNotifIcon(self.ntype)
-    end
-
+    if not self._cachedTypeColor then self._cachedTypeColor = NotifColors[self.ntype] or NotifColors.default end
+    if not self._cachedIcon then self._cachedIcon = GetNotifIcon(self.ntype) end
     local typeColor = self._cachedTypeColor
     local icon = self._cachedIcon
     local alpha = self.alpha / 255
-
-    -- Main background
     lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(40, 40, 40, math.floor(200 * alpha))):Draw()
-
-    -- Left border
     lia.derma.rect(0, 0, 4, h):Rad(8):Color(Color(typeColor.r, typeColor.g, typeColor.b, math.floor(255 * alpha))):Draw()
-
-    -- Colored overlay
     lia.derma.rect(4, 0, w - 4, h):Rad(8):Color(Color(typeColor.r * 0.2, typeColor.g * 0.2, typeColor.b * 0.2, math.floor(150 * alpha))):Draw()
-
-    -- Outline
     lia.derma.rect(0, 0, w, h):Rad(8):Outline(1):Color(Color(0, 0, 0, math.floor(100 * alpha))):Draw()
-
     if icon then
         surface.SetMaterial(icon)
         surface.SetDrawColor(255, 255, 255, self.alpha)
