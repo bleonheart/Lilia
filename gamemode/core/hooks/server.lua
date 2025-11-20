@@ -158,10 +158,14 @@ function GM:CharLoaded(id)
         local client = character:getPlayer()
         if IsValid(client) then
             local uniqueID = "liaSaveChar" .. client:SteamID64()
-            timer.Create(uniqueID, lia.config.get("CharacterDataSaveInterval"), 0, function()
+            local saveInterval = lia.config.get("CharacterDataSaveInterval")
+            print("[DEBUG] CharLoaded: Setting up auto-save timer for", client:Name(), "Interval:", saveInterval, "seconds")
+            timer.Create(uniqueID, saveInterval, 0, function()
                 if IsValid(client) and client:getChar() then
+                    print("[DEBUG] Auto-save: Saving character for", client:Name())
                     client:getChar():save()
                 else
+                    print("[DEBUG] Auto-save: Removing timer for", client:Name(), "- client/char invalid")
                     timer.Remove(uniqueID)
                 end
             end)
@@ -814,7 +818,9 @@ function GM:LoadData()
                 end
 
                 createdEnt:Activate()
-                hook.Run("OnEntityLoaded", createdEnt, ent.data)
+                -- Pass the full entity data structure, not just ent.data
+                -- OnEntityLoaded expects data.data to contain the custom data
+                hook.Run("OnEntityLoaded", createdEnt, ent)
             until true
         end
     end)
@@ -914,6 +920,13 @@ end
 
 function GM:UpdateEntityPersistence(ent)
     if not IsValid(ent) or not ent.IsPersistent then return end
+    print("[DEBUG SERVER] UpdateEntityPersistence - Called for entity:", ent:GetClass())
+    if ent:GetClass() == "lia_npc" then
+        print("[DEBUG SERVER] UpdateEntityPersistence - NPC model:", ent:GetModel())
+        print("[DEBUG SERVER] UpdateEntityPersistence - NPC customData:", ent.customData)
+        if ent.customData then print("[DEBUG SERVER] UpdateEntityPersistence - customData.model:", ent.customData.model) end
+    end
+
     local saved = lia.data.getPersistence()
     local key = makeKey(ent)
     for _, data in ipairs(saved) do
@@ -922,11 +935,14 @@ function GM:UpdateEntityPersistence(ent)
             data.class = ent:GetClass()
             data.model = ent:GetModel()
             data.angles = ent:GetAngles()
+            print("[DEBUG SERVER] UpdateEntityPersistence - Setting data.model to:", data.model)
             local extra = hook.Run("GetEntitySaveData", ent)
             if extra ~= nil then
                 data.data = extra
+                print("[DEBUG SERVER] UpdateEntityPersistence - Saved data.data:", table.ToString(extra, "Saved Data", true))
             else
                 data.data = nil
+                print("[DEBUG SERVER] UpdateEntityPersistence - GetEntitySaveData returned nil")
             end
 
             lia.data.savePersistence(saved)
@@ -934,6 +950,8 @@ function GM:UpdateEntityPersistence(ent)
             return
         end
     end
+
+    print("[DEBUG SERVER] UpdateEntityPersistence - No matching entity found in persistence data")
 end
 
 function GM:EntityRemoved(ent)
@@ -1074,18 +1092,44 @@ function GM:GetEntitySaveData(ent)
             npcName = ent.NPCName or ""
         }
 
-        if ent.customData then saveData.customData = ent.customData end
+        if ent.customData then
+            saveData.customData = ent.customData
+            print("[DEBUG SERVER] GetEntitySaveData - saving customData:", table.ToString(ent.customData, "SaveData CustomData", true))
+            print("[DEBUG SERVER] GetEntitySaveData - customData.model:", ent.customData.model)
+        else
+            print("[DEBUG SERVER] GetEntitySaveData - ent.customData is nil!")
+        end
+
+        print("[DEBUG SERVER] GetEntitySaveData - NPC model at save time:", ent:GetModel())
         return saveData
     end
 end
 
 function GM:OnEntityLoaded(ent, data)
     if ent:GetClass() == "lia_npc" and data and data.uniqueID and data.uniqueID ~= "" then
+        print("[DEBUG SERVER] OnEntityLoaded - Loading NPC with uniqueID:", data.uniqueID)
+        print("[DEBUG SERVER] OnEntityLoaded - data.data:", data.data)
+        print("[DEBUG SERVER] OnEntityLoaded - data.data.customData:", data.data and data.data.customData)
+        if data.data and data.data.customData then
+            print("[DEBUG SERVER] OnEntityLoaded - customData.model:", data.data.customData.model)
+        end
+
         ent.uniqueID = data.uniqueID
         ent.NPCName = data.npcName or "NPC"
         local npcData = lia.dialog.getNPCData(data.uniqueID)
+
+        -- Check if we have customData FIRST before setting default model
+        local hasCustomModel = data.data and data.data.customData and data.data.customData.model and data.data.customData.model ~= ""
+
         if npcData then
-            ent:SetModel("models/Barney.mdl")
+            -- Only set default model if we don't have a custom model
+            if not hasCustomModel then
+                print("[DEBUG SERVER] OnEntityLoaded - No custom model found, setting default model")
+                ent:SetModel("models/Barney.mdl")
+            else
+                print("[DEBUG SERVER] OnEntityLoaded - Custom model found, skipping default model")
+            end
+
             if npcData.BodyGroups and istable(npcData.BodyGroups) then
                 for bodygroup, value in pairs(npcData.BodyGroups) do
                     local bgIndex = ent:FindBodygroupByName(bodygroup)
@@ -1097,15 +1141,27 @@ function GM:OnEntityLoaded(ent, data)
         end
 
         if data.data and data.data.customData and istable(data.data.customData) then
+            print("[DEBUG SERVER] OnEntityLoaded - Applying customData")
             ent.customData = data.data.customData
-            if data.data.customData.name and data.data.customData.name ~= "" then ent.NPCName = data.data.customData.name end
-            if data.data.customData.model and data.data.customData.model ~= "" then ent:SetModel(data.data.customData.model) end
+            if data.data.customData.name and data.data.customData.name ~= "" then
+                ent.NPCName = data.data.customData.name
+                print("[DEBUG SERVER] OnEntityLoaded - Set NPC name to:", ent.NPCName)
+            end
+            if data.data.customData.model and data.data.customData.model ~= "" then
+                print("[DEBUG SERVER] OnEntityLoaded - Setting custom model to:", data.data.customData.model)
+                ent:SetModel(data.data.customData.model)
+                print("[DEBUG SERVER] OnEntityLoaded - Model after setting:", ent:GetModel())
+            else
+                print("[DEBUG SERVER] OnEntityLoaded - No custom model in customData")
+            end
             if data.data.customData.skin then ent:SetSkin(tonumber(data.data.customData.skin) or 0) end
             if data.data.customData.bodygroups and istable(data.data.customData.bodygroups) then
                 for bodygroupIndex, value in pairs(data.data.customData.bodygroups) do
                     ent:SetBodygroup(tonumber(bodygroupIndex) or 0, tonumber(value) or 0)
                 end
             end
+        else
+            print("[DEBUG SERVER] OnEntityLoaded - No customData found in data.data")
         end
 
         if data.data and data.data.customData and data.data.customData.animation and data.data.customData.animation ~= "auto" then ent.customAnimation = data.data.customData.animation end

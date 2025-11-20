@@ -1392,6 +1392,7 @@ else
         dialogTypeLabel:SetTall(20)
         dialogTypeLabel:DockMargin(0, 15, 0, 5)
         local currentType = npc:getNetVar("uniqueID", npc.uniqueID) or "none"
+        local selectedDialogType = currentType
         local dialogTypeCombo = vgui.Create("liaComboBox", scroll)
         dialogTypeCombo:Dock(TOP)
         dialogTypeCombo:SetTall(30)
@@ -1412,12 +1413,16 @@ else
         applyBtn:DockMargin(0, 5, 0, 10)
         applyBtn.DoClick = function()
             local nameValue = nameEntry:GetValue() or ""
+            local modelValue = modelEntry:GetValue() or ""
+            print("[DEBUG CLIENT] Model entry value:", modelValue)
+            print("[DEBUG CLIENT] Model entry is valid:", IsValid(modelEntry))
             local customData = {
                 name = string.Trim(nameValue),
-                model = modelEntry:GetValue(),
+                model = modelValue,
                 bodygroups = {}
             }
 
+            print("[DEBUG CLIENT] customData.model before sending:", customData.model)
             if skinEntry and hasSkins then customData.skin = skinEntry:GetValue() end
             if hasBodygroups then
                 for i, slider in pairs(bodygroupControls) do
@@ -1426,6 +1431,7 @@ else
             end
 
             if hasAnimations and animationCombo then customData.animation = selectedAnimation end
+            print("[DEBUG CLIENT] Full customData being sent:", table.ToString(customData, "Client CustomData", true))
             lia.dialog.submitConfiguration(configID, npc, customData)
             if selectedDialogType ~= currentType then
                 lia.dialog.submitConfiguration("dialog_type", npc, {
@@ -1586,6 +1592,11 @@ if SERVER then
         onApply = function(ply, npc, customData)
             if not IsValid(npc) then return end
             customData = istable(customData) and customData or {}
+            print("[DEBUG SERVER] NPC customization received. NPC:", npc)
+            print("[DEBUG SERVER] CustomData received:", table.ToString(customData, "CustomData", true))
+            print("[DEBUG SERVER] customData.model value:", customData.model)
+            print("[DEBUG SERVER] customData.model type:", type(customData.model))
+            print("[DEBUG SERVER] customData.model empty check:", customData.model == "" or customData.model == nil)
             if customData.name then
                 local trimmedName = string.Trim(customData.name)
                 if trimmedName ~= "" then
@@ -1595,7 +1606,19 @@ if SERVER then
                 end
             end
 
-            if customData.model and customData.model ~= "" then npc:SetModel(customData.model) end
+            if customData.model and customData.model ~= "" then
+                print("[DEBUG SERVER] Setting NPC model to:", customData.model)
+                local oldModel = npc:GetModel()
+                print("[DEBUG SERVER] NPC old model:", oldModel)
+                npc:SetModel(customData.model)
+                local newModel = npc:GetModel()
+                print("[DEBUG SERVER] NPC model after setting:", newModel)
+                print("[DEBUG SERVER] Model change successful:", newModel == customData.model)
+            else
+                print("[DEBUG SERVER] No model in customData or model is empty")
+                print("[DEBUG SERVER] customData.model is:", customData.model)
+            end
+
             if customData.skin then npc:SetSkin(tonumber(customData.skin) or 0) end
             if customData.bodygroups and istable(customData.bodygroups) then
                 for bodygroupIndex, value in pairs(customData.bodygroups) do
@@ -1629,10 +1652,15 @@ if SERVER then
 
             npc:setAnim()
             npc.customData = customData
+            print("[DEBUG SERVER] Final NPC customData before saving:", table.ToString(npc.customData, "Final CustomData", true))
+            print("[DEBUG SERVER] npc.customData.model:", npc.customData.model)
             if not npc.NPCName or npc.NPCName == "" then npc.NPCName = "NPC" end
             npc:setNetVar("NPCName", npc.NPCName)
+            print("[DEBUG SERVER] Calling UpdateEntityPersistence for NPC")
+            print("[DEBUG SERVER] NPC model at persistence time:", npc:GetModel())
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")
+            print("[DEBUG SERVER] NPC customization complete. Final model:", npc:GetModel())
             ply:notifySuccess("NPC customized successfully!")
         end
     })
