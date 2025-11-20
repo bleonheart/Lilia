@@ -912,17 +912,6 @@ function lia.data.savePersistence(entities)
     end):next(function()
         local rows = {}
         for _, ent in ipairs(entities) do
-            if ent.class == "lia_npc" then
-                print("[DEBUG SERVER] savePersistence - Saving NPC entity")
-                print("[DEBUG SERVER] savePersistence - ent.data:", ent.data)
-                if ent.data then
-                    print("[DEBUG SERVER] savePersistence - ent.data.customData:", ent.data.customData)
-                    if ent.data.customData then
-                        print("[DEBUG SERVER] savePersistence - ent.data.customData.model:", ent.data.customData.model)
-                    end
-                end
-            end
-            
             local row = {
                 gamemode = gamemode,
                 map = map,
@@ -933,14 +922,7 @@ function lia.data.savePersistence(entities)
             }
 
             for _, col in ipairs(dynamicList) do
-                if ent.class == "lia_npc" and col == "data" then
-                    print("[DEBUG SERVER] savePersistence - Serializing data column for NPC")
-                    print("[DEBUG SERVER] savePersistence - ent[data] before serialize:", table.ToString(ent[col], "ent[data]", true))
-                end
                 row[col] = lia.data.serialize(ent[col])
-                if ent.class == "lia_npc" and col == "data" then
-                    print("[DEBUG SERVER] savePersistence - Serialized data column")
-                end
             end
 
             rows[#rows + 1] = row
@@ -1018,38 +1000,15 @@ function lia.data.loadPersistenceData(callback)
         local rows = res.results or {}
         local entities = {}
         for _, row in ipairs(rows) do
-            if row.class == "lia_npc" then
-                print("[DEBUG SERVER] loadPersistenceData - Loading NPC row")
-                print("[DEBUG SERVER] loadPersistenceData - All row keys:", table.ToString(row, "Row Keys", true))
-            end
-            
             local ent = {}
             for k, v in pairs(row) do
-                if not defaultCols[k] and k ~= "id" and k ~= "gamemode" and k ~= "map" then
-                    if row.class == "lia_npc" and k == "data" then
-                        print("[DEBUG SERVER] loadPersistenceData - Found data column for NPC")
-                        print("[DEBUG SERVER] loadPersistenceData - Raw value type:", type(v))
-                        print("[DEBUG SERVER] loadPersistenceData - Raw value:", tostring(v))
-                    end
-                    ent[k] = lia.data.deserialize(v)
-                    if row.class == "lia_npc" and k == "data" then
-                        print("[DEBUG SERVER] loadPersistenceData - Deserialized data:", table.ToString(ent[k], "Deserialized Data", true))
-                        if ent[k] and ent[k].customData then
-                            print("[DEBUG SERVER] loadPersistenceData - customData.model:", ent[k].customData.model)
-                        end
-                    end
-                end
+                if not defaultCols[k] and k ~= "id" and k ~= "gamemode" and k ~= "map" then ent[k] = lia.data.deserialize(v) end
             end
 
             ent.class = row.class
             ent.pos = lia.data.decodeVector(row.pos)
             ent.angles = lia.data.decodeAngle(row.angles)
             ent.model = row.model
-            
-            if row.class == "lia_npc" then
-                print("[DEBUG SERVER] loadPersistenceData - Final ent.data for NPC:", ent.data)
-            end
-            
             entities[#entities + 1] = ent
         end
 

@@ -1141,7 +1141,7 @@ lia.config.add("DataSaveInterval", "dataSaveInterval", 600, nil, {
     max = 3600
 })
 
-lia.config.add("CharacterDataSaveInterval", "characterDataSaveInterval", 300, nil, {
+lia.config.add("CharacterDataSaveInterval", "characterDataSaveInterval", 60, nil, {
     desc = "characterDataSaveIntervalDesc",
     category = "categoryServer",
     type = "Number",

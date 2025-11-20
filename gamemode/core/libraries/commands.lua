@@ -1946,7 +1946,7 @@ lia.command.add("demorequests", {
     onRun = function(client)
         if SERVER then
             client:notifyInfoLocalized("openingDemo")
-            client:requestBinaryQuestion(L("demoQuestion"), L("yesShowMe"), L("noThanks"), false, function(confirmed)
+            client:requestBinaryQuestion("UI Demo", L("demoQuestion"), L("yesShowMe"), L("noThanks"), function(confirmed)
                 if confirmed then
                     client:requestDropdown(L("demoDropdownTitle"), L("chooseColor"), {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected ~= nil then

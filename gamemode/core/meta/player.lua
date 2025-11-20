@@ -3417,13 +3417,13 @@ end
     Low Complexity:
         ```lua
         -- Simple: Ask yes/no question
-        player:requestBinaryQuestion("Do you want to continue?", "Yes", "No")
+        player:requestBinaryQuestion("Confirmation", "Do you want to continue?", "Yes", "No")
         ```
 
     Medium Complexity:
         ```lua
         -- Medium: Ask with callback
-        player:requestBinaryQuestion("Delete this item?", "Delete", "Cancel", true, function(choice)
+        player:requestBinaryQuestion("Delete Item", "Delete this item?", "Delete", "Cancel", function(choice)
         if choice == 1 then
             player:notify("Item deleted!")
             else
@@ -3453,6 +3453,21 @@ end
         ```
 ]]
 function playerMeta:requestBinaryQuestion(question, option1, option2, manualDismiss, callback)
+    -- Support for title as first parameter
+    local title = ""
+    if isstring(question) and isstring(option1) and isstring(option2) and (isbool(manualDismiss) or isfunction(manualDismiss)) then
+        -- Standard format: question, option1, option2, manualDismiss, callback
+        title = ""
+    elseif isstring(question) and isstring(option1) and isstring(option2) and isstring(manualDismiss) and isfunction(callback) then
+        -- Title format: title, question, option1, option2, callback
+        title = question
+        question = option1
+        option1 = option2
+        option2 = manualDismiss
+        manualDismiss = false
+        -- callback stays the same
+    end
+
     if SERVER then
         self.liaBinaryReqs = self.liaBinaryReqs or {}
         local id = table.insert(self.liaBinaryReqs, callback)
@@ -3464,7 +3479,7 @@ function playerMeta:requestBinaryQuestion(question, option1, option2, manualDism
         net.WriteBool(manualDismiss)
         net.Send(self)
     else
-        lia.derma.requestBinaryQuestion("", question, function(result) if callback then callback(result and 0 or 1) end end, option1, option2)
+        lia.derma.requestBinaryQuestion(title, question, function(result) if callback then callback(result and 0 or 1) end end, option1, option2)
     end
 end
 
@@ -3575,7 +3590,7 @@ end
         local title = "Character Management"
         local buttons = {
             {text = "Reset Character", callback = function()
-                player:requestBinaryQuestion("Reset character?", "Yes", "No", true, function(choice)
+                player:requestBinaryQuestion("Character Reset", "Reset character?", "Yes", "No", function(choice)
                     if choice == 1 then
                         local char = player:getChar()
                         if char then char:delete() end

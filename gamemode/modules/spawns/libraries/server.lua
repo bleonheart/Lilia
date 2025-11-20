@@ -35,39 +35,20 @@ function MODULE:StoreSpawns(spawns)
 end
 
 local function SpawnPlayer(client)
-    if not IsValid(client) then
-        print("[DEBUG] SpawnPlayer: Client not valid")
-        return
-    end
-
+    if not IsValid(client) then return end
     local character = client:getChar()
-    if not character then
-        print("[DEBUG] SpawnPlayer: No character found")
-        return
-    end
+    if not character then return end
 
     local posData = character:getLastPos()
-    print("[DEBUG] SpawnPlayer: Checking lastpos data - exists:", posData ~= nil)
-
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
-        print("[DEBUG] SpawnPlayer: Using saved lastpos - Map match:", posData.map)
         if posData.pos and isvector(posData.pos) then
-            print("[DEBUG] SpawnPlayer: Setting position:", posData.pos)
             client:SetPos(posData.pos)
-        else
-            print("[DEBUG] SpawnPlayer: Invalid position data")
         end
         if posData.ang and isangle(posData.ang) then
-            print("[DEBUG] SpawnPlayer: Setting angles:", posData.ang)
             client:SetEyeAngles(posData.ang)
-        else
-            print("[DEBUG] SpawnPlayer: Invalid angle data")
         end
         character:setLastPos(nil)
-        print("[DEBUG] SpawnPlayer: Cleared lastpos data after use")
         return
-    else
-        print("[DEBUG] SpawnPlayer: Not using saved lastpos - Data exists:", posData ~= nil, "Map match:", posData and posData.map and posData.map:lower() == game.GetMap():lower())
     end
 
     local factionID
@@ -139,27 +120,18 @@ end
 
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
-    print("[DEBUG] CharPreSave called for character ID:", character:getID())
+    if not IsValid(client) then return end
 
-    if not IsValid(client) then
-        print("[DEBUG] CharPreSave: Client not valid")
-        return
-    end
-
-    local InVehicle = IsValid(client:GetVehicle())
-    print("[DEBUG] CharPreSave: Client valid, InVehicle:", InVehicle, "Alive:", client:Alive())
-
-    if not InVehicle and client:Alive() then
+    -- Save lastpos data when alive (regardless of vehicle status)
+    -- Don't save when dead to avoid saving death positions
+    if client:Alive() then
         local lastPosData = {
             pos = client:GetPos(),
             ang = client:EyeAngles(),
             map = game.GetMap()
         }
 
-        print("[DEBUG] CharPreSave: Setting lastpos data - Pos:", lastPosData.pos, "Map:", lastPosData.map)
         character:setLastPos(lastPosData)
-    else
-        print("[DEBUG] CharPreSave: NOT saving lastpos - InVehicle:", InVehicle, "Alive:", client:Alive())
     end
 end
 
