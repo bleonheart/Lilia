@@ -1149,7 +1149,6 @@ else
             end
         end
 
-
         local hasBodygroups = false
         if IsValid(npc) then
             for i = 0, npc:GetNumBodyGroups() - 1 do
@@ -1236,11 +1235,11 @@ else
                         skinSlider:SetMax(math.max(0, npc:SkinCount() - 1))
                         skinSlider:SetValue(0)
                     end
+
                     LocalPlayer():notifySuccess("NPC model updated to: " .. value .. ". Bodygroups and skin have been reset.")
                 end
             end
         end
-
 
         if hasBodygroups then
             local bodygroupLabel = vgui.Create("DLabel", scroll)
@@ -1260,10 +1259,7 @@ else
 
         local hasSkin = false
         local skinSlider = nil
-        if IsValid(npc) then
-            hasSkin = npc:SkinCount() > 1
-        end
-
+        if IsValid(npc) then hasSkin = npc:SkinCount() > 1 end
         if hasSkin then
             local skinLabel = vgui.Create("DLabel", scroll)
             skinLabel:Dock(TOP)
@@ -1619,10 +1615,7 @@ if SERVER then
                 end
             end
 
-            if customData.skin ~= nil then
-                npc:SetSkin(tonumber(customData.skin) or 0)
-            end
-
+            if customData.skin ~= nil then npc:SetSkin(tonumber(customData.skin) or 0) end
             if modelChanged then
                 npc.customAnimation = nil
                 customData.animation = "auto"
