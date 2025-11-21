@@ -233,14 +233,11 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     container:Dock(TOP)
     container:DockMargin(0, 1, 0, 0)
     container.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(40, 40, 50, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
-
     local label = vgui.Create("DLabel", container)
     label:Dock(TOP)
     label:SetTall(25)
     label:DockMargin(10, 5, 10, 0)
     label:SetText("")
-    
-    -- Function to update label text with current value
     local function updateLabelText(value)
         local displayValue = value
         if dec and dec > 0 then
@@ -248,27 +245,21 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
         else
             displayValue = math.Round(value)
         end
-        local displayText = text .. " - " .. tostring(displayValue)
-        label.Paint = function(_, w, h) 
-            draw.SimpleText(displayText, "LiliaFont.24", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) 
-        end
-    end
-    
-    -- Initialize with current value
-    updateLabelText(val or 0)
 
+        local displayText = text .. " - " .. tostring(displayValue)
+        label.Paint = function(_, w, h) draw.SimpleText(displayText, "LiliaFont.24", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    end
+
+    updateLabelText(val or 0)
     local slider = container:Add("liaSlider")
     slider:Dock(TOP)
     slider:DockMargin(20, 5, 20, 10)
     slider:SetTall(20)
     slider:SetRange(min or 0, max or 100, dec or 0)
     slider:SetValue(val or 0)
-
     if cb then
         slider.OnValueChanged = function(v)
-            -- Get the actual value from the slider to ensure accuracy
             local actualValue = slider:GetValue()
-            -- Ensure actualValue is a number (handle userdata like Vector)
             if not isnumber(actualValue) then
                 if isvector(actualValue) then
                     actualValue = actualValue.x or 0
@@ -276,8 +267,8 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
                     actualValue = tonumber(actualValue) or 0
                 end
             end
+
             local r = math.Round(actualValue, dec or 0)
-            -- Update the label with the new value
             updateLabelText(r)
             cb(slider, r)
         end
@@ -398,11 +389,13 @@ function QuickPanel:populateOptions()
     end)
 
     local hasAddedItems = false
-    -- Define type order: Boolean (checkboxes) first, then Int/Float (sliders)
     local function getTypeOrder(optType)
-        if optType == "Boolean" then return 1
-        elseif optType == "Int" or optType == "Float" then return 2
-        else return 3
+        if optType == "Boolean" then
+            return 1
+        elseif optType == "Int" or optType == "Float" then
+            return 2
+        else
+            return 3
         end
     end
 
@@ -412,11 +405,7 @@ function QuickPanel:populateOptions()
             table.sort(categoryOptions, function(a, b)
                 local typeA = getTypeOrder(a.opt.type)
                 local typeB = getTypeOrder(b.opt.type)
-                -- First sort by type
-                if typeA ~= typeB then
-                    return typeA < typeB
-                end
-                -- Then sort by name within the same type
+                if typeA ~= typeB then return typeA < typeB end
                 local nameA = a.opt.name or a.key
                 local nameB = b.opt.name or b.key
                 return nameA < nameB

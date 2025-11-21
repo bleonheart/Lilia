@@ -281,9 +281,7 @@ function lia.bar.drawBar(x, y, w, h, pos, max, color)
     local usable = math.max(w - 6, 0)
     local fill = usable * pos / max
     PaintPanel(x, y, w + 6, h)
-    if fill > 0 then
-        lia.derma.rect(x + 3, y + 3, fill, h - 6):Rad(3):Color(color):Draw()
-    end
+    if fill > 0 then lia.derma.rect(x + 3, y + 3, fill, h - 6):Rad(3):Color(color):Draw() end
 end
 
 --[[

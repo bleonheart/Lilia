@@ -3074,7 +3074,6 @@ function MODULE:HUDPaint()
         local pos = ent:GetPos()
         if not pos then continue end
         local kind, label, subLabel, baseColor
-        -- Allow modules to add custom ESP targets via hook
         local hookResult = hook.Run("GetAdminESPTarget", ent, client)
         local customRender = nil
         if hookResult and istable(hookResult) then
@@ -3143,11 +3142,9 @@ function MODULE:HUDPaint()
         local screenPos = pos:ToScreen()
         if not screenPos.visible then continue end
         local textHeight = nil
-        -- Allow custom rendering function from hook
         if customRender and isfunction(customRender) then
             customRender(ent, screenPos, kind, label, subLabel, baseColor)
         else
-            -- Standard rendering
             surface.SetFont("LiliaFont.18")
             local _, th = surface.GetTextSize("W")
             textHeight = th
@@ -3158,7 +3155,6 @@ function MODULE:HUDPaint()
             end
         end
 
-        -- Player-specific rendering (health bars, armor, weapons) - only if not using custom render
         if kind == L("players") and not (customRender and isfunction(customRender)) then
             local barW, barH = 100, 22
             local barX = screenPos.x - barW / 2

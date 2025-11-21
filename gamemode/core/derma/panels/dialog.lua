@@ -43,7 +43,7 @@ function PANEL:Init()
     self.content:SetPaintBackground(false)
     self.dialogOptions = self.content:Add("liaScrollPanel")
     self.dialogOptions:Dock(BOTTOM)
-    self.dialogOptions:SetTall(0) -- Will be sized to content
+    self.dialogOptions:SetTall(0)
     self.dialogOptions:SetZPos(4)
     self.dialogOptions:DockMargin(0, 0, 0, 0)
     self.dialogOptions:DockPadding(2, 2, 2, 2)
@@ -58,6 +58,7 @@ function PANEL:Init()
             canvasPanel:SizeToChildren(false, true)
         end
     end
+
     self.responseText = self.responseScroll:Add("DLabel")
     self.responseText:Dock(TOP)
     self.responseText:SetWrap(true)
@@ -70,23 +71,20 @@ function PANEL:Init()
     self.responseText.PerformLayout = function(label)
         if IsValid(label:GetParent()) then
             local parentW = label:GetParent():GetWide()
-            if parentW > 0 and label:GetWide() ~= parentW then
-                label:SetWide(parentW)
-            end
+            if parentW > 0 and label:GetWide() ~= parentW then label:SetWide(parentW) end
         end
-        if label.BaseClass and label.BaseClass.PerformLayout then
-            label.BaseClass.PerformLayout(label)
-        end
+
+        if label.BaseClass and label.BaseClass.PerformLayout then label.BaseClass.PerformLayout(label) end
     end
+
     self.npcDisplayName = "Dialog"
     self.lastResponseText = ""
     self.pendingResponse = false
     self.hasHistoryMessage = false
-    self.conversationStack = {} -- Stack to track conversation levels for "Back" functionality
+    self.conversationStack = {}
 end
 
 function PANEL:Think()
-    -- No longer needed with 50/50 split
 end
 
 function PANEL:SetDialogText(text)
@@ -257,17 +255,14 @@ function PANEL:UpdateResponseText(text)
     if IsValid(self.responseScroll) then
         local scrollBar = self.responseScroll:GetVBar()
         if IsValid(scrollBar) then scrollBar:SetScroll(0) end
-        -- Update scroll panel height based on text content
         timer.Simple(0.01, function()
             if IsValid(self) and IsValid(self.responseScroll) and IsValid(self.responseText) and IsValid(self.content) then
                 local textHeight = self.responseText:GetTall()
                 local contentH = self.content:GetTall()
-                local maxHeight = math.max(contentH * 0.7, 150) -- Max 70% of content, minimum 150px
-                local minHeight = 50 -- Minimum height for visibility
-                local targetHeight = math.min(math.max(textHeight + 8, minHeight), maxHeight) -- Add padding, respect min/max
-                if self.responseScroll:GetTall() ~= targetHeight then
-                    self.responseScroll:SetTall(targetHeight)
-                end
+                local maxHeight = math.max(contentH * 0.7, 150)
+                local minHeight = 50
+                local targetHeight = math.min(math.max(textHeight + 8, minHeight), maxHeight)
+                if self.responseScroll:GetTall() ~= targetHeight then self.responseScroll:SetTall(targetHeight) end
             end
         end)
     end
@@ -338,31 +333,21 @@ end
 function PANEL:PerformLayout(w, h)
     self.BaseClass.PerformLayout(self, w, h)
     if IsValid(self.content) and IsValid(self.dialogOptions) then
-        -- Get content area height
         local contentH = self.content:GetTall()
-        -- Calculate buttons panel height based on content
         local canvas = self.dialogOptions:GetCanvas()
         local buttonsContentHeight = 0
         if IsValid(canvas) then
-            -- Force canvas to size to children first
             canvas:SizeToChildren(false, true)
-            -- Get the actual height needed for all buttons
             buttonsContentHeight = canvas:GetTall()
         end
-        -- Set constraints: minimum 100px, maximum 50% of content area
+
         local minButtonsHeight = 100
         local maxButtonsHeight = math.max(contentH * 0.5, minButtonsHeight)
-        -- Calculate target height: content height with min/max constraints
-        local targetButtonsHeight = math.Clamp(buttonsContentHeight + 4, minButtonsHeight, maxButtonsHeight) -- +4 for padding
-        -- Ensure we leave at least 30% for text area (minimum 150px)
+        local targetButtonsHeight = math.Clamp(buttonsContentHeight + 4, minButtonsHeight, maxButtonsHeight)
         local minTextHeight = math.max(contentH * 0.3, 150)
-        local availableForButtons = contentH - minTextHeight - 8 -- 8px margin
+        local availableForButtons = contentH - minTextHeight - 8
         targetButtonsHeight = math.min(targetButtonsHeight, math.max(availableForButtons, minButtonsHeight))
-        -- Update buttons panel height
-        if self.dialogOptions:GetTall() ~= targetButtonsHeight then
-            self.dialogOptions:SetTall(targetButtonsHeight)
-        end
-        -- Response scroll will automatically take remaining space with FILL
+        if self.dialogOptions:GetTall() ~= targetButtonsHeight then self.dialogOptions:SetTall(targetButtonsHeight) end
     end
 
     if IsValid(self.dialogHistoryFrame) then
@@ -388,7 +373,6 @@ end
 function PANEL:AddDialogOptions(options, npc, skipBackButton)
     local ply = LocalPlayer()
     if isfunction(options) then options = options(ply, npc) end
-
     local validOptions = {}
     for label, info in pairs(options) do
         table.insert(validOptions, {
@@ -397,7 +381,6 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         })
     end
 
-    -- Add automatic "Back" button if we have previous conversation levels
     if not skipBackButton and #self.conversationStack > 0 then
         table.insert(validOptions, {
             label = "Back",
@@ -438,11 +421,8 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         choiceBtn.DoClick = function()
             local isGoodbye = string.lower(label) == "goodbye" or string.lower(label) == "bye" or string.lower(label) == "farewell" or string.lower(label) == "close"
             local isBack = string.lower(label) == "back" or string.lower(label) == "return"
-
-            -- Handle automatic Back button
             if isBack and info.isAutoBack then
                 self:AppendDialogLine(label, true)
-                -- Pop from conversation stack and restore previous options
                 if #self.conversationStack > 0 then
                     local previousLevel = table.remove(self.conversationStack)
                     self:ClearDialogOptions()
@@ -491,11 +471,11 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
                 local nextOptions = info.options
                 if isfunction(nextOptions) then nextOptions = nextOptions(ply, npc) end
                 if nextOptions and istable(nextOptions) then
-                    -- Push current options to stack before going deeper
                     table.insert(self.conversationStack, {
                         options = options,
                         npc = npc
                     })
+
                     self:ClearDialogOptions()
                     self:AddDialogOptions(nextOptions, npc, false)
                     return
@@ -512,12 +492,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         end
     end
 
-    -- Update buttons panel height after adding options
-    timer.Simple(0, function()
-        if IsValid(self) and IsValid(self.dialogOptions) then
-            self:InvalidateLayout(true)
-        end
-    end)
+    timer.Simple(0, function() if IsValid(self) and IsValid(self.dialogOptions) then self:InvalidateLayout(true) end end)
 end
 
 function PANEL:LoadNPCDialog(convoSettings, npc)
@@ -525,7 +500,7 @@ function PANEL:LoadNPCDialog(convoSettings, npc)
     local dialogText = convoSettings.Greeting or convoSettings.text or convoSettings.description or convoSettings.dialog or ""
     self.activeNPC = npc
     self.activeConversation = convoSettings
-    self.conversationStack = {} -- Reset conversation stack for new dialog
+    self.conversationStack = {}
     self:SetDialogText(dialogText)
     self:ClearDialogOptions()
     if convoSettings.Conversation then self:AddDialogOptions(convoSettings.Conversation, npc, false) end

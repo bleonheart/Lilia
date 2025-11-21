@@ -5251,6 +5251,11 @@ lia.command.add("trunk", {
         local entity = client:getTracedEntity()
         local maxDistance = 128
         local openTime = 0.7
+        if not IsValid(entity) then
+            client:notifyErrorLocalized("notLookingAtVehicle")
+            return
+        end
+
         if hook.Run("IsSuitableForTrunk", entity) == false then
             client:notifyErrorLocalized("notLookingAtVehicle")
             return
@@ -5263,6 +5268,11 @@ lia.command.add("trunk", {
 
         client.liaStorageEntity = entity
         client:setAction(L("openingTrunk"), openTime, function()
+            if not IsValid(entity) then
+                client.liaStorageEntity = nil
+                return
+            end
+
             if client:GetPos():Distance(entity:GetPos()) > maxDistance then
                 client.liaStorageEntity = nil
                 return

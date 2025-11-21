@@ -101,10 +101,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     end
 
     local originalPaint = bar.Paint
-    bar.Paint = function(barSelf, w, h)
-        originalPaint(barSelf, w, h)
-    end
-
+    bar.Paint = function(barSelf, w, h) originalPaint(barSelf, w, h) end
     parent[name] = bar
     return bar
 end

@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.min_value = 0
     self.max_value = 1
@@ -50,7 +50,6 @@ function PANEL:SetConvar(convar)
 end
 
 function PANEL:SetValue(val, fromConVar)
-    -- Ensure val is a number (handle userdata like Vector)
     if not isnumber(val) then
         if isvector(val) then
             val = val.x or 0
@@ -82,7 +81,6 @@ function PANEL:GetValue()
 end
 
 function PANEL:UpdateSliderByCursorPos(x)
-    -- Ensure x is a number (handle Vector userdata)
     if not isnumber(x) then
         if isvector(x) then
             x = x.x or 0
@@ -109,23 +107,16 @@ function PANEL:Paint(w)
     local barR = barH / 2
     local handleW, handleH = 14, 14
     local handleR = handleH / 2
-
     local barStart = padX + handleW / 2
     local barEnd = w - padX - handleW / 2
     local barW = barEnd - barStart
     local progress = (self.value - self.min_value) / (self.max_value - self.min_value)
     local activeW = math.Clamp(barW * progress, 0, barW)
-
-    -- Draw slider bar background
     lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.window_shadow):Shadow(5, 20):Draw()
     lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.focus_panel):Draw()
     lia.derma.rect(barStart, barY, barW, barH):Rad(barR):Color(lia.color.theme.button_shadow):Draw()
-
-    -- Draw progress bar
     lia.derma.rect(barStart, barY, self.smoothPos, barH):Rad(barR):Color(lia.color.theme.theme):Draw()
     self.smoothPos = Lerp(FrameTime() * 12, self.smoothPos or 0, activeW)
-
-    -- Draw handle
     local handleX = barStart + self.smoothPos
     local handleY = barY + barH / 2
     lia.derma.drawShadows(handleR, handleX - handleW / 2, handleY - handleH / 2, handleW, handleH, lia.color.theme.window_shadow, 3, 10)
@@ -138,7 +129,6 @@ end
 function PANEL:OnMousePressed(mcode)
     if mcode == MOUSE_LEFT then
         local x = self:CursorPos()
-        -- Ensure we have a number, not userdata
         if not isnumber(x) then
             if isvector(x) then
                 x = x.x or 0
@@ -146,6 +136,7 @@ function PANEL:OnMousePressed(mcode)
                 x = tonumber(x) or 0
             end
         end
+
         self:UpdateSliderByCursorPos(x)
         self.dragging = true
         self:MouseCapture(true)
@@ -164,7 +155,6 @@ end
 
 function PANEL:OnCursorMoved(x)
     if self.dragging then
-        -- Ensure x is a number
         if not isnumber(x) then
             if isvector(x) then
                 x = x.x or 0
@@ -172,6 +162,7 @@ function PANEL:OnCursorMoved(x)
                 x = tonumber(x) or 0
             end
         end
+
         self:UpdateSliderByCursorPos(x)
     end
 end
