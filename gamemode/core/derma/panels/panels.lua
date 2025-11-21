@@ -239,7 +239,7 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     label:DockMargin(10, 5, 10, 0)
     label:SetText("")
     local function updateLabelText(value)
-        local displayValue = value
+        local displayValue
         if dec and dec > 0 then
             displayValue = math.Round(value, dec)
         else
@@ -258,7 +258,7 @@ function QuickPanel:addSlider(text, cb, val, min, max, dec)
     slider:SetRange(min or 0, max or 100, dec or 0)
     slider:SetValue(val or 0)
     if cb then
-        slider.OnValueChanged = function(v)
+        slider.OnValueChanged = function()
             local actualValue = slider:GetValue()
             if not isnumber(actualValue) then
                 if isvector(actualValue) then
