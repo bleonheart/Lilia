@@ -140,10 +140,6 @@ local FilesToLoad = {
         realm = "client"
     },
     {
-        path = "lilia/gamemode/core/libraries/swepeditor.lua",
-        realm = "shared"
-    },
-    {
         path = "lilia/gamemode/core/libraries/currency.lua",
         realm = "shared"
     },

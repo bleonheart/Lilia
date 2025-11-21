@@ -579,7 +579,6 @@ function GM:PlayerInitialSpawn(client)
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")
         net.Send(client)
-        lia.swepeditor.sync(client)
     end)
 
     hook.Run("PostPlayerInitialSpawn", client)

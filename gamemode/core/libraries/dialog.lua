@@ -565,7 +565,7 @@ if SERVER then
                         ShouldShow = function(ply) return ply:GetFaction() == factionName end,
                         options = factionData.quests
                     },
-                    ["General Info"] = {
+                    [L("generalInfo")] = {
                         Response = "The " .. factionName .. " is dedicated to [faction purpose]. We value [faction values]."
                     }
                 }

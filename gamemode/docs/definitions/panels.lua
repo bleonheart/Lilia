@@ -228,7 +228,7 @@ liaDoorMenu
     When Used:
         For loading bars, progress indicators, or value displays
 ]]
-liaDProgressBar
+liaProgressBar
 --[[
     Purpose:
         Text input entry field

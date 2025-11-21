@@ -349,7 +349,7 @@ function lia.bar.drawAction(text, duration)
     local startTime, endTime = CurTime(), CurTime() + duration
     local w, h = ScrW() * 0.35, 50
     local x, y = ScrW() * 0.5 - w * 0.5, ScrH() * 0.725 - h * 0.5
-    lia.gui.actionPanel = vgui.Create("liaDProgressBar")
+    lia.gui.actionPanel = vgui.Create("liaProgressBar")
     lia.gui.actionPanel:SetPos(x, y)
     lia.gui.actionPanel:SetSize(w, h)
     lia.gui.actionPanel:SetText(text)

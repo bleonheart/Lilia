@@ -90,7 +90,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     lbl:DockMargin(8, 0, 10, 0)
     lbl:SetContentAlignment(5)
     lbl:SetTextColor(lia.color.theme.text or Color(210, 235, 235))
-    local bar = entry:Add("liaDProgressBar")
+    local bar = entry:Add("liaProgressBar")
     bar:Dock(FILL)
     bar:DockMargin(0, 6, 8, 6)
     bar:SetBarColor(lia.color.theme.theme or lia.config.get("Color"))
