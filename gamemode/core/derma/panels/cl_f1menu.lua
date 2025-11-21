@@ -15,10 +15,6 @@ function PANEL:Init()
     canvas.Paint = function() end
     self.content = canvas
     hook.Run("LoadCharInformation")
-    for _, module in pairs(lia.module.list) do
-        if module.LoadCharInformation then module:LoadCharInformation() end
-    end
-
     hook.Add("OnThemeChanged", self, self.OnThemeChanged)
     local function tryGenerate()
         if not IsValid(self) then return end
@@ -94,26 +90,19 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
     bar:Dock(FILL)
     bar:DockMargin(0, 6, 8, 6)
     bar:SetBarColor(lia.color.theme.theme or lia.config.get("Color"))
-    bar.Think = function(self)
+    bar.Think = function(barSelf)
         local mn = isfunction(minFunc) and minFunc() or tonumber(minFunc) or 0
-        local mx = isfunction(wmaxFunc) and maxFunc() or tonumber(maxFunc) or 1
+        local mx = isfunction(maxFunc) and maxFunc() or tonumber(maxFunc) or 1
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
         local frac = mx > mn and math.Clamp((val - mn) / (mx - mn), 0, 1) or 0
-        self:SetFraction(frac)
+        barSelf:SetFraction(frac)
         local text = L("barProgress", math.Round(val), math.Round(mx))
-        self:SetText(text)
+        barSelf:SetText(text)
     end
 
-    -- Override paint to position text inside the bar
     local originalPaint = bar.Paint
-    bar.Paint = function(self, w, h)
-        -- Call original paint first
-        originalPaint(self, w, h)
-        -- Draw text centered in the progress bar area (bottom 12 pixels)
-        local cx, cy = w * 0.5, h - 10
-        local text = self.Text or ""
-        draw.SimpleText(text, self.Font, cx + 1, cy + 1, Color(0, 0, 0, 150), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText(text, self.Font, cx, cy, lia.color.theme.text or Color(240, 240, 240), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    bar.Paint = function(barSelf, w, h)
+        originalPaint(barSelf, w, h)
     end
 
     parent[name] = bar

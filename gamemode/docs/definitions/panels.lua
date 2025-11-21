@@ -421,6 +421,7 @@ liaSheet
         For sliding panels or animated content
 ]]
 liaSlideBox
+liaSlider
 --[[
     Purpose:
         Spawn icon display

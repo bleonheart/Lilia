@@ -372,6 +372,7 @@ LANGUAGE = {
     vguiCleanupCommandDesc = "Removes leftover panels like crashed DFrames.",
     enteringVehicle = "Entering Vehicle...",
     carOccupiedNotice = "Someone is entering this car!",
+    tooFarAway = "You are too far away!",
     charKick = "%s kicked character %s.",
     charBan = "%s banned the character %s.",
     charWipe = "%s wiped the character %s from the database.",

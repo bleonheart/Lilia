@@ -2184,13 +2184,9 @@ else
         categoryList:InvalidateLayout(true)
     end
 
-
-
     lia.net.readBigTable("liaUpdateAdminGroups", function(tbl)
         lia.administrator.groups = tbl
-        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.refreshTabs then
-            lia.gui.usergroups.refreshTabs()
-        end
+        if IsValid(lia.gui.usergroups) and lia.gui.usergroups.refreshTabs then lia.gui.usergroups.refreshTabs() end
     end)
 
     lia.net.readBigTable("liaUpdateAdminPrivileges", function(tbl)
@@ -2206,26 +2202,20 @@ else
         local container = parent:Add("DPanel")
         container:Dock(FILL)
         container.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
-
-        -- Create tabs for usergroups
         local tabs = container:Add("liaTabs")
         tabs:Dock(FILL)
         tabs:DockMargin(10, 10, 10, 10)
-
-        -- Bottom panel for action buttons
         local bottom = container:Add("DPanel")
         bottom:Dock(BOTTOM)
         bottom:SetTall(50)
         bottom:DockMargin(10, 5, 10, 10)
         bottom.Paint = function() end
-
         local createBtn = vgui.Create("liaButton", bottom)
         createBtn:Dock(LEFT)
         createBtn:SetWide(120)
         createBtn:DockMargin(0, 0, 10, 0)
         createBtn:SetTxt(L("create") .. " " .. L("group"))
         createBtn.DoClick = function() promptCreateGroup() end
-
         local renameBtn = vgui.Create("liaButton", bottom)
         renameBtn:Dock(LEFT)
         renameBtn:SetWide(120)
@@ -2262,11 +2252,9 @@ else
 
         local function createGroupTab(groupName, groups)
             if not groups[groupName] then return end
-
             local tabPanel = vgui.Create("DPanel")
             tabPanel:Dock(FILL)
             tabPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(12):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
-
             local isDefault = lia.administrator.DefaultGroups and lia.administrator.DefaultGroups[groupName] ~= nil
             local editable = not isDefault
             local privContainer = tabPanel:Add("DPanel")
@@ -2274,7 +2262,6 @@ else
             privContainer:DockMargin(20, 20, 20, 20)
             privContainer.Paint = function() end
             buildPrivilegeList(privContainer, groupName, groups, editable)
-
             local tabData = tabs:AddTab(groupName, tabPanel)
             tabData.groupName = groupName
             return tabData
@@ -2289,7 +2276,6 @@ else
             end
 
             table.sort(keys, function(a, b) return a:lower() < b:lower() end)
-
             for _, groupName in ipairs(keys) do
                 createGroupTab(groupName, groups)
             end
@@ -2309,12 +2295,7 @@ else
                 parent:DockPadding(10, 10, 10, 10)
                 parent.Paint = function(p, w, h) derma.SkinHook("Paint", "Frame", p, w, h) end
                 SetupUserGroupInterface(parent)
-                -- Initial setup - refresh tabs when data is available
-                timer.Simple(0.1, function()
-                    if IsValid(parent) and parent.refreshTabs then
-                        parent.refreshTabs()
-                    end
-                end)
+                timer.Simple(0.1, function() if IsValid(parent) and parent.refreshTabs then parent.refreshTabs() end end)
                 net.Start("liaGroupsRequest")
                 net.SendToServer()
             end

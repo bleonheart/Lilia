@@ -323,6 +323,7 @@ LANGUAGE = {
     vguiCleanupCommandDesc = "Remove painis deixados para trs como DFrames crashados.",
     enteringVehicle = "A entrar no veculo...",
     carOccupiedNotice = "Algum est a entrar neste carro!",
+    tooFarAway = "Estás demasiado longe!",
     charKick = "%s expulsou o personagem %s.",
     charBan = "%s baniu o personagem %s.",
     charWipe = "%s apagou o personagem %s da base de dados.",

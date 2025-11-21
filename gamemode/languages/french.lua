@@ -363,6 +363,7 @@ LANGUAGE = {
     vguiCleanupCommandDesc = "Supprime les panneaux restants comme les DFrames plants.",
     enteringVehicle = "Entre dans le vhicule...",
     carOccupiedNotice = "Quelqu'un entre dans cette voiture !",
+    tooFarAway = "Vous êtes trop loin !",
     charKick = "%s a expuls le personnage %s.",
     charBan = "%s a banni le personnage %s.",
     charWipe = "%s a effac le personnage %s de la base de donnes.",

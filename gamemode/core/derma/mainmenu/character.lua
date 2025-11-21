@@ -555,7 +555,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         local currentValue = character:getAttrib(entry.id) or minValue
         local label = scroll:Add("DLabel")
         label:Dock(TOP)
-        label:DockMargin(10, 3, 10, 5)
+        label:DockMargin(10, 3, 10, -2)
         label:SetFont("LiliaFont.17")
         label:SetTextColor(Color(255, 255, 255))
         label:SetText(entry.attr.name)
@@ -568,7 +568,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         progressBar:SetFraction(math.Clamp(currentValue / maxValue, 0, 1))
         progressBar:SetText(currentValue .. "/" .. maxValue)
         progressBar.Font = "LiliaFont.14"
-        progressBar:SetTall(36)
+        progressBar:SetTall(48)
     end
 
     local fx, fy = self.infoFrame:GetPos()

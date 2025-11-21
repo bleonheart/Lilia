@@ -307,13 +307,9 @@ function PANEL:setActive(state)
         end
 
         hook.Run("StartChat")
-
-        -- Scroll to bottom when chatbox is opened
         if IsValid(self.scroll) and #self.list > 0 then
             local lastPanel = self.list[#self.list]
-            if IsValid(lastPanel) then
-                self.scroll:ScrollToChild(lastPanel)
-            end
+            if IsValid(lastPanel) then self.scroll:ScrollToChild(lastPanel) end
         end
     end
 end

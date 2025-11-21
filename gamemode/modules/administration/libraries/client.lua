@@ -3074,7 +3074,16 @@ function MODULE:HUDPaint()
         local pos = ent:GetPos()
         if not pos then continue end
         local kind, label, subLabel, baseColor
-        if ent:IsPlayer() then
+        -- Allow modules to add custom ESP targets via hook
+        local hookResult = hook.Run("GetAdminESPTarget", ent, client)
+        local customRender = nil
+        if hookResult and istable(hookResult) then
+            kind = hookResult.kind
+            label = hookResult.label
+            subLabel = hookResult.subLabel
+            baseColor = hookResult.baseColor
+            customRender = hookResult.customRender
+        elseif ent:IsPlayer() then
             kind = L("players")
             subLabel = ent:Name():gsub("#", "\226\128\139#")
             if ent:getNetVar("cheater", false) then
@@ -3133,15 +3142,24 @@ function MODULE:HUDPaint()
         if not kind then continue end
         local screenPos = pos:ToScreen()
         if not screenPos.visible then continue end
-        surface.SetFont("LiliaFont.18")
-        local _, textHeight = surface.GetTextSize("W")
-        draw.SimpleTextOutlined(label, "LiliaFont.18", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
-        if subLabel and subLabel ~= label then
-            local subLabelFont = (kind == "npcs") and "LiliaFont.14" or "LiliaFont.18"
-            draw.SimpleTextOutlined(subLabel, subLabelFont, screenPos.x, screenPos.y + textHeight, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+        local textHeight = nil
+        -- Allow custom rendering function from hook
+        if customRender and isfunction(customRender) then
+            customRender(ent, screenPos, kind, label, subLabel, baseColor)
+        else
+            -- Standard rendering
+            surface.SetFont("LiliaFont.18")
+            local _, th = surface.GetTextSize("W")
+            textHeight = th
+            draw.SimpleTextOutlined(label, "LiliaFont.18", screenPos.x, screenPos.y, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+            if subLabel and subLabel ~= label then
+                local subLabelFont = (kind == "npcs") and "LiliaFont.14" or "LiliaFont.18"
+                draw.SimpleTextOutlined(subLabel, subLabelFont, screenPos.x, screenPos.y + textHeight, Color(baseColor.r, baseColor.g, baseColor.b, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color(0, 0, 0, 200))
+            end
         end
 
-        if kind == L("players") then
+        -- Player-specific rendering (health bars, armor, weapons) - only if not using custom render
+        if kind == L("players") and not (customRender and isfunction(customRender)) then
             local barW, barH = 100, 22
             local barX = screenPos.x - barW / 2
             local barY = screenPos.y + textHeight + 5
