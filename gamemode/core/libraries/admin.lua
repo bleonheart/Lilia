@@ -2122,8 +2122,8 @@ else
     local function buildPrivilegeList(container, g, groups, editable)
         local current = table.Copy(groups[g] or {})
         current._info = nil
-        local categoryList = container:Add("DCategoryList")
-        categoryList:Dock(FILL)
+        local tabs = container:Add("liaTabs")
+        tabs:Dock(FILL)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
         local function addRow(list, name)
@@ -2152,38 +2152,22 @@ else
         end
 
         local ordered = computeCategoryMap(groups)
-        surface.SetFont("LiliaFont.36")
-        local _, hfh = surface.GetTextSize("W")
-        local headerH = math.max(hfh + 18, 36)
         for _, cat in ipairs(ordered) do
-            local wrap = vgui.Create("DPanel")
-            wrap.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
-            local list = vgui.Create("DListLayout", wrap)
+            local tabPanel = tabs:Add("DPanel")
+            tabPanel:Dock(FILL)
+            tabPanel.Paint = function() end
+            local scrollPanel = tabPanel:Add("liaScrollPanel")
+            scrollPanel:Dock(FILL)
+            scrollPanel:DockMargin(8, 8, 8, 8)
+            local list = scrollPanel:Add("DListLayout")
             list:Dock(TOP)
-            list:DockMargin(8, 8, 8, 8)
+            list:DockMargin(0, 0, 0, 0)
             for _, priv in ipairs(cat.items) do
                 addRow(list, priv)
             end
 
-            wrap:InvalidateLayout(true)
-            wrap:SizeToChildren(true, true)
-            local c = categoryList:Add(cat.label)
-            c:SetContents(wrap)
-            c:SetExpanded(false)
-            local header = c.Header or c.GetHeader and c:GetHeader() or nil
-            if IsValid(header) then
-                header:SetFont("LiliaFont.36")
-                header:SetTall(headerH)
-                header:SetTextInset(12, 0)
-                header:SetContentAlignment(4)
-                header.Paint = function(_, w, h)
-                    lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-                    draw.SimpleText(cat.label, "LiliaFont.36", 12, h / 2, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                end
-            end
+            tabs:AddSheet(L(cat.label), tabPanel)
         end
-
-        categoryList:InvalidateLayout(true)
     end
 
     local function renderGroupInfo(parent, g, groups)

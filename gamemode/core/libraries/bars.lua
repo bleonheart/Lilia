@@ -345,28 +345,32 @@ end
         ```
 ]]
 function lia.bar.drawAction(text, duration)
+    if IsValid(lia.gui.actionPanel) then lia.gui.actionPanel:Remove() end
     local startTime, endTime = CurTime(), CurTime() + duration
-    hook.Remove("HUDPaint", "liaBarDrawAction")
-    hook.Add("HUDPaint", "liaBarDrawAction", function()
+    local w, h = ScrW() * 0.35, 50
+    local x, y = ScrW() * 0.5 - w * 0.5, ScrH() * 0.725 - h * 0.5
+    lia.gui.actionPanel = vgui.Create("liaDProgressBar")
+    lia.gui.actionPanel:SetPos(x, y)
+    lia.gui.actionPanel:SetSize(w, h)
+    lia.gui.actionPanel:SetText(text)
+    lia.gui.actionPanel:SetBarColor(lia.config.get("Color"))
+    lia.gui.actionPanel:SetProgress(startTime, endTime)
+    lia.gui.actionPanel:SetFraction(0)
+    lia.gui.actionPanel.Think = function(self)
         local curTime = CurTime()
         if curTime >= endTime then
-            hook.Remove("HUDPaint", "liaBarDrawAction")
+            self:Remove()
+            lia.gui.actionPanel = nil
             return
         end
 
         local frac = 1 - math.TimeFraction(startTime, endTime, curTime)
-        local w, h = ScrW() * 0.35, 28
-        local x, y = ScrW() * 0.5 - w * 0.5, ScrH() * 0.725 - h * 0.5
-        lia.util.drawBlurAt(x, y, w, h)
-        PaintPanel(x, y, w, h)
-        surfaceSetDrawColor(lia.config.get("Color"))
-        surfaceDrawRect(x + 4, y + 4, w * frac - 8, h - 8)
-        surfaceSetDrawColor(200, 200, 200, 20)
-        surface.SetMaterial(lia.util.getMaterial("vgui/gradient-d"))
-        surface.DrawTexturedRect(x + 4, y + 4, w * frac - 8, h - 8)
-        draw.SimpleText(text, "LiliaFont.25", x + 2, y - 22, Color(20, 20, 20))
-        draw.SimpleText(text, "LiliaFont.25", x, y - 24, Color(240, 240, 240))
-    end)
+        self:SetFraction(frac)
+    end
+
+    lia.gui.actionPanel:MakePopup()
+    lia.gui.actionPanel:SetKeyboardInputEnabled(false)
+    lia.gui.actionPanel:SetMouseInputEnabled(false)
 end
 
 --[[

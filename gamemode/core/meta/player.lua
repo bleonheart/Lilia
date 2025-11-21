@@ -238,6 +238,221 @@ end
 
 --[[
     Purpose:
+        Sets an action for the player with optional duration and callback
+
+    When Called:
+        When implementing player actions, progress bars, or timed activities for the player
+
+    Parameters:
+        text (string)
+            The action text to display
+        time (number, optional)
+            The duration of the action in seconds
+        callback (function, optional)
+            Function to call when action completes
+
+    Returns:
+        None
+
+    Realm:
+        Server
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Set action
+        player:setAction("Loading...")
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Set action with duration
+        player:setAction("Crafting item...", 5)
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Complex action system with callback
+        local actionText = "Repairing weapon..."
+        local duration = 10
+        local callback = function(ply)
+        ply:notifySuccess("Weapon repaired!")
+        local weapon = ply:GetActiveWeapon()
+        if IsValid(weapon) then
+            weapon:SetHealth(100)
+        end
+        end
+        player:setAction(actionText, duration, callback)
+        ```
+]]
+function playerMeta:setAction(text, time, callback)
+    if time and time <= 0 then
+        if callback then callback(self) end
+        return
+    end
+
+    time = time or 5
+    if not text then
+        if SERVER then
+            timer.Remove("liaAct" .. self:SteamID64())
+            net.Start("liaActBar")
+            net.WriteBool(false)
+            net.Send(self)
+        else
+            if IsValid(lia.gui.actionPanel) then
+                lia.gui.actionPanel:Remove()
+                lia.gui.actionPanel = nil
+            end
+        end
+        return
+    end
+
+    if SERVER then
+        net.Start("liaActBar")
+        net.WriteBool(true)
+        net.WriteString(text)
+        net.WriteFloat(time)
+        net.Send(self)
+        if callback then timer.Create("liaAct" .. self:SteamID64(), time, 1, function() if IsValid(self) then callback(self) end end) end
+    else
+        lia.bar.drawAction(text, time)
+        if callback then timer.Simple(time, function() if IsValid(self) then callback(self) end end) end
+    end
+end
+
+--[[
+Purpose:
+    Makes the player perform an action by staring at an entity for a specified duration
+
+When Called:
+    When implementing interaction systems, examination mechanics, or focused actions for the player
+
+Parameters:
+    entity (Entity)
+        The entity to stare at
+    callback (function)
+        Function to call when action completes
+    time (number)
+        The duration to stare at the entity
+    onCancel (function, optional)
+        Function to call if action is cancelled
+    distance (number, optional)
+        Maximum distance to check (default: 96)
+
+Returns:
+    None
+
+Realm:
+    Server
+
+Example Usage:
+
+Low Complexity:
+    ```lua
+    -- Simple: Stare at entity
+    player:doStaredAction(ent, function() print("Action completed") end, 3)
+    ```
+
+Medium Complexity:
+    ```lua
+    -- Medium: Stare with cancellation
+    local onCancel = function() player:notify("Action cancelled") end
+    player:doStaredAction(ent, function() player:notify("Action completed") end, 5, onCancel)
+    ```
+
+High Complexity:
+    ```lua
+    -- High: Complex interaction system with validation
+    local entity = player:getTracedEntity()
+    if IsValid(entity) then
+        local callback = function()
+        player:notifySuccess("Examination complete!")
+        local data = entity:getData("examinationData", {})
+        player:notifyInfo("Entity data: " .. table.Count(data) .. " entries")
+    end
+    local onCancel = function()
+    player:notifyWarning("Examination interrupted")
+    end
+    player:doStaredAction(entity, callback, 10, onCancel, 150)
+    end
+    ```
+]]
+function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
+    local uniqueID = "liaStare" .. self:SteamID64()
+    local data = {}
+    data.filter = self
+    timer.Create(uniqueID, 0.1, time / 0.1, function()
+        if IsValid(self) and IsValid(entity) then
+            data.start = self:GetShootPos()
+            data.endpos = data.start + self:GetAimVector() * (distance or 96)
+            local targetEntity = self:getTracedEntity()
+            if IsValid(targetEntity) and targetEntity:GetClass() == "prop_ragdoll" and IsValid(targetEntity:getNetVar("player")) then targetEntity = targetEntity:getNetVar("player") end
+            if targetEntity ~= entity then
+                timer.Remove(uniqueID)
+                if onCancel then onCancel() end
+            elseif callback and timer.RepsLeft(uniqueID) == 0 then
+                callback()
+            end
+        else
+            timer.Remove(uniqueID)
+            if onCancel then onCancel() end
+        end
+    end)
+end
+
+--[[
+Purpose:
+    Stops the player's current action and clears action timers
+
+When Called:
+    When interrupting player actions, implementing action cancellation, or cleaning up player state
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Realm:
+    Server
+
+Example Usage:
+
+Low Complexity:
+    ```lua
+    -- Simple: Stop player action
+    player:stopAction()
+    ```
+
+Medium Complexity:
+    ```lua
+    -- Medium: Stop action with notification
+    player:stopAction()
+    player:notify("Action stopped")
+    ```
+
+High Complexity:
+    ```lua
+    -- High: Complex action management with cleanup
+    if player:getNetVar("actionActive", false) then
+        player:stopAction()
+        player:setNetVar("actionActive", false)
+        player:notifyWarning("Action interrupted")
+        -- Clean up any action-related data
+        player:setData("actionProgress", 0)
+    end
+    ```
+]]
+function playerMeta:stopAction()
+    timer.Remove("liaAct" .. self:SteamID64())
+    timer.Remove("liaStare" .. self:SteamID64())
+    net.Start("liaActBar")
+    net.Send(self)
+end
+
+--[[
+    Purpose:
         Checks if the player has a specific administrative privilege
 
     When Called:
@@ -3453,19 +3668,15 @@ end
         ```
 ]]
 function playerMeta:requestBinaryQuestion(question, option1, option2, manualDismiss, callback)
-    -- Support for title as first parameter
     local title = ""
     if isstring(question) and isstring(option1) and isstring(option2) and (isbool(manualDismiss) or isfunction(manualDismiss)) then
-        -- Standard format: question, option1, option2, manualDismiss, callback
         title = ""
     elseif isstring(question) and isstring(option1) and isstring(option2) and isstring(manualDismiss) and isfunction(callback) then
-        -- Title format: title, question, option1, option2, callback
         title = question
         question = option1
         option1 = option2
         option2 = manualDismiss
         manualDismiss = false
-        -- callback stays the same
     end
 
     if SERVER then
@@ -4619,209 +4830,6 @@ if SERVER then
         }, nil, "bans")
 
         self:Kick(L("banMessage", duration or 0, reason or L("genericReason")))
-    end
-
-    --[[
-    Purpose:
-        Sets an action for the player with optional duration and callback
-
-    When Called:
-        When implementing player actions, progress bars, or timed activities for the player
-
-    Parameters:
-        text (string)
-            The action text to display
-        time (number, optional)
-            The duration of the action in seconds
-        callback (function, optional)
-            Function to call when action completes
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-        ```lua
-        -- Simple: Set action
-        player:setAction("Loading...")
-        ```
-
-    Medium Complexity:
-        ```lua
-        -- Medium: Set action with duration
-        player:setAction("Crafting item...", 5)
-        ```
-
-    High Complexity:
-        ```lua
-        -- High: Complex action system with callback
-        local actionText = "Repairing weapon..."
-        local duration = 10
-        local callback = function(ply)
-        ply:notifySuccess("Weapon repaired!")
-        local weapon = ply:GetActiveWeapon()
-        if IsValid(weapon) then
-            weapon:SetHealth(100)
-        end
-        end
-        player:setAction(actionText, duration, callback)
-        ```
-]]
-    function playerMeta:setAction(text, time, callback)
-        if time and time <= 0 then
-            if callback then callback(self) end
-            return
-        end
-
-        time = time or 5
-        if not text then
-            timer.Remove("liaAct" .. self:SteamID64())
-            net.Start("liaActBar")
-            net.WriteBool(false)
-            net.Send(self)
-            return
-        end
-
-        net.Start("liaActBar")
-        net.WriteBool(true)
-        net.WriteString(text)
-        net.WriteFloat(time)
-        net.Send(self)
-        if callback then timer.Create("liaAct" .. self:SteamID64(), time, 1, function() if IsValid(self) then callback(self) end end) end
-    end
-
-    --[[
-    Purpose:
-        Makes the player perform an action by staring at an entity for a specified duration
-
-    When Called:
-        When implementing interaction systems, examination mechanics, or focused actions for the player
-
-    Parameters:
-        entity (Entity)
-            The entity to stare at
-        callback (function)
-            Function to call when action completes
-        time (number)
-            The duration to stare at the entity
-        onCancel (function, optional)
-            Function to call if action is cancelled
-        distance (number, optional)
-            Maximum distance to check (default: 96)
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-        ```lua
-        -- Simple: Stare at entity
-        player:doStaredAction(ent, function() print("Action completed") end, 3)
-        ```
-
-    Medium Complexity:
-        ```lua
-        -- Medium: Stare with cancellation
-        local onCancel = function() player:notify("Action cancelled") end
-        player:doStaredAction(ent, function() player:notify("Action completed") end, 5, onCancel)
-        ```
-
-    High Complexity:
-        ```lua
-        -- High: Complex interaction system with validation
-        local entity = player:getTracedEntity()
-        if IsValid(entity) then
-            local callback = function()
-            player:notifySuccess("Examination complete!")
-            local data = entity:getData("examinationData", {})
-            player:notifyInfo("Entity data: " .. table.Count(data) .. " entries")
-        end
-        local onCancel = function()
-        player:notifyWarning("Examination interrupted")
-        end
-        player:doStaredAction(entity, callback, 10, onCancel, 150)
-        end
-        ```
-]]
-    function playerMeta:doStaredAction(entity, callback, time, onCancel, distance)
-        local uniqueID = "liaStare" .. self:SteamID64()
-        local data = {}
-        data.filter = self
-        timer.Create(uniqueID, 0.1, time / 0.1, function()
-            if IsValid(self) and IsValid(entity) then
-                data.start = self:GetShootPos()
-                data.endpos = data.start + self:GetAimVector() * (distance or 96)
-                local targetEntity = self:getTracedEntity()
-                if IsValid(targetEntity) and targetEntity:GetClass() == "prop_ragdoll" and IsValid(targetEntity:getNetVar("player")) then targetEntity = targetEntity:getNetVar("player") end
-                if targetEntity ~= entity then
-                    timer.Remove(uniqueID)
-                    if onCancel then onCancel() end
-                elseif callback and timer.RepsLeft(uniqueID) == 0 then
-                    callback()
-                end
-            else
-                timer.Remove(uniqueID)
-                if onCancel then onCancel() end
-            end
-        end)
-    end
-
-    --[[
-    Purpose:
-        Stops the player's current action and clears action timers
-
-    When Called:
-        When interrupting player actions, implementing action cancellation, or cleaning up player state
-
-    Parameters:
-        None
-
-    Returns:
-        None
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-        ```lua
-        -- Simple: Stop player action
-        player:stopAction()
-        ```
-
-    Medium Complexity:
-        ```lua
-        -- Medium: Stop action with notification
-        player:stopAction()
-        player:notify("Action stopped")
-        ```
-
-    High Complexity:
-        ```lua
-        -- High: Complex action management with cleanup
-        if player:getNetVar("actionActive", false) then
-            player:stopAction()
-            player:setNetVar("actionActive", false)
-            player:notifyWarning("Action interrupted")
-            -- Clean up any action-related data
-            player:setData("actionProgress", 0)
-        end
-        ```
-]]
-    function playerMeta:stopAction()
-        timer.Remove("liaAct" .. self:SteamID64())
-        timer.Remove("liaStare" .. self:SteamID64())
-        net.Start("liaActBar")
-        net.Send(self)
     end
 
     --[[

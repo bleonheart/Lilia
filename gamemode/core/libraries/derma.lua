@@ -1816,7 +1816,7 @@ lia.derma.baseFuncs = {
         return self
     end,
     Material = function(self, mat)
-        if mat and mat:IsValid() then
+        if mat then
             local tex = mat:GetTexture("$basetexture")
             if tex then TEXTURE = tex end
         end

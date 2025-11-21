@@ -567,8 +567,8 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         progressBar:SetBarColor(entry.attr.color or lia.config.get("Color") or Color(255, 255, 255))
         progressBar:SetFraction(math.Clamp(currentValue / maxValue, 0, 1))
         progressBar:SetText(currentValue .. "/" .. maxValue)
-        progressBar.Font = "LiliaFont.17"
-        progressBar:SetTall(20)
+        progressBar.Font = "LiliaFont.14"
+        progressBar:SetTall(36)
     end
 
     local fx, fy = self.infoFrame:GetPos()
