@@ -274,6 +274,18 @@ For NPC interactions, quest dialogs, or scripted conversations with non-player c
 
 ---
 
+### DialogMenu
+
+#### 📋 Purpose
+NPC dialog interface panel
+The main dialog menu panel for NPC conversations with conversation history tracking, response display, and interactive dialog options
+
+#### ⏰ When Called
+When initiating NPC dialog interactions, quest conversations, or scripted dialogue sequences with non-player characters
+]]
+
+---
+
 ### liaDListView
 
 #### 📋 Purpose
@@ -474,6 +486,18 @@ A slider for numeric value input
 
 #### ⏰ When Called
 For numeric input with visual feedback
+]]
+
+---
+
+### liaSlider
+
+#### 📋 Purpose
+Custom slider control with smooth animations
+A styled slider panel for numeric value input with smooth animations, convar synchronization support, and custom Lilia theming
+
+#### ⏰ When Called
+For settings panels, configuration interfaces, or any UI that requires smooth numeric value selection with visual feedback
 ]]
 
 ---
