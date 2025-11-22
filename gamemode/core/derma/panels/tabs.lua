@@ -178,7 +178,13 @@ function PANEL:Rebuild()
             btnTab:SetWide(btnWidth)
             btnTab:SetText("")
             btnTab.DoClick = function()
-                if IsValid(self.tabs[self.active_id]) and IsValid(self.tabs[self.active_id].pan) then self.tabs[self.active_id].pan:SetVisible(false) end
+                -- Hide all tab panels first to prevent overlapping
+                for i, tabData in ipairs(self.tabs) do
+                    if IsValid(tabData.pan) then
+                        tabData.pan:SetVisible(false)
+                    end
+                end
+                -- Show only the selected tab
                 if IsValid(tab.pan) then tab.pan:SetVisible(true) end
                 self.active_id = id
                 lia.websound.playButtonSound()
@@ -190,7 +196,13 @@ function PANEL:Rebuild()
                 local dm = lia.derma.dermaMenu()
                 for k, v in pairs(self.tabs) do
                     dm:AddOption(v.name, function()
-                        if IsValid(self.tabs[self.active_id]) and IsValid(self.tabs[self.active_id].pan) then self.tabs[self.active_id].pan:SetVisible(false) end
+                        -- Hide all tab panels first to prevent overlapping
+                        for i, tabData in ipairs(self.tabs) do
+                            if IsValid(tabData.pan) then
+                                tabData.pan:SetVisible(false)
+                            end
+                        end
+                        -- Show only the selected tab
                         if IsValid(v.pan) then
                             v.pan:SetVisible(true)
                             self.active_id = k
@@ -332,7 +344,13 @@ end
 function PANEL:SetActiveTab(tab)
     if isnumber(tab) then
         if not self.tabs[tab] then return end
-        if self.tabs[self.active_id] and IsValid(self.tabs[self.active_id].pan) then self.tabs[self.active_id].pan:SetVisible(false) end
+        -- Hide all tab panels first to prevent overlapping
+        for i, tabData in ipairs(self.tabs) do
+            if IsValid(tabData.pan) then
+                tabData.pan:SetVisible(false)
+            end
+        end
+        -- Show only the selected tab
         if IsValid(self.tabs[tab].pan) then self.tabs[tab].pan:SetVisible(true) end
         self.active_id = tab
         local button = self.panel_tabs:GetChild(tab)
