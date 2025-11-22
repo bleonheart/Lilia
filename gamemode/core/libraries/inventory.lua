@@ -1509,7 +1509,6 @@ else
 
         -- Mark that a dual inventory is now open
         lia.inventory.dualInventoryOpen = true
-
         -- Position panels side-by-side
         local extraWidth = (panel2:GetWide() + 4) / 2
         panel1:Center()
