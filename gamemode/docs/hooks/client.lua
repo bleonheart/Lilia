@@ -13202,6 +13202,7 @@ end
 ]]
 function OverrideSpawnTime(client, baseTime)
 end
+
 --[[
     Purpose:
         Allows customization of the information displayed when looking at an item entity in the world
@@ -13654,4 +13655,3 @@ end
 ]]
 function OnCreateDualInventoryPanels(panel1, panel2, inventory1, inventory2)
 end
-

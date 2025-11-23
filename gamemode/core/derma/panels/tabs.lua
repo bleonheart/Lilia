@@ -158,11 +158,9 @@ function PANEL:Rebuild()
         for id, tab in ipairs(self.tabs) do
             surface.SetFont("LiliaFont.18")
             local textW = surface.GetTextSize(tab.name)
-            local iconW = tab.icon and 16 or 0
-            local iconTextGap = tab.icon and 8 or 0
             local padding = 16
             local minWidth = 80
-            local btnWidth = math.max(minWidth, padding + iconW + iconTextGap + textW + padding)
+            local btnWidth = math.max(minWidth, padding + textW + padding)
             tabWidths[id] = btnWidth
         end
 
@@ -179,11 +177,10 @@ function PANEL:Rebuild()
             btnTab:SetText("")
             btnTab.DoClick = function()
                 -- Hide all tab panels first to prevent overlapping
-                for i, tabData in ipairs(self.tabs) do
-                    if IsValid(tabData.pan) then
-                        tabData.pan:SetVisible(false)
-                    end
+                for _, tabData in ipairs(self.tabs) do
+                    if IsValid(tabData.pan) then tabData.pan:SetVisible(false) end
                 end
+
                 -- Show only the selected tab
                 if IsValid(tab.pan) then tab.pan:SetVisible(true) end
                 self.active_id = id
@@ -197,11 +194,10 @@ function PANEL:Rebuild()
                 for k, v in pairs(self.tabs) do
                     dm:AddOption(v.name, function()
                         -- Hide all tab panels first to prevent overlapping
-                        for i, tabData in ipairs(self.tabs) do
-                            if IsValid(tabData.pan) then
-                                tabData.pan:SetVisible(false)
-                            end
+                        for _, tabData in ipairs(self.tabs) do
+                            if IsValid(tabData.pan) then tabData.pan:SetVisible(false) end
                         end
+
                         -- Show only the selected tab
                         if IsValid(v.pan) then
                             v.pan:SetVisible(true)
@@ -216,29 +212,11 @@ function PANEL:Rebuild()
             btnTab.Paint = function(_, w, h)
                 local isActive = self.active_id == id
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
-                local colorIcon = isActive and lia.color.theme.theme or color_white
                 if self.tab_style == "modern" then
                     if isActive then lia.derma.rect(0, h - self.indicator_height, w, self.indicator_height):Color(lia.color.theme.theme):Draw() end
-                    local iconW = tab.icon and 16 or 0
-                    local iconTextGap = tab.icon and 8 or 0
-                    local contentWidth = iconW + iconTextGap + surface.GetTextSize(tab.name)
-                    local startX = (w - contentWidth) / 2
-                    local textX = startX + (iconW > 0 and (iconW + iconTextGap) or 0)
-                    if tab.icon then lia.derma.drawMaterial(0, startX, (h - 16) * 0.5, 16, 16, colorIcon, tab.icon) end
-                    draw.SimpleText(tab.name, "LiliaFont.18", textX, h * 0.5, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(tab.name, "LiliaFont.18", w * 0.5, h * 0.5, colorText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 else
-                    local iconW = tab.icon and 16 or 0
-                    local iconTextGap = tab.icon and 8 or 0
-                    local contentWidth = iconW + iconTextGap + surface.GetTextSize(tab.name)
-                    local startX = (w - contentWidth) / 2
-                    local textX = startX + (iconW > 0 and (iconW + iconTextGap) or 0)
-                    if tab.icon then
-                        lia.derma.drawMaterial(0, startX, (h - 16) * 0.5, 16, 16, colorIcon, tab.icon)
-                    else
-                        lia.derma.rect(startX, (h - 16) * 0.5, 16, 16):Rad(24):Color(colorIcon):Shape(lia.derma.SHAPE_IOS):Draw()
-                    end
-
-                    draw.SimpleText(tab.name, "LiliaFont.18", textX, h * 0.5 - 1, colorText, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                    draw.SimpleText(tab.name, "LiliaFont.18", w * 0.5, h * 0.5 - 1, colorText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
                 end
             end
         end
@@ -345,11 +323,10 @@ function PANEL:SetActiveTab(tab)
     if isnumber(tab) then
         if not self.tabs[tab] then return end
         -- Hide all tab panels first to prevent overlapping
-        for i, tabData in ipairs(self.tabs) do
-            if IsValid(tabData.pan) then
-                tabData.pan:SetVisible(false)
-            end
+        for _, tabData in ipairs(self.tabs) do
+            if IsValid(tabData.pan) then tabData.pan:SetVisible(false) end
         end
+
         -- Show only the selected tab
         if IsValid(self.tabs[tab].pan) then self.tabs[tab].pan:SetVisible(true) end
         self.active_id = tab

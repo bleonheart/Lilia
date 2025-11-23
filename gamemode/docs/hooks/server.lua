@@ -30429,6 +30429,7 @@ end
 ]]
 function WebSoundDownloaded(name, path)
 end
+
 --[[
     Purpose:
         Called when an NPC's type/data is being set or configured
@@ -30596,4 +30597,3 @@ end
 ]]
 function OnNPCTypeSet(client, npc, npcID, filteredData)
 end
-
