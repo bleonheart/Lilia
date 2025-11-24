@@ -1,5 +1,155 @@
 # Changelog
 
+## Version 7.061 (November 24, 2025)
+
+### Changes
+
+- Missing Localization
+- Successfully updated workshop Lilia to 7.059
+- Linting
+- Fixed charunbanoffline
+- Added Configuration to Delete Items of DIsconnected Players
+- Successfully updated workshop Lilia to 7.055
+- Bots Now Can Be Called From Scoreboard
+- Weird Logging Error
+- Fixed Weird Bug W/ Spawns
+- Successfully updated workshop Lilia to 7.051
+- Update tabs.lua
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.048
+- Storage Bug Fixes and added lia.inventory.showDual
+- Minor Tabs Bug
+- Fixed Error W/ ply unban
+- Successfully updated workshop Lilia to 7.044
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+
+## Version 7.059 (November 23, 2025)
+
+### Changes
+
+- Linting
+- Fixed charunbanoffline
+- Added Configuration to Delete Items of DIsconnected Players
+- Successfully updated workshop Lilia to 7.055
+- Bots Now Can Be Called From Scoreboard
+- Weird Logging Error
+- Fixed Weird Bug W/ Spawns
+- Successfully updated workshop Lilia to 7.051
+- Update tabs.lua
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.048
+- Storage Bug Fixes and added lia.inventory.showDual
+- Minor Tabs Bug
+- Fixed Error W/ ply unban
+- Successfully updated workshop Lilia to 7.044
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+- MD
+- Better Logs
+
+## Version 7.055 (November 23, 2025)
+
+### Changes
+
+- Bots Now Can Be Called From Scoreboard
+- Weird Logging Error
+- Fixed Weird Bug W/ Spawns
+- Successfully updated workshop Lilia to 7.051
+- Update tabs.lua
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.048
+- Storage Bug Fixes and added lia.inventory.showDual
+- Minor Tabs Bug
+- Fixed Error W/ ply unban
+- Successfully updated workshop Lilia to 7.044
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+- MD
+- Better Logs
+- Fixed Weird LastPos bug
+- Successfully updated workshop Lilia to 7.037
+- Vendor Item Cooldown UI Changes, Localization and  New Notif
+- Successfully updated workshop Lilia to 7.035
+
+## Version 7.051 (November 23, 2025)
+
+### Changes
+
+- Update tabs.lua
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.048
+- Storage Bug Fixes and added lia.inventory.showDual
+- Minor Tabs Bug
+- Fixed Error W/ ply unban
+- Successfully updated workshop Lilia to 7.044
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+- MD
+- Better Logs
+- Fixed Weird LastPos bug
+- Successfully updated workshop Lilia to 7.037
+- Vendor Item Cooldown UI Changes, Localization and  New Notif
+- Successfully updated workshop Lilia to 7.035
+- Update color.lua
+- Update color.lua
+- Dialog, Item Buy Cooldowns and Language Imrpovements
+- Update derma.lua
+
+## Version 7.048 (November 22, 2025)
+
+### Changes
+
+- Storage Bug Fixes and added lia.inventory.showDual
+- Minor Tabs Bug
+- Fixed Error W/ ply unban
+- Successfully updated workshop Lilia to 7.044
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+- MD
+- Better Logs
+- Fixed Weird LastPos bug
+- Successfully updated workshop Lilia to 7.037
+- Vendor Item Cooldown UI Changes, Localization and  New Notif
+- Successfully updated workshop Lilia to 7.035
+- Update color.lua
+- Update color.lua
+- Dialog, Item Buy Cooldowns and Language Imrpovements
+- Update derma.lua
+- Fixed weird car glitch
+- Method  to pa int lilia buttons
+- Successfully updated workshop Lilia to 7.028
+
+## Version 7.044 (November 21, 2025)
+
+### Changes
+
+- Fix NPC Model Save bug
+- Better Slider
+- SetAction Is Now Shared & Improved Progress Bar
+- MD
+- Better Logs
+- Fixed Weird LastPos bug
+- Successfully updated workshop Lilia to 7.037
+- Vendor Item Cooldown UI Changes, Localization and  New Notif
+- Successfully updated workshop Lilia to 7.035
+- Update color.lua
+- Update color.lua
+- Dialog, Item Buy Cooldowns and Language Imrpovements
+- Update derma.lua
+- Fixed weird car glitch
+- Method  to pa int lilia buttons
+- Successfully updated workshop Lilia to 7.028
+- Way too many changes
+- Successfully updated workshop Lilia to 7.026
+- Linting
+- Minor UI Update & Removed useless Command
+
 ## Version 7.037 (November 19, 2025)
 
 ### Changes
