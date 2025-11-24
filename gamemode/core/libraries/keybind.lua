@@ -845,8 +845,6 @@ if CLIENT then
         local function buildKeybinds(parent)
             parent:Clear()
             local allowEdit = lia.config.get("AllowKeybindEditing", true)
-            
-            -- Create search bar
             local searchBar = vgui.Create("DTextEntry", parent)
             searchBar:Dock(TOP)
             searchBar:DockMargin(10, 10, 10, 10)
@@ -854,20 +852,15 @@ if CLIENT then
             searchBar:SetFont("LiliaFont.18")
             searchBar:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
             searchBar:SetTextColor(Color(200, 200, 200))
-            searchBar.PaintOver = function(_, w, h) 
-                lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() 
-            end
-            
+            searchBar.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
             local scrollPanel = parent:Add("liaScrollPanel")
             scrollPanel:Dock(FILL)
             scrollPanel:InvalidateLayout(true)
             if not IsValid(scrollPanel.VBar) then scrollPanel:PerformLayout() end
-            
             local function populateKeybinds(searchFilter)
                 local canvas = scrollPanel:GetCanvas()
                 canvas:Clear()
                 canvas:DockPadding(10, 10, 10, 10)
-                
                 local taken = {}
                 for action, data in pairs(lia.keybind.stored) do
                     if istable(data) and data.value then taken[data.value] = action end
@@ -884,7 +877,6 @@ if CLIENT then
                     return la < lb
                 end)
 
-                -- Filter actions based on search
                 local filteredActions = {}
                 if searchFilter and searchFilter ~= "" then
                     local filterLower = searchFilter:lower()
@@ -895,9 +887,7 @@ if CLIENT then
                         local actionNameLower = actionName:lower()
                         local actionDescLower = actionDesc:lower()
                         local actionKeyLower = tostring(action):lower()
-                        if actionNameLower:find(filterLower, 1, true) or actionDescLower:find(filterLower, 1, true) or actionKeyLower:find(filterLower, 1, true) then
-                            filteredActions[#filteredActions + 1] = action
-                        end
+                        if actionNameLower:find(filterLower, 1, true) or actionDescLower:find(filterLower, 1, true) or actionKeyLower:find(filterLower, 1, true) then filteredActions[#filteredActions + 1] = action end
                     end
                 else
                     filteredActions = actions
@@ -931,14 +921,12 @@ if CLIENT then
                     end
                 end
             end
-            
-            -- Handle search input
+
             searchBar.OnChange = function(textEntry)
                 local searchText = textEntry:GetValue()
                 populateKeybinds(searchText)
             end
-            
-            -- Initial population
+
             populateKeybinds("")
         end
 

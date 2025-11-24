@@ -185,8 +185,6 @@ function MODULE:PlayerSpawn(client)
     client:SetDSP(0, false)
     playerLoadedChar[client] = nil
     playerCharID[client] = nil
-
-    -- Call spawn logic to handle custom spawn logic when respawning
     DoSpawnLogic(client)
 end
 
@@ -202,20 +200,14 @@ end
 
 function MODULE:PostPlayerLoadout(client)
     local character = client:getChar()
-    if not character then
-        return
-    end
-
+    if not character then return end
     local wasLoadedChar = playerLoadedChar[client] or false
     local savedCharID = playerCharID[client]
     local currentCharID = character and character:getID() or nil
     local lastDeathTime = client:getNetVar("lastDeathTime", 0)
     local hasDied = lastDeathTime > 0
     local isSameChar = savedCharID and currentCharID and savedCharID == currentCharID
-    if not wasLoadedChar and isSameChar and hasDied then
-        DoSpawnLogic(client)
-    end
-
+    if not wasLoadedChar and isSameChar and hasDied then DoSpawnLogic(client) end
     playerLoadedChar[client] = nil
     playerCharID[client] = nil
 end

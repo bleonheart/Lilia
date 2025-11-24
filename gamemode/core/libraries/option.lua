@@ -770,10 +770,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             parent:Clear()
             local tabs = parent:Add("liaTabs")
             tabs:Dock(FILL)
-            
-            -- Store all category items for filtering
             local allCategoryItems = {}
-            
             local function populate()
                 if tabs.tabs then
                     for i = #tabs.tabs, 1, -1 do
@@ -811,17 +808,12 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 
                 table.sort(catNames)
                 allCategoryItems = categories
-                
-                -- Function to filter and display items for a category
                 local function populateCategoryTab(categoryName, scrollPanel, searchFilter)
                     local canvas = scrollPanel:GetCanvas()
                     canvas:Clear()
                     canvas:DockPadding(10, 10, 10, 10)
-                    
                     local items = allCategoryItems[categoryName] or {}
                     local filteredItems = {}
-                    
-                    -- Filter items based on search text
                     if searchFilter and searchFilter ~= "" then
                         local filterLower = searchFilter:lower()
                         for _, it in ipairs(items) do
@@ -829,15 +821,12 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                             local d = tostring(it.config.desc or "")
                             local k = tostring(it.key or "")
                             local ln, ld, lk = n:lower(), d:lower(), k:lower()
-                            if ln:find(filterLower, 1, true) or ld:find(filterLower, 1, true) or lk:find(filterLower, 1, true) then
-                                filteredItems[#filteredItems + 1] = it
-                            end
+                            if ln:find(filterLower, 1, true) or ld:find(filterLower, 1, true) or lk:find(filterLower, 1, true) then filteredItems[#filteredItems + 1] = it end
                         end
                     else
                         filteredItems = items
                     end
-                    
-                    -- Display filtered items
+
                     for _, v in ipairs(filteredItems) do
                         local panel = OptionFormatting[v.elemType](v.key, v.name, v.config, canvas)
                         panel:Dock(TOP)
@@ -845,13 +834,11 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                         panel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(50, 50, 60, 80)):Shape(lia.derma.SHAPE_IOS):Draw() end
                     end
                 end
-                
+
                 for _, catName in ipairs(catNames) do
                     local categoryContainer = vgui.Create("DPanel")
                     categoryContainer:Dock(FILL)
                     categoryContainer.Paint = function() end
-                    
-                    -- Create search bar
                     local searchBar = vgui.Create("DTextEntry", categoryContainer)
                     searchBar:Dock(TOP)
                     searchBar:DockMargin(10, 10, 10, 10)
@@ -859,30 +846,20 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     searchBar:SetFont("LiliaFont.18")
                     searchBar:SetPlaceholderText(L("searchOptions") or "Search Options...")
                     searchBar:SetTextColor(Color(200, 200, 200))
-                    searchBar.PaintOver = function(_, w, h) 
-                        lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() 
-                    end
-                    
-                    -- Create scroll panel for option items
+                    searchBar.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
                     local scrollPanel = vgui.Create("liaScrollPanel", categoryContainer)
                     scrollPanel:Dock(FILL)
                     scrollPanel:InvalidateLayout(true)
                     if not IsValid(scrollPanel.VBar) then scrollPanel:PerformLayout() end
-                    
-                    -- Store search bar and scroll panel reference
                     categoryContainer.searchBar = searchBar
                     categoryContainer.scrollPanel = scrollPanel
                     categoryContainer.categoryName = catName
-                    
-                    -- Handle search input
                     searchBar.OnChange = function(textEntry)
                         local searchText = textEntry:GetValue()
                         populateCategoryTab(catName, scrollPanel, searchText)
                     end
-                    
-                    -- Initial population
+
                     populateCategoryTab(catName, scrollPanel, "")
-                    
                     tabs:AddTab(catName, categoryContainer)
                 end
             end
