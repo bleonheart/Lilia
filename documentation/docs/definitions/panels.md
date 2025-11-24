@@ -490,18 +490,6 @@ For numeric input with visual feedback
 
 ---
 
-### liaSlider
-
-#### 📋 Purpose
-Custom slider control with smooth animations
-A styled slider panel for numeric value input with smooth animations, convar synchronization support, and custom Lilia theming
-
-#### ⏰ When Called
-For settings panels, configuration interfaces, or any UI that requires smooth numeric value selection with visual feedback
-]]
-
----
-
 ### liaBlurredDFrame
 
 #### 📋 Purpose
@@ -618,6 +606,18 @@ A container that slides content in and out
 
 #### ⏰ When Called
 For sliding panels or animated content
+]]
+
+---
+
+### liaSlider
+
+#### 📋 Purpose
+Custom slider control with smooth animations
+A styled slider panel for numeric value input with smooth animations, convar synchronization support, and custom Lilia theming
+
+#### ⏰ When Called
+For settings panels, configuration interfaces, or any UI that requires smooth numeric value selection with visual feedback
 ]]
 
 ---
