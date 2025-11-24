@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Dialog Library
 
     Comprehensive NPC dialog management system for the Lilia framework.
@@ -973,7 +973,7 @@ else
             frame:Center()
             frame:MakePopup()
 
-            local scroll = vgui.Create("DScrollPanel", frame)
+            local scroll = vgui.Create("liaScrollPanel", frame)
             scroll:Dock(FILL)
             scroll:DockMargin(10, 10, 10, 10)
 

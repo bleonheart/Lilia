@@ -509,6 +509,7 @@ LANGUAGE = {
     unsorted = "Non tri",
     noItemSpawnerPermission = "Vous n'avez pas la permission d'utiliser ceci.",
     keybinds = "Raccourcis clavier",
+    allowKeybindEditing = "Autoriser Édition Raccourcis",
     allowKeybindEditingDesc = "Permettre aux joueurs de modifier leurs raccourcis clavier dans le menu des paramètres.",
     kickAllBotsDesc = "Expulse tous les bots du serveur.",
     itemUseOnTarget = "Utiliser sur la cible",

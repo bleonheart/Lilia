@@ -459,6 +459,7 @@ LANGUAGE = {
     unsorted = "No ordenado",
     noItemSpawnerPermission = "No tens permisso para usar isto.",
     keybinds = "Atalhos de Teclado",
+    allowKeybindEditing = "Permitir Edição de Atalhos",
     allowKeybindEditingDesc = "Permitir que os jogadores editem os seus atalhos de teclado no menu de configurações.",
     itemUseOnTarget = "Usar no Alvo",
     placeDownEntity = "Colocar",

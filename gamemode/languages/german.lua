@@ -464,6 +464,7 @@ LANGUAGE = {
     unsorted = "Unsortiert",
     noItemSpawnerPermission = "Du hast keine Berechtigung, dies zu benutzen.",
     keybinds = "Tastenbelegungen",
+    allowKeybindEditing = "Tastenbelegung Bearbeitung",
     allowKeybindEditingDesc = "Erlaube Spielern, ihre Tastenbelegungen im Einstellungsmenü zu bearbeiten.",
     itemUseOnTarget = "Am Ziel benutzen",
     placeDownEntity = "Platzieren",

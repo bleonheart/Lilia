@@ -461,6 +461,7 @@ LANGUAGE = {
     unsorted = "Sin ordenar",
     noItemSpawnerPermission = "No tienes permiso para usar esto.",
     keybinds = "Teclas rpidas",
+    allowKeybindEditing = "Permitir Edición de Teclas",
     allowKeybindEditingDesc = "Permitir que los jugadores editen sus teclas rpidas en el menú de configuración.",
     itemUseOnTarget = "Usar en objetivo",
     placeDownEntity = "Colocar",

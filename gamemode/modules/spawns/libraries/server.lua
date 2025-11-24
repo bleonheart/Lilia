@@ -36,11 +36,10 @@ function MODULE:StoreSpawns(spawns)
     return deferred.resolve(true)
 end
 
-local function SpawnPlayer(client, isLoadout)
+local function DoSpawnLogic(client)
     if not IsValid(client) then return end
     local character = client:getChar()
     if not character then return end
-    if isLoadout then return end
     local posData = character:getLastPos()
     if posData and posData.map and posData.map:lower() == game.GetMap():lower() then
         if posData.pos and isvector(posData.pos) then client:SetPos(posData.pos) end
@@ -186,6 +185,9 @@ function MODULE:PlayerSpawn(client)
     client:SetDSP(0, false)
     playerLoadedChar[client] = nil
     playerCharID[client] = nil
+
+    -- Call spawn logic to handle custom spawn logic when respawning
+    DoSpawnLogic(client)
 end
 
 function MODULE:PostPlayerLoadedChar(client)
@@ -195,13 +197,12 @@ function MODULE:PostPlayerLoadedChar(client)
         playerCharID[client] = character:getID()
     end
 
-    SpawnPlayer(client, false)
+    DoSpawnLogic(client)
 end
 
 function MODULE:PostPlayerLoadout(client)
     local character = client:getChar()
     if not character then
-        SpawnPlayer(client, true)
         return
     end
 
@@ -212,9 +213,7 @@ function MODULE:PostPlayerLoadout(client)
     local hasDied = lastDeathTime > 0
     local isSameChar = savedCharID and currentCharID and savedCharID == currentCharID
     if not wasLoadedChar and isSameChar and hasDied then
-        SpawnPlayer(client, false)
-    else
-        SpawnPlayer(client, true)
+        DoSpawnLogic(client)
     end
 
     playerLoadedChar[client] = nil

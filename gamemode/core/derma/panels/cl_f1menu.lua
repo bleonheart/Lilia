@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
     lia.gui.info = self
@@ -311,7 +311,7 @@ function PANEL:Init()
     end
 
     self:MakePopup()
-    local defaultTab = lia.config.get("DefaultMenuTab", "you")
+    local defaultTab = lia.option.get("DefaultMenuTab", "you")
     if not self.tabList[defaultTab] then
         if self.tabList["you"] then
             defaultTab = "you"
@@ -1070,16 +1070,15 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
                     local function createStaffTable(staffData)
                         panel:Clear()
-                        local searchEntry = panel:Add("DTextEntry")
+                        local searchEntry = panel:Add("liaEntry")
                         searchEntry:Dock(TOP)
                         searchEntry:DockMargin(0, 0, 0, 15)
                         searchEntry:SetTall(30)
                         searchEntry:SetFont("LiliaFont.17")
                         searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
-                        searchEntry.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
-                        searchEntry.OnChange = function(textEntry)
-                            local filteredData = filterStaffData(textEntry:GetValue())
+                        searchEntry.OnTextChanged = function(value)
+                            local filteredData = filterStaffData(value)
                             updateStaffTable(filteredData)
                         end
 
@@ -1292,7 +1291,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                     applyButton:SetTall(35)
                     applyButton:CenterHorizontal()
                     applyButton:SetText(L("apply"))
-                    local scroll = page:Add("DScrollPanel")
+                    local scroll = page:Add("liaScrollPanel")
                     scroll:Dock(FILL)
                     local entries = {}
                     for key, value in pairs(themeData) do
