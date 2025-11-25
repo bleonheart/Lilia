@@ -926,12 +926,24 @@ end)
 net.Receive("liaNetMessage", function()
     local name = net.ReadString()
     local args = net.ReadTable()
+    local startTime = SysTime()
+    local cached = lia.net.isCacheHit(name, args)
+    if cached then
+        lia.net.performance.totalReceiveTime = lia.net.performance.totalReceiveTime + (SysTime() - startTime)
+        lia.net.performance.receives = lia.net.performance.receives + 1
+        return
+    end
+
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], LocalPlayer(), unpack(args))
         if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
     else
         lia.error(L("unregisteredNetMessage", name))
     end
+
+    lia.net.addToCache(name, args, true)
+    lia.net.performance.totalReceiveTime = lia.net.performance.totalReceiveTime + (SysTime() - startTime)
+    lia.net.performance.receives = lia.net.performance.receives + 1
 end)
 
 net.Receive("liaAssureClientSideAssets", function()
