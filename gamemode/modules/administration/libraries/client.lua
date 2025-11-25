@@ -329,13 +329,7 @@ local function OpenFlagsPanel(panel, data)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
     list:AddMenuOption(L("noOptionsAvailable"), function() end)
 end
@@ -468,7 +462,6 @@ function MODULE:PopulateAdminTabs(pages)
                         search:SetFont("LiliaFont.17")
                         search:SetPlaceholderText(L("search"))
                         search:SetTextColor(Color(200, 200, 200))
-                        print("[CHAR LIST DEBUG] Search entry created, IsValid:", IsValid(search), "Has textEntry:", IsValid(search.textEntry))
                         local list = container:Add("liaTable")
                         list:Dock(FILL)
                         local steamIDColumnIndex
@@ -526,13 +519,9 @@ function MODULE:PopulateAdminTabs(pages)
                         end, "icon16/accept.png")
 
                         local function populate(filter)
-                            print("[CHAR LIST DEBUG] populate called with filter:", filter, "type:", type(filter))
                             list:Clear()
                             filter = tostring(filter or "")
                             filter = string.lower(filter)
-                            print("[CHAR LIST DEBUG] After conversion, filter is:", filter, "length:", #filter)
-                            print("[CHAR LIST DEBUG] Total rows to search:", #rows)
-                            local matchCount = 0
                             for _, row in ipairs(rows) do
                                 local values = {}
                                 for _, col in ipairs(columns) do
@@ -544,13 +533,11 @@ function MODULE:PopulateAdminTabs(pages)
                                 local match = false
                                 if filter == "" then
                                     match = true
-                                    print("[CHAR LIST DEBUG] Empty filter, matching all")
                                 else
                                     for _, value in ipairs(values) do
                                         local valueStr = tostring(value):lower()
                                         if valueStr:find(filter, 1, true) then
                                             match = true
-                                            print("[CHAR LIST DEBUG] Match found! Filter:", filter, "Value:", valueStr)
                                             break
                                         end
                                     end
@@ -561,40 +548,15 @@ function MODULE:PopulateAdminTabs(pages)
                                     line.CharID = row.ID
                                     line.SteamID = row.SteamID
                                     line.Banned = row.Banned
-                                    matchCount = matchCount + 1
                                 end
                             end
 
-                            print("[CHAR LIST DEBUG] Total matches found:", matchCount, "out of", #rows)
-                            print("[CHAR LIST DEBUG] List now has", list:GetRowCount(), "rows")
                             -- Force table layout update
                             list:InvalidateLayout(true)
                             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
                         end
 
-                        -- Hook directly into textEntry.OnChange (DTextEntry uses OnChange, not OnTextChanged)
-                        if IsValid(search.textEntry) then
-                            search.textEntry.OnChange = function(textEntry)
-                                print("[CHAR LIST DEBUG] textEntry.OnChange fired!")
-                                local directValue = textEntry:GetValue() or ""
-                                print("[CHAR LIST DEBUG] Direct value from textEntry:", directValue, "length:", #directValue)
-                                populate(directValue)
-                            end
-
-                            print("[CHAR LIST DEBUG] textEntry.OnChange hook set")
-                        else
-                            print("[CHAR LIST DEBUG] ERROR: search.textEntry is not valid!")
-                        end
-
-                        -- Also try OnTextChanged as backup
-                        search.OnTextChanged = function(value)
-                            print("[CHAR LIST DEBUG] OnTextChanged called with value:", value, "type:", type(value))
-                            local searchValue = tostring(value or search:GetValue() or "")
-                            print("[CHAR LIST DEBUG] Final searchValue:", searchValue, "length:", #searchValue)
-                            populate(searchValue)
-                        end
-
-                        print("[CHAR LIST DEBUG] OnTextChanged callback set, testing initial populate")
+                        search.OnTextChanged = function(_, value) populate(value or "") end
                         populate("")
                     end
 
@@ -2852,13 +2814,7 @@ net.Receive("liaAllPks", function()
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
 
@@ -2991,13 +2947,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
 
@@ -3121,13 +3071,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     list:AddMenuOption(L("openSteamProfile"), function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
     list:AddMenuOption(L("viewWarnings"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
     list:AddMenuOption(L("viewTicketRequests"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
 
@@ -3601,13 +3545,7 @@ net.Receive("liaActiveTickets", function()
     end
 
     list:AddMenuOption(L("noOptionsAvailable"), function() end)
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
 
@@ -3754,13 +3692,7 @@ net.Receive("liaAllWarnings", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    if IsValid(search.textEntry) then
-        search.textEntry.OnChange = function(textEntry)
-            local searchValue = textEntry:GetValue() or ""
-            populate(searchValue)
-        end
-    end
-
+    search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
 
