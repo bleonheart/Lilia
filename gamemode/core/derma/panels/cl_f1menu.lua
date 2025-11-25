@@ -1053,7 +1053,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                     panel.originalStaffData = {}
                     panel.filteredStaffData = {}
                     local function filterStaffData(searchText)
-                        if not searchText or searchText == "" then
+                        searchText = tostring(searchText or "")
+                        if searchText == "" then
                             panel.filteredStaffData = panel.originalStaffData
                         else
                             panel.filteredStaffData = {}
@@ -1072,13 +1073,14 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         panel:Clear()
                         local searchEntry = panel:Add("liaEntry")
                         searchEntry:Dock(TOP)
-                        searchEntry:DockMargin(0, 0, 0, 15)
+                        searchEntry:DockMargin(0, 20, 0, 15)
                         searchEntry:SetTall(30)
                         searchEntry:SetFont("LiliaFont.17")
                         searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
                         searchEntry.OnTextChanged = function(value)
-                            local filteredData = filterStaffData(value)
+                            local searchValue = tostring(value or searchEntry:GetValue() or "")
+                            local filteredData = filterStaffData(searchValue)
                             updateStaffTable(filteredData)
                         end
 

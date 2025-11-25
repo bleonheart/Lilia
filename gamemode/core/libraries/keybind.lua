@@ -845,14 +845,13 @@ if CLIENT then
         local function buildKeybinds(parent)
             parent:Clear()
             local allowEdit = lia.config.get("AllowKeybindEditing", true)
-            local searchBar = vgui.Create("DTextEntry", parent)
+            local searchBar = vgui.Create("liaEntry", parent)
             searchBar:Dock(TOP)
             searchBar:DockMargin(10, 10, 10, 10)
             searchBar:SetTall(40)
             searchBar:SetFont("LiliaFont.18")
             searchBar:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
             searchBar:SetTextColor(Color(200, 200, 200))
-            searchBar.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
             local scrollPanel = parent:Add("liaScrollPanel")
             scrollPanel:Dock(FILL)
             scrollPanel:InvalidateLayout(true)
@@ -878,7 +877,8 @@ if CLIENT then
                 end)
 
                 local filteredActions = {}
-                if searchFilter and searchFilter ~= "" then
+                searchFilter = tostring(searchFilter or "")
+                if searchFilter ~= "" then
                     local filterLower = searchFilter:lower()
                     for _, action in ipairs(actions) do
                         local data = lia.keybind.stored[action]
@@ -920,11 +920,14 @@ if CLIENT then
                         buildKeybinds(parent)
                     end
                 end
+
+                -- Force layout update
+                scrollPanel:InvalidateLayout(true)
             end
 
-            searchBar.OnChange = function(textEntry)
-                local searchText = textEntry:GetValue()
-                populateKeybinds(searchText)
+            searchBar.OnTextChanged = function(value)
+                local searchValue = tostring(value or searchBar:GetValue() or "")
+                populateKeybinds(searchValue)
             end
 
             populateKeybinds("")

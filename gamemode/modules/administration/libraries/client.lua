@@ -234,13 +234,13 @@ local function OpenFlagsPanel(panel, data)
         return
     end
 
-    local search = panel:Add("DTextEntry")
+    local search = panel:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panel:Add("liaTable")
     list:Dock(FILL)
     panel.searchEntry = search
@@ -324,9 +324,18 @@ local function OpenFlagsPanel(panel, data)
         end
 
         panel.populating = false
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
+        end
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
     list:AddMenuOption(L("noOptionsAvailable"), function() end)
 end
@@ -450,15 +459,15 @@ function MODULE:PopulateAdminTabs(pages)
                     local function createList(parent, rows)
                         local container = parent:Add("Panel")
                         container:Dock(FILL)
-                        container:DockMargin(0, 20, 0, 0)
+                        container:DockMargin(0, 25, 0, 0)
                         container.Paint = function() end
-                        local search = container:Add("DTextEntry")
+                        local search = container:Add("liaEntry")
                         search:Dock(TOP)
                         search:DockMargin(0, 0, 0, 15)
                         search:SetTall(30)
+                        search:SetFont("LiliaFont.17")
                         search:SetPlaceholderText(L("search"))
                         search:SetTextColor(Color(200, 200, 200))
-                        search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
                         local list = container:Add("liaTable")
                         list:Dock(FILL)
                         local steamIDColumnIndex
@@ -545,9 +554,18 @@ function MODULE:PopulateAdminTabs(pages)
                                     line.Banned = row.Banned
                                 end
                             end
+
+                            -- Force table layout update
+                            list:InvalidateLayout(true)
+                            if list.scrollPanel then
+                                list.scrollPanel:InvalidateLayout(true)
+                            end
                         end
 
-                        search.OnChange = function() populate(search:GetValue()) end
+                        search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
                         populate("")
                     end
 
@@ -2411,13 +2429,13 @@ local function OpenLogsUI(panel, categorizedLogs)
         page:Dock(FILL)
         page:DockPadding(10, 10, 10, 10)
         page.Paint = nil
-        local searchBox = page:Add("DTextEntry")
+        local searchBox = page:Add("liaEntry")
         searchBox:Dock(TOP)
-        searchBox:DockMargin(0, 0, 0, 15)
+        searchBox:DockMargin(0, 10, 0, 15)
         searchBox:SetTall(30)
+        searchBox:SetFont("LiliaFont.17")
         searchBox:SetPlaceholderText(L("searchLogs"))
         searchBox:SetTextColor(Color(200, 200, 200))
-        searchBox.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
         local paginationContainer = page:Add("DPanel")
         paginationContainer:Dock(BOTTOM)
         paginationContainer:DockMargin(0, 15, 0, 0)
@@ -2503,6 +2521,12 @@ local function OpenLogsUI(panel, categorizedLogs)
             currentPage = 1
             updatePagination()
             showCurrentPage()
+
+            -- Force table layout update
+            list:InvalidateLayout(true)
+            if list.scrollPanel then
+                list.scrollPanel:InvalidateLayout(true)
+            end
         end
 
         local function goToPage()
@@ -2516,7 +2540,7 @@ local function OpenLogsUI(panel, categorizedLogs)
 
         prevButton.DoClick = function() goToPage(currentPage - 1) end
         nextButton.DoClick = function() goToPage(currentPage + 1) end
-        searchBox.OnChange = function() populate(searchBox:GetValue()) end
+        searchBox.OnTextChanged = function(value) populate(tostring(value or "")) end
         list:AddMenuOption(L("noOptionsAvailable"), function() end)
         populate("")
         page:SetParent(sheet)
@@ -2714,13 +2738,13 @@ net.Receive("liaAllPks", function()
     local cases = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
     panelRef:Clear()
-    local search = panelRef:Add("DTextEntry")
+    local search = panelRef:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("DListView")
     list:Dock(FILL)
     local function addSizedColumn(text)
@@ -2754,6 +2778,12 @@ net.Receive("liaAllPks", function()
                 lineData.charID = c.charID
                 list:AddLine(unpack(lineData))
             end
+        end
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
         end
     end
 
@@ -2798,7 +2828,10 @@ net.Receive("liaAllPks", function()
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
 end)
 
@@ -2815,13 +2848,13 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
     panelRef.Paint = nil
-    local search = panelRef:Add("DTextEntry")
+    local search = panelRef:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     panelRef.searchEntry = search
@@ -2925,9 +2958,18 @@ lia.net.readBigTable("liaStaffSummary", function(data)
 
             if match then list:AddLine(unpack(values)) end
         end
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
+        end
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
 end)
 
@@ -2936,13 +2978,13 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
     panelRef.Paint = nil
-    local search = panelRef:Add("DTextEntry")
+    local search = panelRef:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     panelRef.searchEntry = search
@@ -3042,12 +3084,21 @@ lia.net.readBigTable("liaAllPlayers", function(players)
                 list:AddLine(unpack(lineData))
             end
         end
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
+        end
     end
 
     list:AddMenuOption(L("openSteamProfile"), function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
     list:AddMenuOption(L("viewWarnings"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
     list:AddMenuOption(L("viewTicketRequests"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
 end)
 
@@ -3436,13 +3487,13 @@ net.Receive("liaActiveTickets", function()
     ticketPanel:Clear()
     ticketPanel:DockPadding(6, 6, 6, 6)
     ticketPanel.Paint = function() end
-    local search = ticketPanel:Add("DTextEntry")
+    local search = ticketPanel:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = ticketPanel:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -3514,10 +3565,19 @@ net.Receive("liaActiveTickets", function()
 
             if match then list:AddLine(unpack(values)) end
         end
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
+        end
     end
 
     list:AddMenuOption(L("noOptionsAvailable"), function() end)
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
 end)
 
@@ -3594,13 +3654,13 @@ net.Receive("liaAllWarnings", function()
     panelRef:Clear()
     panelRef:DockPadding(6, 6, 6, 6)
     panelRef.Paint = function() end
-    local search = panelRef:Add("DTextEntry")
+    local search = panelRef:Add("liaEntry")
     search:Dock(TOP)
-    search:DockMargin(0, 0, 0, 15)
+    search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
+    search:SetFont("LiliaFont.17")
     search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
-    search.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
@@ -3658,9 +3718,18 @@ net.Receive("liaAllWarnings", function()
 
             if match then list:AddLine(unpack(values)) end
         end
+
+        -- Force table layout update
+        list:InvalidateLayout(true)
+        if list.scrollPanel then
+            list.scrollPanel:InvalidateLayout(true)
+        end
     end
 
-    search.OnChange = function() populate(search:GetValue()) end
+    search.OnTextChanged = function(value) 
+        local searchValue = tostring(value or search:GetValue() or "")
+        populate(searchValue) 
+    end
     populate("")
 end)
 

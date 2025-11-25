@@ -789,7 +789,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     local opt = lia.option.stored[key]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
                         local name = opt.name
-                        local desc = opt.desc or ""
                         local catName = opt.data and opt.data.category or L("misc")
                         categories[catName] = categories[catName] or {}
                         categories[catName][#categories[catName] + 1] = {
@@ -814,7 +813,8 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     canvas:DockPadding(10, 10, 10, 10)
                     local items = allCategoryItems[categoryName] or {}
                     local filteredItems = {}
-                    if searchFilter and searchFilter ~= "" then
+                    searchFilter = tostring(searchFilter or "")
+                    if searchFilter ~= "" then
                         local filterLower = searchFilter:lower()
                         for _, it in ipairs(items) do
                             local n = tostring(it.name or "")
@@ -833,20 +833,22 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                         panel:DockMargin(10, 10, 10, 0)
                         panel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(50, 50, 60, 80)):Shape(lia.derma.SHAPE_IOS):Draw() end
                     end
+
+                    -- Force layout update
+                    scrollPanel:InvalidateLayout(true)
                 end
 
                 for _, catName in ipairs(catNames) do
                     local categoryContainer = vgui.Create("DPanel")
                     categoryContainer:Dock(FILL)
                     categoryContainer.Paint = function() end
-                    local searchBar = vgui.Create("DTextEntry", categoryContainer)
+                    local searchBar = vgui.Create("liaEntry", categoryContainer)
                     searchBar:Dock(TOP)
                     searchBar:DockMargin(10, 10, 10, 10)
                     searchBar:SetTall(40)
                     searchBar:SetFont("LiliaFont.18")
                     searchBar:SetPlaceholderText(L("searchOptions") or "Search Options...")
                     searchBar:SetTextColor(Color(200, 200, 200))
-                    searchBar.PaintOver = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(0, 0, 0, 100)):Shape(lia.derma.SHAPE_IOS):Draw() end
                     local scrollPanel = vgui.Create("liaScrollPanel", categoryContainer)
                     scrollPanel:Dock(FILL)
                     scrollPanel:InvalidateLayout(true)
@@ -854,9 +856,9 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     categoryContainer.searchBar = searchBar
                     categoryContainer.scrollPanel = scrollPanel
                     categoryContainer.categoryName = catName
-                    searchBar.OnChange = function(textEntry)
-                        local searchText = textEntry:GetValue()
-                        populateCategoryTab(catName, scrollPanel, searchText)
+                    searchBar.OnTextChanged = function(value)
+                        local searchValue = tostring(value or searchBar:GetValue() or "")
+                        populateCategoryTab(catName, scrollPanel, searchValue)
                     end
 
                     populateCategoryTab(catName, scrollPanel, "")
