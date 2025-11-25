@@ -925,9 +925,11 @@ if CLIENT then
                 scrollPanel:InvalidateLayout(true)
             end
 
-            searchBar.OnTextChanged = function(value)
-                local searchValue = tostring(value or searchBar:GetValue() or "")
-                populateKeybinds(searchValue)
+            if IsValid(searchBar.textEntry) then
+                searchBar.textEntry.OnChange = function(textEntry)
+                    local searchValue = textEntry:GetValue() or ""
+                    populateKeybinds(searchValue)
+                end
             end
 
             populateKeybinds("")

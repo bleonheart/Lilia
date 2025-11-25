@@ -329,9 +329,11 @@ local function OpenFlagsPanel(panel, data)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")
@@ -570,23 +572,25 @@ function MODULE:PopulateAdminTabs(pages)
                             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
                         end
 
-                        search.OnTextChanged = function(value)
+                        -- Hook directly into textEntry.OnChange (DTextEntry uses OnChange, not OnTextChanged)
+                        if IsValid(search.textEntry) then
+                            search.textEntry.OnChange = function(textEntry)
+                                print("[CHAR LIST DEBUG] textEntry.OnChange fired!")
+                                local directValue = textEntry:GetValue() or ""
+                                print("[CHAR LIST DEBUG] Direct value from textEntry:", directValue, "length:", #directValue)
+                                populate(directValue)
+                            end
+                            print("[CHAR LIST DEBUG] textEntry.OnChange hook set")
+                        else
+                            print("[CHAR LIST DEBUG] ERROR: search.textEntry is not valid!")
+                        end
+                        
+                        -- Also try OnTextChanged as backup
+                        search.OnTextChanged = function(value) 
                             print("[CHAR LIST DEBUG] OnTextChanged called with value:", value, "type:", type(value))
                             local searchValue = tostring(value or search:GetValue() or "")
                             print("[CHAR LIST DEBUG] Final searchValue:", searchValue, "length:", #searchValue)
-                            populate(searchValue)
-                        end
-
-                        -- Also hook directly into textEntry to see if it fires
-                        if IsValid(search.textEntry) then
-                            local originalOnChange = search.textEntry.OnChange
-                            search.textEntry.OnChange = function(textEntry)
-                                print("[CHAR LIST DEBUG] textEntry.OnChange fired directly!")
-                                if originalOnChange then originalOnChange(textEntry) end
-                                local directValue = textEntry:GetValue() or ""
-                                print("[CHAR LIST DEBUG] Direct value from textEntry:", directValue)
-                                populate(directValue)
-                            end
+                            populate(searchValue) 
                         end
 
                         print("[CHAR LIST DEBUG] OnTextChanged callback set, testing initial populate")
@@ -2847,9 +2851,11 @@ net.Receive("liaAllPks", function()
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")
@@ -2984,9 +2990,11 @@ lia.net.readBigTable("liaStaffSummary", function(data)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")
@@ -3112,9 +3120,11 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     list:AddMenuOption(L("openSteamProfile"), function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
     list:AddMenuOption(L("viewWarnings"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
     list:AddMenuOption(L("viewTicketRequests"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")
@@ -3590,9 +3600,11 @@ net.Receive("liaActiveTickets", function()
     end
 
     list:AddMenuOption(L("noOptionsAvailable"), function() end)
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")
@@ -3741,9 +3753,11 @@ net.Receive("liaAllWarnings", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    search.OnTextChanged = function(value)
-        local searchValue = tostring(value or search:GetValue() or "")
-        populate(searchValue)
+    if IsValid(search.textEntry) then
+        search.textEntry.OnChange = function(textEntry)
+            local searchValue = textEntry:GetValue() or ""
+            populate(searchValue)
+        end
     end
 
     populate("")

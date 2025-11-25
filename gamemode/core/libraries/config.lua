@@ -2271,9 +2271,11 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 categoryContainer.searchBar = searchBar
                 categoryContainer.scrollPanel = scrollPanel
                 categoryContainer.categoryName = categoryName
-                searchBar.OnTextChanged = function(value)
-                    local searchValue = tostring(value or searchBar:GetValue() or "")
-                    populateCategoryTab(categoryName, scrollPanel, searchValue)
+                if IsValid(searchBar.textEntry) then
+                    searchBar.textEntry.OnChange = function(textEntry)
+                        local searchValue = textEntry:GetValue() or ""
+                        populateCategoryTab(categoryName, scrollPanel, searchValue)
+                    end
                 end
 
                 populateCategoryTab(categoryName, scrollPanel, "")

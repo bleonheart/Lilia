@@ -1472,15 +1472,15 @@ function PANEL:onNameDescChanged(key)
     end
 end
 
-function PANEL:onItemModeUpdated(_, itemType, value)
+function PANEL:onItemModeUpdated()
     self:ReloadItemList(self.lastSearchValue)
 end
 
-function PANEL:onItemPriceUpdated(vendor, itemType)
+function PANEL:onItemPriceUpdated()
     self:ReloadItemList(self.lastSearchValue)
 end
 
-function PANEL:onItemStockUpdated(vendor, itemType)
+function PANEL:onItemStockUpdated()
     self:ReloadItemList(self.lastSearchValue)
 end
 
@@ -1492,7 +1492,7 @@ function PANEL:listenForUpdates()
     hook.Add("VendorItemMaxStockUpdated", self, self.onItemStockUpdated)
 end
 
-function PANEL:OnRowRightClick(rowIndex, rowData)
+function PANEL:OnRowRightClick(_, rowData)
     local entity = liaVendorEnt
     if not IsValid(entity) then
         LocalPlayer():notifyError(L("vendorEntityInvalid"))
