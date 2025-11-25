@@ -1078,12 +1078,9 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         searchEntry:SetFont("LiliaFont.17")
                         searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
-                        if IsValid(searchEntry.textEntry) then
-                            searchEntry.textEntry.OnChange = function(textEntry)
-                                local searchValue = textEntry:GetValue() or ""
-                                local filteredData = filterStaffData(searchValue)
-                                updateStaffTable(filteredData)
-                            end
+                        searchEntry.OnTextChanged = function(_, value)
+                            local filteredData = filterStaffData(value or "")
+                            updateStaffTable(filteredData)
                         end
 
                         local staffTable = panel:Add("liaTable")
