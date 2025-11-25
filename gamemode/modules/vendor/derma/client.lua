@@ -1301,40 +1301,12 @@ function PANEL:populateFactionPanel()
             end
         end
 
-        -- Faction header with checkbox and icon
+        -- Faction header with checkbox
         local factionHeader = panel:Add("DPanel")
         factionHeader:Dock(TOP)
         factionHeader:DockMargin(0, 0, 0, 8)
         factionHeader:SetTall(36)
         factionHeader:SetPaintBackground(false)
-
-        -- Faction icon
-        local factionIcon = factionHeader:Add("DPanel")
-        factionIcon:Dock(LEFT)
-        factionIcon:SetWide(32)
-        factionIcon:DockMargin(0, 2, 6, 2)
-        factionIcon.iconAnim = 0
-        factionIcon.Paint = function(_, w, h)
-            local iconSize = 24
-            local theme = lia.color.theme
-            local iconColor = theme and theme.text or color_white
-
-            -- Subtle breathing animation
-            factionIcon.iconAnim = factionIcon.iconAnim + FrameTime() * 2
-            local scale = 1 + math.sin(factionIcon.iconAnim) * 0.05
-
-            -- Use different icons for different factions
-            local iconName = "icon16/group.png" -- default
-            if k == 1 then iconName = "icon16/user_green.png"
-            elseif k == 2 then iconName = "icon16/user_red.png"
-            elseif k == 3 then iconName = "icon16/user_blue.png"
-            elseif k == 4 then iconName = "icon16/user_orange.png"
-            else iconName = "icon16/user_gray.png" end
-
-            surface.SetMaterial(Material(iconName))
-            surface.SetDrawColor(iconColor)
-            surface.DrawTexturedRect((w - iconSize * scale) / 2, (h - iconSize * scale) / 2, iconSize * scale, iconSize * scale)
-        end
 
         local factionCheckbox = factionHeader:Add("liaCheckbox")
         factionCheckbox:Dock(LEFT)
@@ -1648,40 +1620,12 @@ function PANEL:Init()
             end
         end
 
-        -- Faction header with checkbox and icon
+        -- Faction header with checkbox
         local factionHeader = panel:Add("DPanel")
         factionHeader:Dock(TOP)
         factionHeader:DockMargin(0, 0, 0, 8)
         factionHeader:SetTall(36)
         factionHeader:SetPaintBackground(false)
-
-        -- Faction icon
-        local factionIcon = factionHeader:Add("DPanel")
-        factionIcon:Dock(LEFT)
-        factionIcon:SetWide(32)
-        factionIcon:DockMargin(0, 2, 6, 2)
-        factionIcon.iconAnim = 0
-        factionIcon.Paint = function(_, w, h)
-            local iconSize = 24
-            local theme = lia.color.theme
-            local iconColor = theme and theme.text or color_white
-
-            -- Subtle breathing animation
-            factionIcon.iconAnim = factionIcon.iconAnim + FrameTime() * 2
-            local scale = 1 + math.sin(factionIcon.iconAnim) * 0.05
-
-            -- Use different icons for different factions
-            local iconName = "icon16/group.png" -- default
-            if k == 1 then iconName = "icon16/user_green.png"
-            elseif k == 2 then iconName = "icon16/user_red.png"
-            elseif k == 3 then iconName = "icon16/user_blue.png"
-            elseif k == 4 then iconName = "icon16/user_orange.png"
-            else iconName = "icon16/user_gray.png" end
-
-            surface.SetMaterial(Material(iconName))
-            surface.SetDrawColor(iconColor)
-            surface.DrawTexturedRect((w - iconSize * scale) / 2, (h - iconSize * scale) / 2, iconSize * scale, iconSize * scale)
-        end
 
         local factionCheckbox = factionHeader:Add("liaCheckbox")
         factionCheckbox:Dock(LEFT)
