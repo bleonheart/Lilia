@@ -580,17 +580,18 @@ function MODULE:PopulateAdminTabs(pages)
                                 print("[CHAR LIST DEBUG] Direct value from textEntry:", directValue, "length:", #directValue)
                                 populate(directValue)
                             end
+
                             print("[CHAR LIST DEBUG] textEntry.OnChange hook set")
                         else
                             print("[CHAR LIST DEBUG] ERROR: search.textEntry is not valid!")
                         end
-                        
+
                         -- Also try OnTextChanged as backup
-                        search.OnTextChanged = function(value) 
+                        search.OnTextChanged = function(value)
                             print("[CHAR LIST DEBUG] OnTextChanged called with value:", value, "type:", type(value))
                             local searchValue = tostring(value or search:GetValue() or "")
                             print("[CHAR LIST DEBUG] Final searchValue:", searchValue, "length:", #searchValue)
-                            populate(searchValue) 
+                            populate(searchValue)
                         end
 
                         print("[CHAR LIST DEBUG] OnTextChanged callback set, testing initial populate")
