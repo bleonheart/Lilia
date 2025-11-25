@@ -13,27 +13,15 @@ lia.net.globals = lia.net.globals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.registry = lia.net.registry or {}
 lia.net.cache = lia.net.cache or {}
-lia.net.performance = lia.net.performance or {
-    sends = 0,
-    receives = 0,
-    cacheHits = 0,
-    cacheMisses = 0,
-    totalSendTime = 0,
-    totalReceiveTime = 0,
-    lastReset = CurTime(),
-    history = {}
-}
-
 local chunkTime = 0.05
-local CACHE_TTL = 30 -- seconds
+local CACHE_TTL = 30
 local MAX_CACHE_SIZE = 1000
--- Cache management functions
 local function generateCacheKey(name, args)
     local key = name .. "|"
     for i, arg in ipairs(args) do
         key = key .. tostring(arg) .. (i < #args and "|" or "")
     end
-    return util.CRC(key) -- Use CRC for consistent hashing
+    return util.CRC(key)
 end
 
 local function cleanupCache()
@@ -47,7 +35,6 @@ local function cleanupCache()
         lia.net.cache[key] = nil
     end
 
-    -- If still too large, remove oldest entries
     local cacheSize = table.Count(lia.net.cache)
     if cacheSize > MAX_CACHE_SIZE then
         local sorted = {}
@@ -66,39 +53,67 @@ local function cleanupCache()
     end
 end
 
+--[[
+    Purpose:
+        Checks if a network message with specific arguments is currently cached
+
+    When Called:
+        Before sending or processing a network message to avoid duplicate transmissions
+
+    Parameters:
+        name (string)
+            The name identifier for the network message
+        args (table)
+            The arguments that were sent with the message
+
+    Returns:
+        boolean - true if message is cached and not expired, false otherwise
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        if lia.net.isCacheHit("updateStatus", {"ready", true}) then
+            return -- Skip, already sent recently
+        end
+        ```
+]]
 function lia.net.isCacheHit(name, args)
     local key = generateCacheKey(name, args)
     local entry = lia.net.cache[key]
-    if entry and CurTime() - entry.timestamp <= CACHE_TTL then
-        lia.net.performance.cacheHits = lia.net.performance.cacheHits + 1
-        return true
-    end
-
-    lia.net.performance.cacheMisses = lia.net.performance.cacheMisses + 1
-    return false
+    return entry and CurTime() - entry.timestamp <= CACHE_TTL
 end
 
-function lia.net.addToCache(name, args, data)
-    local key = generateCacheKey(name, args)
-    lia.net.cache[key] = {
-        timestamp = CurTime(),
-        data = data
-    }
+--[[
+    Purpose:
+        Adds a network message to the cache to prevent duplicate transmissions
 
+    When Called:
+        After successfully sending or receiving a network message
+
+    Parameters:
+        name (string)
+            The name identifier for the network message
+        args (table)
+            The arguments that were sent with the message
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        lia.net.addToCache("updateStatus", {"ready", true})
+        ```
+]]
+function lia.net.addToCache(name, args)
+    local key = generateCacheKey(name, args)
+    lia.net.cache[key] = {timestamp = CurTime()}
     cleanupCache()
 end
-
-function lia.net.resetPerformanceStats()
-    lia.net.performance.sends = 0
-    lia.net.performance.receives = 0
-    lia.net.performance.cacheHits = 0
-    lia.net.performance.cacheMisses = 0
-    lia.net.performance.totalSendTime = 0
-    lia.net.performance.totalReceiveTime = 0
-    lia.net.performance.lastReset = CurTime()
-    lia.net.performance.history = {}
-end
-
 
 --[[
     Purpose:
@@ -228,18 +243,8 @@ function lia.net.send(name, target, ...)
     end
 
     local args = {...}
-    local startTime = SysTime()
 
-    -- Check cache for duplicate messages (only for broadcast messages on server)
-    -- NOTE: Only works for messages with identical content. Dynamic values like stamina won't be cached.
-    if SERVER and target == nil then
-        local cached = lia.net.isCacheHit(name, args)
-        if cached then
-            lia.net.performance.totalSendTime = lia.net.performance.totalSendTime + (SysTime() - startTime)
-            lia.net.performance.sends = lia.net.performance.sends + 1
-            return true -- Skip sending, already cached
-        end
-    end
+    if SERVER and target == nil and lia.net.isCacheHit(name, args) then return true end
 
     if SERVER then
         net.Start("liaNetMessage")
@@ -247,8 +252,7 @@ function lia.net.send(name, target, ...)
         net.WriteTable(args)
         if target == nil then
             net.Broadcast()
-            -- Add to cache for broadcast messages
-            lia.net.addToCache(name, args, true)
+            lia.net.addToCache(name, args)
         elseif istable(target) then
             for _, ply in ipairs(target) do
                 if IsValid(ply) then net.Send(ply) end
@@ -266,9 +270,6 @@ function lia.net.send(name, target, ...)
         net.SendToServer()
     end
 
-    -- Track performance
-    lia.net.performance.totalSendTime = lia.net.performance.totalSendTime + (SysTime() - startTime)
-    lia.net.performance.sends = lia.net.performance.sends + 1
     return true
 end
 
@@ -612,7 +613,6 @@ if SERVER then
 
     hook.Add("EntityRemoved", "liaNetworkingCleanup", function(entity) entity:clearNetVars() end)
     hook.Add("PlayerInitialSpawn", "liaNetworkingSync", function(client) client:syncVars() end)
-
 else
     function getNetVar(key, default)
         local value = lia.net.globals[key]
