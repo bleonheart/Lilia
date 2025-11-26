@@ -25,6 +25,8 @@ function PANEL:Init()
     self.OnAction = function() end
     self.OnRightClick = function() end
     self.customMenuOptions = {}
+    self.batchMode = true -- Enable batch mode by default for better performance
+    self.batchRows = {}
 end
 
 function PANEL:AddColumn(name, width, align, sortable)
@@ -42,16 +44,30 @@ end
 function PANEL:AddItem(...)
     local args = {...}
     if #args ~= #self.columns then return end
-    table.insert(self.rows, args)
-    local rowIndex = #self.rows
-    self:RebuildRows()
-    local proxy = {}
-    local rowData = self.rows[rowIndex]
-    setmetatable(proxy, {
-        __index = function(_, key) return rowData[key] end,
-        __newindex = function(_, key, value) rowData[key] = value end
-    })
-    return proxy
+    if self.batchMode then
+        -- In batch mode, just collect the data without rebuilding UI
+        table.insert(self.batchRows, args)
+        local rowIndex = #self.batchRows
+        local proxy = {}
+        local rowData = self.batchRows[rowIndex]
+        setmetatable(proxy, {
+            __index = function(_, key) return rowData[key] end,
+            __newindex = function(_, key, value) rowData[key] = value end
+        })
+        return proxy
+    else
+        -- Normal mode - add immediately (existing behavior)
+        table.insert(self.rows, args)
+        local rowIndex = #self.rows
+        self:RebuildRows()
+        local proxy = {}
+        local rowData = self.rows[rowIndex]
+        setmetatable(proxy, {
+            __index = function(_, key) return rowData[key] end,
+            __newindex = function(_, key, value) rowData[key] = value end
+        })
+        return proxy
+    end
 end
 
 function PANEL:AddLine(...)
@@ -262,8 +278,12 @@ function PANEL:ClearMenuOptions()
 end
 
 function PANEL:Clear()
+    -- Commit any pending batched rows before clearing
+    self:EnsureCommitted()
+
     self.rows = {}
     self.selectedRow = nil
+    self.batchRows = {}  -- Also clear any pending batch data
     self.content:Clear()
 end
 
@@ -276,10 +296,12 @@ function PANEL:ClearLines()
 end
 
 function PANEL:GetSelectedRow()
+    self:EnsureCommitted()
     return self.selectedRow and self.rows[self.selectedRow] or nil
 end
 
 function PANEL:GetRowCount()
+    self:EnsureCommitted()
     return #self.rows
 end
 
@@ -298,6 +320,7 @@ function PANEL:RemoveRow(index)
 end
 
 function PANEL:GetLine(id)
+    self:EnsureCommitted()
     return self.rows[id]
 end
 
@@ -309,6 +332,7 @@ function PANEL:IsLineSelected(id)
 end
 
 function PANEL:SelectItem(id)
+    self:EnsureCommitted()
     if id < 1 or id > #self.rows then return end
     self.selectedRow = id
     if self.OnAction then self.OnAction(self.rows[id]) end
@@ -341,15 +365,18 @@ function PANEL:GetSelectedLines()
 end
 
 function PANEL:GetSelected()
+    self:EnsureCommitted()
     if not self.selectedRow then return nil end
     return self.rows[self.selectedRow]
 end
 
 function PANEL:GetLines()
+    self:EnsureCommitted()
     return self.rows
 end
 
 function PANEL:OnSizeChanged()
+    self:EnsureCommitted()
     if #self.columns > 0 then
         self:CalculateColumnWidths()
         if #self.rows > 0 then
@@ -508,6 +535,7 @@ function PANEL:GetLines()
 end
 
 function PANEL:SortByColumn(columnIndex, desc)
+    self:EnsureCommitted()
     local column = self.columns[columnIndex]
     if not column or not column.sortable then return end
     self.sortColumn = columnIndex
@@ -643,6 +671,62 @@ function PANEL:CreateRow(rowIndex, rowData)
         label:SetContentAlignment(column.align + 4)
         xPos = xPos + column.width
     end
+end
+
+-- ======================================================================
+-- BATCH MODE FUNCTIONS - PERFORMANCE OPTIMIZATION (ENABLED BY DEFAULT)
+-- ======================================================================
+-- liaTable automatically batches updates for optimal performance with large datasets.
+-- Batch mode is ENABLED by default - no code changes needed!
+--
+-- Advanced usage (if you need immediate updates):
+--   table:SetBatchMode(false)  -- Disable auto-batch
+--   table:AddItem(...)         -- Updates UI immediately
+--   table:SetBatchMode(true)   -- Re-enable auto-batch
+-- ======================================================================
+function PANEL:SetBatchMode(enabled)
+    -- If disabling batch mode, commit any pending batched rows first
+    if not enabled and self.batchMode and #self.batchRows > 0 then self:CommitBatch() end
+    self.batchMode = enabled or false
+    if enabled and not self.batchRows then self.batchRows = {} end
+end
+
+function PANEL:CommitBatch()
+    if #self.batchRows == 0 then return end
+    -- Merge batched rows into main rows array
+    for _, row in ipairs(self.batchRows) do
+        table.insert(self.rows, row)
+    end
+
+    -- Clear batch data
+    self.batchRows = {}
+    -- Rebuild UI once for all rows
+    self:RebuildRows()
+end
+
+-- Force immediate commit of batched data (useful for UI updates)
+function PANEL:ForceCommit()
+    if #self.batchRows > 0 then
+        self:CommitBatch()
+    end
+end
+
+-- Auto-commit batch when accessing row data or when UI needs to be displayed
+function PANEL:EnsureCommitted()
+    if #self.batchRows > 0 then self:CommitBatch() end
+end
+
+function PANEL:AddItemsBatch(itemsArray, mapperFunc, filterFunc)
+    if not itemsArray or not mapperFunc then return end
+    self:SetBatchMode(true)
+    for _, item in ipairs(itemsArray) do
+        if not filterFunc or filterFunc(item) then
+            local rowData = mapperFunc(item)
+            if rowData then self:AddItem(unpack(rowData)) end
+        end
+    end
+
+    self:CommitBatch()
 end
 
 vgui.Register("liaTable", PANEL, "Panel")

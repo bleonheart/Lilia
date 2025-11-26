@@ -1556,6 +1556,8 @@ function PANEL:ReloadItemList(filter)
         rowData.item = k
         self.lines[k] = rowData
     end
+    -- Force immediate UI update after bulk loading
+    self.items:ForceCommit()
 end
 
 vgui.Register("liaVendorEditor", PANEL, "liaFrame")

@@ -1402,7 +1402,12 @@ if SERVER then
         end
 
         local tableName = args[1]
-        lia.db.snapshotTable(tableName)
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("creatingSnapshot"), tableName) .. "\n")
+        lia.db.createSnapshot(tableName):next(function(snapshot)
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotCreated") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotRecords"), snapshot.records) .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotPath"), snapshot.path) .. "\n")
+        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotFailed"), tostring(err)) .. "\n") end)
     end)
 
     concommand.Add("lia_snapshot_load", function(_, _, args)
@@ -1410,14 +1415,45 @@ if SERVER then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotUsage") .. "\n")
             MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("availableSnapshots") .. "\n")
             local files = file.Find("lilia/snapshots/*", "DATA")
-            for _, fileName in ipairs(files) do
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), fileName .. "\n")
+            if #files == 0 then
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("noSnapshotsFound") .. "\n")
+            else
+                for _, fileName in ipairs(files) do
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "  - " .. fileName .. "\n")
+                end
             end
             return
         end
 
         local fileName = args[1]
-        lia.db.loadSnapshot(fileName)
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("loadingSnapshot"), fileName) .. "\n")
+        lia.db.loadSnapshot(fileName):next(function(result)
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotLoaded") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotTable"), result.table) .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotRecords"), result.records) .. "\n")
+        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("snapshotLoadFailed"), tostring(err)) .. "\n") end)
+    end)
+
+    concommand.Add("lia_wipetable", function(_, _, args)
+        if not args[1] then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("wipeTableUsage") .. "\n")
+            return
+        end
+
+        local tableName = args[1]
+        local fullTableName = "lia_" .. tableName
+        MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("creatingBackupBeforeWipe"), tableName) .. "\n")
+        lia.db.createSnapshot(tableName):next(function(snapshot)
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format(L("backupCreated"), snapshot.file) .. "\n")
+            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("wipingTable"), fullTableName) .. "\n")
+            lia.db.query("DELETE FROM " .. fullTableName, function()
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("tableWiped"), fullTableName) .. "\n")
+            end, function(err)
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("tableWipeFailed"), tostring(err)) .. "\n")
+            end)
+        end, function(err)
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format(L("backupFailedAbortingWipe"), tostring(err)) .. "\n")
+        end)
     end)
 
     concommand.Add("lia_add_door_group_column", function()

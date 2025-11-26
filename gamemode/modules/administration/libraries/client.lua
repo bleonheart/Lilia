@@ -324,7 +324,8 @@ local function OpenFlagsPanel(panel, data)
         end
 
         panel.populating = false
-        -- Force table layout update
+        -- Force commit batched data and table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
@@ -551,7 +552,8 @@ function MODULE:PopulateAdminTabs(pages)
                                 end
                             end
 
-                            -- Force table layout update
+                            -- Force commit batched data and table layout update
+                            list:ForceCommit()
                             list:InvalidateLayout(true)
                             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
                         end
@@ -2398,7 +2400,7 @@ function MODULE:OpenAdminStickUI(tgt)
     menu:Open()
 end
 
-local LOGS_PER_PAGE = lia.config.get("logsPerPage", 30)
+local LOGS_PER_PAGE = lia.config.get("logsPerPage", 500)
 local function OpenLogsUI(panel, categorizedLogs)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
@@ -2517,10 +2519,10 @@ local function OpenLogsUI(panel, categorizedLogs)
             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
         end
 
-        local function goToPage()
+        local function goToPage(pageNum)
             local totalPages = getTotalPages()
-            if _ >= 1 and _ <= totalPages then
-                currentPage = _
+            if pageNum >= 1 and pageNum <= totalPages then
+                currentPage = pageNum
                 updatePagination()
                 showCurrentPage()
             end

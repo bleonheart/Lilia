@@ -1,4 +1,4 @@
-﻿if registerNetCommands then return end
+﻿if true then return end
 local active = false
 local until_ts = 0
 local threshold = 4096
@@ -247,5 +247,3 @@ concommand.Add("netprof_join", function(ply, _, args)
 
     RunConsoleCommand("netprof_start", who:UserID(), sec, th, 0)
 end)
-
-registerNetCommands = true
