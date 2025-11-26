@@ -2130,8 +2130,8 @@ else
     local function buildPrivilegeList(container, g, groups, editable)
         local current = table.Copy(groups[g] or {})
         current._info = nil
-        local categoryList = container:Add("liaCategoryList")
-        categoryList:Dock(FILL)
+        local tabs = container:Add("liaTabs")
+        tabs:Dock(FILL)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
         local function addRow(list, name)
@@ -2172,12 +2172,10 @@ else
 
             wrap:InvalidateLayout(true)
             wrap:SizeToChildren(true, true)
-            local c = categoryList:Add(cat.label)
-            c:SetContents(wrap)
-            c:SetExpanded(false)
+            tabs:AddTab(cat.label, wrap)
         end
 
-        categoryList:InvalidateLayout(true)
+        tabs:InvalidateLayout(true)
     end
 
     lia.net.readBigTable("liaUpdateAdminGroups", function(tbl)
