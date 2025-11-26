@@ -2130,7 +2130,7 @@ else
     local function buildPrivilegeList(container, g, groups, editable)
         local current = table.Copy(groups[g] or {})
         current._info = nil
-        local categoryList = container:Add("DCategoryList")
+        local categoryList = container:Add("liaCategoryList")
         categoryList:Dock(FILL)
         lia.gui.usergroups.checks = lia.gui.usergroups.checks or {}
         lia.gui.usergroups.checks[g] = lia.gui.usergroups.checks[g] or {}
@@ -2160,9 +2160,6 @@ else
         end
 
         local ordered = computeCategoryMap(groups)
-        surface.SetFont("LiliaFont.36")
-        local _, hfh = surface.GetTextSize("W")
-        local headerH = math.max(hfh + 18, 36)
         for _, cat in ipairs(ordered) do
             local wrap = vgui.Create("DPanel")
             wrap.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw() end
@@ -2178,17 +2175,6 @@ else
             local c = categoryList:Add(cat.label)
             c:SetContents(wrap)
             c:SetExpanded(false)
-            local header = c.Header or c.GetHeader and c:GetHeader() or nil
-            if IsValid(header) then
-                header:SetFont("LiliaFont.36")
-                header:SetTall(headerH)
-                header:SetTextInset(12, 0)
-                header:SetContentAlignment(4)
-                header.Paint = function(_, w, h)
-                    lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-                    draw.SimpleText(cat.label, "LiliaFont.36", 12, h / 2, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                end
-            end
         end
 
         categoryList:InvalidateLayout(true)

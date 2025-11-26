@@ -356,7 +356,7 @@ function PANEL:addText(...)
             p:SetAlpha(255)
         else
             local fraction = math.TimeFraction(p.start, p.finish, CurTime())
-            local alpha = 255 - (fraction * 205)  -- Fade from 255 to 50
+            local alpha = 255 - (fraction * 205)
             p:SetAlpha(math.max(alpha, 50))
         end
     end

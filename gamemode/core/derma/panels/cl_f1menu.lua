@@ -1100,6 +1100,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                             end
 
                             if not staffFound then staffTable:AddLine(L("noStaffCurrentlyOnline"), "", "") end
+                            staffTable:ForceCommit()
                         end
 
                         panel.updateStaffTable = updateStaffTable

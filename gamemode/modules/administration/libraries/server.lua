@@ -43,7 +43,7 @@ function MODULE:PlayerSpawn(client)
 end
 
 function MODULE:PostPlayerLoadout(client)
-    if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("adminstick") end
+    if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_adminstick") end
 end
 
 net.Receive("liaSpawnMenuSpawnItem", function(_, client)

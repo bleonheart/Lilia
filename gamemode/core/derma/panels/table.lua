@@ -25,7 +25,7 @@ function PANEL:Init()
     self.OnAction = function() end
     self.OnRightClick = function() end
     self.customMenuOptions = {}
-    self.batchMode = true -- Enable batch mode by default for better performance
+    self.batchMode = true
     self.batchRows = {}
 end
 
@@ -45,7 +45,6 @@ function PANEL:AddItem(...)
     local args = {...}
     if #args ~= #self.columns then return end
     if self.batchMode then
-        -- In batch mode, just collect the data without rebuilding UI
         table.insert(self.batchRows, args)
         local rowIndex = #self.batchRows
         local proxy = {}
@@ -56,7 +55,6 @@ function PANEL:AddItem(...)
         })
         return proxy
     else
-        -- Normal mode - add immediately (existing behavior)
         table.insert(self.rows, args)
         local rowIndex = #self.rows
         self:RebuildRows()
@@ -278,12 +276,10 @@ function PANEL:ClearMenuOptions()
 end
 
 function PANEL:Clear()
-    -- Commit any pending batched rows before clearing
     self:EnsureCommitted()
-
     self.rows = {}
     self.selectedRow = nil
-    self.batchRows = {}  -- Also clear any pending batch data
+    self.batchRows = {}
     self.content:Clear()
 end
 
@@ -673,19 +669,7 @@ function PANEL:CreateRow(rowIndex, rowData)
     end
 end
 
--- ======================================================================
--- BATCH MODE FUNCTIONS - PERFORMANCE OPTIMIZATION (ENABLED BY DEFAULT)
--- ======================================================================
--- liaTable automatically batches updates for optimal performance with large datasets.
--- Batch mode is ENABLED by default - no code changes needed!
---
--- Advanced usage (if you need immediate updates):
---   table:SetBatchMode(false)  -- Disable auto-batch
---   table:AddItem(...)         -- Updates UI immediately
---   table:SetBatchMode(true)   -- Re-enable auto-batch
--- ======================================================================
 function PANEL:SetBatchMode(enabled)
-    -- If disabling batch mode, commit any pending batched rows first
     if not enabled and self.batchMode and #self.batchRows > 0 then self:CommitBatch() end
     self.batchMode = enabled or false
     if enabled and not self.batchRows then self.batchRows = {} end
@@ -693,25 +677,18 @@ end
 
 function PANEL:CommitBatch()
     if #self.batchRows == 0 then return end
-    -- Merge batched rows into main rows array
     for _, row in ipairs(self.batchRows) do
         table.insert(self.rows, row)
     end
 
-    -- Clear batch data
     self.batchRows = {}
-    -- Rebuild UI once for all rows
     self:RebuildRows()
 end
 
--- Force immediate commit of batched data (useful for UI updates)
 function PANEL:ForceCommit()
-    if #self.batchRows > 0 then
-        self:CommitBatch()
-    end
+    if #self.batchRows > 0 then self:CommitBatch() end
 end
 
--- Auto-commit batch when accessing row data or when UI needs to be displayed
 function PANEL:EnsureCommitted()
     if #self.batchRows > 0 then self:CommitBatch() end
 end

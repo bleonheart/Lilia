@@ -324,7 +324,6 @@ local function OpenFlagsPanel(panel, data)
         end
 
         panel.populating = false
-        -- Force commit batched data and table layout update
         list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
@@ -552,7 +551,6 @@ function MODULE:PopulateAdminTabs(pages)
                                 end
                             end
 
-                            -- Force commit batched data and table layout update
                             list:ForceCommit()
                             list:InvalidateLayout(true)
                             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
@@ -2500,6 +2498,8 @@ local function OpenLogsUI(panel, categorizedLogs)
                     line.rowData = log
                 end
             end
+
+            list:ForceCommit()
         end
 
         local function populate(filter)
@@ -2514,7 +2514,7 @@ local function OpenLogsUI(panel, categorizedLogs)
             currentPage = 1
             updatePagination()
             showCurrentPage()
-            -- Force table layout update
+            list:ForceCommit()
             list:InvalidateLayout(true)
             if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
         end
@@ -2770,7 +2770,7 @@ net.Receive("liaAllPks", function()
             end
         end
 
-        -- Force table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
@@ -2944,7 +2944,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
             if match then list:AddLine(unpack(values)) end
         end
 
-        -- Force table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
@@ -3065,7 +3065,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             end
         end
 
-        -- Force table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
@@ -3541,7 +3541,7 @@ net.Receive("liaActiveTickets", function()
             if match then list:AddLine(unpack(values)) end
         end
 
-        -- Force table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
@@ -3689,7 +3689,7 @@ net.Receive("liaAllWarnings", function()
             if match then list:AddLine(unpack(values)) end
         end
 
-        -- Force table layout update
+        list:ForceCommit()
         list:InvalidateLayout(true)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
