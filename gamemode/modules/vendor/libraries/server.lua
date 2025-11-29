@@ -1,4 +1,4 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
+function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = vendor:getNetVar("name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
@@ -327,7 +327,7 @@ net.Receive("liaVendorDeletePreset", function(_, client)
         net.Start("liaVendorSyncPresets")
         net.WriteTable(lia.vendor.presets)
         net.Broadcast()
-    end):catch(function(err)
+    end):catch(function()
         -- Restore preset to memory if database delete failed
         lia.vendor.presets[presetName] = presetData
         client:notifyErrorLocalized("vendorPresetDeleteFailed")
@@ -368,7 +368,7 @@ net.Receive("liaVendorSavePreset", function(_, client)
         net.Start("liaVendorSyncPresets")
         net.WriteTable(lia.vendor.presets)
         net.Broadcast()
-    end):catch(function(err) client:notifyErrorLocalized("vendorPresetSaveFailed") end)
+    end):catch(function() client:notifyErrorLocalized("vendorPresetSaveFailed") end)
 end)
 
 function MODULE:DatabaseConnected()
@@ -381,5 +381,5 @@ function MODULE:DatabaseConnected()
                 if presetName and itemsData then lia.vendor.presets[presetName] = itemsData end
             end
         end
-    end):catch(function(err) end)
+    end):catch(function() end)
 end
