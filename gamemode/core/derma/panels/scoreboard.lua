@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local rowPaint = {
     [0] = function(_, w, h)
         surface.SetDrawColor(0, 0, 0, 120)
@@ -99,11 +99,13 @@ function PANEL:Init()
     layout:Dock(TOP)
     self.scroll, self.layout = scroll, layout
     self.playerSlots, self.factionLists = {}, {}
-
     -- Sort factions by scoreboardPriority (lower numbers first)
     local sortedFactions = {}
     for facID, facData in ipairs(lia.faction.indices) do
-        table.insert(sortedFactions, {id = facID, data = facData})
+        table.insert(sortedFactions, {
+            id = facID,
+            data = facData
+        })
     end
 
     table.sort(sortedFactions, function(a, b)

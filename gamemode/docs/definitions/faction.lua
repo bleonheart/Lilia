@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Faction Definitions
 
     Character faction definition system for the Lilia framework.

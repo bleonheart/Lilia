@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self:SetTall(30)
     self:DockPadding(0, 36, 0, 0)

@@ -1,4 +1,4 @@
-local surface = surface
+﻿local surface = surface
 local Color = Color
 local function drawAltBg(panel, w, h)
     if panel:GetName() and (panel:GetName():find("ContentContainer") or panel:GetName():find("Tree")) then lia.util.drawBlur(panel, 5) end

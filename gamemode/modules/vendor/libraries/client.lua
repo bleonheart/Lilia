@@ -1,4 +1,4 @@
-function MODULE:VendorOpened(vendor)
+﻿function MODULE:VendorOpened(vendor)
     local vendorUI = vgui.Create("liaVendor")
     vendorUI.vendor = vendor
     hook.Run("OnOpenVendorMenu", self, vendor)
@@ -180,6 +180,4 @@ function MODULE:AddToAdminStickHUD(_, target, information)
     end
 end
 
-net.Receive("liaVendorSyncPresets", function()
-    lia.vendor.presets = net.ReadTable()
-end)
+net.Receive("liaVendorSyncPresets", function() lia.vendor.presets = net.ReadTable() end)

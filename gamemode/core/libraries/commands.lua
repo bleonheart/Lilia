@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -4723,6 +4723,7 @@ lia.command.add("dropmoney", {
             client:notifyMoneyLocalized("moneyDropped", lia.currency.get(amount))
             lia.log.add(client, "moneyDropped", amount)
         end
+
         client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
     end
 })
@@ -5308,6 +5309,7 @@ lia.command.add("deletevendorpreset", {
             net.WriteTable(lia.vendor.presets)
             net.Broadcast()
         end
+
         client:notifySuccessLocalized("vendorPresetDeleted", presetName)
         lia.log.add(client, "deletevendorpreset", presetName)
     end

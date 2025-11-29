@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Player Interaction Library
 
     Player-to-player and entity interaction management system for the Lilia framework.
@@ -732,14 +732,11 @@ if SERVER then
             client:requestString("@giveMoney", "@enterAmount", function(amount)
                 local originalAmount = tonumber(amount) or 0
                 amount = math.floor(originalAmount)
-
                 -- Check if someone tried to input decimals (potential money duping)
                 if originalAmount ~= amount and originalAmount > 0 then
                     lia.log.add(client, "moneyDupeAttempt", "Attempted to give " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
                     for _, admin in ipairs(player.GetAll()) do
-                        if admin:IsAdmin() then
-                            admin:notifyLocalized("moneyDupeAttempt", client:Name(), "givemoney", tostring(originalAmount), tostring(amount))
-                        end
+                        if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "givemoney", tostring(originalAmount), tostring(amount)) end
                     end
                 end
 

@@ -1,4 +1,4 @@
-LiliaVendors = LiliaVendors or {}
+﻿LiliaVendors = LiliaVendors or {}
 ENT.Type = "anim"
 ENT.PrintName = L("entityVendorName")
 ENT.Author = "Samael"
@@ -82,17 +82,13 @@ end
 function ENT:setFactionBuyScale(factionID, scale)
     self.factionBuyScales = self.factionBuyScales or {}
     self.factionBuyScales[factionID] = math.Clamp(scale, 0, 5) -- 0% to 500%
-    if SERVER then
-        self:saveData()
-    end
+    if SERVER then self:saveData() end
 end
 
 function ENT:setFactionSellScale(factionID, scale)
     self.factionSellScales = self.factionSellScales or {}
     self.factionSellScales[factionID] = math.Clamp(scale, 0, 1) -- 0% to 100%
-    if SERVER then
-        self:saveData()
-    end
+    if SERVER then self:saveData() end
 end
 
 function ENT:getFactionBuyScale(factionID)
