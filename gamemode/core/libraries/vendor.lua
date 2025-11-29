@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Vendor Library
 
     NPC vendor management system with editing and rarity support for the Lilia framework.
@@ -12,7 +12,6 @@ lia.vendor.stored = lia.vendor.stored or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
-if CLIENT then print("[VENDOR PRESET CLIENT] Initialized presets table - current count:", table.Count(lia.vendor.presets)) end
 if SERVER then
     local function addEditor(name, reader, applier)
         lia.vendor.editor[name] = function(vendor)

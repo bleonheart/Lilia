@@ -403,17 +403,17 @@ end
 function PANEL:onVendorSynchronized(vendor)
     if not IsValid(self) then return end
     if vendor ~= liaVendorEnt then return end
+
     -- Clear existing items before repopulating to ensure complete refresh
     for _, p in pairs(self.items.vendor) do
         if IsValid(p) then p:Remove() end
     end
-
     for _, p in pairs(self.items.me) do
         if IsValid(p) then p:Remove() end
     end
-
     self.items.vendor = {}
     self.items.me = {}
+
     self:populateItems()
     self:applyCategoryFilter()
     timer.Simple(0, function()
@@ -434,11 +434,12 @@ function PANEL:OnRemove()
         self.noSendExit = true
     end
 
-    if IsValid(lia.gui.vendorEditor) then
-        if IsValid(lia.gui.vendorEditor.deletePresetSelector) then lia.gui.vendorEditor.deletePresetSelector:Remove() end
-        lia.gui.vendorEditor:Remove()
+    if IsValid(lia.gui.vendorEditor) then 
+        if IsValid(lia.gui.vendorEditor.deletePresetSelector) then 
+            lia.gui.vendorEditor.deletePresetSelector:Remove() 
+        end
+        lia.gui.vendorEditor:Remove() 
     end
-
     if IsValid(lia.gui.vendorFactionEditor) then lia.gui.vendorFactionEditor:Remove() end
     if self.refreshTimer then timer.Remove(self.refreshTimer) end
     if self.searchTimer then timer.Remove(self.searchTimer) end
@@ -1262,6 +1263,7 @@ function PANEL:Init()
     self.presetButton:SetText(L("vendorLoadPreset"))
     self.presetButton:SetTooltip(L("vendorLoadPresetTooltip"))
     self.presetButton.DoClick = function() self:openPresetSelector() end
+
     local savePresetButton = self.generalScroll:Add("liaButton")
     savePresetButton:Dock(TOP)
     savePresetButton:DockMargin(0, 0, 0, 8)
@@ -1279,7 +1281,6 @@ function PANEL:Init()
             end
         end)
     end
-
     -- Add bodygroups frame at the bottom if entity has bodygroups
     local hasBodygroupsBottom = false
     for i = 0, entity:GetNumBodyGroups() - 1 do
@@ -1738,10 +1739,15 @@ function PANEL:openDeletePresetSelector()
     self.deleteLeftFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteLeftFrame:SetSize(300, 500)
     self.deleteLeftFrame:SetPos(0, 0)
-    self.deleteLeftFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
+    self.deleteLeftFrame.OnRemove = function() 
+        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
+            self.deletePresetSelector:Remove() 
+        end
+    end
     local leftScroll = self.deleteLeftFrame:Add("liaScrollPanel")
     leftScroll:Dock(FILL)
     leftScroll:DockPadding(8, 8, 8, 8)
+
     -- Add preset buttons
     self.deleteSelectedPreset = nil
     if lia.vendor.presets then
@@ -1774,7 +1780,11 @@ function PANEL:openDeletePresetSelector()
     self.deleteRightFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteRightFrame:SetSize(400, 500)
     self.deleteRightFrame:SetPos(300, 0)
-    self.deleteRightFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
+    self.deleteRightFrame.OnRemove = function() 
+        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
+            self.deletePresetSelector:Remove() 
+        end
+    end
     self.deletePresetDetailsScroll = self.deleteRightFrame:Add("liaScrollPanel")
     self.deletePresetDetailsScroll:Dock(FILL)
     self.deletePresetDetailsScroll:DockPadding(10, 10, 10, 10)
@@ -1823,12 +1833,17 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
         label:SetFont("LiliaFont.18b")
         label:SetTextColor(Color(150, 150, 150))
         label:SetContentAlignment(5) -- Center both horizontally and vertically
-        if IsValid(self.deleteSubmitButton) then self.deleteSubmitButton:SetDisabled(true) end
+        if IsValid(self.deleteSubmitButton) then
+            self.deleteSubmitButton:SetDisabled(true)
+        end
         return
     end
 
     -- Enable delete button
-    if IsValid(self.deleteSubmitButton) then self.deleteSubmitButton:SetDisabled(false) end
+    if IsValid(self.deleteSubmitButton) then
+        self.deleteSubmitButton:SetDisabled(false)
+    end
+
     -- Preset name
     local nameLabel = self.deletePresetDetailsScroll:Add("DLabel")
     nameLabel:Dock(TOP)
@@ -1838,6 +1853,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     nameLabel:SetTextColor(lia.color.theme.text or color_white)
     nameLabel:SetContentAlignment(4)
     nameLabel:SetTall(30)
+
     -- Warning label
     local warningLabel = self.deletePresetDetailsScroll:Add("DLabel")
     warningLabel:Dock(TOP)
@@ -1848,6 +1864,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     warningLabel:SetContentAlignment(4)
     warningLabel:SetWrap(true)
     warningLabel:SetAutoStretchVertical(true)
+
     -- Items count
     local itemsLabel = self.deletePresetDetailsScroll:Add("DLabel")
     itemsLabel:Dock(TOP)

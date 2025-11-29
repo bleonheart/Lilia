@@ -180,4 +180,6 @@ function MODULE:AddToAdminStickHUD(_, target, information)
     end
 end
 
-net.Receive("liaVendorSyncPresets", function() lia.vendor.presets = net.ReadTable() end)
+net.Receive("liaVendorSyncPresets", function()
+    lia.vendor.presets = net.ReadTable()
+end)
