@@ -434,7 +434,12 @@ function PANEL:OnRemove()
         self.noSendExit = true
     end
 
-    if IsValid(lia.gui.vendorEditor) then lia.gui.vendorEditor:Remove() end
+    if IsValid(lia.gui.vendorEditor) then 
+        if IsValid(lia.gui.vendorEditor.deletePresetSelector) then 
+            lia.gui.vendorEditor.deletePresetSelector:Remove() 
+        end
+        lia.gui.vendorEditor:Remove() 
+    end
     if IsValid(lia.gui.vendorFactionEditor) then lia.gui.vendorFactionEditor:Remove() end
     if self.refreshTimer then timer.Remove(self.refreshTimer) end
     if self.searchTimer then timer.Remove(self.searchTimer) end
@@ -1246,6 +1251,12 @@ function PANEL:Init()
     presetLabel:SetTextColor(lia.color.theme.text or color_white)
     presetLabel:SetContentAlignment(5)
     presetLabel:SetTall(24)
+    self.deletePresetButton = self.generalScroll:Add("liaButton")
+    self.deletePresetButton:Dock(TOP)
+    self.deletePresetButton:DockMargin(0, 0, 0, 8)
+    self.deletePresetButton:SetText(L("vendorDeletePreset"))
+    self.deletePresetButton:SetTooltip(L("vendorDeletePresetTooltip"))
+    self.deletePresetButton.DoClick = function() self:openDeletePresetSelector() end
     self.presetButton = self.generalScroll:Add("liaButton")
     self.presetButton:Dock(TOP)
     self.presetButton:DockMargin(0, 0, 0, 8)
@@ -1569,6 +1580,7 @@ end
 function PANEL:OnRemove()
     if IsValid(lia.gui.editorFaction) then lia.gui.editorFaction:Remove() end
     if IsValid(self.presetSelector) then self.presetSelector:Remove() end
+    if IsValid(self.deletePresetSelector) then self.deletePresetSelector:Remove() end
     if self.refreshTimer then timer.Remove(self.refreshTimer) end
 end
 
@@ -1700,6 +1712,168 @@ function PANEL:openPresetSelector()
     end
 
     self.presetSubmitButton = submitButton
+end
+
+function PANEL:openDeletePresetSelector()
+    if IsValid(self.deletePresetSelector) then
+        self.deletePresetSelector:Remove()
+        return
+    end
+
+    -- Main container panel (invisible background)
+    self.deletePresetSelector = vgui.Create("DPanel")
+    self.deletePresetSelector:SetSize(700, 500)
+    self.deletePresetSelector:Center()
+    self.deletePresetSelector:MakePopup()
+    self.deletePresetSelector:SetBackgroundColor(Color(0, 0, 0, 0)) -- Invisible background
+    self.deletePresetSelector._removing = false
+    self.deletePresetSelector.OnRemove = function()
+        self.deletePresetSelector._removing = true
+        -- Close both frames when main container is removed
+        if IsValid(self.deleteLeftFrame) then self.deleteLeftFrame:Remove() end
+        if IsValid(self.deleteRightFrame) then self.deleteRightFrame:Remove() end
+    end
+
+    -- Left frame - Preset list
+    self.deleteLeftFrame = self.deletePresetSelector:Add("liaFrame")
+    self.deleteLeftFrame:SetTitle(L("vendorDeletePreset"))
+    self.deleteLeftFrame:SetSize(300, 500)
+    self.deleteLeftFrame:SetPos(0, 0)
+    self.deleteLeftFrame.OnRemove = function() 
+        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
+            self.deletePresetSelector:Remove() 
+        end
+    end
+    local leftScroll = self.deleteLeftFrame:Add("liaScrollPanel")
+    leftScroll:Dock(FILL)
+    leftScroll:DockPadding(8, 8, 8, 8)
+
+    -- Add preset buttons
+    self.deleteSelectedPreset = nil
+    if lia.vendor.presets then
+        local sortedPresets = {}
+        for presetName, presetData in pairs(lia.vendor.presets) do
+            if isstring(presetName) and presetName ~= "" and presetName ~= "none" then
+                table.insert(sortedPresets, {
+                    name = presetName,
+                    data = presetData
+                })
+            end
+        end
+
+        table.sort(sortedPresets, function(a, b) return a.name < b.name end)
+        for _, preset in ipairs(sortedPresets) do
+            local presetButton = leftScroll:Add("liaButton")
+            presetButton:Dock(TOP)
+            presetButton:DockMargin(0, 0, 0, 8)
+            presetButton:SetText(preset.name)
+            presetButton:SetTall(40)
+            presetButton.DoClick = function()
+                self.deleteSelectedPreset = preset.name
+                self:showDeletePresetDetails(preset.name, preset.data)
+            end
+        end
+    end
+
+    -- Right frame - Preset details
+    self.deleteRightFrame = self.deletePresetSelector:Add("liaFrame")
+    self.deleteRightFrame:SetTitle(L("vendorDeletePreset"))
+    self.deleteRightFrame:SetSize(400, 500)
+    self.deleteRightFrame:SetPos(300, 0)
+    self.deleteRightFrame.OnRemove = function() 
+        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
+            self.deletePresetSelector:Remove() 
+        end
+    end
+    self.deletePresetDetailsScroll = self.deleteRightFrame:Add("liaScrollPanel")
+    self.deletePresetDetailsScroll:Dock(FILL)
+    self.deletePresetDetailsScroll:DockPadding(10, 10, 10, 10)
+    -- Initialize right panel with "No preset selected"
+    self:showDeletePresetDetails(nil)
+    -- Delete button at bottom of right frame
+    local deleteButton = self.deleteRightFrame:Add("liaButton")
+    deleteButton:Dock(BOTTOM)
+    deleteButton:DockMargin(10, 10, 10, 10)
+    deleteButton:SetText(L("delete"))
+    deleteButton:SetTall(40)
+    deleteButton:SetDisabled(true) -- Initially disabled until a preset is selected
+    deleteButton.DoClick = function()
+        if self.deleteSelectedPreset then
+            local presetName = string.lower(self.deleteSelectedPreset)
+            net.Start("liaVendorDeletePreset")
+            net.WriteString(presetName)
+            net.SendToServer()
+            self.deletePresetSelector:Remove()
+        end
+    end
+
+    self.deleteSubmitButton = deleteButton
+end
+
+function PANEL:showDeletePresetDetails(presetName, presetData)
+    -- Clear previous content
+    self.deletePresetDetailsScroll:Clear()
+    -- Handle "none" preset or no preset selected
+    if not presetName or not presetData or table.Count(presetData) == 0 then
+        local displayText = L("vendorNoPresetSelected")
+        -- Show message in a styled panel
+        local emptyPanel = self.deletePresetDetailsScroll:Add("DPanel")
+        emptyPanel:Dock(TOP)
+        emptyPanel:DockMargin(0, 20, 0, 0)
+        emptyPanel:SetTall(100)
+        emptyPanel.Paint = function(_, w, h)
+            local themeColor = lia.color.theme or {}
+            local bgColor = themeColor.secondary or Color(35, 35, 40, 255)
+            draw.RoundedBox(4, 0, 0, w, h, bgColor)
+        end
+
+        local label = emptyPanel:Add("DLabel")
+        label:Dock(FILL)
+        label:SetText(displayText)
+        label:SetFont("LiliaFont.18b")
+        label:SetTextColor(Color(150, 150, 150))
+        label:SetContentAlignment(5) -- Center both horizontally and vertically
+        if IsValid(self.deleteSubmitButton) then
+            self.deleteSubmitButton:SetDisabled(true)
+        end
+        return
+    end
+
+    -- Enable delete button
+    if IsValid(self.deleteSubmitButton) then
+        self.deleteSubmitButton:SetDisabled(false)
+    end
+
+    -- Preset name
+    local nameLabel = self.deletePresetDetailsScroll:Add("DLabel")
+    nameLabel:Dock(TOP)
+    nameLabel:DockMargin(0, 0, 0, 10)
+    nameLabel:SetText(L("name") .. ": " .. presetName)
+    nameLabel:SetFont("LiliaFont.20b")
+    nameLabel:SetTextColor(lia.color.theme.text or color_white)
+    nameLabel:SetContentAlignment(4)
+    nameLabel:SetTall(30)
+
+    -- Warning label
+    local warningLabel = self.deletePresetDetailsScroll:Add("DLabel")
+    warningLabel:Dock(TOP)
+    warningLabel:DockMargin(0, 0, 0, 20)
+    warningLabel:SetText(L("vendorDeletePresetWarning"))
+    warningLabel:SetFont("LiliaFont.16")
+    warningLabel:SetTextColor(Color(255, 100, 100))
+    warningLabel:SetContentAlignment(4)
+    warningLabel:SetWrap(true)
+    warningLabel:SetAutoStretchVertical(true)
+
+    -- Items count
+    local itemsLabel = self.deletePresetDetailsScroll:Add("DLabel")
+    itemsLabel:Dock(TOP)
+    itemsLabel:DockMargin(0, 0, 0, 10)
+    itemsLabel:SetText(L("items") .. ": " .. table.Count(presetData))
+    itemsLabel:SetFont("LiliaFont.16")
+    itemsLabel:SetTextColor(lia.color.theme.text or color_white)
+    itemsLabel:SetContentAlignment(4)
+    itemsLabel:SetTall(24)
 end
 
 function PANEL:showPresetDetails(presetName, presetData)

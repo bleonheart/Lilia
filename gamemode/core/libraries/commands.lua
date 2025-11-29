@@ -5302,7 +5302,7 @@ lia.command.add("deletevendorpreset", {
 
         lia.vendor.presets[presetName] = nil
         if SERVER then
-            lia.db.delete("lia_vendor_presets", "name = " .. lia.db.convertDataType(presetName))
+            lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName))
             -- Sync updated presets to all clients
             net.Start("liaVendorSyncPresets")
             net.WriteTable(lia.vendor.presets)

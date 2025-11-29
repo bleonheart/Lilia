@@ -216,7 +216,6 @@ function MODULE:OnEntityLoaded(ent, data)
     ent:setNetVar("name", data.name)
     ent:setNetVar("animation", data.animation or "")
     ent.items = data.items or {}
-
     ent.factions = data.factions or {}
     ent.classes = data.classes or {}
     ent.factionBuyScales = data.factionBuyScales or {}
@@ -290,14 +289,49 @@ end)
 net.Receive("liaVendorLoadPreset", function(_, client)
     local vendor = client.liaVendor
     if not IsValid(vendor) or not client:canEditVendor(vendor) then return end
-
     local presetName = net.ReadString()
     if not presetName or presetName:Trim() == "" then return end
-
     presetName = presetName:Trim():lower()
     vendor:loadPreset(presetName)
     client:notifyInfoLocalized("vendorPresetLoaded", presetName)
     lia.log.add(client, "vendorPresetLoad", presetName)
+end)
+
+net.Receive("liaVendorDeletePreset", function(_, client)
+    if not client:hasPrivilege("canCreateVendorPresets") then
+        client:notifyErrorLocalized("noPermission")
+        return
+    end
+
+    local presetName = net.ReadString()
+    if not presetName or presetName:Trim() == "" then
+        client:notifyErrorLocalized("vendorPresetNameRequired")
+        return
+    end
+
+    presetName = presetName:Trim():lower()
+    if not lia.vendor.presets[presetName] then
+        client:notifyErrorLocalized("vendorPresetNotFound")
+        return
+    end
+
+    -- Save preset data in case we need to restore it
+    local presetData = lia.vendor.presets[presetName]
+    -- Remove from memory
+    lia.vendor.presets[presetName] = nil
+    -- Delete from database
+    lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName)):next(function()
+        client:notifySuccessLocalized("vendorPresetDeleted", presetName)
+        lia.log.add(client, "vendorPresetDelete", presetName)
+        -- Sync updated presets to all clients
+        net.Start("liaVendorSyncPresets")
+        net.WriteTable(lia.vendor.presets)
+        net.Broadcast()
+    end):catch(function(err)
+        -- Restore preset to memory if database delete failed
+        lia.vendor.presets[presetName] = presetData
+        client:notifyErrorLocalized("vendorPresetDeleteFailed")
+    end)
 end)
 
 net.Receive("liaVendorSavePreset", function(_, client)
@@ -314,49 +348,38 @@ net.Receive("liaVendorSavePreset", function(_, client)
     end
 
     presetName = presetName:Trim():lower()
-
     -- Validate items data
     local validItems = {}
     for itemType, itemData in pairs(itemsData) do
-        if lia.item.list[itemType] then
-            validItems[itemType] = itemData
-        end
+        if lia.item.list[itemType] then validItems[itemType] = itemData end
     end
 
     -- Save to memory
     lia.vendor.presets[presetName] = validItems
-
     -- Save to database
     local jsonData = util.TableToJSON(validItems)
-
     lia.db.upsert({
         name = presetName,
         data = jsonData
-    }, "lia_vendor_presets"):next(function()
+    }, "vendor_presets"):next(function()
         client:notifyInfoLocalized("vendorPresetSaved", presetName)
         lia.log.add(client, "vendorPresetSave", presetName)
         -- Sync presets to all clients
         net.Start("liaVendorSyncPresets")
         net.WriteTable(lia.vendor.presets)
         net.Broadcast()
-    end):catch(function(err)
-        client:notifyErrorLocalized("vendorPresetSaveFailed")
-    end)
+    end):catch(function(err) client:notifyErrorLocalized("vendorPresetSaveFailed") end)
 end)
 
-function MODULE:LiliaTablesLoaded()
+function MODULE:DatabaseConnected()
     lia.db.query("SELECT name, data FROM lia_vendor_presets"):next(function(result)
         local data = result.results
         if data then
             for _, row in ipairs(data) do
                 local presetName = row.name
                 local itemsData = util.JSONToTable(row.data)
-                if presetName and itemsData then
-                    lia.vendor.presets[presetName] = itemsData
-                end
+                if presetName and itemsData then lia.vendor.presets[presetName] = itemsData end
             end
         end
-    end):catch(function(err)
-        -- Silently handle database errors during loading
-    end)
+    end):catch(function(err) end)
 end

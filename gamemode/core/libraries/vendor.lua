@@ -11,6 +11,7 @@ lia.vendor = lia.vendor or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.rarities = lia.vendor.rarities or {}
+if CLIENT then print("[VENDOR PRESET CLIENT] Initialized presets table - current count:", table.Count(lia.vendor.presets)) end
 if SERVER then
     local function addEditor(name, reader, applier)
         lia.vendor.editor[name] = function(vendor)
@@ -23,6 +24,7 @@ if SERVER then
         vendor:setName(name)
         client:notifyLocalized("vendorNameUpdated", name)
     end)
+
     addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, itemType, mode)
         if vendor:getNetVar("preset") ~= "none" then return end
         vendor:setTradeMode(itemType, mode)
@@ -58,14 +60,17 @@ if SERVER then
         vendor:setModel(model)
         client:notifyLocalized("vendorModelUpdated")
     end)
+
     addEditor("skin", function() return net.ReadUInt(8) end, function(vendor, skin)
         vendor:setSkin(skin)
         client:notifyLocalized("vendorSkinUpdated")
     end)
+
     addEditor("bodygroup", function() return net.ReadUInt(8), net.ReadUInt(8) end, function(vendor, index, value)
         vendor:setBodyGroup(index, value)
         client:notifyLocalized("vendorBodygroupUpdated")
     end)
+
     addEditor("useMoney", function() return net.ReadBool() end, function(vendor, useMoney)
         if useMoney then
             vendor:setMoney(lia.config.get("vendorDefaultMoney", 500))

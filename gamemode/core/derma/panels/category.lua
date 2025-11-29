@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     self:SetTall(30)
     self:DockPadding(0, 36, 0, 0)
@@ -26,9 +26,7 @@ function PANEL:Init()
         self:SizeToContents()
         local totalTall = self:GetTall()
         self:SizeTo(-1, totalTall, 0.2, 0, 0.2)
-        if IsValid(self.contents) then
-            self.contents:SetVisible(self.bool_opened)
-        end
+        if IsValid(self.contents) then self.contents:SetVisible(self.bool_opened) end
         self:InvalidateLayout(true)
         self:InvalidateParent(true)
     end
@@ -85,7 +83,18 @@ function PANEL:GetHeader()
 end
 
 function PANEL:AddItem(panel)
-    panel:SetParent(self)
+    -- Create contents panel if it doesn't exist
+    if not IsValid(self.contents) then
+        self.contents = vgui.Create("DPanel", self)
+        self.contents:Dock(TOP)
+        self.contents:DockPadding(5, 5, 5, 5)
+        self.contents:SetPaintBackground(false)
+        self.contents:SetVisible(self.bool_opened)
+    end
+
+    panel:SetParent(self.contents)
+    panel:Dock(TOP)
+    panel:DockMargin(0, 0, 0, 5)
     self:SizeToContents()
 end
 
@@ -98,18 +107,13 @@ function PANEL:SetActive(is_active)
     self.bool_opened = is_active
     self.header_color = is_active and self.header_color_opened or self.header_color_standard
     self:SizeToContents()
-    if IsValid(self.contents) then
-        self.contents:SetVisible(is_active)
-    end
+    if IsValid(self.contents) then self.contents:SetVisible(is_active) end
 end
 
 function PANEL:PerformLayout(w)
     self.header:SetSize(w, 30)
-
     -- Recalculate content size if contents exist and are visible
-    if IsValid(self.contents) and self.bool_opened then
-        self:SizeToContents()
-    end
+    if IsValid(self.contents) and self.bool_opened then self:SizeToContents() end
 end
 
 vgui.Register("liaCategory", PANEL, "Panel")

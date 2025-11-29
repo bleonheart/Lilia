@@ -218,6 +218,7 @@ function ENT:loadPreset(name)
     name = string.lower(name)
     if name == "none" then
         self.items = {}
+        hook.Run("UpdateEntityPersistence", self)
         if self.receivers then
             for _, client in ipairs(self.receivers) do
                 self:sync(client)
@@ -229,8 +230,28 @@ function ENT:loadPreset(name)
     local preset = lia.vendor and lia.vendor.getPreset(name)
     if not preset then return end
 
-    -- Directly set the items from the preset
-    self.items = table.Copy(preset)
+    -- Copy the preset data to vendor items, ensuring proper structure
+    self.items = {}
+    for itemType, itemData in pairs(preset) do
+        if lia.item.list[itemType] and istable(itemData) then
+            self.items[itemType] = {}
+            if itemData[VENDOR_PRICE] ~= nil then
+                self.items[itemType][VENDOR_PRICE] = tonumber(itemData[VENDOR_PRICE])
+            end
+            if itemData[VENDOR_STOCK] ~= nil then
+                self.items[itemType][VENDOR_STOCK] = tonumber(itemData[VENDOR_STOCK])
+            end
+            if itemData[VENDOR_MAXSTOCK] ~= nil then
+                self.items[itemType][VENDOR_MAXSTOCK] = tonumber(itemData[VENDOR_MAXSTOCK])
+            end
+            if itemData[VENDOR_MODE] ~= nil then
+                self.items[itemType][VENDOR_MODE] = tonumber(itemData[VENDOR_MODE])
+            end
+        end
+    end
+    
+    -- Save the preset to the vendor entity
+    hook.Run("UpdateEntityPersistence", self)
 
     if self.receivers then
         for _, client in ipairs(self.receivers) do
