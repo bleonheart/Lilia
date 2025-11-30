@@ -1,5 +1,4 @@
-local GM = GM or GAMEMODE
--- Voice type constants for internal logic (avoid localization in performance-critical code)
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -584,7 +583,6 @@ function GM:PlayerInitialSpawn(client)
         timer.Simple(1, function() lia.playerinteract.sync(client) end)
         timer.Simple(1, function() lia.dialog.syncToClients(client) end)
         timer.Simple(1, function()
-            -- Sync door data to the newly spawned client
             if IsValid(client) then
                 local syncCount = 0
                 local doorsWithData = 0

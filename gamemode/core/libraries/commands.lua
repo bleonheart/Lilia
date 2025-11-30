@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -612,12 +612,9 @@ if SERVER then
             match = match:lower()
             local command = lia.command.list[match]
             if command then
-                -- Check access before prompting for arguments
                 local hasAccess = lia.command.hasAccess(client, match, command)
                 if not hasAccess then
-                    if IsValid(client) then
-                        client:notifyErrorLocalized("noAccess")
-                    end
+                    if IsValid(client) then client:notifyErrorLocalized("noAccess") end
                     return true
                 end
 
@@ -1405,17 +1402,6 @@ if SERVER then
             MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("wipingTable", fullTableName) .. "\n")
             lia.db.query("DELETE FROM " .. fullTableName, function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("tableWiped", fullTableName) .. "\n") end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("tableWipeFailed", tostring(err)) .. "\n") end)
         end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("backupFailedAbortingWipe", tostring(err)) .. "\n") end)
-    end)
-
-    concommand.Add("lia_add_door_group_column", function()
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("addingDoorGroupColumn") .. "\n")
-        lia.db.fieldExists("lia_doors", "door_group"):next(function(exists)
-            if not exists then
-                lia.db.query("ALTER TABLE lia_doors ADD COLUMN door_group TEXT DEFAULT \"default\""):next(function() MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAdded") .. "\n") end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToAddDoorGroupColumn") .. ": " .. error .. "\n") end)
-            else
-                MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("doorGroupColumnAlreadyExists") .. "\n")
-            end
-        end, function(error) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("failedToCheckDoorGroupColumn") .. ": " .. error .. "\n") end)
     end)
 else
     concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
@@ -4350,104 +4336,6 @@ lia.command.add("botsay", {
     end
 })
 
-lia.command.add("botspam", {
-    superAdminOnly = true,
-    desc = "Makes all bots say 50 random messages with 10 second intervals in 4 loops",
-    onRun = function(client, arguments)
-        -- Collect all bots
-        local bots = {}
-        for _, bot in player.Iterator() do
-            if bot:IsBot() then
-                table.insert(bots, bot)
-            end
-        end
-
-        if #bots == 0 then
-            if IsValid(client) then
-                client:ChatPrint("No bots found on the server.")
-            end
-            return
-        end
-
-        -- Random messages pool
-        local randomMessages = {
-            "Hello there!",
-            "What's going on?",
-            "Need help?",
-            "Over here!",
-            "Watch out!",
-            "Come on!",
-            "Let's go!",
-            "This way!",
-            "Behind you!",
-            "Enemy spotted!",
-            "Clear!",
-            "Move up!",
-            "Hold position!",
-            "Cover me!",
-            "Reloading!",
-            "Taking fire!",
-            "Need backup!",
-            "All clear!",
-            "Contact!",
-            "Engaging!",
-            "Fall back!",
-            "Push forward!",
-            "Hold the line!",
-            "Secure area!",
-            "Enemy down!",
-            "Got one!",
-            "Nice shot!",
-            "Good work!",
-            "Keep moving!",
-            "Stay alert!",
-            "I see something!",
-            "What was that?",
-            "Did you hear that?",
-            "Something's not right!",
-            "Let's check it out!",
-            "I'm ready!",
-            "On my way!",
-            "Wait up!",
-            "I'm here!",
-            "Got it!",
-            "Understood!",
-            "Copy that!",
-            "Roger!",
-            "Affirmative!",
-            "Negative!",
-            "Stand by!",
-            "Moving out!",
-            "In position!",
-            "Ready!",
-            "Let's do this!"
-        }
-
-        -- 4 loops, each with 50 messages at 10 second intervals
-        local loops = 4
-        local messagesPerLoop = 50
-        local interval = 10
-
-        for loop = 1, loops do
-            for msgIndex = 1, messagesPerLoop do
-                local delay = (loop - 1) * (messagesPerLoop * interval) + (msgIndex - 1) * interval
-                timer.Simple(delay, function()
-                    for _, bot in ipairs(bots) do
-                        if IsValid(bot) then
-                            local randomMessage = randomMessages[math.random(#randomMessages)]
-                            bot:Say(randomMessage)
-                        end
-                    end
-                end)
-            end
-        end
-
-        if IsValid(client) then
-            client:ChatPrint(string.format("Started bot spam: %d bots will say random messages %d times in %d loops (10 second intervals).", #bots, messagesPerLoop, loops))
-        end
-    end
-})
-
 lia.command.add("forcesay", {
     superAdminOnly = true,
     desc = "forceSayDesc",
@@ -5397,7 +5285,6 @@ lia.command.add("deletevendorpreset", {
         lia.vendor.presets[presetName] = nil
         if SERVER then
             lia.db.delete("vendor_presets", "name = " .. lia.db.convertDataType(presetName))
-            -- Sync updated presets to all clients
             net.Start("liaVendorSyncPresets")
             net.WriteTable(lia.vendor.presets)
             net.Broadcast()
@@ -5990,7 +5877,6 @@ lia.command.add("doorinfo", {
 
             local hidden = doorData.hidden or false
             local locked = doorData.locked or false
-            local group = doorData.group or ""
             local infoData = {
                 {
                     property = L("doorInfoDisabled"),
@@ -6015,10 +5901,6 @@ lia.command.add("doorinfo", {
                 {
                     property = L("classes"),
                     value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
-                },
-                {
-                    property = L("group") or "Faction Group",
-                    value = tostring(group ~= "" and group or L("none"))
                 },
                 {
                     property = L("doorInfoHidden"),
@@ -6368,167 +6250,6 @@ lia.command.add("doorid", {
             end
         else
             client:notifyErrorLocalized("doorMustBeLookingAt")
-        end
-    end
-})
-
-lia.command.add("doorsetgroup", {
-    desc = "doorsetgroupDesc",
-    arguments = {
-        {
-            name = "group",
-            type = "string"
-        }
-    },
-    adminOnly = true,
-    AdminStick = {
-        Name = "adminStickSetDoorGroupName",
-        Category = "doorManagement",
-        SubCategory = "doorSettings",
-        TargetClass = "door",
-        Icon = "icon16/group.png"
-    },
-    onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
-            local doorData = lia.doors.getData(door)
-            if not doorData.disabled then
-                local input = arguments[1]
-                local groupName
-                if input then
-                    if lia.faction.groups[input] then
-                        groupName = input
-                    else
-                        for existingGroup, _ in pairs(lia.faction.groups) do
-                            if lia.util.stringMatches(existingGroup, input) then
-                                groupName = existingGroup
-                                break
-                            end
-                        end
-                    end
-                end
-
-                if groupName then
-                    doorData.group = groupName
-                    lia.doors.setData(door, doorData)
-                    lia.log.add(client, "doorSetGroup", door, groupName)
-                    client:notifySuccessLocalized("doorSetGroup", groupName)
-                elseif arguments[1] then
-                    client:notifyErrorLocalized("invalidGroup")
-                else
-                    doorData.group = nil
-                    lia.doors.setData(door, doorData)
-                    lia.log.add(client, "doorRemoveGroup", door)
-                    client:notifySuccessLocalized("doorRemoveGroup")
-                end
-
-                lia.module.get("doors"):SaveData()
-            else
-                client:notifyErrorLocalized("doorNotValid")
-            end
-        else
-            client:notifyErrorLocalized("doorNotValid")
-        end
-    end
-})
-
-lia.command.add("dooraddgroup", {
-    desc = "dooraddgroupDesc",
-    arguments = {
-        {
-            name = "group",
-            type = "string"
-        }
-    },
-    adminOnly = true,
-    AdminStick = {
-        Name = "adminStickAddDoorGroupName",
-        Category = "doorManagement",
-        SubCategory = "doorSettings",
-        TargetClass = "door",
-        Icon = "icon16/group_add.png"
-    },
-    onRun = function(client, arguments)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
-            local doorData = lia.doors.getData(door)
-            if not doorData.disabled then
-                local input = arguments[1]
-                local groupName
-                if input then
-                    if lia.faction.groups[input] then
-                        groupName = input
-                    else
-                        for existingGroup, _ in pairs(lia.faction.groups) do
-                            if lia.util.stringMatches(existingGroup, input) then
-                                groupName = existingGroup
-                                break
-                            end
-                        end
-                    end
-                end
-
-                if groupName then
-                    local groupFactions = lia.faction.getFactionsInGroup(groupName)
-                    if #groupFactions > 0 then
-                        local factions = doorData.factions or {}
-                        local addedCount = 0
-                        for _, factionID in ipairs(groupFactions) do
-                            if not table.HasValue(factions, factionID) then
-                                table.insert(factions, factionID)
-                                addedCount = addedCount + 1
-                            end
-                        end
-
-                        doorData.factions = factions
-                        door.liaFactions = factions
-                        lia.doors.setData(door, doorData)
-                        lia.log.add(client, "doorAddGroup", door, groupName, addedCount)
-                        client:notifySuccessLocalized("doorAddGroup", groupName, addedCount)
-                    else
-                        client:notifyErrorLocalized("doorGroupEmpty", groupName)
-                    end
-                elseif arguments[1] then
-                    client:notifyErrorLocalized("invalidGroup")
-                else
-                    client:notifyErrorLocalized("missingGroupName")
-                end
-
-                lia.module.get("doors"):SaveData()
-            else
-                client:notifyErrorLocalized("doorNotValid")
-            end
-        else
-            client:notifyErrorLocalized("doorNotValid")
-        end
-    end
-})
-
-lia.command.add("doorremovegroup", {
-    desc = "doorremovegroupDesc",
-    adminOnly = true,
-    AdminStick = {
-        Name = "adminStickRemoveDoorGroupName",
-        Category = "doorManagement",
-        SubCategory = "doorSettings",
-        TargetClass = "door",
-        Icon = "icon16/group_delete.png"
-    },
-    onRun = function(client)
-        local door = client:getTracedEntity()
-        if IsValid(door) and door:isDoor() then
-            local doorData = lia.doors.getData(door)
-            if not doorData.disabled then
-                doorData.group = nil
-                lia.doors.setData(door, doorData)
-                lia.log.add(client, "doorRemoveGroup", door)
-                client:notifySuccessLocalized("doorRemoveGroup")
-                lia.module.get("doors"):SaveData()
-            else
-                client:notifyErrorLocalized("doorNotValid")
-            end
-        else
-            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
@@ -7974,24 +7695,19 @@ lia.command.add("testrequests", {
     onRun = function(client)
         if SERVER then
             client:notifyInfoLocalized("startingRequestTests")
-            -- Test 1: Binary Question
             client:requestBinaryQuestion("Test Binary Question", "Do you want to continue testing?", "Yes", "No", function(confirmed)
                 if confirmed then
                     client:notify("✓ Binary Question: Confirmed", "success")
-                    -- Test 2: Dropdown
                     client:requestDropdown("Test Dropdown", "Choose a color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, selectedData)
                         if selected then
                             client:notify("✓ Dropdown: Selected " .. selected .. " (" .. (selectedData or "no data") .. ")", "success")
-                            -- Test 3: Options (Multi-select)
                             client:requestOptions("Test Options", "Select your favorite activities (max 2):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}}, 2, function(selectedOptions)
                                 if selectedOptions and #selectedOptions > 0 then
                                     local selectedStr = table.concat(selectedOptions, ", ")
                                     client:notify("✓ Options: Selected " .. selectedStr, "success")
-                                    -- Test 4: String Input
                                     client:requestString("Test String Input", "Enter your name:", function(text)
                                         if text then
                                             client:notify("✓ String Input: '" .. text .. "'", "success")
-                                            -- Test 5: Arguments Form
                                             client:requestArguments("Test Arguments Form", {
                                                 {"Name", "string"},
                                                 {
@@ -8010,7 +7726,6 @@ lia.command.add("testrequests", {
                                                 if success and data then
                                                     local result = string.format("Name: %s, Age: %d, Color: %s, Agreed: %s", data["Name"] or "N/A", data["Age"] or 0, data["Favorite Color"] or "N/A", tostring(data["Agree to Terms"] or false))
                                                     client:notify("✓ Arguments: " .. result, "success")
-                                                    -- Test 6: Buttons
                                                     client:requestButtons("Test Buttons", {
                                                         {
                                                             text = "Save",

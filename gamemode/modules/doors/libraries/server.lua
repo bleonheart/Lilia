@@ -591,7 +591,7 @@ end
 
         -- Check for missing columns and add them
         local missingColumns = {
-        door_group = "text"
+        -- Add any missing columns here
         }
 
         for column, type in pairs(missingColumns) do
@@ -624,8 +624,7 @@ function lia.doors.verifyDatabaseSchema()
                 ownable = "integer",
                 name = "text",
                 price = "integer",
-                locked = "integer",
-                door_group = "text"
+                locked = "integer"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
@@ -660,8 +659,7 @@ function lia.doors.verifyDatabaseSchema()
                 ownable = "tinyint",
                 name = "text",
                 price = "int",
-                locked = "tinyint",
-                door_group = "text"
+                locked = "tinyint"
             }
 
             for colName, expectedType in pairs(expectedColumns) do

@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Vendor Library
 
     NPC vendor management system with editing and rarity support for the Lilia framework.
@@ -32,44 +32,20 @@ if SERVER then
     end
 
     addEditor("name", function() return net.ReadString() end, function(vendor, client, name)
-        -- Ensure name is not empty
         if not name or name == "" then name = lia.vendor.defaults.name or "Jane Doe" end
         vendor:setName(name)
         client:notifyLocalized("vendorNameChanged")
     end)
 
-    addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, client, itemType, mode)
-        vendor:setTradeMode(itemType, mode)
-    end)
-
-    addEditor("price", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, client, itemType, price)
-        vendor:setItemPrice(itemType, price)
-    end)
-
-    addEditor("stockDisable", function() return net.ReadString() end, function(vendor, client, itemType)
-        vendor:setMaxStock(itemType, nil)
-    end)
-
-    addEditor("stockMax", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
-        vendor:setMaxStock(itemType, value)
-    end)
-
-    addEditor("stock", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
-        vendor:setStock(itemType, value)
-    end)
-
-    addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, factionID, allowed)
-        vendor:setFactionAllowed(factionID, allowed)
-    end)
-    addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, classID, allowed)
-        vendor:setClassAllowed(classID, allowed)
-    end)
-    addEditor("factionBuyScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, client, factionID, scale)
-        vendor:setFactionBuyScale(factionID, scale)
-    end)
-    addEditor("factionSellScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, client, factionID, scale)
-        vendor:setFactionSellScale(factionID, scale)
-    end)
+    addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, _, itemType, mode) vendor:setTradeMode(itemType, mode) end)
+    addEditor("price", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, _, itemType, price) vendor:setItemPrice(itemType, price) end)
+    addEditor("stockDisable", function() return net.ReadString() end, function(vendor, _, itemType) vendor:setMaxStock(itemType, nil) end)
+    addEditor("stockMax", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, _, itemType, value) vendor:setMaxStock(itemType, value) end)
+    addEditor("stock", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, _, itemType, value) vendor:setStock(itemType, value) end)
+    addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, _, factionID, allowed) vendor:setFactionAllowed(factionID, allowed) end)
+    addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, _, classID, allowed) vendor:setClassAllowed(classID, allowed) end)
+    addEditor("factionBuyScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, _, factionID, scale) vendor:setFactionBuyScale(factionID, scale) end)
+    addEditor("factionSellScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, _, factionID, scale) vendor:setFactionSellScale(factionID, scale) end)
     addEditor("model", function() return net.ReadString() end, function(vendor, client, model)
         vendor:setModel(model)
         client:notifyLocalized("vendorModelChanged")
@@ -85,7 +61,7 @@ if SERVER then
         client:notifyLocalized("vendorBodygroupChanged")
     end)
 
-    addEditor("useMoney", function() return net.ReadBool() end, function(vendor, client, useMoney)
+    addEditor("useMoney", function() return net.ReadBool() end, function(vendor, _, useMoney)
         if useMoney then
             vendor:setMoney(lia.config.get("vendorDefaultMoney", 500))
         else
@@ -93,9 +69,9 @@ if SERVER then
         end
     end)
 
-    addEditor("money", function() return net.ReadUInt(32) end, function(vendor, client, money) vendor:setMoney(money) end)
-    addEditor("scale", function() return net.ReadFloat() end, function(vendor, client, scale) vendor:setSellScale(scale) end)
-    addEditor("preset", function() return net.ReadString() end, function(vendor, client, preset) vendor:applyPreset(preset) end)
+    addEditor("money", function() return net.ReadUInt(32) end, function(vendor, _, money) vendor:setMoney(money) end)
+    addEditor("scale", function() return net.ReadFloat() end, function(vendor, _, scale) vendor:setSellScale(scale) end)
+    addEditor("preset", function() return net.ReadString() end, function(vendor, _, preset) vendor:applyPreset(preset) end)
     addEditor("animation", function()
         local anim = net.ReadString()
         return anim
@@ -369,7 +345,6 @@ end
 
 function lia.vendor.setVendorProperty(entity, property, value)
     if not IsValid(entity) then return end
-    -- Check if value differs from default
     local defaultValue = lia.vendor.defaults[property]
     local isDefault = false
     if istable(defaultValue) then
@@ -380,16 +355,12 @@ function lia.vendor.setVendorProperty(entity, property, value)
 
     if not lia.vendor.stored[entity] then lia.vendor.stored[entity] = {} end
     if isDefault then
-        -- Remove from cache if it's the default value
         lia.vendor.stored[entity][property] = nil
-        -- Clean up empty cache entries
         if table.IsEmpty(lia.vendor.stored[entity]) then lia.vendor.stored[entity] = nil end
     else
-        -- Store non-default value
         lia.vendor.stored[entity][property] = value
     end
 
-    -- Sync to clients if on server
     if SERVER then lia.vendor.syncVendorProperty(entity, property, value, isDefault) end
 end
 
@@ -399,7 +370,7 @@ function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
     net.WriteEntity(entity)
     net.WriteString(property)
     if isDefault then
-        net.WriteBool(true) -- indicates default value
+        net.WriteBool(true)
     else
         net.WriteBool(false)
         net.WriteType(value)
@@ -411,7 +382,7 @@ end
 function lia.vendor.getAllVendorData(entity)
     if not IsValid(entity) then return {} end
     local data = {}
-    for property, defaultValue in pairs(lia.vendor.defaults) do
+    for property, _ in pairs(lia.vendor.defaults) do
         data[property] = lia.vendor.getVendorProperty(entity, property)
     end
     return data

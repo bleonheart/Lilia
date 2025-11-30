@@ -224,7 +224,7 @@ Server
         lia.doors.verifyDatabaseSchema()
         -- Check for missing columns and add them
         local missingColumns = {
-        door_group = "text"
+        -- Add any missing columns here
         }
         for column, type in pairs(missingColumns) do
             lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. column .. " " .. type)
