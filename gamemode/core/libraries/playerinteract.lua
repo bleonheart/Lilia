@@ -783,7 +783,7 @@ if SERVER then
         category = "categoryVoice",
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getNetVar("VoiceType") ~= L("whispering") end,
         onRun = function(client)
-            client:setNetVar("VoiceType", L("whispering"))
+            client:setNetVar("VoiceType", VOICE_WHISPERING)
             client:notifyInfoLocalized("voiceModeSet", L("whispering"))
         end,
         serverOnly = true

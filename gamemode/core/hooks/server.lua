@@ -1,4 +1,8 @@
 local GM = GM or GAMEMODE
+-- Voice type constants for internal logic (avoid localization in performance-critical code)
+local VOICE_WHISPERING = "whispering"
+local VOICE_TALKING = "talking"
+local VOICE_YELLING = "yelling"
 local LimbHitgroups = {HITGROUP_GEAR, HITGROUP_RIGHTARM, HITGROUP_LEFTARM}
 local sounds = {
     male = {
@@ -585,18 +589,18 @@ function GM:PlayerInitialSpawn(client)
                 local syncCount = 0
                 local doorsWithData = 0
                 for _, door in ents.Iterator() do
-                    if IsValid(door) and door:isDoor() then 
+                    if IsValid(door) and door:isDoor() then
                         local syncData = lia.doors.getSyncData(door)
-                        if not table.IsEmpty(syncData) then
-                            doorsWithData = doorsWithData + 1
-                        end
+                        if not table.IsEmpty(syncData) then doorsWithData = doorsWithData + 1 end
                         lia.doors.syncToClient(client, door)
                         syncCount = syncCount + 1
                     end
                 end
+
                 print("[TEST] GM:PlayerInitialSpawn: Checked " .. syncCount .. " doors, " .. doorsWithData .. " have data to sync to client " .. client:Name())
             end
         end)
+
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")
         net.Send(client)
@@ -1006,28 +1010,6 @@ function ClientAddText(client, ...)
     net.WriteTable(args)
     net.Send(client)
 end
-
-local function IsLineOfSightClear(listener, speaker)
-    local tr = util.TraceLine{
-        start = listener:GetShootPos(),
-        endpos = speaker:GetShootPos(),
-        filter = {listener, speaker},
-        mask = MASK_BLOCKLOS
-    }
-
-    if tr.Hit then
-        local ent = tr.Entity
-        if ent == speaker then return true end
-        if ent:GetClass() == "func_door_rotating" then return false end
-        return false
-    end
-    return true
-end
-
--- Voice type constants for internal logic (avoid localization in performance-critical code)
-local VOICE_WHISPERING = "whispering"
-local VOICE_TALKING = "talking"
-local VOICE_YELLING = "yelling"
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
