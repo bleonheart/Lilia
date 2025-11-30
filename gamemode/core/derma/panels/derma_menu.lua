@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.Items = {}
     self:SetSize(200, 0)
@@ -387,40 +387,31 @@ function PANEL:UpdateSize()
     local iconExtra = self.MaxIconWidth > 0 and (self.MaxIconWidth + 8) or 0
     local maxWidth = math.max(200, self.MaxTextWidth + 60 + iconExtra)
     local limit = self.maxHeight or (ScrH() * 0.8)
-
     if height > limit then
-        -- Need scrolling
         if not self._usingScroll then
             self._usingScroll = true
-            -- Create scroll panel
             self._scrollPanel = vgui.Create("liaScrollPanel", self)
             self._scrollPanel:Dock(FILL)
             self._scrollPanel:DockMargin(0, 0, 0, 0)
-
-            -- Move existing items to scroll panel
             for _, item in ipairs(self.Items) do
-                if IsValid(item) then
-                    item:SetParent(self._scrollPanel)
-                end
+                if IsValid(item) then item:SetParent(self._scrollPanel) end
             end
         end
+
         self:SetSize(maxWidth, limit)
     else
-        -- No scrolling needed
         if self._usingScroll then
             self._usingScroll = false
-            -- Move items back to main panel
             for _, item in ipairs(self.Items) do
-                if IsValid(item) then
-                    item:SetParent(self)
-                end
+                if IsValid(item) then item:SetParent(self) end
             end
-            -- Remove scroll panel
+
             if IsValid(self._scrollPanel) then
                 self._scrollPanel:Remove()
                 self._scrollPanel = nil
             end
         end
+
         self:SetSize(maxWidth, height)
     end
 end
@@ -622,8 +613,6 @@ function PANEL:Clear()
     self.Items = {}
     self.MaxTextWidth = 0
     self.MaxIconWidth = 0
-
-    -- Clean up scroll panel if it exists
     if IsValid(self._scrollPanel) then
         self._scrollPanel:Remove()
         self._scrollPanel = nil

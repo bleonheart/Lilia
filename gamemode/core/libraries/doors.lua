@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Doors Library
 
     Door management system for the Lilia framework providing preset configuration,
@@ -386,7 +386,6 @@ if SERVER then
             if corruptedCount > 0 then lia.information(L("foundAndFixedCorruptedDoors", corruptedCount)) end
         end):catch(function(err) lia.error(L("failedToCheckCorruptedDoorData", tostring(err))) end)
     end
-
 end
 
 function lia.doors.getData(door)

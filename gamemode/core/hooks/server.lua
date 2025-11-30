@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -418,7 +418,6 @@ function GM:KeyPress(client, key)
             client:SetVelocity(Vector(0, 0, 50 + dist * 3))
         end
 
-        -- Handle stamina consumption for jumping
         local char = client:getChar()
         if char then
             local stamina = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
@@ -432,7 +431,6 @@ function GM:KeyPress(client, key)
                     client:ConCommand("-speed")
                 end
             elseif stamina < jumpReq then
-                -- Prevent the jump by setting velocity to counteract it
                 client:SetVelocity(Vector(0, 0, 0))
                 return false
             end
@@ -623,8 +621,6 @@ function GM:PlayerInitialSpawn(client)
                         syncCount = syncCount + 1
                     end
                 end
-
-                print("[TEST] GM:PlayerInitialSpawn: Checked " .. syncCount .. " doors, " .. doorsWithData .. " have data to sync to client " .. client:Name())
             end
         end)
 

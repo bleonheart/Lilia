@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Derma Library
 
     Advanced UI rendering and interaction system for the Lilia framework.
@@ -3981,29 +3981,22 @@ function lia.derma.requestOptions(title, options, callback, defaults)
             panel:DockMargin(0, 0, 0, 10)
             panel:SetTall(90)
             panel.Paint = nil
-
             local label = vgui.Create("DLabel", panel)
             label:SetFont("LiliaFont.20")
             label:SetText(optionName)
             label:SizeToContents()
             local textW = select(1, surface.GetTextSize(optionName))
-
             local ctrl
             if istable(optionData) then
-                -- Dropdown option
                 ctrl = vgui.Create("liaComboBox", panel)
                 local defaultChoiceIndex
                 for idx, v in ipairs(optionData) do
                     if istable(v) then
                         ctrl:AddChoice(v[1], v[2])
-                        if defaults[optionName] ~= nil and (v[2] == defaults[optionName] or v[1] == defaults[optionName]) then
-                            defaultChoiceIndex = idx
-                        end
+                        if defaults[optionName] ~= nil and (v[2] == defaults[optionName] or v[1] == defaults[optionName]) then defaultChoiceIndex = idx end
                     else
                         ctrl:AddChoice(tostring(v))
-                        if defaults[optionName] ~= nil and v == defaults[optionName] then
-                            defaultChoiceIndex = idx
-                        end
+                        if defaults[optionName] ~= nil and v == defaults[optionName] then defaultChoiceIndex = idx end
                     end
                 end
 
@@ -4011,7 +4004,6 @@ function lia.derma.requestOptions(title, options, callback, defaults)
                 ctrl:FinishAddingOptions()
                 ctrl:PostInit()
             else
-                -- Checkbox option (legacy support)
                 ctrl = vgui.Create("liaCheckbox", panel)
                 ctrl:SetChecked(defaults and table.HasValue(defaults, optionData))
             end
@@ -4052,9 +4044,7 @@ function lia.derma.requestOptions(title, options, callback, defaults)
         for optionName, controlInfo in pairs(controls) do
             local ctrl = controlInfo.ctrl
             if ctrl:GetName() == "liaCheckbox" then
-                if ctrl:GetChecked() then
-                    table.insert(selectedOptions, controlInfo.data)
-                end
+                if ctrl:GetChecked() then table.insert(selectedOptions, controlInfo.data) end
             elseif ctrl:GetName() == "liaComboBox" then
                 local selectedText, selectedData = ctrl:GetSelected()
                 if selectedData then

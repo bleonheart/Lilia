@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Configuration Library
 
     Comprehensive user-configurable settings management system for the Lilia framework.
@@ -1425,7 +1425,7 @@ lia.config.add("PunchLethality", "punchLethality", true, nil, {
     type = "Boolean"
 })
 
-lia.config.add("StaminaDrain", "staminaDrain", 4, nil, {
+lia.config.add("StaminaDrain", "staminaDrain", 1, nil, {
     desc = "staminaDrainDesc",
     category = "categoryCharacter",
     type = "Number",

@@ -1,4 +1,4 @@
-net.Receive("liaPlayerRespawn", function(_, client)
+﻿net.Receive("liaPlayerRespawn", function(_, client)
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
@@ -442,10 +442,8 @@ net.Receive("liaArgumentsRequest", function(_, client)
     local req = client.liaArgReqs and client.liaArgReqs[id]
     if not req then return end
     local spec = req.spec or {}
-    -- Check if spec is in ordered array format (like {{"Name", "string"}, {"Age", "number"}})
     local isOrdered = istable(spec) and #spec > 0 and istable(spec[1])
     if isOrdered then
-        -- For ordered format, validate each field
         for _, argInfo in ipairs(spec) do
             local name, typeInfo = argInfo[1], argInfo[2]
             local expectedType = typeInfo
@@ -470,7 +468,6 @@ net.Receive("liaArgumentsRequest", function(_, client)
             end
         end
     else
-        -- For key-value format (like {name = "string", age = "number"})
         for name, typeInfo in pairs(spec) do
             local expectedType = typeInfo
             if istable(typeInfo) then expectedType = typeInfo[1] end

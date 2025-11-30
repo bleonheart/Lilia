@@ -1,6 +1,5 @@
 local MODULE = MODULE
 AdminStickIsOpen = false
-local adminStickDevMode = true
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
 local playerInfoLabel = L("player") .. " " .. L("information")
 local subMenuIcons = {

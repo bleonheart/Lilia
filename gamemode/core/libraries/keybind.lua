@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Keybind Library
 
     Keyboard binding registration, storage, and execution system for the Lilia framework.

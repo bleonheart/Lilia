@@ -1,11 +1,10 @@
-function MODULE:CalcStaminaChange(client)
+﻿function MODULE:CalcStaminaChange(client)
     local char = client:getChar()
     if not char then return 1 end
     local draining = client:GetMoveType() ~= MOVETYPE_NOCLIP and not client:InVehicle() and client:KeyDown(IN_SPEED) and client:OnGround() and (client:GetVelocity():Length2D() > client:GetWalkSpeed())
     local offset = draining and -lia.config.get("StaminaDrain") or lia.config.get("StaminaRegeneration")
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
     if CLIENT then return offset end
-
     local max = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
     local current = client:getNetVar("stamina", max)
     local value = math.Clamp(current + offset, 0, max)
@@ -24,12 +23,9 @@ function MODULE:PlayerBindPress(client, bind, pressed)
     if not pressed then return end
     local char = client:getChar()
     if not char then return end
-
     local stamina = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
     local maxStamina = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
-    local runThreshold = maxStamina * 0.25 -- Can only run after 25% stamina is back
-
-    -- Prevent sprinting when stamina is too low
+    local runThreshold = maxStamina * 0.25
     if bind == "+speed" and stamina <= runThreshold then
         client:ConCommand("-speed")
         return true

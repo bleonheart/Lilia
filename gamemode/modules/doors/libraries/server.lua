@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Doors Library Server
 
     Server-side door management and configuration system for the Lilia framework.
@@ -371,10 +371,6 @@ function MODULE:SaveData()
         end)
     end
 end
-
-
-
-
 
 function MODULE:InitPostEntity()
     local doors = ents.FindByClass("prop_door_rotating")

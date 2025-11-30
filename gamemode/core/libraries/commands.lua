@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -5994,7 +5994,6 @@ lia.command.add("doorsampledata", {
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() then
             local doorData = lia.doors.getData(door)
-            -- Sample data based on common door variables
             local sampleData = {
                 name = "Sample Door " .. (door:MapCreationID() or "Unknown"),
                 price = 1000,
@@ -6006,15 +6005,12 @@ lia.command.add("doorsampledata", {
                 classes = {"citizen"}
             }
 
-            -- Apply sample data to the door
             for key, value in pairs(sampleData) do
                 doorData[key] = value
             end
 
             lia.doors.setData(door, doorData)
-            -- Notify the admin
             client:notifyLocalized("doorSampleDataApplied")
-            -- Log the action
             lia.log.add(client, "doorSampleData", door)
         else
             client:notifyErrorLocalized("doorNotValid")
@@ -7608,6 +7604,13 @@ lia.command.add("kickbots", {
 lia.command.add("npcchangetype", {
     adminOnly = true,
     desc = "npcchangetypeDesc",
+    AdminStick = {
+        Name = "adminStickChangeNPCType",
+        Category = "moderation",
+        SubCategory = "moderationTools",
+        TargetClass = "lia_npc",
+        Icon = "icon16/user_edit.png"
+    },
     onRun = function(client)
         if not client:hasPrivilege("Can Manage NPCs") then return client:notifyError("You lack permission to manage NPCs.") end
         local ent = client:getTracedEntity()

@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:PostPlayerLoadout(client)
     local char = client:getChar()
     if not char then return end
@@ -25,7 +25,7 @@ function MODULE:PlayerStaminaLost(client)
     client:EmitSound("player/breathe1.wav", 35, 100)
     local character = client:getChar()
     local maxStamina = character and (hook.Run("GetCharMaxStamina", character) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
-    local breathThreshold = maxStamina * 0.25 -- Breathing continues until player can run again
+    local breathThreshold = maxStamina * 0.25
     local timerName = "liaStamBreathCheck" .. client:SteamID64()
     if timer.Exists(timerName) then timer.Remove(timerName) end
     timer.Create(timerName, 0.5, 0, function()
@@ -55,5 +55,4 @@ timer.Create("liaGlobalStamina", 0.25, 0, function()
     end
 end)
 
--- Manual hook registration to ensure it works
 hook.Add("PlayerBindPress", "liaAttributesPlayerBindPress", function(client, bind, pressed) return MODULE:PlayerBindPress(client, bind, pressed) end)

@@ -1,4 +1,4 @@
-NAME = "English"
+﻿NAME = "English"
 LANGUAGE = {
     mustProvideString = "Must Provide a String",
     use = "Use",
@@ -1045,6 +1045,7 @@ LANGUAGE = {
     banDesc = "Ban a player temporarily or permanently",
     testnotificationsDesc = "Test all notification types",
     npcchangetypeDesc = "Change the type of a dialog NPC you are looking at.",
+    adminStickChangeNPCType = "Change NPC Type",
     resetvendorcooldownsDesc = "Reset vendor cooldowns for a player",
     plyBringDesc = "Teleport a player to you.",
     plyGotoDesc = "Teleport yourself to a player.",
