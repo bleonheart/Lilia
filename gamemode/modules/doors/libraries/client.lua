@@ -1,66 +1,20 @@
--- Initialize client-side door cache
-lia.doors.stored = lia.doors.stored or {}
-
--- Helper function to check if a value differs from default
-function lia.doors.isDifferentFromDefault(key, value)
-    local default = lia.doors.defaults[key]
-    if istable(default) then
-        if not istable(value) then return false end
-        return not table.IsEmpty(value)
-    end
-    return value ~= default
-end
-
--- Helper function to get door data (with defaults applied)
-function lia.doors.getData(door)
-    if not IsValid(door) then return table.Copy(lia.doors.defaults) end
-    return table.Merge(table.Copy(lia.doors.defaults), lia.doors.stored[door] or {})
-end
-
--- Helper function to get only non-default door data for networking
-function lia.doors.getSyncData(door)
-    if not IsValid(door) then return {} end
-    return table.Copy(lia.doors.stored[door] or {})
-end
-
--- Clean up door data when entity is removed
-hook.Add("EntityRemoved", "liaDoorDataCleanup", function(entity)
-    if IsValid(entity) and entity:isDoor() then
-        lia.doors.stored[entity] = nil
-    end
-end)
-
-function MODULE:GetDoorInfo(entity, doorData, doorInfo)
-    local mapID = entity:MapCreationID() or 0
+﻿function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
     local price = doorData.price or 0
     local ownable = not (doorData.noSell or false)
     local title = doorData.title or doorData.name or ""
-    
-    -- Debug print for doors with data
-    local hasData = (doorData.name and doorData.name ~= "") or (price > 0) or (#factions > 0) or (#classes > 0)
-    if hasData then
-        print("[TEST CLIENT] GetDoorInfo: Door #" .. mapID .. " - name: " .. tostring(doorData.name) .. ", title: " .. tostring(title) .. ", price: " .. tostring(price))
-    end
-    
     if title and title ~= "" then
         table.insert(doorInfo, {
             text = title
         })
-        if hasData then
-            print("[TEST CLIENT] GetDoorInfo: Door #" .. mapID .. " added title to doorInfo: " .. title)
-        end
     end
 
     if ownable and price > 0 then
         table.insert(doorInfo, {
             text = L("price") .. ": " .. lia.currency.get(price)
         })
-        if hasData then
-            print("[TEST CLIENT] GetDoorInfo: Door #" .. mapID .. " added price to doorInfo: " .. price)
-        end
     end
 
     if ownable and not IsValid(owner) then
@@ -119,21 +73,7 @@ function MODULE:DrawEntityInfo(entity, alpha)
     local activeWeapon = client:GetActiveWeapon()
     if IsValid(client) and IsValid(activeWeapon) and activeWeapon:GetClass() == "adminstick" then return end
     if entity:isDoor() then
-        local doorData = lia.doors.getData(entity)
-        local mapID = entity:MapCreationID() or 0
-        local hasNonDefaultData = false
-        for key, value in pairs(doorData) do
-            if lia.doors.isDifferentFromDefault(key, value) then
-                hasNonDefaultData = true
-                break
-            end
-        end
-        
-        -- Only debug print for doors with data (to reduce spam)
-        if hasNonDefaultData then
-            print("[TEST CLIENT] DrawEntityInfo: Door #" .. mapID .. " - name: " .. tostring(doorData.name) .. ", price: " .. tostring(doorData.price) .. ", hidden: " .. tostring(doorData.hidden))
-        end
-        
+        local doorData = entity:getNetVar("doorData", {})
         if not (doorData.hidden or false) then
             if doorData.disabled then
                 lia.util.drawEntText(entity, L("doorDisabled"), 0, alpha)
@@ -146,10 +86,6 @@ function MODULE:DrawEntityInfo(entity, alpha)
             local infoTexts = {}
             for _, info in ipairs(doorInfo) do
                 if info.text and info.text ~= "" then table.insert(infoTexts, info.text) end
-            end
-
-            if hasNonDefaultData then
-                print("[TEST CLIENT] DrawEntityInfo: Door #" .. mapID .. " - doorInfo count: " .. #doorInfo .. ", infoTexts count: " .. #infoTexts)
             end
 
             if #infoTexts > 0 then self:DrawDoorInfoBox(entity, infoTexts, alpha) end
@@ -230,7 +166,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if not IsValid(tgt) or not tgt:isDoor() then return end
     local client = LocalPlayer()
     if not client:hasPrivilege("manageDoors") and not client:isStaffOnDuty() then return end
-    local doorData = lia.doors.getData(tgt)
+    local doorData = tgt:getNetVar("doorData", {})
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
     local items = {}
@@ -311,7 +247,7 @@ function MODULE:AddToAdminStickHUD(_, target, information)
             table.insert(information, info)
         end
 
-        local doorData = lia.doors.getData(target)
+        local doorData = target:getNetVar("doorData", {})
         local defaultDoorData = {
             name = "",
             price = 0,
@@ -368,35 +304,41 @@ function MODULE:AddToAdminStickHUD(_, target, information)
             end
         end
 
-        local factions = doorData.factions or {}
-        if factions and #factions > 0 then
-            local factionNames = {}
-            for _, factionId in ipairs(factions) do
-                local faction = lia.faction.indices[factionId]
-                if faction then table.insert(factionNames, faction.name) end
-            end
+        local factions = target:getNetVar("factions")
+        if factions and factions ~= "[]" then
+            local factionData = util.JSONToTable(factions)
+            if factionData and #factionData > 0 then
+                local factionNames = {}
+                for _, factionId in ipairs(factionData) do
+                    local faction = lia.faction.indices[factionId]
+                    if faction then table.insert(factionNames, faction.name) end
+                end
 
-            if #factionNames > 0 then
-                table.insert(information, L("doorAllowedFactions") .. ":")
-                for _, factionName in ipairs(factionNames) do
-                    table.insert(information, "- " .. factionName)
+                if #factionNames > 0 then
+                    table.insert(information, L("doorAllowedFactions") .. ":")
+                    for _, factionName in ipairs(factionNames) do
+                        table.insert(information, "- " .. factionName)
+                    end
                 end
             end
         end
 
-        local classes = doorData.classes or {}
-        if classes and #classes > 0 then
-            local classNames = {}
-            for _, classId in ipairs(classes) do
-                local classIndex = lia.class.retrieveClass(classId)
-                local classInfo = lia.class.list[classIndex]
-                if classInfo then table.insert(classNames, classInfo.name) end
-            end
+        local classes = target:getNetVar("classes")
+        if classes and classes ~= "[]" then
+            local classData = util.JSONToTable(classes)
+            if classData and #classData > 0 then
+                local classNames = {}
+                for _, classId in ipairs(classData) do
+                    local classIndex = lia.class.retrieveClass(classId)
+                    local classInfo = lia.class.list[classIndex]
+                    if classInfo then table.insert(classNames, classInfo.name) end
+                end
 
-            if #classNames > 0 then
-                table.insert(information, L("doorAllowedClasses") .. ":")
-                for _, className in ipairs(classNames) do
-                    table.insert(information, "- " .. className)
+                if #classNames > 0 then
+                    table.insert(information, L("doorAllowedClasses") .. ":")
+                    for _, className in ipairs(classNames) do
+                        table.insert(information, "- " .. className)
+                    end
                 end
             end
         end

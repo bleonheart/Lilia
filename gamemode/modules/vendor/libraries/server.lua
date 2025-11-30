@@ -344,7 +344,6 @@ function MODULE:OnEntityLoaded(ent, data)
     ent.messages = data.messages or {}
     ent.factionBuyScales = data.factionBuyScales
     ent.factionSellScales = data.factionSellScales
-    print("[VENDOR] Loaded vendor '" .. (data.name or "Unknown") .. "' with " .. table.Count(data.factionBuyScales) .. " buy scales and " .. table.Count(data.factionSellScales) .. " sell scales")
 
     -- Sync this vendor's data to all clients after it's loaded
     timer.Simple(0.1, function()

@@ -61,65 +61,54 @@ net.Receive("liaVendorFaction", function()
 end)
 
 net.Receive("liaVendorPrice", function()
-    if not IsValid(liaVendorEnt) then
-        print("[VENDOR DEBUG CLIENT] liaVendorPrice received but no valid vendor entity")
-        return
-    end
+    if not IsValid(liaVendorEnt) then return end
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadInt(32)
     if value < 0 then value = nil end
-    print("[VENDOR DEBUG CLIENT] liaVendorPrice received - Item:", itemType, "Price:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_PRICE] = value
-    print("[VENDOR DEBUG CLIENT] liaVendorPrice applied to vendor.items - Item:", itemType, "Price:", value)
     hook.Run("VendorItemPriceUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorMode", function()
     if not IsValid(liaVendorEnt) then
-        print("[VENDOR DEBUG CLIENT] liaVendorMode received but no valid vendor entity")
         return
     end
+
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadInt(8)
     if value < 0 then value = nil end
-    print("[VENDOR DEBUG CLIENT] liaVendorMode received - Item:", itemType, "Mode:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_MODE] = value
-    print("[VENDOR DEBUG CLIENT] liaVendorMode applied to vendor.items - Item:", itemType, "Mode:", value)
     hook.Run("VendorItemModeUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorStock", function()
     if not IsValid(liaVendorEnt) then
-        print("[VENDOR DEBUG CLIENT] liaVendorStock received but no valid vendor entity")
         return
     end
+
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadUInt(32)
-    print("[VENDOR DEBUG CLIENT] liaVendorStock received - Item:", itemType, "Stock:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_STOCK] = value
-    print("[VENDOR DEBUG CLIENT] liaVendorStock applied to vendor.items - Item:", itemType, "Stock:", value)
     hook.Run("VendorItemStockUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorMaxStock", function()
     if not IsValid(liaVendorEnt) then
-        print("[VENDOR DEBUG CLIENT] liaVendorMaxStock received but no valid vendor entity")
         return
     end
+
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadUInt(32)
     if value == 0 then value = nil end
-    print("[VENDOR DEBUG CLIENT] liaVendorMaxStock received - Item:", itemType, "MaxStock:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_MAXSTOCK] = value
-    print("[VENDOR DEBUG CLIENT] liaVendorMaxStock applied to vendor.items - Item:", itemType, "MaxStock:", value)
     hook.Run("VendorItemMaxStockUpdated", vendor, itemType, value)
 end)
 
@@ -158,7 +147,6 @@ net.Receive("liaVendorFactionBuyScale", function()
     local scale = net.ReadFloat()
     vendor.factionBuyScales = vendor.factionBuyScales or {}
     vendor.factionBuyScales[factionID] = scale
-
     hook.Run("VendorFactionBuyScaleUpdated", vendor, factionID, scale)
 end)
 
@@ -169,7 +157,6 @@ net.Receive("liaVendorFactionSellScale", function()
     local scale = net.ReadFloat()
     vendor.factionSellScales = vendor.factionSellScales or {}
     vendor.factionSellScales[factionID] = scale
-
     hook.Run("VendorFactionSellScaleUpdated", vendor, factionID, scale)
 end)
 
@@ -177,7 +164,6 @@ net.Receive("liaVendorSyncMessages", function()
     if not IsValid(liaVendorEnt) then return end
     local vendor = liaVendorEnt
     vendor.messages = net.ReadTable()
-
     hook.Run("VendorMessagesUpdated", vendor)
 end)
 
