@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Vendor Library
 
     NPC vendor management system with editing and rarity support for the Lilia framework.
@@ -346,7 +346,7 @@ end
 function lia.vendor.setVendorProperty(entity, property, value)
     if not IsValid(entity) then return end
     local defaultValue = lia.vendor.defaults[property]
-    local isDefault = false
+    local isDefault
     if istable(defaultValue) then
         isDefault = table.IsEmpty(value) or (table.Count(value) == 0)
     else
