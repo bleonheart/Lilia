@@ -19,10 +19,12 @@ function ENT:setupVars()
     end
 
     self.receivers = self.receivers or {}
-    self.items = {}
-    self.factions = {}
-    self.messages = {}
-    self.classes = {}
+    self.items = self.items or {}
+    self.factions = self.factions or {}
+    self.messages = self.messages or {}
+    self.classes = self.classes or {}
+    self.factionBuyScales = self.factionBuyScales or {}
+    self.factionSellScales = self.factionSellScales or {}
     self.hasSetupVars = true
 end
 
@@ -82,13 +84,56 @@ end
 function ENT:setFactionBuyScale(factionID, scale)
     self.factionBuyScales = self.factionBuyScales or {}
     self.factionBuyScales[factionID] = math.Clamp(scale, 0, 5) -- 0% to 500%
-    if SERVER then hook.Run("UpdateEntityPersistence", self) end
+    if SERVER then
+        hook.Run("UpdateEntityPersistence", self)
+        net.Start("liaVendorFactionBuyScale")
+        net.WriteUInt(factionID, 8)
+        net.WriteFloat(self.factionBuyScales[factionID])
+        net.Broadcast()
+    end
 end
 
 function ENT:setFactionSellScale(factionID, scale)
     self.factionSellScales = self.factionSellScales or {}
     self.factionSellScales[factionID] = math.Clamp(scale, 0, 1) -- 0% to 100%
+    if SERVER then
+        hook.Run("UpdateEntityPersistence", self)
+        net.Start("liaVendorFactionSellScale")
+        net.WriteUInt(factionID, 8)
+        net.WriteFloat(self.factionSellScales[factionID])
+        net.Broadcast()
+    end
+end
+
+function ENT:setFactionAllowed(factionID, allowed)
+    self.factions = self.factions or {}
+    if allowed then
+        self.factions[factionID] = true
+    else
+        self.factions[factionID] = nil
+    end
     if SERVER then hook.Run("UpdateEntityPersistence", self) end
+end
+
+function ENT:setClassAllowed(classID, allowed)
+    self.classes = self.classes or {}
+    if allowed then
+        self.classes[classID] = true
+    else
+        self.classes[classID] = nil
+    end
+    if SERVER then hook.Run("UpdateEntityPersistence", self) end
+end
+
+function ENT:setMessage(messageType, message)
+    self.messages = self.messages or {}
+    self.messages[messageType] = message
+    if SERVER then
+        hook.Run("UpdateEntityPersistence", self)
+        net.Start("liaVendorSyncMessages")
+        net.WriteTable(self.messages)
+        net.Broadcast()
+    end
 end
 
 function ENT:getFactionBuyScale(factionID)
@@ -159,6 +204,19 @@ end
 
 function ENT:getName()
     return lia.vendor.getVendorProperty(self, "name")
+end
+
+function ENT:setName(name)
+    lia.vendor.setVendorProperty(self, "name", name)
+    if SERVER then hook.Run("UpdateEntityPersistence", self) end
+end
+
+function ENT:setAnimation(animation)
+    lia.vendor.setVendorProperty(self, "animation", animation)
+    if SERVER then
+        hook.Run("UpdateEntityPersistence", self)
+        self:setAnim()
+    end
 end
 
 function ENT:isReadyForAnim()

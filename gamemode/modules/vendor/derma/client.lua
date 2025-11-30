@@ -313,7 +313,8 @@ function PANEL:applyCategoryFilter()
     local data = liaVendorEnt.items or {}
     for id in SortedPairs(data) do
         local itm = lia.item.list[id]
-        local cat = itm and itm:getCategory()
+        if not itm then continue end
+        local cat = itm:getCategory()
         if cat then cat = cat:sub(1, 1):upper() .. cat:sub(2) end
         if not self.currentCategory or self.currentCategory == L("vendorShowAll") or cat == self.currentCategory then
             local mode = liaVendorEnt:getTradeMode(id)
@@ -1346,7 +1347,13 @@ function PANEL:Init()
             slider:SetText("")
             slider:SetRange(0, entity:GetBodygroupCount(i) - 1, 0)
             slider:SetValue(entity:GetBodygroup(i))
-            slider.OnValueChanged = function(_, val) lia.vendor.editor.bodygroup(i, math.Round(val)) end
+            slider.OnValueChanged = function(_, val)
+                val = math.Round(val)
+                local timerName = "liaVendorBodygroup" .. i
+                timer.Create(timerName, 0.3, 1, function()
+                    if IsValid(slider) then lia.vendor.editor.bodygroup(i, val) end
+                end)
+            end
         end
     end
 
@@ -1451,7 +1458,9 @@ function PANEL:populateFactionPanel()
         factionCheckbox:SetWide(48)
         factionCheckbox:DockMargin(0, 0, 8, 0)
         factionCheckbox.factionID = k
-        factionCheckbox.OnChange = function(_, state) lia.vendor.editor.faction(k, state) end
+        factionCheckbox.OnChange = function(_, state)
+            lia.vendor.editor.faction(k, state)
+        end
         self.factions[k] = factionCheckbox
         local factionLabel = factionHeader:Add("DLabel")
         factionLabel:Dock(FILL)
@@ -1484,7 +1493,9 @@ function PANEL:populateFactionPanel()
                 classCheckbox:DockMargin(0, 0, 6, 0)
                 classCheckbox.classID = k2
                 classCheckbox.factionID = factionCheckbox.factionID
-                classCheckbox.OnChange = function(_, state) lia.vendor.editor.class(k2, state) end
+                classCheckbox.OnChange = function(_, state)
+                    lia.vendor.editor.class(k2, state)
+                end
                 self.classes[k2] = classCheckbox
                 local classLabel = classRow:Add("DLabel")
                 classLabel:Dock(FILL)
@@ -1517,8 +1528,13 @@ function PANEL:populateFactionPanel()
         buyScaleSlider:SetValue((liaVendorEnt:getFactionBuyScale(k) or 1.0) * 100)
         buyScaleSlider.OnValueChanged = function(_, value)
             value = math.Round(value) / 100 -- Convert percentage back to decimal
-            lia.vendor.editor.factionBuyScale(k, value)
-            buyScaleLabel:SetText(string.format("%s - %s: %.0f%%", L(v.name), L("vendorBuyScale"), value * 100))
+            local timerName = "liaVendorFactionBuyScale" .. k
+            timer.Create(timerName, 0.3, 1, function()
+                if IsValid(buyScaleSlider) then
+                    lia.vendor.editor.factionBuyScale(k, value)
+                    buyScaleLabel:SetText(string.format("%s - %s: %.0f%%", L(v.name), L("vendorBuyScale"), value * 100))
+                end
+            end)
         end
 
         -- Add sell scale slider
@@ -1540,8 +1556,13 @@ function PANEL:populateFactionPanel()
         sellScaleSlider:SetValue((liaVendorEnt:getFactionSellScale(k) or 1.0) * 100)
         sellScaleSlider.OnValueChanged = function(_, value)
             value = math.Round(value) / 100 -- Convert percentage back to decimal
-            lia.vendor.editor.factionSellScale(k, value)
-            sellScaleLabel:SetText(string.format("%s - %s: %.0f%%", L(v.name), L("vendorSellScale"), value * 100))
+            local timerName = "liaVendorFactionSellScale" .. k
+            timer.Create(timerName, 0.3, 1, function()
+                if IsValid(sellScaleSlider) then
+                    lia.vendor.editor.factionSellScale(k, value)
+                    sellScaleLabel:SetText(string.format("%s - %s: %.0f%%", L(v.name), L("vendorSellScale"), value * 100))
+                end
+            end)
         end
 
         local baseHeight = 69 + (classCount * 34) + 96 -- Added 96 for the two scale panels (48 each)
@@ -2117,6 +2138,7 @@ function PANEL:OnRowRightClick(rowIndex, rowData)
     if IsValid(menu) then menu:Remove() end
     local uniqueID = rowData.item
     local itemTable = lia.item.list[uniqueID]
+    if not itemTable then return end
     menu = lia.derma.dermaMenu()
     local mode, modePanel = menu:AddSubMenu(L("mode"))
     modePanel:SetImage("icon16/key.png")
@@ -2331,7 +2353,13 @@ function PANEL:Init()
         slider:SetText(entity:GetBodygroupName(i))
         slider:SetRange(0, entity:GetBodygroupCount(i) - 1, 0)
         slider:SetValue(entity:GetBodygroup(i))
-        slider.OnValueChanged = function(_, val) lia.vendor.editor.bodygroup(i, math.Round(val)) end
+        slider.OnValueChanged = function(_, val)
+            val = math.Round(val)
+            local timerName = "liaVendorBodygroupEditor" .. i
+            timer.Create(timerName, 0.3, 1, function()
+                if IsValid(slider) then lia.vendor.editor.bodygroup(i, val) end
+            end)
+        end
         self.sliders[i] = slider
     end
 

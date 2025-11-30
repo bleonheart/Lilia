@@ -151,6 +151,36 @@ net.Receive("liaVendorAllowClass", function()
     hook.Run("VendorClassUpdated", vendor, id, allowed)
 end)
 
+net.Receive("liaVendorFactionBuyScale", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local factionID = net.ReadUInt(8)
+    local scale = net.ReadFloat()
+    vendor.factionBuyScales = vendor.factionBuyScales or {}
+    vendor.factionBuyScales[factionID] = scale
+
+    hook.Run("VendorFactionBuyScaleUpdated", vendor, factionID, scale)
+end)
+
+net.Receive("liaVendorFactionSellScale", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    local factionID = net.ReadUInt(8)
+    local scale = net.ReadFloat()
+    vendor.factionSellScales = vendor.factionSellScales or {}
+    vendor.factionSellScales[factionID] = scale
+
+    hook.Run("VendorFactionSellScaleUpdated", vendor, factionID, scale)
+end)
+
+net.Receive("liaVendorSyncMessages", function()
+    if not IsValid(liaVendorEnt) then return end
+    local vendor = liaVendorEnt
+    vendor.messages = net.ReadTable()
+
+    hook.Run("VendorMessagesUpdated", vendor)
+end)
+
 function MODULE:AddToAdminStickHUD(_, target, information)
     if not IsValid(target) or not target.IsVendor then return end
     local name = target:getName()
@@ -207,7 +237,7 @@ net.Receive("liaVendorInitialSync", function()
         local vendor = net.ReadEntity()
         if not IsValid(vendor) then continue end
         local propertyCount = net.ReadUInt(8)
-        lia.vendor.stored[vendor] = {}
+        lia.vendor.stored[vendor] = lia.vendor.stored[vendor] or {}
         for _ = 1, propertyCount do
             local propertyName = net.ReadString()
             local propertyValue = net.ReadType()

@@ -38,32 +38,38 @@ if SERVER then
         client:notifyLocalized("vendorNameChanged")
     end)
 
-    addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, itemType, mode)
+    addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, client, itemType, mode)
         vendor:setTradeMode(itemType, mode)
     end)
 
-    addEditor("price", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, itemType, price)
+    addEditor("price", function() return net.ReadString(), net.ReadInt(32) end, function(vendor, client, itemType, price)
         vendor:setItemPrice(itemType, price)
     end)
 
-    addEditor("stockDisable", function() return net.ReadString() end, function(vendor, itemType)
+    addEditor("stockDisable", function() return net.ReadString() end, function(vendor, client, itemType)
         vendor:setMaxStock(itemType, nil)
     end)
 
-    addEditor("stockMax", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, itemType, value)
+    addEditor("stockMax", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
         vendor:setMaxStock(itemType, value)
     end)
 
-    addEditor("stock", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, itemType, value)
+    addEditor("stock", function() return net.ReadString(), net.ReadUInt(32) end, function(vendor, client, itemType, value)
         vendor:setStock(itemType, value)
     end)
 
-    addEditor("flag", function() return net.ReadString() end, function(vendor, flag) vendor:setFlag(flag) end)
-    addEditor("welcome", function() return net.ReadString() end, function(vendor, message) vendor:setWelcomeMessage(message) end)
-    addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, factionID, allowed) vendor:setFactionAllowed(factionID, allowed) end)
-    addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, classID, allowed) vendor:setClassAllowed(classID, allowed) end)
-    addEditor("factionBuyScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, factionID, scale) vendor:setFactionBuyScale(factionID, scale) end)
-    addEditor("factionSellScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, factionID, scale) vendor:setFactionSellScale(factionID, scale) end)
+    addEditor("faction", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, factionID, allowed)
+        vendor:setFactionAllowed(factionID, allowed)
+    end)
+    addEditor("class", function() return net.ReadUInt(8), net.ReadBool() end, function(vendor, client, classID, allowed)
+        vendor:setClassAllowed(classID, allowed)
+    end)
+    addEditor("factionBuyScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, client, factionID, scale)
+        vendor:setFactionBuyScale(factionID, scale)
+    end)
+    addEditor("factionSellScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, client, factionID, scale)
+        vendor:setFactionSellScale(factionID, scale)
+    end)
     addEditor("model", function() return net.ReadString() end, function(vendor, client, model)
         vendor:setModel(model)
         client:notifyLocalized("vendorModelChanged")
@@ -79,7 +85,7 @@ if SERVER then
         client:notifyLocalized("vendorBodygroupChanged")
     end)
 
-    addEditor("useMoney", function() return net.ReadBool() end, function(vendor, useMoney)
+    addEditor("useMoney", function() return net.ReadBool() end, function(vendor, client, useMoney)
         if useMoney then
             vendor:setMoney(lia.config.get("vendorDefaultMoney", 500))
         else
@@ -87,9 +93,9 @@ if SERVER then
         end
     end)
 
-    addEditor("money", function() return net.ReadUInt(32) end, function(vendor, money) vendor:setMoney(money) end)
-    addEditor("scale", function() return net.ReadFloat() end, function(vendor, scale) vendor:setSellScale(scale) end)
-    addEditor("preset", function() return net.ReadString() end, function(vendor, preset) vendor:applyPreset(preset) end)
+    addEditor("money", function() return net.ReadUInt(32) end, function(vendor, client, money) vendor:setMoney(money) end)
+    addEditor("scale", function() return net.ReadFloat() end, function(vendor, client, scale) vendor:setSellScale(scale) end)
+    addEditor("preset", function() return net.ReadString() end, function(vendor, client, preset) vendor:applyPreset(preset) end)
     addEditor("animation", function()
         local anim = net.ReadString()
         return anim
@@ -133,8 +139,6 @@ else
         net.WriteUInt(value, 32)
     end)
 
-    addEditor("flag", function(flag) net.WriteString(flag) end)
-    addEditor("welcome", function(message) net.WriteString(message) end)
     addEditor("faction", function(factionID, allowed)
         net.WriteUInt(factionID, 8)
         net.WriteBool(allowed)
@@ -401,11 +405,7 @@ function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
         net.WriteType(value)
     end
 
-    if entity.receivers and #entity.receivers > 0 then
-        net.Send(entity.receivers)
-    else
-        net.Broadcast()
-    end
+    net.Broadcast()
 end
 
 function lia.vendor.getAllVendorData(entity)

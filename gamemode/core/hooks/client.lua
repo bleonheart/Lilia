@@ -13,6 +13,9 @@ local lastTrace = {
     endpos = nil
 }
 
+local VOICE_WHISPERING = "whispering"
+local VOICE_TALKING = "talking"
+local VOICE_YELLING = "yelling"
 local hidden = {
     CHUDAutoAim = true,
     CHudHealth = true,
@@ -28,9 +31,9 @@ local hidden = {
 }
 
 local VoiceRanges = {
-    [L("whispering")] = 120,
-    [L("talking")] = 300,
-    [L("yelling")] = 600,
+    [VOICE_WHISPERING] = 120,
+    [VOICE_TALKING] = 300,
+    [VOICE_YELLING] = 600,
 }
 
 local lastEntity
@@ -176,8 +179,8 @@ function GM:PostDrawOpaqueRenderables()
     if not lia.option.get("voiceRange", false) then return end
     local client = LocalPlayer()
     if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
-    local vt = client:getNetVar("VoiceType", L("talking"))
-    local radius = VoiceRanges[vt] or VoiceRanges[L("talking")]
+    local vt = client:getNetVar("VoiceType", VOICE_TALKING)
+    local radius = VoiceRanges[vt] or VoiceRanges[VOICE_TALKING]
     local segments = 36
     local pos = client:GetPos() + Vector(0, 0, 2)
     local color = Color(0, 150, 255)
@@ -274,10 +277,10 @@ end
 local function drawVoiceIndicator()
     local client = LocalPlayer()
     if not IsValid(client) or not client:IsSpeaking() then return end
-    local voiceType = client:getNetVar("VoiceType", L("talking"))
-    local voiceText = L("youAre") .. " " .. voiceType
+    local voiceType = client:getNetVar("VoiceType", VOICE_TALKING)
+    local voiceText = L("youAre") .. " " .. L(voiceType)
     if lia.option.get("voiceRange", false) then
-        local radius = VoiceRanges[voiceType] or VoiceRanges[L("talking")]
+        local radius = VoiceRanges[voiceType] or VoiceRanges[VOICE_TALKING]
         local clientPos = client:GetPos()
         local count = 0
         for _, ply in player.Iterator() do
@@ -381,7 +384,7 @@ function GM:CreateMove(cmd)
     local client = LocalPlayer()
     if IsValid(client) then
         local weapon = client:GetActiveWeapon()
-        if IsValid(weapon) and weapon:GetClass() == "lia_hands" and weapon:IsHoldingObject() and cmd:KeyDown(IN_ATTACK2) then
+        if IsValid(weapon) and weapon:GetClass() == "lia_hands" and weapon.IsHoldingObject and weapon:IsHoldingObject() and cmd:KeyDown(IN_ATTACK2) then
             cmd:ClearMovement()
             local angle = cmd:GetViewAngles()
             angle.z = 0

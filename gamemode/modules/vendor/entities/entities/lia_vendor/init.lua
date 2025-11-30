@@ -1,6 +1,3 @@
-local function safeSendToReceivers(entity)
-    if entity.receivers and #entity.receivers > 0 then net.Send(entity.receivers) end
-end
 
 function ENT:SpawnFunction(client, trace)
     local angles = (trace.HitPos - client:GetPos()):Angle()
@@ -36,7 +33,7 @@ function ENT:setStock(itemType, value)
     net.Start("liaVendorStock")
     net.WriteString(itemType)
     net.WriteUInt(value, 32)
-    safeSendToReceivers(self, "VendorStock")
+    net.Broadcast()
 end
 
 function ENT:addStock(itemType, value)
@@ -59,7 +56,7 @@ function ENT:setMaxStock(itemType, value)
     net.Start("liaVendorMaxStock")
     net.WriteString(itemType)
     net.WriteUInt(value, 32)
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setFactionAllowed(factionID, isAllowed)
@@ -74,7 +71,7 @@ function ENT:setFactionAllowed(factionID, isAllowed)
     net.Start("liaVendorAllowFaction")
     net.WriteUInt(factionID, 8)
     net.WriteBool(self.factions[factionID])
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
     if self.receivers then
         for _, client in ipairs(self.receivers) do
             if not hook.Run("CanPlayerAccessVendor", client, self) then self:removeReceiver(client) end
@@ -94,7 +91,7 @@ function ENT:setClassAllowed(classID, isAllowed)
     net.Start("liaVendorAllowClass")
     net.WriteUInt(classID, 8)
     net.WriteBool(self.classes[classID])
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:removeReceiver(client, requestedByPlayer)
@@ -118,7 +115,7 @@ function ENT:setName(name)
     lia.vendor.setVendorProperty(self, "name", name)
     net.Start("liaVendorEdit")
     net.WriteString("name")
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setTradeMode(itemType, mode)
@@ -129,7 +126,7 @@ function ENT:setTradeMode(itemType, mode)
     net.Start("liaVendorMode")
     net.WriteString(itemType)
     net.WriteInt(mode or -1, 8)
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setItemPrice(itemType, value)
@@ -140,7 +137,7 @@ function ENT:setItemPrice(itemType, value)
     net.Start("liaVendorPrice")
     net.WriteString(itemType)
     net.WriteInt(value or -1, 32)
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setItemStock(itemType, value)
@@ -151,7 +148,7 @@ function ENT:setItemStock(itemType, value)
     net.Start("liaVendorStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setItemMaxStock(itemType, value)
@@ -162,7 +159,7 @@ function ENT:setItemMaxStock(itemType, value)
     net.Start("liaVendorMaxStock")
     net.WriteString(itemType)
     net.WriteInt(value, 32)
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:OnRemove()
@@ -187,7 +184,7 @@ function ENT:setModel(model)
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("model")
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setSkin(skin)
@@ -196,7 +193,7 @@ function ENT:setSkin(skin)
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("skin")
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setBodyGroup(id, value)
@@ -206,7 +203,7 @@ function ENT:setBodyGroup(id, value)
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("bodygroup")
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:setAnimation(animation)
@@ -215,7 +212,7 @@ function ENT:setAnimation(animation)
     hook.Run("UpdateEntityPersistence", self)
     net.Start("liaVendorEdit")
     net.WriteString("animation")
-    if self.receivers and #self.receivers > 0 then net.Send(self.receivers) end
+    net.Broadcast()
 end
 
 function ENT:loadPreset(name)
@@ -223,11 +220,7 @@ function ENT:loadPreset(name)
     if name == "none" then
         self.items = {}
         hook.Run("UpdateEntityPersistence", self)
-        if self.receivers then
-            for _, client in ipairs(self.receivers) do
-                self:sync(client)
-            end
-        end
+        self:syncToAll()
         return
     end
 
@@ -247,11 +240,7 @@ function ENT:loadPreset(name)
 
     -- Save the preset to the vendor entity
     hook.Run("UpdateEntityPersistence", self)
-    if self.receivers then
-        for _, client in ipairs(self.receivers) do
-            self:sync(client)
-        end
-    end
+    self:syncToAll()
 end
 
 function ENT:sync(client)
@@ -267,6 +256,21 @@ function ENT:sync(client)
     end
 
     net.Send(client)
+end
+
+function ENT:syncToAll()
+    net.Start("liaVendorSync")
+    net.WriteEntity(self)
+    net.WriteUInt(table.Count(self.items), 16)
+    for itemType, item in pairs(self.items) do
+        net.WriteString(itemType)
+        net.WriteInt(item[VENDOR_PRICE] or -1, 32)
+        net.WriteInt(item[VENDOR_STOCK] or -1, 32)
+        net.WriteInt(item[VENDOR_MAXSTOCK] or -1, 32)
+        net.WriteInt(item[VENDOR_MODE] or -1, 8)
+    end
+
+    net.Broadcast()
 end
 
 function ENT:addReceiver(client, noSync)
