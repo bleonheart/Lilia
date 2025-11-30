@@ -1,4 +1,4 @@
-﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
+function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = lia.vendor.getVendorProperty(vendor, "name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
@@ -421,7 +421,7 @@ net.Receive("liaVendorDeletePreset", function(_, client)
 
     presetName = presetName:Trim():lower()
     if not lia.vendor.presets[presetName] then
-        client:notifyErrorLocalized("vendorPresetNotFound")
+        client:notifyErrorLocalized("vendorPresetNotFound", presetName)
         return
     end
 
@@ -435,7 +435,7 @@ net.Receive("liaVendorDeletePreset", function(_, client)
         net.Broadcast()
     end):catch(function()
         lia.vendor.presets[presetName] = presetData
-        client:notifyErrorLocalized("vendorPresetDeleteFailed")
+        client:notifyErrorLocalized("vendorPresetDeleteFailed", presetName)
     end)
 end)
 

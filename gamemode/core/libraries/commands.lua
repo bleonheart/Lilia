@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -7686,87 +7686,5 @@ lia.command.add("resetvendorcooldowns", {
         character:setData("vendorCooldowns", {})
         client:notifyLocalized("vendorCooldownsReset", target:Name())
         target:notifyLocalized("vendorCooldownsResetByAdmin")
-    end
-})
-
-lia.command.add("testrequests", {
-    desc = "Test all client:requestXXXX functions individually",
-    privilege = "Staff",
-    onRun = function(client)
-        if SERVER then
-            client:notifyInfoLocalized("startingRequestTests")
-            client:requestBinaryQuestion("Test Binary Question", "Do you want to continue testing?", "Yes", "No", function(confirmed)
-                if confirmed then
-                    client:notify("✓ Binary Question: Confirmed", "success")
-                    client:requestDropdown("Test Dropdown", "Choose a color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected, selectedData)
-                        if selected then
-                            client:notify("✓ Dropdown: Selected " .. selected .. " (" .. (selectedData or "no data") .. ")", "success")
-                            client:requestOptions("Test Options", "Select your favorite activities (max 2):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}}, 2, function(selectedOptions)
-                                if selectedOptions and #selectedOptions > 0 then
-                                    local selectedStr = table.concat(selectedOptions, ", ")
-                                    client:notify("✓ Options: Selected " .. selectedStr, "success")
-                                    client:requestString("Test String Input", "Enter your name:", function(text)
-                                        if text then
-                                            client:notify("✓ String Input: '" .. text .. "'", "success")
-                                            client:requestArguments("Test Arguments Form", {
-                                                {"Name", "string"},
-                                                {
-                                                    "Age",
-                                                    {
-                                                        "number",
-                                                        {
-                                                            min = 1,
-                                                            max = 120
-                                                        }
-                                                    }
-                                                },
-                                                {"Favorite Color", {"table", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}}}},
-                                                {"Agree to Terms", "boolean"}
-                                            }, function(success, data)
-                                                if success and data then
-                                                    local result = string.format("Name: %s, Age: %d, Color: %s, Agreed: %s", data["Name"] or "N/A", data["Age"] or 0, data["Favorite Color"] or "N/A", tostring(data["Agree to Terms"] or false))
-                                                    client:notify("✓ Arguments: " .. result, "success")
-                                                    client:requestButtons("Test Buttons", {
-                                                        {
-                                                            text = "Save",
-                                                            icon = "icon16/disk.png"
-                                                        },
-                                                        {
-                                                            text = "Load",
-                                                            icon = "icon16/folder.png"
-                                                        },
-                                                        {
-                                                            text = "Delete",
-                                                            icon = "icon16/delete.png"
-                                                        },
-                                                        {
-                                                            text = "Cancel",
-                                                            icon = "icon16/cancel.png"
-                                                        }
-                                                    }, function(selectedIndex, buttonText)
-                                                        client:notify("✓ Buttons: Selected '" .. buttonText .. "' (index " .. selectedIndex .. ")", "success")
-                                                        client:notify("All request tests completed!", "success")
-                                                    end, "Choose an action:")
-                                                else
-                                                    client:notify("✗ Arguments: Cancelled or failed", "warning")
-                                                end
-                                            end)
-                                        else
-                                            client:notify("✗ String Input: Cancelled", "warning")
-                                        end
-                                    end, "John Doe")
-                                else
-                                    client:notify("✗ Options: Cancelled or no selection", "warning")
-                                end
-                            end)
-                        else
-                            client:notify("✗ Dropdown: Cancelled", "warning")
-                        end
-                    end)
-                else
-                    client:notify("✗ Binary Question: Declined", "warning")
-                end
-            end)
-        end
     end
 })

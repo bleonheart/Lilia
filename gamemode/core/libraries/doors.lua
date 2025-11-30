@@ -27,6 +27,10 @@ lia.doors.AccessLabels = {
 }
 
 if SERVER then
+    function lia.doors.setData(door, data)
+        door:setNetVar("doorData", data)
+    end
+
     --[[
         Purpose:
             Adds a door preset configuration for a specific map
@@ -382,4 +386,8 @@ if SERVER then
             if corruptedCount > 0 then lia.information(L("foundAndFixedCorruptedDoors", corruptedCount)) end
         end):catch(function(err) lia.error(L("failedToCheckCorruptedDoorData", tostring(err))) end)
     end
+end
+
+function lia.doors.getData(door)
+    return door:getNetVar("doorData", {}) or {}
 end
