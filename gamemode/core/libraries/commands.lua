@@ -2007,6 +2007,21 @@ lia.command.add("playtime", {
     end
 })
 
+lia.command.add("charid", {
+    adminOnly = false,
+    desc = "charidDesc",
+    onRun = function(client)
+        local char = client:getChar()
+        if not char then
+            client:notifyErrorLocalized("noCharacterLoaded")
+            return
+        end
+
+        local charID = char:getID()
+        client:notifyInfoLocalized("charidYour", charID)
+    end
+})
+
 lia.command.add("plygetplaytime", {
     adminOnly = true,
     arguments = {
@@ -2039,6 +2054,44 @@ lia.command.add("plygetplaytime", {
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
         client:ChatPrint(L("playtimeFor", target:Nick(), h, m, s))
+    end
+})
+
+lia.command.add("plycheckid", {
+    adminOnly = true,
+    arguments = {
+        {
+            name = "name",
+            type = "player"
+        },
+    },
+    AdminStick = {
+        Name = "adminStickCheckCharIDName",
+        Category = "moderation",
+        SubCategory = "misc",
+        Icon = "icon16/vcard.png"
+    },
+    desc = "plycheckidDesc",
+    onRun = function(client, args)
+        if not args[1] then
+            client:notifyErrorLocalized("specifyPlayer")
+            return
+        end
+
+        local target = lia.util.findPlayer(client, args[1])
+        if not IsValid(target) then
+            client:notifyErrorLocalized("targetNotFound")
+            return
+        end
+
+        local char = target:getChar()
+        if not char then
+            client:notifyErrorLocalized("noCharacterLoaded")
+            return
+        end
+
+        local charID = char:getID()
+        client:ChatPrint(L("charidFor", target:Nick(), charID))
     end
 })
 
@@ -2949,7 +3002,6 @@ lia.command.add("plyspectate", {
         client:SpectateEntity(target)
         client:GodEnable()
         client.liaSpectating = true
-        client:StripWeapons()
         client:notifySuccessLocalized("spectateStarted", target:Nick())
         target:notifyInfoLocalized("beingSpectated", client:Nick())
         lia.log.add(client, "plySpectate", target:Nick())
@@ -4669,7 +4721,7 @@ lia.command.add("dropmoney", {
         local amount = math.floor(originalAmount)
         if originalAmount ~= amount and originalAmount > 0 then
             lia.log.add(client, "moneyDupeAttempt", "Attempted to drop " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
-            for _, admin in ipairs(player.GetAll()) do
+            for _, admin in player.Iterator() do
                 if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "dropmoney", tostring(originalAmount), tostring(amount)) end
             end
         end
@@ -5928,6 +5980,48 @@ lia.command.add("doorinfo", {
     end
 })
 
+lia.command.add("doorsampledata", {
+    desc = "doorsampledataDesc",
+    adminOnly = true,
+    AdminStick = {
+        Name = L("adminStickDoorSampleName"),
+        Category = "doorManagement",
+        SubCategory = "doorInformation",
+        TargetClass = "door",
+        Icon = "icon16/add.png"
+    },
+    onRun = function(client)
+        local door = client:getTracedEntity()
+        if IsValid(door) and door:isDoor() then
+            local doorData = lia.doors.getData(door)
+            -- Sample data based on common door variables
+            local sampleData = {
+                name = "Sample Door " .. (door:MapCreationID() or "Unknown"),
+                price = 1000,
+                locked = false,
+                disabled = false,
+                hidden = false,
+                noSell = false,
+                factions = {"citizen"},
+                classes = {"citizen"}
+            }
+
+            -- Apply sample data to the door
+            for key, value in pairs(sampleData) do
+                doorData[key] = value
+            end
+
+            lia.doors.setData(door, doorData)
+            -- Notify the admin
+            client:notifyLocalized("doorSampleDataApplied")
+            -- Log the action
+            lia.log.add(client, "doorSampleData", door)
+        else
+            client:notifyErrorLocalized("doorNotValid")
+        end
+    end
+})
+
 lia.command.add("dooraddfaction", {
     desc = "dooraddfactionDesc",
     arguments = {
@@ -6921,7 +7015,7 @@ lia.command.add("returnallitems", {
 
         local returnedCount = 0
         local totalItems = 0
-        for _, target in ipairs(player.GetAll()) do
+        for _, target in player.Iterator() do
             if not target.LostItems or table.IsEmpty(target.LostItems) then continue end
             local character = target:getChar()
             if not character then continue end

@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 AdminStickIsOpen = false
 local adminStickDevMode = true
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
@@ -1970,17 +1970,14 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                             if value and value ~= "" then cmd = cmd .. " " .. QuoteArgs(value) end
                         end
 
-                        if adminStickDevMode then chat.AddText(Color(255, 255, 0), "[AdminStick Debug] ", Color(255, 255, 255), cmd) end
                         cl:ConCommand(cmd)
                         timer.Simple(0.1, function() AdminStickIsOpen = false end)
                     end, defaults)
                 else
-                    if adminStickDevMode then chat.AddText(Color(255, 255, 0), "[AdminStick Debug] ", Color(255, 255, 255), cmd) end
                     cl:ConCommand(cmd)
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end
             else
-                if adminStickDevMode then chat.AddText(Color(255, 255, 0), "[AdminStick Debug] ", Color(255, 255, 255), cmd) end
                 cl:ConCommand(cmd)
                 timer.Simple(0.1, function() AdminStickIsOpen = false end)
             end
@@ -3438,13 +3435,13 @@ function MODULE:TicketFrame(requester, message, claimed)
     closeButton:SetPos(frameWidth - 18, 2)
     closeButton:SetSize(16, 16)
     closeButton.DoClick = function() frm:Remove() end
-    frm:SetPos(xpos, ypos + 130 * #TicketFrames)
-    frm:MoveTo(xpos, ypos + 130 * #TicketFrames, 0.2, 0, 1, function() surface.PlaySound("garrysmod/balloon_pop_cute.wav") end)
+    frm:SetPos(xpos, ypos + 180 * #TicketFrames)
+    frm:MoveTo(xpos, ypos + 180 * #TicketFrames, 0.2, 0, 1, function() surface.PlaySound("garrysmod/balloon_pop_cute.wav") end)
     function frm:OnRemove()
         if TicketFrames then
             table.RemoveByValue(TicketFrames, frm)
             for k, v in ipairs(TicketFrames) do
-                v:MoveTo(xpos, ypos + 130 * (k - 1), 0.1, 0, 1)
+                v:MoveTo(xpos, ypos + 180 * (k - 1), 0.1, 0, 1)
             end
         end
 

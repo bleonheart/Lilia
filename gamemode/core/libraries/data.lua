@@ -967,7 +967,7 @@ end
         ```lua
         -- High: Save complex entities with dynamic properties
         local entities = {}
-        for _, ent in ipairs(ents.GetAll()) do
+        for _, ent in ents.Iterator() do
             if ent:GetClass() == "lia_item" then
                 table.insert(entities, {
                     class   = ent:GetClass(),

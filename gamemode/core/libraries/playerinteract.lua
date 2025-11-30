@@ -737,7 +737,7 @@ if SERVER then
                 amount = math.floor(originalAmount)
                 if originalAmount ~= amount and originalAmount > 0 then
                     lia.log.add(client, "moneyDupeAttempt", "Attempted to give " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
-                    for _, admin in ipairs(player.GetAll()) do
+                    for _, admin in player.Iterator() do
                         if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "givemoney", tostring(originalAmount), tostring(amount)) end
                     end
                 end

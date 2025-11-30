@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -417,6 +417,36 @@ function GM:KeyPress(client, key)
             local dist = math.abs(trHi.HitPos.z - client:GetPos().z)
             client:SetVelocity(Vector(0, 0, 50 + dist * 3))
         end
+
+        -- Handle stamina consumption for jumping
+        local char = client:getChar()
+        if char then
+            local stamina = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+            local jumpReq = lia.config.get("JumpStaminaCost", 25)
+            if stamina >= jumpReq and client:GetMoveType() ~= MOVETYPE_NOCLIP and not client:InVehicle() and client:Alive() and (client.liaNextJump or 0) <= CurTime() then
+                client.liaNextJump = CurTime() + 0.1
+                client:consumeStamina(jumpReq)
+                local newStamina = client:getNetVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
+                if newStamina <= 0 then
+                    client:setNetVar("brth", true)
+                    client:ConCommand("-speed")
+                end
+            elseif stamina < jumpReq then
+                -- Prevent the jump by setting velocity to counteract it
+                client:SetVelocity(Vector(0, 0, 0))
+                return false
+            end
+        end
+    end
+
+    if key == IN_ATTACK2 then
+        local wep = client:GetActiveWeapon()
+        if IsValid(wep) and wep.IsHands and wep.ReadyToPickup then
+            wep:Pickup()
+        elseif IsValid(client.Grabbed) then
+            client:DropObject(client.Grabbed)
+            client.Grabbed = NULL
+        end
     end
 end
 
@@ -588,9 +618,8 @@ function GM:PlayerInitialSpawn(client)
                 local doorsWithData = 0
                 for _, door in ents.Iterator() do
                     if IsValid(door) and door:isDoor() then
-                        local syncData = lia.doors.getSyncData(door)
+                        local syncData = lia.doors.getData(door)
                         if not table.IsEmpty(syncData) then doorsWithData = doorsWithData + 1 end
-                        lia.doors.syncToClient(client, door)
                         syncCount = syncCount + 1
                     end
                 end
@@ -620,12 +649,16 @@ function GM:PlayerLoadout(client)
     client:StripWeapons()
     client:setNetVar("blur", nil)
     client:SetModel(character:getModel())
-    client:SetWalkSpeed(lia.config.get("WalkSpeed"))
-    client:SetRunSpeed(lia.config.get("RunSpeed"))
     client:SetJumpPower(160)
     lia.flag.onSpawn(client)
     hook.Run("PostPlayerLoadout", client)
     client:SelectWeapon("lia_hands")
+    timer.Simple(0.5, function()
+        if IsValid(client) and client:getChar() == character then
+            client:SetWalkSpeed(lia.config.get("WalkSpeed"))
+            client:SetRunSpeed(lia.config.get("RunSpeed"))
+        end
+    end)
 end
 
 function GM:CreateDefaultInventory(character)

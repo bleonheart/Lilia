@@ -134,7 +134,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
             character:giveMoney(price)
             item:remove():next(function() client.vendorTransaction = nil end):catch(function() client.vendorTransaction = nil end)
             vendor:addStock(itemType)
-            client:notifyVendorTradeLocalized("vendorYouSoldItem", item:getName(), lia.currency.get(price))
+            client:notifyMoneyLocalized("vendorYouSoldItem", item:getName(), lia.currency.get(price))
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
         end
     else
@@ -324,7 +324,7 @@ function MODULE:OnEntityLoaded(ent, data)
     ent.factionSellScales = data.factionSellScales
     timer.Simple(0.1, function()
         if IsValid(ent) then
-            for _, client in ipairs(player.GetAll()) do
+            for _, client in player.Iterator() do
                 if IsValid(client) then self:syncVendorDataToClient(client) end
             end
         end
@@ -511,7 +511,7 @@ end
 
 function MODULE:InitPostEntity()
     timer.Simple(0.1, function()
-        for _, client in ipairs(player.GetAll()) do
+        for _, client in player.Iterator() do
             if IsValid(client) then self:syncVendorDataToClient(client) end
         end
     end)
