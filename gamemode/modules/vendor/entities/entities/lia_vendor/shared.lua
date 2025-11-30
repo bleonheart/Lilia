@@ -1,4 +1,4 @@
-﻿LiliaVendors = LiliaVendors or {}
+LiliaVendors = LiliaVendors or {}
 ENT.Type = "anim"
 ENT.PrintName = L("entityVendorName")
 ENT.Author = "Samael"
@@ -13,9 +13,9 @@ ENT.DrawEntityInfo = true
 ENT.IsPersistent = true
 function ENT:setupVars()
     if SERVER then
-        self:setNetVar("name", L("vendorDefaultName"))
-        self:setNetVar("preset", "none")
-        self:setNetVar("animation", "")
+        lia.vendor.setVendorProperty(self, "name", L("vendorDefaultName"))
+        lia.vendor.setVendorProperty(self, "preset", "none")
+        lia.vendor.setVendorProperty(self, "animation", "")
     end
 
     self.receivers = self.receivers or {}
@@ -82,13 +82,13 @@ end
 function ENT:setFactionBuyScale(factionID, scale)
     self.factionBuyScales = self.factionBuyScales or {}
     self.factionBuyScales[factionID] = math.Clamp(scale, 0, 5) -- 0% to 500%
-    if SERVER then self:saveData() end
+    if SERVER then hook.Run("UpdateEntityPersistence", self) end
 end
 
 function ENT:setFactionSellScale(factionID, scale)
     self.factionSellScales = self.factionSellScales or {}
     self.factionSellScales[factionID] = math.Clamp(scale, 0, 1) -- 0% to 100%
-    if SERVER then self:saveData() end
+    if SERVER then hook.Run("UpdateEntityPersistence", self) end
 end
 
 function ENT:getFactionBuyScale(factionID)
@@ -158,11 +158,7 @@ function ENT:getSellScale()
 end
 
 function ENT:getName()
-    return self:getNetVar("name", "")
-end
-
-function ENT:getPreset()
-    return self:getNetVar("preset", "none")
+    return lia.vendor.getVendorProperty(self, "name")
 end
 
 function ENT:isReadyForAnim()
@@ -175,7 +171,7 @@ end
 
 function ENT:setAnim()
     if not self:isReadyForAnim() then return end
-    local customAnim = self:getNetVar("animation", "")
+    local customAnim = lia.vendor.getVendorProperty(self, "animation")
     local sequenceList = self:GetSequenceList()
     if customAnim and customAnim ~= "" then
         for k, v in ipairs(sequenceList) do

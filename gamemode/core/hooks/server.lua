@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local LimbHitgroups = {HITGROUP_GEAR, HITGROUP_RIGHTARM, HITGROUP_LEFTARM}
 local sounds = {
     male = {
@@ -1008,7 +1008,7 @@ end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
-    if speaker:getNetVar("IsDeadRestricted", false) or speaker:getNetVar("liaGagged", false) or not speaker:getChar() or speaker:getLiliaData("VoiceBan", false) then return false, false end
+    if speaker:getNetVar("IsDeadRestricted", false) or speaker:getLiliaData("liaGagged", false) or not speaker:getChar() or speaker:getLiliaData("VoiceBan", false) then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
     local voiceType = speaker:getNetVar("VoiceType", L("talking"))
     local baseRange = voiceType == L("whispering") and lia.config.get("WhisperRange", 70) or voiceType == L("talking") and lia.config.get("TalkRange", 280) or voiceType == L("yelling") and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)

@@ -1,5 +1,5 @@
 function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
-    local vendorName = vendor:getNetVar("name")
+    local vendorName = lia.vendor.getVendorProperty(vendor, "name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
     else
@@ -173,25 +173,58 @@ function MODULE:PlayerAccessVendor(client, vendor)
     net.Send(client)
     if client:canEditVendor(vendor) then
         for factionID in pairs(vendor.factions) do
-            net.Start("liaVendorAllowFaction")
-            net.WriteUInt(factionID, 8)
-            net.WriteBool(true)
-            net.Send(client)
+            if isnumber(factionID) then
+                net.Start("liaVendorAllowFaction")
+                net.WriteUInt(factionID, 8)
+                net.WriteBool(true)
+                net.Send(client)
+            end
         end
 
         for classID in pairs(vendor.classes) do
-            net.Start("liaVendorAllowClass")
-            net.WriteUInt(classID, 8)
-            net.WriteBool(true)
-            net.Send(client)
+            if isnumber(classID) then
+                net.Start("liaVendorAllowClass")
+                net.WriteUInt(classID, 8)
+                net.WriteBool(true)
+                net.Send(client)
+            end
         end
     end
+end
+
+function MODULE:syncVendorDataToClient(client)
+    local vendors = {}
+    for _, vendor in pairs(ents.FindByClass("lia_vendor")) do
+        if IsValid(vendor) and lia.vendor.stored[vendor] then table.insert(vendors, vendor) end
+    end
+
+    if #vendors == 0 then return end
+    net.Start("liaVendorInitialSync")
+    net.WriteUInt(#vendors, 16)
+    for _, vendor in ipairs(vendors) do
+        net.WriteEntity(vendor)
+        local cached = lia.vendor.stored[vendor]
+        local propertyCount = 0
+        -- Count non-default properties first
+        for property, value in pairs(cached) do
+            propertyCount = propertyCount + 1
+        end
+
+        net.WriteUInt(propertyCount, 8)
+        -- Send each non-default property
+        for property, value in pairs(cached) do
+            net.WriteString(property)
+            net.WriteType(value)
+        end
+    end
+
+    net.Send(client)
 end
 
 function MODULE:GetEntitySaveData(ent)
     if ent:GetClass() ~= "lia_vendor" then return end
     return {
-        name = ent:getNetVar("name"),
+        name = lia.vendor.getVendorProperty(ent, "name"),
         items = ent.items,
         factions = ent.factions,
         classes = ent.classes,
@@ -205,7 +238,7 @@ function MODULE:GetEntitySaveData(ent)
             end
             return groups
         end)(),
-        animation = ent:getNetVar("animation"),
+        animation = lia.vendor.getVendorProperty(ent, "animation"),
         factionBuyScales = ent.factionBuyScales,
         factionSellScales = ent.factionSellScales,
     }
@@ -213,8 +246,8 @@ end
 
 function MODULE:OnEntityLoaded(ent, data)
     if ent:GetClass() ~= "lia_vendor" or not data then return end
-    ent:setNetVar("name", data.name)
-    ent:setNetVar("animation", data.animation or "")
+    lia.vendor.setVendorProperty(ent, "name", data.name)
+    lia.vendor.setVendorProperty(ent, "animation", data.animation or "")
     ent.items = data.items or {}
     ent.factions = data.factions or {}
     ent.classes = data.classes or {}
@@ -382,4 +415,9 @@ function MODULE:DatabaseConnected()
             end
         end
     end):catch(function() end)
+end
+
+function MODULE:PostPlayerInitialSpawn(client)
+    -- Sync vendor data to new players
+    self:syncVendorDataToClient(client)
 end

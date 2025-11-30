@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Player Interaction Library
 
     Player-to-player and entity interaction management system for the Lilia framework.
@@ -385,7 +385,7 @@ if SERVER then
         end,
         onRun = function(client, target)
             -- Complex arrest logic with validation
-            if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+            if lia.config.get("DisableCheaterActions", true) and client.isCheater then
                 lia.log.add(client, "cheaterAction", "Attempted arrest while flagged as cheater")
                 client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
                 return
@@ -745,7 +745,7 @@ if SERVER then
                     return
                 end
 
-                if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+                if lia.config.get("DisableCheaterActions", true) and client.isCheater then
                     lia.log.add(client, "cheaterAction", L("cheaterActionTransferMoney"))
                     client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
                     return

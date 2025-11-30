@@ -1,11 +1,11 @@
-﻿function ENT:Draw()
+function ENT:Draw()
     self:DrawModel()
 end
 
 function ENT:Think()
     if not self.hasSetupVars then self:setupVars() end
     local curTime = CurTime()
-    local currentAnim = self:getNetVar("animation", "")
+    local currentAnim = lia.vendor.getVendorProperty(self, "animation")
     if (self.lastAnimationCheck or "") ~= currentAnim and currentAnim ~= "" then
         self.lastAnimationCheck = currentAnim
         if self:isReadyForAnim() then self:setAnim() end
@@ -21,6 +21,6 @@ function ENT:Think()
 end
 
 function ENT:onDrawEntityInfo(alpha)
-    local name = self:getNetVar("name", L("vendorDefaultName"))
+    local name = lia.vendor.getVendorProperty(self, "name")
     lia.util.drawEntText(self, name, 0, alpha)
 end

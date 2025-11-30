@@ -1,4 +1,4 @@
-﻿local sw, sh = ScrW(), ScrH()
+local sw, sh = ScrW(), ScrH()
 local RarityColors = lia.vendor.rarities
 local VendorClick = {"buttons/button15.wav", 30, 250}
 local PANEL = {}
@@ -167,8 +167,7 @@ end
 
 function PANEL:populateItems()
     if not IsValid(liaVendorEnt) then return end
-    local data = liaVendorEnt.items
-    if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
+    local data = liaVendorEnt.items or {}
     local vendorItemCount = 0
     local meItemCount = 0
     for id in SortedPairs(data) do
@@ -284,8 +283,7 @@ end
 
 function PANEL:GetItemCategoryList()
     if not IsValid(liaVendorEnt) then return {} end
-    local data = liaVendorEnt.items
-    if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
+    local data = liaVendorEnt.items or {}
     local out = {
         [L("vendorShowAll")] = true
     }
@@ -312,8 +310,7 @@ function PANEL:applyCategoryFilter()
     self.items.vendor = {}
     self.items.me = {}
     if not IsValid(liaVendorEnt) then return end
-    local data = liaVendorEnt.items
-    if not istable(data) then data = liaVendorEnt:getNetVar("items", {}) end
+    local data = liaVendorEnt.items or {}
     for id in SortedPairs(data) do
         local itm = lia.item.list[id]
         local cat = itm and itm:getCategory()
@@ -403,17 +400,17 @@ end
 function PANEL:onVendorSynchronized(vendor)
     if not IsValid(self) then return end
     if vendor ~= liaVendorEnt then return end
-
     -- Clear existing items before repopulating to ensure complete refresh
     for _, p in pairs(self.items.vendor) do
         if IsValid(p) then p:Remove() end
     end
+
     for _, p in pairs(self.items.me) do
         if IsValid(p) then p:Remove() end
     end
+
     self.items.vendor = {}
     self.items.me = {}
-
     self:populateItems()
     self:applyCategoryFilter()
     timer.Simple(0, function()
@@ -434,12 +431,11 @@ function PANEL:OnRemove()
         self.noSendExit = true
     end
 
-    if IsValid(lia.gui.vendorEditor) then 
-        if IsValid(lia.gui.vendorEditor.deletePresetSelector) then 
-            lia.gui.vendorEditor.deletePresetSelector:Remove() 
-        end
-        lia.gui.vendorEditor:Remove() 
+    if IsValid(lia.gui.vendorEditor) then
+        if IsValid(lia.gui.vendorEditor.deletePresetSelector) then lia.gui.vendorEditor.deletePresetSelector:Remove() end
+        lia.gui.vendorEditor:Remove()
     end
+
     if IsValid(lia.gui.vendorFactionEditor) then lia.gui.vendorFactionEditor:Remove() end
     if self.refreshTimer then timer.Remove(self.refreshTimer) end
     if self.searchTimer then timer.Remove(self.searchTimer) end
@@ -726,7 +722,16 @@ function PANEL:updateCooldown()
     end
 
     if shouldShowCooldown and remainingTime > 0 and not self.isSelling then
-        local cooldownText = L("vendorOnCooldown", remainingTime)
+        local minutes = math.floor(remainingTime / 60)
+        local seconds = remainingTime % 60
+        local timeString
+        if minutes > 0 then
+            timeString = string.format("%dm %ds", minutes, seconds)
+        else
+            timeString = string.format("%ds", seconds)
+        end
+
+        local cooldownText = L("vendorOnCooldown", timeString)
         self.action:SetText(cooldownText)
         self.action.text = cooldownText
         self.action:SetEnabled(false)
@@ -1094,7 +1099,24 @@ function PANEL:Init()
     self.name:Dock(TOP)
     self.name:SetPlaceholderText(L("name"))
     self.name:SetValue(entity:getName())
-    self.name.action = function(value) if entity:getNetVar("name") ~= value then lia.vendor.editor.name(value) end end
+    self.name.action = function(value)
+        local currentName = lia.vendor.getVendorProperty(entity, "name")
+        if currentName ~= value then
+            if not value or value == "" then
+                -- If clearing the name field, use the default name
+                value = L("vendorDefaultName")
+            end
+
+            -- Prevent multiple calls while processing
+            if not self.name.processing then
+                self.name.processing = true
+                lia.vendor.editor.name(value)
+                -- Reset processing flag after a short delay
+                timer.Simple(0.1, function() if IsValid(self) and IsValid(self.name) then self.name.processing = false end end)
+            end
+        end
+    end
+
     self.model = self:Add("liaEntry")
     self.model:Dock(TOP)
     self.model:DockMargin(0, 4, 0, 0)
@@ -1225,7 +1247,7 @@ function PANEL:Init()
     self.animation:SetText(L("vendorPickAnimation"))
     self.animation:SetTooltip(L("vendorAnimationTooltip"))
     self:refreshAnimationDropdown()
-    local currentAnimation = entity:getNetVar("animation", "")
+    local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
     self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation)
     self.animation:ChooseOption(currentAnimation == "" and L("none") or currentAnimation)
     self.animation.OnSelect = function(_, _, value)
@@ -1263,7 +1285,6 @@ function PANEL:Init()
     self.presetButton:SetText(L("vendorLoadPreset"))
     self.presetButton:SetTooltip(L("vendorLoadPresetTooltip"))
     self.presetButton.DoClick = function() self:openPresetSelector() end
-
     local savePresetButton = self.generalScroll:Add("liaButton")
     savePresetButton:Dock(TOP)
     savePresetButton:DockMargin(0, 0, 0, 8)
@@ -1281,6 +1302,7 @@ function PANEL:Init()
             end
         end)
     end
+
     -- Add bodygroups frame at the bottom if entity has bodygroups
     local hasBodygroupsBottom = false
     for i = 0, entity:GetNumBodyGroups() - 1 do
@@ -1614,7 +1636,7 @@ function PANEL:refreshAnimationDropdown()
         end
     end
 
-    local currentAnimation = liaVendorEnt:getNetVar("animation", "")
+    local currentAnimation = lia.vendor.getVendorProperty(liaVendorEnt, "animation")
     if isstring(currentAnimation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
 end
 
@@ -1739,15 +1761,10 @@ function PANEL:openDeletePresetSelector()
     self.deleteLeftFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteLeftFrame:SetSize(300, 500)
     self.deleteLeftFrame:SetPos(0, 0)
-    self.deleteLeftFrame.OnRemove = function() 
-        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
-            self.deletePresetSelector:Remove() 
-        end
-    end
+    self.deleteLeftFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
     local leftScroll = self.deleteLeftFrame:Add("liaScrollPanel")
     leftScroll:Dock(FILL)
     leftScroll:DockPadding(8, 8, 8, 8)
-
     -- Add preset buttons
     self.deleteSelectedPreset = nil
     if lia.vendor.presets then
@@ -1780,11 +1797,7 @@ function PANEL:openDeletePresetSelector()
     self.deleteRightFrame:SetTitle(L("vendorDeletePreset"))
     self.deleteRightFrame:SetSize(400, 500)
     self.deleteRightFrame:SetPos(300, 0)
-    self.deleteRightFrame.OnRemove = function() 
-        if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then 
-            self.deletePresetSelector:Remove() 
-        end
-    end
+    self.deleteRightFrame.OnRemove = function() if IsValid(self.deletePresetSelector) and not self.deletePresetSelector._removing then self.deletePresetSelector:Remove() end end
     self.deletePresetDetailsScroll = self.deleteRightFrame:Add("liaScrollPanel")
     self.deletePresetDetailsScroll:Dock(FILL)
     self.deletePresetDetailsScroll:DockPadding(10, 10, 10, 10)
@@ -1814,7 +1827,7 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     -- Clear previous content
     self.deletePresetDetailsScroll:Clear()
     -- Handle "none" preset or no preset selected
-    if not presetName or not presetData or table.Count(presetData) == 0 then
+    if not presetName or not presetData then
         local displayText = L("vendorNoPresetSelected")
         -- Show message in a styled panel
         local emptyPanel = self.deletePresetDetailsScroll:Add("DPanel")
@@ -1833,17 +1846,12 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
         label:SetFont("LiliaFont.18b")
         label:SetTextColor(Color(150, 150, 150))
         label:SetContentAlignment(5) -- Center both horizontally and vertically
-        if IsValid(self.deleteSubmitButton) then
-            self.deleteSubmitButton:SetDisabled(true)
-        end
+        if IsValid(self.deleteSubmitButton) then self.deleteSubmitButton:SetDisabled(true) end
         return
     end
 
     -- Enable delete button
-    if IsValid(self.deleteSubmitButton) then
-        self.deleteSubmitButton:SetDisabled(false)
-    end
-
+    if IsValid(self.deleteSubmitButton) then self.deleteSubmitButton:SetDisabled(false) end
     -- Preset name
     local nameLabel = self.deletePresetDetailsScroll:Add("DLabel")
     nameLabel:Dock(TOP)
@@ -1853,7 +1861,6 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     nameLabel:SetTextColor(lia.color.theme.text or color_white)
     nameLabel:SetContentAlignment(4)
     nameLabel:SetTall(30)
-
     -- Warning label
     local warningLabel = self.deletePresetDetailsScroll:Add("DLabel")
     warningLabel:Dock(TOP)
@@ -1864,7 +1871,6 @@ function PANEL:showDeletePresetDetails(presetName, presetData)
     warningLabel:SetContentAlignment(4)
     warningLabel:SetWrap(true)
     warningLabel:SetAutoStretchVertical(true)
-
     -- Items count
     local itemsLabel = self.deletePresetDetailsScroll:Add("DLabel")
     itemsLabel:Dock(TOP)
@@ -2063,14 +2069,14 @@ function PANEL:onNameDescChanged(key)
         self:refreshAnimationDropdown()
         timer.Simple(0.1, function()
             if IsValid(self) and IsValid(entity) then
-                local currentAnimation = entity:getNetVar("animation", "")
+                local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
                 if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
             end
         end)
     elseif key == "scale" then
         self:updateSellScale()
     elseif key == "animation" then
-        local currentAnimation = entity:getNetVar("animation", "")
+        local currentAnimation = lia.vendor.getVendorProperty(entity, "animation")
         if IsValid(self.animation) then self.animation:SetValue(currentAnimation == "" and L("none") or currentAnimation) end
     end
 end
@@ -2101,7 +2107,7 @@ function PANEL:listenForUpdates()
     hook.Add("VendorSynchronized", self, self.onVendorSynchronized)
 end
 
-function PANEL:OnRowRightClick(_, rowData)
+function PANEL:OnRowRightClick(rowIndex, rowData)
     local entity = liaVendorEnt
     if not IsValid(entity) then
         LocalPlayer():notifyError(L("vendorEntityInvalid"))

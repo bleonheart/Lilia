@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
 local IsValid = IsValid
@@ -379,11 +379,14 @@ end
 
 function GM:CreateMove(cmd)
     local client = LocalPlayer()
-    if IsValid(client) and client:getNetVar("bIsHoldingObject", false) and cmd:KeyDown(IN_ATTACK2) then
-        cmd:ClearMovement()
-        local angle = cmd:GetViewAngles()
-        angle.z = 0
-        cmd:SetViewAngles(angle)
+    if IsValid(client) then
+        local weapon = client:GetActiveWeapon()
+        if IsValid(weapon) and weapon:GetClass() == "lia_hands" and weapon:IsHoldingObject() and cmd:KeyDown(IN_ATTACK2) then
+            cmd:ClearMovement()
+            local angle = cmd:GetViewAngles()
+            angle.z = 0
+            cmd:SetViewAngles(angle)
+        end
     end
 end
 
@@ -663,7 +666,7 @@ function GM:DrawDeathNotice()
 end
 
 function GM:GetMainMenuPosition(character)
-    if character then
+    if character and lia.config.get("MainMenuUseLastPos", true) then
         local lastPos = character:getLastPos()
         if lastPos and lastPos.pos and isvector(lastPos.pos) then
             local angles = lastPos.ang and isangle(lastPos.ang) and lastPos.ang or Angle(0, 0, 0)

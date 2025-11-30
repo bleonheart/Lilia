@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -2943,7 +2943,7 @@ lia.command.add("plyspectate", {
             return
         end
 
-        if target:getNetVar("liaSpectating") then
+        if target.liaSpectating then
             client:notifyErrorLocalized("targetAlreadySpectated")
             return
         end
@@ -2953,7 +2953,7 @@ lia.command.add("plyspectate", {
         client:Spectate(OBS_MODE_CHASE)
         client:SpectateEntity(target)
         client:GodEnable()
-        client:setNetVar("liaSpectating", true)
+        client.liaSpectating = true
         client:StripWeapons()
         client:notifySuccessLocalized("spectateStarted", target:Nick())
         target:notifyInfoLocalized("beingSpectated", client:Nick())
@@ -2965,14 +2965,14 @@ lia.command.add("stopspectate", {
     adminOnly = true,
     desc = "stopSpectateDesc",
     onRun = function(client)
-        if not client:getNetVar("liaSpectating") then
+        if not client.liaSpectating then
             client:notifyErrorLocalized("notSpectating")
             return
         end
 
         client:UnSpectate()
         client:GodDisable()
-        client:setNetVar("liaSpectating", false)
+        client.liaSpectating = false
         local returnPos = client:getNetVar("liaSpectateReturnPos")
         local returnAng = client:getNetVar("liaSpectateReturnAng")
         if returnPos then
@@ -3191,43 +3191,29 @@ lia.command.add("fallover", {
         },
     },
     onRun = function(client, arguments)
-        if client:getNetVar("FallOverCooldown", false) then
+        if client.FallOverCooldown then
             client:notifyWarningLocalized("cmdCooldown")
             return
-        end
-
-        if client:IsFrozen() then
+        elseif client:IsFrozen() then
             client:notifyWarningLocalized("cmdFrozen")
             return
-        end
-
-        if not client:Alive() then
+        elseif not client:Alive() then
             client:notifyErrorLocalized("cmdDead")
             return
-        end
-
-        if IsValid(client:GetVehicle()) then
+        elseif IsValid(client:GetVehicle()) then
             client:notifyWarningLocalized("cmdVehicle")
             return
-        end
-
-        if client:GetMoveType() == MOVETYPE_NOCLIP then
+        elseif client:GetMoveType() == MOVETYPE_NOCLIP then
             client:notifyWarningLocalized("cmdNoclip")
+            return
+        elseif IsValid(client:getNetVar("ragdoll")) then
             return
         end
 
-        local t = tonumber(arguments[1])
-        if not t or t < 1 then
-            t = 5
-        else
-            t = math.Clamp(t, 1, 60)
-        end
-
-        client:setNetVar("FallOverCooldown", true)
-        if not IsValid(client:getNetVar("ragdoll")) then
-            client:setRagdolled(true, t)
-            timer.Simple(10, function() if IsValid(client) then client:setNetVar("FallOverCooldown", false) end end)
-        end
+        local time = math.Clamp(tonumber(arguments[1]) or 5, 1, 60)
+        client.FallOverCooldown = true
+        client:setRagdolled(true, time)
+        timer.Simple(time, function() if IsValid(client) then client.FallOverCooldown = false end end)
     end
 })
 
@@ -4723,6 +4709,7 @@ lia.command.add("dropmoney", {
             client:notifyMoneyLocalized("moneyDropped", lia.currency.get(amount))
             lia.log.add(client, "moneyDropped", amount)
         end
+
         client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
     end
 })
@@ -5308,6 +5295,7 @@ lia.command.add("deletevendorpreset", {
             net.WriteTable(lia.vendor.presets)
             net.Broadcast()
         end
+
         client:notifySuccessLocalized("vendorPresetDeleted", presetName)
         lia.log.add(client, "deletevendorpreset", presetName)
     end
@@ -5602,7 +5590,7 @@ lia.command.add("doorbuy", {
         Icon = "icon16/money_add.png"
     },
     onRun = function(client)
-        if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+        if lia.config.get("DisableCheaterActions", true) and client.isCheater then
             lia.log.add(client, "cheaterAction", L("buyDoor"):lower())
             client:notifyWarningLocalized("maybeYouShouldntHaveCheated")
             return
@@ -6876,7 +6864,7 @@ lia.command.add("togglecheater", {
 
         local isCheater = target:getLiliaData("cheater", false)
         target:setLiliaData("cheater", not isCheater)
-        target:setNetVar("cheater", not isCheater and true or nil)
+        target.isCheater = not isCheater
         hook.Run("OnCheaterStatusChanged", client, target, not isCheater)
         if isCheater then
             client:notifySuccessLocalized("cheaterUnmarked", target:Name())

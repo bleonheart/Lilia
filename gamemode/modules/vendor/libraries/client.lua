@@ -1,4 +1,4 @@
-﻿function MODULE:VendorOpened(vendor)
+function MODULE:VendorOpened(vendor)
     local vendorUI = vgui.Create("liaVendor")
     vendorUI.vendor = vendor
     hook.Run("OnOpenVendorMenu", self, vendor)
@@ -61,45 +61,65 @@ net.Receive("liaVendorFaction", function()
 end)
 
 net.Receive("liaVendorPrice", function()
-    if not IsValid(liaVendorEnt) then return end
+    if not IsValid(liaVendorEnt) then
+        print("[VENDOR DEBUG CLIENT] liaVendorPrice received but no valid vendor entity")
+        return
+    end
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadInt(32)
     if value < 0 then value = nil end
+    print("[VENDOR DEBUG CLIENT] liaVendorPrice received - Item:", itemType, "Price:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_PRICE] = value
+    print("[VENDOR DEBUG CLIENT] liaVendorPrice applied to vendor.items - Item:", itemType, "Price:", value)
     hook.Run("VendorItemPriceUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorMode", function()
-    if not IsValid(liaVendorEnt) then return end
+    if not IsValid(liaVendorEnt) then
+        print("[VENDOR DEBUG CLIENT] liaVendorMode received but no valid vendor entity")
+        return
+    end
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadInt(8)
     if value < 0 then value = nil end
+    print("[VENDOR DEBUG CLIENT] liaVendorMode received - Item:", itemType, "Mode:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_MODE] = value
+    print("[VENDOR DEBUG CLIENT] liaVendorMode applied to vendor.items - Item:", itemType, "Mode:", value)
     hook.Run("VendorItemModeUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorStock", function()
-    if not IsValid(liaVendorEnt) then return end
+    if not IsValid(liaVendorEnt) then
+        print("[VENDOR DEBUG CLIENT] liaVendorStock received but no valid vendor entity")
+        return
+    end
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadUInt(32)
+    print("[VENDOR DEBUG CLIENT] liaVendorStock received - Item:", itemType, "Stock:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_STOCK] = value
+    print("[VENDOR DEBUG CLIENT] liaVendorStock applied to vendor.items - Item:", itemType, "Stock:", value)
     hook.Run("VendorItemStockUpdated", vendor, itemType, value)
 end)
 
 net.Receive("liaVendorMaxStock", function()
-    if not IsValid(liaVendorEnt) then return end
+    if not IsValid(liaVendorEnt) then
+        print("[VENDOR DEBUG CLIENT] liaVendorMaxStock received but no valid vendor entity")
+        return
+    end
     local vendor = liaVendorEnt
     local itemType = net.ReadString()
     local value = net.ReadUInt(32)
     if value == 0 then value = nil end
+    print("[VENDOR DEBUG CLIENT] liaVendorMaxStock received - Item:", itemType, "MaxStock:", value)
     vendor.items[itemType] = vendor.items[itemType] or {}
     vendor.items[itemType][VENDOR_MAXSTOCK] = value
+    print("[VENDOR DEBUG CLIENT] liaVendorMaxStock applied to vendor.items - Item:", itemType, "MaxStock:", value)
     hook.Run("VendorItemMaxStockUpdated", vendor, itemType, value)
 end)
 
@@ -135,7 +155,7 @@ function MODULE:AddToAdminStickHUD(_, target, information)
     if not IsValid(target) or not target.IsVendor then return end
     local name = target:getName()
     if name and name ~= "" then table.insert(information, L("vendorNameLabel") .. name) end
-    local animation = target:getNetVar("animation", "")
+    local animation = lia.vendor.getVendorProperty(target, "animation")
     if animation and animation ~= "" then table.insert(information, L("animationLabel") .. animation) end
     local itemCount = 0
     if target.items then
@@ -180,6 +200,36 @@ function MODULE:AddToAdminStickHUD(_, target, information)
     end
 end
 
-net.Receive("liaVendorSyncPresets", function()
-    lia.vendor.presets = net.ReadTable()
+net.Receive("liaVendorSyncPresets", function() lia.vendor.presets = net.ReadTable() end)
+net.Receive("liaVendorInitialSync", function()
+    local vendorCount = net.ReadUInt(16)
+    for _ = 1, vendorCount do
+        local vendor = net.ReadEntity()
+        if not IsValid(vendor) then continue end
+        local propertyCount = net.ReadUInt(8)
+        lia.vendor.stored[vendor] = {}
+        for _ = 1, propertyCount do
+            local propertyName = net.ReadString()
+            local propertyValue = net.ReadType()
+            lia.vendor.stored[vendor][propertyName] = propertyValue
+        end
+    end
+end)
+
+net.Receive("liaVendorPropertySync", function()
+    local vendor = net.ReadEntity()
+    if not IsValid(vendor) then return end
+    local propertyName = net.ReadString()
+    local isDefault = net.ReadBool()
+    if not lia.vendor.stored[vendor] then lia.vendor.stored[vendor] = {} end
+    if isDefault then
+        -- Remove property since it's now default
+        lia.vendor.stored[vendor][propertyName] = nil
+        -- Clean up empty entries
+        if table.IsEmpty(lia.vendor.stored[vendor]) then lia.vendor.stored[vendor] = nil end
+    else
+        -- Update property with new value
+        local propertyValue = net.ReadType()
+        lia.vendor.stored[vendor][propertyName] = propertyValue
+    end
 end)

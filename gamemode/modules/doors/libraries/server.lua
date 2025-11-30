@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Doors Library Server
 
     Server-side door management and configuration system for the Lilia framework.
@@ -50,7 +50,6 @@ function MODULE:LoadData()
     lia.db.query(query):next(function(res)
         local rows = res.results or {}
         local loadedCount = 0
-        local presetData = lia.doors.getPreset(mapName)
         local doorsWithData = {}
         for _, row in ipairs(rows) do
             local id = tonumber(row.id)
@@ -94,11 +93,9 @@ function MODULE:LoadData()
                         if not isEmpty then
                             factions = result
                             ent.liaFactions = factions
-                            ent:setNetVar("factions", util.TableToJSON(factions))
                         else
                             factions = result
                             ent.liaFactions = factions
-                            ent:setNetVar("factions", util.TableToJSON(factions))
                         end
                     else
                         lia.warning(L("failedToDeserializeFactionsForDoor", id) .. ": " .. tostring(result))
@@ -126,11 +123,9 @@ function MODULE:LoadData()
                         if not isEmpty then
                             classes = result
                             ent.liaClasses = classes
-                            ent:setNetVar("classes", util.TableToJSON(classes))
                         else
                             classes = result
                             ent.liaClasses = classes
-                            ent:setNetVar("classes", util.TableToJSON(classes))
                         end
                     else
                         lia.warning(L("failedToDeserializeClassesForDoor", id) .. ": " .. tostring(result))
@@ -196,74 +191,6 @@ function MODULE:LoadData()
             end
         end
 
-        if presetData then
-            for doorID, doorVars in pairs(presetData) do
-                if not doorsWithData[doorID] then
-                    local ent = ents.GetMapCreatedEntity(doorID)
-                    if IsValid(ent) and ent:isDoor() then
-                        local hasPresetData = false
-                        local doorData = {}
-                        if doorVars.name and tostring(doorVars.name) ~= "" then
-                            doorData.name = tostring(doorVars.name)
-                            hasPresetData = true
-                        end
-
-                        if doorVars.price and doorVars.price > 0 then
-                            doorData.price = doorVars.price
-                            hasPresetData = true
-                        end
-
-                        if doorVars.locked then
-                            doorData.locked = true
-                            hasPresetData = true
-                        end
-
-                        if doorVars.disabled then
-                            doorData.disabled = true
-                            hasPresetData = true
-                        end
-
-                        if doorVars.hidden then
-                            doorData.hidden = true
-                            hasPresetData = true
-                        end
-
-                        if doorVars.noSell then
-                            doorData.noSell = true
-                            hasPresetData = true
-                        end
-
-                        if doorVars.factions and istable(doorVars.factions) and not table.IsEmpty(doorVars.factions) then
-                            doorData.factions = doorVars.factions
-                            ent.liaFactions = doorVars.factions
-                            hasPresetData = true
-                        end
-
-                        if doorVars.classes and istable(doorVars.classes) and not table.IsEmpty(doorVars.classes) then
-                            doorData.classes = doorVars.classes
-                            ent.liaClasses = doorVars.classes
-                            hasPresetData = true
-                        end
-
-                        if hasPresetData then
-                            doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
-                            ent:setNetVar("doorData", doorData)
-                            lia.information(L("appliedPresetToDoor", doorID))
-                            loadedCount = loadedCount + 1
-                            if ent:isDoor() then
-                                if doorData.locked then
-                                    ent:Fire("lock")
-                                else
-                                    ent:Fire("unlock")
-                                end
-                            end
-                        end
-                    else
-                        lia.warning(L("doorNotFoundForPreset", doorID))
-                    end
-                end
-            end
-        end
     end):catch(function(err)
         lia.error(L("failedToLoadDoorData", tostring(err)))
         lia.error(L("databaseConnectionIssue"))
@@ -284,33 +211,6 @@ function MODULE:SaveData()
             doorData = hook.Run("PreDoorDataSave", door, doorData) or doorData
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
-            if not doorData.factions then
-                local factions = door:getNetVar("factions")
-                if factions and factions ~= "[]" then
-                    local success, result = pcall(util.JSONToTable, factions)
-                    if success and istable(result) then
-                        factionsTable = result
-                    else
-                        lia.warning(L("failedToParseFactionsJSON", mapID))
-                    end
-                elseif door.liaFactions then
-                    factionsTable = door.liaFactions
-                end
-            end
-
-            if not doorData.classes then
-                local classes = door:getNetVar("classes")
-                if classes and classes ~= "[]" then
-                    local success, result = pcall(util.JSONToTable, classes)
-                    if success and istable(result) then
-                        classesTable = result
-                    else
-                        lia.warning(L("failedToParseClassesJSON", mapID))
-                    end
-                elseif door.liaClasses then
-                    classesTable = door.liaClasses
-                end
-            end
 
             if not istable(factionsTable) then
                 lia.warning(L("doorInvalidFactionsType", mapID, type(factionsTable)))
@@ -372,182 +272,7 @@ function MODULE:SaveData()
     end
 end
 
---[[
-    Purpose:
-        Adds a door preset configuration for a specific map
 
-    When Called:
-        When setting up predefined door configurations for maps
-
-    Parameters:
-        mapName (string)
-            The name of the map to apply the preset to
-        presetData (table)
-            Table containing door configuration data with the following structure:
-            [doorID] = {
-                name (string, optional)
-                    Custom name for the door
-                price (number, optional)
-                    Price to purchase the door
-                locked (boolean, optional)
-                    Whether the door starts locked
-                disabled (boolean, optional)
-                    Whether the door is disabled
-                hidden (boolean, optional)
-                    Whether the door info is hidden
-                noSell (boolean, optional)
-                    Whether the door cannot be sold
-                factions (table, optional)
-                    Array of faction uniqueIDs that can access the door
-                classes (table, optional)
-                    Array of class uniqueIDs that can access the door
-            }
-
-    Returns:
-        nil
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-    ```lua
-    -- Simple: Add basic door preset for a map
-    lia.doors.addPreset("rp_downtown_v4c_v2", {
-    [123] = {
-    name = "Police Station Door",
-    price = 1000,
-    locked = true
-    }
-    })
-    ```
-
-    Medium Complexity:
-    ```lua
-    -- Medium: Add preset with faction restrictions
-    lia.doors.addPreset("rp_downtown_v4c_v2", {
-    [123] = {
-    name = "Police Station",
-    price = 5000,
-    locked = false,
-    factions = {"police", "mayor"}
-    },
-    [124] = {
-    name = "Evidence Room",
-    price = 0,
-    locked = true,
-    factions = {"police"}
-    }
-    })
-    ```
-
-    High Complexity:
-    ```lua
-    -- High: Complex preset with multiple doors and restrictions
-    local policeDoors = {
-    [123] = {
-    name = "Police Station Main",
-    price = 10000,
-    locked = false,
-    factions = {"police", "mayor", "chief"}
-    },
-    [124] = {
-    name = "Evidence Room",
-    price = 0,
-    locked = true,
-    factions = {"police"},
-    classes = {"detective", "chief"}
-    },
-    [125] = {
-    name = "Interrogation Room",
-    price = 0,
-    locked = true,
-    factions = {"police"},
-    classes = {"detective", "chief", "officer"}
-    }
-    }
-    lia.doors.addPreset("rp_downtown_v4c_v2", policeDoors)
-    ```
-]]
-function lia.doors.addPreset(mapName, presetData)
-    if not mapName or not presetData then
-        error("lia.doors.addPreset: Missing required parameters (mapName, presetData)")
-        return
-    end
-
-    lia.doors.presets[mapName] = presetData
-    lia.information(L("addedDoorPresetForMap") .. ": " .. mapName)
-end
-
---[[
-    Purpose:
-        Retrieves a door preset configuration for a specific map
-
-    When Called:
-        When loading door data or checking for existing presets
-
-    Parameters:
-        mapName (string)
-            The name of the map to get the preset for
-
-    Returns:
-        Table or nil - The preset data table if found, nil otherwise
-
-    Realm:
-        Server
-
-    Example Usage:
-
-    Low Complexity:
-    ```lua
-    -- Simple: Get preset for current map
-    local preset = lia.doors.getPreset(game.GetMap())
-    if preset then
-        print("Found preset for map")
-    end
-    ```
-
-    Medium Complexity:
-    ```lua
-    -- Medium: Check and use preset data
-    local mapName = lia.data.getEquivalencyMap(game.GetMap())
-    local preset = lia.doors.getPreset(mapName)
-    if preset then
-        for doorID, doorData in pairs(preset) do
-            print("Door " .. doorID .. " has preset: " .. (doorData.name or "Unnamed"))
-        end
-    end
-    ```
-
-    High Complexity:
-    ```lua
-    -- High: Dynamic preset loading with validation
-    local function loadMapPresets(mapName)
-        local preset = lia.doors.getPreset(mapName)
-        if not preset then
-            lia.warning("No door preset found for map: " .. mapName)
-            return false
-        end
-
-        local validDoors = 0
-        for doorID, doorData in pairs(preset) do
-            local ent = ents.GetMapCreatedEntity(doorID)
-            if IsValid(ent) and ent:isDoor() then
-                validDoors = validDoors + 1
-                -- Apply preset data to door
-                ent:setNetVar("doorData", doorData)
-            end
-        end
-
-        lia.information("Loaded " .. validDoors .. " doors from preset for " .. mapName)
-        return true
-    end
-    ```
-]]
-function lia.doors.getPreset(mapName)
-    return lia.doors.presets[mapName]
-end
 
 --[[
     Purpose:
@@ -591,7 +316,6 @@ end
 
         -- Check for missing columns and add them
         local missingColumns = {
-        door_group = "text"
         }
 
         for column, type in pairs(missingColumns) do
@@ -624,8 +348,7 @@ function lia.doors.verifyDatabaseSchema()
                 ownable = "integer",
                 name = "text",
                 price = "integer",
-                locked = "integer",
-                door_group = "text"
+                locked = "integer"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
@@ -660,8 +383,7 @@ function lia.doors.verifyDatabaseSchema()
                 ownable = "tinyint",
                 name = "text",
                 price = "int",
-                locked = "tinyint",
-                door_group = "text"
+                locked = "tinyint"
             }
 
             for colName, expectedType in pairs(expectedColumns) do
@@ -879,7 +601,7 @@ end
 
 function MODULE:KeyLock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
-    if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+    if lia.config.get("DisableCheaterActions", true) and client.isCheater then
         lia.log.add(client, "cheaterAction", L("cheaterActionLockDoor"))
         return
     end
@@ -896,7 +618,7 @@ end
 
 function MODULE:KeyUnlock(client, door, time)
     if not IsValid(door) or not IsValid(client) then return end
-    if lia.config.get("DisableCheaterActions", true) and client:getNetVar("cheater", false) then
+    if lia.config.get("DisableCheaterActions", true) and client.isCheater then
         lia.log.add(client, "cheaterAction", L("cheaterActionUnlockDoor"))
         return
     end
@@ -913,7 +635,7 @@ end
 
 function MODULE:ToggleLock(client, door, state)
     if not IsValid(door) then return end
-    if lia.config.get("DisableCheaterActions", true) and IsValid(client) and client:getNetVar("cheater", false) then
+    if lia.config.get("DisableCheaterActions", true) and IsValid(client) and client.isCheater then
         lia.log.add(client, "cheaterAction", state and L("cheaterActionLockDoor") or L("cheaterActionUnlockDoor"))
         return
     end
