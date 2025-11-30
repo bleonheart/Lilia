@@ -579,6 +579,24 @@ function GM:PlayerInitialSpawn(client)
 
         timer.Simple(1, function() lia.playerinteract.sync(client) end)
         timer.Simple(1, function() lia.dialog.syncToClients(client) end)
+        timer.Simple(1, function()
+            -- Sync door data to the newly spawned client
+            if IsValid(client) then
+                local syncCount = 0
+                local doorsWithData = 0
+                for _, door in ents.Iterator() do
+                    if IsValid(door) and door:isDoor() then 
+                        local syncData = lia.doors.getSyncData(door)
+                        if not table.IsEmpty(syncData) then
+                            doorsWithData = doorsWithData + 1
+                        end
+                        lia.doors.syncToClient(client, door)
+                        syncCount = syncCount + 1
+                    end
+                end
+                print("[TEST] GM:PlayerInitialSpawn: Checked " .. syncCount .. " doors, " .. doorsWithData .. " have data to sync to client " .. client:Name())
+            end
+        end)
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")
         net.Send(client)

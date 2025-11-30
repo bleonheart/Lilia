@@ -3168,7 +3168,7 @@ function MODULE:HUDPaint()
                 baseColor = lia.option.get("espEntitiesColor")
             end
         elseif ent:isDoor() then
-            local doorData = ent:getNetVar("doorData", {})
+            local doorData = lia.doors.getData(ent)
             local factions = doorData.factions or {}
             local classes = doorData.classes or {}
             local name = doorData.name

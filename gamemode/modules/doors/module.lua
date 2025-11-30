@@ -13,3 +13,16 @@ lia.doors.AccessLabels = {
     [DOOR_TENANT] = "doorAccessTenant",
     [DOOR_OWNER] = "doorAccessOwner"
 }
+
+-- Default door values - only non-default values are stored/synced
+lia.doors.defaults = {
+    name = "",
+    title = "",
+    price = 0,
+    disabled = false,
+    locked = false,
+    hidden = false,
+    noSell = false,
+    factions = {},
+    classes = {}
+}

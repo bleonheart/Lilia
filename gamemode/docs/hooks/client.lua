@@ -356,7 +356,7 @@ end
             -- Handle doors
             elseif target:isDoor() then
                 table.insert(information, "=== DOOR INFO ===")
-                local doorData = target:getNetVar("doorData", {})
+                local doorData = target:lia.doors.getData(target)
                 if doorData.name and doorData.name ~= "" then
                     table.insert(information, "Name: " .. doorData.name)
                 end
@@ -819,7 +819,7 @@ end
         ```lua
         -- Medium: Add formatted door information
         function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
-            local doorData = entity:getNetVar("doorData")
+            local doorData = lia.doors.getData(entity)
             if doorData then
                 if doorData.title then
                     table.insert(infoTexts, "Title: " .. doorData.title)
@@ -837,7 +837,7 @@ end
         function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
             if not IsValid(entity) then return end
 
-            local doorData = entity:getNetVar("doorData")
+            local doorData = lia.doors.getData(entity)
             local alpha = alphaOverride or 255
 
             -- Add door title if available
@@ -4186,7 +4186,7 @@ end
         ```lua
         -- Medium: Add formatted door information
         function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
-            local doorData = entity:getNetVar("doorData")
+            local doorData = lia.doors.getData(entity)
             if doorData then
                 if doorData.title then
                     table.insert(infoTexts, "Title: " .. doorData.title)
@@ -4204,7 +4204,7 @@ end
         function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
             if not IsValid(entity) then return end
 
-            local doorData = entity:getNetVar("doorData")
+            local doorData = lia.doors.getData(entity)
             local alpha = alphaOverride or 255
 
             -- Add door title if available
@@ -9622,7 +9622,7 @@ end
 
             -- Show for doors with special permissions
             if entity:GetClass() == "lia_door" then
-                local doorData = entity:getNetVar("doorData")
+                local doorData = lia.doors.getData(entity)
                 if doorData and doorData.owner then
                     return doorData.owner == char:getID() or client:IsAdmin()
                 end
