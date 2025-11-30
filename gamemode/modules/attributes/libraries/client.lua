@@ -24,11 +24,6 @@ function MODULE:Think()
     if offset ~= 0 then predictedStamina = math.Clamp(predictedStamina + offset, 0, maxStamina) end
 end
 
-function MODULE:NetVarChanged(client, key, _, newVar)
-    if client ~= LocalPlayer() or key ~= "stamina" then return end
-    predictedStamina = newVar
-end
-
 function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end

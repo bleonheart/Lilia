@@ -197,7 +197,6 @@ end
             {name = "epic", color = Color(128, 0, 255)},
             {name = "legendary", color = Color(255, 165, 0)}
         }
-
         for _, rarity in ipairs(rarities) do
             lia.vendor.addRarities(rarity.name, rarity.color)
         end
@@ -259,7 +258,6 @@ end
             ["ammo_pistol"]    = {price = 10, stock = 50, mode = 1},
             ["ammo_shotgun"]   = {price = 15, stock = 30, mode = 1}
         }
-
         lia.vendor.addPreset("gun_dealer", weaponPreset)
         ```
 ]]
@@ -319,7 +317,6 @@ end
         -- High: Get preset and dynamically configure vendor based on preset data
         local presetName = "gun_dealer"
         local preset = lia.vendor.getPreset(presetName)
-
         if preset then
             for itemType, itemData in pairs(preset) do
                 vendor:setItemPrice(itemType, itemData.price)
