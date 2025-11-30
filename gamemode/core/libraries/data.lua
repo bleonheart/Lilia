@@ -856,13 +856,7 @@ for col in pairs(defaultCols) do
 end
 
 local function addPersistenceColumn(col)
-    local query
-    if lia.db.module == "sqlite" then
-        query = ([[ALTER TABLE lia_persistence ADD COLUMN %s TEXT]]):format(lia.db.escapeIdentifier(col))
-    else
-        query = ([[ALTER TABLE `lia_persistence` ADD COLUMN %s TEXT NULL]]):format(lia.db.escapeIdentifier(col))
-    end
-    return lia.db.query(query)
+    return lia.db.query("ALTER TABLE lia_persistence ADD COLUMN " .. lia.db.escapeIdentifier(col) .. " TEXT")
 end
 
 local function ensurePersistenceColumns(cols)
