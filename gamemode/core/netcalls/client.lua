@@ -1,4 +1,4 @@
-﻿net.Receive("liaSetWaypoint", function()
+net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()

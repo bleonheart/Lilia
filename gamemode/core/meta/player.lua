@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Player Meta
 
     Player management system for the Lilia framework.
@@ -4431,9 +4431,17 @@ if SERVER then
 ]]
     function playerMeta:consumeStamina(amount)
         local char = self:getChar()
-        local current = self:getNetVar("stamina", char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
-        local value = math.Clamp(current - amount, 0, char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100))
+        local max = char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
+        local current = self:getLocalVar("stm", max)
+        local value = math.Clamp(current - amount, 0, max)
+        self:setLocalVar("stm", value)
         self:setNetVar("stamina", value)
+
+        -- Sync predicted stamina with client
+        net.Start("liaStaminaSync")
+        net.WriteFloat(value)
+        net.Send(self)
+
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)
             hook.Run("PlayerStaminaLost", self)
