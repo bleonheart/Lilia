@@ -18,6 +18,7 @@
 ]]
 lia.doors = lia.doors or {}
 lia.doors.presets = lia.doors.presets or {}
+lia.doors.stored = lia.doors.stored or {}
 DOOR_OWNER, DOOR_TENANT, DOOR_GUEST, DOOR_NONE = 3, 2, 1, 0
 lia.doors.AccessLabels = {
     [DOOR_NONE] = "doorAccessNone",
@@ -26,9 +27,104 @@ lia.doors.AccessLabels = {
     [DOOR_OWNER] = "doorAccessOwner"
 }
 
+-- Default door values - only non-default values are stored/synchronized
+lia.doors.defaultValues = {
+    name = "",
+    title = "",
+    price = 0,
+    disabled = false,
+    locked = false,
+    hidden = false,
+    noSell = false,
+    factions = {},
+    classes = {}
+}
+
 if SERVER then
+    -- Cache door data on server - only stores non-default values
+    function lia.doors.setCachedData(door, data)
+        local doorID = door:MapCreationID()
+        if not doorID or doorID <= 0 then return end
+        -- Create a copy of the data and filter out default values
+        local filteredData = {}
+        local hasData = false
+        for key, value in pairs(data or {}) do
+            local defaultValue = lia.doors.defaultValues[key]
+            if defaultValue ~= nil then
+                -- Special handling for arrays
+                if istable(value) and istable(defaultValue) then
+                    if not table.IsEmpty(value) then
+                        filteredData[key] = value
+                        hasData = true
+                    end
+                elseif value ~= defaultValue then
+                    filteredData[key] = value
+                    hasData = true
+                end
+            end
+        end
+
+        -- Store only non-default data
+        if hasData then
+            lia.doors.stored[doorID] = filteredData
+        else
+            lia.doors.stored[doorID] = nil
+        end
+
+        -- Notify clients of the change
+        lia.doors.syncDoorData(door)
+    end
+
+    -- Get cached door data (returns full data with defaults filled in)
+    function lia.doors.getCachedData(door)
+        local doorID = door:MapCreationID()
+        if not doorID or doorID <= 0 then return {} end
+        local cachedData = lia.doors.stored[doorID] or {}
+        local fullData = {}
+        -- Fill in defaults for missing values
+        for key, defaultValue in pairs(lia.doors.defaultValues) do
+            if cachedData[key] ~= nil then
+                fullData[key] = cachedData[key]
+            else
+                fullData[key] = defaultValue
+            end
+        end
+        return fullData
+    end
+
+    -- Sync door data to all clients
+    function lia.doors.syncDoorData(door)
+        local doorID = door:MapCreationID()
+        if not doorID or doorID <= 0 then return end
+        local data = lia.doors.stored[doorID]
+        net.Start("liaDoorDataUpdate")
+        net.WriteUInt(doorID, 16)
+        if data then
+            net.WriteBool(true)
+            net.WriteTable(data)
+        else
+            net.WriteBool(false)
+        end
+
+        net.Broadcast()
+    end
+
+    -- Sync all door data to a specific client (used during PlayerInitialSpawn)
+    function lia.doors.syncAllDoorsToClient(client)
+        if not IsValid(client) then return end
+        net.Start("liaDoorDataBulk")
+        net.WriteUInt(table.Count(lia.doors.stored), 16)
+        for doorID, data in pairs(lia.doors.stored) do
+            net.WriteUInt(doorID, 16)
+            net.WriteTable(data)
+        end
+
+        net.Send(client)
+    end
+
+    -- Legacy function for backward compatibility
     function lia.doors.setData(door, data)
-        door:setNetVar("doorData", data)
+        lia.doors.setCachedData(door, data)
     end
 
     --[[
@@ -389,5 +485,39 @@ if SERVER then
 end
 
 function lia.doors.getData(door)
-    return door:getNetVar("doorData", {}) or {}
+    if SERVER then
+        return lia.doors.getCachedData(door)
+    else
+        return lia.doors.getCachedData(door)
+    end
+end
+
+-- Client-side cache management
+if CLIENT then
+    lia.doors.stored = lia.doors.stored or {}
+    -- Get cached door data on client (returns full data with defaults filled in)
+    function lia.doors.getCachedData(door)
+        local doorID = door:MapCreationID()
+        if not doorID or doorID <= 0 then return {} end
+        local cachedData = lia.doors.stored[doorID] or {}
+        local fullData = {}
+        -- Fill in defaults for missing values
+        for key, defaultValue in pairs(lia.doors.defaultValues) do
+            if cachedData[key] ~= nil then
+                fullData[key] = cachedData[key]
+            else
+                fullData[key] = defaultValue
+            end
+        end
+        return fullData
+    end
+
+    -- Update cached door data from server
+    function lia.doors.updateCachedData(doorID, data)
+        if data then
+            lia.doors.stored[doorID] = data
+        else
+            lia.doors.stored[doorID] = nil
+        end
+    end
 end

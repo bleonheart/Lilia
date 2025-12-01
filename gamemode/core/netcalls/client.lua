@@ -1084,6 +1084,22 @@ net.Receive("liaDoorMenu", function()
     end
 end)
 
+wnet.Receive("liaDoorDataUpdate", function()
+    local doorID = net.ReadUInt(16)
+    local hasData = net.ReadBool()
+    local data = hasData and net.ReadTable() or nil
+    lia.doors.updateCachedData(doorID, data)
+end)
+
+net.Receive("liaDoorDataBulk", function()
+    local count = net.ReadUInt(16)
+    for i = 1, count do
+        local doorID = net.ReadUInt(16)
+        local data = net.ReadTable()
+        lia.doors.updateCachedData(doorID, data)
+    end
+end)
+
 net.Receive("liaDoorPerm", function()
     local door = net.ReadEntity()
     local client = net.ReadEntity()

@@ -5156,7 +5156,7 @@ if SERVER then
             self:SetMoveType(MOVETYPE_NONE)
             if time then
                 local uniqueID = "liaUnRagdoll" .. self:SteamID64()
-                timer.Create(uniqueID, 0.33, 0, function()
+                timer.Create(uniqueID, 1.0, 0, function()
                     if not IsValid(entity) or not IsValid(self) then
                         timer.Remove(uniqueID)
                         return
@@ -5165,7 +5165,7 @@ if SERVER then
                     local velocity = entity:GetVelocity()
                     entity.liaLastVelocity = velocity
                     self:SetPos(entity:GetPos())
-                    time = time - 0.33
+                    time = time - 1.0
                     if time <= 0 then SafeRemoveEntity(entity) end
                 end)
             end

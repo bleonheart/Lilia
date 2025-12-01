@@ -7744,6 +7744,8 @@ lia.command.add("forcerespawn", {
         end
 
         client:Spawn()
+        -- Reset lastDeathTime to prevent timer issues on subsequent deaths
+        client:setNetVar("lastDeathTime", 0)
         client:notifySuccessLocalized("playerForceRespawned", client:Name())
         client:notifyLocalized("youWereForceRespawned")
         lia.log.add(client, "forcerespawn", client:Name())

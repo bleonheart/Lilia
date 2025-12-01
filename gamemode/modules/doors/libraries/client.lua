@@ -73,7 +73,7 @@ function MODULE:DrawEntityInfo(entity, alpha)
     local activeWeapon = client:GetActiveWeapon()
     if IsValid(client) and IsValid(activeWeapon) and activeWeapon:GetClass() == "adminstick" then return end
     if entity:isDoor() then
-        local doorData = entity:getNetVar("doorData", {})
+        local doorData = lia.doors.getData(entity)
         if not (doorData.hidden or false) then
             if doorData.disabled then
                 lia.util.drawEntText(entity, L("doorDisabled"), 0, alpha)
@@ -166,7 +166,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
     if not IsValid(tgt) or not tgt:isDoor() then return end
     local client = LocalPlayer()
     if not client:hasPrivilege("manageDoors") and not client:isStaffOnDuty() then return end
-    local doorData = tgt:getNetVar("doorData", {})
+    local doorData = lia.doors.getData(tgt)
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
     local items = {}
@@ -247,7 +247,7 @@ function MODULE:AddToAdminStickHUD(_, target, information)
             table.insert(information, info)
         end
 
-        local doorData = target:getNetVar("doorData", {})
+        local doorData = lia.doors.getData(target)
         local defaultDoorData = {
             name = "",
             price = 0,

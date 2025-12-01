@@ -21,14 +21,14 @@ function MODULE:PostLoadData()
             if IsValid(door) and door:isDoor() then
                 local doorData = door:getNetVar("doorData", {})
                 if not doorData or table.IsEmpty(doorData) then
-                    door:setNetVar("doorData", {
+                    lia.doors.setCachedData(door, {
                         disabled = true
                     })
 
                     count = count + 1
                 else
                     doorData.disabled = true
-                    door:setNetVar("doorData", doorData)
+                    lia.doors.setCachedData(door, doorData)
                     count = count + 1
                 end
             end
@@ -98,7 +98,7 @@ function MODULE:LoadData()
                         else
                             factions = result
                             ent.liaFactions = factions
-                            ent:setNetVar("factions", util.TableToJSON(factions))
+                            ent.liaFactions = factions
                         end
                     else
                         lia.warning(L("failedToDeserializeFactionsForDoor", id) .. ": " .. tostring(result))
@@ -126,11 +126,9 @@ function MODULE:LoadData()
                         if not isEmpty then
                             classes = result
                             ent.liaClasses = classes
-                            ent:setNetVar("classes", util.TableToJSON(classes))
                         else
                             classes = result
                             ent.liaClasses = classes
-                            ent:setNetVar("classes", util.TableToJSON(classes))
                         end
                     else
                         lia.warning(L("failedToDeserializeClassesForDoor", id) .. ": " .. tostring(result))
@@ -184,7 +182,7 @@ function MODULE:LoadData()
 
             if hasData then
                 doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
-                ent:setNetVar("doorData", doorData)
+                lia.doors.setCachedData(ent, doorData)
                 loadedCount = loadedCount + 1
                 if ent:isDoor() then
                     if doorData.locked then
@@ -247,7 +245,7 @@ function MODULE:LoadData()
 
                         if hasPresetData then
                             doorData = hook.Run("PostDoorDataLoad", ent, doorData) or doorData
-                            ent:setNetVar("doorData", doorData)
+                            lia.doors.setCachedData(ent, doorData)
                             lia.information(L("appliedPresetToDoor", doorID))
                             loadedCount = loadedCount + 1
                             if ent:isDoor() then
@@ -408,12 +406,12 @@ function MODULE:PlayerUse(client, door)
 end
 
 function MODULE:CanPlayerUseDoor(_, door)
-    local doorData = door:getNetVar("doorData", {})
+    local doorData = lia.doors.getData(door)
     if doorData.disabled then return false end
 end
 
 function MODULE:CanPlayerAccessDoor(client, door)
-    local doorData = door:getNetVar("doorData", {})
+    local doorData = lia.doors.getData(door)
     local factions = doorData.factions
     if factions and #factions > 0 then
         local playerFaction = client:getChar():getFaction()
@@ -449,7 +447,7 @@ end
 function MODULE:ShowTeam(client)
     local entity = client:getTracedEntity()
     if IsValid(entity) and entity:isDoor() then
-        local doorData = entity:getNetVar("doorData", {})
+        local doorData = lia.doors.getData(entity)
         local factions = doorData.factions
         local classes = doorData.classes
         if (not factions or #factions == 0) and (not classes or #classes == 0) then

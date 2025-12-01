@@ -1810,6 +1810,8 @@ if SERVER then
             return true
         elseif cmd == "respawn" then
             target:Spawn()
+            -- Reset lastDeathTime to prevent timer issues on subsequent deaths
+            target:setNetVar("lastDeathTime", 0)
             admin:notifySuccessLocalized("plyRespawned", target:Name())
             lia.log.add(admin, "plyRespawn", target:Name())
             lia.db.insertTable({
