@@ -1,4 +1,4 @@
-﻿net.Receive("liaPlayerRespawn", function(_, client)
+net.Receive("liaPlayerRespawn", function(_, client)
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
@@ -216,17 +216,17 @@ net.Receive("liaCharChoose", function(_, client)
                 -- Staff character is allowed, proceed with loading
                 lia.char.loadSingleCharacter(id, client, function(character)
                     if not character then return response(false, "invalidChar") end
-                    local status, result = hook.Run("CanPlayerUseChar", client, character)
+                    local status, reason = hook.Run("CanPlayerUseChar", client, character)
                     if status == false then
-                        if result[1] == "@" then result = result:sub(2) end
-                        return response(result)
+                        if reason[1] == "@" then reason = reason:sub(2) end
+                        return response(reason)
                     end
 
                     if currentChar then
-                        status, result = hook.Run("CanPlayerSwitchChar", client, currentChar, character)
+                        status, reason = hook.Run("CanPlayerSwitchChar", client, currentChar, character)
                         if status == false then
-                            if result[1] == "@" then result = result:sub(2) end
-                            return response(result)
+                            if reason[1] == "@" then reason = reason:sub(2) end
+                            return response(reason)
                         end
 
                         currentChar:save()

@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Character Library
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
@@ -77,6 +77,7 @@ lia.char.pendingRequests = lia.char.pendingRequests or {}
 ]]
 function lia.char.getCharacter(charID, client, callback)
     if SERVER then
+        if not charID then return end
         local character = lia.char.loaded[charID]
         if character then
             if callback then callback(character) end
@@ -2632,16 +2633,16 @@ if SERVER then
                 end
 
                 -- Staff character is allowed, proceed with loading (duplicate the loading logic below)
-                lia.db.selectOne("*", "characters", "id = " .. charID):next(function(result)
-                    if not result then
+                lia.db.selectOne("*", "characters", "id = " .. charID):next(function(charResult)
+                    if not charResult then
                         if callback then callback(nil) end
                         return
                     end
 
                     local charData = {}
                     for k, v in pairs(lia.char.vars) do
-                        if v.field and result[v.field] then
-                            local value = tostring(result[v.field])
+                        if v.field and charResult[v.field] then
+                            local value = tostring(charResult[v.field])
                             if isnumber(v.default) then
                                 value = tonumber(value) or v.default
                             elseif isbool(v.default) then

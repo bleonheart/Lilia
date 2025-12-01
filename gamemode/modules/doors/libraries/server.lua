@@ -19,7 +19,7 @@ function MODULE:PostLoadData()
         local count = 0
         for _, door in ents.Iterator() do
             if IsValid(door) and door:isDoor() then
-                local doorData = door:getNetVar("doorData", {})
+                local doorData = lia.doors.getCachedData(door)
                 if not doorData or table.IsEmpty(doorData) then
                     lia.doors.setCachedData(door, {
                         disabled = true
@@ -94,10 +94,8 @@ function MODULE:LoadData()
                         if not isEmpty then
                             factions = result
                             ent.liaFactions = factions
-                            ent:setNetVar("factions", util.TableToJSON(factions))
                         else
                             factions = result
-                            ent.liaFactions = factions
                             ent.liaFactions = factions
                         end
                     else
@@ -277,39 +275,13 @@ function MODULE:SaveData()
         if door:isDoor() then
             local mapID = door:MapCreationID()
             if not mapID or mapID <= 0 then continue end
-            local doorData = door:getNetVar("doorData", {})
+            local doorData = lia.doors.getCachedData(door)
             if not doorData or table.IsEmpty(doorData) then continue end
             doorData = hook.Run("PreDoorDataSave", door, doorData) or doorData
             local factionsTable = doorData.factions or {}
             local classesTable = doorData.classes or {}
-            if not doorData.factions then
-                local factions = door:getNetVar("factions")
-                if factions and factions ~= "[]" then
-                    local success, result = pcall(util.JSONToTable, factions)
-                    if success and istable(result) then
-                        factionsTable = result
-                    else
-                        lia.warning(L("failedToParseFactionsJSON", mapID))
-                    end
-                elseif door.liaFactions then
-                    factionsTable = door.liaFactions
-                end
-            end
-
-            if not doorData.classes then
-                local classes = door:getNetVar("classes")
-                if classes and classes ~= "[]" then
-                    local success, result = pcall(util.JSONToTable, classes)
-                    if success and istable(result) then
-                        classesTable = result
-                    else
-                        lia.warning(L("failedToParseClassesJSON", mapID))
-                    end
-                elseif door.liaClasses then
-                    classesTable = door.liaClasses
-                end
-            end
-
+            if not doorData.factions and door.liaFactions then factionsTable = door.liaFactions end
+            if not doorData.classes and door.liaClasses then classesTable = door.liaClasses end
             if not istable(factionsTable) then
                 lia.warning(L("doorInvalidFactionsType", mapID, type(factionsTable)))
                 factionsTable = {}

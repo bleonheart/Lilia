@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 AdminStickIsOpen = false
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
 local playerInfoLabel = L("player") .. " " .. L("information")
@@ -1052,7 +1052,7 @@ local function GenerateDynamicCategories()
         end
     end
 
-    local preferredOrder = {"moderation", "characterManagement", "doorManagement", "teleportation", "utility"}
+    local preferredOrder = {"moderation", "characterManagement", "doorManagement", "storageManagement", "teleportation", "utility"}
     local orderedCategories = {}
     for _, preferredCategory in ipairs(preferredOrder) do
         if mergedCategories[preferredCategory] then table.insert(orderedCategories, preferredCategory) end
@@ -1098,6 +1098,34 @@ local function GenerateDynamicCategories()
                     name = L("adminStickSubCategoryDoorSettings") or L("adminStickSubCategorySettings"),
                     icon = "icon16/cog.png"
                 },
+                factions = {
+                    name = L("adminStickSubCategoryFactions") or "Factions",
+                    icon = "icon16/group.png",
+                    subcategories = {
+                        addFactions = {
+                            name = L("addFactions"),
+                            icon = "icon16/group_add.png"
+                        },
+                        removeFactions = {
+                            name = L("removeFactions"),
+                            icon = "icon16/group_delete.png"
+                        }
+                    }
+                },
+                classes = {
+                    name = L("adminStickSubCategoryClasses") or "Classes",
+                    icon = "icon16/user.png",
+                    subcategories = {
+                        addClasses = {
+                            name = L("addClasses"),
+                            icon = "icon16/user_add.png"
+                        },
+                        removeClasses = {
+                            name = L("removeClasses"),
+                            icon = "icon16/user_delete.png"
+                        }
+                    }
+                },
                 doorMaintenance = {
                     name = L("adminStickSubCategoryDoorMaintenance") or L("adminStickSubCategoryMaintenance"),
                     icon = "icon16/wrench.png"
@@ -1105,6 +1133,16 @@ local function GenerateDynamicCategories()
                 doorInformation = {
                     name = L("adminStickSubCategoryDoorInformation") or L("adminStickSubCategoryInformation"),
                     icon = "icon16/information.png"
+                }
+            }
+        },
+        storageManagement = {
+            name = L("storageManagement") or "Storage Management",
+            icon = "icon16/package.png",
+            subcategories = {
+                storageActions = {
+                    name = "adminStickSubCategoryStorageActions",
+                    icon = "icon16/lightning.png"
                 }
             }
         },
@@ -1259,6 +1297,8 @@ local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
             elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
+                hasContent = true
+            elseif categoryKey == "storageManagement" and tgt.isStorageEntity then
                 hasContent = true
             elseif categoryKey == "teleportation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
                 hasContent = true
@@ -1892,6 +1932,9 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         elseif sub == "doorInformation" then
             subcategoryKey = "doorInformation"
         end
+    elseif cat == "storageManagement" then
+        categoryKey = "storageManagement"
+        if sub == "storageActions" then subcategoryKey = "storageActions" end
     elseif cat == "moderation" then
         categoryKey = "moderation"
         if sub == "moderationTools" then
@@ -1993,7 +2036,7 @@ end
 
 function MODULE:OpenAdminStickUI(tgt)
     local cl = LocalPlayer()
-    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not hasAdminStickTargetClass(tgt:GetClass()) then return end
+    if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not tgt.isStorageEntity and not hasAdminStickTargetClass(tgt:GetClass()) then return end
     if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
     local tempMenu = lia.derma.dermaMenu()
     local stores = {}
@@ -2197,7 +2240,30 @@ function MODULE:OpenAdminStickUI(tgt)
         local canFaction = client:hasPrivilege("manageTransfers")
         local canClass = client:hasPrivilege("manageClasses")
         local canWhitelist = client:hasPrivilege("manageWhitelists")
-        if not target or not IsValid(target) or not target:IsPlayer() then return end
+        -- Handle storage entities
+        if IsValid(target) and target.isStorageEntity then
+            local storageOptions = {
+                {
+                    name = L("removePassword"),
+                    icon = "icon16/key_delete.png",
+                    callback = function(callbackTarget) RunConsoleCommand("say", "/storagepasswordremove") end
+                },
+                {
+                    name = L("changePassword"),
+                    icon = "icon16/key.png",
+                    callback = function(callbackTarget) lia.derma.requestString(L("enterNewPassword"), L("enterNewPassword"), function(password) if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end end, "") end
+                }
+            }
+
+            table.insert(lists, {
+                name = "storage",
+                category = "storageManagement",
+                subcategory = "storageActions",
+                items = storageOptions
+            })
+        end
+
+        if not target or not IsValid(target) or (not target:IsPlayer() and not target.isStorageEntity) then return end
         local char = target:getChar()
         if not char then return end
         if char then
@@ -2354,28 +2420,40 @@ function MODULE:OpenAdminStickUI(tgt)
             local listName = listData.name
             local categoryKey = listData.category
             local subcategoryKey = listData.subcategory
+            local subSubcategoryKey = listData.subSubcategory
             local items = listData.items
             if listName and categoryKey and subcategoryKey and items and #items > 0 then
                 local category = GetOrCreateCategoryMenu(currentMenu, categoryKey, currentStores)
                 if category and IsValid(category) then
                     local subcategory = GetOrCreateSubCategoryMenu(category, categoryKey, subcategoryKey, currentStores)
                     if subcategory and IsValid(subcategory) then
-                        table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
-                        local icon = subMenuIcons[listName] or "icon16/page.png"
-                        for _, item in ipairs(items) do
-                            local option = subcategory:AddOption(L(item.name), function()
-                                if item.callback then item.callback(currentTarget, item) end
-                                timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                            end)
-
-                            if item.icon and IsValid(option) then
-                                option:SetIcon(item.icon)
-                            elseif icon and icon ~= "icon16/page.png" and IsValid(option) then
-                                option:SetIcon(icon)
+                        local targetMenu = subcategory
+                        if subSubcategoryKey then
+                            -- Create sub-subcategory menu
+                            targetMenu = GetOrCreateSubCategoryMenu(subcategory, categoryKey .. "_" .. subcategoryKey, subSubcategoryKey, currentStores)
+                            if not targetMenu or not IsValid(targetMenu) then
+                                targetMenu = subcategory -- fallback to subcategory if sub-subcategory fails
                             end
                         end
 
-                        if subcategory.UpdateSize then subcategory:UpdateSize() end
+                        if targetMenu and IsValid(targetMenu) then
+                            table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
+                            local icon = subMenuIcons[listName] or "icon16/page.png"
+                            for _, item in ipairs(items) do
+                                local option = targetMenu:AddOption(L(item.name), function()
+                                    if item.callback then item.callback(currentTarget, item) end
+                                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                                end)
+
+                                if item.icon and IsValid(option) then
+                                    option:SetIcon(item.icon)
+                                elseif icon and icon ~= "icon16/page.png" and IsValid(option) then
+                                    option:SetIcon(icon)
+                                end
+                            end
+
+                            if targetMenu.UpdateSize then targetMenu:UpdateSize() end
+                        end
                     end
                 end
             end

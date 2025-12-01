@@ -1084,7 +1084,7 @@ net.Receive("liaDoorMenu", function()
     end
 end)
 
-wnet.Receive("liaDoorDataUpdate", function()
+net.Receive("liaDoorDataUpdate", function()
     local doorID = net.ReadUInt(16)
     local hasData = net.ReadBool()
     local data = hasData and net.ReadTable() or nil
@@ -1093,7 +1093,7 @@ end)
 
 net.Receive("liaDoorDataBulk", function()
     local count = net.ReadUInt(16)
-    for i = 1, count do
+    for _ = 1, count do
         local doorID = net.ReadUInt(16)
         local data = net.ReadTable()
         lia.doors.updateCachedData(doorID, data)
@@ -1130,14 +1130,6 @@ net.Receive("liaDoorData", function()
     end
 end)
 
-net.Receive("liaDoorDataUpdate", function()
-    local door = net.ReadEntity()
-    local syncData = net.ReadTable()
-    if IsValid(door) and istable(syncData) then
-        lia.doors.stored[door] = syncData
-        hook.Run("DoorDataUpdated", door, syncData)
-    end
-end)
 
 net.Receive("liaRemoveFOne", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
 local function uiCreate()

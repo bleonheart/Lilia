@@ -1,4 +1,4 @@
-﻿function MODULE:GetDoorInfo(entity, doorData, doorInfo)
+function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
@@ -169,28 +169,54 @@ function MODULE:GetAdminStickLists(tgt, lists)
     local doorData = lia.doors.getData(tgt)
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
-    local items = {}
+
+    -- Add Factions
+    local addFactionItems = {}
     for _, faction in pairs(lia.faction.teams) do
         if not table.HasValue(factionsAssigned, faction.uniqueID) then
-            table.insert(items, {
-                name = L("doorAddFaction") .. ": " .. faction.name,
+            table.insert(addFactionItems, {
+                name = faction.name,
                 icon = "icon16/group_add.png",
                 callback = function() LocalPlayer():ConCommand("say /dooraddfaction '" .. faction.uniqueID .. "'") end
             })
         end
     end
 
+    if #addFactionItems > 0 then
+        table.insert(lists, {
+            name = L("addFactions"),
+            category = "doorManagement",
+            subcategory = "factions",
+            subSubcategory = "addFactions",
+            items = addFactionItems
+        })
+    end
+
+    -- Remove Factions
+    local removeFactionItems = {}
     for _, id in ipairs(factionsAssigned) do
         local faction = lia.faction.get(id)
         if faction then
-            table.insert(items, {
-                name = L("doorRemoveFactionAdmin") .. ": " .. faction.name,
+            table.insert(removeFactionItems, {
+                name = faction.name,
                 icon = "icon16/group_delete.png",
                 callback = function() LocalPlayer():ConCommand("say /doorremovefaction '" .. faction.uniqueID .. "'") end
             })
         end
     end
 
+    if #removeFactionItems > 0 then
+        table.insert(lists, {
+            name = L("removeFactions"),
+            category = "doorManagement",
+            subcategory = "factions",
+            subSubcategory = "removeFactions",
+            items = removeFactionItems
+        })
+    end
+
+    -- Add Classes
+    local addClassItems = {}
     for classID, classData in pairs(lia.class.list) do
         local isAlreadyAssigned = false
         for _, classUID in ipairs(existingClasses) do
@@ -201,40 +227,53 @@ function MODULE:GetAdminStickLists(tgt, lists)
         end
 
         if not isAlreadyAssigned then
-            table.insert(items, {
-                name = L("set") .. " " .. L("door") .. " " .. L("class") .. ": " .. classData.name,
-                icon = "icon16/tag_blue.png",
+            table.insert(addClassItems, {
+                name = classData.name,
+                icon = "icon16/user_add.png",
                 callback = function() LocalPlayer():ConCommand("say /doorsetclass '" .. classID .. "'") end
             })
         end
     end
 
+    if #addClassItems > 0 then
+        table.insert(lists, {
+            name = L("addClasses"),
+            category = "doorManagement",
+            subcategory = "classes",
+            subSubcategory = "addClasses",
+            items = addClassItems
+        })
+    end
+
+    -- Remove Classes
+    local removeClassItems = {}
     for _, classUID in ipairs(existingClasses) do
         local classIndex = lia.class.retrieveClass(classUID)
         local classInfo = lia.class.list[classIndex]
         if classInfo then
-            table.insert(items, {
-                name = L("remove") .. " " .. L("door") .. " " .. L("class") .. ": " .. classInfo.name,
-                icon = "icon16/delete.png",
+            table.insert(removeClassItems, {
+                name = classInfo.name,
+                icon = "icon16/user_delete.png",
                 callback = function() LocalPlayer():ConCommand("say /doorremoveclass '" .. classUID .. "'") end
             })
         end
     end
 
     if #existingClasses > 0 then
-        table.insert(items, {
+        table.insert(removeClassItems, {
             name = L("remove") .. " " .. L("all") .. " " .. L("classes"),
             icon = "icon16/delete.png",
             callback = function() LocalPlayer():ConCommand("say /doorremoveclass ''") end
         })
     end
 
-    if #items > 0 then
+    if #removeClassItems > 0 then
         table.insert(lists, {
-            name = L("adminStickSubCategoryDoorSettings") or L("adminStickSubCategorySettings"),
+            name = L("removeClasses"),
             category = "doorManagement",
-            subcategory = "doorSettings",
-            items = items
+            subcategory = "classes",
+            subSubcategory = "removeClasses",
+            items = removeClassItems
         })
     end
 end

@@ -37,7 +37,9 @@ lia.doors.defaultValues = {
     hidden = false,
     noSell = false,
     factions = {},
-    classes = {}
+    classes = {},
+    useCount = 0,
+    lastUsed = 0
 }
 
 if SERVER then
@@ -291,7 +293,7 @@ if SERVER then
                 if IsValid(ent) and ent:isDoor() then
                     validDoors = validDoors + 1
                     -- Apply preset data to door
-                    ent:setNetVar("doorData", doorData)
+                    lia.doors.setCachedData(ent, doorData)
                 end
             end
 
