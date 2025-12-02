@@ -5315,6 +5315,7 @@ if SERVER then
         if lia.net.checkBadType(key, value) then return end
         lia.net[self] = lia.net[self] or {}
         local oldValue = lia.net[self][key]
+        if oldValue == value then return end
         lia.net[self][key] = value
         net.Start("liaNetVar")
         net.WriteUInt(self:EntIndex(), 16)
