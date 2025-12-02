@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -585,7 +585,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn.DoClick = function()
         if character:isBanned() then
             local characterName = character:getName()
-            Derma_Query(L("pkDialogMessage", characterName), L("permaKillTitle"), L("iAcknowledge"), function() end)
+            LocalPlayer():requestString(L("permaKillTitle"), L("pkDialogMessage", characterName), function() end)
             return
         end
 

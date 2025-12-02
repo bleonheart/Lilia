@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Administrator Library
 
     Comprehensive user group and privilege management system for the Lilia framework.
@@ -2266,11 +2266,13 @@ else
                 return
             end
 
-            Derma_Query(L("deleteGroupPrompt", activeTab.groupName), L("confirm"), L("yes"), function()
-                net.Start("liaGroupsRemove")
-                net.WriteString(activeTab.groupName)
-                net.SendToServer()
-            end, L("no"))
+            LocalPlayer():requestString(L("confirm"), L("deleteGroupPrompt", activeTab.groupName), function(value)
+                if value and value:lower() == "yes" then
+                    net.Start("liaGroupsRemove")
+                    net.WriteString(activeTab.groupName)
+                    net.SendToServer()
+                end
+            end)
         end
 
         local function createGroupTab(groupName, groups)

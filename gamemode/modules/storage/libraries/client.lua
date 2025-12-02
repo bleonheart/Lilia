@@ -149,7 +149,7 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
         lia.color.theme and lia.color.theme.button or Color(80, 50, 50),
         lia.color.theme and lia.color.theme.button_hovered or Color(100, 60, 60)
     )
-    removeBtn.DoClick = function() Derma_Query(L("confirmRemovePassword"), L("removePassword"), L("yes"), function() SetStoragePassword("remove") end, L("no")) end
+    removeBtn.DoClick = function() LocalPlayer():requestString(L("removePassword"), L("confirmRemovePassword"), function(value) if value and value:lower() == "yes" then SetStoragePassword("remove") end end) end
 
     -- Update button states based on lock status
     local updateButtons = function()

@@ -2093,6 +2093,12 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     if #cmds > 0 then hasOptions = true end
+
+    -- Check for storage entities
+    if IsValid(tgt) and tgt.isStorageEntity then
+        hasOptions = true
+    end
+
     local tempStores = {}
     hook.Run("PopulateAdminStick", tempMenu, tgt, tempStores)
     tempMenu:Remove()
@@ -2256,7 +2262,7 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             table.insert(lists, {
-                name = "storage",
+                name = L("storage") or "Storage",
                 category = "storageManagement",
                 subcategory = "storageActions",
                 items = storageOptions
@@ -2264,9 +2270,12 @@ function MODULE:OpenAdminStickUI(tgt)
         end
 
         if not target or not IsValid(target) or (not target:IsPlayer() and not target.isStorageEntity) then return end
-        local char = target:getChar()
-        if not char then return end
-        if char then
+
+        -- Only process player-specific options for players
+        if target:IsPlayer() then
+            local char = target:getChar()
+            if not char then return end
+            if char then
             local facID = char:getFaction()
             if facID then
                 if canFaction then
@@ -2411,6 +2420,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 end
             end
         end
+        end -- End of target:IsPlayer() check
     end)
 
     hook.Add("PopulateAdminStick", "liaAddAdminStickLists", function(currentMenu, currentTarget, currentStores)
