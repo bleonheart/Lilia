@@ -996,12 +996,6 @@ lia.config.add("CurrencySymbol", "currencySymbol", "", function(newVal) lia.curr
     type = "Generic"
 })
 
-lia.config.add("PKWorld", "pkWorld", false, nil, {
-    desc = "pkWorldDesc",
-    category = "categoryCharacter",
-    type = "Boolean"
-})
-
 lia.config.add("CurrencySingularName", "currencySingularName", "currencySingular", function(newVal) lia.currency.singular = L(newVal) end, {
     desc = "currencySingularNameDesc",
     category = "categoryCharacter",
@@ -1077,24 +1071,6 @@ lia.config.add("WalkRatio", "walkRatio", 0.5, nil, {
     decimals = 2
 })
 
-lia.config.add("WhitelistEnabled", "whitelistEnabled", false, nil, {
-    desc = "whitelistEnabledDesc",
-    category = "categoryServer",
-    noNetworking = false,
-    schemaOnly = false,
-    isGlobal = false,
-    type = "Boolean"
-})
-
-lia.config.add("BlacklistedEnabled", "blacklistEnabled", false, nil, {
-    desc = "blacklistEnabledDesc",
-    category = "categoryServer",
-    noNetworking = false,
-    schemaOnly = false,
-    isGlobal = false,
-    type = "Boolean"
-})
-
 lia.config.add("MaxCharacters", "maxCharacters", 5, nil, {
     desc = "maxCharactersDesc",
     category = "categoryCharacter",
@@ -1115,14 +1091,6 @@ lia.config.add("MinDescLen", "minDescriptionLength", 16, nil, {
     type = "Number",
     min = 10,
     max = 500
-})
-
-lia.config.add("SaveInterval", "saveInterval", 300, nil, {
-    desc = "saveIntervalDesc",
-    category = "categoryCharacter",
-    type = "Number",
-    min = 60,
-    max = 3600
 })
 
 lia.config.add("DefaultMoney", "defaultMoney", 0, nil, {
@@ -1179,29 +1147,9 @@ lia.config.add("MaxChatLength", "maxChatLength", 256, nil, {
     max = 1024
 })
 
-lia.config.add("SchemaYear", "schemaYear", 2025, nil, {
-    desc = "schemaYearDesc",
-    category = "categoryGeneral",
-    type = "Number",
-    min = 0,
-    max = 999999
-})
-
 lia.config.add("DoorsAlwaysDisabled", "doorsAlwaysDisabled", false, nil, {
     desc = "doorsAlwaysDisabledDesc",
     category = "categoryGameplay",
-    type = "Boolean"
-})
-
-lia.config.add("AmericanDates", "americanDates", true, nil, {
-    desc = "americanDatesDesc",
-    category = "categoryGeneral",
-    type = "Boolean"
-})
-
-lia.config.add("AmericanTimeStamp", "americanTimeStamp", true, nil, {
-    desc = "americanTimeStampDesc",
-    category = "categoryGeneral",
     type = "Boolean"
 })
 
@@ -1225,12 +1173,6 @@ lia.config.add("AllowKeybindEditing", "allowKeybindEditing", true, nil, {
 
 lia.config.add("CrosshairEnabled", "enableCrosshair", false, nil, {
     desc = "enableCrosshairDesc",
-    category = "categoryGameplay",
-    type = "Boolean",
-})
-
-lia.config.add("BarsDisabled", "disableBars", false, nil, {
-    desc = "disableBarsDesc",
     category = "categoryGameplay",
     type = "Boolean",
 })
@@ -1306,14 +1248,6 @@ lia.config.add("MaxThirdPersonHeight", "maxThirdPersonHeight", 90, nil, {
     max = 100
 })
 
-lia.config.add("MaxViewDistance", "maxViewDistance", 32768, nil, {
-    desc = "maxViewDistanceDesc",
-    category = "categoryGameplay",
-    type = "Number",
-    min = 500,
-    max = 32768,
-})
-
 local function getDermaSkins()
     local skins = {}
     for name in pairs(derma.GetSkinTable()) do
@@ -1350,14 +1284,6 @@ lia.config.add("LogRetentionDays", "logRetentionPeriod", 7, nil, {
     type = "Number",
     min = 1,
     max = 30,
-})
-
-lia.config.add("MaxLogLines", "maximumLogLines", 1000, nil, {
-    desc = "maximumLogLinesDesc",
-    category = "categoryServer",
-    type = "Number",
-    min = 100,
-    max = 1000000,
 })
 
 lia.config.add("StaminaSlowdown", "staminaSlowdownEnabled", true, nil, {
@@ -1768,12 +1694,6 @@ lia.config.add("ItemGiveEnabled", "itemGiveEnabled", true, nil, {
     type = "Boolean",
 })
 
-lia.config.add("DisableCheaterActions", "disableCheaterActions", true, nil, {
-    desc = "disableCheaterActionsDesc",
-    category = "categoryGameplay",
-    type = "Boolean",
-})
-
 lia.config.add("LoseItemsonDeathNPC", "loseItemsOnNPCDeath", false, nil, {
     desc = "loseItemsOnNPCDeathDesc",
     category = "categoryGameplay",
@@ -1794,18 +1714,6 @@ lia.config.add("LoseItemsonDeathWorld", "loseItemsOnWorldDeath", false, nil, {
 
 lia.config.add("DeathPopupEnabled", "enableDeathPopup", true, nil, {
     desc = "enableDeathPopupDesc",
-    category = "categoryGameplay",
-    type = "Boolean"
-})
-
-lia.config.add("StaffHasGodMode", "staffGodMode", true, nil, {
-    desc = "staffGodModeDesc",
-    category = "categoryServer",
-    type = "Boolean"
-})
-
-lia.config.add("RagdollDamageTransfer", "ragdollDamageTransfer", true, nil, {
-    desc = "ragdollDamageTransferDesc",
     category = "categoryGameplay",
     type = "Boolean"
 })

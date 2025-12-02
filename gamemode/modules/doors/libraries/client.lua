@@ -3,7 +3,9 @@
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
     local price = doorData.price or 0
-    local ownable = not (doorData.noSell or false)
+    local hasFactions = factions and #factions > 0
+    local hasClasses = classes and #classes > 0
+    local ownable = not (doorData.noSell or hasFactions or hasClasses)
     local title = doorData.title or doorData.name or ""
     if title and title ~= "" then
         table.insert(doorInfo, {

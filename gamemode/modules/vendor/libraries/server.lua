@@ -1,4 +1,4 @@
-function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
+﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, _, _, isFailed)
     local vendorName = lia.vendor.getVendorProperty(vendor, "name")
     if not isSellingToVendor then
         lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
@@ -259,12 +259,17 @@ function MODULE:syncVendorDataToClient(client)
             if property ~= "name" and property ~= "animation" then propertiesToSync[property] = value end
         end
 
-        for _, _ in pairs(propertiesToSync) do
+        local validProperties = {}
+        for property, value in pairs(propertiesToSync) do
+            if value ~= nil and (isstring(value) or isnumber(value) or isbool(value) or istable(value)) then validProperties[property] = value end
+        end
+
+        for _, _ in pairs(validProperties) do
             propertyCount = propertyCount + 1
         end
 
         net.WriteUInt(propertyCount, 8)
-        for property, value in pairs(propertiesToSync) do
+        for property, value in pairs(validProperties) do
             net.WriteString(property)
             net.WriteTable({value})
         end

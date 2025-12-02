@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
 local IsValid = IsValid
@@ -545,7 +545,6 @@ end
 
 function GM:PlayerStartVoice(client)
     if not IsValid(g_VoicePanelList) or not lia.config.get("IsVoiceEnabled", true) then return end
-    if client:getNetVar("IsDeadRestricted", false) then return false end
     hook.Run("PlayerEndVoice", client)
     local pnl = VoicePanels[client]
     if IsValid(pnl) then

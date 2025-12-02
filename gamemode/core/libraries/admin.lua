@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Administrator Library
 
     Comprehensive user group and privilege management system for the Lilia framework.
@@ -162,19 +162,13 @@ local function clearPrivilegeCategoryCache()
     privilegeCategoryCache = {}
 end
 
--- Cache for group levels to avoid recalculating on every call
 local groupLevelCache = {}
-
 local function clearGroupLevelCache()
     groupLevelCache = {}
 end
 
 local function getGroupLevel(group)
-    -- Check cache first
-    if groupLevelCache[group] ~= nil then
-        return groupLevelCache[group]
-    end
-
+    if groupLevelCache[group] ~= nil then return groupLevelCache[group] end
     local levels = lia.administrator.DefaultGroups or {}
     if levels[group] then
         groupLevelCache[group] = levels[group]
@@ -191,6 +185,7 @@ local function getGroupLevel(group)
             groupLevelCache[group] = levels[inh]
             return levels[inh]
         end
+
         current = inh
     end
 
@@ -207,12 +202,18 @@ end
 
 local function rebuildPrivileges()
     lia.administrator.privileges = lia.administrator.privileges or {}
+    local rebuildCache = {}
+    local function getCachedGroupLevel(groupName)
+        if rebuildCache[groupName] == nil then rebuildCache[groupName] = getGroupLevel(groupName) end
+        return rebuildCache[groupName]
+    end
+
     for groupName, perms in pairs(lia.administrator.groups or {}) do
+        local groupLevel = getCachedGroupLevel(groupName)
         for priv, allowed in pairs(perms) do
             if priv ~= "_info" and allowed == true then
                 local current = lia.administrator.privileges[priv]
-                local groupLevel = getGroupLevel(groupName)
-                local currentLevel = current and getGroupLevel(current) or math.huge
+                local currentLevel = current and getCachedGroupLevel(current) or math.huge
                 if not current or groupLevel < currentLevel then
                     local base
                     for name, lvl in pairs(lia.administrator.DefaultGroups or {}) do
@@ -449,15 +450,19 @@ function lia.administrator.hasAccess(ply, privilege)
         end
     end
 
+    local groupLevel = getGroupLevel(grp)
+    local defaultGroups = lia.administrator.DefaultGroups or {}
+    local superadminLevel = defaultGroups.superadmin or 3
+    local adminLevel = defaultGroups.admin or 3
     if not lia.administrator.privileges[privilege] then
         if SERVER then
             local playerInfo = IsValid(ply) and ply:Nick() .. " (" .. ply:SteamID() .. ")" or "Unknown"
             lia.log.add(ply, "missingPrivilege", privilege, playerInfo, grp)
         end
-        return getGroupLevel(grp) >= (lia.administrator.DefaultGroups.admin or 3)
+        return groupLevel >= adminLevel
     end
 
-    if getGroupLevel(grp) >= (lia.administrator.DefaultGroups.superadmin or 3) then return true end
+    if groupLevel >= superadminLevel then return true end
     local g = lia.administrator.groups and lia.administrator.groups[grp] or nil
     if g and g[privilege] == true then return true end
     local min = lia.administrator.privileges[privilege]
@@ -628,10 +633,12 @@ function lia.administrator.registerPrivilege(priv)
     lia.administrator.privilegeNames[id] = priv.Name or priv.ID
     clearPrivilegeCategoryCache()
     if priv.Category then lia.administrator.privilegeCategories[id] = priv.Category end
+    local defaultGroups = lia.administrator.DefaultGroups or {}
+    local minLevel = defaultGroups[tostring(min):lower()] or 1
     for groupName, perms in pairs(lia.administrator.groups) do
         perms = perms or {}
         lia.administrator.groups[groupName] = perms
-        if shouldGrant(groupName, min) then perms[id] = true end
+        if getGroupLevel(groupName) >= minLevel then perms[id] = true end
     end
 
     local name = L(priv.Name or priv.ID)
@@ -780,11 +787,13 @@ function lia.administrator.applyInheritance(groupName)
     end
 
     copyFrom(inh)
+    local groupLevel = getGroupLevel(groupName)
+    local defaultGroups = lia.administrator.DefaultGroups or {}
     for priv, min in pairs(lia.administrator.privileges or {}) do
-        if shouldGrant(groupName, min) then g[priv] = true end
+        local m = tostring(min or "user"):lower()
+        if groupLevel >= (defaultGroups[m] or 1) then g[priv] = true end
     end
 
-    -- Clear cache since inheritance may have changed group levels
     clearGroupLevelCache()
 end
 
@@ -1678,7 +1687,7 @@ if SERVER then
             end
         elseif cmd == "mute" then
             if target:getChar() then
-                target:setLiliaData("VoiceBan", true)
+                target:setLiliaData("liaMuted", true)
                 admin:notifySuccessLocalized("plyMuted")
                 lia.log.add(admin, "plyMute", target:Name())
                 lia.db.insertTable({
@@ -1696,7 +1705,7 @@ if SERVER then
             end
         elseif cmd == "unmute" then
             if target:getChar() then
-                target:setLiliaData("VoiceBan", false)
+                target:setLiliaData("liaMuted", false)
                 admin:notifySuccessLocalized("plyUnmuted")
                 lia.log.add(admin, "plyUnmute", target:Name())
                 hook.Run("PlayerUnmuted", target, admin)

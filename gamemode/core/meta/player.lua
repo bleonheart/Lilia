@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Player Meta
 
     Player management system for the Lilia framework.
@@ -2970,18 +2970,16 @@ function playerMeta:networkAnimation(active, boneData)
         net.WriteTable(boneData)
         net.Broadcast()
     else
-        -- Initialize bone cache if it doesn't exist
         if not self.liaBoneCache then self.liaBoneCache = {} end
         for name, ang in pairs(boneData) do
             local i = self:LookupBone(name)
             if i then
                 local targetAng = active and ang or angle_zero
                 local cachedAng = self.liaBoneCache[i]
-                -- Only update if the angle has actually changed (compare components)
                 local shouldUpdate = true
                 if cachedAng then
                     local diff = math.abs(cachedAng.p - targetAng.p) + math.abs(cachedAng.y - targetAng.y) + math.abs(cachedAng.r - targetAng.r)
-                    shouldUpdate = diff > 0.001 -- Small threshold to account for floating point precision
+                    shouldUpdate = diff > 0.001
                 end
 
                 if shouldUpdate then
@@ -5263,6 +5261,15 @@ if SERVER then
                 end
             end
         end
+
+        if lia.localvars and lia.localvars[self] then
+            for k, v in pairs(lia.localvars[self]) do
+                net.Start("liaNetLocal")
+                net.WriteString(k)
+                net.WriteType(v)
+                net.Send(self)
+            end
+        end
     end
 
     --[[
@@ -5376,11 +5383,12 @@ if SERVER then
 
     --[[
     Purpose:
-        Sets a local variable on the player and automatically networks it if it's "stamina"
-        This provides efficient networking similar to Helix's system
+        Sets a local networked variable that only syncs to the owning player's client.
+        This provides efficient networking similar to Helix's system where local variables
+        are only visible to the specific player they belong to.
 
     When Called:
-        When setting player-local data that needs to sync to the client (like stamina)
+        When setting player-local data that needs to sync to the client (like stamina, private messages, etc.)
 
     Parameters:
         key (string)
@@ -5395,54 +5403,110 @@ if SERVER then
         Server
 
     Notes:
-        For "stamina" key, automatically networks via liaNetLocal when value changes
+        - Automatically networks the variable to the player's client via liaNetLocal
+        - Only the owning player can see their local variables on the client
+        - Similar to Helix's SetLocalVar implementation
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Set a local variable
+        player:setLocalVar("stamina", 100)
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Set local variable with validation
+        local newStamina = math.Clamp(stamina + 10, 0, 100)
+        player:setLocalVar("stamina", newStamina)
+        player:notify("Stamina updated")
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Complex local variable system with hooks
+        local oldValue = player:getLocalVar("secretCode", 0)
+        local newValue = oldValue + 1
+        player:setLocalVar("secretCode", newValue)
+        hook.Run("OnPlayerSecretCodeChanged", player, oldValue, newValue)
+        ```
     ]]
     function playerMeta:setLocalVar(key, value)
         if not IsValid(self) then return end
+        if lia.net.checkBadType(key, value) then return end
         lia.localvars = lia.localvars or {}
         lia.localvars[self] = lia.localvars[self] or {}
+        local oldValue = lia.localvars[self][key]
+        if oldValue == value and not istable(value) then return end
         lia.localvars[self][key] = value
-        -- Automatically network stamina changes (similar to Helix's approach)
-        if key == "stamina" then
-            lia.net[self] = lia.net[self] or {}
-            local netOldValue = lia.net[self][key]
-            -- Only network if value actually changed
-            if netOldValue ~= value then
-                lia.net[self][key] = value
-                if not self:IsBot() then
-                    net.Start("liaNetLocal")
-                    net.WriteString(key)
-                    net.WriteType(value)
-                    net.Send(self)
-                    hook.Run("NetVarChanged", self, key, netOldValue, value)
-                end
-            end
+        if not lia.shuttingDown then
+            net.Start("liaNetLocal")
+            net.WriteString(key)
+            net.WriteType(value)
+            net.Send(self)
         end
+
+        hook.Run("NetVarChanged", self, key, oldValue, value)
     end
 
     --[[
     Purpose:
-        Gets a local variable from the player
+        Retrieves a local networked variable. If it is not set, it'll return the default that you've specified.
+        Locally networked variables can only be retrieved from the owning player when used from the client.
 
     When Called:
-        When retrieving player-local data
+        When retrieving player-local data that was set with setLocalVar
 
     Parameters:
         key (string)
-            The local variable key to retrieve
+            Identifier of the local variable
         default (any, optional)
-            Default value if the key doesn't exist
+            Default value to return if the local variable is not set
 
     Returns:
-        any - The local variable value or default
+        any - Value associated with the key, or the default that was given if it doesn't exist
 
     Realm:
         Server
+
+    Notes:
+        - Similar to Helix's GetLocalVar implementation
+        - Only the server can read local vars directly from lia.localvars
+        - On client, use getLocalVar which reads from networked data
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get local variable
+        local stamina = player:getLocalVar("stamina", 100)
+        print("Stamina:", stamina)
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Get with default value
+        local secretCode = player:getLocalVar("secretCode", 0)
+        if secretCode > 100 then
+            player:notify("Secret code is high!")
+        end
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Complex local variable retrieval with validation
+        local playerData = player:getLocalVar("playerData", {})
+        if playerData and playerData.level then
+            local level = playerData.level
+            local exp = playerData.experience or 0
+            -- Process player data
+        end
+        ```
     ]]
     function playerMeta:getLocalVar(key, default)
         if not IsValid(self) then return default end
-        lia.localvars = lia.localvars or {}
-        if lia.localvars[self] and lia.localvars[self][key] ~= nil then return lia.localvars[self][key] end
+        if lia.localvars and lia.localvars[self] and lia.localvars[self][key] ~= nil then return lia.localvars[self][key] end
         return default
     end
 else
@@ -5561,34 +5625,68 @@ else
 
     --[[
     Purpose:
-        Gets a local variable from the player, reading from networked data for "stamina"
-        This provides client-side access to server-synced local variables
+        Retrieves a local networked variable. If it is not set, it'll return the default that you've specified.
+        Locally networked variables can only be retrieved from the owning player when used from the client.
+        This provides client-side access to server-synced local variables.
 
     When Called:
-        When retrieving player-local data on the client
+        When retrieving player-local data on the client that was set with setLocalVar on the server
 
     Parameters:
         key (string)
-            The local variable key to retrieve
+            Identifier of the local variable
         default (any, optional)
-            Default value if the key doesn't exist
+            Default value to return if the local variable is not set
 
     Returns:
-        any - The local variable value or default
+        any - Value associated with the key, or the default that was given if it doesn't exist
 
     Realm:
         Client
 
     Notes:
-        For "stamina" key on LocalPlayer, reads from lia.net table (networked data)
+        - Similar to Helix's GetLocalVar implementation
+        - Reads from lia.net table where local vars are stored by the network receiver
+        - Only works for LocalPlayer() on the client (local vars are player-specific)
+        - The network receiver stores local vars in lia.net[playerEntIndex][key]
+
+    Example Usage:
+
+    Low Complexity:
+        ```lua
+        -- Simple: Get local variable on client
+        local stamina = LocalPlayer():getLocalVar("stamina", 100)
+        print("Stamina:", stamina)
+        ```
+
+    Medium Complexity:
+        ```lua
+        -- Medium: Get with default value and use in UI
+        local stamina = LocalPlayer():getLocalVar("stamina", 100)
+        local maxStamina = LocalPlayer():getLocalVar("maxStamina", 100)
+        local percentage = (stamina / maxStamina) * 100
+        draw.RoundedBox(4, 10, 10, 200 * percentage / 100, 20, Color(0, 255, 0))
+        ```
+
+    High Complexity:
+        ```lua
+        -- High: Complex local variable retrieval with validation and UI updates
+        local playerData = LocalPlayer():getLocalVar("playerData", {})
+        if playerData and playerData.level then
+            local level = playerData.level
+            local exp = playerData.experience or 0
+            local nextLevelExp = playerData.nextLevelExp or 1000
+            -- Update UI with player data
+            if IsValid(levelDisplay) then
+                levelDisplay:SetText("Level: " .. level)
+            end
+        end
+        ```
     ]]
     function playerMeta:getLocalVar(key, default)
         if not IsValid(self) then return default end
-        -- For stamina on LocalPlayer, read from networked data
-        if key == "stamina" and self == LocalPlayer() then
-            local idx = self:EntIndex()
-            if lia.net[idx] and lia.net[idx][key] ~= nil then return lia.net[idx][key] end
-        end
+        local idx = self:EntIndex()
+        if lia.net[idx] and lia.net[idx][key] ~= nil then return lia.net[idx][key] end
         return default
     end
 

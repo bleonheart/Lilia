@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -368,7 +368,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
 
         local player = entity:getNetVar("player")
         local damage = dmgInfo:GetDamage()
-        if IsValid(player) and lia.config.get("RagdollDamageTransfer", true) then
+        if IsValid(player) then
             local currentHealth = player:Health()
             local newHealth = math.max(currentHealth - damage, 0)
             player:SetHealth(newHealth)

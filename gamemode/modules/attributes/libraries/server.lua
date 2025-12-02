@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local function InitializeStaminaTimer()
     local staminaTimer = function()
         for _, client in player.Iterator() do
@@ -64,7 +64,6 @@ function MODULE:PlayerStaminaLost(client)
 end
 
 function MODULE:PlayerLoadedChar(client, character)
-    -- Initialize global timer if not already done
     InitializeStaminaTimer()
     timer.Simple(0.25, function()
         if IsValid(client) then
@@ -72,11 +71,6 @@ function MODULE:PlayerLoadedChar(client, character)
             client:setLocalVar("stamina", character:getData("stamina", maxStamina))
         end
     end)
-end
-
-function MODULE:CharacterPreSave(character)
-    local client = character:GetPlayer()
-    if IsValid(client) then character:SetData("stamina", client:getLocalVar("stamina", hook.Run("GetCharMaxStamina", character) or lia.config.get("DefaultStamina", 100))) end
 end
 
 function MODULE:PlayerThrowPunch(client)

@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     if not client:isStaffOnDuty() then
         local switchingToStaff = newCharacter and newCharacter:getFaction() == FACTION_STAFF
@@ -22,9 +22,19 @@ function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
 end
 
 function MODULE:EntityTakeDamage(entity, dmgInfo)
+    if IsValid(entity) and entity:IsPlayer() and entity:isStaffOnDuty() then
+        dmgInfo:SetDamage(0)
+        return
+    end
+
     if IsValid(entity) and entity:IsVehicle() and entity:GetClass():find("prop_vehicle") then
         local driver = entity:GetDriver()
         if IsValid(driver) then
+            if driver:isStaffOnDuty() then
+                dmgInfo:SetDamage(0)
+                return
+            end
+
             local hitPos = dmgInfo:GetDamagePosition()
             if hitPos:Distance(driver:GetPos()) <= 53 then
                 local newHealth = driver:Health() - dmgInfo:GetDamage() * 0.3
@@ -291,7 +301,6 @@ function MODULE:PlayerInitialSpawn(client)
             if IsValid(client) then
                 lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
                 client:notifyErrorLocalized("caughtCheating")
-                -- Warn staff
                 for _, p in player.Iterator() do
                     if p:isStaffOnDuty() or p:hasPrivilege("receiveCheaterNotifications") then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
                 end

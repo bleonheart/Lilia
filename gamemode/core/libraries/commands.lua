@@ -3498,17 +3498,17 @@ lia.command.add("charvoicetoggle", {
         end
 
         if target:getChar() then
-            local isBanned = target:getLiliaData("VoiceBan", false)
-            target:setLiliaData("VoiceBan", not isBanned)
-            if isBanned then
-                client:notifySuccessLocalized("voiceUnmuted", target:Name())
-                target:notifyInfoLocalized("voiceUnmutedByAdmin")
+            local isMuted = target:getLiliaData("liaMuted", false)
+            target:setLiliaData("liaMuted", not isMuted)
+            if isMuted then
+                client:notifySuccessLocalized("textUnmuted", target:Name())
+                target:notifyInfoLocalized("textUnmutedByAdmin")
             else
-                client:notifySuccessLocalized("voiceMuted", target:Name())
-                target:notifyWarningLocalized("voiceMutedByAdmin")
+                client:notifySuccessLocalized("textMuted", target:Name())
+                target:notifyWarningLocalized("textMutedByAdmin")
             end
 
-            lia.log.add(client, "voiceToggle", target:Name(), isBanned and L("unmuted") or L("muted"))
+            lia.log.add(client, "textToggle", target:Name(), isMuted and L("unmuted") or L("muted"))
         else
             client:notifyErrorLocalized("noValidCharacter")
         end
@@ -5705,8 +5705,16 @@ lia.command.add("doortoggleownable", {
         if IsValid(door) and door:isDoor() then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
+                local factions = doorData.factions or {}
+                local classes = doorData.classes or {}
+                local hasFactions = factions and #factions > 0
+                local hasClasses = classes and #classes > 0
                 local isUnownable = doorData.noSell or false
                 local newState = not isUnownable
+                if newState and (hasFactions or hasClasses) then
+                    client:notifyErrorLocalized("doorIsNotOwnable")
+                    return false
+                end
                 doorData.noSell = newState and true or nil
                 lia.doors.setData(door, doorData)
                 lia.log.add(client, "doorToggleOwnable", door, newState)
@@ -6070,6 +6078,7 @@ lia.command.add("dooraddfaction", {
                     if not table.HasValue(facs, faction.uniqueID) then facs[#facs + 1] = faction.uniqueID end
                     doorData.factions = facs
                     door.liaFactions = facs
+                    doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetFaction", door, faction.name)
                     client:notifySuccessLocalized("doorSetFaction", faction.name)
@@ -6201,6 +6210,7 @@ lia.command.add("doorsetclass", {
                     if not table.HasValue(classes, classData.uniqueID) then classes[#classes + 1] = classData.uniqueID end
                     doorData.classes = classes
                     door.liaClasses = classes
+                    doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetClass", door, classData.name)
                     client:notifySuccessLocalized("doorSetClass", classData.name)

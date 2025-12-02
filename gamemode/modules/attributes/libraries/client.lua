@@ -1,4 +1,4 @@
-local predictedStamina = 100
+﻿local predictedStamina = 100
 function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
@@ -33,10 +33,6 @@ function MODULE:Think()
         local max = hook.Run("GetCharMaxStamina", LocalPlayer():getChar()) or lia.config.get("DefaultStamina", 100)
         predictedStamina = math.Clamp(predictedStamina + offset, 0, max)
     end
-end
-
-function MODULE:NetVarChanged(ply, key, _, newValue)
-    if key == "stamina" and ply == LocalPlayer() and math.abs(predictedStamina - newValue) > 5 then predictedStamina = newValue end
 end
 
 lia.bar.add(function()

@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Network Library
 
     Network communication and data streaming system for the Lilia framework.
@@ -626,7 +626,7 @@ if SERVER then
             key (string)
                 The variable key name
             value (any)
-                The value to store (cannot contain functions)
+                The value to store
             receiver (Player, optional)
                 Specific player to send to, nil broadcasts to all
 
