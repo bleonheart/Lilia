@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Character Library
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
@@ -2625,14 +2625,12 @@ if SERVER then
         end
 
         if client and not table.HasValue(client.liaCharList or {}, charID) then
-            -- Allow staff characters to be loaded even if not in liaCharList, as long as player has privilege
             lia.db.selectOne("faction", "characters", "id = " .. charID):next(function(result)
                 if not (result and result.faction == FACTION_STAFF and client:hasPrivilege("createStaffCharacter")) then
                     if callback then callback(nil) end
                     return
                 end
 
-                -- Staff character is allowed, proceed with loading (duplicate the loading logic below)
                 lia.db.selectOne("*", "characters", "id = " .. charID):next(function(charResult)
                     if not charResult then
                         if callback then callback(nil) end

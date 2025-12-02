@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -7763,7 +7763,6 @@ lia.command.add("forcerespawn", {
         end
 
         client:Spawn()
-        -- Reset lastDeathTime to prevent timer issues on subsequent deaths
         client:setNetVar("lastDeathTime", 0)
         client:notifySuccessLocalized("playerForceRespawned", client:Name())
         client:notifyLocalized("youWereForceRespawned")
@@ -7814,7 +7813,6 @@ lia.command.add("storagepasswordremove", {
     onRun = function(client)
         local trace = client:GetEyeTrace()
         local entity = trace.Entity
-
         if not IsValid(entity) or trace.HitPos:Distance(client:GetPos()) > 128 then
             client:notifyErrorLocalized("invalidTarget")
             return
@@ -7829,8 +7827,6 @@ lia.command.add("storagepasswordremove", {
         entity:setNetVar("locked", false)
         client:notifySuccessLocalized("storageUnlocked")
         lia.log.add(client, "storagePasswordRemoved", entity:GetClass())
-
-        -- Save the storage data
         hook.Run("UpdateEntityPersistence", entity)
     end
 })
@@ -7848,7 +7844,6 @@ lia.command.add("storagepasswordchange", {
         local trace = client:GetEyeTrace()
         local entity = trace.Entity
         local newPassword = arguments[1]
-
         if not IsValid(entity) or trace.HitPos:Distance(client:GetPos()) > 128 then
             client:notifyErrorLocalized("invalidTarget")
             return
@@ -7863,8 +7858,6 @@ lia.command.add("storagepasswordchange", {
         entity:setNetVar("locked", true)
         client:notifySuccessLocalized("storagePasswordChanged")
         lia.log.add(client, "storagePasswordChanged", entity:GetClass())
-
-        -- Save the storage data
         hook.Run("UpdateEntityPersistence", entity)
     end
 })

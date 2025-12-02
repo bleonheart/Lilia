@@ -1,4 +1,4 @@
-net.Receive("liaSetWaypoint", function()
+﻿net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()
@@ -1129,7 +1129,6 @@ net.Receive("liaDoorData", function()
         hook.Run("DoorDataReceived", door, syncData)
     end
 end)
-
 
 net.Receive("liaRemoveFOne", function() if IsValid(lia.gui.menu) then lia.gui.menu:remove() end end)
 local function uiCreate()

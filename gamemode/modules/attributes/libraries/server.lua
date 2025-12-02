@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:PostPlayerLoadout(client)
     local char = client:getChar()
     if not char then return end
@@ -18,7 +18,6 @@ function MODULE:PostPlayerLoadout(client)
     local maxStamina = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
     client:setLocalVar("stm", maxStamina)
     client:setNetVar("stamina", maxStamina)
-    -- Create individual stamina timer for this player
     local uniqueID = "liaStam" .. client:SteamID64()
     timer.Create(uniqueID, 0.25, 0, function()
         if not IsValid(client) then

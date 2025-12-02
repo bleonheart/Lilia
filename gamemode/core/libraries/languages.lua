@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Languages Library
 
     Internationalization (i18n) and localization system for the Lilia framework.
@@ -11,7 +11,7 @@ lia.lang = lia.lang or {}
 lia.lang.names = lia.lang.names or {}
 lia.lang.stored = lia.lang.stored or {}
 lia.lang.cache = lia.lang.cache or {}
-lia.lang.cache.maxSize = 1000 -- Maximum number of cached entries
+lia.lang.cache.maxSize = 1000
 lia.lang.cache.currentSize = 0
 --[[
     Purpose:
@@ -154,7 +154,6 @@ function lia.lang.addTable(name, tbl)
         lia.lang.stored[lowerName][tostring(k)] = tostring(v)
     end
 
-    -- Clear cache when language tables are updated
     lia.lang.clearCache()
 end
 
@@ -252,17 +251,12 @@ end
 ]]
 function lia.lang.generateCacheKey(lang, key, ...)
     local argCount = select("#", ...)
-
-    if argCount == 0 then
-        return lang .. ":" .. key
-    end
-
+    if argCount == 0 then return lang .. ":" .. key end
     local paramStr = ""
     for i = 1, argCount do
         local arg = select(i, ...)
         paramStr = paramStr .. "|" .. tostring(arg)
     end
-
     return lang .. ":" .. key .. paramStr
 end
 
@@ -285,15 +279,10 @@ end
 function lia.lang.cleanupCache()
     local cache = lia.lang.cache
     local keys = {}
-
-    -- Collect all cache keys
     for key in pairs(cache) do
-        if key ~= "maxSize" and key ~= "currentSize" then
-            table.insert(keys, key)
-        end
+        if key ~= "maxSize" and key ~= "currentSize" then table.insert(keys, key) end
     end
 
-    -- Remove half of the cache entries (LRU-style cleanup)
     local removeCount = math.floor(#keys / 2)
     for i = 1, removeCount do
         local key = keys[i]
@@ -380,15 +369,8 @@ end
 ]]
 function lia.lang.getLocalizedString(key, ...)
     local lang = lia.config and lia.config.get("Language", "english") or "english"
-
-    -- Generate cache key
     local cacheKey = lia.lang.generateCacheKey(lang, key, ...)
-
-    -- Check cache first
-    if lia.lang.cache[cacheKey] then
-        return lia.lang.cache[cacheKey]
-    end
-
+    if lia.lang.cache[cacheKey] then return lia.lang.cache[cacheKey] end
     local langTable = lia.lang.stored and lia.lang.stored[lang:lower()]
     local template = langTable and langTable[key]
     if not template then return tostring(key) end
@@ -414,15 +396,9 @@ function lia.lang.getLocalizedString(key, ...)
         return tostring(key)
     end
 
-    -- Cache the result
     lia.lang.cache[cacheKey] = result
     lia.lang.cache.currentSize = lia.lang.cache.currentSize + 1
-
-    -- Clean up cache if it exceeds max size
-    if lia.lang.cache.currentSize > lia.lang.cache.maxSize then
-        lia.lang.cleanupCache()
-    end
-
+    if lia.lang.cache.currentSize > lia.lang.cache.maxSize then lia.lang.cleanupCache() end
     return result
 end
 
@@ -486,10 +462,4 @@ end
 L = lia.lang.getLocalizedString
 lia.lang.loadFromDir("lilia/gamemode/languages")
 hook.Run("OnLocalizationLoaded")
-
--- Hook to clear cache when language config changes
-hook.Add("OnConfigChanged", "lia.lang.cache", function(key, oldValue, newValue)
-    if key == "Language" and oldValue ~= newValue then
-        lia.lang.clearCache()
-    end
-end)
+hook.Add("OnConfigChanged", "lia.lang.cache", function(key, oldValue, newValue) if key == "Language" and oldValue ~= newValue then lia.lang.clearCache() end end)

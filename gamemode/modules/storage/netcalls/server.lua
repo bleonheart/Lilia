@@ -1,4 +1,4 @@
-net.Receive("liaStorageExit", function(_, client)
+﻿net.Receive("liaStorageExit", function(_, client)
     local storage = client.liaStorageEntity
     if IsValid(storage) then storage.receivers[client] = nil end
     client.liaStorageEntity = nil
@@ -90,7 +90,6 @@ net.Receive("liaStorageSetPassword", function(_, client)
 
     local storage = storageFunc()
     if not storage or not storage.receivers[client] then return end
-
     if action == "remove" then
         if not storage.password then
             client:notifyErrorLocalized("storageNotLocked")
@@ -101,7 +100,6 @@ net.Receive("liaStorageSetPassword", function(_, client)
         storage:setNetVar("locked", false)
         client:notifySuccessLocalized("storageUnlocked")
         lia.log.add(client, "storagePasswordRemoved", storage:GetClass())
-
     elseif action == "set" then
         local newPassword = net.ReadString()
         if not newPassword or newPassword == "" then
@@ -113,7 +111,6 @@ net.Receive("liaStorageSetPassword", function(_, client)
         storage:setNetVar("locked", true)
         client:notifySuccessLocalized("storageLocked")
         lia.log.add(client, "storagePasswordSet", storage:GetClass())
-
     elseif action == "change" then
         if not storage.password then
             client:notifyErrorLocalized("storageNotLocked")
@@ -122,7 +119,6 @@ net.Receive("liaStorageSetPassword", function(_, client)
 
         local oldPassword = net.ReadString()
         local newPassword = net.ReadString()
-
         if storage.password ~= oldPassword then
             client:notifyErrorLocalized("wrongPassword")
             return
@@ -139,6 +135,5 @@ net.Receive("liaStorageSetPassword", function(_, client)
         lia.log.add(client, "storagePasswordChanged", storage:GetClass())
     end
 
-    -- Save the storage data
     hook.Run("UpdateEntityPersistence", storage)
 end)

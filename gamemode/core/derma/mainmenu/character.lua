@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -31,7 +31,6 @@ function PANEL:Init()
     self.adminPrivilegesUpdateHook = "liaCharacterAdminPrivilegesUpdate" .. tostring(self)
     hook.Add("AdminPrivilegesUpdated", self.adminPrivilegesUpdateHook, function()
         if not IsValid(self) then return end
-        -- Refresh the start buttons when admin privileges are updated
         self:createStartButton()
     end)
 

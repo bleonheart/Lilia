@@ -1,4 +1,4 @@
-net.Receive("liaPlayerRespawn", function(_, client)
+﻿net.Receive("liaPlayerRespawn", function(_, client)
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
@@ -209,11 +209,9 @@ net.Receive("liaCharChoose", function(_, client)
 
     if not lia.char.isLoaded(id) then
         if not table.HasValue(client.liaCharList or {}, id) then
-            -- Allow staff characters to be loaded even if not in liaCharList, as long as player has privilege
             lia.db.selectOne("faction", "characters", "id = " .. id):next(function(result)
                 local allowStaffChar = result and result.faction == FACTION_STAFF and client:hasPrivilege("createStaffCharacter")
                 if not allowStaffChar then return response(false, "invalidChar") end
-                -- Staff character is allowed, proceed with loading
                 lia.char.loadSingleCharacter(id, client, function(character)
                     if not character then return response(false, "invalidChar") end
                     local status, reason = hook.Run("CanPlayerUseChar", client, character)

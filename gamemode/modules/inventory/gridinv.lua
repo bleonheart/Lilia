@@ -1,4 +1,4 @@
-local GridInv = lia.Inventory:extend("GridInv")
+﻿local GridInv = lia.Inventory:extend("GridInv")
 local function CanAccessInventoryIfCharacterIsOwner(inventory, action, context)
     if inventory.virtual then return action == "transfer" end
     local ownerID = inventory:getData("char")
@@ -206,7 +206,6 @@ if SERVER then
                 end
             end
         else
-            -- Validate provided coordinates - if they don't fit or cause overlap, find a free position
             local doesFit = targetInventory:doesItemFitAtPos(item, x, y)
             if not doesFit then
                 x, y = targetInventory:findFreePosition(item)
@@ -225,11 +224,7 @@ if SERVER then
             end
         end
 
-        -- Ensure we have valid coordinates after validation
-        if not x or not y then
-            return d:reject(L("noSpaceForItem"))
-        end
-
+        if not x or not y then return d:reject(L("noSpaceForItem")) end
         if isStackCommand and item.isStackable ~= true then isStackCommand = false end
         local targetAssignments, remainingQuantity = {}, xOrQuantity
         if isStackCommand then

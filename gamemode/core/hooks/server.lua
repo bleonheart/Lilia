@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -594,7 +594,6 @@ function GM:PlayerInitialSpawn(client)
 
         timer.Simple(1, function() lia.playerinteract.sync(client) end)
         timer.Simple(1, function() lia.dialog.syncToClients(client) end)
-        -- Sync door data to client on initial spawn
         timer.Simple(1, function() if IsValid(client) then lia.doors.syncAllDoorsToClient(client) end end)
         hook.Run("PlayerLiliaDataLoaded", client)
         net.Start("liaAssureClientSideAssets")

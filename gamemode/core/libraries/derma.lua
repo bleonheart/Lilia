@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Derma Library
 
     Advanced UI rendering and interaction system for the Lilia framework.

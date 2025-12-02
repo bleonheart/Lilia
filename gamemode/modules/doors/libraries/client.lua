@@ -1,4 +1,4 @@
-function MODULE:GetDoorInfo(entity, doorData, doorInfo)
+﻿function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
@@ -169,8 +169,6 @@ function MODULE:GetAdminStickLists(tgt, lists)
     local doorData = lia.doors.getData(tgt)
     local factionsAssigned = doorData.factions or {}
     local existingClasses = doorData.classes or {}
-
-    -- Add Factions
     local addFactionItems = {}
     for _, faction in pairs(lia.faction.teams) do
         if not table.HasValue(factionsAssigned, faction.uniqueID) then
@@ -192,7 +190,6 @@ function MODULE:GetAdminStickLists(tgt, lists)
         })
     end
 
-    -- Remove Factions
     local removeFactionItems = {}
     for _, id in ipairs(factionsAssigned) do
         local faction = lia.faction.get(id)
@@ -215,7 +212,6 @@ function MODULE:GetAdminStickLists(tgt, lists)
         })
     end
 
-    -- Add Classes
     local addClassItems = {}
     for classID, classData in pairs(lia.class.list) do
         local isAlreadyAssigned = false
@@ -245,7 +241,6 @@ function MODULE:GetAdminStickLists(tgt, lists)
         })
     end
 
-    -- Remove Classes
     local removeClassItems = {}
     for _, classUID in ipairs(existingClasses) do
         local classIndex = lia.class.retrieveClass(classUID)

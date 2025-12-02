@@ -1,4 +1,4 @@
-SWEP.PrintName = L("handsWeaponName")
+﻿SWEP.PrintName = L("handsWeaponName")
 SWEP.Slot = 0
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
@@ -249,7 +249,6 @@ function SWEP:PrimaryAttack()
         return
     end
 
-    -- Stamina consumption is handled in PlayerThrowPunch hook
     local defaultDelay = self.Primary.Delay
     local scaledDelay = hook.Run("GetHandsAttackSpeed", self:GetOwner(), defaultDelay)
     self:SetNextPrimaryFire(CurTime() + (isnumber(scaledDelay) and scaledDelay or defaultDelay))

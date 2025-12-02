@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Doors Library
 
     Door management system for the Lilia framework providing preset configuration,
@@ -27,7 +27,6 @@ lia.doors.AccessLabels = {
     [DOOR_OWNER] = "doorAccessOwner"
 }
 
--- Default door values - only non-default values are stored/synchronized
 lia.doors.defaultValues = {
     name = "",
     title = "",
@@ -43,17 +42,14 @@ lia.doors.defaultValues = {
 }
 
 if SERVER then
-    -- Cache door data on server - only stores non-default values
     function lia.doors.setCachedData(door, data)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return end
-        -- Create a copy of the data and filter out default values
         local filteredData = {}
         local hasData = false
         for key, value in pairs(data or {}) do
             local defaultValue = lia.doors.defaultValues[key]
             if defaultValue ~= nil then
-                -- Special handling for arrays
                 if istable(value) and istable(defaultValue) then
                     if not table.IsEmpty(value) then
                         filteredData[key] = value
@@ -66,24 +62,20 @@ if SERVER then
             end
         end
 
-        -- Store only non-default data
         if hasData then
             lia.doors.stored[doorID] = filteredData
         else
             lia.doors.stored[doorID] = nil
         end
 
-        -- Notify clients of the change
         lia.doors.syncDoorData(door)
     end
 
-    -- Get cached door data (returns full data with defaults filled in)
     function lia.doors.getCachedData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return {} end
         local cachedData = lia.doors.stored[doorID] or {}
         local fullData = {}
-        -- Fill in defaults for missing values
         for key, defaultValue in pairs(lia.doors.defaultValues) do
             if cachedData[key] ~= nil then
                 fullData[key] = cachedData[key]
@@ -94,7 +86,6 @@ if SERVER then
         return fullData
     end
 
-    -- Sync door data to all clients
     function lia.doors.syncDoorData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return end
@@ -111,7 +102,6 @@ if SERVER then
         net.Broadcast()
     end
 
-    -- Sync all door data to a specific client (used during PlayerInitialSpawn)
     function lia.doors.syncAllDoorsToClient(client)
         if not IsValid(client) then return end
         net.Start("liaDoorDataBulk")
@@ -124,7 +114,6 @@ if SERVER then
         net.Send(client)
     end
 
-    -- Legacy function for backward compatibility
     function lia.doors.setData(door, data)
         lia.doors.setCachedData(door, data)
     end
@@ -494,16 +483,13 @@ function lia.doors.getData(door)
     end
 end
 
--- Client-side cache management
 if CLIENT then
     lia.doors.stored = lia.doors.stored or {}
-    -- Get cached door data on client (returns full data with defaults filled in)
     function lia.doors.getCachedData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return {} end
         local cachedData = lia.doors.stored[doorID] or {}
         local fullData = {}
-        -- Fill in defaults for missing values
         for key, defaultValue in pairs(lia.doors.defaultValues) do
             if cachedData[key] ~= nil then
                 fullData[key] = cachedData[key]
@@ -514,7 +500,6 @@ if CLIENT then
         return fullData
     end
 
-    -- Update cached door data from server
     function lia.doors.updateCachedData(doorID, data)
         if data then
             lia.doors.stored[doorID] = data
