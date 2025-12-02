@@ -45,8 +45,8 @@ function MODULE:PlayerStaminaLost(client)
         end
 
         local char = client:getChar()
-        local maxStamina = char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
-        local currentStamina = client:getLocalVar("stamina", maxStamina)
+        local currentMaxStamina = char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
+        local currentStamina = client:getLocalVar("stamina", currentMaxStamina)
         if currentStamina > breathThreshold then
             client:StopSound("player/breathe1.wav")
             client:setNetVar("brth", nil)

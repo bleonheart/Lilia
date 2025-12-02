@@ -5347,7 +5347,6 @@ if SERVER then
         if not IsValid(self) then return end
         lia.localvars = lia.localvars or {}
         lia.localvars[self] = lia.localvars[self] or {}
-        local oldValue = lia.localvars[self][key]
         lia.localvars[self][key] = value
 
         -- Automatically network stamina changes (similar to Helix's approach)

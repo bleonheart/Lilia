@@ -35,14 +35,9 @@ function MODULE:Think()
     end
 end
 
--- Sync predicted stamina when server value changes (similar to Helix's OnLocalVarSet)
-hook.Add("NetVarChanged", "liaStaminaSync", function(ply, key, oldValue, newValue)
-    if key == "stamina" and ply == LocalPlayer() then
-        if math.abs(predictedStamina - newValue) > 5 then
-            predictedStamina = newValue
-        end
-    end
-end)
+function MODULE:NetVarChanged(ply, key, _, newValue)
+    if key == "stamina" and ply == LocalPlayer() and math.abs(predictedStamina - newValue) > 5 then predictedStamina = newValue end
+end
 
 lia.bar.add(function()
     local client = LocalPlayer()
