@@ -1,0 +1,5 @@
+--[[
+    Test comment
+]]
+code = true
+
