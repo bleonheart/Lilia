@@ -4369,7 +4369,7 @@ if SERVER then
         -- High: Complex stamina system with effects
         local char = player:getChar()
         if char then
-            local currentStamina = player:getNetVar("stamina", 100)
+            local currentStamina = player:getLocalVar("stamina", 100)
             local maxStamina = hook.Run("GetCharMaxStamina", char) or 100
             local restoreAmount = math.min(amount, maxStamina - currentStamina)
             player:restoreStamina(restoreAmount)
@@ -4420,7 +4420,7 @@ if SERVER then
         ```lua
         -- Medium: Consume stamina with validation
         local cost = 15
-        local currentStamina = player:getNetVar("stamina", 100)
+        local currentStamina = player:getLocalVar("stamina", 100)
         if currentStamina >= cost then
             player:consumeStamina(cost)
             player:notify("Stamina used: " .. cost)
@@ -4434,7 +4434,7 @@ if SERVER then
         -- High: Complex stamina system with effects
         local char = player:getChar()
         if char then
-            local currentStamina = player:getNetVar("stamina", 100)
+            local currentStamina = player:getLocalVar("stamina", 100)
             local maxStamina = hook.Run("GetCharMaxStamina", char) or 100
             local staminaRatio = currentStamina / maxStamina
             if staminaRatio < 0.25 then

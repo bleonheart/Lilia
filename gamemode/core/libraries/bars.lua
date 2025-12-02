@@ -116,7 +116,7 @@ end
         lia.bar.add(function()
             local ply = LocalPlayer()
             if not IsValid(ply) then return 0 end
-            return ply:getNetVar("stamina", 100) / 100
+            return ply:getLocalVar("stamina", 100) / 100
         end, Color(0, 255, 0), 2, "stamina")
         ```
 
