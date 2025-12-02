@@ -1,4 +1,4 @@
-﻿function MODULE:GetDoorInfo(entity, doorData, doorInfo)
+function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
@@ -21,7 +21,7 @@
 
     if ownable and not IsValid(owner) then
         table.insert(doorInfo, {
-            text = L("doorCanBeOwned")
+            text = L("doorIsOwnable")
         })
     end
 
