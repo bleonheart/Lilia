@@ -5312,7 +5312,7 @@ if SERVER then
         ```
 ]]
     function playerMeta:setNetVar(key, value)
-        if checkBadType(key, value) then return end
+        if lia.net.checkBadType(key, value) then return end
         lia.net[self] = lia.net[self] or {}
         local oldValue = lia.net[self][key]
         lia.net[self][key] = value
@@ -5323,6 +5323,48 @@ if SERVER then
         net.Broadcast()
         if not self:IsBot() then
             net.Start("liaNetLocal")
+            net.WriteString(key)
+            net.WriteType(value)
+            net.Send(self)
+        end
+
+        hook.Run("NetVarChanged", self, key, oldValue, value)
+    end
+
+    --[[
+        Purpose:
+            Sets a client-specific net variable that only syncs to this client
+
+        When Called:
+            When you need to set a net variable that should only be visible to this specific client
+
+        Parameters:
+            key (string)
+                The variable key
+            value (any)
+                The value to store
+
+        Returns:
+            nil
+
+        Realm:
+            Server
+
+        Example Usage:
+            ```lua
+            -- Send a private message only to this player
+            player:setClientNetVar("privateMessage", "This is only for you!")
+            ```
+    ]]
+    function playerMeta:setClientNetVar(key, value)
+        if lia.net.checkBadType(key, value) then return end
+        lia.net[self] = lia.net[self] or {}
+        local oldValue = lia.net[self][key]
+        if oldValue == value then return end
+        lia.net[self][key] = value
+        if not lia.shuttingDown then
+            net.Start("liaClientNetVar")
+            net.WriteUInt(self:EntIndex(), 16)
             net.WriteString(key)
             net.WriteType(value)
             net.Send(self)
