@@ -1,34 +1,25 @@
 function MODULE:CalcStaminaChange(client)
     local char = client:getChar()
-
-    if not char or client:GetMoveType() == MOVETYPE_NOCLIP then
-        return 0
-    end
-
+    if not char or client:GetMoveType() == MOVETYPE_NOCLIP then return 0 end
     local walkSpeed = lia.config.get("WalkSpeed", 100)
     local maxAttributes = lia.config.get("maxAttributes", 100)
     local offset
-
     if client:KeyDown(IN_SPEED) and client:GetVelocity():LengthSqr() >= (walkSpeed * walkSpeed) and client:OnGround() then
-        -- Characters could have attribute values greater than max if the config was changed
         offset = -lia.config.get("StaminaDrain", 1) + math.min(char:getAttrib("end", 0), maxAttributes) / 100
     else
         offset = client:Crouching() and lia.config.get("StaminaCrouchRegeneration", 2) or lia.config.get("StaminaRegeneration", 1.75)
     end
 
     offset = hook.Run("AdjustStaminaOffset", client, offset) or offset
-
     if CLIENT then
-        return offset -- for the client we need to return the estimated stamina change
+        return offset
     else
         local max = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
         local current = client:getLocalVar("stm", max)
         local value = math.Clamp(current + offset, 0, max)
-
         if current ~= value then
             client:setLocalVar("stm", value)
             client:setNetVar("stamina", value)
-
             if value == 0 and not client:getNetVar("brth", false) then
                 client:setNetVar("brth", true)
                 char:updateAttrib("end", 0.1)

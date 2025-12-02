@@ -2209,6 +2209,8 @@ else
         else
             lia.administrator.privileges = tbl
         end
+
+        hook.Run("AdminPrivilegesUpdated")
     end)
 
     local function SetupUserGroupInterface(parent)

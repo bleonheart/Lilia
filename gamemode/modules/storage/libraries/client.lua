@@ -105,7 +105,7 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     local panelColor = lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1] or Color(35, 35, 35)
     local textColor = lia.color.theme and lia.color.theme.text or color_white
 
-    lockPanelRef.Paint = function(self, w, h)
+    lockPanelRef.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(panelColor):Shape(lia.derma.SHAPE_IOS):Draw()
         draw.SimpleText(L("storageLockManagement"), "liaSmallFont", w/2, 8, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end

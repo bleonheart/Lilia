@@ -7811,7 +7811,7 @@ lia.command.add("storagepasswordremove", {
     adminOnly = true,
     desc = "storagePasswordRemoveDesc",
     arguments = {},
-    onRun = function(client, arguments)
+    onRun = function(client)
         local trace = client:GetEyeTrace()
         local entity = trace.Entity
 

@@ -1,4 +1,4 @@
-﻿local RULES = {
+local RULES = {
     AccessIfStorageReceiver = function(inventory, _, context)
         local client = context.client
         if not IsValid(client) then return end
@@ -63,11 +63,76 @@ end
 local PROHIBITED_ACTIONS = {
     [L("equip")] = true,
     [L("unequip")] = true,
+    [L("use")] = true,
+    [L("drop")] = true,
 }
 
 function MODULE:CanPlayerInteractItem(_, action, itemObject)
     local inventory = lia.inventory.instances[itemObject.invID]
     if inventory and inventory.isStorage and PROHIBITED_ACTIONS[action] then return false, "forbiddenActionStorage" end
+end
+
+function MODULE:StorageCanTransferItem(client, storage, item)
+    if not IsValid(client) or not item then return end
+    local clientInv = client:getChar() and client:getChar():getInv()
+    if not clientInv then return end
+    if item.invID == clientInv:getID() then
+        if item:getData("equip", false) then
+            if IsValid(client) then client:notifyErrorLocalized("cannotTransferEquippedItem") end
+            return false
+        end
+    end
+end
+
+function MODULE:CanItemBeTransfered(item, oldInventory, newInventory, client)
+    if not IsValid(client) or not item or not oldInventory or not newInventory then return true end
+    
+    -- Check if item is equipped
+    local isEquipped = item:getData("equip", false)
+    if not isEquipped then return true end
+    
+    -- Check if destination is storage
+    local isStorageInv = newInventory.isStorage == true
+    local newInvID = newInventory:getID()
+    
+    -- If isStorage flag not set, check if inventory belongs to storage entity
+    if not isStorageInv then
+        for _, ent in ipairs(ents.FindByClass("lia_storage")) do
+            if IsValid(ent) then
+                local storageInvID = ent:getNetVar("id")
+                if storageInvID and storageInvID == newInvID then
+                    isStorageInv = true
+                    break
+                end
+            end
+        end
+    end
+    
+    -- Check vehicle trunks
+    if not isStorageInv then
+        for _, ent in ipairs(ents.GetAll()) do
+            if IsValid(ent) and ent:getNetVar("hasStorage", false) then
+                local trunkInvID = ent:getNetVar("inv")
+                if trunkInvID and trunkInvID == newInvID then
+                    isStorageInv = true
+                    break
+                end
+            end
+        end
+    end
+    
+    -- Block transfer if item is equipped and destination is storage
+    if isEquipped and isStorageInv then
+        local clientInv = client:getChar() and client:getChar():getInv()
+        if clientInv and oldInventory:getID() == clientInv:getID() then
+            if IsValid(client) then
+                client:notifyErrorLocalized("cannotTransferEquippedItem")
+            end
+            return false, "cannotTransferEquippedItem"
+        end
+    end
+    
+    return true
 end
 
 function MODULE:EntityRemoved(entity)
@@ -85,6 +150,30 @@ end
 
 function MODULE:StorageInventorySet(_, inventory, isCar)
     inventory:addAccessRule(isCar and RULES.AccessIfCarStorageReceiver or RULES.AccessIfStorageReceiver)
+    
+    -- Add rule to prevent equipped items from being transferred to storage
+    inventory:addAccessRule(function(inv, action, context)
+        if action ~= "transfer" then return end
+        if not context or not context.item or not context.from then return end
+        
+        local item = context.item
+        local fromInv = context.from
+        local client = context.client
+        
+        -- Check if item is equipped
+        if not item:getData("equip", false) then return end
+        
+        -- Check if source is player's inventory
+        if not IsValid(client) or not client:getChar() then return end
+        local clientInv = client:getChar():getInv()
+        if not clientInv or fromInv:getID() ~= clientInv:getID() then return end
+        
+        -- Block the transfer
+        if IsValid(client) then
+            client:notifyErrorLocalized("cannotTransferEquippedItem")
+        end
+        return false, "cannotTransferEquippedItem"
+    end, 1) -- High priority
 end
 
 function MODULE:GetEntitySaveData(ent)

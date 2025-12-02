@@ -1141,7 +1141,7 @@ local function GenerateDynamicCategories()
             icon = "icon16/package.png",
             subcategories = {
                 storageActions = {
-                    name = "adminStickSubCategoryStorageActions",
+                    name = L("adminStickSubCategoryStorageActions"),
                     icon = "icon16/lightning.png"
                 }
             }
@@ -2252,12 +2252,12 @@ function MODULE:OpenAdminStickUI(tgt)
                 {
                     name = L("removePassword"),
                     icon = "icon16/key_delete.png",
-                    callback = function(callbackTarget) RunConsoleCommand("say", "/storagepasswordremove") end
+                    callback = function() RunConsoleCommand("say", "/storagepasswordremove") end
                 },
                 {
                     name = L("changePassword"),
                     icon = "icon16/key.png",
-                    callback = function(callbackTarget) lia.derma.requestString(L("enterNewPassword"), L("enterNewPassword"), function(password) if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end end, "") end
+                    callback = function() lia.derma.requestString(L("enterNewPassword"), L("enterNewPassword"), function(password) if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end end, "") end
                 }
             }
 

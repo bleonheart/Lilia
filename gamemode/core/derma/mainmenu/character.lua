@@ -28,6 +28,13 @@ function PANEL:Init()
         self:onCharListUpdated(oldCharList, newCharList)
     end)
 
+    self.adminPrivilegesUpdateHook = "liaCharacterAdminPrivilegesUpdate" .. tostring(self)
+    hook.Add("AdminPrivilegesUpdated", self.adminPrivilegesUpdateHook, function()
+        if not IsValid(self) then return end
+        -- Refresh the start buttons when admin privileges are updated
+        self:createStartButton()
+    end)
+
     self.tabs = self:Add("DPanel")
     self.tabs:Dock(TOP)
     self.tabs:DockMargin(64, 32, 64, 0)
@@ -829,6 +836,7 @@ function PANEL:OnRemove()
     hook.Remove("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables")
     hook.Remove("PreDrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam")
     if self.charListUpdateHook then hook.Remove("CharListUpdated", self.charListUpdateHook) end
+    if self.adminPrivilegesUpdateHook then hook.Remove("AdminPrivilegesUpdated", self.adminPrivilegesUpdateHook) end
     if render.oldDrawBeam then
         render.DrawBeam = render.oldDrawBeam
         render.oldDrawBeam = nil

@@ -18,7 +18,6 @@ function MODULE:PostPlayerLoadout(client)
     local maxStamina = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
     client:setLocalVar("stm", maxStamina)
     client:setNetVar("stamina", maxStamina)
-
     -- Create individual stamina timer for this player
     local uniqueID = "liaStam" .. client:SteamID64()
     timer.Create(uniqueID, 0.25, 0, function()
@@ -27,7 +26,7 @@ function MODULE:PostPlayerLoadout(client)
             return
         end
 
-        MODULE:CalcStaminaChange(client)
+        self:CalcStaminaChange(client)
     end)
 end
 
@@ -69,9 +68,7 @@ end
 
 function MODULE:CharacterPreSave(character)
     local client = character:GetPlayer()
-    if IsValid(client) then
-        character:SetData("stamina", client:getLocalVar("stm", hook.Run("GetCharMaxStamina", character) or lia.config.get("DefaultStamina", 100)))
-    end
+    if IsValid(client) then character:SetData("stamina", client:getLocalVar("stm", hook.Run("GetCharMaxStamina", character) or lia.config.get("DefaultStamina", 100))) end
 end
 
 function MODULE:PlayerThrowPunch(client)
@@ -82,12 +79,8 @@ function MODULE:PlayerThrowPunch(client)
         local value = math.Clamp(current - staminaUse, 0, max)
         client:setLocalVar("stm", value)
         client:setNetVar("stamina", value)
-
-        -- Sync predicted stamina with client
         net.Start("liaStaminaSync")
         net.WriteFloat(value)
         net.Send(client)
     end
 end
-
-hook.Add("PlayerBindPress", "liaAttributesPlayerBindPress", function(client, bind, pressed) return MODULE:PlayerBindPress(client, bind, pressed) end)

@@ -1,5 +1,4 @@
 local predictedStamina = 100
-
 function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
@@ -23,28 +22,22 @@ function MODULE:LoadCharInformation()
         hook.Run("AddBarField", L("attributes"), id, attr.name, function() return minVal end, function() return maxVal end, function() return char:getAttrib(id) end)
     end
 
-    -- Initialize predicted stamina
     local max = hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)
     predictedStamina = client:getNetVar("stamina", max)
 end
 
 function MODULE:Think()
-    local offset = MODULE:CalcStaminaChange(LocalPlayer())
-    -- The server checks it every 0.25 sec, here we check it every FrameTime() seconds
+    local offset = self:CalcStaminaChange(LocalPlayer())
     offset = math.Remap(FrameTime(), 0, 0.25, 0, offset)
-
     if offset ~= 0 then
         local max = hook.Run("GetCharMaxStamina", LocalPlayer():getChar()) or lia.config.get("DefaultStamina", 100)
         predictedStamina = math.Clamp(predictedStamina + offset, 0, max)
     end
 end
 
--- Synchronize predicted stamina with server when there's significant drift
 net.Receive("liaStaminaSync", function()
     local serverStamina = net.ReadFloat()
-    if math.abs(predictedStamina - serverStamina) > 5 then
-        predictedStamina = serverStamina
-    end
+    if math.abs(predictedStamina - serverStamina) > 5 then predictedStamina = serverStamina end
 end)
 
 lia.bar.add(function()

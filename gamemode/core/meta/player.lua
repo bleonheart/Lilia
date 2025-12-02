@@ -4436,12 +4436,9 @@ if SERVER then
         local value = math.Clamp(current - amount, 0, max)
         self:setLocalVar("stm", value)
         self:setNetVar("stamina", value)
-
-        -- Sync predicted stamina with client
         net.Start("liaStaminaSync")
         net.WriteFloat(value)
         net.Send(self)
-
         if value == 0 and not self:getNetVar("brth", false) then
             self:setNetVar("brth", true)
             hook.Run("PlayerStaminaLost", self)
