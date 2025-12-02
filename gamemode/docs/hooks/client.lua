@@ -4009,7 +4009,7 @@ end
 
             -- Update player settings
             if LocalPlayer() then
-                LocalPlayer():SetNWString("skin_preference", newSkin)
+                LocalPlayer():setClientNetVar("skin_preference", newSkin)
             end
 
             -- Log comprehensive skin change
@@ -10340,7 +10340,7 @@ end
             end
 
             -- Check time-based restrictions
-            local deathTime = client:GetNWFloat("DeathTime", 0)
+            local deathTime = client:getNetVar("DeathTime", 0)
             local respawnDelay = lia.config.get("RespawnDelay", 5)
 
             if (CurTime() - deathTime) < respawnDelay then
@@ -11233,13 +11233,13 @@ end
                     lia.gui.crosshair:SetVisible(false)
                 end
                 -- Adjust weapon view model
-                LocalPlayer():SetNWBool("ThirdPerson", true)
+                LocalPlayer():setClientNetVar("ThirdPerson", true)
             else
                 -- Show HUD elements in first person
                 if lia.gui.crosshair then
                     lia.gui.crosshair:SetVisible(true)
                 end
-                LocalPlayer():SetNWBool("ThirdPerson", false)
+                LocalPlayer():setClientNetVar("ThirdPerson", false)
             end
         end
         ```
@@ -11265,11 +11265,11 @@ end
             -- Adjust camera settings
             if newValue then
                 -- Third person mode
-                client:SetNWBool("ThirdPerson", true)
+                client:setNetVar("ThirdPerson", true)
 
                 -- Adjust camera distance based on character
                 local cameraDistance = MODULE.GetThirdPersonDistance(char)
-                client:SetNWFloat("ThirdPersonDistance", cameraDistance)
+                client:setNetVar("ThirdPersonDistance", cameraDistance)
 
                 -- Hide first person elements
                 MODULE.HideFirstPersonElements()
@@ -11288,8 +11288,8 @@ end
 
             else
                 -- First person mode
-                client:SetNWBool("ThirdPerson", false)
-                client:SetNWFloat("ThirdPersonDistance", 0)
+                client:setNetVar("ThirdPerson", false)
+                client:setNetVar("ThirdPersonDistance", 0)
 
                 -- Show first person elements
                 MODULE.ShowFirstPersonElements()
