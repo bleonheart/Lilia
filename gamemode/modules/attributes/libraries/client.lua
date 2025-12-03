@@ -1,4 +1,4 @@
-﻿local predictedStamina = 100
+local predictedStamina = 100
 function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
@@ -32,6 +32,13 @@ function MODULE:Think()
     if offset ~= 0 then
         local max = hook.Run("GetCharMaxStamina", LocalPlayer():getChar()) or lia.config.get("DefaultStamina", 100)
         predictedStamina = math.Clamp(predictedStamina + offset, 0, max)
+    end
+end
+
+function MODULE:OnLocalVarSet(key, value)
+    if key ~= "stamina" then return end
+    if math.abs(predictedStamina - value) > 5 then
+        predictedStamina = value
     end
 end
 

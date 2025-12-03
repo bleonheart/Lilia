@@ -159,7 +159,7 @@ if SERVER then
     function entityMeta:clearNetVars(receiver)
         if not IsValid(self) then return end
         lia.net[self] = nil
-        if lia.localvars and lia.localvars[self] then lia.localvars[self] = nil end
+        if lia.net.locals[self] then lia.net.locals[self] = nil end
         if lia.shuttingDown then return end
         net.Start("liaNetDel")
         net.WriteUInt(self:EntIndex(), 16)
@@ -204,15 +204,13 @@ if SERVER then
 
     function entityMeta:setLocalVar(key, value)
         if not IsValid(self) then return end
-        lia.localvars = lia.localvars or {}
-        lia.localvars[self] = lia.localvars[self] or {}
-        lia.localvars[self][key] = value
+        lia.net.locals[self] = lia.net.locals[self] or {}
+        lia.net.locals[self][key] = value
     end
 
     function entityMeta:getLocalVar(key, default)
         if not IsValid(self) then return default end
-        lia.localvars = lia.localvars or {}
-        if lia.localvars[self] and lia.localvars[self][key] ~= nil then return lia.localvars[self][key] end
+        if lia.net.locals[self] and lia.net.locals[self][key] ~= nil then return lia.net.locals[self][key] end
         return default
     end
 else

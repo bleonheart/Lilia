@@ -10,6 +10,7 @@
 lia.net = lia.net or {}
 lia.net.sendq = lia.net.sendq or {}
 lia.net.globals = lia.net.globals or {}
+lia.net.locals = lia.net.locals or {}
 lia.net.buffers = lia.net.buffers or {}
 lia.net.registry = lia.net.registry or {}
 lia.net.cache = lia.net.cache or {}
@@ -287,22 +288,4 @@ end
 function lia.net.getNetVar(key, default)
     local value = lia.net.globals[key]
     return value ~= nil and value or default
-end
-
-
-function lia.net.getLocalVar(ply, key, default)
-    if SERVER then
-        if not IsValid(ply) or not isstring(key) then return default end
-        if lia.localvars and lia.localvars[ply] and lia.localvars[ply][key] ~= nil then
-            return lia.localvars[ply][key]
-        end
-        return default
-    else
-        if not IsValid(ply) or not isstring(key) then return default end
-        local idx = ply:EntIndex()
-        if lia.net[idx] and lia.net[idx][key] ~= nil then
-            return lia.net[idx][key]
-        end
-        return default
-    end
 end

@@ -333,9 +333,8 @@ net.Receive("liaNetLocal", function()
     local value = net.ReadType()
     local idx = LocalPlayer():EntIndex()
     lia.net[idx] = lia.net[idx] or {}
-    local oldValue = lia.net[idx][key]
     lia.net[idx][key] = value
-    hook.Run("NetVarChanged", LocalPlayer(), key, oldValue, value)
+    hook.Run("OnLocalVarSet", key, value)
 end)
 
 net.Receive("liaActBar", function()

@@ -126,9 +126,6 @@ function playerMeta:removeRagdoll()
     self:setNetVar("blur", nil)
 end
 
-
-
-
 function playerMeta:getItemWeapon()
     local character = self:getChar()
     local inv = character:getInv()
@@ -180,7 +177,6 @@ function playerMeta:getTracedEntity(distance)
     local targetEntity = util.TraceLine(data).Entity
     return targetEntity
 end
-
 
 function playerMeta:notify(message, notifType)
     if SERVER then
@@ -1057,8 +1053,8 @@ if SERVER then
             end
         end
 
-        if lia.localvars and lia.localvars[self] then
-            for k, v in pairs(lia.localvars[self]) do
+        if lia.net.locals[self] then
+            for k, v in pairs(lia.net.locals[self]) do
                 net.Start("liaNetLocal")
                 net.WriteString(k)
                 net.WriteType(v)
@@ -1091,11 +1087,10 @@ if SERVER then
     function playerMeta:setLocalVar(key, value)
         if not IsValid(self) then return end
         if lia.net.checkBadType(key, value) then return end
-        lia.localvars = lia.localvars or {}
-        lia.localvars[self] = lia.localvars[self] or {}
-        local oldValue = lia.localvars[self][key]
+        lia.net.locals[self] = lia.net.locals[self] or {}
+        local oldValue = lia.net.locals[self][key]
         if oldValue == value and not istable(value) then return end
-        lia.localvars[self][key] = value
+        lia.net.locals[self][key] = value
         if not lia.shuttingDown then
             net.Start("liaNetLocal")
             net.WriteString(key)
@@ -1108,7 +1103,7 @@ if SERVER then
 
     function playerMeta:getLocalVar(key, default)
         if not IsValid(self) then return default end
-        if lia.localvars and lia.localvars[self] and lia.localvars[self][key] ~= nil then return lia.localvars[self][key] end
+        if lia.net.locals[self] and lia.net.locals[self][key] ~= nil then return lia.net.locals[self][key] end
         return default
     end
 else
