@@ -1,5 +1,0 @@
---[[
-    Test comment
-]]
-code = true
-
