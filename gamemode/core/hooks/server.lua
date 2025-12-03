@@ -455,7 +455,7 @@ function GM:PostPlayerLoadout(client)
     end
 
     client:SetSkin(character:getSkin())
-    client:setNetVar("VoiceType", VOICE_TALKING)
+    client:setLocalVar("VoiceType", VOICE_TALKING)
 end
 
 function GM:DoPlayerDeath(client, attacker)
@@ -490,7 +490,6 @@ function GM:PlayerSpawn(client)
         client:setNetVar("diedInRagdoll", nil)
     end
 
-    client:setNetVar("IsDeadRestricted", false)
     if not client:getChar() then client:SetNoDraw(true) end
     hook.Run("PlayerLoadout", client)
 end
@@ -1012,9 +1011,9 @@ end
 
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
-    if speaker:getNetVar("IsDeadRestricted", false) or speaker:getLiliaData("liaGagged", false) or not speaker:getChar() or speaker:getLiliaData("VoiceBan", false) then return false, false end
+    if speaker:getLiliaData("liaGagged", false) or not speaker:getChar() then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
-    local voiceType = speaker:getNetVar("VoiceType", VOICE_TALKING)
+    local voiceType = speaker:getLocalVar("VoiceType", VOICE_TALKING)
     local baseRange = voiceType == VOICE_WHISPERING and lia.config.get("WhisperRange", 70) or voiceType == VOICE_TALKING and lia.config.get("TalkRange", 280) or voiceType == VOICE_YELLING and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)
     local distance = listener:GetPos():Distance(speaker:GetPos())
     local canHear = distance <= baseRange

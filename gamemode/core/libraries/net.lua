@@ -279,23 +279,6 @@ if SERVER then
         hook.Run("NetVarChanged", nil, key, oldValue, value)
     end
 
-    function lia.net.setClientNetVar(client, key, value)
-        if not IsValid(client) or not isstring(key) then return end
-        if checkBadType(key, value) then return end
-        lia.net[client] = lia.net[client] or {}
-        local oldValue = lia.net[client][key]
-        if oldValue == value then return end
-        lia.net[client][key] = value
-        if not lia.shuttingDown then
-            net.Start("liaClientNetVar")
-            net.WriteUInt(client:EntIndex(), 16)
-            net.WriteString(key)
-            net.WriteType(value)
-            net.Send(client)
-        end
-
-        hook.Run("NetVarChanged", client, key, oldValue, value)
-    end
 
     hook.Add("EntityRemoved", "liaNetworkingCleanup", function(entity) entity:clearNetVars() end)
     hook.Add("PlayerInitialSpawn", "liaNetworkingSync", function(client) client:syncVars() end)
@@ -306,12 +289,6 @@ function lia.net.getNetVar(key, default)
     return value ~= nil and value or default
 end
 
-function lia.net.getClientNetVar(client, key, default)
-    if not IsValid(client) or not isstring(key) then return default end
-    lia.net[client] = lia.net[client] or {}
-    local value = lia.net[client][key]
-    return value ~= nil and value or default
-end
 
 function lia.net.getLocalVar(ply, key, default)
     if SERVER then

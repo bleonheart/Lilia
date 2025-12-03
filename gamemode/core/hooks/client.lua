@@ -179,7 +179,7 @@ function GM:PostDrawOpaqueRenderables()
     if not lia.option.get("voiceRange", false) then return end
     local client = LocalPlayer()
     if not (IsValid(client) and client:IsSpeaking() and client:getChar()) then return end
-    local vt = client:getNetVar("VoiceType", VOICE_TALKING)
+    local vt = client:getLocalVar("VoiceType", VOICE_TALKING)
     local radius = VoiceRanges[vt] or VoiceRanges[VOICE_TALKING]
     local segments = 36
     local pos = client:GetPos() + Vector(0, 0, 2)
@@ -277,7 +277,7 @@ end
 local function drawVoiceIndicator()
     local client = LocalPlayer()
     if not IsValid(client) or not client:IsSpeaking() then return end
-    local voiceType = client:getNetVar("VoiceType", VOICE_TALKING)
+    local voiceType = client:getLocalVar("VoiceType", VOICE_TALKING)
     local voiceText = L("youAre") .. " " .. L(voiceType)
     if lia.option.get("voiceRange", false) then
         local radius = VoiceRanges[voiceType] or VoiceRanges[VOICE_TALKING]

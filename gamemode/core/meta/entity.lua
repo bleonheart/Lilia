@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Entity Meta
 
     Entity management system for the Lilia framework.
@@ -121,32 +121,9 @@ function entityMeta:isDoorLocked()
     return self:GetInternalVariable("m_bLocked") or self.locked or false
 end
 
-function entityMeta:getEntItemDropPos(offset)
-    if not IsValid(self) then return Vector(0, 0, 0), Angle(0, 0, 0) end
-    if not offset then offset = 64 end
-    local trResult = util.TraceLine({
-        start = self:EyePos(),
-        endpos = self:EyePos() + self:GetAimVector() * offset,
-        mask = MASK_SHOT,
-        filter = {self}
-    })
-    return trResult.HitPos + trResult.HitNormal * 5, trResult.HitNormal:Angle()
-end
-
 function entityMeta:isFemale()
     if not IsValid(self) then return false end
     return hook.Run("GetModelGender", self:GetModel()) == "female"
-end
-
-function entityMeta:isNearEntity(radius, otherEntity)
-    if not IsValid(self) then return false end
-    if otherEntity == self then return true end
-    if not radius then radius = 96 end
-    for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
-        if v == self then continue end
-        if IsValid(otherEntity) and v == otherEntity or v:GetClass() == self:GetClass() then return true end
-    end
-    return false
 end
 
 function entityMeta:getDoorPartner()
@@ -215,16 +192,6 @@ if SERVER then
         self:setNetVar("noSell", state)
     end
 
-    function entityMeta:isDoor()
-        if not IsValid(self) then return false end
-        local class = self:GetClass():lower()
-        local doorPrefixes = {"prop_door", "func_door", "func_door_rotating", "door_"}
-        for _, prefix in ipairs(doorPrefixes) do
-            if class:find(prefix) then return true end
-        end
-        return false
-    end
-
     function entityMeta:setNetVar(key, value, receiver)
         if not IsValid(self) then return end
         if lia.net.checkBadType(key, value) then return end
@@ -233,12 +200,6 @@ if SERVER then
         if oldValue ~= value then lia.net[self][key] = value end
         self:sendNetVar(key, receiver)
         hook.Run("NetVarChanged", self, key, oldValue, value)
-    end
-
-    function entityMeta:getNetVar(key, default)
-        if not IsValid(self) then return default end
-        if lia.net[self] and lia.net[self][key] ~= nil then return lia.net[self][key] end
-        return default
     end
 
     function entityMeta:setLocalVar(key, value)
@@ -255,18 +216,6 @@ if SERVER then
         return default
     end
 else
-    function entityMeta:isDoor()
-        if not IsValid(self) then return false end
-        return self:GetClass():find("door")
-    end
-
-    function entityMeta:getNetVar(key, default)
-        if not IsValid(self) then return default end
-        local index = self:EntIndex()
-        if lia.net[index] and lia.net[index][key] ~= nil then return lia.net[index][key] end
-        return default
-    end
-
     function entityMeta:playFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, _, dsp)
         local v = math.Clamp(tonumber(volume) or 1, 0, 1)
         local follow = shouldFollow ~= false
@@ -403,5 +352,32 @@ else
             playLocalFile(soundPath)
             return
         end
+    end
+end
+
+function entityMeta:isDoor()
+    if not IsValid(self) then return false end
+    if SERVER then
+        if not IsValid(self) then return false end
+        local class = self:GetClass():lower()
+        local doorPrefixes = {"prop_door", "func_door", "func_door_rotating", "door_"}
+        for _, prefix in ipairs(doorPrefixes) do
+            if class:find(prefix) then return true end
+        end
+        return false
+    else
+        return self:GetClass():find("door")
+    end
+end
+
+function entityMeta:getNetVar(key, default)
+    if not IsValid(self) then return default end
+    if SERVER then
+        if lia.net[self] and lia.net[self][key] ~= nil then return lia.net[self][key] end
+        return default
+    else
+        local index = self:EntIndex()
+        if lia.net[index] and lia.net[index][key] ~= nil then return lia.net[index][key] end
+        return default
     end
 end

@@ -552,3 +552,4 @@ Context: if not LocalPlayer():getNetVar("isAFK") then return end
 Usage: getNetVar
 Context: local afkTime = LocalPlayer():getNetVar("afkTime", 0)
 ```
+

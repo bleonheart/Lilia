@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Character Meta
 
     Character management system for the Lilia framework.
@@ -11,31 +11,6 @@ local characterMeta = lia.meta.character or {}
 characterMeta.__index = characterMeta
 characterMeta.id = characterMeta.id or 0
 characterMeta.vars = characterMeta.vars or {}
-
-    Returns:
-        string - Formatted character string with ID
-
-    Realm:
-        Shared
-
-    Example Usage:
-
-    Low Complexity:
-        ```lua
-        -- Simple: Get character string representation
-        local charString = character:tostring()
-        print(charString) -- Output: "character[123]"
-        ```
-
-    Medium Complexity:
-function characterMeta:tostring()
-    return L("character") .. "[" .. (self.id or 0) .. "]"
-end
-
-function characterMeta:eq(other)
-    return self:getID() == other:getID()
-end
-
 function characterMeta:getID()
     return self.id
 end
@@ -87,19 +62,6 @@ function characterMeta:hasFlags(flagStr)
     return false
 end
 
-function characterMeta:getItemWeapon(requireEquip)
-    if requireEquip == nil then requireEquip = true end
-    local client = self:getPlayer()
-    local inv = self:getInv()
-    local items = inv:getItems()
-    local weapon = client:GetActiveWeapon()
-    if not IsValid(weapon) then return false end
-    for _, v in pairs(items) do
-        if v.class and v.class == weapon:GetClass() and requireEquip and v:getData("equip", false) then return true end
-    end
-    return false
-end
-
 function characterMeta:getAttrib(key, default)
     local att = self:getAttribs()[key] or default or 0
     local boosts = self:getVar("boosts", {})[key]
@@ -109,11 +71,6 @@ function characterMeta:getAttrib(key, default)
         end
     end
     return att
-end
-
-function characterMeta:getBoost(attribID)
-    local boosts = self:getVar("boosts", {})
-    return boosts[attribID]
 end
 
 function characterMeta:doesRecognize(id)

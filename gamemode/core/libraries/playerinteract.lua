@@ -233,9 +233,9 @@ if SERVER then
 
     lia.playerinteract.addAction("changeToWhisper", {
         category = "categoryVoice",
-        shouldShow = function(client) return client:getChar() and client:Alive() and client:getNetVar("VoiceType") ~= L("whispering") end,
+        shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= L("whispering") end,
         onRun = function(client)
-            client:setNetVar("VoiceType", VOICE_WHISPERING)
+            client:setLocalVar("VoiceType", VOICE_WHISPERING)
             client:notifyInfoLocalized("voiceModeSet", L("whispering"))
         end,
         serverOnly = true
@@ -243,9 +243,9 @@ if SERVER then
 
     lia.playerinteract.addAction("changeToTalk", {
         category = "categoryVoice",
-        shouldShow = function(client) return client:getChar() and client:Alive() and client:getNetVar("VoiceType") ~= VOICE_TALKING end,
+        shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_TALKING end,
         onRun = function(client)
-            client:setNetVar("VoiceType", VOICE_TALKING)
+            client:setLocalVar("VoiceType", VOICE_TALKING)
             client:notifyInfoLocalized("voiceModeSet", L("talking"))
         end,
         serverOnly = true
@@ -253,9 +253,9 @@ if SERVER then
 
     lia.playerinteract.addAction("changeToYell", {
         category = "categoryVoice",
-        shouldShow = function(client) return client:getChar() and client:Alive() and client:getNetVar("VoiceType") ~= VOICE_YELLING end,
+        shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_YELLING end,
         onRun = function(client)
-            client:setNetVar("VoiceType", VOICE_YELLING)
+            client:setLocalVar("VoiceType", VOICE_YELLING)
             client:notifyInfoLocalized("voiceModeSet", L("yelling"))
         end,
         serverOnly = true

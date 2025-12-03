@@ -127,27 +127,8 @@ function playerMeta:removeRagdoll()
     self:setNetVar("blur", nil)
 end
 
-function playerMeta:isStuck()
-    return util.TraceEntity({
-        start = self:GetPos(),
-        endpos = self:GetPos(),
-        filter = self
-    }, self).StartSolid
-end
 
-function playerMeta:isNearPlayer(radius, entity)
-    local squaredRadius = radius * radius
-    local squaredDistance = self:GetPos():DistToSqr(entity:GetPos())
-    return squaredDistance <= squaredRadius
-end
 
-function playerMeta:entitiesNearPlayer(radius, playerOnly)
-    local nearbyEntities = {}
-    for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
-        if not playerOnly or v:IsPlayer() then table.insert(nearbyEntities, v) end
-    end
-    return nearbyEntities
-end
 
 function playerMeta:getItemWeapon()
     local character = self:getChar()
@@ -164,10 +145,6 @@ function playerMeta:getItemWeapon()
             end
         end
     end
-end
-
-function playerMeta:isRunning()
-    return vectorMeta.Length2D(self:GetVelocity()) > self:GetWalkSpeed() + 10
 end
 
 function playerMeta:isFamilySharedAccount()
@@ -205,23 +182,6 @@ function playerMeta:getTracedEntity(distance)
     return targetEntity
 end
 
-function playerMeta:getTrace(distance)
-    if not distance then distance = 200 end
-    local data = {}
-    data.start = self:GetShootPos()
-    data.endpos = data.start + self:GetAimVector() * distance
-    data.filter = {self, self}
-    data.mins = -Vector(4, 4, 4)
-    data.maxs = Vector(4, 4, 4)
-    local trace = util.TraceHull(data)
-    return trace
-end
-
-function playerMeta:getEyeEnt(distance)
-    distance = distance or 150
-    local e = self:GetEyeTrace().Entity
-    return e:GetPos():Distance(self:GetPos()) <= distance and e or nil
-end
 
 function playerMeta:notify(message, notifType)
     if SERVER then
@@ -798,44 +758,7 @@ function playerMeta:requestDropdown(title, subTitle, options, callback)
     end
 end
 
-function playerMeta:getParts()
-    return self:getNetVar("parts", {})
-end
-
 if SERVER then
-    function playerMeta:syncParts()
-        net.Start("liaPacSync")
-        net.Send(self)
-    end
-
-    function playerMeta:addPart(partID)
-        if self:getParts()[partID] then return end
-        net.Start("liaPacPartAdd")
-        net.WriteEntity(self)
-        net.WriteString(partID)
-        net.Broadcast()
-        local parts = self:getParts()
-        parts[partID] = true
-        self:setNetVar("parts", parts)
-    end
-
-    function playerMeta:removePart(partID)
-        net.Start("liaPacPartRemove")
-        net.WriteEntity(self)
-        net.WriteString(partID)
-        net.Broadcast()
-        local parts = self:getParts()
-        parts[partID] = nil
-        self:setNetVar("parts", parts)
-    end
-
-    function playerMeta:resetParts()
-        net.Start("liaPacPartReset")
-        net.WriteEntity(self)
-        net.Broadcast()
-        self:setNetVar("parts", {})
-    end
-
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
         local maxStamina = char and (hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100)) or lia.config.get("DefaultStamina", 100)
@@ -972,10 +895,6 @@ if SERVER then
 
         local diff = os.time(lia.time.toNumber(self.lastJoin)) - os.time(lia.time.toNumber(self.firstJoin))
         return diff + RealTime() - (self.liaJoinTime or RealTime())
-    end
-
-    function playerMeta:getSessionTime()
-        return RealTime() - (self.liaJoinTime or RealTime())
     end
 
     function playerMeta:createRagdoll(freeze, isDead)
@@ -1170,23 +1089,6 @@ if SERVER then
         hook.Run("NetVarChanged", self, key, oldValue, value)
     end
 
-    function playerMeta:setClientNetVar(key, value)
-        if lia.net.checkBadType(key, value) then return end
-        lia.net[self] = lia.net[self] or {}
-        local oldValue = lia.net[self][key]
-        if oldValue == value then return end
-        lia.net[self][key] = value
-        if not lia.shuttingDown then
-            net.Start("liaClientNetVar")
-            net.WriteUInt(self:EntIndex(), 16)
-            net.WriteString(key)
-            net.WriteType(value)
-            net.Send(self)
-        end
-
-        hook.Run("NetVarChanged", self, key, oldValue, value)
-    end
-
     function playerMeta:setLocalVar(key, value)
         if not IsValid(self) then return end
         if lia.net.checkBadType(key, value) then return end
@@ -1211,21 +1113,6 @@ if SERVER then
         return default
     end
 else
-    function playerMeta:canOverrideView()
-        local ragdoll = self:getNetVar("ragdoll")
-        local isInVehicle = IsValid(self:GetVehicle())
-        if IsValid(lia.gui.char) then return false end
-        if isInVehicle then return false end
-        if hook.Run("ShouldDisableThirdperson", self) == true then return false end
-        return lia.option.get("thirdPersonEnabled", false) and lia.config.get("ThirdPersonEnabled", true) and IsValid(self) and self:getChar() and not IsValid(ragdoll)
-    end
-
-    function playerMeta:isInThirdPerson()
-        local thirdPersonEnabled = lia.config.get("ThirdPersonEnabled", true)
-        local tpEnabled = lia.option.get("thirdPersonEnabled", false)
-        return tpEnabled and thirdPersonEnabled
-    end
-
     function playerMeta:getLocalVar(key, default)
         if not IsValid(self) then return default end
         local idx = self:EntIndex()
@@ -1245,8 +1132,4 @@ else
         local diff = os.time(lia.time.toNumber(lia.lastJoin)) - os.time(lia.time.toNumber(lia.firstJoin))
         return diff + RealTime() - (lia.joinTime or 0)
     end
-end
-
-function playerMeta:getClientNetVar(key, default)
-    return lia.net.getClientNetVar(self, key, default)
 end

@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Notice Library
 
     Player notification and messaging system for the Lilia framework.
@@ -8,40 +8,7 @@
         The notice library provides comprehensive functionality for displaying notifications and messages to players in the Lilia framework. It handles both server-side and client-side notification systems, supporting both direct text messages and localized messages with parameter substitution. The library operates across server and client realms, with the server sending notification data to clients via network messages, while the client handles the visual display of notifications using VGUI panels. It includes automatic organization of multiple notifications, sound effects, and console output for debugging purposes. The library also provides compatibility with Garry's Mod's legacy notification system.
 ]]
 lia.notices = lia.notices or {}
-if SERVER then
-    function lia.notices.notify(client, message, notifType)
-        net.Start("liaNotificationData")
-        net.WriteString(message)
-        net.WriteString(notifType or "default")
-        if client then
-            net.Send(client)
-        else
-            net.Broadcast()
-        end
-    end
-
-    function lia.notices.notifyLocalized(client, key, notifType, ...)
-        local args = {...}
-        if client and type(client) ~= "Player" then
-            table.insert(args, 1, client)
-            client = nil
-        end
-
-        net.Start("liaNotifyLocal")
-        net.WriteString(key)
-        net.WriteUInt(#args, 8)
-        for i = 1, #args do
-            net.WriteString(tostring(args[i]))
-        end
-
-        net.WriteString(tostring(notifType or "default"))
-        if client then
-            net.Send(client)
-        else
-            net.Broadcast()
-        end
-    end
-else
+if CLIENT then
     function lia.notices.receiveNotify()
         local msg = net.ReadString() or ""
         local ntype = net.ReadString() or "default"
@@ -77,23 +44,6 @@ else
             local lp = LocalPlayer()
             if IsValid(lp) then lp:EmitSound("garrysmod/content_downloaded.wav", 50, 250, 1, CHAN_AUTO) end
         end)
-    end
-
-    function lia.notices.notify(_, message, notifType)
-        local notice = vgui.Create("liaNotice")
-        notice:SetText(tostring(message))
-        notice:SetType(tostring(notifType or "default"))
-        table.insert(lia.notices, notice)
-        OrganizeNotices()
-        MsgC(Color(0, 255, 255), tostring(message) .. "\n")
-        timer.Simple(0.15, function()
-            local lp = LocalPlayer()
-            if IsValid(lp) then lp:EmitSound("garrysmod/content_downloaded.wav", 50, 250, 1, CHAN_AUTO) end
-        end)
-    end
-
-    function lia.notices.notifyLocalized(client, key, notifType, ...)
-        lia.notices.notify(client, L(key, ...), notifType or "default")
     end
 
     function lia.notices.notifyInfoLocalized(client, key, ...)
@@ -155,5 +105,55 @@ if CLIENT then
                 y = y - (v:GetTall() + spacing)
             end
         end
+    end
+end
+
+function lia.notices.notifyLocalized(client, key, notifType, ...)
+    if SERVER then
+        local args = {...}
+        if client and type(client) ~= "Player" then
+            table.insert(args, 1, client)
+            client = nil
+        end
+
+        net.Start("liaNotifyLocal")
+        net.WriteString(key)
+        net.WriteUInt(#args, 8)
+        for i = 1, #args do
+            net.WriteString(tostring(args[i]))
+        end
+
+        net.WriteString(tostring(notifType or "default"))
+        if client then
+            net.Send(client)
+        else
+            net.Broadcast()
+        end
+    else
+        lia.notices.notify(client, L(key, ...), notifType or "default")
+    end
+end
+
+function lia.notices.notify(client, message, notifType)
+    if SERVER then
+        net.Start("liaNotificationData")
+        net.WriteString(message)
+        net.WriteString(notifType or "default")
+        if client then
+            net.Send(client)
+        else
+            net.Broadcast()
+        end
+    else
+        local notice = vgui.Create("liaNotice")
+        notice:SetText(tostring(message))
+        notice:SetType(tostring(notifType or "default"))
+        table.insert(lia.notices, notice)
+        OrganizeNotices()
+        MsgC(Color(0, 255, 255), tostring(message) .. "\n")
+        timer.Simple(0.15, function()
+            local lp = LocalPlayer()
+            if IsValid(lp) then lp:EmitSound("garrysmod/content_downloaded.wav", 50, 250, 1, CHAN_AUTO) end
+        end)
     end
 end
