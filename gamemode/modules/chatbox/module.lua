@@ -1,4 +1,4 @@
-﻿MODULE.name = "chatboxModuleName"
+MODULE.name = "chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "chatSystemDescription"
@@ -31,6 +31,12 @@ MODULE.Privileges = {
         Name = "accessHelpChat",
         ID = "accessHelpChat",
         MinAccess = "superadmin",
+        Category = "categoryChat",
+    },
+    {
+        Name = "bypassOOCBlockPrivilege",
+        ID = "bypassOOCBlock",
+        MinAccess = "admin",
         Category = "categoryChat",
     },
 }
