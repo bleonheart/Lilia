@@ -36,7 +36,7 @@ MODULE.Privileges = {
     {
         Name = "bypassOOCBlockPrivilege",
         ID = "bypassOOCBlock",
-        MinAccess = "admin",
+        MinAccess = "superadmin",
         Category = "categoryChat",
     },
 }
