@@ -1192,7 +1192,7 @@ hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
 
-function GM:CanEditVariable(ent, pl, key, val, editor)
+function GM:CanEditVariable()
     return false
 end
 
