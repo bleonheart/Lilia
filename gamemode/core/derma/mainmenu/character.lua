@@ -81,6 +81,13 @@ function PANEL:restoreExternalEntities()
         if IsValid(ent) then ent:SetNoDraw(wasHidden) end
     end
 
+    local client = LocalPlayer()
+    if IsValid(client) and self.hiddenEntities[client] ~= nil then
+        client:SetNoDraw(self.hiddenEntities[client])
+    elseif IsValid(client) then
+        client:SetNoDraw(false)
+    end
+
     self.hiddenEntities = nil
 end
 
@@ -830,6 +837,8 @@ function PANEL:OnRemove()
     if lia.gui.character == self then lia.gui.character = nil end
     hook.Run("CharMenuClosed")
     self:restoreExternalEntities()
+    local client = LocalPlayer()
+    if IsValid(client) then client:SetNoDraw(false) end
     hook.Remove("PrePlayerDraw", "liaMainMenuPrePlayerDraw")
     hook.Remove("CalcView", "liaMainMenuCalcView")
     hook.Remove("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables")

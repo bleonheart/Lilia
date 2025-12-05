@@ -15,16 +15,7 @@
             sv_maxupdaterate = 66,
             sv_mincmdrate = 30
         },
-        ["hooks"] = {
-            {"OnEntityCreated", "WidgetInit"},
-            {"Think", "DOFThink"},
-            {"Think", "CheckSchedules"},
-            {"PlayerTick", "TickWidgets"},
-            {"PlayerInitialSpawn", "PlayerAuthSpawn"},
-            {"LoadGModSave", "LoadGModSave"},
-            {"PlayerInitialSpawn", "HintSystem_PlayerInitialSpawn"},
-            {"PlayerSpawn", "HintSystem_PlayerSpawn"}
-        }
+        ["hooks"] = {{"OnEntityCreated", "WidgetInit"}, {"Think", "DOFThink"}, {"Think", "CheckSchedules"}, {"PlayerTick", "TickWidgets"}, {"PlayerInitialSpawn", "PlayerAuthSpawn"}, {"LoadGModSave", "LoadGModSave"}, {"PlayerInitialSpawn", "HintSystem_PlayerInitialSpawn"}, {"PlayerSpawn", "HintSystem_PlayerSpawn"}}
     },
     ["client"] = {
         ["convars"] = {
@@ -33,14 +24,11 @@
             cl_updaterate = 66,
             cl_cmdrate = 66,
             cl_interp = 0.01364,
-            cl_interpolate = 0,
             cl_interp_ratio = 2,
             r_shadows = 1,
             r_dynamic = 0,
-            r_eyegloss = 0,
             r_eyemove = 0,
             r_flex = 0,
-            r_drawtracers = 0,
             r_drawflecks = 0,
             r_drawdetailprops = 0,
             r_shadowrendertotexture = 0,
@@ -49,18 +37,14 @@
             cl_phys_props_enable = 0,
             cl_phys_props_max = 0,
             cl_threaded_bone_setup = 1,
-            cl_threaded_client_leaf_system = 1,
             props_break_max_pieces = 0,
-            r_propsmaxdist = 0,
             violence_agibs = 0,
             violence_hgibs = 0,
-            mat_shadowstate = 0,
             cl_show_splashes = 0,
             cl_ejectbrass = 0,
             cl_detailfade = 800,
             cl_smooth = 0,
             r_fastzreject = -1,
-            r_decal_cullsize = 1,
             r_lod = 0,
             cl_lagcompensation = 1,
             r_spray_lifetime = 1,
@@ -70,21 +54,15 @@
             mat_envmapsize = 0,
             mat_envmaptgasize = 0,
             mat_hdr_level = 0,
-            mat_max_worldmesh_vertices = 512,
             mat_motion_blur_enabled = 0,
-            mat_parallaxmap = 0,
             mat_picmip = 2,
             mat_reduceparticles = 1,
             mp_decals = 1,
             r_waterdrawreflection = 0,
             violence_ablood = 0,
             violence_hblood = 0,
-            r_threaded_client_shadow_manager = 1,
             r_threaded_particles = 1,
-            r_threaded_renderables = 1,
-            r_queued_decals = 1,
             r_queued_ropes = 1,
-            r_queued_post_processing = 1,
             threadpool_affinity = 64,
             mat_queue_mode = 2,
             studio_queue_mode = 1,
@@ -131,13 +109,10 @@ if SERVER then
     hook.Remove("Think", "CheckSchedules")
     hook.Remove("LoadGModSave", "LoadGModSave")
     hook.Add("PropBreak", "liaPerformancePropBreak", function(_, entity) if IsValid(entity) and IsValid(entity:GetPhysicsObject()) then constraint.RemoveAll(entity) end end)
-
-    -- Apply server convars
     for name, value in pairs(performanceConfig.server.convars) do
         RunConsoleCommand(name, value)
     end
 
-    -- Remove server hooks
     for _, hookData in ipairs(performanceConfig.server.hooks) do
         hook.Remove(hookData[1], hookData[2])
     end
@@ -165,7 +140,6 @@ else
     end)
 
     timer.Create("lua_gc", 60, 0, ClearLuaMemory)
-
     local function ApplyConvars()
         for name, value in pairs(performanceConfig.client.convars) do
             RunConsoleCommand(name, value)

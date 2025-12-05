@@ -310,6 +310,7 @@ function GM:CheckPassword(steamID64, _, serverPassword, clientPassword, playerNa
 end
 
 function GM:PlayerSay(client, message)
+    if not message then return "" end
     local chatType, parsedMessage, anonymous = lia.chat.parse(client, message, true)
     message = parsedMessage
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
