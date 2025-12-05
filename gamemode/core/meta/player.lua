@@ -123,7 +123,6 @@ function playerMeta:removeRagdoll()
     if not IsValid(ragdoll) then return end
     ragdoll.liaIgnoreDelete = true
     SafeRemoveEntity(ragdoll)
-    self:setNetVar("blur", nil)
 end
 
 function playerMeta:getItemWeapon()
@@ -954,7 +953,6 @@ if SERVER then
             entity:setNetVar("player", self)
             entity:CallOnRemove("fixer", function()
                 if IsValid(self) then
-                    self:setNetVar("blur", nil)
                     if self.liaStoredHealth then self:SetHealth(math.max(self.liaStoredHealth, 1)) end
                     if not entity.liaNoReset then self:SetPos(entity:GetPos()) end
                     self:SetNoDraw(false)
@@ -990,7 +988,6 @@ if SERVER then
                 end
             end)
 
-            self:setNetVar("blur", 25)
             self:setNetVar("ragdoll", entity)
             entity.liaWeapons = {}
             entity.liaAmmo = {}

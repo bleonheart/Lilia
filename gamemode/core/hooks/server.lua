@@ -614,9 +614,7 @@ function GM:PlayerLoadout(client)
     client:SetNoDraw(false)
     client:SetWeaponColor(Vector(0.30, 0.80, 0.10))
     client:StripWeapons()
-    client:setNetVar("blur", nil)
     client:SetModel(character:getModel())
-    client:SetJumpPower(160)
     lia.flag.onSpawn(client)
     hook.Run("PostPlayerLoadout", client)
     client:SelectWeapon("lia_hands")
@@ -624,6 +622,7 @@ function GM:PlayerLoadout(client)
         if IsValid(client) and client:getChar() == character then
             client:SetWalkSpeed(lia.config.get("WalkSpeed"))
             client:SetRunSpeed(lia.config.get("RunSpeed"))
+            client:SetJumpPower(160)
         end
     end)
 end
