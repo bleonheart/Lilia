@@ -66,7 +66,6 @@ else
         r_decal_cullsize = {1, function() return GetConVar("r_decal_cullsize"):GetInt() end},
         r_lod = {0, function() return GetConVar("r_lod"):GetInt() end},
         cl_lagcompensation = {1, function() return GetConVar("cl_lagcompensation"):GetInt() end},
-        cl_playerspraydisable = {1, function() return GetConVar("cl_playerspraydisable"):GetInt() end},
         r_spray_lifetime = {1, function() return GetConVar("r_spray_lifetime"):GetInt() end},
         mat_antialias = {0, function() return GetConVar("mat_antialias"):GetInt() end},
         cl_detaildist = {0, function() return GetConVar("cl_detaildist"):GetInt() end},
@@ -90,7 +89,6 @@ else
         r_queued_ropes = {1, function() return GetConVar("r_queued_ropes"):GetInt() end},
         r_queued_post_processing = {1, function() return GetConVar("r_queued_post_processing"):GetInt() end},
         threadpool_affinity = {4, function() return GetConVar("threadpool_affinity"):GetInt() end},
-        mem_max_heapsize = {2048, function() return GetConVar("mem_max_heapsize"):GetInt() end},
         mat_queue_mode = {0, function() return GetConVar("mat_queue_mode"):GetInt() end},
         studio_queue_mode = {1, function() return GetConVar("studio_queue_mode"):GetInt() end},
         gmod_mcore_test = {1, function() return GetConVar("gmod_mcore_test"):GetInt() end}
@@ -111,12 +109,10 @@ else
         OnGamemodeLoaded = {"CreateMenuBar"}
     }
 
-    local detours = {}
     local function ApplyConvars()
         for name, data in pairs(cmdlist) do
             local convar = GetConVar(name)
             if convar then
-                detours[name] = data[2]()
                 RunConsoleCommand(name, data[1])
             end
         end
