@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Player Meta
 
     Player management system for the Lilia framework.
@@ -760,8 +760,8 @@ if SERVER then
         local current = self:getLocalVar("stamina", maxStamina)
         local value = math.Clamp(current + amount, 0, maxStamina)
         if current ~= value then self:setLocalVar("stamina", value) end
-        if value >= maxStamina * 0.25 and self:getNetVar("brth", false) then
-            self:setNetVar("brth", nil)
+        if value >= maxStamina * 0.25 and self:getLocalVar("brth", false) then
+            self:setLocalVar("brth", nil)
             hook.Run("PlayerStaminaGained", self)
         end
     end
@@ -773,8 +773,8 @@ if SERVER then
         local value = math.Clamp(current - amount, 0, max)
         if current ~= value then
             self:setLocalVar("stamina", value)
-            if value == 0 and not self:getNetVar("brth", false) then
-                self:setNetVar("brth", true)
+            if value == 0 and not self:getLocalVar("brth", false) then
+                self:setLocalVar("brth", true)
                 hook.Run("PlayerStaminaLost", self)
             end
         end

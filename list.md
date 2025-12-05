@@ -553,3 +553,4 @@ Usage: getNetVar
 Context: local afkTime = LocalPlayer():getNetVar("afkTime", 0)
 ```
 
+

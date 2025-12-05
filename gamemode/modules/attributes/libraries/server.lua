@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local function InitializeStaminaTimer()
     local staminaTimer = function()
         for _, client in player.Iterator() do
@@ -37,8 +37,8 @@ function MODULE:PostPlayerLoadout(client)
 end
 
 function MODULE:PlayerStaminaLost(client)
-    if client:getNetVar("brth", false) then return end
-    client:setNetVar("brth", true)
+    if client:getLocalVar("brth", false) then return end
+    client:setLocalVar("brth", true)
     client:StopSound("player/breathe1.wav")
     client:EmitSound("player/breathe1.wav", 35, 100)
     local character = client:getChar()
@@ -57,7 +57,7 @@ function MODULE:PlayerStaminaLost(client)
         local currentStamina = client:getLocalVar("stamina", currentMaxStamina)
         if currentStamina > breathThreshold then
             client:StopSound("player/breathe1.wav")
-            client:setNetVar("brth", nil)
+            client:setLocalVar("brth", nil)
             timer.Remove(timerName)
         end
     end)

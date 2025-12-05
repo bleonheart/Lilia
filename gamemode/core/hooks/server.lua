@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -410,7 +410,7 @@ function GM:KeyPress(client, key)
                 client:consumeStamina(jumpReq)
                 local newStamina = client:getLocalVar("stamina", maxStamina)
                 if newStamina <= 0 then
-                    client:setNetVar("brth", true)
+                    client:setLocalVar("brth", true)
                     client:ConCommand("-speed")
                 end
             elseif stamina < jumpReq then
@@ -465,7 +465,7 @@ function GM:DoPlayerDeath(client, attacker)
         existingRagdoll.liaIsDeadRagdoll = true
         existingRagdoll.liaNoReset = true
         existingRagdoll:CallOnRemove("deadRagdoll", function() existingRagdoll.liaIgnoreDelete = true end)
-        client:setNetVar("diedInRagdoll", true)
+        client.diedInRagdoll = true
     elseif hook.Run("ShouldSpawnClientRagdoll", client) ~= false then
         client:createRagdoll(false, true)
     end
@@ -484,10 +484,10 @@ end
 function GM:PlayerSpawn(client)
     client:stopAction()
     client:SetDSP(1, false)
-    if not client:getNetVar("diedInRagdoll", false) then
+    if not client.diedInRagdoll then
         client:removeRagdoll()
     else
-        client:setNetVar("diedInRagdoll", nil)
+        client.diedInRagdoll = nil
     end
 
     if not client:getChar() then client:SetNoDraw(true) end
@@ -757,7 +757,7 @@ function GM:SaveData()
 
     if #data > 0 then
         lia.data.savePersistence(data)
-        lia.information(L("dataSaved"))
+        lia.information("dataSaved")
     end
 end
 
@@ -1192,3 +1192,10 @@ hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
     MsgC(Color(255, 153, 0), L("unbanLogFormat", data.networkid), "\n")
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
+
+function GM:CanEditVariable(ent, pl, key, val, editor)
+    return false
+end
+
+if timer.Exists("CheckHookTimes") then timer.Remove("CheckHookTimes") end
+timer.Remove("HostnameThink")
