@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Entity Meta
 
     Entity management system for the Lilia framework.
@@ -190,7 +190,9 @@ if SERVER then
     function entityMeta:setKeysNonOwnable(state)
         if not IsValid(self) then return end
         if self:isDoor() then
-            lia.doors.setData(self, {noSell = state})
+            lia.doors.setData(self, {
+                noSell = state
+            })
         else
             self:setNetVar("noSell", state)
         end

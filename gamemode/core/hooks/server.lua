@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -90,6 +90,7 @@ function GM:PlayerLoadedChar(client, character)
     character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
     if not timer.Exists("liaSalaryGlobal") then self:CreateSalaryTimers() end
+    if not timer.Exists("liaVoiceUpdate") then self:CreateVoiceUpdateTimer() end
     local ammoTable = character:getAmmo()
     if character:getFaction() == FACTION_STAFF then
         local storedDiscord = client:getLiliaData("staffDiscord")
@@ -548,6 +549,7 @@ function GM:PlayerDisconnected(client)
 
     client:removeRagdoll()
     lia.char.cleanUpForPlayer(client)
+    client.liaVoiceHear = nil
     if lia.config.get("DeleteDroppedItemsOnLeave", false) then
         local droppedItems = lia.util.findPlayerItems(client)
         for _, item in ipairs(droppedItems) do
@@ -1008,15 +1010,39 @@ function ClientAddText(client, ...)
     net.Send(client)
 end
 
+local function UpdateVoiceHearing()
+    if not lia.config.get("IsVoiceEnabled", true) then return end
+    for _, listener in player.Iterator() do
+        if not IsValid(listener) or not listener:getChar() or not listener:Alive() then
+            listener.liaVoiceHear = nil
+            continue
+        end
+
+        listener.liaVoiceHear = listener.liaVoiceHear or {}
+        for _, speaker in player.Iterator() do
+            if not IsValid(speaker) or speaker == listener or not speaker:getChar() or not speaker:Alive() or speaker:getLiliaData("liaGagged", false) then
+                listener.liaVoiceHear[speaker] = nil
+                continue
+            end
+
+            local voiceType = speaker:getLocalVar("VoiceType", VOICE_TALKING)
+            local baseRange = voiceType == VOICE_WHISPERING and lia.config.get("WhisperRange", 70) or voiceType == VOICE_TALKING and lia.config.get("TalkRange", 280) or voiceType == VOICE_YELLING and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)
+            local distance = listener:GetPos():Distance(speaker:GetPos())
+            listener.liaVoiceHear[speaker] = distance <= baseRange
+        end
+    end
+end
+
 function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
-    if speaker:getLiliaData("liaGagged", false) or not speaker:getChar() then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
-    local voiceType = speaker:getLocalVar("VoiceType", VOICE_TALKING)
-    local baseRange = voiceType == VOICE_WHISPERING and lia.config.get("WhisperRange", 70) or voiceType == VOICE_TALKING and lia.config.get("TalkRange", 280) or voiceType == VOICE_YELLING and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)
-    local distance = listener:GetPos():Distance(speaker:GetPos())
-    local canHear = distance <= baseRange
-    return canHear, canHear
+    local bCanHear = listener.liaVoiceHear and listener.liaVoiceHear[speaker]
+    return bCanHear, bCanHear
+end
+
+function GM:OnVoiceTypeChanged(client)
+    if not IsValid(client) or not client:getChar() then return end
+    UpdateVoiceHearing()
 end
 
 function GM:CreateCharacterSaveTimer()
@@ -1064,6 +1090,11 @@ function GM:CreateSalaryTimers()
     else
         timer.Create("liaSalaryGlobal", salaryInterval, 0, salaryTimer)
     end
+end
+
+function GM:CreateVoiceUpdateTimer()
+    if timer.Exists("liaVoiceUpdate") then return end
+    timer.Create("liaVoiceUpdate", 0.5, 0, function() UpdateVoiceHearing() end)
 end
 
 function GM:ShowHelp()

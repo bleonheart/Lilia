@@ -112,9 +112,7 @@ else
     local function ApplyConvars()
         for name, data in pairs(cmdlist) do
             local convar = GetConVar(name)
-            if convar then
-                RunConsoleCommand(name, data[1])
-            end
+            if convar then RunConsoleCommand(name, data[1]) end
         end
     end
 
