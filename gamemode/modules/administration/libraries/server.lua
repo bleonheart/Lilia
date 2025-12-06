@@ -104,15 +104,11 @@ local function ReadLogEntries(category, page)
     local logsPerPage = lia.config.get("logsPerPage", 500)
     local cutoff = os.time() - maxDays * 86400
     local cutoffStr = os.date("%Y-%m-%d %H:%M:%S", cutoff)
-
-    -- First, get total count for pagination
     local countCondition = table.concat({"gamemode = " .. lia.db.convertDataType(engine.ActiveGamemode()), "category = " .. lia.db.convertDataType(category), "timestamp >= " .. lia.db.convertDataType(cutoffStr)}, " AND ")
     lia.db.count("logs", countCondition):next(function(totalCount)
-        -- Now get the specific page
         local offset = (page - 1) * logsPerPage
         local limit = logsPerPage
         local condition = countCondition .. " ORDER BY id DESC LIMIT " .. limit .. " OFFSET " .. offset
-
         lia.db.select({"timestamp", "message", "steamID"}, "logs", condition):next(function(res)
             local rows = res.results or {}
             local logs = {}
@@ -138,21 +134,14 @@ end
 
 net.Receive("liaSendLogsRequest", function(_, client)
     if not CanPlayerSeeLog(client) then return end
-
     local category = net.ReadString()
-    local page = net.ReadUInt(16) -- Max 65535 pages should be plenty
-
-    -- Validate category access
+    local page = net.ReadUInt(16)
     if hook.Run("CanPlayerSeeLogCategory", client, category) == false then return end
-
-    ReadLogEntries(category, page):next(function(result)
-        lia.net.writeBigTable(client, "liaSendLogs", result)
-    end)
+    ReadLogEntries(category, page):next(function(result) lia.net.writeBigTable(client, "liaSendLogs", result) end)
 end)
 
 net.Receive("liaSendLogsCategoriesRequest", function(_, client)
     if not CanPlayerSeeLog(client) then return end
-
     local categories = {}
     for _, v in pairs(lia.log.types) do
         categories[v.category or L("uncategorized")] = true
@@ -160,9 +149,7 @@ net.Receive("liaSendLogsCategoriesRequest", function(_, client)
 
     local catList = {}
     for k in pairs(categories) do
-        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then
-            catList[#catList + 1] = k
-        end
+        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then catList[#catList + 1] = k end
     end
 
     net.Start("liaSendLogsCategories")

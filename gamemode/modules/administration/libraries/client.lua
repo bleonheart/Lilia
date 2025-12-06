@@ -613,8 +613,6 @@ function MODULE:PopulateAdminTabs(pages)
                     panel:Clear()
                     panel:DockPadding(6, 6, 6, 6)
                     panel.Paint = nil
-
-                    -- Request categories first
                     net.Start("liaSendLogsCategoriesRequest")
                     net.SendToServer()
                 end
@@ -672,21 +670,24 @@ end)
 spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
     if not client:hasPrivilege("canUseItemSpawner") then return end
-    local icon = vgui.Create("ContentIcon", container)
-    icon:SetContentType("inventoryitem")
-    icon:SetSpawnName(data.id)
+    local icon = vgui.Create("liaItemIcon", container)
+    icon:SetSize(112, 112)
+    icon:DockMargin(15, 15, 15, 15)
+    icon.GetSpawnName = function() return data.id end
+    icon.SetSpawnName = function(_, name) data.id = name end
+    icon.SetContentType = function(_, type) end
     icon:SetName(data.name)
     local itemData = lia.item.list[data.id]
-    if itemData.icon then
-        icon.Image:SetMaterial(itemData.icon)
-    else
-        local model = itemData.model or "default.mdl"
-        local matName = string.Replace(model, ".mdl", "")
-        icon.Image:SetMaterial(Material("spawnicons/" .. matName .. ".png"))
+    icon:setItemType(data.id)
+    if icon.Icon then
+        icon.Icon:SetSize(104, 104)
+        local w, h = icon:GetSize()
+        local iconW, iconH = icon.Icon:GetSize()
+        icon.Icon:SetPos((w - iconW) * 0.5, (h - iconH) * 0.5)
     end
 
     icon:SetColor(Color(205, 92, 92, 255))
-    icon:SetTooltip(lia.darkrp.textWrap(itemData.desc or "", "DermaDefault", 560))
+    icon:SetTooltip("<font=LiliaFont.16b>" .. itemData:getName() .. "</font>\n" .. "<font=LiliaFont.16>" .. lia.darkrp.textWrap(itemData:getDesc() or "", "DermaDefault", 560))
     icon.DoClick = function()
         net.Start("liaSpawnMenuSpawnItem")
         net.WriteString(data.id)
@@ -695,49 +696,12 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
     end
 
     icon.OpenMenu = function()
-        local menu = lia.derma.dermaMenu()
-        menu:AddOption(L("copy"), function() SetClipboardText(icon:GetSpawnName()) end):SetIcon("icon16/page_copy.png")
-        menu:AddOption(L("giveToCharacter"), function()
-            local popup = vgui.Create("liaFrame")
-            popup:SetTitle(L("spawnItemTitle", data.id))
-            popup:SetSize(600, 150)
-            popup:Center()
-            popup:MakePopup()
-            popup:ShowCloseButton(true)
-            local label = vgui.Create("DLabel", popup)
-            label:Dock(TOP)
-            label:SetText(L("giveTo") .. ":")
-            local combo = vgui.Create("liaComboBox", popup)
-            combo:Dock(TOP)
-            combo:PostInit()
-            for _, ply in player.Iterator() do
-                if IsValid(ply) and ply:IsPlayer() then
-                    local character = ply:getChar()
-                    if character then
-                        local steamID = ply:SteamID() or character.steamID or ""
-                        if steamID and steamID ~= "" then
-                            local charName = character:getName() or L("unknown")
-                            combo:AddChoice(L("characterSteamIDFormat", charName, steamID), steamID)
-                        end
-                    end
-                end
-            end
-
-            local button = vgui.Create("liaButton", popup)
-            button:Dock(BOTTOM)
-            button:SetText(L("spawnItem"))
-            button.DoClick = function()
-                local target = combo:GetSelectedData()
-                net.Start("liaSpawnMenuGiveItem")
-                net.WriteString(data.id)
-                net.WriteString(target or "")
-                net.SendToServer()
-                LocalPlayer():notifySuccess("Item given successfully!")
-                popup:Remove()
-            end
-        end)
-
-        menu:Open()
+        net.Start("liaSpawnMenuGiveItem")
+        net.WriteString(data.id)
+        net.WriteString(LocalPlayer():SteamID())
+        net.SendToServer()
+        LocalPlayer():notifySuccess(L("itemGivenToSelf"))
+        lia.websound.playButtonSound("outlands-rp/ui/ui_return.wav")
     end
 
     container:Add(icon)
@@ -2478,13 +2442,11 @@ function MODULE:OpenAdminStickUI(tgt)
 end
 
 local LOGS_PER_PAGE = lia.config.get("logsPerPage", 500)
-local currentCategoryData = {} -- Store data for each category
-
+local currentCategoryData = {}
 local function CreateLogsUI(panel, categories)
     panel:Clear()
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
-
     if not categories or #categories == 0 then
         local noLogsLabel = panel:Add("DLabel")
         noLogsLabel:Dock(FILL)
@@ -2497,15 +2459,12 @@ local function CreateLogsUI(panel, categories)
 
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
-
     for _, category in ipairs(categories) do
         local pagePanel = vgui.Create("DPanel")
         pagePanel:Dock(FILL)
         pagePanel:DockPadding(10, 10, 10, 10)
         pagePanel.Paint = nil
         pagePanel.category = category
-
-        -- Loading indicator
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
         loadingLabel:SetText(L("loading"))
@@ -2513,8 +2472,6 @@ local function CreateLogsUI(panel, categories)
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
         pagePanel.loadingLabel = loadingLabel
-
-        -- Store reference to this page panel
         currentCategoryData[category] = {
             panel = pagePanel,
             currentPage = 1,
@@ -2526,16 +2483,13 @@ local function CreateLogsUI(panel, categories)
         sheet:AddSheet(category, pagePanel)
     end
 
-    -- Override tab selection to request logs for the selected category
     local oldSetActiveTab = sheet.SetActiveTab
     sheet.SetActiveTab = function(self, tabIndex)
         oldSetActiveTab(self, tabIndex)
-
         local activeTab = self.tabs[tabIndex]
         if activeTab and activeTab.panel then
             local category = activeTab.panel.category
             if category then
-                -- Request logs for this category
                 net.Start("liaSendLogsRequest")
                 net.WriteString(category)
                 net.WriteUInt(currentCategoryData[category].currentPage, 16)
@@ -2544,39 +2498,27 @@ local function CreateLogsUI(panel, categories)
         end
     end
 
-    if sheet.tabs and #sheet.tabs > 0 then
-        sheet:SetActiveTab(1)
-    end
-
+    if sheet.tabs and #sheet.tabs > 0 then sheet:SetActiveTab(1) end
     panel.logsSheet = sheet
 end
 
 local function UpdateLogsUI(panel, logsData)
     local category = logsData.category
     if not category or not currentCategoryData[category] then return end
-
     local categoryData = currentCategoryData[category]
     local pagePanel = categoryData.panel
-
-    -- Clear loading state
     if IsValid(pagePanel.loadingLabel) then
         pagePanel.loadingLabel:Remove()
         pagePanel.loadingLabel = nil
     end
 
-    -- Clear existing content
     for _, child in ipairs(pagePanel:GetChildren()) do
-        if child ~= pagePanel.loadingLabel then
-            child:Remove()
-        end
+        if child ~= pagePanel.loadingLabel then child:Remove() end
     end
 
-    -- Update category data
     categoryData.currentPage = logsData.currentPage
     categoryData.totalPages = logsData.totalPages
     categoryData.logs = logsData.logs
-
-    -- Create search box
     local searchBox = pagePanel:Add("liaEntry")
     searchBox:Dock(TOP)
     searchBox:DockMargin(0, 0, 0, 15)
@@ -2585,61 +2527,51 @@ local function UpdateLogsUI(panel, logsData)
     searchBox:SetPlaceholderText(L("searchLogs"))
     searchBox:SetTextColor(Color(200, 200, 200))
     searchBox:SetText(categoryData.searchFilter)
-
-    -- Create pagination container
     local paginationContainer = pagePanel:Add("DPanel")
     paginationContainer:Dock(BOTTOM)
     paginationContainer:DockMargin(0, 15, 0, 0)
     paginationContainer:SetTall(30)
-    paginationContainer.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
-    end
-
+    paginationContainer.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(0, 0, 0, 50)):Shape(lia.derma.SHAPE_IOS):Draw() end
     local prevButton = paginationContainer:Add("liaButton")
     prevButton:Dock(LEFT)
     prevButton:SetWide(80)
     prevButton:SetText(L("previousPage"))
     prevButton:DockMargin(5, 5, 5, 5)
-
     local pageLabel = paginationContainer:Add("DLabel")
     pageLabel:Dock(FILL)
     pageLabel:DockMargin(10, 5, 10, 5)
     pageLabel:SetTextColor(Color(200, 200, 200))
     pageLabel:SetFont("LiliaFont.16")
     pageLabel:SetContentAlignment(5)
-
     local nextButton = paginationContainer:Add("liaButton")
     nextButton:Dock(RIGHT)
     nextButton:SetWide(80)
     nextButton:SetText(L("nextPage"))
     nextButton:DockMargin(5, 5, 5, 5)
-
-    -- Create logs table
     local list = pagePanel:Add("liaTable")
     list:Dock(FILL)
     list:DockMargin(0, 0, 0, 10)
-
     local columns = {
-        { name = L("timestamp"), field = "timestamp" },
-        { name = L("message"), field = "message" },
-        { name = L("steamID"), field = "steamID" }
+        {
+            name = L("timestamp"),
+            field = "timestamp"
+        },
+        {
+            name = L("message"),
+            field = "message"
+        },
+        {
+            name = L("steamID"),
+            field = "steamID"
+        }
     }
 
     for _, col in ipairs(columns) do
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption(L("copySteamID"), function(rowData)
-        if rowData[3] and rowData[3] ~= "" then
-            SetClipboardText(tostring(rowData[3]))
-        end
-    end, "icon16/page_copy.png")
-
-    list:AddMenuOption(L("copyLogMessage"), function(rowData)
-        SetClipboardText(tostring(rowData[2] or ""))
-    end, "icon16/page_copy.png")
-
-    -- Update pagination display
+    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData[3] and rowData[3] ~= "" then SetClipboardText(tostring(rowData[3])) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyLogMessage"), function(rowData) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
     local function updatePagination()
         pageLabel:SetText(L("pageIndicator", categoryData.currentPage, categoryData.totalPages))
         prevButton:SetDisabled(categoryData.currentPage <= 1)
@@ -2648,17 +2580,16 @@ local function UpdateLogsUI(panel, logsData)
         nextButton:SetTextColor(categoryData.currentPage >= categoryData.totalPages and Color(100, 100, 100) or Color(200, 200, 200))
     end
 
-    -- Display current page logs
     local function showCurrentPage()
         list:Clear()
         for _, log in ipairs(categoryData.logs) do
             local line = list:AddLine(log.timestamp, log.message, log.steamID or "")
             line.rowData = log
         end
+
         list:ForceCommit()
     end
 
-    -- Request new page
     local function requestPage(pageNum)
         if pageNum >= 1 and pageNum <= categoryData.totalPages then
             categoryData.currentPage = pageNum
@@ -2669,34 +2600,17 @@ local function UpdateLogsUI(panel, logsData)
         end
     end
 
-    -- Handle search (client-side filtering of current page)
-    searchBox.OnTextChanged = function(_, value)
-        categoryData.searchFilter = value or ""
-        -- For now, we'll just store the filter but not apply client-side filtering
-        -- since we're doing server-side pagination. In a more advanced implementation,
-        -- we could send the filter to the server as well.
-    end
-
-    prevButton.DoClick = function()
-        requestPage(categoryData.currentPage - 1)
-    end
-
-    nextButton.DoClick = function()
-        requestPage(categoryData.currentPage + 1)
-    end
-
+    searchBox.OnTextChanged = function(_, value) categoryData.searchFilter = value or "" end
+    prevButton.DoClick = function() requestPage(categoryData.currentPage - 1) end
+    nextButton.DoClick = function() requestPage(categoryData.currentPage + 1) end
     updatePagination()
     showCurrentPage()
-
     list:ForceCommit()
     list:InvalidateLayout(true)
-    if list.scrollPanel then
-        list.scrollPanel:InvalidateLayout(true)
-    end
+    if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
 end
 
 liaLogsPanel = liaLogsPanel or nil
--- Handle categories response
 net.Receive("liaSendLogsCategories", function()
     local categories = net.ReadTable()
     if not categories or #categories == 0 then
@@ -2722,7 +2636,6 @@ net.Receive("liaSendLogsCategories", function()
     end
 end)
 
--- Handle logs response for specific category/page
 lia.net.readBigTable("liaSendLogs", function(logsData)
     if not logsData then
         chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))

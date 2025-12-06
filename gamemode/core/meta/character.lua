@@ -350,7 +350,6 @@ if SERVER then
 
     function characterMeta:save(callback)
         if self.isBot then return end
-
         local shouldSave = hook.Run("CharPreSave", self)
         if shouldSave ~= false then
             local data = {}
