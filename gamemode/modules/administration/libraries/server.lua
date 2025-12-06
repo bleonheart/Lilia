@@ -90,10 +90,6 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     lia.log.add(client, "chargiveItem", id, target, "SpawnMenuGiveItem")
 end)
 
-local function SendLogs(client, categorizedLogs)
-    lia.net.writeBigTable(client, "liaSendLogs", categorizedLogs)
-end
-
 local function CanPlayerSeeLog(client)
     return lia.config.get("AdminConsoleNetworkLogs", true) and client:hasPrivilege("canSeeLogs")
 end

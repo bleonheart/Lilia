@@ -675,7 +675,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
     icon:DockMargin(15, 15, 15, 15)
     icon.GetSpawnName = function() return data.id end
     icon.SetSpawnName = function(_, name) data.id = name end
-    icon.SetContentType = function(_, type) end
+    icon.SetContentType = function() end
     icon:SetName(data.name)
     local itemData = lia.item.list[data.id]
     icon:setItemType(data.id)
@@ -2441,7 +2441,6 @@ function MODULE:OpenAdminStickUI(tgt)
     menu:Open()
 end
 
-local LOGS_PER_PAGE = lia.config.get("logsPerPage", 50)
 local currentCategoryData = {}
 local function CreateLogsUI(panel, categories)
     panel:Clear()
@@ -2460,24 +2459,19 @@ local function CreateLogsUI(panel, categories)
 
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
-
     local function requestLogsForCategory(category)
-        if not category or not currentCategoryData[category] then
-            return
-        end
-
+        if not category or not currentCategoryData[category] then return end
         local pagePanel = currentCategoryData[category].panel
-        if not IsValid(pagePanel) then
-            return
-        end
-        
+        if not IsValid(pagePanel) then return end
         if IsValid(pagePanel.loadingLabel) then
             pagePanel.loadingLabel:Remove()
             pagePanel.loadingLabel = nil
         end
+
         for _, child in ipairs(pagePanel:GetChildren()) do
             child:Remove()
         end
+
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
         loadingLabel:SetText(L("loading"))
@@ -2485,7 +2479,6 @@ local function CreateLogsUI(panel, categories)
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
         pagePanel.loadingLabel = loadingLabel
-
         net.Start("liaSendLogsRequest")
         net.WriteString(category)
         net.WriteUInt(currentCategoryData[category].currentPage, 16)
@@ -2513,9 +2506,7 @@ local function CreateLogsUI(panel, categories)
             searchFilter = ""
         }
 
-        sheet:AddTab(category, pagePanel, nil, function()
-            requestLogsForCategory(category)
-        end)
+        sheet:AddTab(category, pagePanel, nil, function() requestLogsForCategory(category) end)
     end
 
     local oldSetActiveTab = sheet.SetActiveTab
@@ -2528,9 +2519,7 @@ local function CreateLogsUI(panel, categories)
         end
     end
 
-    if sheet.tabs and #sheet.tabs > 0 then
-        sheet:SetActiveTab(1)
-    end
+    if sheet.tabs and #sheet.tabs > 0 then sheet:SetActiveTab(1) end
     panel.logsSheet = sheet
 end
 
@@ -2556,6 +2545,7 @@ local function UpdateLogsUI(panel, logsData)
                     tab.pan.loadingLabel = nil
                 end
             end
+
             local activeId = panel.logsSheet.active_id or 1
             local activeTab = panel.logsSheet.tabs[activeId]
             if activeTab and activeTab.pan and IsValid(activeTab.pan.loadingLabel) then
@@ -2567,15 +2557,9 @@ local function UpdateLogsUI(panel, logsData)
     end
 
     local categoryData = currentCategoryData[category]
-    if not categoryData then
-        return
-    end
-
+    if not categoryData then return end
     local pagePanel = categoryData.panel
-    if not IsValid(pagePanel) then
-        return
-    end
-
+    if not IsValid(pagePanel) then return end
     if IsValid(pagePanel.loadingLabel) then
         pagePanel.loadingLabel:Remove()
         pagePanel.loadingLabel = nil
@@ -2653,18 +2637,13 @@ local function UpdateLogsUI(panel, logsData)
         list:Clear()
         local searchFilter = string.lower(categoryData.searchFilter or "")
         local filteredLogs = categoryData.logs
-
         if searchFilter ~= "" then
             filteredLogs = {}
             for _, log in ipairs(categoryData.logs) do
                 local timestamp = string.lower(tostring(log.timestamp or ""))
                 local message = string.lower(tostring(log.message or ""))
                 local steamID = string.lower(tostring(log.steamID or ""))
-                if string.find(timestamp, searchFilter, 1, true) or
-                   string.find(message, searchFilter, 1, true) or
-                   string.find(steamID, searchFilter, 1, true) then
-                    table.insert(filteredLogs, log)
-                end
+                if string.find(timestamp, searchFilter, 1, true) or string.find(message, searchFilter, 1, true) or string.find(steamID, searchFilter, 1, true) then table.insert(filteredLogs, log) end
             end
         end
 
@@ -2690,6 +2669,7 @@ local function UpdateLogsUI(panel, logsData)
         categoryData.searchFilter = value or ""
         showCurrentPage()
     end
+
     prevButton.DoClick = function() requestPage(categoryData.currentPage - 1) end
     nextButton.DoClick = function() requestPage(categoryData.currentPage + 1) end
     updatePagination()
