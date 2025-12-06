@@ -55,7 +55,6 @@
             mat_envmaptgasize = 0,
             mat_hdr_level = 0,
             mat_motion_blur_enabled = 0,
-            mat_picmip = 2,
             mat_reduceparticles = 1,
             mp_decals = 1,
             r_waterdrawreflection = 0,
