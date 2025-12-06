@@ -149,7 +149,7 @@ function MODULE:OnCharDisconnect(client, character)
     if not IsValid(client) or not character then return end
     local lastPosData = {
         pos = client:GetPos(),
-        ang = client:GetEyeAngles(),
+        ang = Angle(0, 0, 0),
         map = lia.data.getEquivalencyMap(game.GetMap())
     }
 
