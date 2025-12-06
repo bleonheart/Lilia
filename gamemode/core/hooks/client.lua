@@ -668,18 +668,20 @@ function GM:DrawDeathNotice()
 end
 
 function GM:GetMainMenuPosition(character)
-    if character and lia.config.get("MainMenuUseLastPos", true) then
-        local lastPos = character:getLastPos()
-        if lastPos and lastPos.pos and isvector(lastPos.pos) then
-            local angles = lastPos.ang and isangle(lastPos.ang) and lastPos.ang or Angle(0, 0, 0)
-            return lastPos.pos, angles
+    if character then
+        if lia.config.get("MainMenuUseLastPos", true) then
+            local lastPos = character:getLastPos()
+            if lastPos and lastPos.pos and isvector(lastPos.pos) then
+                local angles = lastPos.ang and isangle(lastPos.ang) and lastPos.ang or Angle(0, 0, 0)
+                return lastPos.pos, angles
+            end
         end
 
         if character:getFaction() then
             local faction = lia.faction.get(character:getFaction())
             if faction and faction.mainMenuPosition then
                 local menuPos = faction.mainMenuPosition
-                local currentMap = game.GetMap()
+                local currentMap = lia.data.getEquivalencyMap(game.GetMap())
                 if istable(menuPos) and menuPos[currentMap] then
                     local mapPos = menuPos[currentMap]
                     if istable(mapPos) then

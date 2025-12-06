@@ -107,11 +107,10 @@ end
 
 function MODULE:CharPreSave(character)
     local client = character:getPlayer()
-    if not IsValid(client) then return end
-    if client:getChar() == character then
+    if IsValid(client) and client:getChar() == character then
         local lastPosData = {
             pos = client:GetPos(),
-            ang = client:GetEyeAngles(),
+            ang = Angle(0, 0, 0),
             map = lia.data.getEquivalencyMap(game.GetMap())
         }
 
