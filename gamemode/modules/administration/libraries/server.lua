@@ -101,7 +101,7 @@ end
 local function ReadLogEntries(category, page)
     local d = deferred.new()
     local maxDays = lia.config.get("LogRetentionDays", 7)
-    local logsPerPage = lia.config.get("logsPerPage", 500)
+    local logsPerPage = lia.config.get("logsPerPage", 50)
     local cutoff = os.time() - maxDays * 86400
     local cutoffStr = os.date("%Y-%m-%d %H:%M:%S", cutoff)
     local countCondition = table.concat({"gamemode = " .. lia.db.convertDataType(engine.ActiveGamemode()), "category = " .. lia.db.convertDataType(category), "timestamp >= " .. lia.db.convertDataType(cutoffStr)}, " AND ")

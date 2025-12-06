@@ -759,7 +759,7 @@ function GM:SaveData()
 
     if #data > 0 then
         lia.data.savePersistence(data)
-        lia.information("dataSaved")
+        lia.information(L("dataSaved"))
     end
 end
 

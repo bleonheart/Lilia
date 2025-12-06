@@ -2441,10 +2441,11 @@ function MODULE:OpenAdminStickUI(tgt)
     menu:Open()
 end
 
-local LOGS_PER_PAGE = lia.config.get("logsPerPage", 500)
+local LOGS_PER_PAGE = lia.config.get("logsPerPage", 50)
 local currentCategoryData = {}
 local function CreateLogsUI(panel, categories)
     panel:Clear()
+    currentCategoryData = {}
     panel:DockPadding(6, 6, 6, 6)
     panel.Paint = nil
     if not categories or #categories == 0 then
@@ -2459,6 +2460,38 @@ local function CreateLogsUI(panel, categories)
 
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
+
+    local function requestLogsForCategory(category)
+        if not category or not currentCategoryData[category] then
+            return
+        end
+
+        local pagePanel = currentCategoryData[category].panel
+        if not IsValid(pagePanel) then
+            return
+        end
+        
+        if IsValid(pagePanel.loadingLabel) then
+            pagePanel.loadingLabel:Remove()
+            pagePanel.loadingLabel = nil
+        end
+        for _, child in ipairs(pagePanel:GetChildren()) do
+            child:Remove()
+        end
+        local loadingLabel = pagePanel:Add("DLabel")
+        loadingLabel:Dock(FILL)
+        loadingLabel:SetText(L("loading"))
+        loadingLabel:SetTextColor(Color(150, 150, 150))
+        loadingLabel:SetFont("LiliaFont.20")
+        loadingLabel:SetContentAlignment(5)
+        pagePanel.loadingLabel = loadingLabel
+
+        net.Start("liaSendLogsRequest")
+        net.WriteString(category)
+        net.WriteUInt(currentCategoryData[category].currentPage, 16)
+        net.SendToServer()
+    end
+
     for _, category in ipairs(categories) do
         local pagePanel = vgui.Create("DPanel")
         pagePanel:Dock(FILL)
@@ -2480,33 +2513,69 @@ local function CreateLogsUI(panel, categories)
             searchFilter = ""
         }
 
-        sheet:AddSheet(category, pagePanel)
+        sheet:AddTab(category, pagePanel, nil, function()
+            requestLogsForCategory(category)
+        end)
     end
 
     local oldSetActiveTab = sheet.SetActiveTab
     sheet.SetActiveTab = function(self, tabIndex)
         oldSetActiveTab(self, tabIndex)
         local activeTab = self.tabs[tabIndex]
-        if activeTab and activeTab.panel then
-            local category = activeTab.panel.category
-            if category then
-                net.Start("liaSendLogsRequest")
-                net.WriteString(category)
-                net.WriteUInt(currentCategoryData[category].currentPage, 16)
-                net.SendToServer()
-            end
+        if activeTab and activeTab.pan then
+            local category = activeTab.pan.category
+            requestLogsForCategory(category)
         end
     end
 
-    if sheet.tabs and #sheet.tabs > 0 then sheet:SetActiveTab(1) end
+    if sheet.tabs and #sheet.tabs > 0 then
+        sheet:SetActiveTab(1)
+    end
     panel.logsSheet = sheet
 end
 
 local function UpdateLogsUI(panel, logsData)
-    local category = logsData.category
-    if not category or not currentCategoryData[category] then return end
+    local category = logsData and logsData.category
+    if not category then
+        if IsValid(panel) and panel.logsSheet and panel.logsSheet.tabs then
+            local activeId = panel.logsSheet.active_id or 1
+            local activeTab = panel.logsSheet.tabs[activeId]
+            if activeTab and activeTab.pan and IsValid(activeTab.pan.loadingLabel) then
+                activeTab.pan.loadingLabel:Remove()
+                activeTab.pan.loadingLabel = nil
+            end
+        end
+        return
+    end
+
+    if not currentCategoryData[category] then
+        if IsValid(panel) and panel.logsSheet and panel.logsSheet.tabs then
+            for _, tab in ipairs(panel.logsSheet.tabs) do
+                if tab.pan and tab.pan.category == category and IsValid(tab.pan.loadingLabel) then
+                    tab.pan.loadingLabel:Remove()
+                    tab.pan.loadingLabel = nil
+                end
+            end
+            local activeId = panel.logsSheet.active_id or 1
+            local activeTab = panel.logsSheet.tabs[activeId]
+            if activeTab and activeTab.pan and IsValid(activeTab.pan.loadingLabel) then
+                activeTab.pan.loadingLabel:Remove()
+                activeTab.pan.loadingLabel = nil
+            end
+        end
+        return
+    end
+
     local categoryData = currentCategoryData[category]
+    if not categoryData then
+        return
+    end
+
     local pagePanel = categoryData.panel
+    if not IsValid(pagePanel) then
+        return
+    end
+
     if IsValid(pagePanel.loadingLabel) then
         pagePanel.loadingLabel:Remove()
         pagePanel.loadingLabel = nil
@@ -2516,9 +2585,9 @@ local function UpdateLogsUI(panel, logsData)
         if child ~= pagePanel.loadingLabel then child:Remove() end
     end
 
-    categoryData.currentPage = logsData.currentPage
-    categoryData.totalPages = logsData.totalPages
-    categoryData.logs = logsData.logs
+    categoryData.currentPage = logsData.currentPage or 1
+    categoryData.totalPages = logsData.totalPages or 1
+    categoryData.logs = logsData.logs or {}
     local searchBox = pagePanel:Add("liaEntry")
     searchBox:Dock(TOP)
     searchBox:DockMargin(0, 0, 0, 15)
@@ -2582,7 +2651,24 @@ local function UpdateLogsUI(panel, logsData)
 
     local function showCurrentPage()
         list:Clear()
-        for _, log in ipairs(categoryData.logs) do
+        local searchFilter = string.lower(categoryData.searchFilter or "")
+        local filteredLogs = categoryData.logs
+
+        if searchFilter ~= "" then
+            filteredLogs = {}
+            for _, log in ipairs(categoryData.logs) do
+                local timestamp = string.lower(tostring(log.timestamp or ""))
+                local message = string.lower(tostring(log.message or ""))
+                local steamID = string.lower(tostring(log.steamID or ""))
+                if string.find(timestamp, searchFilter, 1, true) or
+                   string.find(message, searchFilter, 1, true) or
+                   string.find(steamID, searchFilter, 1, true) then
+                    table.insert(filteredLogs, log)
+                end
+            end
+        end
+
+        for _, log in ipairs(filteredLogs) do
             local line = list:AddLine(log.timestamp, log.message, log.steamID or "")
             line.rowData = log
         end
@@ -2600,7 +2686,10 @@ local function UpdateLogsUI(panel, logsData)
         end
     end
 
-    searchBox.OnTextChanged = function(_, value) categoryData.searchFilter = value or "" end
+    searchBox.OnTextChanged = function(_, value)
+        categoryData.searchFilter = value or ""
+        showCurrentPage()
+    end
     prevButton.DoClick = function() requestPage(categoryData.currentPage - 1) end
     nextButton.DoClick = function() requestPage(categoryData.currentPage + 1) end
     updatePagination()
@@ -2637,11 +2726,6 @@ net.Receive("liaSendLogsCategories", function()
 end)
 
 lia.net.readBigTable("liaSendLogs", function(logsData)
-    if not logsData then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
-        return
-    end
-
     local logsPanel = liaLogsPanel
     if not IsValid(logsPanel) then
         for _, panel in ipairs(vgui.GetWorldPanel():GetChildren()) do
@@ -2653,8 +2737,29 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
         end
     end
 
+    local function removeLoadingLabel()
+        if IsValid(logsPanel) and logsPanel.logsSheet and logsPanel.logsSheet.tabs then
+            local activeId = logsPanel.logsSheet.active_id or 1
+            local activeTab = logsPanel.logsSheet.tabs[activeId]
+            if activeTab and activeTab.pan and IsValid(activeTab.pan.loadingLabel) then
+                activeTab.pan.loadingLabel:Remove()
+                activeTab.pan.loadingLabel = nil
+            end
+        end
+    end
+
+    if not logsData then
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
+        removeLoadingLabel()
+        return
+    end
+
     if IsValid(logsPanel) then
-        UpdateLogsUI(logsPanel, logsData)
+        local success, err = pcall(UpdateLogsUI, logsPanel, logsData)
+        if not success then
+            chat.AddText(Color(255, 0, 0), "Error updating logs UI: " .. tostring(err))
+            removeLoadingLabel()
+        end
     else
         chat.AddText(Color(255, 100, 100), L("logsPanelError"))
     end
