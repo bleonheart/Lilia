@@ -355,17 +355,16 @@ function GM:EntityTakeDamage(entity, dmgInfo)
         end
     end
 
-    -- Handle ragdoll damage transfer
-    local player
+    local foundPlayer
     if entity:GetClass() == "prop_ragdoll" then
         for _, ply in player.Iterator() do
             if ply:GetRagdollEntity() == entity then
-                player = ply
+                foundPlayer = ply
                 break
             end
         end
 
-        if IsValid(player) then
+        if IsValid(foundPlayer) then
             if dmgInfo:IsDamageType(DMG_CRUSH) then
                 if (entity.liaFallGrace or 0) < CurTime() then
                     if dmgInfo:GetDamage() <= 10 then dmgInfo:SetDamage(0) end
@@ -375,9 +374,8 @@ function GM:EntityTakeDamage(entity, dmgInfo)
                 end
             end
 
-            local damage = dmgInfo:GetDamage()
-            if IsValid(player) then
-                player:TakeDamageInfo(dmgInfo)
+            if IsValid(foundPlayer) then
+                foundPlayer:TakeDamageInfo(dmgInfo)
                 dmgInfo:SetDamage(0)
             end
         end
@@ -387,24 +385,22 @@ function GM:EntityTakeDamage(entity, dmgInfo)
     if not entity:IsPlayer() then return end
     if entity:isStaffOnDuty() and lia.config.get("StaffHasGodMode", true) then return true end
     if entity:GetMoveType() == MOVETYPE_NOCLIP then return true end
-    if IsValid(player) then
-        if dmgInfo:IsDamageType(DMG_CRUSH) then
-            if (entity.liaFallGrace or 0) < CurTime() then
-                if dmgInfo:GetDamage() <= 10 then dmgInfo:SetDamage(0) end
-                entity.liaFallGrace = CurTime() + 0.5
-            else
-                return
-            end
+    if dmgInfo:IsDamageType(DMG_CRUSH) then
+        if (entity.liaFallGrace or 0) < CurTime() then
+            if dmgInfo:GetDamage() <= 10 then dmgInfo:SetDamage(0) end
+            entity.liaFallGrace = CurTime() + 0.5
+        else
+            return
         end
+    end
 
-        local damage = dmgInfo:GetDamage()
-        if IsValid(player) then
-            local currentHealth = player:Health()
-            local newHealth = math.max(currentHealth - damage, 0)
-            player:SetHealth(newHealth)
-            if newHealth <= 0 and currentHealth > 0 then player:Kill() end
-            dmgInfo:SetDamage(0)
-        end
+    local damage = dmgInfo:GetDamage()
+    if IsValid(entity) then
+        local currentHealth = entity:Health()
+        local newHealth = math.max(currentHealth - damage, 0)
+        entity:SetHealth(newHealth)
+        if newHealth <= 0 and currentHealth > 0 then entity:Kill() end
+        dmgInfo:SetDamage(0)
     end
 end
 

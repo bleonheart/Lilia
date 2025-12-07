@@ -97,16 +97,16 @@ else
         local class = entity:GetClass()
         timer.Simple(0, function()
             if class == "prop_ragdoll" then
-                local player
+                local foundPlayer
                 for _, ply in player.Iterator() do
                     if ply:GetRagdollEntity() == entity then
-                        player = ply
+                        foundPlayer = ply
                         break
                     end
                 end
 
-                if IsValid(player) then
-                    entity.objCache = player
+                if IsValid(foundPlayer) then
+                    entity.objCache = foundPlayer
                     entity.RenderOverride = function()
                         entity:DrawModel()
                         hook.Run("DrawPlayerRagdoll", entity)
