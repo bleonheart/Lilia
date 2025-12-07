@@ -408,11 +408,6 @@ if SERVER then
             else
                 self:remove()
             end
-        elseif deferred.isPromise(result) then
-            result:catch(function(err)
-                -- Handle promise rejection to prevent unhandled rejection errors
-                -- The error has already been handled by the function (e.g., user notification)
-            end)
         end
 
         self.player = oldPlayer
