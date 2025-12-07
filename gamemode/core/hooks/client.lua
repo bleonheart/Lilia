@@ -84,22 +84,21 @@ local function drawAmmo(wpn)
     local sec = client:GetAmmoCount(wpn:GetSecondaryAmmoType())
     local x, y = ScrW() - 80, ScrH() - 80
     if sec > 0 then
-        lia.util.drawBlurAt(x, y, 64, 64)
-        surface.SetDrawColor(255, 255, 255, 5)
-        surface.DrawRect(x, y, 64, 64)
-        surface.SetDrawColor(255, 255, 255, 3)
-        surface.DrawOutlinedRect(x, y, 64, 64)
-        lia.util.drawText(sec, x + 32, y + 32, nil, 1, 1, "LiliaFont.36")
+        local shadowIntensity = 8
+        local shadowBlur = 12
+        lia.derma.rect(x, y, 64, 64):Rad(6):Color(lia.color.theme.window_shadow):Shadow(shadowIntensity, shadowBlur):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(x, y, 64, 64):Radii(6, 6, 6, 6):Color(lia.color.theme.background_alpha):Draw()
+        lia.util.drawText(sec, x + 32, y + 32, lia.color.theme.text, 1, 1, "LiliaFont.36")
     end
 
     if wpn:GetClass() ~= "weapon_slam" and (clip > 0 or count > 0) then
         x = x - (sec > 0 and 144 or 64)
-        lia.util.drawBlurAt(x, y, 128, 64)
-        surface.SetDrawColor(255, 255, 255, 5)
-        surface.DrawRect(x, y, 128, 64)
-        surface.SetDrawColor(255, 255, 255, 3)
-        surface.DrawOutlinedRect(x, y, 128, 64)
-        lia.util.drawText(clip == -1 and count or clip .. "/" .. count, x + 64, y + 32, nil, 1, 1, "LiliaFont.36")
+        local ammoText = clip == -1 and count or clip .. "/" .. count
+        local shadowIntensity = 8
+        local shadowBlur = 12
+        lia.derma.rect(x, y, 128, 64):Rad(6):Color(lia.color.theme.window_shadow):Shadow(shadowIntensity, shadowBlur):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(x, y, 128, 64):Radii(6, 6, 6, 6):Color(lia.color.theme.background_alpha):Draw()
+        lia.util.drawText(ammoText, x + 64, y + 32, lia.color.theme.text, 1, 1, "LiliaFont.36")
     end
 end
 

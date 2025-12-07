@@ -7180,8 +7180,8 @@ lia.command.add("plyrespawn", {
     },
     desc = "plyRespawnDesc",
     onRun = function(client, arguments)
-        local target = arguments[1]
-        if not IsValid(target) then
+        local target = lia.util.findPlayer(client, arguments[1])
+        if not target or not IsValid(target) then
             client:notifyErrorLocalized("invalidTarget")
             return
         end
