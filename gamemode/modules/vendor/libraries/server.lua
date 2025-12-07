@@ -329,20 +329,16 @@ function MODULE:OnEntityLoaded(ent, data)
     ent.messages = istable(data.messages) and data.messages or {}
     ent.factionBuyScales = istable(data.factionBuyScales) and data.factionBuyScales or {}
     ent.factionSellScales = istable(data.factionSellScales) and data.factionSellScales or {}
-
     -- Fix position and physics after loading from persistence
     timer.Simple(0.1, function()
         if not IsValid(ent) then return end
         local savedPos = ent:GetPos()
         local savedAng = ent:GetAngles()
-
         -- Ensure move type is set correctly
         ent:SetMoveType(MOVETYPE_NONE)
-
         -- Re-apply position and angles
         ent:SetPos(savedPos)
         ent:SetAngles(savedAng)
-
         -- Ensure physics object is properly frozen
         local physObj = ent:GetPhysicsObject()
         if IsValid(physObj) then

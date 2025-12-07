@@ -1,4 +1,4 @@
-function MODULE:CalcStaminaChange(client)
+﻿function MODULE:CalcStaminaChange(client)
     local char = client:getChar()
     if not char or client:GetMoveType() == MOVETYPE_NOCLIP then return 0 end
     local walkSpeed = lia.config.get("WalkSpeed", 100)
@@ -67,15 +67,11 @@ function MODULE:SetupMove(client, cMoveData)
     if not lia.config.get("StaminaSlowdown", true) then return end
     -- Cache the brth value to avoid calling getLocalVar every frame
     -- Cache is invalidated when brth is set via NetVarChanged hook
-    if not client.liaBrthCache then
-        client.liaBrthCache = client:getLocalVar("brth", false)
-    end
+    if not client.liaBrthCache then client.liaBrthCache = client:getLocalVar("brth", false) end
     if client.liaBrthCache then cMoveData:SetMaxClientSpeed(client:GetWalkSpeed()) end
 end
 
-function MODULE:NetVarChanged(client, key, oldValue, value)
+function MODULE:NetVarChanged(client, key, _, value)
     -- Invalidate brth cache when it changes
-    if key == "brth" then
-        client.liaBrthCache = value or false
-    end
+    if key == "brth" then client.liaBrthCache = value or false end
 end

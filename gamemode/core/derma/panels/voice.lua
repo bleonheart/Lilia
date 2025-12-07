@@ -1,4 +1,4 @@
-local VOICE_WHISPERING = "whispering"
+﻿local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
 VoicePanels = {}
@@ -64,6 +64,7 @@ function PANEL:Think()
             self:UpdateIcon()
         end
     end
+
     if self.fadeAnim then self.fadeAnim:Run() end
 end
 
