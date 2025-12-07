@@ -1,4 +1,4 @@
-﻿    lia.config.add("CurrencyNotificationImage", "Currency Notification Image", "icon16/money.png", nil, {
+﻿lia.config.add("CurrencyNotificationImage", "Currency Notification Image", "icon16/money.png", nil, {
     desc = "The material path for the currency icon used in money-type notifications",
     category = "Notifications",
     type = "String"
@@ -54,7 +54,6 @@ function PANEL:RecalcSize()
     self.scale = ScrH() / 1080
     surface.SetFont("LiliaFont.17")
     local msg = self.msg or ""
-
     -- Split message by newlines to handle multi-line text
     -- Manually split to ensure we preserve empty lines
     local lines = {}
@@ -68,45 +67,36 @@ function PANEL:RecalcSize()
                 table.insert(lines, string.sub(msg, startPos))
                 break
             end
+
             table.insert(lines, string.sub(msg, startPos, pos - 1))
             startPos = pos + 1
         end
     end
 
-    if #lines == 0 then
-        lines = {""}
-    end
-
+    if #lines == 0 then lines = {""} end
     -- Calculate width based on the longest line
     local maxWidth = 0
     local lineHeight = 0
     for _, line in ipairs(lines) do
         local tw, th = surface.GetTextSize(line)
         -- Handle empty lines by using space character for measurement
-        if tw == 0 and th == 0 then
-            tw, th = surface.GetTextSize(" ")
-        end
+        if tw == 0 and th == 0 then tw, th = surface.GetTextSize(" ") end
         if tw > maxWidth then maxWidth = tw end
         if th > lineHeight then lineHeight = th end
     end
 
-    if maxWidth == 0 or lineHeight == 0 then
-        maxWidth, lineHeight = surface.GetTextSize(" ")
-    end
-
+    if maxWidth == 0 or lineHeight == 0 then maxWidth, lineHeight = surface.GetTextSize(" ") end
     local minWidth = 300 * self.scale
     local extraSpacing = 40 * self.scale
     local iconWidth = 24 * self.scale
     local textPadding = math.min(60 * self.scale, maxWidth * 0.1)
     local requiredWidth = maxWidth + (NotificationPadding * 2) + iconWidth + extraSpacing + textPadding
     local w = math.max(requiredWidth, minWidth)
-
     -- Calculate height based on number of lines
     -- Add extra padding between lines
     local lineSpacing = 2 * self.scale
     local totalHeight = (lineHeight * #lines) + (lineSpacing * math.max(0, #lines - 1)) + (NotificationPadding * self.scale)
     local h = math.max(NotificationHeight * self.scale, totalHeight)
-
     self:SetSize(w, h)
     self.iconSize = iconWidth
     self.padding = NotificationPadding * self.scale
@@ -174,7 +164,6 @@ function PANEL:Paint(w, h)
     -- Render multi-line text
     local textX = self.padding + self.iconSize + self.padding / 2
     local textColor = Color(255, 255, 255, self.alpha)
-
     if self.lines and #self.lines > 1 then
         -- Multi-line rendering
         local totalTextHeight = (self.lineHeight * #self.lines) + (self.lineSpacing * math.max(0, #self.lines - 1))

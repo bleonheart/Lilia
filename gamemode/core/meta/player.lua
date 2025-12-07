@@ -960,18 +960,14 @@ if SERVER then
                             for _, weapon in ipairs(self:GetWeapons()) do
                                 local weaponClass = weapon:GetClass()
                                 local clip = entity.liaWeaponClips[weaponClass]
-                                if clip and clip > 0 then
-                                    weapon:SetClip1(clip)
-                                end
+                                if clip and clip > 0 then weapon:SetClip1(clip) end
                             end
                         end
 
                         -- Finally, restore reserve ammo for each ammo type
                         if entity.liaAmmo then
                             for ammoType, reserve in pairs(entity.liaAmmo) do
-                                if reserve and reserve > 0 then
-                                    self:SetAmmo(reserve, ammoType)
-                                end
+                                if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
                             end
                         end
                     end
@@ -1039,18 +1035,14 @@ if SERVER then
                         for _, weapon in ipairs(self:GetWeapons()) do
                             local weaponClass = weapon:GetClass()
                             local clip = ragdoll.liaWeaponClips[weaponClass]
-                            if clip and clip > 0 then
-                                weapon:SetClip1(clip)
-                            end
+                            if clip and clip > 0 then weapon:SetClip1(clip) end
                         end
                     end
 
                     -- Finally, restore reserve ammo for each ammo type
                     if ragdoll.liaAmmo then
                         for ammoType, reserve in pairs(ragdoll.liaAmmo) do
-                            if reserve and reserve > 0 then
-                                self:SetAmmo(reserve, ammoType)
-                            end
+                            if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
                         end
                     end
                 end

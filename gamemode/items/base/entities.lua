@@ -8,15 +8,14 @@ ITEM.functions.Place = {
     onRun = function(item)
         local client = item.player
         if not IsValid(item.entity) then
-         client:notifyError("You must place the entity down first!")
-         return false
+            client:notifyError("You must place the entity down first!")
+            return false
         end
-        
-            local entity = ents.Create(item.entityid)
-            entity:SetPos(item.entity:GetPos())
-            entity:Spawn()
-            item:remove()
-    
+
+        local entity = ents.Create(item.entityid)
+        entity:SetPos(item.entity:GetPos())
+        entity:Spawn()
+        item:remove()
         return true
     end,
 }

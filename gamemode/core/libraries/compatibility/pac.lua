@@ -104,6 +104,7 @@ else
                         break
                     end
                 end
+
                 if IsValid(player) then
                     entity.objCache = player
                     entity.RenderOverride = function()

@@ -4409,7 +4409,6 @@ lia.command.add("spawnbots", {
     onRun = function(client, arguments)
         if not SERVER then return end
         local requestedAmount = math.max(1, math.floor(arguments.amount or 1))
-
         local maxPlayers = game.MaxPlayers()
         local availableSlots = maxPlayers - player.GetCount()
         if requestedAmount > availableSlots then
@@ -4441,7 +4440,6 @@ lia.command.add("bot", {
     desc = "spawnBotDesc",
     onRun = function(client)
         if not SERVER then return end
-
         local maxPlayers = game.MaxPlayers()
         if player.GetCount() >= maxPlayers then
             client:notifyErrorLocalized("spawnBotsLimit", 1, 0, maxPlayers)

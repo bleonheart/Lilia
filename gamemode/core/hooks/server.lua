@@ -364,6 +364,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
                 break
             end
         end
+
         if IsValid(player) then
             if dmgInfo:IsDamageType(DMG_CRUSH) then
                 if (entity.liaFallGrace or 0) < CurTime() then
@@ -373,6 +374,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
                     return
                 end
             end
+
             local damage = dmgInfo:GetDamage()
             if IsValid(player) then
                 player:TakeDamageInfo(dmgInfo)
@@ -385,7 +387,6 @@ function GM:EntityTakeDamage(entity, dmgInfo)
     if not entity:IsPlayer() then return end
     if entity:isStaffOnDuty() and lia.config.get("StaffHasGodMode", true) then return true end
     if entity:GetMoveType() == MOVETYPE_NOCLIP then return true end
-
     if IsValid(player) then
         if dmgInfo:IsDamageType(DMG_CRUSH) then
             if (entity.liaFallGrace or 0) < CurTime() then
@@ -395,6 +396,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
                 return
             end
         end
+
         local damage = dmgInfo:GetDamage()
         if IsValid(player) then
             local currentHealth = player:Health()

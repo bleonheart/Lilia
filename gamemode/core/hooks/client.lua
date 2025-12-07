@@ -163,6 +163,7 @@ local function RenderEntities()
                             end
                         end
                     end
+
                     if IsValid(netPlayer) then
                         local p = toScreen(ent:LocalToWorld(ent:OBBCenter()))
                         hook.Run("DrawEntityInfo", netPlayer, a, p)
@@ -217,8 +218,8 @@ function GM:ShouldDrawEntityInfo(e)
                 end
             end
         end
-        if IsValid(ply) then return e == LocalPlayer() and not LocalPlayer():ShouldDrawLocalPlayer() end
 
+        if IsValid(ply) then return e == LocalPlayer() and not LocalPlayer():ShouldDrawLocalPlayer() end
         if e.DrawEntityInfo then return true end
         if e.onShouldDrawEntityInfo and e:onShouldDrawEntityInfo() then return true end
         return true
