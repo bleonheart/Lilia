@@ -13,7 +13,6 @@ ENT.DrawEntityInfo = true
 ENT.IsPersistent = true
 function ENT:setupVars()
     if SERVER then
-        -- Only set default properties if they haven't been set yet (not loaded from persistence)
         if not self.hasSetupVars then
             lia.vendor.setVendorProperty(self, "name", L("vendorDefaultName"))
             lia.vendor.setVendorProperty(self, "preset", "none")
@@ -23,11 +22,9 @@ function ENT:setupVars()
 
     self.receivers = self.receivers or {}
     self.items = self.items or {}
-    -- Only initialize factions if it doesn't exist - preserve existing data
     if not istable(self.factions) then self.factions = {} end
     self.messages = self.messages or {}
     self.classes = self.classes or {}
-    -- Only initialize faction scales if they don't exist - preserve existing data
     if not istable(self.factionBuyScales) then self.factionBuyScales = {} end
     if not istable(self.factionSellScales) then self.factionSellScales = {} end
     self.hasSetupVars = true
@@ -48,7 +45,6 @@ function ENT:Initialize()
     end
 
     self.receivers = self.receivers or {}
-    -- Store position before any operations that might affect it
     local savedPos = self:GetPos()
     local savedAng = self:GetAngles()
     self:SetModel("models/mossman.mdl")
@@ -59,7 +55,6 @@ function ENT:Initialize()
     self:PhysicsInit(SOLID_BBOX)
     self:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
     self:setupVars()
-    -- Re-apply position after physics initialization
     self:SetPos(savedPos)
     self:SetAngles(savedAng)
     local physObj = self:GetPhysicsObject()
@@ -70,7 +65,6 @@ function ENT:Initialize()
         physObj:SetAngles(savedAng)
     end
 
-    -- Additional safeguard: ensure position is maintained after a short delay
     timer.Simple(0.1, function()
         if IsValid(self) then
             self:SetMoveType(MOVETYPE_NONE)

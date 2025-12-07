@@ -322,24 +322,18 @@ function MODULE:OnEntityLoaded(ent, data)
     lia.vendor.setVendorProperty(ent, "name", data.name)
     lia.vendor.setVendorProperty(ent, "animation", data.animation or "")
     ent.items = data.items or {}
-    -- Always use saved data from persistence - it's the source of truth
-    -- This ensures faction data is preserved even if setupVars was called first
     ent.factions = istable(data.factions) and data.factions or {}
     ent.classes = istable(data.classes) and data.classes or {}
     ent.messages = istable(data.messages) and data.messages or {}
     ent.factionBuyScales = istable(data.factionBuyScales) and data.factionBuyScales or {}
     ent.factionSellScales = istable(data.factionSellScales) and data.factionSellScales or {}
-    -- Fix position and physics after loading from persistence
     timer.Simple(0.1, function()
         if not IsValid(ent) then return end
         local savedPos = ent:GetPos()
         local savedAng = ent:GetAngles()
-        -- Ensure move type is set correctly
         ent:SetMoveType(MOVETYPE_NONE)
-        -- Re-apply position and angles
         ent:SetPos(savedPos)
         ent:SetAngles(savedAng)
-        -- Ensure physics object is properly frozen
         local physObj = ent:GetPhysicsObject()
         if IsValid(physObj) then
             physObj:EnableMotion(false)
@@ -348,7 +342,6 @@ function MODULE:OnEntityLoaded(ent, data)
             physObj:SetAngles(savedAng)
         end
 
-        -- Sync vendor data to clients
         for _, client in player.Iterator() do
             if IsValid(client) then self:syncVendorDataToClient(client) end
         end

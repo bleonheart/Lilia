@@ -55,7 +55,6 @@ end
 function PANEL:Think()
     if not IsValid(self.client) then return end
     if self.LabelName:GetText() ~= self.name then self.LabelName:SetText(self.name) end
-    -- Only update icon if VoiceType might have changed (check every 0.1 seconds instead of every frame)
     if not self.nextIconCheck or CurTime() >= self.nextIconCheck then
         self.nextIconCheck = CurTime() + 0.1
         local newVoiceType = self.client:getLocalVar("VoiceType", VOICE_TALKING)

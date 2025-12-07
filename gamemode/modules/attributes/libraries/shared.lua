@@ -21,13 +21,13 @@
             client:setLocalVar("stamina", value)
             if value == 0 and not client:getLocalVar("brth", false) then
                 client:setLocalVar("brth", true)
-                client.liaBrthCache = true -- Update cache
+                client.liaBrthCache = true
                 char:updateAttrib("end", 0.1)
                 char:updateAttrib("stm", 0.01)
                 hook.Run("PlayerStaminaLost", client)
             elseif value >= 50 and client:getLocalVar("brth", false) then
                 client:setLocalVar("brth", nil)
-                client.liaBrthCache = false -- Update cache
+                client.liaBrthCache = false
                 hook.Run("PlayerStaminaGained", client)
             end
         end
@@ -65,13 +65,10 @@ end
 
 function MODULE:SetupMove(client, cMoveData)
     if not lia.config.get("StaminaSlowdown", true) then return end
-    -- Cache the brth value to avoid calling getLocalVar every frame
-    -- Cache is invalidated when brth is set via NetVarChanged hook
     if not client.liaBrthCache then client.liaBrthCache = client:getLocalVar("brth", false) end
     if client.liaBrthCache then cMoveData:SetMaxClientSpeed(client:GetWalkSpeed()) end
 end
 
 function MODULE:NetVarChanged(client, key, _, value)
-    -- Invalidate brth cache when it changes
     if key == "brth" then client.liaBrthCache = value or false end
 end
