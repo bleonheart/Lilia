@@ -400,7 +400,7 @@ function SKIN:PaintExpandButton(panel, w, h)
     if not panel:GetExpanded() then surface.DrawRect(w * 0.5 - 1, 4, 2, h - 8) end
 end
 
-function SKIN:PaintComboDownArrow(panel, w, h)
+function SKIN:PaintComboDownArrow(_, w, h)
     local colors = getTheme()
     surface.SetDrawColor(colors.headerText)
     surface.DrawPoly({
@@ -460,7 +460,7 @@ function SKIN:PaintListBox(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
-function SKIN:PaintSelection(panel, w, h)
+function SKIN:PaintSelection(_, w, h)
     local colors = getTheme()
     lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(colors.accent, 160)):Shape(lia.derma.SHAPE_IOS):Draw()
 end

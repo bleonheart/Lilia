@@ -1318,7 +1318,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
     return true
 end)
 
-hook.Add("GravGunPickupAllowed", "Lilia.GravGunPickupAllowed", function(client, entity)
+hook.Add("GravGunPickupAllowed", "Lilia.GravGunPickupAllowed", function(client)
     if client:InVehicle() then
         client:notifyErrorLocalized("cmdVehicle")
         return false
