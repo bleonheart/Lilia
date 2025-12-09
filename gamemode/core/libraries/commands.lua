@@ -4205,7 +4205,6 @@ lia.command.add("getallinfos", {
 })
 
 lia.command.add("dropmoney", {
-    adminOnly = true,
     desc = "dropMoneyDesc",
     arguments = {
         {

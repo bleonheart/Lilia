@@ -35,14 +35,8 @@ end
 
 function playerMeta:doGesture(a, b, c)
     self:AnimRestartGesture(a, b, c)
-    if SERVER then
-        net.Start("liaSyncGesture")
-        net.WriteEntity(self)
-        net.WriteUInt(a, 8)
-        net.WriteUInt(b, 8)
-        net.WriteBool(c)
-        net.Broadcast()
-    end
+    self:AnimRestartGesture(a, b, c)
+    netstream.Start(self:GetPos(), "liaSyncGesture", self, a, b, c)
 end
 
 function playerMeta:setAction(text, time, callback)
