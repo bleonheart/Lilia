@@ -632,7 +632,7 @@ if SERVER then
             if callback then callback(item) end
         end)
 
-        promise:next(function(item) end, function(reason)
+        promise:next(function() end, function(reason)
             if reason and reason:find("An inventory has a missing item") then
                 lia.error(reason)
             else

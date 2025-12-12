@@ -687,7 +687,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
     end
 
     icon:SetColor(Color(205, 92, 92, 255))
-    icon.PaintOver = function(self, w, h)
+    icon.PaintOver = function(_, w, h)
         local name = itemData:getName()
         surface.SetFont("LiliaFont.18")
         local textW, textH = surface.GetTextSize(name)
