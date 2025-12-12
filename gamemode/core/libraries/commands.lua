@@ -4404,9 +4404,50 @@ lia.command.add("fillwithbots", {
     superAdminOnly = true,
     desc = "botsManageDesc",
     alias = {"bots"},
-    onRun = function(client)
+    arguments = {
+        {
+            name = "amount",
+            type = "number",
+            optional = true
+        }
+    },
+    onRun = function(client, arguments)
         if not SERVER then return end
-        if not timer.Exists("Bots_Add_Timer") then
+        if timer.Exists("Bots_Add_Timer") then
+            client:notifyErrorLocalized("botsAlreadyAdding")
+            return
+        end
+
+        local requestedAmount = arguments.amount
+        if requestedAmount then
+            -- Spawn specific number of bots
+            requestedAmount = math.max(1, math.floor(requestedAmount))
+            local maxPlayers = game.MaxPlayers()
+            local availableSlots = maxPlayers - player.GetCount()
+
+            if requestedAmount > availableSlots then
+                client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots, maxPlayers)
+                return
+            end
+
+            if requestedAmount <= 0 then
+                client:notifyErrorLocalized("spawnBotsInvalidAmount")
+                return
+            end
+
+            local botsSpawned = 0
+            timer.Create("Bots_Add_Timer", 2, 0, function()
+                if botsSpawned < requestedAmount and player.GetCount() < game.MaxPlayers() then
+                    game.ConsoleCommand("bot\n")
+                    botsSpawned = botsSpawned + 1
+                else
+                    timer.Remove("Bots_Add_Timer")
+                end
+            end)
+
+            client:notifyInfoLocalized("spawningBots", requestedAmount)
+        else
+            -- Fill server with bots (original behavior)
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if player.GetCount() < game.MaxPlayers() then
                     game.ConsoleCommand("bot\n")
@@ -4416,8 +4457,6 @@ lia.command.add("fillwithbots", {
             end)
 
             client:notifyInfoLocalized("botsFillingServer")
-        else
-            client:notifyErrorLocalized("botsAlreadyAdding")
         end
     end
 })
