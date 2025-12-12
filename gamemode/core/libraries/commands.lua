@@ -603,6 +603,11 @@ end)
 lia.command.findPlayer = lia.util.findPlayer
 if SERVER then
     concommand.Add("kickbots", function()
+        -- Stop any ongoing bot spawning timer
+        if timer.Exists("Bots_Add_Timer") then
+            timer.Remove("Bots_Add_Timer")
+        end
+
         for _, bot in player.Iterator() do
             if bot:IsBot() then lia.administrator.execCommand("kick", bot, nil, L("allBotsKicked")) end
         end
@@ -7038,6 +7043,11 @@ lia.command.add("kickbots", {
     privilege = "manageBots",
     desc = "kickAllBotsDesc",
     onRun = function(client)
+        -- Stop any ongoing bot spawning timer
+        if timer.Exists("Bots_Add_Timer") then
+            timer.Remove("Bots_Add_Timer")
+        end
+
         local kickedCount = 0
         for _, bot in player.Iterator() do
             if bot:IsBot() then
