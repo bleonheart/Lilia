@@ -3281,7 +3281,7 @@ end)
 function MODULE:HUDPaint()
     local client = LocalPlayer()
     if not client:IsValid() or not client:IsPlayer() or not client:getChar() then return end
-    if not (client:GetMoveType() == MOVETYPE_NOCLIP) then return end
+    if client:GetMoveType() ~= MOVETYPE_NOCLIP then return end
     if not (client:hasPrivilege("noClipESPOffsetStaff") or client:isStaffOnDuty()) then return end
     if not lia.option.get("espEnabled", false) then return end
     for _, ent in ents.Iterator() do

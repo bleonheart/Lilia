@@ -250,6 +250,7 @@ class CombinedReportData:
     localization_data: Dict
     argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
+    module_localization_conflicts: Dict[str, List[Dict[str, str]]]  # Conflicting localization keys across modules
     modules_scan: List[Dict]
     language_comparison: Dict[str, Dict[str, List[str]]]  # New field for language key mismatches
     panels_found: List[str]  # New field for panels found in code
@@ -792,7 +793,7 @@ class FunctionComparisonReportGenerator:
 
         # 3. Localization Analysis
         print("Analyzing localization...")
-        localization_data, modules_data = self._run_localization_analysis()
+        localization_data, modules_data, module_localization_conflicts = self._run_localization_analysis()
 
         # 4. Argument Mismatch Detection
         print("Detecting argument mismatches...")
@@ -828,6 +829,7 @@ class FunctionComparisonReportGenerator:
             localization_data=localization_data,
             argument_mismatches=argument_mismatches,
             modules_data=modules_data,
+            module_localization_conflicts=module_localization_conflicts,
             modules_scan=modules_scan,
             language_comparison=language_comparison,
             panels_found=panels_found,
@@ -1344,16 +1346,19 @@ class FunctionComparisonReportGenerator:
 
         return documented_panels
 
-    def _run_localization_analysis(self) -> Tuple[Dict, List]:
-        """Run localization analysis"""
+    def _run_localization_analysis(self) -> Tuple[Dict, List, Dict[str, List[Dict[str, str]]]]:
+        """Run localization analysis and detect conflicting module localization keys"""
         try:
             # Framework analysis
             framework_data = analyze_data(self.language_file, str(self.base_path))
 
             # Modules analysis (only if module docs generation is enabled)
-            modules = []
+            modules: List[Dict] = []
+            module_conflicts: Dict[str, List[Dict[str, str]]] = {}
+
             if self.generate_module_docs:
                 lang_name = Path(self.language_file).stem
+                key_occurrences: Dict[str, List[Dict[str, str]]] = defaultdict(list)
 
                 for base_path in self.modules_paths:
                     base_path = Path(base_path)
@@ -1373,18 +1378,36 @@ class FunctionComparisonReportGenerator:
                         lang_file = module_dir / "languages" / f"{lang_name}.lua"
                         # Only check localization for gitmodules; skip other modules for localization
                         if 'gitmodules' not in str(base_path).lower():
-                            # Skip localization analysis for non-gitmodules
-                            pass
-                        else:
-                            if not lang_file.exists():
-                                continue
-                            module_data = analyze_data(str(lang_file), str(module_dir))
-                            modules.append(module_data)
+                            continue
 
-            return framework_data, modules
+                        if not lang_file.exists():
+                            continue
+
+                        module_data = analyze_data(str(lang_file), str(module_dir))
+                        module_info = {
+                            **module_data,
+                            'module_name': module_name,
+                            'module_path': str(module_dir),
+                            'language_file': str(lang_file),
+                        }
+                        modules.append(module_info)
+
+                        # Track occurrences to find conflicts across modules
+                        for key, value in module_data.get('keys', {}).items():
+                            key_occurrences[key].append({
+                                'module_name': module_name,
+                                'module_path': str(module_dir),
+                                'language_file': str(lang_file),
+                                'value': value,
+                            })
+
+                # Conflicts are keys present in more than one module
+                module_conflicts = {k: v for k, v in key_occurrences.items() if len(v) > 1}
+
+            return framework_data, modules, module_conflicts
         except Exception as e:
             print(f"Error in localization analysis: {e}")
-            return {}, []
+            return {}, [], {}
 
     def _run_font_analysis(self) -> Tuple[Set[str], Set[str], Set[str], Set[str], Set[str], int, Dict[str, Set[str]]]:
         """Run font analysis to find registered and used fonts"""
@@ -2236,6 +2259,7 @@ class FunctionComparisonReportGenerator:
         undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', []))) if data.localization_data else 0
         at_patterns = data.localization_data.get('at_pattern_count', len(data.localization_data.get('at_pattern_rows', []))) if data.localization_data else 0
         arg_mismatches = len(data.argument_mismatches)
+        module_conflicts = len(getattr(data, 'module_localization_conflicts', {}) or {})
 
         lines.extend([
             "### Function Documentation",
@@ -2264,6 +2288,7 @@ class FunctionComparisonReportGenerator:
             "### Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
             f"- **@xxxxx Patterns:** {at_patterns} unique",
+            f"- **Module Key Conflicts:** {module_conflicts} keys",
             f"- **Argument Mismatches:** {arg_mismatches}",
             "",
             "---",
@@ -2541,6 +2566,7 @@ class FunctionComparisonReportGenerator:
             return lines
 
         loc_data = data.localization_data
+        module_conflicts = getattr(data, 'module_localization_conflicts', {}) or {}
 
         # Framework summary
         if data.localization_data:
@@ -2574,6 +2600,32 @@ class FunctionComparisonReportGenerator:
                     lines.append(f"  - Context: `{mismatch['context'][:80]}{'...' if len(mismatch['context']) > 80 else ''}`")
                 lines.append("")
 
+        # Module localization conflicts
+        if module_conflicts:
+            lines.extend([
+                "### Module Localization Conflicts",
+                f"- **Conflicting Keys:** {len(module_conflicts)}",
+                "",
+            ])
+
+            for key in sorted(module_conflicts.keys(), key=str.lower):
+                entries = module_conflicts[key]
+                lines.append(f"- `{key}` appears in {len(entries)} modules:")
+                for entry in sorted(entries, key=lambda e: (e.get('module_name') or "").lower()):
+                    module_label = entry.get('module_name') or entry.get('module_path') or "Unknown module"
+                    module_path = entry.get('module_path')
+                    display_label = f"{module_label} ({module_path})" if module_path else module_label
+
+                    value_preview = entry.get('value')
+                    if value_preview is not None:
+                        preview = re.sub(r'\s+', ' ', str(value_preview)).strip()
+                        if len(preview) > 80:
+                            preview = preview[:77] + "..."
+                        lines.append(f"  - {display_label}: \"{preview}\"")
+                    else:
+                        lines.append(f"  - {display_label}")
+                lines.append("")
+
         # Issues summary (for backward compatibility)
         issues = []
         if data.localization_data and loc_data.get('undefined_rows'):
@@ -2582,6 +2634,8 @@ class FunctionComparisonReportGenerator:
             issues.append(f"- {len(loc_data['at_pattern_rows'])} @xxxxx patterns")
         if data.argument_mismatches:
             issues.append(f"- {len(data.argument_mismatches)} argument mismatches")
+        if module_conflicts:
+            issues.append(f"- {len(module_conflicts)} module key conflicts")
 
         if issues:
             lines.append("### Key Issues:")
