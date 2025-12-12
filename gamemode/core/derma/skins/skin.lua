@@ -17,9 +17,21 @@ local function getTheme()
     }
 end
 
+local function isScoreboardChild(panel)
+    local parent = panel
+    while IsValid(parent) do
+        if parent.isLiaScoreboard then return true end
+        parent = parent:GetParent()
+    end
+
+    return false
+end
+
 local function drawAltBg(panel, w, h)
     local colors = getTheme()
-    if panel:GetName() and (panel:GetName():find("ContentContainer") or panel:GetName():find("Tree")) then lia.util.drawBlur(panel, 5) end
+    local panelName = panel:GetName()
+    local shouldBlur = panelName and (panelName:find("ContentContainer") or panelName:find("Tree"))
+    if shouldBlur and not isScoreboardChild(panel) then lia.util.drawBlur(panel, 5) end
     lia.derma.rect(0, 0, w, h):Rad(6):Color(colors.shadow):Shadow(6, 14):Shape(lia.derma.SHAPE_IOS):Draw()
     lia.derma.rect(0, 0, w, h):Rad(6):Color(colors.panel):Shape(lia.derma.SHAPE_IOS):Draw()
 end
