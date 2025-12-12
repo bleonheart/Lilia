@@ -1052,7 +1052,7 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
---[[
+    --[[
             Purpose:
                 Sends an admin notification to staff with the proper privilege
 
@@ -1099,7 +1099,7 @@ if SERVER then
         end
     end
 
---[[
+    --[[
             Purpose:
                 Grants a permission to a usergroup and saves the change
 
@@ -1158,7 +1158,7 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
---[[
+    --[[
             Purpose:
                 Removes a permission from a usergroup and saves the change
 
@@ -1216,7 +1216,7 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
---[[
+    --[[
             Purpose:
                 Sends current privileges and groups to players who are ready to receive them
 
@@ -1297,7 +1297,7 @@ if SERVER then
         end
     end
 
---[[
+    --[[
             Purpose:
                 Checks if admin groups or privileges differ from the last sync
 
@@ -1346,7 +1346,7 @@ if SERVER then
         return currentPrivilegeCount ~= lia.administrator._lastSyncPrivilegeCount or currentGroupCount ~= lia.administrator._lastSyncGroupCount
     end
 
---[[
+    --[[
             Purpose:
                 Sets a player’s usergroup and notifies CAMI about the change
 

@@ -2354,7 +2354,6 @@ end
 function lia.derma.requestButtons(title, buttons, callback, description)
     if IsValid(lia.gui.menuRequestButtons) then lia.gui.menuRequestButtons:Remove() end
     local buttonCount = #buttons
-    -- Slightly taller dialog so multi-button layouts have more breathing room
     local frameHeight = 260 + (buttonCount * 45)
     local frame = vgui.Create("liaFrame")
     frame:SetSize(350, frameHeight)
