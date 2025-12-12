@@ -52,6 +52,7 @@ end
 function PANEL:Init()
     if IsValid(lia.gui.score) then lia.gui.score:Remove() end
     lia.gui.score = self
+    self.isLiaScoreboard = true
     hook.Run("ScoreboardOpened", self)
     self:ApplyConfig()
     self:ShowCloseButton(false)
