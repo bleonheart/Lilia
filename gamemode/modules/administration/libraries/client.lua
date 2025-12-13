@@ -2076,7 +2076,7 @@ function MODULE:OpenAdminStickUI(tgt)
     local tgtClass = tgt:GetClass()
     local cmds = {}
     for k, v in pairs(lia.command.list) do
-        if v.AdminStick and istable(v.AdminStick) then
+        if v.AdminStick and istable(v.AdminStick) and not v.realCommand then
             local tc = v.AdminStick.TargetClass
             if tc then
                 if tc == "door" and tgt:isDoor() or tc == tgtClass then

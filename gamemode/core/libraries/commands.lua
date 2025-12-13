@@ -603,11 +603,7 @@ end)
 lia.command.findPlayer = lia.util.findPlayer
 if SERVER then
     concommand.Add("kickbots", function()
-        -- Stop any ongoing bot spawning timer
-        if timer.Exists("Bots_Add_Timer") then
-            timer.Remove("Bots_Add_Timer")
-        end
-
+        if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         for _, bot in player.Iterator() do
             if bot:IsBot() then lia.administrator.execCommand("kick", bot, nil, L("allBotsKicked")) end
         end
@@ -1730,62 +1726,85 @@ lia.command.add("charkill", {
     superAdminOnly = true,
     alias = "permakill",
     desc = "charkillDesc",
+    arguments = {
+        {
+            name = "name",
+            type = "player"
+        }
+    },
     AdminStick = {
         Name = "adminStickCharKillName",
         Category = "characterManagement",
         SubCategory = "adminStickSubCategoryBans",
         Icon = "icon16/user_delete.png"
     },
-    onRun = function(client)
-        local choices = {}
-        for _, ply in player.Iterator() do
-            if ply:getChar() then
-                choices[#choices + 1] = {
-                    ply:Nick(),
-                    {
-                        name = ply:Nick(),
-                        steamID = ply:SteamID(),
-                        charID = ply:getChar():getID()
-                    }
-                }
-            end
+    onRun = function(client, args)
+        if not args[1] then
+            client:notifyErrorLocalized("specifyPlayer")
+            return
         end
 
-        local playerKey = L("player")
-        local reasonKey = L("reason")
-        local evidenceKey = L("evidence")
-        client:requestArguments(L("pkActiveMenu"), {
-            [playerKey] = {"table", choices},
-            [reasonKey] = "string",
-            [evidenceKey] = "string"
-        }, function(success, data)
-            if not success then return end
-            local selection = data[playerKey]
-            local reason = data[reasonKey]
-            local evidence = data[evidenceKey]
-            if not (isstring(evidence) and evidence:match("^https?://")) then
-                client:notifyErrorLocalized("evidenceInvalidURL")
-                return
-            end
+        local ply = lia.util.findPlayer(client, args[1])
+        if not IsValid(ply) then
+            client:notifyErrorLocalized("targetNotFound")
+            return
+        end
 
-            lia.db.insertTable({
-                player = selection.name,
-                reason = reason,
-                steamID = selection.steamID,
-                charID = selection.charID,
-                submitterName = client:Name(),
-                submitterSteamID = client:SteamID(),
-                timestamp = os.time(),
-                evidence = evidence
-            }, nil, "permakills")
+        local char = ply:getChar()
+        if not char then
+            client:notifyErrorLocalized("noCharacterLoaded")
+            return
+        end
 
-            for _, ply in player.Iterator() do
-                if ply:SteamID() == selection.steamID and ply:getChar() then
-                    ply:getChar():ban()
-                    break
-                end
-            end
-        end)
+        local isPermakilled = char:getData("permakilled", false)
+        if isPermakilled then
+            -- Remove permakill marking
+            char:setData("permakilled", nil)
+            lia.db.delete("permakills", "charID = " .. lia.db.convertDataType(char:getID()))
+            client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
+            lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
+        else
+            -- Add permakill marking - require reason and evidence
+            local reasonKey = L("reason")
+            local evidenceKey = L("evidence")
+            client:requestArguments(L("pkReasonMenu"), {
+                [reasonKey] = "string",
+                [evidenceKey] = "string"
+            }, function(success, data)
+                if not success then return end
+                local reason = data[reasonKey]
+                local evidence = data[evidenceKey]
+                lia.db.insertTable({
+                    player = ply:Nick(),
+                    reason = reason,
+                    steamID = ply:SteamID(),
+                    charID = char:getID(),
+                    submitterName = client:Name(),
+                    submitterSteamID = client:SteamID(),
+                    timestamp = os.time(),
+                    evidence = evidence
+                }, nil, "permakills")
+
+                char:setData("permakilled", true)
+                -- Ask for instant death option
+                local instantDeathKey = L("instantDeath")
+                client:requestArguments(L("pkDeathOptionMenu"), {
+                    [instantDeathKey] = "boolean"
+                }, function(success2, data2)
+                    if not success2 then return end
+                    local instantDeath = data2[instantDeathKey]
+                    if instantDeath then
+                        -- Kill the player immediately, which will trigger auto-ban due to permakill flag
+                        ply:Kill()
+                        client:notifySuccessLocalized("charKillInstant", client:Name(), ply:Nick())
+                        lia.log.add(client, "charKillInstant", ply:Nick(), char:getID(), reason)
+                    else
+                        client:notifySuccessLocalized("charKill", client:Name(), ply:Nick())
+                        lia.log.add(client, "charKill", ply:Nick(), char:getID(), reason)
+                    end
+                end)
+            end)
+        end
     end
 })
 
@@ -4424,7 +4443,6 @@ lia.command.add("fillwithbots", {
             requestedAmount = math.max(1, math.floor(requestedAmount))
             local maxPlayers = game.MaxPlayers()
             local availableSlots = maxPlayers - player.GetCount()
-
             if requestedAmount > availableSlots then
                 client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots, maxPlayers)
                 return
@@ -7083,10 +7101,7 @@ lia.command.add("kickbots", {
     desc = "kickAllBotsDesc",
     onRun = function(client)
         -- Stop any ongoing bot spawning timer
-        if timer.Exists("Bots_Add_Timer") then
-            timer.Remove("Bots_Add_Timer")
-        end
-
+        if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         local kickedCount = 0
         for _, bot in player.Iterator() do
             if bot:IsBot() then

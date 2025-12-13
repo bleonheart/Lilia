@@ -281,10 +281,43 @@ function GM:DrawEntityInfo(e, a, pos)
     end
 
     if ch then hook.Run("DrawCharInfo", e, ch, charInfo) end
-    for i = 1, #charInfo do
-        local info = charInfo[i]
-        local _, ty = lia.util.drawText(info[1]:gsub("#", "\226\128\139#"), x, y, ColorAlpha(info[2] or color_white, a), 1, 1, "LiliaFont.17")
-        y = y + ty
+    -- Calculate panel dimensions and draw background
+    if #charInfo > 0 then
+        surface.SetFont("LiliaFont.17")
+        local maxWidth = 0
+        local totalHeight = 0
+        local lineHeights = {}
+        for i = 1, #charInfo do
+            local info = charInfo[i]
+            local text = info[1]:gsub("#", "\226\128\139#")
+            local tw, th = surface.GetTextSize(text)
+            maxWidth = math.max(maxWidth, tw)
+            lineHeights[i] = th
+            if i == 1 then
+                totalHeight = th
+            else
+                totalHeight = totalHeight + th + 2 -- 2 pixel line spacing
+            end
+        end
+
+        local padding = 12
+        local panelWidth = maxWidth + padding * 2
+        local panelHeight = totalHeight + padding * 2
+        local panelX = x - panelWidth / 2
+        local panelY = y - panelHeight / 2
+        -- Draw background panel with blur and border
+        lia.util.drawBlurAt(panelX, panelY, panelWidth, panelHeight, 4, 2, 0.3 * (a / 255))
+        lia.derma.rect(panelX, panelY, panelWidth, panelHeight):Color(ColorAlpha(lia.color.theme.background_alpha or Color(0, 0, 0, 150), a)):Rad(8):Draw()
+        lia.derma.rect(panelX, panelY, panelWidth, panelHeight):Color(ColorAlpha(lia.color.theme.theme or lia.color.theme.accent, a)):Rad(8):Outline(2):Draw()
+        -- Draw text lines
+        local currentY = panelY + padding
+        for i = 1, #charInfo do
+            local info = charInfo[i]
+            local text = info[1]:gsub("#", "\226\128\139#")
+            local textColor = ColorAlpha(info[2] or color_white, a)
+            lia.util.drawText(text, x, currentY, textColor, 1, 1, "LiliaFont.17")
+            currentY = currentY + lineHeights[i] + 2
+        end
     end
 end
 
