@@ -576,11 +576,15 @@ end
 
 function playerMeta:getMainCharacter()
     local mainCharData = self:getLiliaData("mainCharacter")
-    if not mainCharData then return nil end
-    if istable(mainCharData) then
-        return mainCharData.charID
+    if mainCharData then
+        if istable(mainCharData) then
+            return mainCharData.charID
+        else
+            return mainCharData
+        end
+    else
+        return nil
     end
-    return mainCharData
 end
 
 function playerMeta:setMainCharacter(charID)
@@ -588,6 +592,7 @@ function playerMeta:setMainCharacter(charID)
         charID = tonumber(charID)
         if not charID or charID == 0 then
             self:setLiliaData("mainCharacter", nil)
+            self:saveLiliaData()
             return true
         end
 
@@ -611,13 +616,17 @@ function playerMeta:setMainCharacter(charID)
         end
 
         if table.HasValue(self.liaCharList or {}, charID) then
-            self:setLiliaData("mainCharacter", {
+            local mainCharTable = {
                 charID = charID,
                 setTime = os.time()
-            })
+            }
+            self:setLiliaData("mainCharacter", mainCharTable)
+            if self.liaData and self.liaData.mainCharacterSetTime then
+                self.liaData.mainCharacterSetTime = nil
+            end
+            self:saveLiliaData()
             return true
         end
-
         return false
     else
         net.Start("liaSetMainCharacter")
@@ -861,6 +870,9 @@ if SERVER then
                 self.firstJoin = data[1].firstJoin or timeStamp
                 self.lastJoin = data[1].lastJoin or timeStamp
                 self.liaData = util.JSONToTable(data[1].data)
+                if self.liaData and self.liaData.mainCharacter and istable(self.liaData.mainCharacter) and self.liaData.mainCharacterSetTime then
+                    self.liaData.mainCharacterSetTime = nil
+                end
                 self.totalOnlineTime = tonumber(data[1].totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
                 local default = os.time(lia.time.toNumber(self.lastJoin))
                 self.lastOnline = tonumber(data[1].lastOnline) or self:getLiliaData("lastOnline", default)

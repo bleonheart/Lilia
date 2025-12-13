@@ -285,21 +285,23 @@ net.Receive("liaInvQuantity", function()
 end)
 
 net.Receive("liaDataSync", function()
-    local data = net.ReadTable()
-    local first = net.ReadType()
-    local last = net.ReadType()
-    lia.localData = data
-    lia.firstJoin = first
-    lia.lastJoin = last
+    local bytesRemaining = net.BytesLeft()
+    if bytesRemaining > 100 then
+        local data = net.ReadTable()
+        local first = net.ReadType()
+        local last = net.ReadType()
+        lia.localData = data
+        lia.firstJoin = first
+        lia.lastJoin = last
+    else
+        local key = net.ReadString()
+        local value = net.ReadType()
+        lia.localData = lia.localData or {}
+        lia.localData[key] = value
+    end
 end)
 
 net.Receive("liaStorageSync", function() lia.inventory.storage = net.ReadTable() end)
-net.Receive("liaDataSync", function()
-    local key = net.ReadString()
-    local value = net.ReadType()
-    lia.localData = lia.localData or {}
-    lia.localData[key] = value
-end)
 
 net.Receive("liaAttributeData", function()
     local id = net.ReadUInt(32)
