@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -1764,16 +1764,19 @@ lia.command.add("charkill", {
             client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
             lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
         else
-            -- Add permakill marking - require reason and evidence
+            -- Add permakill marking - require reason, evidence, and instant death option
             local reasonKey = L("reason")
             local evidenceKey = L("evidence")
+            local instantDeathKey = L("instantDeath")
             client:requestArguments(L("pkReasonMenu"), {
                 [reasonKey] = "string",
-                [evidenceKey] = "string"
+                [evidenceKey] = "string",
+                [instantDeathKey] = "boolean"
             }, function(success, data)
                 if not success then return end
                 local reason = data[reasonKey]
                 local evidence = data[evidenceKey]
+                local instantDeath = data[instantDeathKey]
                 lia.db.insertTable({
                     player = ply:Nick(),
                     reason = reason,
@@ -1786,23 +1789,15 @@ lia.command.add("charkill", {
                 }, nil, "permakills")
 
                 char:setData("permakilled", true)
-                -- Ask for instant death option
-                local instantDeathKey = L("instantDeath")
-                client:requestArguments(L("pkDeathOptionMenu"), {
-                    [instantDeathKey] = "boolean"
-                }, function(success2, data2)
-                    if not success2 then return end
-                    local instantDeath = data2[instantDeathKey]
-                    if instantDeath then
-                        -- Kill the player immediately, which will trigger auto-ban due to permakill flag
-                        ply:Kill()
-                        client:notifySuccessLocalized("charKillInstant", client:Name(), ply:Nick())
-                        lia.log.add(client, "charKillInstant", ply:Nick(), char:getID(), reason)
-                    else
-                        client:notifySuccessLocalized("charKill", client:Name(), ply:Nick())
-                        lia.log.add(client, "charKill", ply:Nick(), char:getID(), reason)
-                    end
-                end)
+                if instantDeath then
+                    -- Ban the character immediately
+                    char:ban()
+                    client:notifySuccessLocalized("charKillInstant", client:Name(), ply:Nick())
+                    lia.log.add(client, "charKillInstant", ply:Nick(), char:getID(), reason)
+                else
+                    client:notifySuccessLocalized("charKill", client:Name(), ply:Nick())
+                    lia.log.add(client, "charKill", ply:Nick(), char:getID(), reason)
+                end
             end)
         end
     end

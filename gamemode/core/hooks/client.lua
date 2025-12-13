@@ -245,7 +245,7 @@ function GM:DrawCharInfo(c, _, info)
 end
 
 function GM:DrawEntityInfo(e, a, pos)
-    if not e:IsPlayer() or hook.Run("ShouldDrawPlayerInfo", e) == false then return end
+    if not e:IsPlayer() or hook.Run("ShouldDrawPlayerInfo", e) == false or IsValid(lia.gui.character) or IsValid(lia.gui.info) then return end
     local ch = e:getChar()
     if not ch then return end
     pos = pos or toScreen(e:GetPos() + (e:Crouching() and Vector(0, 0, 48) or Vector(0, 0, 80)))

@@ -574,6 +574,58 @@ function playerMeta:getLiliaData(key, default)
     end
 end
 
+function playerMeta:getMainCharacter()
+    local mainCharData = self:getLiliaData("mainCharacter")
+    if not mainCharData then return nil end
+    if istable(mainCharData) then
+        return mainCharData.charID
+    end
+    return mainCharData
+end
+
+function playerMeta:setMainCharacter(charID)
+    if SERVER then
+        charID = tonumber(charID)
+        if not charID or charID == 0 then
+            self:setLiliaData("mainCharacter", nil)
+            return true
+        end
+
+        local cooldownDays = lia.config.get("MainCharacterCooldownDays", 0)
+        if cooldownDays > 0 then
+            local mainCharData = self:getLiliaData("mainCharacter")
+            local lastSetTime = nil
+            if istable(mainCharData) then
+                lastSetTime = mainCharData.setTime
+            else
+                lastSetTime = self:getLiliaData("mainCharacterSetTime")
+            end
+
+            if lastSetTime then
+                local daysSince = (os.time() - lastSetTime) / 86400
+                if daysSince < cooldownDays then
+                    local daysRemaining = math.ceil(cooldownDays - daysSince)
+                    return false, L("mainCharacterCooldownActive", daysRemaining)
+                end
+            end
+        end
+
+        if table.HasValue(self.liaCharList or {}, charID) then
+            self:setLiliaData("mainCharacter", {
+                charID = charID,
+                setTime = os.time()
+            })
+            return true
+        end
+
+        return false
+    else
+        net.Start("liaSetMainCharacter")
+        net.WriteUInt(charID or 0, 32)
+        net.SendToServer()
+    end
+end
+
 function playerMeta:hasFlags(flags)
     for i = 1, #flags do
         local flag = flags:sub(i, i)
