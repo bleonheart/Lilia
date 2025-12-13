@@ -105,7 +105,10 @@ else
 
     function MODULE:GetMainCharacterID()
         local client = LocalPlayer()
-        if IsValid(client) then return client:getLiliaData("mainCharacter") end
+        if IsValid(client) then
+            local mainCharID = client:getMainCharacter()
+            return mainCharID and tonumber(mainCharID) or nil
+        end
         return nil
     end
 
@@ -121,11 +124,7 @@ else
             LocalPlayer():notifyErrorLocalized("noMainCharacter")
             return
         end
-        -- Use the normal character choose flow
-        return self:ChooseCharacter(mainCharID):next(function()
-            -- Close the main menu if it's open
-            if IsValid(lia.gui.character) then lia.gui.character:Remove() end
-        end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
+        return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
     end
 
     function MODULE:LiliaLoaded()
@@ -133,7 +132,6 @@ else
     end
 
     function MODULE:CharListLoaded()
-        -- Refresh main menu buttons when character list is loaded
         if IsValid(lia.gui.character) and not lia.gui.character.isLoadMode then lia.gui.character:createStartButton() end
     end
 
@@ -171,14 +169,12 @@ else
 
     net.Receive("liaMainCharacterSet", function()
         local charID = net.ReadUInt(32)
-        charID = tonumber(charID) -- Ensure it's a number
+        charID = tonumber(charID)
         local client = LocalPlayer()
         if IsValid(client) then
-            -- Update local data immediately
             lia.localData = lia.localData or {}
             lia.localData["mainCharacter"] = charID
             client:notifyLocalized("mainCharacterSet")
-            -- Refresh the character panel to hide the "Set as Main Character" button
             if IsValid(lia.gui.character) and lia.gui.character.isLoadMode then lia.gui.character:updateSelectedCharacter() end
         end
     end)
@@ -201,7 +197,6 @@ else
 end
 
 function MODULE:CanPlayerCreateChar(client, data)
-    -- Staff characters bypass character limits entirely
     if istable(data) and data.faction == FACTION_STAFF then return true end
     if SERVER then
         local count = #client.liaCharList or 0

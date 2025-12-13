@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -1758,13 +1758,11 @@ lia.command.add("charkill", {
 
         local isPermakilled = char:getData("permakilled", false)
         if isPermakilled then
-            -- Remove permakill marking
             char:setData("permakilled", nil)
             lia.db.delete("permakills", "charID = " .. lia.db.convertDataType(char:getID()))
             client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
             lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
         else
-            -- Add permakill marking - require reason, evidence, and instant death option
             local reasonKey = L("reason")
             local evidenceKey = L("evidence")
             local instantDeathKey = L("instantDeath")
@@ -1790,7 +1788,6 @@ lia.command.add("charkill", {
 
                 char:setData("permakilled", true)
                 if instantDeath then
-                    -- Ban the character immediately
                     char:ban()
                     client:notifySuccessLocalized("charKillInstant", client:Name(), ply:Nick())
                     lia.log.add(client, "charKillInstant", ply:Nick(), char:getID(), reason)
@@ -4434,7 +4431,6 @@ lia.command.add("fillwithbots", {
 
         local requestedAmount = arguments.amount
         if requestedAmount then
-            -- Spawn specific number of bots
             requestedAmount = math.max(1, math.floor(requestedAmount))
             local maxPlayers = game.MaxPlayers()
             local availableSlots = maxPlayers - player.GetCount()
@@ -4460,7 +4456,6 @@ lia.command.add("fillwithbots", {
 
             client:notifyInfoLocalized("spawningBots", requestedAmount)
         else
-            -- Fill server with bots (original behavior)
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if player.GetCount() < game.MaxPlayers() then
                     game.ConsoleCommand("bot\n")
@@ -7095,7 +7090,6 @@ lia.command.add("kickbots", {
     privilege = "manageBots",
     desc = "kickAllBotsDesc",
     onRun = function(client)
-        -- Stop any ongoing bot spawning timer
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         local kickedCount = 0
         for _, bot in player.Iterator() do

@@ -281,7 +281,6 @@ function GM:DrawEntityInfo(e, a, pos)
     end
 
     if ch then hook.Run("DrawCharInfo", e, ch, charInfo) end
-    -- Calculate panel dimensions and draw background
     if #charInfo > 0 then
         surface.SetFont("LiliaFont.17")
         local maxWidth = 0
@@ -296,7 +295,7 @@ function GM:DrawEntityInfo(e, a, pos)
             if i == 1 then
                 totalHeight = th
             else
-                totalHeight = totalHeight + th + 2 -- 2 pixel line spacing
+                totalHeight = totalHeight + th + 2
             end
         end
 
@@ -305,11 +304,9 @@ function GM:DrawEntityInfo(e, a, pos)
         local panelHeight = totalHeight + padding * 2
         local panelX = x - panelWidth / 2
         local panelY = y - panelHeight / 2
-        -- Draw background panel with blur and border
         lia.util.drawBlurAt(panelX, panelY, panelWidth, panelHeight, 4, 2, 0.3 * (a / 255))
         lia.derma.rect(panelX, panelY, panelWidth, panelHeight):Color(ColorAlpha(lia.color.theme.background_alpha or Color(0, 0, 0, 150), a)):Rad(8):Draw()
         lia.derma.rect(panelX, panelY, panelWidth, panelHeight):Color(ColorAlpha(lia.color.theme.theme or lia.color.theme.accent, a)):Rad(8):Outline(2):Draw()
-        -- Draw text lines
         local currentY = panelY + padding
         for i = 1, #charInfo do
             local info = charInfo[i]

@@ -620,10 +620,9 @@ function playerMeta:setMainCharacter(charID)
                 charID = charID,
                 setTime = os.time()
             }
+
             self:setLiliaData("mainCharacter", mainCharTable)
-            if self.liaData and self.liaData.mainCharacterSetTime then
-                self.liaData.mainCharacterSetTime = nil
-            end
+            if self.liaData and self.liaData.mainCharacterSetTime then self.liaData.mainCharacterSetTime = nil end
             self:saveLiliaData()
             return true
         end
@@ -870,9 +869,7 @@ if SERVER then
                 self.firstJoin = data[1].firstJoin or timeStamp
                 self.lastJoin = data[1].lastJoin or timeStamp
                 self.liaData = util.JSONToTable(data[1].data)
-                if self.liaData and self.liaData.mainCharacter and istable(self.liaData.mainCharacter) and self.liaData.mainCharacterSetTime then
-                    self.liaData.mainCharacterSetTime = nil
-                end
+                if self.liaData and self.liaData.mainCharacter and istable(self.liaData.mainCharacter) and self.liaData.mainCharacterSetTime then self.liaData.mainCharacterSetTime = nil end
                 self.totalOnlineTime = tonumber(data[1].totalOnlineTime) or self:getLiliaData("totalOnlineTime", 0)
                 local default = os.time(lia.time.toNumber(self.lastJoin))
                 self.lastOnline = tonumber(data[1].lastOnline) or self:getLiliaData("lastOnline", default)

@@ -228,21 +228,13 @@ function PANEL:createStartButton()
     end
 
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
-    -- Only show main character button if we have both the main character ID and character list loaded,
-    -- and it's not the currently loaded character
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         table.insert(buttonsData, {
             id = "loadmain",
             text = L("loadMainCharacter"),
             doClick = function()
                 self:clickSound()
-                lia.module.get("mainmenu"):LoadMainCharacter():next(function()
-                    -- Character loaded successfully
-                end):catch(function(err)
-                    if err and err ~= "" then
-                        LocalPlayer():notifyErrorLocalized(err)
-                    end
-                end)
+                lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
             end
         })
     end
