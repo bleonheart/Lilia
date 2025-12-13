@@ -1356,7 +1356,6 @@ local function OpenPlayerModelUI(tgt)
 
     local sheet = fr:Add("liaTabs")
     sheet:Dock(FILL)
-
     local function populateModelGrid(wr, modList)
         wr:Clear()
         for _, md in ipairs(modList) do
@@ -1374,7 +1373,6 @@ local function OpenPlayerModelUI(tgt)
     allSc:Dock(FILL)
     local allWr = allSc:Add("DIconLayout")
     allWr:Dock(FILL)
-
     local allModList = {}
     for n, m in SortedPairs(player_manager.AllValidModels()) do
         table.insert(allModList, {
@@ -1387,11 +1385,9 @@ local function OpenPlayerModelUI(tgt)
     table.sort(allModList, function(a, b) return a.name < b.name end)
     populateModelGrid(allWr, allModList)
     sheet:AddSheet(L("all"), allPanel)
-
     local factionPanel = sheet:Add("Panel")
     local factionSheet = factionPanel:Add("liaTabs")
     factionSheet:Dock(FILL)
-
     local function processFactionModel(modelData, defaultName, modList)
         if isstring(modelData) then
             table.insert(modList, {
@@ -1437,6 +1433,7 @@ local function OpenPlayerModelUI(tgt)
                             processFactionModel(modelData, faction.name or "Unknown Faction", modList)
                         end
                     end
+
                     if models.female then
                         for _, modelData in ipairs(models.female) do
                             processFactionModel(modelData, faction.name or "Unknown Faction", modList)
@@ -1460,7 +1457,6 @@ local function OpenPlayerModelUI(tgt)
             factionSc:Dock(FILL)
             local factionWr = factionSc:Add("DIconLayout")
             factionWr:Dock(FILL)
-
             local factionModList = {}
             processFactionModels(faction, factionModList)
             table.sort(factionModList, function(a, b) return a.name < b.name end)
@@ -1470,7 +1466,6 @@ local function OpenPlayerModelUI(tgt)
     end
 
     sheet:AddSheet(L("faction"), factionPanel)
-
     local charObj = tgt:getChar()
     if charObj then
         local classIndex = charObj:getClass()
@@ -1478,7 +1473,6 @@ local function OpenPlayerModelUI(tgt)
             local classPanel = sheet:Add("Panel")
             local classSheet = classPanel:Add("liaTabs")
             classSheet:Dock(FILL)
-
             local function processClassModel(modelData, className, modList)
                 if istable(modelData) then
                     table.insert(modList, {
@@ -1529,7 +1523,6 @@ local function OpenPlayerModelUI(tgt)
                     classSc:Dock(FILL)
                     local classWr = classSc:Add("DIconLayout")
                     classWr:Dock(FILL)
-
                     local classModList = {}
                     processClassModels(class, classModList)
                     table.sort(classModList, function(a, b) return a.name < b.name end)
@@ -3963,6 +3956,7 @@ function MODULE:AdminStickAddModels(modList)
                 name = modelName or modelPath,
                 mdl = modelPath
             })
+
             addedModels[modelPath] = true
         end
     end
@@ -3971,9 +3965,7 @@ function MODULE:AdminStickAddModels(modList)
         if isstring(modelData) then
             addModel(modelData, defaultName)
         elseif istable(modelData) then
-            if modelData[1] and isstring(modelData[1]) then
-                addModel(modelData[1], modelData[2] or defaultName)
-            end
+            if modelData[1] and isstring(modelData[1]) then addModel(modelData[1], modelData[2] or defaultName) end
         end
     end
 
@@ -4010,8 +4002,6 @@ function MODULE:AdminStickAddModels(modList)
     end
 
     for _, class in pairs(lia.class.list or {}) do
-        if class.model and isstring(class.model) then
-            addModel(class.model, class.name or "Unknown Class")
-        end
+        if class.model and isstring(class.model) then addModel(class.model, class.name or "Unknown Class") end
     end
 end
