@@ -411,7 +411,7 @@ net.Receive("liaRequestPksCount", function(_, client)
     end)
 end)
 
-function MODULE:PlayerShouldPermaKill(client, inflictor, attacker)
+function MODULE:PlayerShouldPermaKill(client)
     local character = client:getChar()
     if not character then return false end
     return character:getData("permakilled", false)

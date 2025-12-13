@@ -599,7 +599,7 @@ function playerMeta:setMainCharacter(charID)
         local cooldownDays = lia.config.get("MainCharacterCooldownDays", 0)
         if cooldownDays > 0 then
             local mainCharData = self:getLiliaData("mainCharacter")
-            local lastSetTime = nil
+            local lastSetTime
             if istable(mainCharData) then
                 lastSetTime = mainCharData.setTime
             else
