@@ -1409,7 +1409,7 @@ local function OpenPlayerModelUI(tgt)
         local models = faction.models
         if istable(models) then
             local hasStringKeys = false
-            for k, v in pairs(models) do
+            for k, _ in pairs(models) do
                 if isstring(k) then
                     hasStringKeys = true
                     break
@@ -1417,7 +1417,7 @@ local function OpenPlayerModelUI(tgt)
             end
 
             if hasStringKeys then
-                for category, categoryModels in pairs(models) do
+                for _, categoryModels in pairs(models) do
                     if istable(categoryModels) then
                         for _, modelData in ipairs(categoryModels) do
                             processFactionModel(modelData, faction.name or "Unknown Faction", modList)
@@ -1450,7 +1450,7 @@ local function OpenPlayerModelUI(tgt)
         end
     end
 
-    for k, faction in pairs(lia.faction.teams or {}) do
+    for _, faction in pairs(lia.faction.teams or {}) do
         if faction.models then
             local factionSubPanel = factionSheet:Add("Panel")
             local factionSc = factionSubPanel:Add("liaScrollPanel")
