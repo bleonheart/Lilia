@@ -814,6 +814,160 @@ function playerMeta:requestDropdown(title, subTitle, options, callback)
     end
 end
 
+local function isStuck(client)
+    return util.TraceEntity({
+        start = client:GetPos(),
+        endpos = client:GetPos(),
+        filter = client
+    }, client).StartSolid
+end
+
+function playerMeta:setRagdolled(state, baseTime, getUpGrace, getUpMessage)
+    if SERVER then
+        getUpMessage = getUpMessage or L("wakingUp")
+        local ragdoll = self:GetRagdollEntity()
+        local time = hook.Run("GetRagdollTime", self, time) or baseTime or 10
+        if state then
+            local handsWeapon = self:GetActiveWeapon()
+            if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
+            if IsValid(ragdoll) then SafeRemoveEntity(ragdoll) end
+            self:CreateRagdoll()
+            local entity = self:GetRagdollEntity()
+            entity.liaWeapons = {}
+            entity.liaAmmo = {}
+            entity.liaWeaponClips = {}
+            local processedAmmoTypes = {}
+            for _, w in ipairs(self:GetWeapons()) do
+                local weaponClass = w:GetClass()
+                entity.liaWeapons[#entity.liaWeapons + 1] = weaponClass
+                local ammoType = w:GetPrimaryAmmoType()
+                local clip = w:Clip1()
+                entity.liaWeaponClips[weaponClass] = clip
+                if ammoType and ammoType > 0 and not processedAmmoTypes[ammoType] then
+                    local reserve = self:GetAmmoCount(ammoType)
+                    entity.liaAmmo[ammoType] = reserve
+                    processedAmmoTypes[ammoType] = true
+                end
+            end
+
+            entity:CallOnRemove("fixer", function()
+                if IsValid(self) then
+                    if self.liaStoredHealth then self:SetHealth(math.max(self.liaStoredHealth, 1)) end
+                    if not entity.liaNoReset then self:SetPos(entity:GetPos()) end
+                    self:SetNoDraw(false)
+                    self:SetNotSolid(false)
+                    self:Freeze(false)
+                    self:SetMoveType(MOVETYPE_WALK)
+                    self:SetLocalVelocity(IsValid(entity) and entity.liaLastVelocity or vector_origin)
+                    self.liaStoredHealth = nil
+                    self.liaStoredMaxHealth = nil
+                end
+
+                if IsValid(self) and not entity.liaIgnoreDelete then
+                    if entity.liaWeapons then
+                        for _, weaponClass in ipairs(entity.liaWeapons) do
+                            self:Give(weaponClass, true)
+                        end
+
+                        if entity.liaWeaponClips then
+                            for _, weapon in ipairs(self:GetWeapons()) do
+                                local weaponClass = weapon:GetClass()
+                                local clip = entity.liaWeaponClips[weaponClass]
+                                if clip and clip > 0 then weapon:SetClip1(clip) end
+                            end
+                        end
+
+                        if entity.liaAmmo then
+                            for ammoType, reserve in pairs(entity.liaAmmo) do
+                                if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
+                            end
+                        end
+                    end
+
+                    if isStuck(self) then
+                        entity:DropToFloor()
+                        self:SetPos(entity:GetPos() + Vector(0, 0, 16))
+                        local positions = lia.util.findEmptySpace(self, {entity, self})
+                        for _, pos in ipairs(positions) do
+                            self:SetPos(pos)
+                            if not isStuck(self) then return end
+                        end
+                    end
+                end
+            end)
+
+            if getUpGrace then entity.liaGrace = CurTime() + getUpGrace end
+            if time and time > 0 then
+                entity.liaStart = CurTime()
+                entity.liaFinish = entity.liaStart + time
+                self:setAction(getUpMessage, time)
+            end
+
+            self:GodEnable()
+            self:StripWeapons()
+            self:Freeze(true)
+            self:SetNoDraw(true)
+            self:SetNotSolid(true)
+            self:SetMoveType(MOVETYPE_NONE)
+            if time then
+                local uniqueID = "liaUnRagdoll" .. self:SteamID64()
+                timer.Create(uniqueID, 1.0, 0, function()
+                    if not IsValid(entity) or not IsValid(self) then
+                        timer.Remove(uniqueID)
+                        return
+                    end
+
+                    local velocity = entity:GetVelocity()
+                    entity.liaLastVelocity = velocity
+                    self:SetPos(entity:GetPos())
+                    time = time - 1.0
+                    if time <= 0 then
+                        timer.Remove(uniqueID)
+                        self:setRagdolled(false)
+                    end
+                end)
+            end
+
+            if IsValid(entity) then
+                entity:SetCollisionGroup(COLLISION_GROUP_NONE)
+                entity:SetCustomCollisionCheck(false)
+            end
+        else
+            ragdoll = self:GetRagdollEntity()
+            if IsValid(ragdoll) then
+                if ragdoll.liaWeapons then
+                    for _, weaponClass in ipairs(ragdoll.liaWeapons) do
+                        self:Give(weaponClass, true)
+                    end
+
+                    if ragdoll.liaWeaponClips then
+                        for _, weapon in ipairs(self:GetWeapons()) do
+                            local weaponClass = weapon:GetClass()
+                            local clip = ragdoll.liaWeaponClips[weaponClass]
+                            if clip and clip > 0 then weapon:SetClip1(clip) end
+                        end
+                    end
+
+                    if ragdoll.liaAmmo then
+                        for ammoType, reserve in pairs(ragdoll.liaAmmo) do
+                            if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
+                        end
+                    end
+                end
+
+                self:removeRagdoll()
+                self:GodDisable()
+                self:Freeze(false)
+                self:SetNoDraw(false)
+                self:SetNotSolid(false)
+                self:SetMoveType(MOVETYPE_WALK)
+            end
+        end
+    end
+
+    hook.Run("OnCharFallover", self, nil, state)
+end
+
 if SERVER then
     function playerMeta:restoreStamina(amount)
         local char = self:getChar()
@@ -952,157 +1106,6 @@ if SERVER then
 
         local diff = os.time(lia.time.toNumber(self.lastJoin)) - os.time(lia.time.toNumber(self.firstJoin))
         return diff + RealTime() - (self.liaJoinTime or RealTime())
-    end
-
-    local function isStuck(client)
-        return util.TraceEntity({
-            start = client:GetPos(),
-            endpos = client:GetPos(),
-            filter = client
-        }, client).StartSolid
-    end
-
-    function playerMeta:setRagdolled(state, baseTime, getUpGrace, getUpMessage)
-        getUpMessage = getUpMessage or L("wakingUp")
-        local ragdoll = self:GetRagdollEntity()
-        local time = hook.Run("GetRagdollTime", self, time) or baseTime or 10
-        if state then
-            local handsWeapon = self:GetActiveWeapon()
-            if IsValid(handsWeapon) and handsWeapon:GetClass() == "lia_hands" and handsWeapon:IsHoldingObject() then handsWeapon:DropObject() end
-            if IsValid(ragdoll) then SafeRemoveEntity(ragdoll) end
-            self:CreateRagdoll()
-            local entity = self:GetRagdollEntity()
-            entity.liaWeapons = {}
-            entity.liaAmmo = {}
-            entity.liaWeaponClips = {}
-            local processedAmmoTypes = {}
-            for _, w in ipairs(self:GetWeapons()) do
-                local weaponClass = w:GetClass()
-                entity.liaWeapons[#entity.liaWeapons + 1] = weaponClass
-                local ammoType = w:GetPrimaryAmmoType()
-                local clip = w:Clip1()
-                entity.liaWeaponClips[weaponClass] = clip
-                if ammoType and ammoType > 0 and not processedAmmoTypes[ammoType] then
-                    local reserve = self:GetAmmoCount(ammoType)
-                    entity.liaAmmo[ammoType] = reserve
-                    processedAmmoTypes[ammoType] = true
-                end
-            end
-
-            entity:CallOnRemove("fixer", function()
-                if IsValid(self) then
-                    if self.liaStoredHealth then self:SetHealth(math.max(self.liaStoredHealth, 1)) end
-                    if not entity.liaNoReset then self:SetPos(entity:GetPos()) end
-                    self:SetNoDraw(false)
-                    self:SetNotSolid(false)
-                    self:Freeze(false)
-                    self:SetMoveType(MOVETYPE_WALK)
-                    self:SetLocalVelocity(IsValid(entity) and entity.liaLastVelocity or vector_origin)
-                    self.liaStoredHealth = nil
-                    self.liaStoredMaxHealth = nil
-                end
-
-                if IsValid(self) and not entity.liaIgnoreDelete then
-                    if entity.liaWeapons then
-                        for _, weaponClass in ipairs(entity.liaWeapons) do
-                            self:Give(weaponClass, true)
-                        end
-
-                        if entity.liaWeaponClips then
-                            for _, weapon in ipairs(self:GetWeapons()) do
-                                local weaponClass = weapon:GetClass()
-                                local clip = entity.liaWeaponClips[weaponClass]
-                                if clip and clip > 0 then weapon:SetClip1(clip) end
-                            end
-                        end
-
-                        if entity.liaAmmo then
-                            for ammoType, reserve in pairs(entity.liaAmmo) do
-                                if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
-                            end
-                        end
-                    end
-
-                    if isStuck(self) then
-                        entity:DropToFloor()
-                        self:SetPos(entity:GetPos() + Vector(0, 0, 16))
-                        local positions = lia.util.findEmptySpace(self, {entity, self})
-                        for _, pos in ipairs(positions) do
-                            self:SetPos(pos)
-                            if not isStuck(self) then return end
-                        end
-                    end
-                end
-            end)
-
-            if getUpGrace then entity.liaGrace = CurTime() + getUpGrace end
-            if time and time > 0 then
-                entity.liaStart = CurTime()
-                entity.liaFinish = entity.liaStart + time
-                self:setAction(getUpMessage, time)
-            end
-
-            self:GodEnable()
-            self:StripWeapons()
-            self:Freeze(true)
-            self:SetNoDraw(true)
-            self:SetNotSolid(true)
-            self:SetMoveType(MOVETYPE_NONE)
-            if time then
-                local uniqueID = "liaUnRagdoll" .. self:SteamID64()
-                timer.Create(uniqueID, 1.0, 0, function()
-                    if not IsValid(entity) or not IsValid(self) then
-                        timer.Remove(uniqueID)
-                        return
-                    end
-
-                    local velocity = entity:GetVelocity()
-                    entity.liaLastVelocity = velocity
-                    self:SetPos(entity:GetPos())
-                    time = time - 1.0
-                    if time <= 0 then
-                        timer.Remove(uniqueID)
-                        self:setRagdolled(false)
-                    end
-                end)
-            end
-
-            if IsValid(entity) then
-                entity:SetCollisionGroup(COLLISION_GROUP_NONE)
-                entity:SetCustomCollisionCheck(false)
-            end
-        else
-            ragdoll = self:GetRagdollEntity()
-            if IsValid(ragdoll) then
-                if ragdoll.liaWeapons then
-                    for _, weaponClass in ipairs(ragdoll.liaWeapons) do
-                        self:Give(weaponClass, true)
-                    end
-
-                    if ragdoll.liaWeaponClips then
-                        for _, weapon in ipairs(self:GetWeapons()) do
-                            local weaponClass = weapon:GetClass()
-                            local clip = ragdoll.liaWeaponClips[weaponClass]
-                            if clip and clip > 0 then weapon:SetClip1(clip) end
-                        end
-                    end
-
-                    if ragdoll.liaAmmo then
-                        for ammoType, reserve in pairs(ragdoll.liaAmmo) do
-                            if reserve and reserve > 0 then self:SetAmmo(reserve, ammoType) end
-                        end
-                    end
-                end
-
-                self:removeRagdoll()
-                self:GodDisable()
-                self:Freeze(false)
-                self:SetNoDraw(false)
-                self:SetNotSolid(false)
-                self:SetMoveType(MOVETYPE_WALK)
-                hook.Run("OnCharFallover", self, nil, false)
-            end
-        end
     end
 
     function playerMeta:syncVars()

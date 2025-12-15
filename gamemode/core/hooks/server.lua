@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -674,11 +674,12 @@ function GM:SetupBotPlayer(client)
     local invType = hook.Run("GetDefaultInventoryType") or "GridInv"
     if not invType then return end
     local inventory = lia.inventory.new(invType)
+    local model = hook.Run("GetBotModel", client, faction) or "models/player/phoenix.mdl"
     local character = lia.char.new({
         name = lia.util.generateRandomName(),
         faction = faction and faction.uniqueID or "unknown",
         desc = L("botDesc", botID),
-        model = "models/player/phoenix.mdl",
+        model = model,
     }, botID, client, client:SteamID())
 
     local defaultClass = lia.faction.getDefaultClass(faction.index)

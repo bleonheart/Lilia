@@ -1,4 +1,4 @@
-﻿local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
+local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
 local HANDLER_RESOLVE, HANDLER_REJECT, HANDLER_PROMISE = 1, 2, 3
 REJECTION_HANDLER_ID = REJECTION_HANDLER_ID or 0
 UNHANDLED_PROMISES = UNHANDLED_PROMISES or {}
@@ -84,7 +84,7 @@ end
 
 function Promise:_handle(value)
     if value == self then return self:reject(L("promiseCannotResolveSelf")) end
-    if istable(value) and value.next then
+    if value ~= nil and istable(value) and value.next then
         if value.state then
             if not DEBUG_IGNOREUNHANDLED then
                 UNHANDLED_PROMISES[value.rejectionHandlerID] = nil
