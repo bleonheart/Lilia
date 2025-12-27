@@ -3427,7 +3427,6 @@ Reload: Drop]],
     -- Notes
     notes = "Notes",
     savedNotes = "saved notes",
-    title = "Title",
     content = "Content",
     enterNoteTitle = "Enter note title",
     typeNote = "Type a note",
