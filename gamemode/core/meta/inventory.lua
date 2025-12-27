@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Inventory Meta
 
     Inventory management system for the Lilia framework.

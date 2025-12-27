@@ -1,4 +1,4 @@
-local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
+﻿local PENDING, FULFILLED, REJECTED = "pending", "fulfilled", "rejected"
 local HANDLER_RESOLVE, HANDLER_REJECT, HANDLER_PROMISE = 1, 2, 3
 REJECTION_HANDLER_ID = REJECTION_HANDLER_ID or 0
 UNHANDLED_PROMISES = UNHANDLED_PROMISES or {}
@@ -72,7 +72,7 @@ function Promise:next(onResolve, onReject)
         promise.rejectionHandlerID = self.rejectionHandlerID
     else
         promise.rejectionHandlerID = REJECTION_HANDLER_ID
-        UNHANDLED_PROMISES[REJECTION_HANDLER_ID] = true
+        if UNHANDLED_PROMISES then UNHANDLED_PROMISES[REJECTION_HANDLER_ID] = true end
         REJECTION_HANDLER_ID = REJECTION_HANDLER_ID + 1
     end
     return promise
@@ -86,7 +86,7 @@ function Promise:_handle(value)
     if value == self then return self:reject(L("promiseCannotResolveSelf")) end
     if value ~= nil and istable(value) and value.next then
         if value.state then
-            if not DEBUG_IGNOREUNHANDLED then
+            if not DEBUG_IGNOREUNHANDLED and UNHANDLED_PROMISES then
                 UNHANDLED_PROMISES[value.rejectionHandlerID] = nil
                 value.rejectionHandlerID = self.rejectionHandlerID
             end
@@ -145,7 +145,7 @@ function Promise:_handle(value)
                 local status, result = pcall(onReject, value)
                 if status then
                     promise:_handle(result)
-                    if self.rejectionHandlerID then UNHANDLED_PROMISES[self.rejectionHandlerID] = nil end
+                    if self.rejectionHandlerID and UNHANDLED_PROMISES then UNHANDLED_PROMISES[self.rejectionHandlerID] = nil end
                 else
                     promise:reject(result)
                 end
@@ -170,7 +170,7 @@ function Promise:_handle(value)
     if isRejected and not DEBUG_IGNOREUNHANDLED then
         local trace = debug.traceback()
         timer.Simple(0.1, function()
-            if UNHANDLED_PROMISES[self.rejectionHandlerID] and not DEBUG_IGNOREUNHANDLED then
+            if UNHANDLED_PROMISES and UNHANDLED_PROMISES[self.rejectionHandlerID] and not DEBUG_IGNOREUNHANDLED then
                 UNHANDLED_PROMISES[self.rejectionHandlerID] = nil
                 lia.error(L("promiseUnhandledRejection", tostring(self.reason or "")))
                 lia.error(trace)
@@ -188,7 +188,7 @@ function deferred.new()
     local promise = Promise:new()
     if not DEBUG_IGNOREUNHANDLED then
         promise.rejectionHandlerID = REJECTION_HANDLER_ID
-        UNHANDLED_PROMISES[REJECTION_HANDLER_ID] = true
+        if UNHANDLED_PROMISES then UNHANDLED_PROMISES[REJECTION_HANDLER_ID] = true end
         REJECTION_HANDLER_ID = REJECTION_HANDLER_ID + 1
     end
     return promise

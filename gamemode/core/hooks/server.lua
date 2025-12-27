@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -109,7 +109,7 @@ function GM:PlayerLoadedChar(client, character)
         end
     end
 
-    if not table.IsEmpty(ammoTable) then
+    if istable(ammoTable) and not table.IsEmpty(ammoTable) then
         timer.Simple(0.25, function()
             if not IsValid(client) then return end
             for ammoType, ammoCount in pairs(ammoTable) do
@@ -494,6 +494,12 @@ function GM:DoPlayerDeath(client, attacker)
         existingRagdoll:CallOnRemove("deadRagdoll", function() existingRagdoll.liaIgnoreDelete = true end)
         client.diedInRagdoll = true
     end
+
+    timer.Simple(0, function()
+        if not IsValid(client) then return end
+        local deathRagdoll = client:GetRagdollEntity()
+        if IsValid(deathRagdoll) then client:setNetVar("ragdoll", deathRagdoll) end
+    end)
 
     if IsValid(attacker) and attacker:IsPlayer() then
         if client == attacker then
