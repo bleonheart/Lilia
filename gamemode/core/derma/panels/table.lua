@@ -48,18 +48,17 @@ function PANEL:AddColumn(name, width, align, sortable)
     -- Add methods for compatibility with DListView API
     column.SetMinWidth = function(self, minWidth)
         column.minWidth = minWidth
-        if column.width < minWidth then
-            column.width = minWidth
-        end
+        -- Keep autoSize enabled but ensure minimum width is respected
+        if column.width < minWidth then column.width = minWidth end
     end
 
+    column.SetMaxWidth = function(self, maxWidth) column.maxWidth = maxWidth end
     column.SetWidth = function(self, width)
         column.width = width
         column.autoSize = false -- Disable auto-sizing when manually set
     end
 
     table.insert(self.columns, column)
-
     self:RebuildRows()
     return column
 end
@@ -146,7 +145,13 @@ function PANEL:CreateRow(rowIndex, rowData)
 
     row.DoRightClick = function()
         self.selectedRow = rowIndex
-        self.OnRightClick(rowData)
+        print("[liaTable] DoRightClick row", rowIndex, "invoking OnRightClick")
+        local handled = self.OnRightClick(rowData)
+        if handled then
+            print("[liaTable] OnRightClick handled custom menu")
+            return
+        end
+
         local menu = lia.derma.dermaMenu()
         for _, option in ipairs(self.customMenuOptions) do
             menu:AddOption(option.text, function() option.callback(rowData, rowIndex) end, option.icon)
@@ -193,7 +198,9 @@ function PANEL:CalculateColumnWidths()
                 end
             end
 
-            column.width = math.max(maxWidth, column.minWidth or 60)
+            local calculatedWidth = math.max(maxWidth, column.minWidth or 60)
+            if column.maxWidth then calculatedWidth = math.min(calculatedWidth, column.maxWidth) end
+            column.width = calculatedWidth
             table.insert(autoSizeColumns, colIndex)
         end
     end

@@ -631,9 +631,6 @@ function MODULE:PopulateAdminTabs(pages)
             icon = "icon16/lightning.png",
             drawFunc = function(panel)
                 panelRef = panel
-                panel:Clear()
-                panel:DockPadding(6, 6, 6, 6)
-                panel.Paint = nil
                 net.Start("liaRequestAllPks")
                 net.SendToServer()
             end
@@ -2971,6 +2968,8 @@ net.Receive("liaAllPks", function()
     local cases = net.ReadTable() or {}
     if not IsValid(panelRef) then return end
     panelRef:Clear()
+    panelRef:DockPadding(6, 6, 6, 6)
+    panelRef.Paint = function() end
     local search = panelRef:Add("liaEntry")
     search:Dock(TOP)
     search:DockMargin(0, 20, 0, 15)
@@ -2984,19 +2983,28 @@ net.Receive("liaAllPks", function()
     panelRef.list = list
     panelRef:InvalidateLayout(true)
     panelRef:SizeToChildren(false, true)
-    local function addSizedColumn(text)
-        local col = list:AddColumn(text)
-        surface.SetFont(col.Header:GetFont())
-        local w = surface.GetTextSize(col.Header:GetText())
-        col:SetMinWidth(w + 16)
-        col:SetWidth(w + 16)
-        return col
-    end
+    local columns = {
+        {
+            name = L("timestamp"),
+            field = "timestamp"
+        },
+        {
+            name = L("character"),
+            field = "character"
+        },
+        {
+            name = L("submitter"),
+            field = "submitter"
+        },
+        {
+            name = L("evidence"),
+            field = "evidence"
+        }
+    }
 
-    addSizedColumn(L("timestamp"))
-    addSizedColumn(L("character"))
-    addSizedColumn(L("submitter"))
-    addSizedColumn(L("evidence"))
+    for _, col in ipairs(columns) do
+        list:AddColumn(col.name)
+    end
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")
