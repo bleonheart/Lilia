@@ -631,6 +631,9 @@ function MODULE:PopulateAdminTabs(pages)
             icon = "icon16/lightning.png",
             drawFunc = function(panel)
                 panelRef = panel
+                panel:Clear()
+                panel:DockPadding(6, 6, 6, 6)
+                panel.Paint = nil
                 net.Start("liaRequestAllPks")
                 net.SendToServer()
             end
@@ -2977,6 +2980,10 @@ net.Receive("liaAllPks", function()
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
+    panelRef.searchEntry = search
+    panelRef.list = list
+    panelRef:InvalidateLayout(true)
+    panelRef:SizeToChildren(false, true)
     local function addSizedColumn(text)
         local col = list:AddColumn(text)
         surface.SetFont(col.Header:GetFont())

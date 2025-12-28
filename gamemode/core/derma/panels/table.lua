@@ -30,15 +30,38 @@ function PANEL:Init()
 end
 
 function PANEL:AddColumn(name, width, align, sortable)
-    table.insert(self.columns, {
+    local column = {
         name = name,
         width = width or 100,
         align = align or TEXT_ALIGN_LEFT,
         sortable = sortable ~= false,
-        autoSize = true
-    })
+        autoSize = true,
+        minWidth = 0
+    }
+
+    -- Create a mock Header object for compatibility
+    column.Header = {
+        GetFont = function() return self.font end,
+        GetText = function() return name end
+    }
+
+    -- Add methods for compatibility with DListView API
+    column.SetMinWidth = function(self, minWidth)
+        column.minWidth = minWidth
+        if column.width < minWidth then
+            column.width = minWidth
+        end
+    end
+
+    column.SetWidth = function(self, width)
+        column.width = width
+        column.autoSize = false -- Disable auto-sizing when manually set
+    end
+
+    table.insert(self.columns, column)
 
     self:RebuildRows()
+    return column
 end
 
 function PANEL:AddItem(...)
@@ -170,7 +193,7 @@ function PANEL:CalculateColumnWidths()
                 end
             end
 
-            column.width = math.max(maxWidth, 60)
+            column.width = math.max(maxWidth, column.minWidth or 60)
             table.insert(autoSizeColumns, colIndex)
         end
     end
