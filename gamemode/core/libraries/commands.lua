@@ -7775,3 +7775,144 @@ concommand.Add("lia_give_money_steamid", function(client, _, args)
         MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
     end)
 end)
+
+concommand.Add("lia_whitelist_faction_steamid", function(client, _, args)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    local steamID = args[1]
+    local factionUniqueID = args[2]
+
+    if not steamID or not factionUniqueID then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_whitelist_faction_steamid <steamID> <factionUniqueID>\n")
+        return
+    end
+
+    -- Normalize SteamID format
+    local normalized = lia.util.convertSteamID(steamID)
+    if not normalized then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID format: " .. steamID .. "\n")
+        return
+    end
+
+    -- Check if faction exists
+    local faction = lia.faction.get(factionUniqueID)
+    if not faction then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Faction not found: " .. factionUniqueID .. "\n")
+        return
+    end
+
+    if faction.uniqueID == "staff" then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Cannot whitelist for staff faction.\n")
+        return
+    end
+
+    lia.db.selectOne({"data"}, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function(row)
+        if not row then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No player data found for SteamID: " .. normalized .. "\n")
+            return
+        end
+
+        local data = row.data
+        if isstring(data) then data = util.JSONToTable(data) end
+        if not istable(data) then data = {} end
+
+        data.whitelists = data.whitelists or {}
+        data.whitelists[SCHEMA.folder] = data.whitelists[SCHEMA.folder] or {}
+        data.whitelists[SCHEMA.folder][faction.uniqueID] = true
+
+        lia.db.updateTable({
+            data = data
+        }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function()
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully whitelisted SteamID " .. normalized .. " for faction '" .. faction.name .. "' (" .. faction.uniqueID .. ")\n")
+            lia.log.add(nil, "factionWhitelistSteamID", normalized, faction.name, faction.uniqueID)
+        end):catch(function(err)
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
+        end)
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
+    end)
+end)
+
+concommand.Add("lia_whitelist_class_steamid", function(client, _, args)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    local steamID = args[1]
+    local classUniqueID = args[2]
+
+    if not steamID or not classUniqueID then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_whitelist_class_steamid <steamID> <classUniqueID>\n")
+        return
+    end
+
+    -- Normalize SteamID format
+    local normalized = lia.util.convertSteamID(steamID)
+    if not normalized then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID format: " .. steamID .. "\n")
+        return
+    end
+
+    -- Check if class exists
+    local classID = lia.class.retrieveClass(classUniqueID)
+    if not classID then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Class not found: " .. classUniqueID .. "\n")
+        return
+    end
+
+    local classData = lia.class.list[classID]
+
+    -- Get all characters for this SteamID
+    lia.db.select({"id", "name", "classwhitelists"}, "lia_characters", "steamID = '" .. lia.db.escape(normalized) .. "'"):next(function(characters)
+        if not characters or #characters == 0 then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. normalized .. "\n")
+            return
+        end
+
+        local updatedCount = 0
+        for _, charData in ipairs(characters) do
+            local charID = charData.id
+            local charName = charData.name
+            local classwhitelists = charData.classwhitelists
+
+            if isstring(classwhitelists) then
+                classwhitelists = util.JSONToTable(classwhitelists) or {}
+            elseif not istable(classwhitelists) then
+                classwhitelists = {}
+            end
+
+            if classwhitelists[classID] then
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Character '" .. charName .. "' (ID: " .. charID .. ") is already whitelisted for class '" .. classData.name .. "'\n")
+            else
+                classwhitelists[classID] = true
+
+                lia.db.updateTable({
+                    classwhitelists = classwhitelists
+                }, nil, "lia_characters", "id = " .. charID):next(function()
+                    -- Update classwhitelists for loaded characters
+                    local character = lia.char.loaded[charID]
+                    if character then
+                        character.vars.classwhitelists = classwhitelists
+                        character:syncVars()
+                    end
+
+                    updatedCount = updatedCount + 1
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Whitelisted character '" .. charName .. "' (ID: " .. charID .. ") for class '" .. classData.name .. "' (" .. classData.uniqueID .. ")\n")
+
+                    if updatedCount == #characters then
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully whitelisted " .. updatedCount .. " characters owned by SteamID " .. normalized .. " for class '" .. classData.name .. "'\n")
+                        lia.log.add(nil, "classWhitelistSteamID", normalized, classData.name, classData.uniqueID, updatedCount)
+                    end
+                end):catch(function(err)
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating class whitelist for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n")
+                end)
+            end
+        end
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
+    end)
+end)
