@@ -196,6 +196,7 @@ if CLIENT then
                     else
                         fontData.font = baseFont
                     end
+
                     fontData.size = tonumber(sizeStr) or 16
                 end
             end
@@ -207,6 +208,7 @@ if CLIENT then
                 else
                     fontData.font = boldMatch
                 end
+
                 fontData.weight = 700
             end
 
@@ -221,6 +223,7 @@ if CLIENT then
                 else
                     fontData.font = boldItalicMatch
                 end
+
                 fontData.weight = 700
                 fontData.italic = true
             end
@@ -232,6 +235,7 @@ if CLIENT then
                 else
                     fontData.font = boldShadowMatch
                 end
+
                 fontData.weight = 700
                 fontData.shadow = true
             end

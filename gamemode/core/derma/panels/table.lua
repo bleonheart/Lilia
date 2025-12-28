@@ -39,23 +39,20 @@ function PANEL:AddColumn(name, width, align, sortable)
         minWidth = 0
     }
 
-    -- Create a mock Header object for compatibility
     column.Header = {
         GetFont = function() return self.font end,
         GetText = function() return name end
     }
 
-    -- Add methods for compatibility with DListView API
     column.SetMinWidth = function(_, minWidth)
         column.minWidth = minWidth
-        -- Keep autoSize enabled but ensure minimum width is respected
         if column.width < minWidth then column.width = minWidth end
     end
 
     column.SetMaxWidth = function(_, maxWidth) column.maxWidth = maxWidth end
     column.SetWidth = function(_, newWidth)
         column.width = newWidth
-        column.autoSize = false -- Disable auto-sizing when manually set
+        column.autoSize = false
     end
 
     table.insert(self.columns, column)

@@ -3005,6 +3005,7 @@ net.Receive("liaAllPks", function()
     for _, col in ipairs(columns) do
         list:AddColumn(col.name)
     end
+
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")

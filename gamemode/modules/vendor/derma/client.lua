@@ -1183,7 +1183,6 @@ function PANEL:Init()
 
     self.items:Dock(FILL)
     self.items:DockMargin(8, 0, 8, 8)
-    -- Add columns with error checking
     local nameCol = self.items:AddColumn("Name")
     nameCol:SetMinWidth(150)
     nameCol:SetMaxWidth(200)
@@ -1201,18 +1200,22 @@ function PANEL:Init()
         if not rowData or not rowData.item then return end
         lia.vendor.editor.mode(rowData.item, nil)
     end, "icon16/cog_error.png")
+
     self.items:AddMenuOption(L("mode") .. " - " .. L("buyOnlynSell"), function(rowData)
         if not rowData or not rowData.item then return end
         lia.vendor.editor.mode(rowData.item, VENDOR_SELLANDBUY)
     end, "icon16/cog.png")
+
     self.items:AddMenuOption(L("mode") .. " - " .. L("buyOnly"), function(rowData)
         if not rowData or not rowData.item then return end
         lia.vendor.editor.mode(rowData.item, VENDOR_BUYONLY)
     end, "icon16/cog_delete.png")
+
     self.items:AddMenuOption(L("mode") .. " - " .. L("sellOnly"), function(rowData)
         if not rowData or not rowData.item then return end
         lia.vendor.editor.mode(rowData.item, VENDOR_SELLONLY)
     end, "icon16/cog_add.png")
+
     self.items:AddMenuOption(L("price"), function(rowData)
         if not rowData or not rowData.item then return end
         local vEnt = liaVendorEnt
@@ -1224,10 +1227,12 @@ function PANEL:Init()
             lia.vendor.editor.price(rowData.item, text)
         end, vEnt:getPrice(rowData.item))
     end, "icon16/coins.png")
+
     self.items:AddMenuOption(L("stock") .. " - " .. L("disable"), function(rowData)
         if not rowData or not rowData.item then return end
         lia.vendor.editor.stockDisable(rowData.item)
     end, "icon16/table_delete.png")
+
     self.items:AddMenuOption(L("stock") .. " - " .. L("edit"), function(rowData)
         if not rowData or not rowData.item then return end
         local vEnt = liaVendorEnt
@@ -1240,6 +1245,7 @@ function PANEL:Init()
             lia.vendor.editor.stockMax(rowData.item, text)
         end, max or 1)
     end, "icon16/table_edit.png")
+
     self.items:AddMenuOption(L("stock") .. " - " .. L("vendorEditCurStock"), function(rowData)
         if not rowData or not rowData.item then return end
         local vEnt = liaVendorEnt
