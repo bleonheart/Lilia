@@ -602,6 +602,118 @@ end)
 
 lia.command.findPlayer = lia.util.findPlayer
 if SERVER then
+    local function sanitizeFlags(flags)
+        if not flags then return "" end
+        local cleaned = tostring(flags):gsub("%s", "")
+        local seen = {}
+        local result = ""
+        for i = 1, #cleaned do
+            local flag = cleaned:sub(i, i)
+            if not seen[flag] then
+                seen[flag] = true
+                result = result .. flag
+            end
+        end
+
+        return result
+    end
+
+    local function mergeFlags(existing, additions)
+        existing = sanitizeFlags(existing)
+        additions = sanitizeFlags(additions)
+        if additions == "" then return existing, "" end
+        local seen = {}
+        for i = 1, #existing do
+            local flag = existing:sub(i, i)
+            seen[flag] = true
+        end
+
+        local appended = ""
+        for i = 1, #additions do
+            local flag = additions:sub(i, i)
+            if not seen[flag] then
+                seen[flag] = true
+                appended = appended .. flag
+            end
+        end
+
+        if appended ~= "" then existing = existing .. appended end
+        return existing, appended
+    end
+
+    local function normalizeSteamID(value)
+        if not value or value == "" then return nil end
+        if value:find("^%d+$") then
+            local converted = util.SteamIDFrom64(value)
+            if converted and converted ~= "STEAM_0:0:0" then return converted end
+        end
+
+        return value
+    end
+
+    local function findPlayerBySteamID(steamID)
+        local steamID64 = util.SteamIDTo64(steamID)
+        for _, ply in player.Iterator() do
+            if ply:SteamID() == steamID or ply:SteamID64() == steamID64 then return ply end
+        end
+    end
+
+    local function appendPermanentFlags(steamID, flagsStr)
+        local normalized = normalizeSteamID(steamID)
+        if not normalized then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID supplied.\n")
+            return
+        end
+
+        local cleanedFlags = sanitizeFlags(flagsStr)
+        if cleanedFlags == "" then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No flags provided.\n")
+            return
+        end
+
+        local target = findPlayerBySteamID(normalized)
+        if target then
+            local merged, appended = mergeFlags(target:getLiliaData("permanentflags", ""), cleanedFlags)
+            if appended == "" then
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No new flags to add for " .. normalized .. ".\n")
+                return
+            end
+
+            target:setLiliaData("permanentflags", merged)
+            local char = target:getChar()
+            if char then char:giveFlags(appended) end
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ".\n")
+            return
+        end
+
+        lia.db.selectOne({"data"}, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function(row)
+            if not row then
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No player data found for " .. normalized .. ".\n")
+                return
+            end
+
+            local data = row.data
+            if isstring(data) then data = util.JSONToTable(data) end
+            if not istable(data) then data = {} end
+            local merged, appended = mergeFlags(data.permanentflags or "", cleanedFlags)
+            if appended == "" then
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No new flags to add for " .. normalized .. ".\n")
+                return
+            end
+
+            data.permanentflags = merged
+            lia.db.updateTable({
+                data = data
+            }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized))
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ".\n")
+        end)
+    end
+
+    concommand.Add("lia_givepermaflags", function(client, _, args)
+        if IsValid(client) and not client:IsSuperAdmin() then return end
+        appendPermanentFlags(args[1], args[2])
+    end)
+
     concommand.Add("kickbots", function()
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         for _, bot in player.Iterator() do
@@ -622,6 +734,41 @@ if SERVER then
     concommand.Add("plysetgroup", function(ply, _, args)
         local target = lia.util.findPlayer(ply, args[1])
         local usergroup = args[2]
+
+        -- Function to handle offline player usergroup setting
+        local function setOfflineUserGroup(steamID, adminPly)
+            if not lia.administrator.groups[usergroup] then
+                if adminPly and IsValid(adminPly) then
+                    adminPly:notifyErrorLocalized("invalidUsergroup", usergroup)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " \"" .. usergroup .. "\"\n")
+                end
+                return
+            end
+
+            lia.db.selectOne({"steamName", "userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
+                if not data then
+                    if adminPly and IsValid(adminPly) then
+                        adminPly:notifyErrorLocalized("plyNoExist")
+                    else
+                        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. steamID .. "\"\n")
+                    end
+                    return
+                end
+
+                lia.db.updateTable({
+                    userGroup = usergroup
+                }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function()
+                    lia.log.add(adminPly, "usergroup", steamID, usergroup)
+                    local playerName = data.steamName or steamID
+                    if adminPly and IsValid(adminPly) then
+                        adminPly:notifyInfoLocalized("userGroupSetBy", playerName, usergroup)
+                    end
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set " .. playerName .. " (" .. steamID .. ") to usergroup: " .. usergroup .. "\n")
+                end)
+            end)
+        end
+
         if not IsValid(ply) or not game.IsDedicated() then
             if IsValid(target) then
                 if lia.administrator.groups[usergroup] then
@@ -633,7 +780,12 @@ if SERVER then
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " \"" .. usergroup .. "\"\n")
                 end
             else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. args[1] .. "\"\n")
+                -- Check if it's a valid SteamID for offline player
+                if string.match(args[1], "^STEAM_%d+:%d+:%d+$") then
+                    setOfflineUserGroup(args[1], nil)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. args[1] .. "\"\n")
+                end
             end
         elseif ply:hasPrivilege("setUserGroup") then
             if IsValid(target) then
@@ -644,10 +796,15 @@ if SERVER then
                     lia.log.add(ply, "usergroup", target, usergroup)
                     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set " .. target:getName() .. " (" .. target:SteamID() .. ") to usergroup: " .. usergroup .. "\n")
                 else
-                    ply:notifyErrorLocalized("invalidUsergroup" .. " \"" .. usergroup .. "\"")
+                    ply:notifyErrorLocalized("invalidUsergroup", usergroup)
                 end
             else
-                ply:notifyErrorLocalized("plyNoExist")
+                -- Check if it's a valid SteamID for offline player
+                if string.match(args[1], "^STEAM_%d+:%d+:%d+$") then
+                    setOfflineUserGroup(args[1], ply)
+                else
+                    ply:notifyErrorLocalized("plyNoExist")
+                end
             end
         else
             ply:notifyErrorLocalized("noPerm")
@@ -7448,3 +7605,173 @@ lia.command.add("listnearbyentities", {
         client:notify("Listed " .. totalEntities .. " entities within " .. radius .. " units")
     end
 })
+
+concommand.Add("lia_setextrachars", function(client, _, args)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    local steamid = args[1]
+    local amount = tonumber(args[2])
+    if not steamid or steamid == "" then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID provided.\n")
+        return
+    end
+
+    if not amount or amount < 0 then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid amount provided. Must be a non-negative number.\n")
+        return
+    end
+
+    -- Always update the database directly
+    lia.db.query("SELECT steamID, data FROM lia_players WHERE steamID = " .. lia.db.convertDataType(steamid) .. " LIMIT 1", function(data)
+        local playerData = {}
+        if data and data[1] then
+            -- Player exists, get their current data
+            playerData = data[1].data
+            if isstring(playerData) then
+                playerData = util.JSONToTable(playerData) or {}
+            elseif not playerData then
+                playerData = {}
+            end
+        else
+            -- Player doesn't exist, create new record
+            lia.db.insertTable({
+                steamID = steamid,
+                steamName = "Unknown",
+                data = "{}",
+                lastJoin = os.date("%Y-%m-%d %H:%M:%S", os.time()),
+                lastIP = "",
+                lastOnline = os.time(),
+                totalOnlineTime = 0
+            }, nil, "players")
+        end
+
+        -- Set the extra characters
+        playerData.extra_characters = amount
+        -- Update the database
+        lia.db.updateTable({
+            data = util.TableToJSON(playerData)
+        }, nil, "players", "steamID = " .. lia.db.convertDataType(steamid))
+
+        -- Also update online player if they're currently connected
+        for _, ply in player.Iterator() do
+            if ply:SteamID() == steamid then
+                ply:setLiliaData("extra_characters", amount)
+                break
+            end
+        end
+
+        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set player " .. steamid .. " extra characters to " .. amount .. ".\n")
+        lia.log.add(nil, "setExtraChars", steamid, amount)
+    end)
+end)
+
+concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
+    if IsValid(client) then return end
+
+    local steamID = args[1]
+    local width = tonumber(args[2])
+    local height = tonumber(args[3])
+
+    if not steamID or not width or not height then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_set_inventory_size_all_chars <steamID> <width> <height>\n")
+        return
+    end
+
+    if width < 1 or height < 1 then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Width and height must be positive numbers.\n")
+        return
+    end
+
+    lia.db.select({"id", "name"}, "lia_characters", "steamID = '" .. lia.db.escape(steamID) .. "'"):next(function(characters)
+        if not characters or #characters == 0 then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. steamID .. "\n")
+            return
+        end
+
+        local updatedCount = 0
+        for _, charData in ipairs(characters) do
+            local charID = charData.id
+            local charName = charData.name
+
+            -- Load the character's inventory
+            lia.inventory.loadByID(charID):next(function(inventory)
+                if inventory then
+                    inventory:setSize(width, height)
+                    inventory:sync()
+                    updatedCount = updatedCount + 1
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Updated inventory size for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. "\n")
+                else
+                    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Could not load inventory for character '" .. charName .. "' (ID: " .. charID .. ")\n")
+                end
+            end):catch(function(err)
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating inventory for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n")
+            end)
+        end
+
+        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Started updating inventory sizes for " .. #characters .. " characters of SteamID: " .. steamID .. "\n")
+        lia.log.add(nil, "setInventorySizeAllChars", steamID, width, height, #characters)
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
+    end)
+end)
+
+concommand.Add("lia_give_money_steamid", function(client, _, args)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    local steamID = args[1]
+    local amount = tonumber(args[2])
+
+    if not steamID or not amount then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_give_money_steamid <steamID> <amount>\n")
+        return
+    end
+
+    if amount < 0 then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Amount must be a positive number.\n")
+        return
+    end
+
+    lia.db.select({"id", "name", "money"}, "lia_characters", "steamID = '" .. lia.db.escape(steamID) .. "'"):next(function(characters)
+        if not characters or #characters == 0 then
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. steamID .. "\n")
+            return
+        end
+
+        local updatedCount = 0
+        for _, charData in ipairs(characters) do
+            local charID = charData.id
+            local charName = charData.name
+            local currentMoney = charData.money or 0
+            local newMoney = currentMoney + amount
+
+            lia.db.updateTable({
+                money = newMoney
+            }, nil, "characters", "id = " .. charID):next(function()
+                -- Update money for loaded characters
+                local character = lia.char.loaded[charID]
+                if character then
+                    character.vars.money = newMoney
+                    character:syncVars()
+                end
+
+                updatedCount = updatedCount + 1
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(newMoney) .. "\n")
+
+                if updatedCount == #characters then
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully gave " .. lia.currency.get(amount) .. " to " .. #characters .. " characters owned by SteamID: " .. steamID .. "\n")
+                    lia.log.add(nil, "giveMoneySteamID", steamID, amount, #characters)
+                end
+            end):catch(function(err)
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating money for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n")
+            end)
+        end
+    end):catch(function(err)
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n")
+    end)
+end)
