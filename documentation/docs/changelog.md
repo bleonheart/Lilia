@@ -1,5 +1,380 @@
 # Changelog
 
+## Version 7.161 (December 30, 2025)
+
+### Changes
+
+- Update server.lua
+- Successfully updated workshop Lilia to 7.159
+- Better Model in Ammo
+- Placing entity items without being in inv
+- Successfully updated workshop Lilia to 7.156
+- Update item.lua
+- Auto Gen TFA & ARCCW Ammo
+- Successfully updated workshop Lilia to 7.153
+- Update server.lua
+- Fixed Bad Arg
+- Successfully updated workshop Lilia to 7.150
+- Bug Fixing and New Feature
+- Successfully updated workshop Lilia to 7.148
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+
+## Version 7.159 (December 28, 2025)
+
+### Changes
+
+- Better Model in Ammo
+- Placing entity items without being in inv
+- Successfully updated workshop Lilia to 7.156
+- Update item.lua
+- Auto Gen TFA & ARCCW Ammo
+- Successfully updated workshop Lilia to 7.153
+- Update server.lua
+- Fixed Bad Arg
+- Successfully updated workshop Lilia to 7.150
+- Bug Fixing and New Feature
+- Successfully updated workshop Lilia to 7.148
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+
+## Version 7.156 (December 28, 2025)
+
+### Changes
+
+- Update item.lua
+- Auto Gen TFA & ARCCW Ammo
+- Successfully updated workshop Lilia to 7.153
+- Update server.lua
+- Fixed Bad Arg
+- Successfully updated workshop Lilia to 7.150
+- Bug Fixing and New Feature
+- Successfully updated workshop Lilia to 7.148
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+- Prevented Respawn without SPACE
+- Successfully updated workshop Lilia to 7.137
+- Skin Changes
+
+## Version 7.153 (December 28, 2025)
+
+### Changes
+
+- Update server.lua
+- Fixed Bad Arg
+- Successfully updated workshop Lilia to 7.150
+- Bug Fixing and New Feature
+- Successfully updated workshop Lilia to 7.148
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+- Prevented Respawn without SPACE
+- Successfully updated workshop Lilia to 7.137
+- Skin Changes
+- Successfully updated workshop Lilia to 7.135
+- Stamina fIX
+- Better Confirmation UI
+
+## Version 7.150 (December 28, 2025)
+
+### Changes
+
+- Bug Fixing and New Feature
+- Successfully updated workshop Lilia to 7.148
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+- Prevented Respawn without SPACE
+- Successfully updated workshop Lilia to 7.137
+- Skin Changes
+- Successfully updated workshop Lilia to 7.135
+- Stamina fIX
+- Better Confirmation UI
+- Chatbox Bug Fix
+- Better Inventory Items
+- Added Extra Respawn Logic
+
+## Version 7.148 (December 27, 2025)
+
+### Changes
+
+- Minor Bug Fixing
+- Successfully updated workshop Lilia to 7.146
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+- Prevented Respawn without SPACE
+- Successfully updated workshop Lilia to 7.137
+- Skin Changes
+- Successfully updated workshop Lilia to 7.135
+- Stamina fIX
+- Better Confirmation UI
+- Chatbox Bug Fix
+- Better Inventory Items
+- Added Extra Respawn Logic
+- resetmapprops command
+- Successfully updated workshop Lilia to 7.128
+
+## Version 7.146 (December 13, 2025)
+
+### Changes
+
+- Faction And Class appear on Admin Stick  models now
+- Bots Regenerate on Char Ban
+- Main Character Mechanic
+- Made PK Work Properly
+- Fixed Ammo Saving
+- FACTION|CLASS.models now appear in the adminstick models
+- Increased Ragdoll Time + Reduced Damage on VDM
+- Prevented Respawn without SPACE
+- Successfully updated workshop Lilia to 7.137
+- Skin Changes
+- Successfully updated workshop Lilia to 7.135
+- Stamina fIX
+- Better Confirmation UI
+- Chatbox Bug Fix
+- Better Inventory Items
+- Added Extra Respawn Logic
+- resetmapprops command
+- Successfully updated workshop Lilia to 7.128
+- New Skins
+- Rarities are now tied to lia.item, instead of .vendor
+
+## Version 7.137 (December 12, 2025)
+
+### Changes
+
+- Skin Changes
+- Successfully updated workshop Lilia to 7.135
+- Stamina fIX
+- Better Confirmation UI
+- Chatbox Bug Fix
+- Better Inventory Items
+- Added Extra Respawn Logic
+- resetmapprops command
+- Successfully updated workshop Lilia to 7.128
+- New Skins
+- Rarities are now tied to lia.item, instead of .vendor
+- Minor Bug Fixing
+- DoubleIf Statement
+- Successfully updated workshop Lilia to 7.123
+- GetPlayerRespawnLocation  hook
+- Successfully updated workshop Lilia to 7.121
+- Ragdoll Optimization
+- Successfully updated workshop Lilia to 7.119
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+
+## Version 7.135 (December 12, 2025)
+
+### Changes
+
+- Stamina fIX
+- Better Confirmation UI
+- Chatbox Bug Fix
+- Better Inventory Items
+- Added Extra Respawn Logic
+- resetmapprops command
+- Successfully updated workshop Lilia to 7.128
+- New Skins
+- Rarities are now tied to lia.item, instead of .vendor
+- Minor Bug Fixing
+- DoubleIf Statement
+- Successfully updated workshop Lilia to 7.123
+- GetPlayerRespawnLocation  hook
+- Successfully updated workshop Lilia to 7.121
+- Ragdoll Optimization
+- Successfully updated workshop Lilia to 7.119
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+- Log Pagination
+- Character Loader Camera Pos Fixes
+
+## Version 7.128 (December 09, 2025)
+
+### Changes
+
+- New Skins
+- Rarities are now tied to lia.item, instead of .vendor
+- Minor Bug Fixing
+- DoubleIf Statement
+- Successfully updated workshop Lilia to 7.123
+- GetPlayerRespawnLocation  hook
+- Successfully updated workshop Lilia to 7.121
+- Ragdoll Optimization
+- Successfully updated workshop Lilia to 7.119
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+- Log Pagination
+- Character Loader Camera Pos Fixes
+- Fixed Convert Entity
+- Successfully updated workshop Lilia to 7.113
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+
+## Version 7.123 (December 08, 2025)
+
+### Changes
+
+- GetPlayerRespawnLocation  hook
+- Successfully updated workshop Lilia to 7.121
+- Ragdoll Optimization
+- Successfully updated workshop Lilia to 7.119
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+- Log Pagination
+- Character Loader Camera Pos Fixes
+- Fixed Convert Entity
+- Successfully updated workshop Lilia to 7.113
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+- Successfully updated workshop Lilia to 7.17
+- Bug Fixing
+- Successfully updated workshop Lilia to 7.15
+- More Optimizations!
+- Cached getItemTable
+
+## Version 7.121 (December 07, 2025)
+
+### Changes
+
+- Ragdoll Optimization
+- Successfully updated workshop Lilia to 7.119
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+- Log Pagination
+- Character Loader Camera Pos Fixes
+- Fixed Convert Entity
+- Successfully updated workshop Lilia to 7.113
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+- Successfully updated workshop Lilia to 7.17
+- Bug Fixing
+- Successfully updated workshop Lilia to 7.15
+- More Optimizations!
+- Cached getItemTable
+- Successfully updated workshop Lilia to 7.12
+- Caching for lessl ag
+
+## Version 7.119 (December 07, 2025)
+
+### Changes
+
+- Cached Breathing and Gags
+- Successfully updated workshop Lilia to 7.117
+- Log Pagination
+- Character Loader Camera Pos Fixes
+- Fixed Convert Entity
+- Successfully updated workshop Lilia to 7.113
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+- Successfully updated workshop Lilia to 7.17
+- Bug Fixing
+- Successfully updated workshop Lilia to 7.15
+- More Optimizations!
+- Cached getItemTable
+- Successfully updated workshop Lilia to 7.12
+- Caching for lessl ag
+- Successfully updated workshop Lilia to 7.10
+- Huge Optimization in Stamina
+
+## Version 7.117 (December 06, 2025)
+
+### Changes
+
+- Log Pagination
+- Character Loader Camera Pos Fixes
+- Fixed Convert Entity
+- Successfully updated workshop Lilia to 7.113
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+- Successfully updated workshop Lilia to 7.17
+- Bug Fixing
+- Successfully updated workshop Lilia to 7.15
+- More Optimizations!
+- Cached getItemTable
+- Successfully updated workshop Lilia to 7.12
+- Caching for lessl ag
+- Successfully updated workshop Lilia to 7.10
+- Huge Optimization in Stamina
+- Successfully updated workshop Lilia to 7.098
+- Door Optimization
+
+## Version 7.113 (December 05, 2025)
+
+### Changes
+
+- Removed Redudant Nets and Moved Several to setLocalVar for Performance
+- Successfully updated workshop Lilia to 7.111
+- Compressed Categories of Privileges
+- Successfully updated workshop Lilia to 7.19
+- Chatbox perms
+- Successfully updated workshop Lilia to 7.17
+- Bug Fixing
+- Successfully updated workshop Lilia to 7.15
+- More Optimizations!
+- Cached getItemTable
+- Successfully updated workshop Lilia to 7.12
+- Caching for lessl ag
+- Successfully updated workshop Lilia to 7.10
+- Huge Optimization in Stamina
+- Successfully updated workshop Lilia to 7.098
+- Door Optimization
+- Overlap Bug Fix
+- Update admin.lua
+- requestString instead of Derma_Query
+- Language Cache
+
 ## Version 7.17 (December 03, 2025)
 
 ### Changes

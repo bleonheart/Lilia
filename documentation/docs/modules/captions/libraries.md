@@ -51,7 +51,7 @@ Server and Client variants exist.
     lia.caption.start(message, 2.5)
     
     -- Medium: Show caption to multiple players (Server)
-    for _, ply in player.Iterator() do
+    for _, ply in ipairs(player.GetAll()) do
         if ply:IsValid() then
             lia.caption.start(ply, "Event starting soon", 5)
         end
@@ -119,7 +119,7 @@ Server and Client variants exist.
     end
     
     -- Medium: Stop captions for all players (Server)
-    for _, ply in player.Iterator() do
+    for _, ply in ipairs(player.GetAll()) do
         lia.caption.finish(ply)
     end
 
