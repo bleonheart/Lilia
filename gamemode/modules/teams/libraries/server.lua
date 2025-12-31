@@ -182,7 +182,7 @@ function MODULE:CanPlayerUseChar(client, character)
     if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
 end
 
-function MODULE:CanPlayerSwitchChar(client, _, newCharacter)
+function MODULE:CanPlayerSwitchChar(client, currentCharacter, newCharacter)
     local faction = lia.faction.indices[newCharacter:getFaction()]
     if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
 end

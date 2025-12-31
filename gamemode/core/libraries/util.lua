@@ -406,10 +406,10 @@ else
         panel:SetPos(x, y)
     end
 
-    function lia.util.drawGradient(_x, _y, _w, _h, direction, color_shadow, radius, flags)
+    function lia.util.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)
         local listGradients = {Material("vgui/gradient_up"), Material("vgui/gradient_down"), Material("vgui/gradient-l"), Material("vgui/gradient-r")}
         radius = radius and radius or 0
-        lia.derma.drawMaterial(radius, _x, _y, _w, _h, color_shadow, listGradients[direction], flags)
+        lia.derma.drawMaterial(radius, x, y, w, h, color_shadow, listGradients[direction], flags)
     end
 
     function lia.util.wrapText(text, width, font)
@@ -440,7 +440,7 @@ else
         return lines, maxW
     end
 
-    function lia.util.drawBlur(panel, amount, _, alpha)
+    function lia.util.drawBlur(panel, amount, passes, alpha)
         amount = amount or 5
         alpha = alpha or 255
         local maxPasses = 3
