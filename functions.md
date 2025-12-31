@@ -6,4200 +6,2178 @@ Total: 412 functions
 Count: 5 functions
 
 - `lia.bootstrap(section, msg)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.error(msg)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.information(msg)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.relaydiscordMessage(embed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.warning(msg)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.administrator
 Count: 19 functions
 
 - `lia.administrator.addPermission(groupName, permission, silent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.applyInheritance(groupName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.createGroup(groupName, info)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.execCommand(cmd, victim, dur, reason)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.hasAccess(ply, privilege)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.hasChanges()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.load()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.notifyAdmin(notification)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.registerPrivilege(priv)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.removeGroup(groupName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.removePermission(groupName, permission, silent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.renameGroup(oldName, newName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.save(noNetwork)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.serverExecCommand(cmd, victim, dur, reason, admin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.setPlayerUsergroup(ply, newGroup, source)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.sync(c)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.administrator.unregisterPrivilege(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.attribs
 Count: 3 functions
 
 - `lia.attribs.loadFromDir(directory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.attribs.register(uniqueID, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.attribs.setup(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.bar
 Count: 6 functions
 
 - `lia.bar.add(getValue, color, priority, identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.bar.drawAction(text, duration)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.bar.drawAll()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.bar.drawBar(x, y, w, h, pos, max, color)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.bar.get(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.bar.remove(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### lia.char
 Count: 22 functions
 
 - `lia.char.addCharacter(id, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.cleanUpForPlayer(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.create(data, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.delete(id, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getAll()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getBySteamID(steamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getCharBanned(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getCharData(charID, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getCharDataRaw(charID, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getCharacter(charID, client, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getOwnerByID(ID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.getTeamColor(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.hookVar(varName, hookName, func)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.isLoaded(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.loadSingleCharacter(charID, client, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.new(data, id, client, steamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.registerVar(key, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.removeCharacter(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.restore(client, callback, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.setCharDatabase(charID, field, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.unloadCharacter(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.char.unloadUnusedCharacters(client, activeCharID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.chat
 Count: 4 functions
 
 - `lia.chat.parse(client, message, noSend)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.chat.register(chatType, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.chat.send(speaker, chatType, text, anonymous, receivers)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.chat.timestamp(ooc)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.class
 Count: 9 functions
 
 - `lia.class.canBe(client, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.get(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.getPlayerCount(class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.getPlayers(class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.hasWhitelist(class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.loadFromDir(directory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.register(uniqueID, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.retrieveClass(class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.class.retrieveJoinable(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.color
 Count: 16 functions
 
 - `lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.applyTheme(themeName, useTransition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.calculateNegativeColor(mainColor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.darken(color, factor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.getAllThemes()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.getCurrentTheme()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.getCurrentThemeName()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.getMainColor()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.isColor(v)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.isTransitionActive()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.lerp(frac, col1, col2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.register(name, color)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.registerTheme(name, themeData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.returnMainAdjustedColors()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.startThemeTransition(name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.color.testThemeTransition(themeName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.command
 Count: 8 functions
 
 - `lia.command.add(command, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.buildSyntaxFromArguments(args)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.extractArgs(text)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.hasAccess(client, command, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.openArgumentPrompt(cmdKey, missing, prefix)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.parse(client, text, realCommand, arguments)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.run(client, command, arguments)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.command.send(command, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.config
 Count: 12 functions
 
 - `lia.config.add(key, name, value, callback, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.forceSet(key, value, noSave)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.get(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.getChangedValues(includeDefaults)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.getOptions(key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.hasChanges()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.load()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.reset()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.save()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.send(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.set(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.config.setDefault(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.currency
 Count: 2 functions
 
 - `lia.currency.get(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.currency.spawn(pos, amount, angle)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.darkrp
 Count: 7 functions
 
 - `lia.darkrp.createCategory()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.createEntity(name, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.findEmptyPos(startPos, entitiesToIgnore, maxDistance, searchStep, checkArea)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.formatMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.isEmpty(position, entitiesToIgnore)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.notify(client, notifyType, duration, message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.darkrp.textWrap(text, fontName, maxLineWidth)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.data
 Count: 16 functions
 
 - `lia.data.addEquivalencyMap(map1, map2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.decode(value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.decodeAngle(raw)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.decodeVector(raw)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.delete(key, global, ignoreMap)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.deserialize(raw)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.encodetable(value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.get(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.getEquivalencyMap(map)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.getPersistence()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.loadPersistence()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.loadPersistenceData(callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.loadTables()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.savePersistence(entities)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.serialize(value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.data.set(key, value, global, ignoreMap)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.db
 Count: 30 functions
 
 - `lia.db.addDatabaseFields()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.bulkInsert(dbTable, rows)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.bulkUpsert(dbTable, rows)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.connect(callback, reconnect)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.convertDataType(value, noEscape)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.count(dbTable, condition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.createColumn(tableName, columnName, columnType, defaultValue)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.createSnapshot(tableName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.createTable(dbName, primaryKey, schema)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.delete(dbTable, condition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.escapeIdentifier(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.exists(dbTable, condition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.fieldExists(tbl, field)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.getCharacterTable(callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.getTables()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.insertOrIgnore(value, dbTable)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.insertTable(value, callback, dbTable)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.loadSnapshot(fileName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.loadTables()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.removeColumn(tableName, columnName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.removeTable(tableName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.select(fields, dbTable, condition, limit)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.selectOne(fields, dbTable, condition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.tableExists(tbl)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.transaction(queries)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.updateTable(value, callback, dbTable, condition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.upsert(value, dbTable)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.waitForTablesToLoad()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.db.wipeTables(callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 
 #### lia.derma
 Count: 47 functions
 
 - `lia.derma.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.approachExp(current, target, speed, dt)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.circle(x, y, r)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.clampMenuPosition(panel)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.createTableUI(title, columns, data, options, charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.dermaMenu()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.draw(radius, x, y, w, h, col, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawBlur(panel, amount, passes, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawBoxWithText(text, x, y, options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawCircle(x, y, radius, col, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawEntText(ent, text, posY, alphaOverride)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawSurfaceTexture(material, color, x, y, w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.easeInOutCubic(t)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.easeOutCubic(t)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.openOptionsMenu(title, options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.optionsMenu(rawOptions, config)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.radialMenu(options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.rect(x, y, w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestArguments(title, argTypes, onSubmit, defaults)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestButtons(title, buttons, callback, description)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestColorPicker(func, color_standart)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestDropdown(title, options, callback, defaultValue)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestOptions(title, options, callback, defaults)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestPlayerSelector(do_click)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestPopupQuestion(question, buttons)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.requestString(title, description, callback, defaultValue, maxLength)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.setDefaultShape(shape)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.setFlag(flags, flag, bool)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.derma.wrapText(text, width, font)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### lia.dialog
 Count: 13 functions
 
 - `lia.dialog.getAvailableConfigurations(ply, npc, npcID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.getConfiguration(uniqueID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.getNPCData(npcID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.getOriginalNPCData(npcID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.isTableEqual(tbl1, tbl2, checked)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.openConfigurationPicker(npc, npcID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.openCustomizationUI(npc, configID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.openDialog(client, npc, npcID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.registerConfiguration(uniqueID, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.registerNPC(uniqueID, data, shouldSync)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.submitConfiguration(configID, npc, payload)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.syncDialogs()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.dialog.syncToClients(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.doors
 Count: 11 functions
 
 - `lia.doors.addPreset(mapName, presetData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.cleanupCorruptedData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.getCachedData(door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.getData(door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.getPreset(mapName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.setCachedData(door, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.setData(door, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.syncAllDoorsToClient(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.syncDoorData(door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.updateCachedData(doorID, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.doors.verifyDatabaseSchema()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.faction
 Count: 15 functions
 
 - `lia.faction.cacheModels(models)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.formatModelData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.get(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getCategories(teamName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getClasses(faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getDefaultClass(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getIndex(uniqueID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getModelsFromCategory(teamName, category)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getPlayerCount(faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.getPlayers(faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.hasWhitelist(faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.isFactionCategory(faction, categoryFactions)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.jobGenerate(index, name, color, default, models)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.loadFromDir(directory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.faction.register(uniqueID, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.flag
 Count: 2 functions
 
 - `lia.flag.add(flag, desc, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.flag.onSpawn(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.font
 Count: 5 functions
 
 - `lia.font.getAvailableFonts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.font.getBoldFontName(fontName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.font.loadFonts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.font.register(fontName, fontData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.font.registerFonts(fontName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.inventory
 Count: 17 functions
 
 - `lia.inventory.checkOverflow(inv, character, oldW, oldH)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.cleanUpForCharacter(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.deleteByID(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.getAllStorage(includeTrunks)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.getAllTrunks()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.getStorage(model)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.getTrunk(vehicleClass)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.instance(typeID, initialData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.loadAllFromCharID(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.loadByID(id, noCache)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.loadFromDefaultStorage(id, noCache)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.new(typeID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.newType(typeID, invTypeStruct)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.registerStorage(model, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.registerTrunk(vehicleClass, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.show(inventory, parent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.inventory.showDual(inventory1, inventory2, parent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.item
 Count: 25 functions
 
 - `lia.item.addRarities(name, color)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.addWeaponOverride(className, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.addWeaponToBlacklist(className)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.createInv(w, h, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.deleteByID(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.generateAmmo()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.generateWeapons()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.get(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.getInstancedItemByID(itemID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.getInv(invID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.getItemByID(itemID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.getItemDataByID(itemID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.instance(index, uniqueID, itemData, x, y, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.isItem(object)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.load(path, baseID, isBaseItem)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.loadFromDir(directory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.loadItemByID(itemIndex)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.new(uniqueID, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.newInv(owner, invType, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.overrideItem(uniqueID, overrides)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.registerInv(invType, w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.restoreInv(invID, w, h, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.item.spawn(uniqueID, position, callback, angles, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.keybind
 Count: 4 functions
 
 - `lia.keybind.add(k, d, desc, cb)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.keybind.get(a, df)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.keybind.load()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.keybind.save()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.lang
 Count: 7 functions
 
 - `lia.lang.addTable(name, tbl)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.cleanupCache()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.clearCache()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.generateCacheKey(lang, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.getLanguages()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.getLocalizedString(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.lang.loadFromDir(directory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.loader
 Count: 6 functions
 
 - `lia.loader.checkForUpdates()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.loader.include(path, realm)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.loader.includeDir(dir, raw, deep, realm)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.loader.includeEntities(path)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.loader.initializeGamemode(isReload)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.log
 Count: 3 functions
 
 - `lia.log.add(client, logType, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.log.addType(logType, func, category)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `lia.log.getString(client, logType, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 
 #### lia.menu
 Count: 4 functions
 
 - `lia.menu.add(opts, pos, onRemove)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.menu.drawAll()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.menu.getActiveMenu()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.menu.onButtonPressed(id, cb)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### lia.module
 Count: 4 functions
 
 - `lia.module.get(identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.module.initialize()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.module.load(uniqueID, path, variable, skipSubmodules)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.module.loadFromDir(directory, group, skip)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.net
 Count: 7 functions
 
 - `lia.net.addToCache(name, args)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.checkBadType(name, object)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.getNetVar(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.isCacheHit(name, args)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.readBigTable(netStr, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.setNetVar(key, value, receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.net.writeBigTable(targets, netStr, tbl, chunkSize)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.notices
 Count: 10 functions
 
 - `lia.notices.notify(client, message, notifType)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyAdminLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyErrorLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyInfoLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyLocalized(client, key, notifType, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyMoneyLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifySuccessLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.notifyWarningLocalized(client, key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.receiveNotify()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.notices.receiveNotifyL()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.option
 Count: 6 functions
 
 - `lia.option.add(key, name, desc, default, callback, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.option.get(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.option.getOptions(key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.option.load()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.option.save()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.option.set(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.playerinteract
 Count: 9 functions
 
 - `lia.playerinteract.addAction(name, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.addInteraction(name, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.getActions(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.getCategorizedOptions(options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.getInteractions(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.hasChanges()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.isWithinRange(client, entity, customRange)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.playerinteract.sync(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.time
 Count: 5 functions
 
 - `lia.time.formatDHM(seconds)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.time.getDate()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.time.getHour()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.time.timeSince(strTime)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.time.toNumber(str)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.util
 Count: 31 functions
 
-- `lia.util.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+- `lia.util.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)`
+  - Shared
 - `lia.util.canFit(pos, mins, maxs, filter)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.clampMenuPosition(panel)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.createTableUI(title, columns, data, options, charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.drawBlur(panel, amount, passes, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.drawEntText(ent, text, posY, alphaOverride)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
-- `lia.util.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
+- `lia.util.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)`
+  - Shared
 - `lia.util.drawLookText(text, posY, alphaOverride, maxDist)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findFaction(client, name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayer(client, identifier)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayerBySteamID(SteamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayerBySteamID64(SteamID64)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayerEntities(client, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayerItems(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayerItemsByClass(client, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayersInBox(mins, maxs)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.findPlayersInSphere(origin, radius)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.formatStringNamed(format, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.generateRandomName(firstNames, lastNames)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.getAdmins()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.getBySteamID(steamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.getMaterial(materialPath, materialParameters)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.openOptionsMenu(title, options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.playerInRadius(pos, dist)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.requestEntityInformation(entity, argTypes, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.sendTableUI(client, title, columns, data, options, characterID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.stringMatches(a, b)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.util.wrapText(text, width, font)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.vendor
 Count: 6 functions
 
 - `lia.vendor.addPreset(name, items)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.vendor.getAllVendorData(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.vendor.getPreset(name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.vendor.getVendorProperty(entity, property)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.vendor.setVendorProperty(entity, property, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.vendor.syncVendorProperty(entity, property, value, isDefault)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### lia.webimage
 Count: 5 functions
 
 - `lia.webimage.clearCache(skipReRegister)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.webimage.download(n, u, cb, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.webimage.get(n, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.webimage.getStats()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.webimage.register(n, u, cb, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### lia.websound
 Count: 6 functions
 
 - `lia.websound.clearCache(skipReRegister)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.websound.download(name, url, cb)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.websound.get(name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.websound.getStats()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.websound.playButtonSound(customSound, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `lia.websound.register(name, url, cb)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### lia.workshop
 Count: 5 functions
 
 - `lia.workshop.addWorkshop(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.workshop.gather()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.workshop.hasContentToDownload()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.workshop.mountContent()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `lia.workshop.send(ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### characterMeta
 - `characterMeta:addBoost(boostID, attribID, boostAmount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:ban(time)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:clearAllBoosts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:delete()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:destroy()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:doesFakeRecognize(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:doesRecognize(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:getAttrib(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:getData(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:getDisplayedName(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:getID()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:getPlayer()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:giveFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:giveMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:hasFlags(flagStr)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:hasMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:isBanned()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:isMainCharacter()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:joinClass(class, isForced)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:kick()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:kickClass()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:recognize(character, name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:removeBoost(boostID, attribID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:save(callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:setAttrib(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:setData(k, v, noReplication, receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:setFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:setup(noNetworking)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:sync(receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:takeFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:takeMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `characterMeta:updateAttrib(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### entityMeta
 - `entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:checkDoorAccess(client, access)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:clearNetVars(receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:getDoorOwner()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:getDoorPartner()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:getLocalVar(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:getNetVar(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isDoor()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isDoorLocked()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isFemale()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isItem()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isLocked()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isMoney()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isProp()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:isSimfphysCar()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:keysLock()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:keysOwn(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:keysUnLock()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:playFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, soundLevel, dsp)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:removeDoorAccessData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:sendNetVar(key, receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:setKeysNonOwnable(state)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:setLocalVar(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:setLocked(state)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `entityMeta:setNetVar(key, value, receiver)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 #### panelMeta
 - `panelMeta:AvatarMask(mask)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Background(col, rad, rtl, rtr, rbl, rbr)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:BarHover(col, height, speed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Blur(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Circle(col)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleAvatar()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleCheckbox(inner, outer, speed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleClick(col, speed, trad)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleExpandHover(col, speed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleFadeHover(col, speed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:CircleHover(col, speed, trad)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:ClearAppendOverwrite()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:ClearPaint()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:ClearTransitionFunc()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:DivTall(frac, target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:DivWide(frac, target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:DualText(toptext, topfont, topcol, bottomtext, bottomfont, bottomcol, alignment, centerSpacing)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:FadeHover(col, speed, rad)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:FadeIn(time, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:FillHover(col, dir, speed, mat)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Gradient(col, dir, frac, op)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:HideVBar()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:LinedCorners(col, cornerLen)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Material(mat, col)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:NetMessage(name, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:On(name, fn)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Outline(col, width)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:ReadyTextbox()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SetAppendOverwrite(fn)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SetOpenURL(url)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SetRemove(target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SetTransitionFunc(fn)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SetupTransition(name, speed, fn)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SideBlock(col, size, side)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SquareCheckbox(inner, outer, speed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SquareFromHeight()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:SquareFromWidth()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Stick(dock, margin, dontInvalidate)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:Text(text, font, col, alignment, ox, oy, paint)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:TiledMaterial(mat, tw, th, col)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:liaDeleteInventoryHooks(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:liaListenForInventoryChanges(inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:setScaledPos(x, y)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `panelMeta:setScaledSize(w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 
 #### playerMeta
 - `playerMeta:Name()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:addMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:addPart(partID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:banPlayer(reason, duration, banner)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:canAfford(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:canEditVendor(vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:consumeStamina(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:doGesture(a, b, c)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:doStaredAction(entity, callback, time, onCancel, distance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:forceSequence(sequenceName, callback, time, noFreeze)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getAllLiliaData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getChar()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getClassData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getDarkRPVar(var)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getFlags()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getItemDropPos()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getItemWeapon()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getItems()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getLiliaData(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getLocalVar(key, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getMainCharacter()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getMoney()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getParts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getPlayTime()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:getTracedEntity(distance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:giveFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:hasFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:hasPrivilege(privilegeName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:hasSkillLevel(skill, level)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:hasWhitelist(faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:isFamilySharedAccount()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:isStaff()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:isStaffOnDuty()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
-- `playerMeta:isVIP()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:leaveSequence()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:loadLiliaData(callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:meetsRequiredSkills(requiredSkillLevels)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:networkAnimation(active, boneData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notify(message, notifType)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyAdmin(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyAdminLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyError(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyErrorLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyInfo(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyInfoLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyLocalized(message, notifType, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyMoney(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyMoneyLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifySuccess(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifySuccessLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyWarning(message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:notifyWarningLocalized(key, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:playTimeGreaterThan(time)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:removePart(partID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:removeRagdoll()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestArguments(title, argTypes, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestBinaryQuestion(question, option1, option2, manualDismiss, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestButtons(title, buttons)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestDropdown(title, subTitle, options, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestOptions(title, subTitle, options, limit, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestPopupQuestion(question, buttons)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:requestString(title, subTitle, callback, default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:resetParts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:restoreStamina(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:saveLiliaData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setAction(text, time, callback)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setLiliaData(key, value, noNetworking, noSave)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setLocalVar(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setMainCharacter(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setNetVar(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setRagdolled(state, baseTime, getUpGrace, getUpMessage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:setWaypoint(name, vector, logo, onReach)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:stopAction()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:syncParts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:syncVars()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:takeFlags(flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:takeMoney(amount)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `playerMeta:tostring()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 
 
 - `AddBarField(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `AddSection(sectionName, color, priority, location)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `AddTextField(sectionName, fieldName, labelText, valueFunc)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `AddToAdminStickHUD(client, target, information)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `AdjustCreationData(client, data, newData, originalData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `AdjustPACPartData(wearer, id, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `AdjustStaminaOffset(client, offset)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `AdminPrivilegesUpdated()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `AdminStickAddModels(allModList, tgt)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `AdvDupe_FinishPasting(tbl)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `AttachPart(client, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `BagInventoryReady(self, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `BagInventoryRemoved(self, inv)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CalcStaminaChange(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanCharBeTransfered(tChar, faction, arg3)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanDeleteChar(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CanDisplayCharInfo(name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CanInviteToClass(client, target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanInviteToFaction(client, target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanItemBeTransfered(item, inventory, VENDOR_INVENTORY_MEASURE, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanOpenBagPanel(item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CanOutfitChangeModel(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPerformVendorEdit(self, vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPersistEntity(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPickupMoney(activator, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerAccessDoor(client, self, access)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerAccessVendor(client, vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerChooseWeapon(weapon)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerCreateChar(client, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerDropItem(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerEarnSalary(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerEquipItem(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerHoldObject(client, entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerInteractItem(client, action, self, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerJoinClass(client, class, info)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerKnock(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerLock(client, door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerModifyConfig(client, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerOpenScoreboard(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CanPlayerRotateItem(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerSeeLogCategory(client, category)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerSpawnStorage(client, entity, info)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerSwitchChar(client, currentCharacter, newCharacter)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerTakeItem(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerThrowPunch(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerUnequipItem(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerUnlock(client, door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerUseChar(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerUseCommand(client, command)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanPlayerUseDoor(client, door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CanPlayerViewInventory()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CanRunItemAction(tempItem, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CanSaveData(ent, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharCleanUp(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharDeleted(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharForceRecognized(ply, range)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CharHasFlags(self, flags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CharListColumns(columns)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharListEntry(entry, row)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharListExtraDetails(client, entry, stored)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharListLoaded(newCharList)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharListUpdated(oldCharList, newCharList)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharLoaded(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharMenuClosed()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharMenuOpened(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CharPostSave(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharPreSave(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CharRestored(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ChatAddText(text, ...)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ChatParsed(client, chatType, message, anonymous)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ChatboxPanelCreated(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ChatboxTextAdded(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CheckFactionLimitReached(faction, character, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ChooseCharacter(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CommandAdded(command, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `CommandRan(client, command, arg3, results)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ConfigChanged(key, value, oldValue, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ConfigureCharacterCreationSteps(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CreateCharacter(data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CreateCharacterSaveTimer()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CreateChat()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CreateDefaultInventory(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CreateInformationButtons(pages)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CreateInventoryPanel(inventory, parent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CreateMenuButtons(tabs)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `CreateSalaryTimers()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `CreateVoiceUpdateTimer()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DatabaseConnected()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DeleteCharacter(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DermaSkinChanged(newSkin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DiscordRelaySend(embed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DiscordRelayUnavailable()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DiscordRelayed(embed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DisplayPlayerHUDInformation(client, hudInfos)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DoModuleIncludes(path, MODULE)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `DoorDataReceived(door, syncData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DoorEnabledToggled(client, door, newState)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DoorHiddenToggled(client, entity, newState)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DoorLockToggled(client, door, state)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DoorOwnableToggled(client, door, newState)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DoorPriceSet(client, door, price)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DoorTitleSet(client, door, name)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `DrawCharInfo(client, character, info)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DrawDoorInfoBox(entity, infoTexts, alphaOverride)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DrawEntityInfo(e, a, pos)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DrawItemEntityInfo(self, item, infoTable, alpha)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DrawLiliaModelView(client, entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `DrawPlayerRagdoll(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ExitStorage()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `F1MenuClosed()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `F1MenuOpened(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `FetchSpawns()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `FilterCharModels(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `FilterDoorInfo(entity, doorData, doorInfo)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ForceRecognizeRange(ply, range, fakeName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetAdjustedPartData(wearer, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetAdminESPTarget(ent, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetAdminStickLists(tgt, lists)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetAllCaseClaims()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetAttributeMax(client, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetAttributeStartingMax(client, attribute)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetBotModel(client, faction)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetCharMaxStamina(char)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetDamageScale(hitgroup, dmgInfo, damageScale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetDefaultCharDesc(client, arg2, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetDefaultCharName(client, faction, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetDefaultInventorySize(client, char)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetDefaultInventoryType(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetDisplayedDescription(client, isHUD)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetDisplayedName(client, chatType)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetDoorInfo(entity, doorData, doorInfo)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetDoorInfoForAdminStick(target, extraInfo)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetEntitySaveData(ent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetHandsAttackSpeed(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetInjuredText(c)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetItemDropModel(itemTable, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetItemStackKey(item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetItemStacks(inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetMainCharacterID()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetMainMenuPosition(character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `GetMaxPlayerChar(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetMaxStartingAttributePoints(client, count)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetModelGender(model)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetMoneyModel(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetNPCDialogOptions(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetOOCDelay(speaker)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPlayTime(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPlayerDeathSound(client, isFemale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPlayerPainSound(client, paintype, isFemale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPlayerPunchDamage(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetPlayerPunchRagdollTime(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetPlayerRespawnLocation(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPlayerSpawnLocation(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPrestigePayBonus(client, char, pay, faction, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetPriceOverride(self, uniqueID, price, isSellingToVendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetRagdollTime(self, time)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetSalaryAmount(client, faction, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetTicketsByRequester(steamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetVendorSaleScale(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `GetWarnings(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetWarningsByIssuer(steamID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `GetWeaponName(weapon)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `HandleItemTransferRequest(client, itemID, x, y, invID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `InitializeStorage(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `InitializedConfig()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InitializedItems()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InitializedKeybinds()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InitializedModules()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InitializedOptions()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InitializedSchema()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `InteractionMenuClosed()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InteractionMenuOpened(frame)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InterceptClickItemIcon(self, itemIcon, keyCode)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InventoryClosed(self, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InventoryDataChanged(instance, key, oldValue, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InventoryDeleted(instance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `InventoryInitialized(instance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InventoryItemAdded(inventory, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InventoryItemDataChanged(item, key, oldValue, newValue, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InventoryItemIconCreated(icon, item, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InventoryItemRemoved(self, instance, preserveItem)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `InventoryOpened(panel, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `InventoryPanelCreated(panel, inventory, parent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `IsCharFakeRecognized(character, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `IsCharRecognized(a, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `IsRecognizedChatType(chatType)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `IsSuitableForTrunk(ent)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `IsValid()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ItemCombine(client, item, target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ItemDataChanged(item, key, oldValue, newValue)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ItemDefaultFunctions(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ItemDeleted(instance)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ItemDraggedOutOfInventory(client, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ItemFunctionCalled(self, method, client, entity, results)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ItemInitialized(item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ItemPaintOver(self, itemTable, w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ItemQuantityChanged(item, oldValue, quantity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ItemShowEntityMenu(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ItemTransfered(context)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `KeyLock(client, door, time)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `KeyUnlock(client, door, time)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `KickedFromChar(characterID, isCurrentChar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `LiliaLoaded()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `LiliaTablesLoaded()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `LoadCharInformation()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `LoadData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `LoadMainCharacter()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `LoadMainMenuInformation(info, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ModifyCharacterModel(arg1, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ModifyScoreboardModel(arg1, ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ModifyVoiceIndicatorText(client, voiceText, voiceType)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `NetVarChanged(client, key, oldValue, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnAdminStickMenuClosed()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnAdminSystemLoaded(arg1, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharAttribBoosted(client, self, attribID, boostID, arg5)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharAttribUpdated(client, self, key, arg4)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharCreated(client, character, originalData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharDelete(client, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharDisconnect(client, character)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharFlagsGiven(ply, self, addedFlags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharFlagsTaken(ply, self, removedFlags)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharGetup(target, entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharKick(self, client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharNetVarChanged(character, key, oldVar, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharPermakilled(self, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharRecognized(client, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnCharVarChanged(character, varName, oldVar, newVar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnChatReceived(client, chatType, text, anonymous)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnCheaterCaught(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnConfigChanged(key, oldValue, newValue)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnConfigUpdated(key, oldValue, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnCreateDualInventoryPanels(panel1, panel2, inventory1, inventory2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnCreateItemInteractionMenu(self, menu, itemTable)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnDataSet(key, value, gamemode, map)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnDatabaseLoaded()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnDeathSoundPlayed(client, deathSound)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnEntityLoaded(ent, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnEntityPersistUpdated(ent, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnEntityPersisted(ent, entData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnItemAdded(owner, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnItemCreated(itemTable, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnItemOverridden(item, overrides)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnItemRegistered(ITEM)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnItemSpawned(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnLoadTables()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnLocalVarSet(key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnLocalizationLoaded()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnNPCTypeSet(client, npc, npcID, filteredData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnOOCMessageSent(client, message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnOpenVendorMenu(self, vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnPAC3PartTransfered(part)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnPainSoundPlayed(entity, painSound)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPickupMoney(activator, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerDropWeapon(client, weapon, entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerEnterSequence(self, sequenceName, callback, time, noFreeze)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerInteractItem(client, action, self, result, data)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerJoinClass(target, arg2, oldClass)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerLeaveSequence(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerLostStackItem(itemTypeOrItem)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerObserve(client, state)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerPurchaseDoor(client, door, arg3)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerRagdolled(self, entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPlayerSwitchClass(client, class, oldClass)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnPrivilegeRegistered(arg1, arg2, arg3, arg4)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnPrivilegeUnregistered(arg1, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnRequestItemTransfer(self, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnSalaryAdjust(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnSalaryGiven(client, char, pay, faction, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnSavedItemLoaded(loadedItems)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnServerLog(client, logType, logString, category)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnThemeChanged(themeName, useTransition)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OnTicketClaimed(client, requester, ticketMessage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnTicketClosed(client, requester, ticketMessage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnTicketCreated(noob, message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnTransferred(target)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnUsergroupCreated(groupName, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnUsergroupPermissionsChanged(groupName, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnUsergroupRemoved(groupName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnUsergroupRenamed(oldName, newName)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OnVendorEdited(client, vendor, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnVoiceTypeChanged(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `OnlineStaffDataReceived(staffData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OpenAdminStickUI(tgt)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OptionAdded(key, name, option)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OptionChanged(key, old, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OptionReceived(arg1, key, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `OverrideFactionDesc(uniqueID, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OverrideFactionModels(uniqueID, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OverrideFactionName(uniqueID, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `OverrideSpawnTime(ply, baseTime)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PaintItem(item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PlayerAccessVendor(client, vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerCheatDetected(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerGagged(target, admin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerLiliaDataLoaded(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerLoadedChar(client, character, currentChar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerMessageSend(speaker, chatType, text, anonymous, receivers)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerModelChanged(client, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerMuted(target, admin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerShouldAct()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `PlayerShouldPermaKill(client, inflictor, attacker)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerSpawnPointSelected(client, pos, ang)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerStaminaGained(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerStaminaLost(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerThrowPunch(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `PlayerUngagged(target, admin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerUnmuted(target, admin)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PlayerUseDoor(client, door)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PopulateAdminStick(currentMenu, currentTarget, currentStores)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PopulateAdminTabs(pages)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PopulateConfigurationButtons(pages)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PopulateInventoryItems(pnlContent, tree)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PostDoorDataLoad(ent, doorData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostDrawInventory(mainPanel, parentPanel)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PostLoadData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostLoadFonts(mainFont, mainFont)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PostPlayerInitialSpawn(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostPlayerLoadedChar(client, character, currentChar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostPlayerLoadout(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostPlayerSay(client, message, chatType, anonymous)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PostScaleDamage(hitgroup, dmgInfo, damageScale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PreCharDelete(id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PreDoorDataSave(door, doorData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PreDrawPhysgunBeam()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `PreLiliaLoaded()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `PrePlayerInteractItem(client, action, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PrePlayerLoadedChar(client, character, currentChar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PreSalaryGive(client, char, pay, faction, class)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `PreScaleDamage(hitgroup, dmgInfo, damageScale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `RefreshFonts()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `RegisterAdminStickSubcategories(categories)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `RegisterPreparedStatements()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `RemovePart(client, id)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `RemoveWarning(charID, index)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ResetCharacterPanel()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `RunAdminSystemCommand(cmd, admin, victim, dur, reason)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SaveData()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ScoreboardClosed(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ScoreboardOpened(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ScoreboardRowCreated(slot, ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ScoreboardRowRemoved(self, ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `SendPopup(noob, message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetMainCharacter(charID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetupBagInventoryAccessRules(inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetupBotPlayer(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetupDatabase()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetupPACDataFromItems()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `SetupPlayerModel(client, self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SetupQuickMenu(self)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldAllowScoreboardOverride(client, var)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldBarDraw(bar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldDataBeSaved()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ShouldDeleteSavedItems()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ShouldDisableThirdperson(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldDrawAmmo(wpn)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldDrawEntityInfo(e)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldDrawPlayerInfo(e)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldDrawWepSelect(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldHideBars()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldMenuButtonShow(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldPlayDeathSound(client, deathSound)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ShouldPlayPainSound(entity, painSound)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ShouldRespawnScreenAppear()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldShowCharVarInCreation(key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldShowClassOnScoreboard(clsData)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldShowFactionOnScoreboard(ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldShowPlayerOnScoreboard(ply)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldShowQuickMenu()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `ShouldSpawnClientRagdoll(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ShowPlayerOptions(target, options)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `StorageCanTransferItem(client, storage, item)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `StorageEntityRemoved(self, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `StorageInventorySet(entity, inventory, isCar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `StorageItemRemoved()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `StorageOpen(storage, isCar)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `StorageRestored(ent, inventory)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `StorageUnlockPrompt(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `StoreSpawns(spawns)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `SyncCharList(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `ThirdPersonToggled(arg1)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `TicketFrame(requester, message, claimed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `TicketSystemClaim(client, requester, ticketMessage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `TicketSystemClose(client, requester, ticketMessage)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `TicketSystemCreated(noob, message)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `ToggleLock(client, door, state)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `TooltipInitialize(var, panel)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `TooltipLayout(var)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `TooltipPaint(var, w, h)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `TransferItem(itemID)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `TryViewModel(entity)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `UpdateEntityPersistence(vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorClassUpdated(vendor, id, allowed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorEdited(liaVendorEnt, key)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorExited()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `VendorFactionBuyScaleUpdated(vendor, factionID, scale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorFactionSellScaleUpdated(vendor, factionID, scale)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorFactionUpdated(vendor, id, allowed)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorItemMaxStockUpdated(vendor, itemType, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorItemModeUpdated(vendor, itemType, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorItemPriceUpdated(vendor, itemType, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorItemStockUpdated(vendor, itemType, value)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorMessagesUpdated(vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorOpened(vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `VendorSynchronized(vendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VendorTradeEvent(client, vendor, itemType, isSellingToVendor)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `VoiceToggled(enabled)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `WarningIssued(client, target, reason, count, warnerSteamID, arg6)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `WarningRemoved(client, targetClient, arg3, arg4, arg5, arg6)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server
 - `WeaponCycleSound()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `WeaponSelectSound()`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `WebImageDownloaded(n, arg2)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `WebSoundDownloaded(name, path)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Client
 - `getData(default)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `setData(value, global, ignoreMap)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Shared
 - `syncVendorDataToClient(client)`
-  - [ ] Confirmed missing arguments
-  - [ ] Confirmed argument names
-  - [ ] Confirm Realm
+  - Server

@@ -42,8 +42,6 @@
 
 - [Development Server](https://liliaframework.github.io/modules/developmentserver/about/)
 
-- [Donator](https://liliaframework.github.io/modules/donator/about/)
-
 - [Door Kick](https://liliaframework.github.io/modules/doorkick/about/)
 
 - [Extended Descriptions](https://liliaframework.github.io/modules/extendeddescriptions/about/)

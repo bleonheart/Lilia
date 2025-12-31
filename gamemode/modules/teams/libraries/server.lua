@@ -79,6 +79,11 @@ end
 
 local function applyAttributes(client, attr)
     if not attr then return end
+    local offset = Vector(0, 0, 64)
+    local offsetDuck = Vector(0, 0, 28)
+    client:SetViewOffset(offset)
+    client:SetViewOffsetDucked(offsetDuck)
+    client:SetModelScale(1)
     if attr.NPCRelations then
         for _, entity in ents.Iterator() do
             if entity:IsNPC() and attr.NPCRelations[entity:GetClass()] then entity:AddEntityRelationship(client, attr.NPCRelations[entity:GetClass()], 0) end
@@ -89,9 +94,7 @@ local function applyAttributes(client, attr)
         end
     end
 
-    if attr.scale then
-        local offset = Vector(0, 0, 64)
-        local offsetDuck = Vector(0, 0, 28)
+    if attr.scale and attr.scale ~= 1 then
         client:SetViewOffset(offset * attr.scale)
         client:SetViewOffsetDucked(offsetDuck * attr.scale)
         client:SetModelScale(attr.scale)
