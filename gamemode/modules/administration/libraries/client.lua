@@ -1,5 +1,6 @@
 local MODULE = MODULE
 AdminStickIsOpen = false
+AdminStickMenu = nil
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
 local playerInfoLabel = L("player") .. " " .. L("information")
 local subMenuIcons = {
@@ -2166,6 +2167,7 @@ function MODULE:OpenAdminStickUI(tgt)
     AdminStickIsOpen = true
     local menu = lia.derma.dermaMenu()
     if not IsValid(menu) then return end
+    AdminStickMenu = menu
     if tgt:IsPlayer() then
         local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local charName = tgt:getChar() and tgt:getChar():getName() or tgt:Name()
@@ -2663,12 +2665,14 @@ function MODULE:OpenAdminStickUI(tgt)
     function menu:OnRemove()
         cl.AdminStickTarget = nil
         AdminStickIsOpen = false
+        AdminStickMenu = nil
         hook.Run("OnAdminStickMenuClosed")
     end
 
     function menu:OnClose()
         cl.AdminStickTarget = nil
         AdminStickIsOpen = false
+        AdminStickMenu = nil
         hook.Run("OnAdminStickMenuClosed")
     end
 
@@ -4267,7 +4271,7 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     end
 
     -- Top right instructions
-    local instructions = {"Left Click: Select", "Right Click: Actions", "Reload: Target self", "Reload + Sprint: Clear target"}
+    local instructions = {"Left Click: Selects target", "Right Click: Freezes player", "Shift + R: Selects yourself", "R: Clears the selection"}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",
@@ -4320,14 +4324,6 @@ function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
             textAlignX = TEXT_ALIGN_CENTER,
             textAlignY = TEXT_ALIGN_TOP
         })
-    end
-
-    -- Bottom left distance info (simple autosize with bottom-left anchor)
-    local distanceLines
-    if weapon.StartPos then
-        distanceLines = {"Distance Tool", "Tracking..."}
-    else
-        distanceLines = {"Distance Tool", "Set a start point"}
     end
 
     table.insert(hudInfos, {
