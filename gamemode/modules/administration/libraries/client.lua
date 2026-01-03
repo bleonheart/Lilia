@@ -2175,9 +2175,6 @@ function MODULE:OpenAdminStickUI(tgt)
         local steamID = tgt:IsBot() and "BOT" or tgt:SteamID() or ""
         local steamID64 = tgt:IsBot() and "BOT" or tgt:SteamID64() or ""
         local model = tgt:GetModel() or ""
-        local pos = tgt:GetPos()
-        local ang = tgt:GetAngles()
-        local printposStr = string.format("setpos %s %s %s; setang %s %s %s", tostring(math.Round(pos.x, 2)), tostring(math.Round(pos.y, 2)), tostring(math.Round(pos.z, 2)), tostring(math.Round(ang.p, 2)), tostring(math.Round(ang.y, 2)), tostring(math.Round(ang.r, 2)))
         local steamProfileLink = steamID64 ~= "BOT" and steamID64 ~= "" and ("https://steamcommunity.com/profiles/" .. steamID64) or ""
         local info = {
             {
@@ -2267,9 +2264,9 @@ function MODULE:OpenAdminStickUI(tgt)
             },
             {
                 name = function()
-                    local pos = tgt:GetPos()
-                    local ang = tgt:GetAngles()
-                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z, ang.x, ang.y, ang.z)
+                    local currentPos = tgt:GetPos()
+                    local currentAng = tgt:GetAngles()
+                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
                     -- Shorten for menu: one-line, parenthesis grouped
                     return "Position: " .. posStr .. " (copy)"
                 end,
@@ -2280,9 +2277,9 @@ function MODULE:OpenAdminStickUI(tgt)
                         return
                     end
 
-                    local pos = tgt:GetPos()
-                    local ang = tgt:GetAngles()
-                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z, ang.x, ang.y, ang.z)
+                    local currentPos = tgt:GetPos()
+                    local currentAng = tgt:GetAngles()
+                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
                     chat.AddText(Color(255, 255, 255), posStr)
                     SetClipboardText(posStr)
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
@@ -2403,7 +2400,7 @@ function MODULE:OpenAdminStickUI(tgt)
         local posStr = string.format("%.2f %.2f %.2f", pos.x, pos.y, pos.z)
         local angStr = string.format("%.2f %.2f %.2f", ang.p, ang.y, ang.r)
         local setPosAngStr = string.format("setpos %.2f %.2f %.2f; setang %.2f %.2f %.2f", pos.x, pos.y, pos.z, ang.p, ang.y, ang.r)
-        local displayName = ""
+        local displayName
         if target:IsPlayer() then
             local char = target:getChar()
             displayName = (char and char:getName()) or target:Nick() or target:Name() or "Unknown"

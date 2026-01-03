@@ -95,13 +95,23 @@ function chat.AddText(...)
 end
 
 function MODULE:ChatText(_, _, text, messageType)
-    if messageType == "none" and IsValid(self.panel) then
-        self.panel:addText(text)
-        if lia.config.get("CustomChatSound", "") and lia.config.get("CustomChatSound", "") ~= "" then
-            surface.PlaySound(lia.config.get("CustomChatSound", ""))
-        else
-            chat.PlaySound()
-        end
+    if messageType ~= "none" then return end
+    local hadPanel = IsValid(self.panel)
+    if not hadPanel then
+        local prevActive = lia.chat.wasActive
+        lia.chat.wasActive = false
+        self:CreateChat()
+        lia.chat.wasActive = prevActive
+    end
+
+    if not IsValid(self.panel) then return end
+    local wasActive = self.panel.active
+    self.panel:addText(text)
+    if not wasActive and self.panel.active then self.panel:setActive(false) end
+    if lia.config.get("CustomChatSound", "") and lia.config.get("CustomChatSound", "") ~= "" then
+        surface.PlaySound(lia.config.get("CustomChatSound", ""))
+    else
+        chat.PlaySound()
     end
 end
 
