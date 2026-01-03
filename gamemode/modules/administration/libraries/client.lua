@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 AdminStickIsOpen = false
 AdminStickMenu = nil
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
@@ -2267,7 +2267,6 @@ function MODULE:OpenAdminStickUI(tgt)
                     local currentPos = tgt:GetPos()
                     local currentAng = tgt:GetAngles()
                     local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
-                    -- Shorten for menu: one-line, parenthesis grouped
                     return "Position: " .. posStr .. " (copy)"
                 end,
                 cmd = function()
@@ -2394,7 +2393,6 @@ function MODULE:OpenAdminStickUI(tgt)
         local canClass = client:hasPrivilege("manageClasses")
         local canWhitelist = client:hasPrivilege("manageWhitelists")
         if not target or not IsValid(target) then return end
-        -- Generic copy helpers (work for players and world entities/props)
         local pos = target:GetPos()
         local ang = target:GetAngles()
         local posStr = string.format("%.2f %.2f %.2f", pos.x, pos.y, pos.z)
@@ -4209,10 +4207,8 @@ function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
     if not client:getChar() then return end
     local weapon = client:GetActiveWeapon()
     if not IsValid(weapon) then return end
-    -- Admin Stick HUD
     if weapon:GetClass() == "lia_adminstick" then
         self:DisplayAdminStickHUD(client, hudInfos, weapon)
-        -- Distance Tool HUD
     elseif weapon:GetClass() == "lia_distance" then
         self:DisplayDistanceToolHUD(client, hudInfos, weapon)
     end
@@ -4220,10 +4216,8 @@ end
 
 function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     local target = weapon:GetTarget()
-    -- Bottom left detailed information
     if IsValid(target) then
         local infoLines = {}
-        -- If target is not a player but is owned by one, use the owner instead
         if not target:IsPlayer() and IsValid(target:GetOwner()) and target:GetOwner():IsPlayer() then target = target:GetOwner() end
         if target:IsPlayer() then
             local char = target:getChar()
@@ -4241,9 +4235,7 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
             local speed = math.Round(velocity:Length())
             table.insert(infoLines, "Speed: " .. speed)
         else
-            -- Entity information
             table.insert(infoLines, "Class: " .. target:GetClass())
-            -- Owner information
             local owner = target:GetOwner()
             if IsValid(owner) and owner:IsPlayer() then
                 table.insert(infoLines, "Owner: " .. owner:Nick())
@@ -4251,7 +4243,6 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
                 table.insert(infoLines, "Owner: World")
             end
 
-            -- Entity ID
             table.insert(infoLines, "Entity ID: " .. target:EntIndex())
         end
 
@@ -4267,7 +4258,6 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
         })
     end
 
-    -- Top right instructions
     local instructions = {"Left Click: Selects target", "Right Click: Freezes player", "Shift + R: Selects yourself", "R: Clears the selection"}
     table.insert(hudInfos, {
         text = instructions,
@@ -4282,7 +4272,6 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
 end
 
 function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
-    -- Top right instructions
     local instructions = {"Left Click: Set point", "Right Click: Clear points", "Reload: Measure current"}
     table.insert(hudInfos, {
         text = instructions,
@@ -4295,7 +4284,6 @@ function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
         textAlignY = TEXT_ALIGN_TOP
     })
 
-    -- Distance tracker at top
     if weapon.StartPos then
         local tr = client:GetEyeTrace()
         local distance = weapon.StartPos:Distance(tr.HitPos)

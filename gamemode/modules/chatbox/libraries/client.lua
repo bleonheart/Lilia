@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 lia.chat = lia.chat or {}
 lia.chat.persistedMessages = lia.chat.persistedMessages or {}
 chat.liaAddText = chat.liaAddText or chat.AddText
@@ -135,4 +135,3 @@ function MODULE:ChatAddText(text, ...)
 end
 
 net.Receive("liaRegenChat", RegenChat)
-

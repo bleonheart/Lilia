@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Database Library
 
     Comprehensive database management system with SQLite support for the Lilia framework.
@@ -36,6 +36,7 @@ lia.db.modules = {
                     end
                     return
                 end
+
                 if d then
                     d:reject(err)
                 else
@@ -501,9 +502,7 @@ function lia.db.addDatabaseFields()
         end
     end
 
-    lia.db.fieldExists("lia_warnings", "severity"):next(function(exists)
-        if not exists then lia.db.query("ALTER TABLE lia_warnings ADD COLUMN severity TEXT DEFAULT 'Medium'") end
-    end)
+    lia.db.fieldExists("lia_warnings", "severity"):next(function(exists) if not exists then lia.db.query("ALTER TABLE lia_warnings ADD COLUMN severity TEXT DEFAULT 'Medium'") end end)
 end
 
 function lia.db.exists(dbTable, condition)

@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:CanPlayerSwitchChar(client, character, newCharacter)
     if not client:isStaffOnDuty() then
         local switchingToStaff = newCharacter and newCharacter:getFaction() == FACTION_STAFF

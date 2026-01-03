@@ -90,12 +90,10 @@ function PANEL:Init()
         if IsValid(facCat.Header) then
             facCat.Header:SetTall(50)
             facCat.Header.Paint = function(_, ww, hh)
-                -- Apply blur like liaFrame does
                 local blurAmount = 4
                 local blurPasses = 2
                 local blurAlpha = 255
                 lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-                -- Use background_alpha with subtle faction color tint like liaFrame does when bool_alpha is true
                 local radius = 8
                 local baseColor = lia.color.theme.background_alpha
                 local tintedColor = Color(math.Clamp((baseColor.r + facColor.r) * 0.5, 0, 255), math.Clamp((baseColor.g + facColor.g) * 0.5, 0, 255), math.Clamp((baseColor.b + facColor.b) * 0.5, 0, 255), baseColor.a)
@@ -152,12 +150,10 @@ function PANEL:Init()
                 if IsValid(cat.Header) then
                     cat.Header:SetTall(30)
                     cat.Header.Paint = function(_, ww, hh)
-                        -- Apply blur like liaFrame does
                         local blurAmount = 4
                         local blurPasses = 2
                         local blurAlpha = 255
                         lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-                        -- Use background_alpha with subtle class color tint like liaFrame does when bool_alpha is true
                         local radius = 6
                         local c = clsData.color or facColor
                         local baseColor = lia.color.theme.background_alpha

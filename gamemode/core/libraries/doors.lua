@@ -80,7 +80,6 @@ if SERVER then
             if cachedData[key] ~= nil then
                 fullData[key] = cachedData[key]
             else
-                -- Create a copy of table defaults to prevent sharing references
                 if istable(defaultValue) then
                     fullData[key] = table.Copy(defaultValue)
                 else

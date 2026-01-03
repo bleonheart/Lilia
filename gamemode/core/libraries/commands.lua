@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -7753,16 +7753,14 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
             local charName = charData.name
             local promise
             if isPlayerOnline then
-                -- Check if this character is currently loaded
                 local character = lia.char.getCharacter(charID)
                 if character then
-                    -- Set the override in database
                     character:setData("invSizeOverride", sizeOverride)
-                    -- Notify player to swap characters for the change to take effect (only once per player)
                     if not hasNotifiedPlayer then
                         ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " Your inventory size has been changed to " .. width .. "x" .. height .. ". Please swap characters for the change to take effect.")
                         hasNotifiedPlayer = true
                     end
+
                     if not hasNotifiedStaff then
                         local staffMessage = "Inventory size set to " .. width .. "x" .. height .. " for " .. ply:Name() .. " (Steam64ID: " .. ply:SteamID64() .. ")."
                         StaffAddTextShadowed(Color(199, 21, 133), "INVENTORY", Color(255, 255, 255), staffMessage)
@@ -7772,7 +7770,6 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
                     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online)\n")
                     promise = deferred.resolve(true)
                 else
-                    -- Character not loaded, set in database
                     promise = deferred.new()
                     local encoded = pon.encode({sizeOverride})
                     lia.db.upsert({
@@ -7790,7 +7787,6 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
                     end)
                 end
             else
-                -- Player offline, set in database
                 promise = deferred.new()
                 local encoded = pon.encode({sizeOverride})
                 lia.db.upsert({
@@ -7889,15 +7885,12 @@ concommand.Add("lia_run_test_commands", function(client, _, args)
         return
     end
 
-    -- Handle SteamID parsing - handle various input formats
     local steamID
-    -- Debug: Show all received arguments
     MsgC(Color(255, 255, 255), "[Lilia] ", "Debug: Received " .. #args .. " arguments:\n")
     for i, arg in ipairs(args) do
         MsgC(Color(255, 255, 255), "[Lilia] ", "  args[" .. i .. "] = '" .. tostring(arg) .. "'\n")
     end
 
-    -- First, try to find a complete SteamID in any single argument
     for i, arg in ipairs(args) do
         if string.match(arg, "STEAM_%d:%d:%d+") then
             steamID = arg
@@ -7906,7 +7899,6 @@ concommand.Add("lia_run_test_commands", function(client, _, args)
         end
     end
 
-    -- If no complete SteamID found, check if SteamID was split across arguments (e.g., STEAM_0 1 464054146)
     if not steamID and #args >= 3 then
         local possibleSteamID = args[1] .. ":" .. args[2] .. ":" .. args[3]
         if string.match(possibleSteamID, "STEAM_%d:%d:%d+") then
@@ -7915,7 +7907,6 @@ concommand.Add("lia_run_test_commands", function(client, _, args)
         end
     end
 
-    -- If still no SteamID, check if all arguments concatenated with colons form a valid SteamID
     if not steamID and #args > 0 then
         local combined = table.concat(args, ":")
         if string.match(combined, "STEAM_%d:%d:%d+") then
@@ -7939,31 +7930,26 @@ concommand.Add("lia_run_test_commands", function(client, _, args)
     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "========================================\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "This will execute 5 test commands with default values.\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Commands will be run for SteamID: " .. steamID .. "\n\n")
-    -- Test command 1: lia_setextrachars {SteamID} number (using 5 as default)
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[1/5] Setting extra characters to 5...\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_setextrachars \"" .. steamID .. "\" 5\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Allows player to have 5 additional characters beyond the default limit.\n")
     game.ConsoleCommand("lia_setextrachars \"" .. steamID .. "\" 5\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 1 completed\n\n")
-    -- Test command 2: lia_givepermaflags {SteamID} petr
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[2/5] Granting permanent 'petr' flag...\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_givepermaflags \"" .. steamID .. "\" petr\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Gives permanent 'petr' permission flag to the player.\n")
     game.ConsoleCommand("lia_givepermaflags \"" .. steamID .. "\" petr\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 2 completed\n\n")
-    -- Test command 3: lia_set_inventory_size_all_chars {SteamID} 10 10
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[3/5] Setting inventory size to 10x10 for all characters...\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_set_inventory_size_all_chars \"" .. steamID .. "\" 10 10\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Resizes all character inventories to 10 width x 10 height.\n")
     game.ConsoleCommand("lia_set_inventory_size_all_chars \"" .. steamID .. "\" 10 10\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 3 completed\n\n")
-    -- Test command 4: plysetgroup {SteamID} UserGroup (using "superadmin" as default group)
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[4/5] Setting user group to superadmin...\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Command: plysetgroup \"" .. steamID .. "\" superadmin\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Sets the player's usergroup to superadmin level.\n")
     game.ConsoleCommand("plysetgroup \"" .. steamID .. "\" superadmin\n")
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 4 completed\n\n")
-    -- Test command 5: lia_give_money_steamid {SteamID} AMOUNT (using 1000 as default)
     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[5/5] Giving 1000 currency to all characters...\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_give_money_steamid \"" .. steamID .. "\" 1000\n")
     MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Adds 1000 currency to all characters owned by this SteamID.\n")

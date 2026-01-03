@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Administrator Library
 
     Comprehensive user group and privilege management system for the Lilia framework.
@@ -728,7 +728,6 @@ if SERVER then
         end
 
         local targetInfo = target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")"
-
         if cmd == "kick" then
             target:Kick(reason or L("genericReason"))
             admin:notifySuccessLocalized("plyKicked")
@@ -835,6 +834,7 @@ if SERVER then
                 staffSteamID = admin:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
+
             staffAction("KILL", admin:Name() .. " killed " .. targetInfo)
             return true
         elseif cmd == "bring" then
@@ -879,6 +879,7 @@ if SERVER then
                 staffSteamID = admin:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
+
             staffAction("JAIL", admin:Name() .. " jailed " .. targetInfo)
             return true
         elseif cmd == "unjail" then
@@ -938,6 +939,7 @@ if SERVER then
                 staffSteamID = admin:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
+
             staffAction("STRIP", admin:Name() .. " stripped weapons from " .. targetInfo)
             return true
         elseif cmd == "respawn" then
@@ -954,6 +956,7 @@ if SERVER then
                 staffSteamID = admin:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
+
             staffAction("RESPAWN", admin:Name() .. " respawned " .. targetInfo)
             return true
         elseif cmd == "blind" then
@@ -982,6 +985,7 @@ if SERVER then
                 staffSteamID = admin:SteamID(),
                 timestamp = os.time()
             }, nil, "staffactions")
+
             staffAction("BLIND", admin:Name() .. " blinded " .. targetInfo)
             return true
         elseif cmd == "unblind" then

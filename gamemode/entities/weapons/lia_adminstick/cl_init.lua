@@ -1,4 +1,4 @@
-function SWEP:PrimaryAttack()
+﻿function SWEP:PrimaryAttack()
     local client = LocalPlayer()
     local target = client:GetEyeTrace().Entity
     if IsValid(target) then
@@ -36,15 +36,11 @@ function SWEP:Reload()
     self.NextReload = SysTime() + 0.5
     local client = LocalPlayer()
     if client:KeyDown(IN_SPEED) then
-        if AdminStickIsOpen and IsValid(AdminStickMenu) then
-            AdminStickMenu:Remove()
-        end
+        if AdminStickIsOpen and IsValid(AdminStickMenu) then AdminStickMenu:Remove() end
         client.AdminStickTarget = client
         lia.module.get("administration"):OpenAdminStickUI(client)
     else
-        if AdminStickIsOpen and IsValid(AdminStickMenu) then
-            AdminStickMenu:Remove()
-        end
+        if AdminStickIsOpen and IsValid(AdminStickMenu) then AdminStickMenu:Remove() end
         client.AdminStickTarget = nil
     end
 end

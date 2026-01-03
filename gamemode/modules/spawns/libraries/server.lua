@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 function MODULE:FetchSpawns()
     local d = deferred.new()
     local stored = lia.data.get("spawns", {})
@@ -231,11 +231,10 @@ function MODULE:PlayerDeath(client, _, attacker)
                 attackerDisplay = attacker:GetClass() or L("na")
             end
         end
+
         local deathMessage = client:Name() .. " (Character " .. char:getID() .. "| Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay
         local isStaff = client:isStaffOnDuty() or client:hasPrivilege("canSeeLogs")
-        if not isStaff then
-            ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. deathMessage)
-        end
+        if not isStaff then ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. deathMessage) end
         StaffAddTextShadowed(Color(255, 0, 0), "DEATH", Color(255, 255, 255), deathMessage)
     end
 

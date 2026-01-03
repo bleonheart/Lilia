@@ -147,7 +147,6 @@ function characterMeta:getData(key, default)
     if not key then return self.dataVars end
     local value = self.dataVars and self.dataVars[key]
     if value == nil then
-        -- If not in dataVars, try to load from database
         if SERVER then
             local charID = self:getID()
             if charID then

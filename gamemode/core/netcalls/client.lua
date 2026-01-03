@@ -1,4 +1,4 @@
-net.Receive("liaSetWaypoint", function()
+﻿net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()
@@ -71,7 +71,6 @@ local function wrapText(text, font, maxWidth)
 
     local lines = {}
     local currentLine = ""
-
     for _, word in ipairs(words) do
         local testLine = currentLine == "" and word or currentLine .. " " .. word
         local testW, _ = surface.GetTextSize(testLine)
@@ -88,6 +87,7 @@ local function wrapText(text, font, maxWidth)
                     for char in word:gmatch(".") do
                         table.insert(chars, char)
                     end
+
                     local splitLine = ""
                     for _, char in ipairs(chars) do
                         local testChar = splitLine .. char
@@ -104,6 +104,7 @@ local function wrapText(text, font, maxWidth)
                             end
                         end
                     end
+
                     if splitLine ~= "" then
                         currentLine = splitLine
                     else
@@ -117,10 +118,7 @@ local function wrapText(text, font, maxWidth)
         end
     end
 
-    if currentLine ~= "" then
-        table.insert(lines, currentLine)
-    end
-
+    if currentLine ~= "" then table.insert(lines, currentLine) end
     return lines
 end
 
@@ -230,7 +228,6 @@ net.Receive("liaServerChatAddText", function()
 end)
 
 local pendingShadowed = {}
-
 local function deliverShadowed(args)
     local chatModule = lia.module.get("chatbox")
     if chatModule and chatModule.CreateChat then chatModule:CreateChat() end
@@ -268,7 +265,11 @@ local function deliverShadowed(args)
             lia.chat = lia.chat or {}
             lia.chat.persistedMessages = lia.chat.persistedMessages or {}
             local history = lia.chat.persistedMessages
-            history[#history + 1] = {arguments = args, shadowed = true}
+            history[#history + 1] = {
+                arguments = args,
+                shadowed = true
+            }
+
             local maxEntries = 200
             if #history > maxEntries then
                 local overflow = #history - maxEntries
@@ -277,10 +278,8 @@ local function deliverShadowed(args)
                 end
             end
         end
-
         return true
     end
-
     return false
 end
 
@@ -288,18 +287,17 @@ local function flushPendingShadowed()
     if #pendingShadowed == 0 then return end
     local delivered = {}
     for i = 1, #pendingShadowed do
-        if deliverShadowed(pendingShadowed[i]) then
-            delivered[#delivered + 1] = i
-        end
+        if deliverShadowed(pendingShadowed[i]) then delivered[#delivered + 1] = i end
     end
 
     if #delivered > 0 then
-        for idx = #delivered, 1, -1 do table.remove(pendingShadowed, delivered[idx]) end
+        for idx = #delivered, 1, -1 do
+            table.remove(pendingShadowed, delivered[idx])
+        end
     end
 end
 
 hook.Add("ChatboxPanelCreated", "Lilia.FlushShadowedMessages", flushPendingShadowed)
-
 net.Receive("liaServerChatAddTextShadowed", function()
     local args = net.ReadTable()
     if not deliverShadowed(args) then
