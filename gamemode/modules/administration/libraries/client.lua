@@ -2204,6 +2204,62 @@ function MODULE:OpenAdminStickUI(tgt)
             },
         }
 
+        local pos = tgt:GetPos()
+        local ang = tgt:GetAngles()
+        local posStr = string.format("%.2f %.2f %.2f", pos.x, pos.y, pos.z)
+        local angStr = string.format("%.2f %.2f %.2f", ang.p, ang.y, ang.r)
+        local printposStr = string.format("setpos %.2f %.2f %.2f; setang %.2f %.2f %.2f", pos.x, pos.y, pos.z, ang.p, ang.y, ang.r)
+        local steamID64 = tgt:IsBot() and "BOT" or tgt:SteamID64() or ""
+
+        local additionalInfo = {
+            {
+                name = "Angles: " .. angStr .. " (copy)",
+                cmd = function()
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    SetClipboardText(angStr)
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = "Position: " .. posStr .. " (copy)",
+                cmd = function()
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    SetClipboardText(posStr)
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = "Pos + Ang (printpos): " .. printposStr .. " (copy)",
+                cmd = function()
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    SetClipboardText(printposStr)
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = "SteamID64: " .. steamID64 .. " (copy)",
+                cmd = function()
+                    if not tgt:IsBot() and steamID64 ~= "" then
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        SetClipboardText(steamID64)
+                    end
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+        }
+
+        for _, item in ipairs(additionalInfo) do
+            table.insert(info, item)
+        end
+
         table.sort(info, function(a, b) return a.name < b.name end)
         for _, o in ipairs(info) do
             local option = menu:AddOption(L(o.name), o.cmd)
@@ -4136,7 +4192,12 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     -- Bottom left detailed information
     if IsValid(target) then
         local infoLines = {}
-        if target:IsPlayer() and target ~= client then
+        -- If target is not a player but is owned by one, use the owner instead
+        if not target:IsPlayer() and IsValid(target:GetOwner()) and target:GetOwner():IsPlayer() then
+            target = target:GetOwner()
+        end
+
+        if target:IsPlayer() then
             table.insert(infoLines, "Player: " .. target:Nick())
             table.insert(infoLines, "Steam: " .. (target:IsBot() and "BOT" or target:SteamName()))
             table.insert(infoLines, "SteamID: " .. (target:IsBot() and "BOT" or target:SteamID()))
@@ -4149,29 +4210,15 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
             table.insert(infoLines, "Weapon: " .. (weaponName or "None"))
             local char = target:getChar()
             if char then
-                table.insert(infoLines, "Character: " .. char:getName())
                 local faction = lia.faction.teams[char:getFaction()]
                 if faction then table.insert(infoLines, "Faction: " .. faction.name) end
                 local classID = char:getClass()
                 local classData = classID and lia.class.list and lia.class.list[classID]
                 if classData and classData.name then table.insert(infoLines, "Class: " .. classData.name) end
-            else
-                table.insert(infoLines, "Character: Not loaded")
             end
-
-            local pPos = target:GetPos()
-            table.insert(infoLines, string.format("Position: %.1f, %.1f, %.1f", pPos.x, pPos.y, pPos.z))
-            local pAng = target:GetAngles()
-            table.insert(infoLines, string.format("Angles: %.1f, %.1f, %.1f", pAng.p, pAng.y, pAng.r))
-            table.insert(infoLines, "Model: " .. target:GetModel())
         else
             -- Entity information
             table.insert(infoLines, "Class: " .. target:GetClass())
-            table.insert(infoLines, "Model: " .. target:GetModel())
-            local pos = target:GetPos()
-            table.insert(infoLines, string.format("Position: %.1f, %.1f, %.1f", pos.x, pos.y, pos.z))
-            local ang = target:GetAngles()
-            table.insert(infoLines, string.format("Angles: %.1f, %.1f, %.1f", ang.p, ang.y, ang.r))
             -- Owner information
             local owner = target:GetOwner()
             if IsValid(owner) and owner:IsPlayer() then
