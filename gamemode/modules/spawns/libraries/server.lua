@@ -203,11 +203,9 @@ function MODULE:PlayerDeath(client, _, attacker)
         local timeStr = os.date("%H:%M:%S", os.time())
         local attackerName = L("na")
         local attackerChar = nil
-        local isWorldDamage = false
         if IsValid(attacker) then
             if attacker == client or attacker:IsWorld() or attacker:GetClass() == "worldspawn" then
                 attackerName = "the environment"
-                isWorldDamage = true
             elseif attacker:IsPlayer() then
                 attackerChar = attacker:getChar()
                 local charID = attackerChar and tostring(attackerChar:getID()) or L("na")
@@ -221,18 +219,15 @@ function MODULE:PlayerDeath(client, _, attacker)
         local killedByText = L("killedBy") .. " " .. attackerName .. " at " .. timeStr
         ClientAddText(client, Color(255, 255, 255), dateStr .. " - ", Color(255, 255, 255), killedByText)
         local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
-        local steamId = "Unknown"
         local attackerDisplay = "unknown"
         if IsValid(attacker) then
             if attacker == client or attacker:IsWorld() or attacker:GetClass() == "worldspawn" then
-                steamId = "World"
                 attackerDisplay = "the environment"
             elseif attacker:IsPlayer() then
                 attackerChar = attackerChar or attacker:getChar()
-                steamId = attacker:SteamID64()
+                local steamId = attacker:SteamID64()
                 attackerDisplay = attackerChar and ("Character " .. attackerChar:getID() .. " | Steam64ID " .. steamId) or L("na")
             else
-                steamId = "Unknown"
                 attackerDisplay = attacker:GetClass() or L("na")
             end
         end

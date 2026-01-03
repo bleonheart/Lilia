@@ -74,7 +74,7 @@ local function wrapText(text, font, maxWidth)
 
     for _, word in ipairs(words) do
         local testLine = currentLine == "" and word or currentLine .. " " .. word
-        local testW, testH = surface.GetTextSize(testLine)
+        local testW, _ = surface.GetTextSize(testLine)
         if testW <= maxWidth then
             currentLine = testLine
         else
@@ -82,7 +82,7 @@ local function wrapText(text, font, maxWidth)
                 table.insert(lines, currentLine)
                 currentLine = word
             else
-                local wordW, wordH = surface.GetTextSize(word)
+                local wordW, _ = surface.GetTextSize(word)
                 if wordW > maxWidth then
                     local chars = {}
                     for char in word:gmatch(".") do
