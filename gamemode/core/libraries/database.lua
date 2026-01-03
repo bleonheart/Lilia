@@ -27,10 +27,18 @@ lia.db.modules = {
             local data = sql.Query(query)
             local err = sql.LastError()
             if data == false then
+                if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then
+                    if d then
+                        d:resolve({
+                            results = {},
+                            lastID = 0
+                        })
+                    end
+                    return
+                end
                 if d then
                     d:reject(err)
                 else
-                    if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then return end
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " * " .. query .. "\n")
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. err .. "\n")
                 end
