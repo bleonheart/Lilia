@@ -1,6 +1,10 @@
 function SWEP:PrimaryAttack()
-    local target = self:GetTarget()
-    if IsValid(target) then lia.module.get("administration"):OpenAdminStickUI(target) end
+    local client = LocalPlayer()
+    local target = client:GetEyeTrace().Entity
+    if IsValid(target) then
+        client.AdminStickTarget = target
+        lia.module.get("administration"):OpenAdminStickUI(target)
+    end
 end
 
 function SWEP:SecondaryAttack()
