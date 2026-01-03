@@ -2168,22 +2168,71 @@ function MODULE:OpenAdminStickUI(tgt)
     if not IsValid(menu) then return end
     if tgt:IsPlayer() then
         local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
+        local charName = tgt:getChar() and tgt:getChar():getName() or tgt:Name()
+        local steamName = tgt:IsBot() and "BOT" or tgt:SteamName() or ""
+        local steamID = tgt:IsBot() and "BOT" or tgt:SteamID() or ""
+        local steamID64 = tgt:IsBot() and "BOT" or tgt:SteamID64() or ""
+        local model = tgt:GetModel() or ""
+        local pos = tgt:GetPos()
+        local ang = tgt:GetAngles()
+        local printposStr = string.format("setpos %s %s %s; setang %s %s %s", 
+            tostring(math.Round(pos.x, 2)), tostring(math.Round(pos.y, 2)), tostring(math.Round(pos.z, 2)),
+            tostring(math.Round(ang.p, 2)), tostring(math.Round(ang.y, 2)), tostring(math.Round(ang.r, 2)))
+
         local info = {
             {
-                name = L("steamIDCopyFormat", tgt:SteamID()),
+                name = "Steam Name: " .. steamName .. " (copy)",
                 cmd = function()
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(tgt:SteamID())
+                    if steamName ~= "BOT" and steamName ~= "" then
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        SetClipboardText(steamName)
+                    end
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
             },
             {
-                name = L("nameCopyFormat", tgt:Name()),
+                name = "Steam Profile: " .. (steamProfileLink ~= "" and steamProfileLink or "N/A") .. " (copy)",
+                cmd = function()
+                    if steamProfileLink ~= "" then
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        SetClipboardText(steamProfileLink)
+                    end
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = L("steamIDCopyFormat", steamID),
+                cmd = function()
+                    if steamID ~= "BOT" and steamID ~= "" then
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        SetClipboardText(steamID)
+                    end
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = "SteamID64: " .. steamID64 .. " (copy)",
+                cmd = function()
+                    if steamID64 ~= "BOT" and steamID64 ~= "" then
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        SetClipboardText(steamID64)
+                    end
+                    menu:Remove()
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end,
+                icon = "icon16/page_copy.png"
+            },
+            {
+                name = L("nameCopyFormat", charName),
                 cmd = function()
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(tgt:Name())
+                    SetClipboardText(charName)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2196,44 +2245,23 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedCharID")
                         SetClipboardText(tgt:getChar():getID())
                     end
-
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
             },
-        }
-
-        local pos = tgt:GetPos()
-        local ang = tgt:GetAngles()
-        local posStr = string.format("%.2f %.2f %.2f", pos.x, pos.y, pos.z)
-        local angStr = string.format("%.2f %.2f %.2f", ang.p, ang.y, ang.r)
-        local printposStr = string.format("setpos %.2f %.2f %.2f; setang %.2f %.2f %.2f", pos.x, pos.y, pos.z, ang.p, ang.y, ang.r)
-        local steamID64 = tgt:IsBot() and "BOT" or tgt:SteamID64() or ""
-
-        local additionalInfo = {
             {
-                name = "Angles: " .. angStr .. " (copy)",
+                name = "Model: " .. model .. " (copy)",
                 cmd = function()
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(angStr)
+                    SetClipboardText(model)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
             },
             {
-                name = "Position: " .. posStr .. " (copy)",
-                cmd = function()
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(posStr)
-                    menu:Remove()
-                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                end,
-                icon = "icon16/page_copy.png"
-            },
-            {
-                name = "Pos + Ang (printpos): " .. printposStr .. " (copy)",
+                name = "Position (printpos): " .. printposStr .. " (copy)",
                 cmd = function()
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     SetClipboardText(printposStr)
@@ -2242,25 +2270,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 end,
                 icon = "icon16/page_copy.png"
             },
-            {
-                name = "SteamID64: " .. steamID64 .. " (copy)",
-                cmd = function()
-                    if not tgt:IsBot() and steamID64 ~= "" then
-                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                        SetClipboardText(steamID64)
-                    end
-                    menu:Remove()
-                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
-                end,
-                icon = "icon16/page_copy.png"
-            },
         }
-
-        for _, item in ipairs(additionalInfo) do
-            table.insert(info, item)
-        end
-
-        table.sort(info, function(a, b) return a.name < b.name end)
         for _, o in ipairs(info) do
             local option = menu:AddOption(L(o.name), o.cmd)
             option:SetIcon(o.icon)
@@ -4198,24 +4208,24 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
         end
 
         if target:IsPlayer() then
-            table.insert(infoLines, "Player: " .. target:Nick())
-            table.insert(infoLines, "Steam: " .. (target:IsBot() and "BOT" or target:SteamName()))
-            table.insert(infoLines, "SteamID: " .. (target:IsBot() and "BOT" or target:SteamID()))
-            table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
-            table.insert(infoLines, "Armor: " .. target:Armor())
-            table.insert(infoLines, "User Group: " .. target:GetUserGroup())
-            local activeWeapon = target:GetActiveWeapon()
-            local weaponName
-            if IsValid(activeWeapon) then weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass() end
-            table.insert(infoLines, "Weapon: " .. (weaponName or "None"))
             local char = target:getChar()
-            if char then
-                local faction = lia.faction.teams[char:getFaction()]
-                if faction then table.insert(infoLines, "Faction: " .. faction.name) end
-                local classID = char:getClass()
-                local classData = classID and lia.class.list and lia.class.list[classID]
-                if classData and classData.name then table.insert(infoLines, "Class: " .. classData.name) end
-            end
+            local charName = char and char:getName() or target:Nick()
+            local steamName = target:IsBot() and "BOT" or target:SteamName() or ""
+
+            table.insert(infoLines, "Name: " .. charName)
+            table.insert(infoLines, "Steam Name: " .. steamName)
+            table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
+
+            local activeWeapon = target:GetActiveWeapon()
+            local weaponName = "None"
+            if IsValid(activeWeapon) then weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass() end
+            table.insert(infoLines, "Weapon: " .. weaponName)
+
+            table.insert(infoLines, "User Group: " .. target:GetUserGroup())
+
+            local velocity = target:GetVelocity()
+            local speed = math.Round(velocity:Length())
+            table.insert(infoLines, "Speed: " .. speed)
         else
             -- Entity information
             table.insert(infoLines, "Class: " .. target:GetClass())
