@@ -2307,7 +2307,55 @@ function MODULE:OpenAdminStickUI(tgt)
         local canFaction = client:hasPrivilege("manageTransfers")
         local canClass = client:hasPrivilege("manageClasses")
         local canWhitelist = client:hasPrivilege("manageWhitelists")
-        if IsValid(target) and target.isStorageEntity then
+        if not target or not IsValid(target) then return end
+
+        -- Generic copy helpers (work for players and world entities/props)
+        local pos = target:GetPos()
+        local ang = target:GetAngles()
+        local posStr = string.format("%.2f %.2f %.2f", pos.x, pos.y, pos.z)
+        local angStr = string.format("%.2f %.2f %.2f", ang.p, ang.y, ang.r)
+        local setPosAngStr = string.format("setpos %.2f %.2f %.2f; setang %.2f %.2f %.2f", pos.x, pos.y, pos.z, ang.p, ang.y, ang.r)
+        local displayName = ""
+        if target:IsPlayer() then
+            local char = target:getChar()
+            displayName = (char and char:getName()) or target:Nick() or target:Name() or "Unknown"
+        elseif target.GetName and target:GetName() ~= "" then
+            displayName = target:GetName()
+        else
+            displayName = target:GetClass() or "Unknown"
+        end
+
+        local copyItems = {
+            {
+                name = "Copy Name",
+                icon = "icon16/page_copy.png",
+                callback = function() SetClipboardText(displayName) end
+            },
+            {
+                name = "Copy Position",
+                icon = "icon16/page_copy.png",
+                callback = function() SetClipboardText(posStr) end
+            },
+            {
+                name = "Copy Angles",
+                icon = "icon16/page_copy.png",
+                callback = function() SetClipboardText(angStr) end
+            },
+            {
+                name = "Copy Pos + Ang (printpos)",
+                icon = "icon16/page_copy.png",
+                callback = function() SetClipboardText(setPosAngStr) end
+            }
+        }
+
+        table.insert(lists, {
+            name = "Copy",
+            category = "utility",
+            subcategory = "commands",
+            items = copyItems
+        })
+
+        if target.isStorageEntity then
             local storageOptions = {
                 {
                     name = L("removePassword"),
@@ -2329,7 +2377,7 @@ function MODULE:OpenAdminStickUI(tgt)
             })
         end
 
-        if not target or not IsValid(target) or (not target:IsPlayer() and not target.isStorageEntity) then return end
+        if not target:IsPlayer() and not target.isStorageEntity then return end
         if target:IsPlayer() then
             local char = target:getChar()
             if not char then return end
@@ -4085,11 +4133,9 @@ end
 
 function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     local target = weapon:GetTarget()
-
     -- Bottom left detailed information
     if IsValid(target) then
         local infoLines = {}
-
         if target:IsPlayer() and target ~= client then
             table.insert(infoLines, "Player: " .. target:Nick())
             table.insert(infoLines, "Steam: " .. (target:IsBot() and "BOT" or target:SteamName()))
@@ -4097,25 +4143,18 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
             table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
             table.insert(infoLines, "Armor: " .. target:Armor())
             table.insert(infoLines, "User Group: " .. target:GetUserGroup())
-
             local activeWeapon = target:GetActiveWeapon()
             local weaponName
-            if IsValid(activeWeapon) then
-                weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass()
-            end
+            if IsValid(activeWeapon) then weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass() end
             table.insert(infoLines, "Weapon: " .. (weaponName or "None"))
-
             local char = target:getChar()
             if char then
                 table.insert(infoLines, "Character: " .. char:getName())
                 local faction = lia.faction.teams[char:getFaction()]
                 if faction then table.insert(infoLines, "Faction: " .. faction.name) end
-
                 local classID = char:getClass()
                 local classData = classID and lia.class.list and lia.class.list[classID]
-                if classData and classData.name then
-                    table.insert(infoLines, "Class: " .. classData.name)
-                end
+                if classData and classData.name then table.insert(infoLines, "Class: " .. classData.name) end
             else
                 table.insert(infoLines, "Character: Not loaded")
             end
@@ -4133,7 +4172,6 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
             table.insert(infoLines, string.format("Position: %.1f, %.1f, %.1f", pos.x, pos.y, pos.z))
             local ang = target:GetAngles()
             table.insert(infoLines, string.format("Angles: %.1f, %.1f, %.1f", ang.p, ang.y, ang.r))
-
             -- Owner information
             local owner = target:GetOwner()
             if IsValid(owner) and owner:IsPlayer() then
@@ -4159,13 +4197,7 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     end
 
     -- Top right instructions
-    local instructions = {
-        "Left Click: Select",
-        "Right Click: Actions",
-        "Reload: Target self",
-        "Reload + Sprint: Clear target"
-    }
-
+    local instructions = {"Left Click: Select", "Right Click: Actions", "Reload: Target self", "Reload + Sprint: Clear target"}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",
@@ -4180,12 +4212,7 @@ end
 
 function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
     -- Top right instructions
-    local instructions = {
-        "Left Click: Set point",
-        "Right Click: Clear points",
-        "Reload: Measure current"
-    }
-
+    local instructions = {"Left Click: Set point", "Right Click: Clear points", "Reload: Measure current"}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",
@@ -4202,7 +4229,6 @@ function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
         local tr = client:GetEyeTrace()
         local distance = weapon.StartPos:Distance(tr.HitPos)
         local distanceText = string.format("Distance: %.1f units", distance)
-
         table.insert(hudInfos, {
             text = distanceText,
             font = "LiliaFont.24",
