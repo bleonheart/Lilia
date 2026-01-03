@@ -2016,7 +2016,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                     value = "Medium"
                 },
                 {
-                    label = "High (Cheats)",
+                    label = "High",
                     value = "High"
                 }
             }
