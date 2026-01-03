@@ -386,48 +386,6 @@ function GM:HUDPaint()
             end
         end
 
-        -- Draw interaction indicator if looking at a player/entity with available interactions
-        local tracedEnt = client:getTracedEntity(100)
-        if IsValid(tracedEnt) and tracedEnt:IsPlayer() then
-            local shouldDraw = false
-            if lia and lia.playerinteract and lia.playerinteract.stored and lia.playerinteract.isWithinRange and lia.playerinteract.getInteractions then
-                local isInRange = lia.playerinteract.isWithinRange(client, tracedEnt, 100)
-                if isInRange then
-                    local ok, interactions = pcall(lia.playerinteract.getInteractions, client)
-                    if ok and interactions and table.Count(interactions) > 0 then
-                        shouldDraw = true
-                    end
-                end
-            end
-
-            if shouldDraw then
-                local screenCenterX = math.Round(ScrW() / 2)
-                local screenCenterY = math.Round(ScrH() * 0.15)
-                local radius = 8
-                local fadeSpeed = 1.5
-                local fadeAlpha = (math.sin(CurTime() * fadeSpeed) + 1) / 2
-                local minAlpha = 100
-                local maxAlpha = 255
-                local alpha = math.floor(minAlpha + (fadeAlpha * (maxAlpha - minAlpha)))
-                local themeColor = (lia.color and lia.color.theme and (lia.color.theme.accent or lia.color.theme.category_accent or lia.color.theme.theme)) or Color(100, 150, 200, 255)
-                local color = Color(themeColor.r, themeColor.g, themeColor.b, alpha)
-
-                surface.SetDrawColor(color)
-                local segments = 64
-                local angleStep = 360 / segments
-
-                for i = 0, segments - 1 do
-                    local angle1 = math.rad(i * angleStep)
-                    local angle2 = math.rad((i + 1) * angleStep)
-                    local x1 = screenCenterX + math.cos(angle1) * radius
-                    local y1 = screenCenterY + math.sin(angle1) * radius
-                    local x2 = screenCenterX + math.cos(angle2) * radius
-                    local y2 = screenCenterY + math.sin(angle2) * radius
-
-                    surface.DrawLine(x1, y1, x2, y2)
-                end
-            end
-        end
     end
 
     drawVoiceIndicator()

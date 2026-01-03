@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Commands Library
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
@@ -695,38 +695,25 @@ if SERVER then
             end
 
             if not istable(data) then data = {} end
-
             local existingFlags = data.permanentflags or ""
             local merged, appended = mergeFlags(existingFlags, cleanedFlags)
-
             if appended == "" then
                 MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No new flags to add for " .. normalized .. ". Existing flags: '" .. existingFlags .. "', Attempted to add: '" .. cleanedFlags .. "'\n")
                 return
             end
 
             data.permanentflags = merged
-
             if row then
                 lia.db.updateTable({
                     data = util.TableToJSON(data)
-                }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function()
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n")
-                end):catch(function(err)
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating flags for " .. normalized .. ": " .. tostring(err) .. "\n")
-                end)
+                }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n") end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating flags for " .. normalized .. ": " .. tostring(err) .. "\n") end)
             else
                 lia.db.insertTable({
                     steamID = normalized,
                     data = util.TableToJSON(data)
-                }, nil, "players"):next(function()
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created player entry and added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n")
-                end):catch(function(err)
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error creating player entry for " .. normalized .. ": " .. tostring(err) .. "\n")
-                end)
+                }, nil, "players"):next(function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created player entry and added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n") end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error creating player entry for " .. normalized .. ": " .. tostring(err) .. "\n") end)
             end
-        end):catch(function(err)
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error while checking player " .. normalized .. ": " .. tostring(err) .. "\n")
-        end)
+        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error while checking player " .. normalized .. ": " .. tostring(err) .. "\n") end)
     end
 
     concommand.Add("lia_givepermaflags", function(client, _, args)
@@ -922,7 +909,7 @@ if SERVER then
 
         lia.config.reset()
         lia.information(L("configWiped"))
-    end) 
+    end)
 
     concommand.Add("list_entities", function(client)
         local entityCount = {}
@@ -7698,25 +7685,24 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
         local isPlayerOnline = IsValid(ply) and ply:IsPlayer()
         local updatePromises = {}
         local sizeOverride = {width, height}
-
+        local hasNotifiedPlayer = false
         for _, charData in ipairs(characters) do
             local charID = charData.id
             local charName = charData.name
             local promise
-
             if isPlayerOnline then
                 -- Check if this character is currently loaded
                 local character = lia.char.getCharacter(charID)
                 if character then
-                    -- Ensure dataVars exists
-                    character.dataVars = character.dataVars or {}
-                    -- Set the override in dataVars immediately (before database update)
-                    character.dataVars["invSizeOverride"] = sizeOverride
-                    -- Also update in database
+                    -- Set the override in database
                     character:setData("invSizeOverride", sizeOverride)
-                    -- Trigger the custom hook that applies inventory size
-                    hook.Run("ApplyInventorySizeOverride", ply, character)
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online, applied immediately)\n")
+                    -- Notify player to swap characters for the change to take effect (only once per player)
+                    if not hasNotifiedPlayer then
+                        ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " Your inventory size has been changed to " .. width .. "x" .. height .. ". Please swap characters for the change to take effect.")
+                        hasNotifiedPlayer = true
+                    end
+
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online)\n")
                     promise = deferred.resolve(true)
                 else
                     -- Character not loaded, set in database
@@ -7804,7 +7790,6 @@ concommand.Add("lia_give_money_steamid", function(client, _, args)
             local charName = charData.name
             local currentMoney = tonumber(charData.money) or 0
             local newMoney = currentMoney + amount
-
             if isPlayerOnline and ply:getChar() and ply:getChar():getID() == charID then
                 local char = ply:getChar()
                 char:giveMoney(amount)

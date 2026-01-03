@@ -1053,6 +1053,18 @@ function ClientAddText(client, ...)
     net.Send(client)
 end
 
+function ClientAddTextShadowed(client, ...)
+    if not client or not IsValid(client) then
+        lia.error(L("invalidClientChatAddText"))
+        return
+    end
+
+    local args = {...}
+    net.Start("liaServerChatAddTextShadowed")
+    net.WriteTable(args)
+    net.Send(client)
+end
+
 local function UpdateVoiceHearing()
     if not lia.config.get("IsVoiceEnabled", true) then return end
     local speakerGaggedCache = {}

@@ -131,7 +131,8 @@ net.Receive("liaServerChatAddText", function()
         end
         
         if (labelText == "DEATH" and labelColor.r == 255 and labelColor.g == 0 and labelColor.b == 0) or
-           (labelText == "INSERT" and labelColor.r == 255 and labelColor.g == 165 and labelColor.b == 0) then
+           (labelText == "INSERT" and labelColor.r == 255 and labelColor.g == 165 and labelColor.b == 0) or
+           (labelText == "Inventory" and labelColor.r == 255 and labelColor.g == 0 and labelColor.b == 0) then
             
             local chatPanel = lia.module.get("chatbox") and lia.module.get("chatbox").panel
             if IsValid(chatPanel) and IsValid(chatPanel.scroll) then
@@ -164,6 +165,108 @@ net.Receive("liaServerChatAddText", function()
                 
                 return
             end
+        end
+    end
+    
+    chat.AddText(unpack(args))
+end)
+
+net.Receive("liaServerChatAddTextShadowed", function()
+    local args = net.ReadTable()
+    
+    if #args >= 3 and IsColor(args[1]) and isstring(args[2]) and IsColor(args[3]) then
+        local labelColor = args[1]
+        local labelText = args[2]
+        local textColor = args[3]
+        local messageText = ""
+        
+        for i = 4, #args do
+            if isstring(args[i]) then
+                messageText = messageText .. args[i]
+            end
+        end
+        
+        local chatPanel = lia.module.get("chatbox") and lia.module.get("chatbox").panel
+        if IsValid(chatPanel) and IsValid(chatPanel.scroll) then
+            local paintedPanel = vgui.Create("liaPaintedNotification", chatPanel.scroll)
+            paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
+            paintedPanel:SetWide(chatPanel:GetWide() - 16)
+            
+            paintedPanel.start = CurTime() + 8
+            paintedPanel.finish = paintedPanel.start + 12
+            paintedPanel.Think = function(p)
+                if chatPanel.active then
+                    p:SetAlpha(255)
+                else
+                    local fraction = math.TimeFraction(p.start, p.finish, CurTime())
+                    local alpha = 255 - (fraction * 255)
+                    p:SetAlpha(math.max(alpha, 0))
+                end
+            end
+            
+            chatPanel.list = chatPanel.list or {}
+            chatPanel.list[#chatPanel.list + 1] = paintedPanel
+            paintedPanel:SetPos(0, chatPanel.lastY or 0)
+            chatPanel.lastY = (chatPanel.lastY or 0) + paintedPanel:GetTall() + 2
+            
+            timer.Simple(0.01, function()
+                if IsValid(chatPanel.scroll) and IsValid(paintedPanel) then
+                    chatPanel.scroll:ScrollToChild(paintedPanel)
+                end
+            end)
+            
+            return
+        end
+    end
+    
+    chat.AddText(unpack(args))
+end)
+
+net.Receive("liaServerChatAddTextShadowed", function()
+    local args = net.ReadTable()
+    
+    if #args >= 3 and IsColor(args[1]) and isstring(args[2]) and IsColor(args[3]) then
+        local labelColor = args[1]
+        local labelText = args[2]
+        local textColor = args[3]
+        local messageText = ""
+        
+        for i = 4, #args do
+            if isstring(args[i]) then
+                messageText = messageText .. args[i]
+            end
+        end
+        
+        local chatPanel = lia.module.get("chatbox") and lia.module.get("chatbox").panel
+        if IsValid(chatPanel) and IsValid(chatPanel.scroll) then
+            local paintedPanel = vgui.Create("liaPaintedNotification", chatPanel.scroll)
+            paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
+            paintedPanel:SetWide(chatPanel:GetWide() - 16)
+            
+            paintedPanel.start = CurTime() + 8
+            paintedPanel.finish = paintedPanel.start + 12
+            paintedPanel.Think = function(p)
+                if chatPanel.active then
+                    p:SetAlpha(255)
+                else
+                    local fraction = math.TimeFraction(p.start, p.finish, CurTime())
+                    local alpha = 255 - (fraction * 255)
+                    p:SetAlpha(math.max(alpha, 0))
+                end
+            end
+            
+            chatPanel.list = chatPanel.list or {}
+            chatPanel.list[#chatPanel.list + 1] = paintedPanel
+            paintedPanel:SetPos(0, chatPanel.lastY or 0)
+            chatPanel.lastY = (chatPanel.lastY or 0) + paintedPanel:GetTall() + 2
+            
+            timer.Simple(0.01, function()
+                if IsValid(chatPanel.scroll) and IsValid(paintedPanel) then
+                    chatPanel.scroll:ScrollToChild(paintedPanel)
+                end
+            end)
+            
+            return
         end
     end
     

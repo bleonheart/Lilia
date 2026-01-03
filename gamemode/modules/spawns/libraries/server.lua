@@ -207,7 +207,9 @@ function MODULE:PlayerDeath(client, _, attacker)
         if IsValid(attacker) then
             if attacker:IsPlayer() then
                 attackerChar = attacker:getChar()
-                attackerName = attackerChar and tostring(attackerChar:getID()) or L("na")
+                local charID = attackerChar and tostring(attackerChar:getID()) or L("na")
+                local steamID = attacker:SteamID64()
+                attackerName = "Character ID " .. charID .. " [STEAMID64 " .. steamID .. "]"
             elseif attacker:IsWorld() then
                 attackerName = L("na")
             else
@@ -227,8 +229,8 @@ function MODULE:PlayerDeath(client, _, attacker)
         elseif IsValid(attacker) and not attacker:IsPlayer() and not attacker:IsWorld() then
             weaponName = attacker:GetClass()
         end
-        local attackerDisplay = IsValid(attacker) and (attacker:IsPlayer() and attackerName or (attacker:IsWorld() and "the environment" or attackerName)) or "unknown"
-        ClientAddText(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. char:getID() .. " (Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay .. " (Steam64ID: " .. steamId .. ") using " .. weaponName .. ".")
+        local attackerDisplay = IsValid(attacker) and (attacker:IsPlayer() and (attackerChar and "Character " .. attackerChar:getID() .. " | Steam64ID " .. steamId or L("na")) or (attacker:IsWorld() and "the environment" or attacker:GetClass() or L("na"))) or "unknown"
+        ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. client:Name() .. " (Character " .. char:getID() .. "| Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay)
     end
 
     if attacker:IsPlayer() and lia.config.get("LoseItemsonDeathHuman", false) then

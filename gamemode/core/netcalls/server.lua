@@ -29,7 +29,7 @@ net.Receive("liaInsertKeyPressed", function(_, client)
     local charID = char:getID()
     local steamId = client:SteamID64()
     for _, staff in player.Iterator() do
-        if IsValid(staff) and (staff:isStaffOnDuty() or staff:hasPrivilege("seeInsertNotifications")) then ClientAddText(staff, Color(255, 165, 0), "INSERT", Color(255, 255, 255), " | " .. logTimestamp .. " | Player " .. charID .. " (Steam64ID: " .. steamId .. ") pressed the Insert key.") end
+        if IsValid(staff) and (staff:isStaffOnDuty() or staff:hasPrivilege("seeInsertNotifications")) then ClientAddTextShadowed(staff, Color(255, 165, 0), "INSERT", Color(255, 255, 255), " | " .. logTimestamp .. " | Player " .. charID .. " (Steam64ID: " .. steamId .. ") pressed the Insert key.") end
     end
 end)
 
