@@ -1,4 +1,4 @@
-﻿NAME = "English"
+NAME = "English"
 LANGUAGE = {
     mustProvideString = "Must Provide a String",
     use = "Use",
@@ -1098,8 +1098,9 @@ LANGUAGE = {
     warnings = "Warnings",
     warning = "Warning",
     warningMessage = "Warning Message",
-    warnUsage = "Usage: warn [player] [reason]",
-    playerWarned = "You have been warned by %s for: %s",
+    warningSeverity = "Severity",
+    warnUsage = "Usage: warn [player] [severity] [reason]",
+    playerWarned = "You have been warned by %s (%s) for: %s",
     warningIssued = "Warning issued to %s",
     noWarnings = "%s has no warnings.",
     id = "ID",
@@ -2303,7 +2304,7 @@ Reload: Drop]],
     logVendorMoneyRestock = "%s restocked vendor %s money to %s",
     logVendorsSave = "%s saved all vendor data",
     logConfigChange = "Configuration changed: '%s' from '%s' to '%s'.",
-    logWarningIssued = "Warning issued at %s by admin '%s' to player '%s' for: '%s'. Total warnings: %s (added #%s).",
+    logWarningIssued = "Warning issued at %s by admin '%s' to player '%s' for: '%s' [Severity: %s]. Total warnings: %s (added #%s).",
     logWarningRemoved = "Warning removed at %s by admin '%s' for player '%s'. Reason: '%s'. Remaining warnings: %s (removed #%s).",
     logViewWarns = "Admin '%s' viewed warnings for player '%s'.",
     logViewWarnsIssued = "Admin '%s' viewed warnings issued by staff '%s'.",

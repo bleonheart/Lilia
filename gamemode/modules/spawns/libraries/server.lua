@@ -203,7 +203,6 @@ function MODULE:PlayerDeath(client, _, attacker)
         local timeStr = os.date("%H:%M:%S", os.time())
         local attackerName = L("na")
         local attackerChar = nil
-
         if IsValid(attacker) then
             if attacker:IsPlayer() then
                 attackerChar = attacker:getChar()
@@ -220,23 +219,15 @@ function MODULE:PlayerDeath(client, _, attacker)
         local serverName = GetHostName() or "Server"
         local killedByText = L("killedBy") .. " " .. attackerName .. " at " .. timeStr
         ClientAddText(client, Color(255, 255, 255), serverName .. " | " .. dateStr .. " - ", Color(255, 0, 0), killedByText)
-
         local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
         local steamId = IsValid(attacker) and attacker:IsPlayer() and attacker:SteamID64() or (attacker:IsWorld() and "World" or "Unknown")
-        local weaponName = "Unknown"
-        if IsValid(attacker) and attacker:IsPlayer() and IsValid(attacker:GetActiveWeapon()) then
-            weaponName = attacker:GetActiveWeapon():GetClass()
-        elseif IsValid(attacker) and not attacker:IsPlayer() and not attacker:IsWorld() then
-            weaponName = attacker:GetClass()
-        end
         local attackerDisplay = IsValid(attacker) and (attacker:IsPlayer() and (attackerChar and "Character " .. attackerChar:getID() .. " | Steam64ID " .. steamId or L("na")) or (attacker:IsWorld() and "the environment" or attacker:GetClass() or L("na"))) or "unknown"
-        ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. client:Name() .. " (Character " .. char:getID() .. "| Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay)
+        local deathMessage = client:Name() .. " (Character " .. char:getID() .. "| Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay
+        ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. deathMessage)
+        StaffAddTextShadowed(Color(255, 0, 0), "DEATH", Color(255, 255, 255), deathMessage)
     end
 
-    if attacker:IsPlayer() and lia.config.get("LoseItemsonDeathHuman", false) then
-        RemovedDropOnDeathItems(client)
-    end
-
+    if attacker:IsPlayer() and lia.config.get("LoseItemsonDeathHuman", false) then RemovedDropOnDeathItems(client) end
     client:SetDSP(30, false)
     char:setLastPos(nil)
     if not attacker:IsPlayer() and lia.config.get("LoseItemsonDeathNPC", false) or attacker:IsWorld() and lia.config.get("LoseItemsonDeathWorld", false) then RemovedDropOnDeathItems(client) end

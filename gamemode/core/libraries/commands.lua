@@ -3979,6 +3979,7 @@ lia.command.add("charsetmoney", {
         target:getChar():setMoney(math.floor(amount))
         client:notifyMoneyLocalized("setMoney", target:Name(), lia.currency.get(math.floor(amount)))
         lia.log.add(client, "charSetMoney", target:Name(), math.floor(amount))
+        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " set money of " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ") to " .. lia.currency.get(math.floor(amount)))
     end
 })
 
@@ -4013,6 +4014,7 @@ lia.command.add("charaddmoney", {
         target:getChar():setMoney(currentMoney + amount)
         client:notifyMoneyLocalized("addMoney", target:Name(), lia.currency.get(amount), lia.currency.get(currentMoney + amount))
         lia.log.add(client, "charAddMoney", target:Name(), amount, currentMoney + amount)
+        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " gave " .. lia.currency.get(amount) .. " to " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. "). New balance: " .. lia.currency.get(currentMoney + amount))
     end,
     alias = {"chargivemoney"}
 })
@@ -6991,6 +6993,11 @@ lia.command.add("warn", {
             type = "player"
         },
         {
+            name = "severity",
+            type = "string",
+            optional = true
+        },
+        {
             name = "reason",
             type = "string"
         },
@@ -7003,7 +7010,29 @@ lia.command.add("warn", {
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
-        local reason = table.concat(arguments, " ", 2)
+        local rawSeverity = arguments[2]
+        local reasonStartIndex = 3
+        local severity = "Medium"
+        local function normalizeSeverity(value)
+            if not isstring(value) then return nil end
+            local lowered = string.lower(string.Trim(value))
+            if lowered == "low" or lowered == "minor" then return "Low" end
+            if lowered == "medium" or lowered == "med" then return "Medium" end
+            if lowered == "high" or lowered == "major" then return "High" end
+            return nil
+        end
+
+        local normalized = normalizeSeverity(rawSeverity)
+        if normalized then
+            severity = normalized
+        elseif rawSeverity and rawSeverity ~= "" then
+            client:notifyErrorLocalized("invalidArg")
+            return
+        else
+            reasonStartIndex = 2
+        end
+
+        local reason = table.concat(arguments, " ", reasonStartIndex)
         if not targetName or reason == "" then return L("warnUsage") end
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
@@ -7019,12 +7048,34 @@ lia.command.add("warn", {
         local timestamp = os.date("%Y-%m-%d %H:%M:%S")
         local warnerName = client:Nick()
         local warnerSteamID = client:SteamID()
-        lia.module.get("administration"):AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID)
+        lia.module.get("administration"):AddWarning(target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID, severity)
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-            target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", reason)
+            target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", severity, reason)
             client:notifySuccessLocalized("warningIssued", target:Nick())
-            hook.Run("WarningIssued", client, target, reason, count, warnerSteamID, target:SteamID())
+            local message = warnerName .. " warned " .. target:Name() .. " (Character " .. target:getChar():getID() .. " | Steam64ID: " .. target:SteamID64() .. ") for \"" .. reason .. "\" [Severity: " .. severity .. "]."
+            StaffAddTextShadowed(Color(255, 140, 0), "WARNING", Color(255, 255, 255), message)
+            hook.Run("WarningIssued", client, target, reason, severity, count, warnerSteamID, target:SteamID())
         end)
+    end
+})
+
+lia.command.add("previewchatmessages", {
+    superAdminOnly = true,
+    desc = "Preview chat outputs",
+    onRun = function(client)
+        if not IsValid(client) then return end
+        local ts = os.date("%Y-%m-%d %H:%M:%S")
+        ClientAddTextShadowed(client, Color(255, 165, 0), "PREVIEW", Color(255, 255, 255), " | " .. ts .. " | Shadowed sample message (general).")
+        ClientAddTextShadowed(client, Color(255, 140, 0), "WARNING", Color(255, 255, 255), " | " .. ts .. " | Low severity warning preview.")
+        ClientAddTextShadowed(client, Color(255, 215, 0), "WARNING", Color(255, 255, 255), " | " .. ts .. " | Medium severity warning preview.")
+        ClientAddTextShadowed(client, Color(255, 0, 0), "WARNING", Color(255, 255, 255), " | " .. ts .. " | High severity warning preview.")
+        ClientAddTextShadowed(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. ts .. " | John Doe (Character 12 | Steam64ID: 76561198000000000) was killed by Character 13 | Steam64ID: 76561198000000001.")
+        ClientAddTextShadowed(client, Color(255, 165, 0), "INSERT", Color(255, 255, 255), " | " .. ts .. " | Player 12 (Steam64ID: 76561198000000002) pressed the Insert key.")
+        ClientAddTextShadowed(client, Color(199, 21, 133), "INVENTORY", Color(255, 255, 255), " | " .. ts .. " | Inventory size changed to 10x10.")
+        ClientAddTextShadowed(client, Color(34, 139, 34), "MONEY", Color(255, 255, 255), " | " .. ts .. " | $5,000 granted to player preview.")
+        ClientAddTextShadowed(client, Color(123, 104, 238), "SIT", Color(255, 255, 255), " | " .. ts .. " | Teleport preview to sit room.")
+        ClientAddText(client, Color(200, 200, 200), "[Preview] ", Color(255, 255, 255), "Non-shadowed chat line for comparison.")
+        client:notifySuccess("Preview messages sent to your chat.")
     end
 })
 
@@ -7062,7 +7113,8 @@ lia.command.add("viewwarns", {
                     index = index,
                     timestamp = warn.timestamp or L("na"),
                     admin = string.format("%s (%s)", warn.warner or L("na"), warn.warnerSteamID or L("na")),
-                    warningMessage = warn.message or L("na")
+                    warningMessage = warn.message or L("na"),
+                    severity = warn.severity or "Medium"
                 })
             end
 
@@ -7082,6 +7134,10 @@ lia.command.add("viewwarns", {
                 {
                     name = "warningMessage",
                     field = "warningMessage"
+                },
+                {
+                    name = L("warningSeverity"),
+                    field = "severity"
                 }
             }, warningList, {
                 {
@@ -7130,7 +7186,8 @@ lia.command.add("viewwarnsissued", {
                     index = index,
                     timestamp = warn.timestamp or L("na"),
                     player = string.format("%s (%s)", warn.warned or L("na"), warn.warnedSteamID or L("na")),
-                    warningMessage = warn.message or L("na")
+                    warningMessage = warn.message or L("na"),
+                    severity = warn.severity or "Medium"
                 }
             end
 
@@ -7150,6 +7207,10 @@ lia.command.add("viewwarnsissued", {
                 {
                     name = "warningMessage",
                     field = "warningMessage"
+                },
+                {
+                    name = L("warningSeverity"),
+                    field = "severity"
                 }
             }, warningList)
 
@@ -7686,6 +7747,7 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
         local updatePromises = {}
         local sizeOverride = {width, height}
         local hasNotifiedPlayer = false
+        local hasNotifiedStaff = false
         for _, charData in ipairs(characters) do
             local charID = charData.id
             local charName = charData.name
@@ -7700,6 +7762,11 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
                     if not hasNotifiedPlayer then
                         ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " Your inventory size has been changed to " .. width .. "x" .. height .. ". Please swap characters for the change to take effect.")
                         hasNotifiedPlayer = true
+                    end
+                    if not hasNotifiedStaff then
+                        local staffMessage = "Inventory size set to " .. width .. "x" .. height .. " for " .. ply:Name() .. " (Steam64ID: " .. ply:SteamID64() .. ")."
+                        StaffAddTextShadowed(Color(199, 21, 133), "INVENTORY", Color(255, 255, 255), staffMessage)
+                        hasNotifiedStaff = true
                     end
 
                     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online)\n")

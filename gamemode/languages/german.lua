@@ -1,4 +1,4 @@
-﻿NAME = "German"
+NAME = "German"
 LANGUAGE = {
     mustProvideString = "Es muss ein String angegeben werden",
     use = "Benutzen",
@@ -1012,8 +1012,9 @@ LANGUAGE = {
     warnings = "Verwarnungen",
     warning = "Verwarnung",
     warningMessage = "Verwarnungsnachricht",
-    warnUsage = "Benutzung: warn [Spieler] [Grund]",
-    playerWarned = "Du wurdest von %s verwarnt fr: %s",
+    warningSeverity = "Schweregrad",
+    warnUsage = "Benutzung: warn [Spieler] [Schweregrad] [Grund]",
+    playerWarned = "Du wurdest von %s (%s) verwarnt fr: %s",
     warningIssued = "Verwarnung an %s ausgesprochen",
     noWarnings = "%s hat keine Verwarnungen.",
     id = "ID",
@@ -2211,7 +2212,7 @@ Nachladen: Fallenlassen]],
     logVendorMoneyRestock = "%s hat Hndler %s Geld auf %s aufgefllt",
     logVendorsSave = "%s hat alle Hndlerdaten gespeichert",
     logConfigChange = "Konfiguration gendert: '%s' von '%s' zu '%s'.",
-    logWarningIssued = "Warnung am %s von Admin '%s' an Spieler '%s' fr: '%s'. Gesamtwarnungen: %s (hinzugefgt #%s).",
+    logWarningIssued = "Warnung am %s von Admin '%s' an Spieler '%s' fr: '%s' [Schweregrad: %s]. Gesamtwarnungen: %s (hinzugefgt #%s).",
     logWarningRemoved = "Warnung am %s von Admin '%s' fr Spieler '%s' entfernt. Grund: '%s'. Verbleibende Warnungen: %s (entfernt #%s).",
     logViewWarns = "Admin '%s' hat Warnungen fr Spieler '%s' angesehen.",
     logViewWarnsIssued = "Admin '%s' hat von Staff '%s' vergebene Warnungen angesehen.",

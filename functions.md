@@ -1351,7 +1351,7 @@ Count: 5 functions
   - Client
 - `AddToAdminStickHUD(client, target, information)`
   - Client
-- `AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)`
+- `AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)`
   - Server
 - `AdjustCreationData(client, data, newData, originalData)`
   - Shared
@@ -2163,7 +2163,7 @@ Count: 5 functions
   - Server
 - `VoiceToggled(enabled)`
   - Client
-- `WarningIssued(client, target, reason, count, warnerSteamID, arg6)`
+- `WarningIssued(client, target, reason, severity, count, warnerSteamID, targetSteamID)`
   - Server
 - `WarningRemoved(client, targetClient, arg3, arg4, arg5, arg6)`
   - Server

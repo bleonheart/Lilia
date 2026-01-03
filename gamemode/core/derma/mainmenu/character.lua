@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -198,6 +198,7 @@ function PANEL:createStartButton()
                 tooltip = string.format("Maximum characters reached (%d/%d)", currentChars, maxChars)
             end
         end
+
         table.insert(buttonsData, {
             id = "create",
             text = L("createCharacter"),
@@ -217,9 +218,7 @@ function PANEL:createStartButton()
 
     if hasNonStaffChar then
         local tooltip = hook.Run("GetCharacterLoadButtonTooltip", client)
-        if not tooltip or tooltip == "" then
-            tooltip = "Load an existing character"
-        end
+        if not tooltip or tooltip == "" then tooltip = "Load an existing character" end
         table.insert(buttonsData, {
             id = "load",
             text = L("loadCharacter"),
@@ -247,9 +246,7 @@ function PANEL:createStartButton()
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         local tooltip = hook.Run("GetCharacterLoadMainButtonTooltip", client)
-        if not tooltip or tooltip == "" then
-            tooltip = "Load your main character"
-        end
+        if not tooltip or tooltip == "" then tooltip = "Load your main character" end
         table.insert(buttonsData, {
             id = "loadmain",
             text = L("loadMainCharacter"),
@@ -263,9 +260,7 @@ function PANEL:createStartButton()
 
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
-        if not tooltip or tooltip == "" then
-            tooltip = hasStaffChar and "Load your staff character" or "Create a staff character"
-        end
+        if not tooltip or tooltip == "" then tooltip = hasStaffChar and "Load your staff character" or "Create a staff character" end
         table.insert(buttonsData, {
             id = "staff",
             text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
@@ -293,9 +288,7 @@ function PANEL:createStartButton()
 
     if discordURL ~= "" then
         local tooltip = hook.Run("GetCharacterDiscordButtonTooltip", client, discordURL)
-        if not tooltip or tooltip == "" then
-            tooltip = "Join our Discord server"
-        end
+        if not tooltip or tooltip == "" then tooltip = "Join our Discord server" end
         table.insert(buttonsData, {
             id = "discord",
             text = L("discord"),
@@ -309,9 +302,7 @@ function PANEL:createStartButton()
 
     if workshopURL ~= "" then
         local tooltip = hook.Run("GetCharacterWorkshopButtonTooltip", client, workshopURL)
-        if not tooltip or tooltip == "" then
-            tooltip = "View our Workshop collection"
-        end
+        if not tooltip or tooltip == "" then tooltip = "View our Workshop collection" end
         table.insert(buttonsData, {
             id = "workshop",
             text = L("workshop"),
@@ -325,9 +316,7 @@ function PANEL:createStartButton()
 
     if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
         local tooltip = hook.Run("GetCharacterMountButtonTooltip", client)
-        if not tooltip or tooltip == "" then
-            tooltip = "Mount required Workshop content"
-        end
+        if not tooltip or tooltip == "" then tooltip = "Mount required Workshop content" end
         table.insert(buttonsData, {
             id = "mount",
             text = L("mountContent"),
@@ -345,9 +334,7 @@ function PANEL:createStartButton()
     end
 
     local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
-    if not disconnectTooltip or disconnectTooltip == "" then
-        disconnectTooltip = "Disconnect from the server"
-    end
+    if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = "Disconnect from the server" end
     table.insert(buttonsData, {
         id = "disconnect",
         text = L("disconnect"),
@@ -360,9 +347,7 @@ function PANEL:createStartButton()
 
     if clientChar and not self.isKickedFromChar then
         local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
-        if not returnTooltip or returnTooltip == "" then
-            returnTooltip = "Return to your character"
-        end
+        if not returnTooltip or returnTooltip == "" then returnTooltip = "Return to your character" end
         table.insert(buttonsData, {
             id = "return",
             text = L("returnButton"),
@@ -383,6 +368,7 @@ function PANEL:createStartButton()
             btn.liaToolTip = true
             btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
         end
+
         local oldSetPos = btn.SetPos
         btn.SetPos = function(b, nx, ny)
             oldSetPos(b, nx, ny)

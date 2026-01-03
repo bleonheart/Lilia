@@ -1,4 +1,4 @@
-﻿NAME = "Portuguese"
+NAME = "Portuguese"
 LANGUAGE = {
     mustProvideString = "Deves fornecer uma cadeia de texto",
     use = "Usar",
@@ -1000,8 +1000,9 @@ LANGUAGE = {
     warnings = "Avisos",
     warning = "Aviso",
     warningMessage = "Mensagem de Aviso",
+    warningSeverity = "Gravidade",
     warnUsage = "Uso: warn [jogador] [razo]",
-    playerWarned = "Foste avisado por %s por: %s",
+    playerWarned = "Foste avisado por %s (%s) por: %s",
     warningIssued = "Aviso emitido a %s",
     noWarnings = "%s no tem avisos.",
     id = "ID",
@@ -2224,7 +2225,7 @@ Recarregar: Largar]],
     logVendorMoneyRestock = "%s reabasteceu o dinheiro do vendedor %s para %s",
     logVendorsSave = "%s guardou todos os dados dos vendedores",
     logConfigChange = "Configurao alterada: '%s' de '%s' para '%s'.",
-    logWarningIssued = "Aviso emitido em %s pelo admin '%s' ao jogador '%s' por: '%s'. Total de avisos: %s (adicionado #%s).",
+    logWarningIssued = "Aviso emitido em %s pelo admin '%s' ao jogador '%s' por: '%s' [Gravidade: %s]. Total de avisos: %s (adicionado #%s).",
     logWarningRemoved = "Aviso removido em %s pelo admin '%s' para o jogador '%s'. Motivo: '%s'. Avisos restantes: %s (removido #%s).",
     logViewWarns = "O admin '%s' viu os avisos do jogador '%s'.",
     logViewWarnsIssued = "O admin '%s' viu os avisos emitidos pelo staff '%s'.",

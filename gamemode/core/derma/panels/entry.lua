@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     self.title = nil
     self.placeholder = L("enterText")
@@ -19,11 +19,7 @@ function PANEL:Init()
     self._text_offset = 0
     self._centerText = false
     self.panelColor = lia.color.theme.panel[1]
-    self.textEntry.Paint = function(s, w, h)
-        if self._centerText then
-            return
-        end
-    end
+    self.textEntry.Paint = function(s, w, h) if self._centerText then return end end
     self.textEntry._originalPaintOver = nil
     self.textEntry.PaintOver = function(s, w, h)
         if not s._shadowLerp then s._shadowLerp = 5 end
@@ -46,12 +42,10 @@ function PANEL:Init()
         local value = self:GetValue()
         local padding = 6
         local font = self.font or "LiliaFont.18"
-        
         local textCol = lia.color.theme.text_entry or lia.color.theme.text or color_white
         local selBase = lia.color.theme.theme or lia.color.theme.accent or Color(100, 100, 255)
         local selCol = Color(selBase.r, selBase.g, selBase.b, 60)
         local caretCol = lia.color.theme.theme or lia.color.theme.accent or textCol
-        
         if self._centerText then
             if value == "" then
                 surface.SetFont(font)
@@ -59,7 +53,6 @@ function PANEL:Init()
                 draw.SimpleText(self.placeholder or "", font, w * 0.5, h * 0.5, phColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             else
                 surface.SetFont(font)
-                local textW, textH = surface.GetTextSize(value)
                 draw.SimpleText(value, font, w * 0.5, h * 0.5, textCol, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
             end
         else
@@ -68,6 +61,7 @@ function PANEL:Init()
                 local phColor = lia.color.theme.gray
                 draw.SimpleText(self.placeholder or "", font, padding, h * 0.5, phColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
+
             s:DrawTextEntryText(textCol, selCol, caretCol)
         end
     end
@@ -268,21 +262,13 @@ function PANEL:SetContentAlignment(align)
     if align == TEXT_ALIGN_CENTER or align == 5 then
         self._centerText = true
         if IsValid(self.textEntry) then
-            self.textEntry.Paint = function(s, w, h)
-                return
-            end
+            self.textEntry.Paint = function(s, w, h) return end
             self.textEntry:SetPaintBackground(false)
             self.textEntry:SetPaintBorder(false)
         end
     else
         self._centerText = false
-        if IsValid(self.textEntry) then
-            self.textEntry.Paint = function(s, w, h)
-                if self._centerText then
-                    return
-                end
-            end
-        end
+        if IsValid(self.textEntry) then self.textEntry.Paint = function(s, w, h) if self._centerText then return end end end
     end
 end
 

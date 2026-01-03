@@ -298,14 +298,17 @@ function MODULE:TicketSystemClaim(admin, requester)
         adminSteamID = admin:SteamID(),
         message = ticket and ticket.message or ""
     }, nil, "ticketclaims")
+    local requesterInfo = requester:Name() .. " (Steam64ID: " .. requester:SteamID64() .. ")"
+    local adminInfo = admin:Name() .. " (Steam64ID: " .. admin:SteamID64() .. ")"
+    StaffAddTextShadowed(Color(0, 191, 255), "TICKET", Color(255, 255, 255), adminInfo .. " claimed a ticket from " .. requesterInfo)
 end
 
 function MODULE:TicketSystemClose(admin, requester)
     lia.db.count("ticketclaims", "adminSteamID = " .. lia.db.convertDataType(admin:SteamID())):next(function(count) lia.log.add(admin, "ticketClosed", requester:Name(), count) end)
 end
 
-function MODULE:WarningIssued(admin, target, reason, index)
-    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, count, index) end)
+function MODULE:WarningIssued(admin, target, reason, severity, index)
+    lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count) lia.log.add(admin, "warningIssued", target, reason, severity or "Medium", count, index) end)
 end
 
 function MODULE:WarningRemoved(admin, target, warning, index)
@@ -373,6 +376,8 @@ net.Receive("liaManagesitroomsAction", function(_, client)
             client:SetPos(targetPos)
             client:notifySuccessLocalized("sitroomTeleport", name)
             lia.log.add(client, "sendToSitRoom", client:Name(), name)
+            local message = client:Name() .. " (Steam64ID: " .. client:SteamID64() .. ") teleported to sit room \"" .. name .. "\"."
+            StaffAddTextShadowed(Color(123, 104, 238), "SIT", Color(255, 255, 255), message)
         end
     elseif action == 2 then
         local newName = net.ReadString()
@@ -1149,15 +1154,16 @@ end)
 
 function MODULE:GetWarnings(charID)
     local condition = "charID = " .. lia.db.convertDataType(charID)
-    return lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)
+    return lia.db.select({"id", "timestamp", "message", "warner", "warnerSteamID", "severity"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
 function MODULE:GetWarningsByIssuer(steamID)
     local condition = "warnerSteamID = " .. lia.db.convertDataType(steamID)
-    return lia.db.select({"id", "timestamp", "message", "warned", "warnedSteamID", "warner", "warnerSteamID"}, "warnings", condition):next(function(res) return res.results or {} end)
+    return lia.db.select({"id", "timestamp", "message", "warned", "warnedSteamID", "warner", "warnerSteamID", "severity"}, "warnings", condition):next(function(res) return res.results or {} end)
 end
 
-function MODULE:AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID)
+function MODULE:AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)
+    local finalSeverity = severity or "Medium"
     lia.db.insertTable({
         charID = charID,
         warned = warned,
@@ -1165,8 +1171,10 @@ function MODULE:AddWarning(charID, warned, warnedSteamID, timestamp, message, wa
         timestamp = timestamp,
         message = message,
         warner = warner,
-        warnerSteamID = warnerSteamID
+        warnerSteamID = warnerSteamID,
+        severity = finalSeverity
     }, nil, "warnings")
+    return finalSeverity
 end
 
 function MODULE:RemoveWarning(charID, index)
@@ -1221,7 +1229,7 @@ end)
 
 net.Receive("liaRequestAllWarnings", function(_, client)
     if not client:hasPrivilege("viewPlayerWarnings") then return end
-    lia.db.select({"timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message"}, "warnings"):next(function(res)
+    lia.db.select({"timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message", "severity"}, "warnings"):next(function(res)
         net.Start("liaAllWarnings")
         net.WriteTable(res.results or {})
         net.Send(client)

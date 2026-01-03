@@ -1,4 +1,4 @@
-﻿function SWEP:PrimaryAttack()
+function SWEP:PrimaryAttack()
     local target = self:GetTarget()
     if IsValid(target) then lia.module.get("administration"):OpenAdminStickUI(target) end
 end

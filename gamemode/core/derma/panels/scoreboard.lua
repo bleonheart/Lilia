@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 local rowPaint = {
     [0] = function(_, w, h)
         surface.SetDrawColor(0, 0, 0, 120)
@@ -95,16 +95,10 @@ function PANEL:Init()
                 local blurPasses = 2
                 local blurAlpha = 255
                 lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-
                 -- Use background_alpha with subtle faction color tint like liaFrame does when bool_alpha is true
                 local radius = 8
                 local baseColor = lia.color.theme.background_alpha
-                local tintedColor = Color(
-                    math.Clamp((baseColor.r + facColor.r) * 0.5, 0, 255),
-                    math.Clamp((baseColor.g + facColor.g) * 0.5, 0, 255),
-                    math.Clamp((baseColor.b + facColor.b) * 0.5, 0, 255),
-                    baseColor.a
-                )
+                local tintedColor = Color(math.Clamp((baseColor.r + facColor.r) * 0.5, 0, 255), math.Clamp((baseColor.g + facColor.g) * 0.5, 0, 255), math.Clamp((baseColor.b + facColor.b) * 0.5, 0, 255), baseColor.a)
                 lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(tintedColor):Shape(lia.derma.SHAPE_IOS):Draw()
             end
         end
@@ -163,17 +157,11 @@ function PANEL:Init()
                         local blurPasses = 2
                         local blurAlpha = 255
                         lia.util.drawBlur(_, blurAmount, blurPasses, blurAlpha)
-
                         -- Use background_alpha with subtle class color tint like liaFrame does when bool_alpha is true
                         local radius = 6
                         local c = clsData.color or facColor
                         local baseColor = lia.color.theme.background_alpha
-                        local tintedColor = Color(
-                            math.Clamp((baseColor.r + c.r) * 0.5, 0, 255),
-                            math.Clamp((baseColor.g + c.g) * 0.5, 0, 255),
-                            math.Clamp((baseColor.b + c.b) * 0.5, 0, 255),
-                            baseColor.a
-                        )
+                        local tintedColor = Color(math.Clamp((baseColor.r + c.r) * 0.5, 0, 255), math.Clamp((baseColor.g + c.g) * 0.5, 0, 255), math.Clamp((baseColor.b + c.b) * 0.5, 0, 255), baseColor.a)
                         lia.derma.rect(0, 0, ww, hh):Rad(radius):Color(tintedColor):Shape(lia.derma.SHAPE_IOS):Draw()
                     end
                 end

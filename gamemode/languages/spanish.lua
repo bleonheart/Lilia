@@ -1,4 +1,4 @@
-﻿NAME = "Spanish"
+NAME = "Spanish"
 LANGUAGE = {
     mustProvideString = "Debes proporcionar una cadena",
     use = "Usar",
@@ -996,8 +996,9 @@ LANGUAGE = {
     warnings = "Advertencias",
     warning = "Advertencia",
     warningMessage = "Mensaje de Advertencia",
-    warnUsage = "Uso: warn [jugador] [razn]",
-    playerWarned = "Has sido advertido por %s por: %s",
+    warningSeverity = "Severidad",
+    warnUsage = "Uso: warn [jugador] [severidad] [razn]",
+    playerWarned = "Has sido advertido por %s (%s) por: %s",
     warningIssued = "Advertencia emitida a %s",
     noWarnings = "%s no tiene advertencias.",
     id = "ID",
@@ -2220,7 +2221,7 @@ Recargar: Soltar]],
     logVendorMoneyRestock = "%s reabasteci el dinero del vendedor %s a %s",
     logVendorsSave = "%s guard todos los datos de los vendedores",
     logConfigChange = "Configuracin cambiada: '%s' de '%s' a '%s'.",
-    logWarningIssued = "Advertencia emitida en %s por el admin '%s' al jugador '%s' por: '%s'. Advertencias totales: %s (aadida #%s).",
+    logWarningIssued = "Advertencia emitida en %s por el admin '%s' al jugador '%s' por: '%s' [Severidad: %s]. Advertencias totales: %s (aadida #%s).",
     logWarningRemoved = "Advertencia eliminada en %s por el admin '%s' para el jugador '%s'. Razn: '%s'. Advertencias restantes: %s (eliminada #%s).",
     logViewWarns = "El admin '%s' vio las advertencias del jugador '%s'.",
     logViewWarnsIssued = "El admin '%s' vio las advertencias emitidas por el staff '%s'.",

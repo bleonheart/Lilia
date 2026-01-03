@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 local RealTime, FrameTime = RealTime, FrameTime
 local mathApproach = math.Approach
 local IsValid = IsValid
@@ -385,7 +385,6 @@ function GM:HUDPaint()
                 end
             end
         end
-
     end
 
     drawVoiceIndicator()

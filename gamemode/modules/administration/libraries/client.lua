@@ -2000,10 +2000,54 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
 
     if IsValid(m) then
         local ic = data.AdminStick.Icon or "icon16/page.png"
+        local id = GetIdentifier(tgt)
+        local baseCmd = "say /" .. key
+        if id ~= "" then baseCmd = baseCmd .. " " .. QuoteArgs(id) end
+        if key == "warn" then
+            local warnMenu, warnOption = m:AddSubMenu(L(name))
+            if warnOption then warnOption:SetIcon(ic) end
+            local severityOptions = {
+                {
+                    label = "Low",
+                    value = "Low"
+                },
+                {
+                    label = "Medium",
+                    value = "Medium"
+                },
+                {
+                    label = "High (Cheats)",
+                    value = "High"
+                }
+            }
+
+            local reasonKey = L("reason") or "reason"
+            local function openReason(selectedSeverity)
+                lia.derma.requestArguments(L(name) .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
+                    if not success or not argData then
+                        timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                        LocalPlayer().AdminStickTarget = nil
+                        return
+                    end
+
+                    local reasonValue = argData[reasonKey] or ""
+                    local warnCmd = baseCmd .. " " .. QuoteArgs(selectedSeverity)
+                    if reasonValue ~= "" then warnCmd = warnCmd .. " " .. QuoteArgs(reasonValue) end
+                    cl:ConCommand(warnCmd)
+                    timer.Simple(0.1, function() AdminStickIsOpen = false end)
+                end, {
+                    [reasonKey] = ""
+                })
+            end
+
+            for _, option in ipairs(severityOptions) do
+                warnMenu:AddOption(option.label, function() openReason(option.value) end):SetIcon("icon16/error.png")
+            end
+            return
+        end
+
         m:AddOption(L(name), function()
-            local id = GetIdentifier(tgt)
-            local cmd = "say /" .. key
-            if id ~= "" then cmd = cmd .. " " .. QuoteArgs(id) end
+            local cmd = baseCmd
             if data.arguments and #data.arguments > 0 then
                 local argTypes = {}
                 local defaults = {}
@@ -3900,6 +3944,10 @@ net.Receive("liaAllWarnings", function()
         {
             name = L("warningMessage"),
             field = "message"
+        },
+        {
+            name = L("warningSeverity"),
+            field = "severity"
         }
     }
 
@@ -3924,7 +3972,7 @@ net.Receive("liaAllWarnings", function()
         for _, warn in ipairs(warnings) do
             local warnedDisplay = string.format("%s (%s)", warn.warned or "", warn.warnedSteamID or "")
             local adminDisplay = string.format("%s (%s)", warn.warner or "", warn.warnerSteamID or "")
-            local values = {warn.timestamp or "", warnedDisplay, adminDisplay, warn.message or ""}
+            local values = {warn.timestamp or "", warnedDisplay, adminDisplay, warn.message or "", warn.severity or "Medium"}
             local match = false
             if filter == "" then
                 match = true
@@ -4020,4 +4068,180 @@ function MODULE:AdminStickAddModels(modList)
     for _, class in pairs(lia.class.list or {}) do
         if class.model and isstring(class.model) then addModel(class.model, class.name or "Unknown Class") end
     end
+end
+
+function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
+    if not client:getChar() then return end
+    local weapon = client:GetActiveWeapon()
+    if not IsValid(weapon) then return end
+    -- Admin Stick HUD
+    if weapon:GetClass() == "lia_adminstick" then
+        self:DisplayAdminStickHUD(client, hudInfos, weapon)
+        -- Distance Tool HUD
+    elseif weapon:GetClass() == "lia_distance" then
+        self:DisplayDistanceToolHUD(client, hudInfos, weapon)
+    end
+end
+
+function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
+    local target = weapon:GetTarget()
+
+    -- Bottom left detailed information
+    if IsValid(target) then
+        local infoLines = {}
+
+        if target:IsPlayer() and target ~= client then
+            table.insert(infoLines, "Player: " .. target:Nick())
+            table.insert(infoLines, "Steam: " .. (target:IsBot() and "BOT" or target:SteamName()))
+            table.insert(infoLines, "SteamID: " .. (target:IsBot() and "BOT" or target:SteamID()))
+            table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
+            table.insert(infoLines, "Armor: " .. target:Armor())
+            table.insert(infoLines, "User Group: " .. target:GetUserGroup())
+
+            local activeWeapon = target:GetActiveWeapon()
+            local weaponName
+            if IsValid(activeWeapon) then
+                weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass()
+            end
+            table.insert(infoLines, "Weapon: " .. (weaponName or "None"))
+
+            local char = target:getChar()
+            if char then
+                table.insert(infoLines, "Character: " .. char:getName())
+                local faction = lia.faction.teams[char:getFaction()]
+                if faction then table.insert(infoLines, "Faction: " .. faction.name) end
+
+                local classID = char:getClass()
+                local classData = classID and lia.class.list and lia.class.list[classID]
+                if classData and classData.name then
+                    table.insert(infoLines, "Class: " .. classData.name)
+                end
+            else
+                table.insert(infoLines, "Character: Not loaded")
+            end
+
+            local pPos = target:GetPos()
+            table.insert(infoLines, string.format("Position: %.1f, %.1f, %.1f", pPos.x, pPos.y, pPos.z))
+            local pAng = target:GetAngles()
+            table.insert(infoLines, string.format("Angles: %.1f, %.1f, %.1f", pAng.p, pAng.y, pAng.r))
+            table.insert(infoLines, "Model: " .. target:GetModel())
+        else
+            -- Entity information
+            table.insert(infoLines, "Class: " .. target:GetClass())
+            table.insert(infoLines, "Model: " .. target:GetModel())
+            local pos = target:GetPos()
+            table.insert(infoLines, string.format("Position: %.1f, %.1f, %.1f", pos.x, pos.y, pos.z))
+            local ang = target:GetAngles()
+            table.insert(infoLines, string.format("Angles: %.1f, %.1f, %.1f", ang.p, ang.y, ang.r))
+
+            -- Owner information
+            local owner = target:GetOwner()
+            if IsValid(owner) and owner:IsPlayer() then
+                table.insert(infoLines, "Owner: " .. owner:Nick())
+            else
+                table.insert(infoLines, "Owner: World")
+            end
+
+            -- Entity ID
+            table.insert(infoLines, "Entity ID: " .. target:EntIndex())
+        end
+
+        table.insert(hudInfos, {
+            text = infoLines,
+            font = "LiliaFont.20",
+            position = {
+                x = ScrW() * 0.5,
+                y = ScrH() - 30
+            },
+            textAlignX = TEXT_ALIGN_CENTER,
+            textAlignY = TEXT_ALIGN_BOTTOM
+        })
+    end
+
+    -- Top right instructions
+    local instructions = {
+        "Left Click: Select",
+        "Right Click: Actions",
+        "Reload: Target self",
+        "Reload + Sprint: Clear target"
+    }
+
+    table.insert(hudInfos, {
+        text = instructions,
+        font = "LiliaFont.18",
+        position = {
+            x = ScrW() - 20,
+            y = 20
+        },
+        textAlignX = TEXT_ALIGN_RIGHT,
+        textAlignY = TEXT_ALIGN_TOP
+    })
+end
+
+function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
+    -- Top right instructions
+    local instructions = {
+        "Left Click: Set point",
+        "Right Click: Clear points",
+        "Reload: Measure current"
+    }
+
+    table.insert(hudInfos, {
+        text = instructions,
+        font = "LiliaFont.18",
+        position = {
+            x = ScrW() - 20,
+            y = 20
+        },
+        textAlignX = TEXT_ALIGN_RIGHT,
+        textAlignY = TEXT_ALIGN_TOP
+    })
+
+    -- Distance tracker at top
+    if weapon.StartPos then
+        local tr = client:GetEyeTrace()
+        local distance = weapon.StartPos:Distance(tr.HitPos)
+        local distanceText = string.format("Distance: %.1f units", distance)
+
+        table.insert(hudInfos, {
+            text = distanceText,
+            font = "LiliaFont.24",
+            position = {
+                x = ScrW() * 0.5,
+                y = 30
+            },
+            textAlignX = TEXT_ALIGN_CENTER,
+            textAlignY = TEXT_ALIGN_TOP
+        })
+    else
+        table.insert(hudInfos, {
+            text = "Click to set start point",
+            font = "LiliaFont.20",
+            position = {
+                x = ScrW() * 0.5,
+                y = 30
+            },
+            textAlignX = TEXT_ALIGN_CENTER,
+            textAlignY = TEXT_ALIGN_TOP
+        })
+    end
+
+    -- Bottom left distance info (simple autosize with bottom-left anchor)
+    local distanceLines
+    if weapon.StartPos then
+        distanceLines = {"Distance Tool", "Tracking..."}
+    else
+        distanceLines = {"Distance Tool", "Set a start point"}
+    end
+
+    table.insert(hudInfos, {
+        text = distanceLines,
+        font = "LiliaFont.20",
+        position = {
+            x = 20,
+            y = ScrH() - 30
+        },
+        textAlignX = TEXT_ALIGN_LEFT,
+        textAlignY = TEXT_ALIGN_BOTTOM
+    })
 end

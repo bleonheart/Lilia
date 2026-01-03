@@ -1,4 +1,4 @@
-net.Receive("liaPlayerRespawn", function(_, client)
+﻿net.Receive("liaPlayerRespawn", function(_, client)
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
@@ -25,12 +25,10 @@ net.Receive("liaInsertKeyPressed", function(_, client)
     if not IsValid(client) then return end
     local char = client:getChar()
     if not char then return end
-    local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
     local charID = char:getID()
     local steamId = client:SteamID64()
-    for _, staff in player.Iterator() do
-        if IsValid(staff) and (staff:isStaffOnDuty() or staff:hasPrivilege("seeInsertNotifications")) then ClientAddTextShadowed(staff, Color(255, 165, 0), "INSERT", Color(255, 255, 255), " | " .. logTimestamp .. " | Player " .. charID .. " (Steam64ID: " .. steamId .. ") pressed the Insert key.") end
-    end
+    local message = client:Name() .. " (Character " .. charID .. " | Steam64ID: " .. steamId .. ") pressed the Insert key."
+    StaffAddTextShadowed(Color(255, 165, 0), "INSERT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("seeInsertNotifications") end)
 end)
 
 net.Receive("liaStringRequest", function(_, client)
@@ -140,7 +138,11 @@ net.Receive("liaCheckHack", function(_, client)
             local warnsModule = lia.module.get("administration")
             if warnsModule and warnsModule.AddWarning then
                 local timestamp = os.date("%Y-%m-%d %H:%M:%S")
-                warnsModule:AddWarning(client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM")
+                local severity = "High"
+                warnsModule:AddWarning(client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
+                local charID = client:getChar():getID()
+                local message = client:Name() .. " (Character " .. charID .. " | Steam64ID: " .. client:SteamID64() .. ") was flagged for cheating. Severity: " .. severity .. "."
+                StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("receiveCheaterNotifications") end)
             end
         end
     end

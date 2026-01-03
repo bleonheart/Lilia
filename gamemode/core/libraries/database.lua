@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Database Library
 
     Comprehensive database management system with SQLite support for the Lilia framework.
@@ -199,7 +199,8 @@ CREATE TABLE IF NOT EXISTS lia_warnings (
     timestamp datetime,
     message text,
     warner text,
-    warnerSteamID text
+    warnerSteamID text,
+    severity text default 'Medium'
 );
 CREATE TABLE IF NOT EXISTS lia_permakills (
     id integer primary key autoincrement,
@@ -491,6 +492,10 @@ function lia.db.addDatabaseFields()
             end)
         end
     end
+
+    lia.db.fieldExists("lia_warnings", "severity"):next(function(exists)
+        if not exists then lia.db.query("ALTER TABLE lia_warnings ADD COLUMN severity TEXT DEFAULT 'Medium'") end
+    end)
 end
 
 function lia.db.exists(dbTable, condition)

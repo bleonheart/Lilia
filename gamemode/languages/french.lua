@@ -1,4 +1,4 @@
-﻿NAME = "French"
+NAME = "French"
 LANGUAGE = {
     mustProvideString = "Vous devez fournir une chane de caractres",
     use = "Utiliser",
@@ -1040,8 +1040,9 @@ LANGUAGE = {
     warnings = "Avertissements",
     warning = "Avertissement",
     warningMessage = "Message d'avertissement",
-    warnUsage = "Utilisation : warn [joueur] [raison]",
-    playerWarned = "Vous avez t averti par %s pour : %s",
+    warningSeverity = "Svr",
+    warnUsage = "Utilisation : warn [joueur] [sévérité] [raison]",
+    playerWarned = "Vous avez t averti par %s (%s) pour : %s",
     warningIssued = "Avertissement donn  %s",
     noWarnings = "%s n'a aucun avertissement.",
     id = "ID",
@@ -2247,7 +2248,7 @@ Recharger : Lcher]],
     logVendorMoneyRestock = "%s a rapprovisionn l'argent du vendeur %s  %s",
     logVendorsSave = "%s a sauvegard toutes les donnes des vendeurs",
     logConfigChange = "Configuration modifie : '%s' de '%s'  '%s'.",
-    logWarningIssued = "Avertissement donn  %s par l'admin '%s' au joueur '%s' pour : '%s'. Total d'avertissements : %s (ajout #%s).",
+    logWarningIssued = "Avertissement donn  %s par l'admin '%s' au joueur '%s' pour : '%s' [Svr : %s]. Total d'avertissements : %s (ajout #%s).",
     logWarningRemoved = "Avertissement retir  %s par l'admin '%s' pour le joueur '%s'. Raison : '%s'. Restant : %s (retir #%s).",
     logViewWarns = "L'admin '%s' a consult les avertissements du joueur '%s'.",
     logViewWarnsIssued = "L'admin '%s' a consult les avertissements donns par le staff '%s'.",
