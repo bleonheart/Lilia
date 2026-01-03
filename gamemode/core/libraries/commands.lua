@@ -685,26 +685,47 @@ if SERVER then
         end
 
         lia.db.selectOne({"data"}, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function(row)
-            if not row then
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No player data found for " .. normalized .. ".\n")
-                return
+            local data = {}
+            if row and row.data then
+                if isstring(row.data) then
+                    data = util.JSONToTable(row.data) or {}
+                elseif istable(row.data) then
+                    data = row.data
+                end
             end
 
-            local data = row.data
-            if isstring(data) then data = util.JSONToTable(data) end
             if not istable(data) then data = {} end
-            local merged, appended = mergeFlags(data.permanentflags or "", cleanedFlags)
+
+            local existingFlags = data.permanentflags or ""
+            local merged, appended = mergeFlags(existingFlags, cleanedFlags)
+
             if appended == "" then
-                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No new flags to add for " .. normalized .. ".\n")
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No new flags to add for " .. normalized .. ". Existing flags: '" .. existingFlags .. "', Attempted to add: '" .. cleanedFlags .. "'\n")
                 return
             end
 
             data.permanentflags = merged
-            lia.db.updateTable({
-                data = data
-            }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized))
 
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ".\n")
+            if row then
+                lia.db.updateTable({
+                    data = util.TableToJSON(data)
+                }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function()
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n")
+                end):catch(function(err)
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating flags for " .. normalized .. ": " .. tostring(err) .. "\n")
+                end)
+            else
+                lia.db.insertTable({
+                    steamID = normalized,
+                    data = util.TableToJSON(data)
+                }, nil, "players"):next(function()
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Created player entry and added flags '" .. appended .. "' to " .. normalized .. ". New flags: '" .. merged .. "'\n")
+                end):catch(function(err)
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error creating player entry for " .. normalized .. ": " .. tostring(err) .. "\n")
+                end)
+            end
+        end):catch(function(err)
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error while checking player " .. normalized .. ": " .. tostring(err) .. "\n")
         end)
     end
 
@@ -765,7 +786,7 @@ if SERVER then
         end
 
         if not IsValid(ply) or not game.IsDedicated() then
-            if IsValid(target) then
+            if IsValid(target) and isfunction(target.getName) then
                 if lia.administrator.groups[usergroup] then
                     target.liaUserGroup = usergroup
                     target:notifyInfoLocalized("userGroupSet", usergroup)
@@ -782,7 +803,7 @@ if SERVER then
                 end
             end
         elseif ply:hasPrivilege("setUserGroup") then
-            if IsValid(target) then
+            if IsValid(target) and isfunction(target.getName) then
                 if lia.administrator.groups[usergroup] then
                     target.liaUserGroup = usergroup
                     target:notifyInfoLocalized("userGroupSet", usergroup)
@@ -901,7 +922,7 @@ if SERVER then
 
         lia.config.reset()
         lia.information(L("configWiped"))
-    end)
+    end) 
 
     concommand.Add("list_entities", function(client)
         local entityCount = {}
@@ -7631,20 +7652,22 @@ concommand.Add("lia_setextrachars", function(client, _, args)
             }, nil, "players")
         end
 
-        playerData.extra_characters = amount
+        local currentExtra = tonumber(playerData.extraCharacters) or 0
+        local newExtra = currentExtra + amount
+        playerData.extraCharacters = newExtra
         lia.db.updateTable({
             data = util.TableToJSON(playerData)
         }, nil, "players", "steamID = " .. lia.db.convertDataType(steamid))
 
         for _, ply in player.Iterator() do
             if ply:SteamID() == steamid then
-                ply:setLiliaData("extra_characters", amount)
+                ply:setLiliaData("extraCharacters", newExtra)
                 break
             end
         end
 
-        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set player " .. steamid .. " extra characters to " .. amount .. ".\n")
-        lia.log.add(nil, "setExtraChars", steamid, amount)
+        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Added " .. amount .. " extra character slot" .. (amount == 1 and "" or "s") .. " to player " .. steamid .. ". New total: " .. newExtra .. " (was " .. currentExtra .. ").\n")
+        lia.log.add(nil, "addExtraChars", steamid, amount, newExtra)
     end)
 end)
 
@@ -7663,30 +7686,88 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
         return
     end
 
-    lia.db.select({"id", "name"}, "lia_characters", "steamID = '" .. lia.db.escape(steamID) .. "'"):next(function(characters)
+    lia.db.select({"id", "name"}, "characters", "steamID = " .. lia.db.convertDataType(steamID)):next(function(res)
+        local characters = res.results or {}
         if not characters or #characters == 0 then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. steamID .. "\n")
             return
         end
 
-        local updatedCount = 0
+        MsgC(Color(255, 255, 255), "[Lilia] ", "Processing " .. #characters .. " characters...\n")
+        local ply = player.GetBySteamID(steamID)
+        local isPlayerOnline = IsValid(ply) and ply:IsPlayer()
+        local updatePromises = {}
+        local sizeOverride = {width, height}
+
         for _, charData in ipairs(characters) do
             local charID = charData.id
             local charName = charData.name
-            lia.inventory.loadByID(charID):next(function(inventory)
-                if inventory then
-                    inventory:setSize(width, height)
-                    inventory:sync()
-                    updatedCount = updatedCount + 1
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Updated inventory size for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. "\n")
+            local promise
+
+            if isPlayerOnline then
+                -- Check if this character is currently loaded
+                local character = lia.char.getCharacter(charID)
+                if character then
+                    -- Ensure dataVars exists
+                    character.dataVars = character.dataVars or {}
+                    -- Set the override in dataVars immediately (before database update)
+                    character.dataVars["invSizeOverride"] = sizeOverride
+                    -- Also update in database
+                    character:setData("invSizeOverride", sizeOverride)
+                    -- Trigger the custom hook that applies inventory size
+                    hook.Run("ApplyInventorySizeOverride", ply, character)
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online, applied immediately)\n")
+                    promise = deferred.resolve(true)
                 else
-                    MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Could not load inventory for character '" .. charName .. "' (ID: " .. charID .. ")\n")
+                    -- Character not loaded, set in database
+                    promise = deferred.new()
+                    local encoded = pon.encode({sizeOverride})
+                    lia.db.upsert({
+                        charID = charID,
+                        key = "invSizeOverride",
+                        value = encoded
+                    }, "chardata", function(success, err)
+                        if success then
+                            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player online, char not loaded)\n")
+                            promise:resolve(true)
+                        else
+                            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error setting inventory size override for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n")
+                            promise:resolve(false)
+                        end
+                    end)
                 end
-            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating inventory for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n") end)
+            else
+                -- Player offline, set in database
+                promise = deferred.new()
+                local encoded = pon.encode({sizeOverride})
+                lia.db.upsert({
+                    charID = charID,
+                    key = "invSizeOverride",
+                    value = encoded
+                }, "chardata", function(success, err)
+                    if success then
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Set inventory size override for character '" .. charName .. "' (ID: " .. charID .. ") to " .. width .. "x" .. height .. " (player offline)\n")
+                        promise:resolve(true)
+                    else
+                        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error setting inventory size override for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n")
+                        promise:resolve(false)
+                    end
+                end)
+            end
+
+            table.insert(updatePromises, promise)
         end
 
-        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Started updating inventory sizes for " .. #characters .. " characters of SteamID: " .. steamID .. "\n")
-        lia.log.add(nil, "setInventorySizeAllChars", steamID, width, height, #characters)
+        deferred.map(updatePromises, function(result) return result end):next(function(results)
+            local successCount = 0
+            for _, success in ipairs(results) do
+                if success then successCount = successCount + 1 end
+            end
+
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully set inventory size override for " .. successCount .. " of " .. #characters .. " characters.\n")
+            MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Note: Inventory sizes will be applied when characters load.\n")
+            lia.log.add(nil, "setInventorySizeAllChars", steamID, width, height, successCount)
+        end)
     end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
 end)
 
@@ -7708,153 +7789,137 @@ concommand.Add("lia_give_money_steamid", function(client, _, args)
         return
     end
 
-    lia.db.select({"id", "name", "money"}, "lia_characters", "steamID = '" .. lia.db.escape(steamID) .. "'"):next(function(characters)
+    lia.db.select({"id", "name", "money"}, "characters", "steamID = " .. lia.db.convertDataType(steamID)):next(function(res)
+        local characters = res.results or {}
         if not characters or #characters == 0 then
             MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. steamID .. "\n")
             return
         end
 
+        local ply = player.GetBySteamID(steamID)
+        local isPlayerOnline = IsValid(ply) and ply:IsPlayer()
         local updatedCount = 0
         for _, charData in ipairs(characters) do
             local charID = charData.id
             local charName = charData.name
-            local currentMoney = charData.money or 0
+            local currentMoney = tonumber(charData.money) or 0
             local newMoney = currentMoney + amount
-            lia.db.updateTable({
-                money = newMoney
-            }, nil, "characters", "id = " .. charID):next(function()
-                local character = lia.char.loaded[charID]
-                if character then
-                    character.vars.money = newMoney
-                    character:syncVars()
-                end
 
+            if isPlayerOnline and ply:getChar() and ply:getChar():getID() == charID then
+                local char = ply:getChar()
+                char:giveMoney(amount)
+                local actualNewMoney = char:getMoney()
                 updatedCount = updatedCount + 1
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(newMoney) .. "\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(actualNewMoney) .. " (player online)\n")
                 if updatedCount == #characters then
                     MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully gave " .. lia.currency.get(amount) .. " to " .. #characters .. " characters owned by SteamID: " .. steamID .. "\n")
                     lia.log.add(nil, "giveMoneySteamID", steamID, amount, #characters)
                 end
-            end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating money for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n") end)
-        end
-    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
-end)
-
-concommand.Add("lia_whitelist_faction_steamid", function(client, _, args)
-    if IsValid(client) then
-        client:notifyErrorLocalized("commandConsoleOnly")
-        return
-    end
-
-    local steamID = args[1]
-    local factionUniqueID = args[2]
-    if not steamID or not factionUniqueID then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_whitelist_faction_steamid <steamID> <factionUniqueID>\n")
-        return
-    end
-
-    local normalized = lia.util.convertSteamID(steamID)
-    if not normalized then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID format: " .. steamID .. "\n")
-        return
-    end
-
-    local faction = lia.faction.get(factionUniqueID)
-    if not faction then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Faction not found: " .. factionUniqueID .. "\n")
-        return
-    end
-
-    if faction.uniqueID == "staff" then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Cannot whitelist for staff faction.\n")
-        return
-    end
-
-    lia.db.selectOne({"data"}, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function(row)
-        if not row then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No player data found for SteamID: " .. normalized .. "\n")
-            return
-        end
-
-        local data = row.data
-        if isstring(data) then data = util.JSONToTable(data) end
-        if not istable(data) then data = {} end
-        data.whitelists = data.whitelists or {}
-        data.whitelists[SCHEMA.folder] = data.whitelists[SCHEMA.folder] or {}
-        data.whitelists[SCHEMA.folder][faction.uniqueID] = true
-        lia.db.updateTable({
-            data = data
-        }, nil, "players", "steamID = " .. lia.db.convertDataType(normalized)):next(function()
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully whitelisted SteamID " .. normalized .. " for faction '" .. faction.name .. "' (" .. faction.uniqueID .. ")\n")
-            lia.log.add(nil, "factionWhitelistSteamID", normalized, faction.name, faction.uniqueID)
-        end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
-    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
-end)
-
-concommand.Add("lia_whitelist_class_steamid", function(client, _, args)
-    if IsValid(client) then
-        client:notifyErrorLocalized("commandConsoleOnly")
-        return
-    end
-
-    local steamID = args[1]
-    local classUniqueID = args[2]
-    if not steamID or not classUniqueID then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_whitelist_class_steamid <steamID> <classUniqueID>\n")
-        return
-    end
-
-    local normalized = lia.util.convertSteamID(steamID)
-    if not normalized then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Invalid SteamID format: " .. steamID .. "\n")
-        return
-    end
-
-    local classID = lia.class.retrieveClass(classUniqueID)
-    if not classID then
-        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Class not found: " .. classUniqueID .. "\n")
-        return
-    end
-
-    local classData = lia.class.list[classID]
-    lia.db.select({"id", "name", "classwhitelists"}, "lia_characters", "steamID = '" .. lia.db.escape(normalized) .. "'"):next(function(characters)
-        if not characters or #characters == 0 then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. normalized .. "\n")
-            return
-        end
-
-        local updatedCount = 0
-        for _, charData in ipairs(characters) do
-            local charID = charData.id
-            local charName = charData.name
-            local classwhitelists = charData.classwhitelists
-            if isstring(classwhitelists) then
-                classwhitelists = util.JSONToTable(classwhitelists) or {}
-            elseif not istable(classwhitelists) then
-                classwhitelists = {}
-            end
-
-            if classwhitelists[classID] then
-                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "Character '" .. charName .. "' (ID: " .. charID .. ") is already whitelisted for class '" .. classData.name .. "'\n")
             else
-                classwhitelists[classID] = true
-                lia.db.updateTable({
-                    classwhitelists = classwhitelists
-                }, nil, "lia_characters", "id = " .. charID):next(function()
-                    local character = lia.char.loaded[charID]
-                    if character then
-                        character.vars.classwhitelists = classwhitelists
-                        character:syncVars()
-                    end
-
+                if lia.char.setCharDatabase(charID, "money", newMoney) then
                     updatedCount = updatedCount + 1
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Whitelisted character '" .. charName .. "' (ID: " .. charID .. ") for class '" .. classData.name .. "' (" .. classData.uniqueID .. ")\n")
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(newMoney) .. " (player offline)\n")
                     if updatedCount == #characters then
-                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully whitelisted " .. updatedCount .. " characters owned by SteamID " .. normalized .. " for class '" .. classData.name .. "'\n")
-                        lia.log.add(nil, "classWhitelistSteamID", normalized, classData.name, classData.uniqueID, updatedCount)
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully gave " .. lia.currency.get(amount) .. " to " .. #characters .. " characters owned by SteamID: " .. steamID .. "\n")
+                        lia.log.add(nil, "giveMoneySteamID", steamID, amount, #characters)
                     end
-                end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating class whitelist for character '" .. charName .. "' (ID: " .. charID .. "): " .. tostring(err) .. "\n") end)
+                else
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating money for character '" .. charName .. "' (ID: " .. charID .. ")\n")
+                end
             end
         end
     end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
+end)
+
+concommand.Add("lia_run_test_commands", function(client, _, args)
+    if IsValid(client) then
+        client:notifyErrorLocalized("commandConsoleOnly")
+        return
+    end
+
+    -- Handle SteamID parsing - handle various input formats
+    local steamID
+    -- Debug: Show all received arguments
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Debug: Received " .. #args .. " arguments:\n")
+    for i, arg in ipairs(args) do
+        MsgC(Color(255, 255, 255), "[Lilia] ", "  args[" .. i .. "] = '" .. tostring(arg) .. "'\n")
+    end
+
+    -- First, try to find a complete SteamID in any single argument
+    for i, arg in ipairs(args) do
+        if string.match(arg, "STEAM_%d:%d:%d+") then
+            steamID = arg
+            MsgC(Color(255, 255, 255), "[Lilia] ", "Found complete SteamID in args[" .. i .. "]: " .. steamID .. "\n")
+            break
+        end
+    end
+
+    -- If no complete SteamID found, check if SteamID was split across arguments (e.g., STEAM_0 1 464054146)
+    if not steamID and #args >= 3 then
+        local possibleSteamID = args[1] .. ":" .. args[2] .. ":" .. args[3]
+        if string.match(possibleSteamID, "STEAM_%d:%d:%d+") then
+            steamID = possibleSteamID
+            MsgC(Color(255, 255, 255), "[Lilia] ", "Reconstructed SteamID from args[1]+args[2]+args[3]: " .. steamID .. "\n")
+        end
+    end
+
+    -- If still no SteamID, check if all arguments concatenated with colons form a valid SteamID
+    if not steamID and #args > 0 then
+        local combined = table.concat(args, ":")
+        if string.match(combined, "STEAM_%d:%d:%d+") then
+            steamID = combined
+            MsgC(Color(255, 255, 255), "[Lilia] ", "Combined all arguments with colons: " .. steamID .. "\n")
+        end
+    end
+
+    if not steamID or not string.match(steamID, "STEAM_%d:%d:%d+") then
+        MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_run_test_commands <steamID>\n")
+        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "Supported formats:\n")
+        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "  lia_run_test_commands STEAM_0:1:12345678\n")
+        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "  lia_run_test_commands \"STEAM_0:1:12345678\"\n")
+        MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), "  lia_run_test_commands STEAM_0 1 12345678\n")
+        return
+    end
+
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Using SteamID: '" .. steamID .. "' (length: " .. string.len(steamID) .. ")\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "========================================\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "STARTING TEST COMMANDS FOR STEAMID: " .. steamID .. "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "========================================\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "This will execute 5 test commands with default values.\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Commands will be run for SteamID: " .. steamID .. "\n\n")
+    -- Test command 1: lia_setextrachars {SteamID} number (using 5 as default)
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[1/5] Setting extra characters to 5...\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_setextrachars \"" .. steamID .. "\" 5\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Allows player to have 5 additional characters beyond the default limit.\n")
+    game.ConsoleCommand("lia_setextrachars \"" .. steamID .. "\" 5\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 1 completed\n\n")
+    -- Test command 2: lia_givepermaflags {SteamID} petr
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[2/5] Granting permanent 'petr' flag...\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_givepermaflags \"" .. steamID .. "\" petr\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Gives permanent 'petr' permission flag to the player.\n")
+    game.ConsoleCommand("lia_givepermaflags \"" .. steamID .. "\" petr\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 2 completed\n\n")
+    -- Test command 3: lia_set_inventory_size_all_chars {SteamID} 10 10
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[3/5] Setting inventory size to 10x10 for all characters...\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_set_inventory_size_all_chars \"" .. steamID .. "\" 10 10\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Resizes all character inventories to 10 width x 10 height.\n")
+    game.ConsoleCommand("lia_set_inventory_size_all_chars \"" .. steamID .. "\" 10 10\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 3 completed\n\n")
+    -- Test command 4: plysetgroup {SteamID} UserGroup (using "superadmin" as default group)
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[4/5] Setting user group to superadmin...\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Command: plysetgroup \"" .. steamID .. "\" superadmin\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Sets the player's usergroup to superadmin level.\n")
+    game.ConsoleCommand("plysetgroup \"" .. steamID .. "\" superadmin\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 4 completed\n\n")
+    -- Test command 5: lia_give_money_steamid {SteamID} AMOUNT (using 1000 as default)
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "[5/5] Giving 1000 currency to all characters...\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Command: lia_give_money_steamid \"" .. steamID .. "\" 1000\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Purpose: Adds 1000 currency to all characters owned by this SteamID.\n")
+    game.ConsoleCommand("lia_give_money_steamid \"" .. steamID .. "\" 1000\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ Command 5 completed\n\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "========================================\n")
+    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "✓ ALL TEST COMMANDS COMPLETED SUCCESSFULLY!\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Target SteamID: " .. steamID .. "\n")
+    MsgC(Color(255, 255, 255), "[Lilia] ", "Note: Check individual command outputs above for any database errors or issues.\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "========================================\n")
 end)

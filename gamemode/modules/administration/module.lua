@@ -1,4 +1,4 @@
-﻿MODULE.name = "administrationModuleName"
+MODULE.name = "administrationModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "administrationToolsDescription"
@@ -492,6 +492,12 @@ MODULE.Privileges = {
     {
         Name = "canManageProperties",
         ID = "canManageProperties",
+        MinAccess = "superadmin",
+        Category = "categoryStaffManagement",
+    },
+    {
+        Name = "seeInsertNotifications",
+        ID = "seeInsertNotifications",
         MinAccess = "superadmin",
         Category = "categoryStaffManagement",
     },

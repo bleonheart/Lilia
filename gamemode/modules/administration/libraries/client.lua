@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 AdminStickIsOpen = false
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
 local playerInfoLabel = L("player") .. " " .. L("information")
@@ -2321,8 +2321,8 @@ function MODULE:OpenAdminStickUI(tgt)
                         end
                     end
 
-                    local classes = lia.faction.getClasses and lia.faction.getClasses(facID) or {}
-                    if classes and #classes > 1 and canClass then
+                    local classes = lia.faction.getClasses(facID) or {}
+                    if classes and #classes >= 1 and canClass then
                         local cls = {}
                         for _, c in ipairs(classes) do
                             table.insert(cls, {

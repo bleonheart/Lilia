@@ -145,7 +145,21 @@ end
 function characterMeta:getData(key, default)
     self.dataVars = self.dataVars or {}
     if not key then return self.dataVars end
-    local value = self.dataVars and self.dataVars[key] or default
+    local value = self.dataVars and self.dataVars[key]
+    if value == nil then
+        -- If not in dataVars, try to load from database
+        if SERVER then
+            local charID = self:getID()
+            if charID then
+                local dbValue = lia.char.getCharData(charID, key)
+                if dbValue ~= nil then
+                    self.dataVars[key] = dbValue
+                    return dbValue
+                end
+            end
+        end
+        return default
+    end
     return value
 end
 

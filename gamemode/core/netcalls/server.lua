@@ -1,4 +1,4 @@
-﻿net.Receive("liaPlayerRespawn", function(_, client)
+net.Receive("liaPlayerRespawn", function(_, client)
     if not IsValid(client) or client:Alive() then return end
     local char = client:getChar()
     if not char then return end
@@ -18,6 +18,18 @@
         client:Spawn()
     else
         lia.log.add(client, "respawn", "Respawn denied - timePassed: " .. timePassed .. " < baseTime: " .. baseTime)
+    end
+end)
+
+net.Receive("liaInsertKeyPressed", function(_, client)
+    if not IsValid(client) then return end
+    local char = client:getChar()
+    if not char then return end
+    local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
+    local charID = char:getID()
+    local steamId = client:SteamID64()
+    for _, staff in player.Iterator() do
+        if IsValid(staff) and (staff:isStaffOnDuty() or staff:hasPrivilege("seeInsertNotifications")) then ClientAddText(staff, Color(255, 165, 0), "INSERT", Color(255, 255, 255), " | " .. logTimestamp .. " | Player " .. charID .. " (Steam64ID: " .. steamId .. ") pressed the Insert key.") end
     end
 end)
 
@@ -765,7 +777,7 @@ net.Receive("liaRequestInteractOptions", function(_, ply)
     local requestType = net.ReadString()
     local options = {}
     if requestType == "interaction" then
-        local ent = ply:getTracedEntity(250)
+        local ent = ply:getTracedEntity(100)
         if not IsValid(ent) then
             net.Start("liaProvideInteractOptions")
             net.WriteString(requestType)
@@ -775,31 +787,34 @@ net.Receive("liaRequestInteractOptions", function(_, ply)
         end
 
         for name, opt in pairs(lia.playerinteract.stored or {}) do
-            if opt.type == "interaction" and lia.playerinteract.isWithinRange(ply, ent, opt.range) then
-                local targetType = opt.target or "player"
-                local isPlayerTarget = ent:IsPlayer()
-                local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
-                if targetMatches then
-                    local canShow = true
-                    if opt.shouldShow then
-                        local ok, res = pcall(opt.shouldShow, ply, ent)
-                        canShow = ok and res ~= false
-                    end
+            if opt.type == "interaction" then
+                local maxRange = opt.range and math.min(opt.range, 100) or 100
+                if lia.playerinteract.isWithinRange(ply, ent, maxRange) then
+                    local targetType = opt.target or "player"
+                    local isPlayerTarget = ent:IsPlayer()
+                    local targetMatches = targetType == "any" or targetType == "player" and isPlayerTarget or targetType == "entity" and not isPlayerTarget
+                    if targetMatches then
+                        local canShow = true
+                        if opt.shouldShow then
+                            local ok, res = pcall(opt.shouldShow, ply, ent)
+                            canShow = ok and res ~= false
+                        end
 
-                    if canShow then
-                        options[#options + 1] = {
-                            name = name,
-                            opt = {
-                                type = opt.type,
-                                serverOnly = opt.serverOnly and true or false,
-                                range = opt.range,
-                                category = opt.category or "",
-                                target = opt.target,
-                                timeToComplete = opt.timeToComplete,
-                                actionText = opt.actionText,
-                                targetActionText = opt.targetActionText
+                        if canShow then
+                            options[#options + 1] = {
+                                name = name,
+                                opt = {
+                                    type = opt.type,
+                                    serverOnly = opt.serverOnly and true or false,
+                                    range = opt.range,
+                                    category = opt.category or "",
+                                    target = opt.target,
+                                    timeToComplete = opt.timeToComplete,
+                                    actionText = opt.actionText,
+                                    targetActionText = opt.targetActionText
+                                }
                             }
-                        }
+                        end
                     end
                 end
             end

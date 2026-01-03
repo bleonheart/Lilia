@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 function MODULE:FetchSpawns()
     local d = deferred.new()
     local stored = lia.data.get("spawns", {})
@@ -198,14 +198,41 @@ function MODULE:PlayerDeath(client, _, attacker)
         timer.Simple(spawnTime, function() if IsValid(client) and client:getChar() and not client:Alive() then client:Spawn() end end)
     end
 
-    if attacker:IsPlayer() then
-        if lia.config.get("LoseItemsonDeathHuman", false) then RemovedDropOnDeathItems(client) end
-        if lia.config.get("DeathPopupEnabled", true) then
-            local dateStr = lia.time.getDate()
-            local attackerChar = attacker:getChar()
-            local steamId = tostring(attacker:SteamID())
-            ClientAddText(client, Color(255, 0, 0), "[" .. string.upper(L("death")) .. "]: ", Color(255, 255, 255), dateStr, " - ", L("killedBy"), " ", Color(255, 215, 0), L("characterID"), ": ", Color(255, 255, 255), attackerChar and tostring(attackerChar:getID()) or L("na"), " (", Color(0, 255, 0), steamId, Color(255, 255, 255), ")")
+    if lia.config.get("DeathPopupEnabled", true) then
+        local dateStr = os.date("%d/%m/%Y", os.time())
+        local timeStr = os.date("%H:%M:%S", os.time())
+        local attackerName = L("na")
+        local attackerChar = nil
+
+        if IsValid(attacker) then
+            if attacker:IsPlayer() then
+                attackerChar = attacker:getChar()
+                attackerName = attackerChar and tostring(attackerChar:getID()) or L("na")
+            elseif attacker:IsWorld() then
+                attackerName = L("na")
+            else
+                attackerName = attacker:GetClass() or L("na")
+            end
         end
+
+        local serverName = GetHostName() or "Server"
+        local killedByText = L("killedBy") .. " " .. attackerName .. " at " .. timeStr
+        ClientAddText(client, Color(255, 255, 255), serverName .. " | " .. dateStr .. " - ", Color(255, 0, 0), killedByText)
+
+        local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
+        local steamId = IsValid(attacker) and attacker:IsPlayer() and attacker:SteamID64() or (attacker:IsWorld() and "World" or "Unknown")
+        local weaponName = "Unknown"
+        if IsValid(attacker) and attacker:IsPlayer() and IsValid(attacker:GetActiveWeapon()) then
+            weaponName = attacker:GetActiveWeapon():GetClass()
+        elseif IsValid(attacker) and not attacker:IsPlayer() and not attacker:IsWorld() then
+            weaponName = attacker:GetClass()
+        end
+        local attackerDisplay = IsValid(attacker) and (attacker:IsPlayer() and attackerName or (attacker:IsWorld() and "the environment" or attackerName)) or "unknown"
+        ClientAddText(client, Color(255, 0, 0), "DEATH", Color(255, 255, 255), " | " .. logTimestamp .. " | " .. char:getID() .. " (Steam64ID: " .. client:SteamID64() .. ") was killed by " .. attackerDisplay .. " (Steam64ID: " .. steamId .. ") using " .. weaponName .. ".")
+    end
+
+    if attacker:IsPlayer() and lia.config.get("LoseItemsonDeathHuman", false) then
+        RemovedDropOnDeathItems(client)
     end
 
     client:SetDSP(30, false)

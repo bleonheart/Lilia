@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -187,9 +187,21 @@ function PANEL:createStartButton()
     end
 
     if hook.Run("CanPlayerCreateChar", client) ~= false then
+        local maxChars = hook.Run("GetMaxPlayerChar", client) or lia.config.get("MaxCharacters", 5)
+        local currentChars = lia.characters and #lia.characters or 0
+        local remainingChars = maxChars - currentChars
+        local tooltip = hook.Run("GetCharacterCreateButtonTooltip", client, currentChars, maxChars)
+        if not tooltip or tooltip == "" then
+            if remainingChars > 0 then
+                tooltip = string.format("Create a new character (%d/%d slots used, %d remaining)", currentChars, maxChars, remainingChars)
+            else
+                tooltip = string.format("Maximum characters reached (%d/%d)", currentChars, maxChars)
+            end
+        end
         table.insert(buttonsData, {
             id = "create",
             text = L("createCharacter"),
+            tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -204,9 +216,14 @@ function PANEL:createStartButton()
     end
 
     if hasNonStaffChar then
+        local tooltip = hook.Run("GetCharacterLoadButtonTooltip", client)
+        if not tooltip or tooltip == "" then
+            tooltip = "Load an existing character"
+        end
         table.insert(buttonsData, {
             id = "load",
             text = L("loadCharacter"),
+            tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -229,9 +246,14 @@ function PANEL:createStartButton()
 
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
+        local tooltip = hook.Run("GetCharacterLoadMainButtonTooltip", client)
+        if not tooltip or tooltip == "" then
+            tooltip = "Load your main character"
+        end
         table.insert(buttonsData, {
             id = "loadmain",
             text = L("loadMainCharacter"),
+            tooltip = tooltip,
             doClick = function()
                 self:clickSound()
                 lia.module.get("mainmenu"):LoadMainCharacter():next(function() end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
@@ -240,9 +262,14 @@ function PANEL:createStartButton()
     end
 
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
+        local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
+        if not tooltip or tooltip == "" then
+            tooltip = hasStaffChar and "Load your staff character" or "Create a staff character"
+        end
         table.insert(buttonsData, {
             id = "staff",
             text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
+            tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
                     if IsValid(b) then b:Remove() end
@@ -265,9 +292,14 @@ function PANEL:createStartButton()
     end
 
     if discordURL ~= "" then
+        local tooltip = hook.Run("GetCharacterDiscordButtonTooltip", client, discordURL)
+        if not tooltip or tooltip == "" then
+            tooltip = "Join our Discord server"
+        end
         table.insert(buttonsData, {
             id = "discord",
             text = L("discord"),
+            tooltip = tooltip,
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(discordURL)
@@ -276,9 +308,14 @@ function PANEL:createStartButton()
     end
 
     if workshopURL ~= "" then
+        local tooltip = hook.Run("GetCharacterWorkshopButtonTooltip", client, workshopURL)
+        if not tooltip or tooltip == "" then
+            tooltip = "View our Workshop collection"
+        end
         table.insert(buttonsData, {
             id = "workshop",
             text = L("workshop"),
+            tooltip = tooltip,
             doClick = function()
                 self:clickSound()
                 gui.OpenURL(workshopURL)
@@ -287,9 +324,14 @@ function PANEL:createStartButton()
     end
 
     if lia.workshop.hasContentToDownload and lia.workshop.hasContentToDownload() then
+        local tooltip = hook.Run("GetCharacterMountButtonTooltip", client)
+        if not tooltip or tooltip == "" then
+            tooltip = "Mount required Workshop content"
+        end
         table.insert(buttonsData, {
             id = "mount",
             text = L("mountContent"),
+            tooltip = tooltip,
             doClick = function()
                 self:clickSound()
                 if lia.workshop and lia.workshop.mountContent then
@@ -302,9 +344,14 @@ function PANEL:createStartButton()
         })
     end
 
+    local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
+    if not disconnectTooltip or disconnectTooltip == "" then
+        disconnectTooltip = "Disconnect from the server"
+    end
     table.insert(buttonsData, {
         id = "disconnect",
         text = L("disconnect"),
+        tooltip = disconnectTooltip,
         doClick = function()
             self:clickSound()
             RunConsoleCommand("disconnect")
@@ -312,9 +359,14 @@ function PANEL:createStartButton()
     })
 
     if clientChar and not self.isKickedFromChar then
+        local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
+        if not returnTooltip or returnTooltip == "" then
+            returnTooltip = "Return to your character"
+        end
         table.insert(buttonsData, {
             id = "return",
             text = L("returnButton"),
+            tooltip = returnTooltip,
             doClick = function() self:Remove() end
         })
     end
@@ -327,6 +379,10 @@ function PANEL:createStartButton()
         btn:SetPos(x, y)
         btn:SetText(string.upper(data.text))
         btn.DoClick = data.doClick
+        if data.tooltip and data.tooltip ~= "" then
+            btn.liaToolTip = true
+            btn:SetTooltip("<font=LiliaFont.16>" .. data.tooltip .. "</font>")
+        end
         local oldSetPos = btn.SetPos
         btn.SetPos = function(b, nx, ny)
             oldSetPos(b, nx, ny)
@@ -715,11 +771,17 @@ function PANEL:updateModelEntity(character)
     self.modelEntity:SetPos(pos)
     self.modelEntity:SetAngles(ang)
     self.currentCamPos = nil
-    for _, seq in ipairs(self.modelEntity:GetSequenceList()) do
-        if seq:lower():find("idle") and seq ~= "idlenoise" then
-            self.modelEntity:ResetSequence(seq)
-            self.modelEntity:SetCycle(0)
-            break
+    local seqID = self.modelEntity:LookupSequence("idle_all_01")
+    if seqID > 0 then
+        self.modelEntity:ResetSequence(seqID)
+        self.modelEntity:SetCycle(0)
+    else
+        for _, seq in ipairs(self.modelEntity:GetSequenceList()) do
+            if seq:lower():find("idle") and seq ~= "idlenoise" then
+                self.modelEntity:ResetSequence(seq)
+                self.modelEntity:SetCycle(0)
+                break
+            end
         end
     end
 

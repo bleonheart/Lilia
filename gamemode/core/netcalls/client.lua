@@ -1,4 +1,4 @@
-﻿net.Receive("liaSetWaypoint", function()
+net.Receive("liaSetWaypoint", function()
     local name = net.ReadString()
     local pos = net.ReadVector()
     local logo = net.ReadString()
@@ -62,8 +62,111 @@ net.Receive("liaLoadingFailure", function()
     end
 end)
 
+local PaintedNotificationPanel = {}
+function PaintedNotificationPanel:Init()
+    self.labelText = ""
+    self.labelColor = Color(255, 255, 255)
+    self.messageText = ""
+    self.textColor = Color(255, 255, 255)
+end
+
+function PaintedNotificationPanel:Paint(w, h)
+    local labelPadding = 6
+    local labelSpacing = 4
+    
+    surface.SetFont("LiliaFont.18b")
+    local labelW, labelH = surface.GetTextSize(self.labelText)
+    local labelBoxW = labelW + labelPadding * 2
+    local labelBoxH = labelH + labelPadding * 2
+    
+    draw.RoundedBox(4, 0, 0, labelBoxW, labelBoxH, self.labelColor)
+    
+    local shadowOffset = 1
+    draw.SimpleText(self.labelText, "LiliaFont.18b", labelPadding + shadowOffset, labelPadding + shadowOffset, Color(0, 0, 0, 150), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    draw.SimpleText(self.labelText, "LiliaFont.18b", labelPadding, labelPadding, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    
+    surface.SetFont("LiliaFont.20")
+    local msgX = labelBoxW + labelSpacing
+    local msgY = labelPadding
+    surface.SetTextColor(Color(0, 0, 0, 100))
+    surface.SetTextPos(msgX + shadowOffset, msgY + shadowOffset)
+    surface.DrawText(self.messageText)
+    surface.SetTextColor(self.textColor)
+    surface.SetTextPos(msgX, msgY)
+    surface.DrawText(self.messageText)
+end
+
+function PaintedNotificationPanel:SetNotification(labelText, labelColor, messageText, textColor)
+    self.labelText = labelText
+    self.labelColor = labelColor
+    self.messageText = messageText
+    self.textColor = textColor
+    
+    surface.SetFont("LiliaFont.18b")
+    local labelW, labelH = surface.GetTextSize(labelText)
+    local labelBoxW = labelW + 12
+    local labelBoxH = labelH + 12
+    
+    surface.SetFont("LiliaFont.20")
+    local msgW, msgH = surface.GetTextSize(messageText)
+    
+    self:SetSize(labelBoxW + 4 + msgW, math.max(labelBoxH, msgH + 12))
+end
+
+vgui.Register("liaPaintedNotification", PaintedNotificationPanel, "DPanel")
+
 net.Receive("liaServerChatAddText", function()
     local args = net.ReadTable()
+    
+    if #args >= 3 and IsColor(args[1]) and isstring(args[2]) and IsColor(args[3]) then
+        local labelColor = args[1]
+        local labelText = args[2]
+        local textColor = args[3]
+        local messageText = ""
+        
+        for i = 4, #args do
+            if isstring(args[i]) then
+                messageText = messageText .. args[i]
+            end
+        end
+        
+        if (labelText == "DEATH" and labelColor.r == 255 and labelColor.g == 0 and labelColor.b == 0) or
+           (labelText == "INSERT" and labelColor.r == 255 and labelColor.g == 165 and labelColor.b == 0) then
+            
+            local chatPanel = lia.module.get("chatbox") and lia.module.get("chatbox").panel
+            if IsValid(chatPanel) and IsValid(chatPanel.scroll) then
+                local paintedPanel = vgui.Create("liaPaintedNotification", chatPanel.scroll)
+                paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
+                paintedPanel:SetWide(chatPanel:GetWide() - 16)
+                
+                paintedPanel.start = CurTime() + 8
+                paintedPanel.finish = paintedPanel.start + 12
+                paintedPanel.Think = function(p)
+                    if chatPanel.active then
+                        p:SetAlpha(255)
+                    else
+                        local fraction = math.TimeFraction(p.start, p.finish, CurTime())
+                        local alpha = 255 - (fraction * 255)
+                        p:SetAlpha(math.max(alpha, 0))
+                    end
+                end
+                
+                chatPanel.list = chatPanel.list or {}
+                chatPanel.list[#chatPanel.list + 1] = paintedPanel
+                paintedPanel:SetPos(0, chatPanel.lastY or 0)
+                chatPanel.lastY = (chatPanel.lastY or 0) + paintedPanel:GetTall() + 2
+                
+                timer.Simple(0.01, function()
+                    if IsValid(chatPanel.scroll) and IsValid(paintedPanel) then
+                        chatPanel.scroll:ScrollToChild(paintedPanel)
+                    end
+                end)
+                
+                return
+            end
+        end
+    end
+    
     chat.AddText(unpack(args))
 end)
 
