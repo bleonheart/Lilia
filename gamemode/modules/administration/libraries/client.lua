@@ -2175,10 +2175,8 @@ function MODULE:OpenAdminStickUI(tgt)
         local model = tgt:GetModel() or ""
         local pos = tgt:GetPos()
         local ang = tgt:GetAngles()
-        local printposStr = string.format("setpos %s %s %s; setang %s %s %s", 
-            tostring(math.Round(pos.x, 2)), tostring(math.Round(pos.y, 2)), tostring(math.Round(pos.z, 2)),
-            tostring(math.Round(ang.p, 2)), tostring(math.Round(ang.y, 2)), tostring(math.Round(ang.r, 2)))
-
+        local printposStr = string.format("setpos %s %s %s; setang %s %s %s", tostring(math.Round(pos.x, 2)), tostring(math.Round(pos.y, 2)), tostring(math.Round(pos.z, 2)), tostring(math.Round(ang.p, 2)), tostring(math.Round(ang.y, 2)), tostring(math.Round(ang.r, 2)))
+        local steamProfileLink = steamID64 ~= "BOT" and steamID64 ~= "" and ("https://steamcommunity.com/profiles/" .. steamID64) or ""
         local info = {
             {
                 name = "Steam Name: " .. steamName .. " (copy)",
@@ -2187,6 +2185,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamName)
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2199,6 +2198,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamProfileLink)
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2211,6 +2211,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamID)
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2223,6 +2224,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamID64)
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2245,6 +2247,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         cl:notifySuccessLocalized("adminStickCopiedCharID")
                         SetClipboardText(tgt:getChar():getID())
                     end
+
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2261,18 +2264,36 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = "Position (printpos): " .. printposStr .. " (copy)",
+                name = function()
+                    local pos = tgt:GetPos()
+                    local ang = tgt:GetAngles()
+                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z, ang.x, ang.y, ang.z)
+                    -- Shorten for menu: one-line, parenthesis grouped
+                    return "Position: " .. posStr .. " (copy)"
+                end,
                 cmd = function()
+                    local client = cl
+                    if not IsValid(client) then
+                        chat.AddText(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers"))
+                        return
+                    end
+
+                    local pos = tgt:GetPos()
+                    local ang = tgt:GetAngles()
+                    local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", pos.x, pos.y, pos.z, ang.x, ang.y, ang.z)
+                    chat.AddText(Color(255, 255, 255), posStr)
+                    SetClipboardText(posStr)
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
-                    SetClipboardText(printposStr)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
                 icon = "icon16/page_copy.png"
             },
         }
+
         for _, o in ipairs(info) do
-            local option = menu:AddOption(L(o.name), o.cmd)
+            local nameText = isfunction(o.name) and o.name() or o.name
+            local option = menu:AddOption(L(nameText), o.cmd)
             option:SetIcon(o.icon)
             option:SetZPos(-100)
         end
@@ -2374,7 +2395,6 @@ function MODULE:OpenAdminStickUI(tgt)
         local canClass = client:hasPrivilege("manageClasses")
         local canWhitelist = client:hasPrivilege("manageWhitelists")
         if not target or not IsValid(target) then return end
-
         -- Generic copy helpers (work for players and world entities/props)
         local pos = target:GetPos()
         local ang = target:GetAngles()
@@ -4203,26 +4223,19 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     if IsValid(target) then
         local infoLines = {}
         -- If target is not a player but is owned by one, use the owner instead
-        if not target:IsPlayer() and IsValid(target:GetOwner()) and target:GetOwner():IsPlayer() then
-            target = target:GetOwner()
-        end
-
+        if not target:IsPlayer() and IsValid(target:GetOwner()) and target:GetOwner():IsPlayer() then target = target:GetOwner() end
         if target:IsPlayer() then
             local char = target:getChar()
             local charName = char and char:getName() or target:Nick()
             local steamName = target:IsBot() and "BOT" or target:SteamName() or ""
-
             table.insert(infoLines, "Name: " .. charName)
             table.insert(infoLines, "Steam Name: " .. steamName)
             table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
-
             local activeWeapon = target:GetActiveWeapon()
             local weaponName = "None"
             if IsValid(activeWeapon) then weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass() end
             table.insert(infoLines, "Weapon: " .. weaponName)
-
             table.insert(infoLines, "User Group: " .. target:GetUserGroup())
-
             local velocity = target:GetVelocity()
             local speed = math.Round(velocity:Length())
             table.insert(infoLines, "Speed: " .. speed)

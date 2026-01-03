@@ -62,12 +62,75 @@ net.Receive("liaLoadingFailure", function()
     end
 end)
 
+local function wrapText(text, font, maxWidth)
+    surface.SetFont(font)
+    local words = {}
+    for word in text:gmatch("%S+") do
+        table.insert(words, word)
+    end
+
+    local lines = {}
+    local currentLine = ""
+
+    for _, word in ipairs(words) do
+        local testLine = currentLine == "" and word or currentLine .. " " .. word
+        local testW, testH = surface.GetTextSize(testLine)
+        if testW <= maxWidth then
+            currentLine = testLine
+        else
+            if currentLine ~= "" then
+                table.insert(lines, currentLine)
+                currentLine = word
+            else
+                local wordW, wordH = surface.GetTextSize(word)
+                if wordW > maxWidth then
+                    local chars = {}
+                    for char in word:gmatch(".") do
+                        table.insert(chars, char)
+                    end
+                    local splitLine = ""
+                    for _, char in ipairs(chars) do
+                        local testChar = splitLine .. char
+                        local charW = surface.GetTextSize(testChar)
+                        if charW <= maxWidth then
+                            splitLine = testChar
+                        else
+                            if splitLine ~= "" then
+                                table.insert(lines, splitLine)
+                                splitLine = char
+                            else
+                                table.insert(lines, char)
+                                splitLine = ""
+                            end
+                        end
+                    end
+                    if splitLine ~= "" then
+                        currentLine = splitLine
+                    else
+                        currentLine = ""
+                    end
+                else
+                    table.insert(lines, word)
+                    currentLine = ""
+                end
+            end
+        end
+    end
+
+    if currentLine ~= "" then
+        table.insert(lines, currentLine)
+    end
+
+    return lines
+end
+
 local PaintedNotificationPanel = {}
 function PaintedNotificationPanel:Init()
     self.labelText = ""
     self.labelColor = Color(255, 255, 255)
     self.messageText = ""
     self.textColor = Color(255, 255, 255)
+    self.messageLines = {}
 end
 
 function PaintedNotificationPanel:Paint(w, h)
@@ -84,12 +147,16 @@ function PaintedNotificationPanel:Paint(w, h)
     surface.SetFont("LiliaFont.20")
     local msgX = labelBoxW + labelSpacing
     local msgY = labelPadding
-    surface.SetTextColor(Color(0, 0, 0, 100))
-    surface.SetTextPos(msgX + shadowOffset, msgY + shadowOffset)
-    surface.DrawText(self.messageText)
-    surface.SetTextColor(self.textColor)
-    surface.SetTextPos(msgX, msgY)
-    surface.DrawText(self.messageText)
+    local _, lineHeight = surface.GetTextSize("A")
+    for i, line in ipairs(self.messageLines) do
+        local yPos = msgY + (i - 1) * (lineHeight + 2)
+        surface.SetTextColor(Color(0, 0, 0, 100))
+        surface.SetTextPos(msgX + shadowOffset, yPos + shadowOffset)
+        surface.DrawText(line)
+        surface.SetTextColor(self.textColor)
+        surface.SetTextPos(msgX, yPos)
+        surface.DrawText(line)
+    end
 end
 
 function PaintedNotificationPanel:SetNotification(labelText, labelColor, messageText, textColor)
@@ -97,13 +164,26 @@ function PaintedNotificationPanel:SetNotification(labelText, labelColor, message
     self.labelColor = labelColor
     self.messageText = messageText
     self.textColor = textColor
+    self:RecalculateLayout()
+end
+
+function PaintedNotificationPanel:RecalculateLayout()
+    if not self.messageText then return end
     surface.SetFont("LiliaFont.18b")
-    local labelW, labelH = surface.GetTextSize(labelText)
+    local labelW, labelH = surface.GetTextSize(self.labelText)
     local labelBoxW = labelW + 12
     local labelBoxH = labelH + 12
+    local panelWidth = self:GetWide() > 0 and self:GetWide() or (ScrW() * 0.3)
+    local maxWidth = panelWidth - labelBoxW - 20
     surface.SetFont("LiliaFont.20")
-    local msgW, msgH = surface.GetTextSize(messageText)
-    self:SetSize(labelBoxW + 4 + msgW, math.max(labelBoxH, msgH + 12))
+    self.messageLines = wrapText(self.messageText, "LiliaFont.20", math.max(maxWidth, 100))
+    local _, lineHeight = surface.GetTextSize("A")
+    local totalMsgH = #self.messageLines * (lineHeight + 2)
+    self:SetSize(panelWidth, math.max(labelBoxH, totalMsgH + 12))
+end
+
+function PaintedNotificationPanel:OnSizeChanged()
+    self:RecalculateLayout()
 end
 
 vgui.Register("liaPaintedNotification", PaintedNotificationPanel, "DPanel")
@@ -122,8 +202,8 @@ net.Receive("liaServerChatAddText", function()
             local chatPanel = lia.module.get("chatbox") and lia.module.get("chatbox").panel
             if IsValid(chatPanel) and IsValid(chatPanel.scroll) then
                 local paintedPanel = vgui.Create("liaPaintedNotification", chatPanel.scroll)
-                paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
                 paintedPanel:SetWide(chatPanel:GetWide() - 16)
+                paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
                 paintedPanel.start = CurTime() + 8
                 paintedPanel.finish = paintedPanel.start + 12
                 paintedPanel.Think = function(p)
@@ -165,8 +245,8 @@ local function deliverShadowed(args)
         end
 
         local paintedPanel = vgui.Create("liaPaintedNotification", chatPanel.scroll)
-        paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
         paintedPanel:SetWide(chatPanel:GetWide() - 16)
+        paintedPanel:SetNotification(labelText, labelColor, messageText, textColor)
         paintedPanel.start = CurTime() + 8
         paintedPanel.finish = paintedPanel.start + 12
         paintedPanel.Think = function(p)
