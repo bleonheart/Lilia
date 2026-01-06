@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: faction.md
+]]
+--[[
     Faction Library
 
     Comprehensive faction (team) management and registration system for the Lilia framework.

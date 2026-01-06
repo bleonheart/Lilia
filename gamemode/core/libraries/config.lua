@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: config.md
+]]
+--[[
     Configuration Library
 
     Comprehensive user-configurable settings management system for the Lilia framework.
@@ -7,7 +11,6 @@
     Overview:
         The configuration library provides comprehensive functionality for managing user-configurable settings in the Lilia framework. It handles the creation, storage, retrieval, and persistence of various types of options including boolean toggles, numeric sliders, color pickers, text inputs, and dropdown selections. The library operates on both client and server sides, with automatic persistence to JSON files and optional networking capabilities for server-side options. It includes a complete user interface system for displaying and modifying options through the configuration menu, with support for categories, visibility conditions, and real-time updates. The library ensures that all user preferences are maintained across sessions and provides hooks for modules to react to option changes.
 ]]
-local GM = GM or GAMEMODE
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 lia.config._lastSyncedValues = lia.config._lastSyncedValues or {}
@@ -573,7 +576,7 @@ lia.config.add("IsVoiceEnabled", "voiceChatEnabled", true, function(_, newValue)
 
 lia.config.add("SalaryInterval", "salaryInterval", 300, function()
     if not SERVER then return end
-    timer.Simple(0.1, function() GM:CreateSalaryTimers() end)
+    timer.Simple(0.1, function() hook.Run("CreateSalaryTimers") end)
 end, {
     desc = "salaryIntervalDesc",
     category = "categoryCharacter",
@@ -1095,7 +1098,7 @@ lia.config.add("ClassDisplay", "displayClassesOnCharacters", true, nil, {
 })
 
 local function refreshScoreboard()
-    if CLIENT and lia.gui and IsValid(lia.gui.score) and lia.gui.score.ApplyConfig then lia.gui.score:ApplyConfig() end
+    if CLIENT and  IsValid(lia.gui.score) and lia.gui.score.ApplyConfig then lia.gui.score:ApplyConfig() end
 end
 
 lia.config.add("sbWidth", "sbWidth", 0.65, refreshScoreboard, {

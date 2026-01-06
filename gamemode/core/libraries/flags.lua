@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: flag.md
+]]
+--[[
     Flags Library
 
     Character permission and access control system for the Lilia framework.

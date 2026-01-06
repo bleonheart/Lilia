@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: doors.md
+]]
+--[[
     Doors Library
 
     Door management system for the Lilia framework providing preset configuration,

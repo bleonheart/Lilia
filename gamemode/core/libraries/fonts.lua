@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: font.md
+]]
+--[[
     Font Library
 
     Comprehensive font management system for the Lilia framework.

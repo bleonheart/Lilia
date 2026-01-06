@@ -247,6 +247,8 @@ class CombinedReportData:
     hooks_documented: List[str]
     hooks_registered: List[str]  # New field for hooks registered in code
     hooks_signatures: Dict[str, List[str]]  # New field for hook -> parameter names
+    hooks_method: List[str]  # New field for hooks called as XXXX:Hook(Args)
+    hooks_standard: List[str]  # New field for hooks called via hook.Add/hook.Run/etc.
     localization_data: Dict
     argument_mismatches: List[Dict]  # New field for argument mismatches
     modules_data: List
@@ -789,7 +791,7 @@ class FunctionComparisonReportGenerator:
 
         # 2. Missing Hooks Analysis
         print("Analyzing hooks documentation...")
-        hooks_missing, hooks_documented, hooks_registered = self._run_hooks_analysis()
+        hooks_missing, hooks_documented, hooks_registered, hooks_method, hooks_standard = self._run_hooks_analysis()
 
         # 3. Localization Analysis
         print("Analyzing localization...")
@@ -826,6 +828,8 @@ class FunctionComparisonReportGenerator:
             hooks_documented=hooks_documented,
             hooks_registered=hooks_registered,
             hooks_signatures=getattr(self, 'hooks_signatures', {}),
+            hooks_method=hooks_method,
+            hooks_standard=hooks_standard,
             localization_data=localization_data,
             argument_mismatches=argument_mismatches,
             modules_data=modules_data,
@@ -969,17 +973,18 @@ class FunctionComparisonReportGenerator:
             print(f"Error in function comparison: {e}")
             return {}
 
-    def _run_hooks_analysis(self) -> Tuple[List[str], List[str], List[str]]:
+    def _run_hooks_analysis(self) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
         """Run hooks documentation analysis"""
         try:
-            hooks_registered, hooks_signatures = self._scan_hook_registrations_with_signatures()
+            hooks_registered, hooks_signatures, method_hooks, standard_hooks = self._scan_hook_registrations_with_signatures()
             self.hooks_signatures = hooks_signatures
             hooks_documented = self._read_all_documented_hooks()
             hooks_missing = [h for h in hooks_registered if h not in hooks_documented]
-            return sorted(hooks_missing), sorted(list(hooks_documented)), hooks_registered
+            return (sorted(hooks_missing), sorted(list(hooks_documented)), hooks_registered,
+                    sorted(list(method_hooks)), sorted(list(standard_hooks)))
         except Exception as e:
             print(f"Error in hooks analysis: {e}")
-            return [], [], []
+            return [], [], [], [], []
 
     def _read_all_documented_hooks(self) -> Set[str]:
         """Read documented hooks from all hooks documentation files"""
@@ -1064,13 +1069,15 @@ class FunctionComparisonReportGenerator:
 
         return '\n'.join(processed_lines)
 
-    def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]]]:
+    def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]], Set[str], Set[str]]:
         """Scan Lua files for hooks and attempt to capture their parameter names.
 
-        Returns (registered_hooks_sorted, hook_signatures_map)
+        Returns (registered_hooks_sorted, hook_signatures_map, method_hooks, standard_hooks)
         """
         registered_hooks: Set[str] = set()
         hook_signatures: Dict[str, List[str]] = {}
+        method_hooks: Set[str] = set()  # Hooks defined as XXXX:Hook() methods
+        standard_hooks: Set[str] = set()  # Hooks used with hook.Add/hook.Run/etc.
 
         # Scan gamemode files
         lua_files = list(self.base_path.rglob("*.lua"))
@@ -1087,9 +1094,16 @@ class FunctionComparisonReportGenerator:
                 # Remove comments from content before processing
                 content = self._remove_lua_comments(content)
 
-                # Names only
-                file_hooks = self._extract_hooks_from_file_content(content)
-                registered_hooks.update(file_hooks)
+                # Extract hooks by type
+                file_method_hooks, file_standard_hooks = self._extract_hooks_by_type_from_file_content(content)
+
+                # Update sets
+                method_hooks.update(file_method_hooks)
+                standard_hooks.update(file_standard_hooks)
+
+                # All registered hooks (union of both types)
+                registered_hooks.update(file_method_hooks)
+                registered_hooks.update(file_standard_hooks)
 
                 # Signatures
                 file_signatures = self._extract_hook_signatures_from_file_content(content)
@@ -1102,7 +1116,84 @@ class FunctionComparisonReportGenerator:
                 print(f"Warning: Error scanning {lua_file}: {e}")
                 continue
 
-        return sorted(list(registered_hooks)), hook_signatures
+        # Ensure no overlap - standard hooks take precedence
+        # If a hook is called with hook.Add/hook.Run/hook.Call, it belongs in the standard category,
+        # even if it's also defined as a method
+        method_hooks = method_hooks - standard_hooks
+
+        return sorted(list(registered_hooks)), hook_signatures, method_hooks, standard_hooks
+
+    def _extract_hooks_by_type_from_file_content(self, content: str) -> Tuple[Set[str], Set[str]]:
+        """Extract hooks from file content and categorize them by type.
+
+        Returns (method_hooks, standard_hooks)
+        where method_hooks are XXXX:Hook() style and standard_hooks are hook.Add/hook.Run style.
+        Note: A hook cannot be in both categories - standard hooks take precedence.
+        """
+        method_hooks: Set[str] = set()
+        standard_hooks: Set[str] = set()
+
+        # Pattern for hook.Add calls
+        # Matches: hook.Add("hook_name", ...)
+        hook_add_pattern = r'hook\.Add\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for hook.Run calls
+        # Matches: hook.Run("hook_name", ...)
+        hook_run_pattern = r'hook\.Run\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for hook.Call calls
+        # Matches: hook.Call("hook_name", ...)
+        hook_call_pattern = r'hook\.Call\s*\(\s*([\'"`])([^\'"`]+)\1'
+
+        # Pattern for GM:HookName function definitions
+        # Matches: function GM:HookName(params)
+        gm_hook_pattern = r'function\s+GM:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Pattern for MODULE:HookName function definitions
+        # Matches: function MODULE:HookName(params)
+        module_hook_pattern = r'function\s+MODULE:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Pattern for SCHEMA:HookName function definitions
+        # Matches: function SCHEMA:HookName(params)
+        schema_hook_pattern = r'function\s+SCHEMA:([A-Za-z_][A-Za-z0-9_]*)'
+
+        # Find GM:HookName function definitions (method hooks)
+        for match in re.finditer(gm_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                method_hooks.add(hook_name.strip())
+
+        # Find MODULE:HookName function definitions (method hooks)
+        for match in re.finditer(module_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                method_hooks.add(hook_name.strip())
+
+        # Find SCHEMA:HookName function definitions (method hooks)
+        for match in re.finditer(schema_hook_pattern, content):
+            hook_name = match.group(1)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                method_hooks.add(hook_name.strip())
+
+        # Find hook.Add calls (standard hooks)
+        for match in re.finditer(hook_add_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                standard_hooks.add(hook_name.strip())
+
+        # Find hook.Run calls (standard hooks)
+        for match in re.finditer(hook_run_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                standard_hooks.add(hook_name.strip())
+
+        # Find hook.Call calls (standard hooks)
+        for match in re.finditer(hook_call_pattern, content):
+            hook_name = match.group(2)
+            if hook_name and hook_name.strip() not in GMOD_HOOKS_BLACKLIST:
+                standard_hooks.add(hook_name.strip())
+
+        return method_hooks, standard_hooks
 
     def _extract_hooks_from_file_content(self, content: str) -> Set[str]:
         """Extract hooks from file content using all patterns"""
@@ -2275,6 +2366,8 @@ class FunctionComparisonReportGenerator:
             f"- **Unused Hooks:** {unused_hooks_count} (documented but unused)",
             f"- **Total Documented Hooks:** {len(data.hooks_documented)}",
             f"- **Total Registered Hooks:** {len(data.hooks_registered)}",
+            f"- **Method-Style Hooks:** {len(data.hooks_method)} (XXXX:Hook calls)",
+            f"- **Standard Hooks:** {len(data.hooks_standard)} (hook.Add/hook.Run calls)",
             "",
             "### Panels Documentation",
             f"- **Panels Found:** {len(data.panels_found)}",
@@ -2442,9 +2535,39 @@ class FunctionComparisonReportGenerator:
             f"- **Missing Hooks:** {len(data.hooks_missing)} (used in code but not documented)",
             f"- **Documented Hooks:** {len(data.hooks_documented)}",
             f"- **Registered Hooks:** {len(data.hooks_registered)}",
+            f"- **Method-Style Hooks:** {len(data.hooks_method)} (defined as XXXX:Hook())",
+            f"- **Standard Hooks:** {len(data.hooks_standard)} (used with hook.Add/hook.Run/etc.)",
             f"- **Unused Hooks:** {len(unused_hooks)} (documented but not registered)",
             "",
         ])
+
+        # Hook Categories
+        lines.append("### Hook Categories")
+        lines.append("")
+
+        if data.hooks_method:
+            lines.append("#### Method-Style Hooks (XXXX:Hook)")
+            lines.append("Hooks defined as methods on tables (GM, MODULE, SCHEMA) but not called with hook.Add/hook.Run/hook.Call:")
+            for hook in sorted(data.hooks_method):
+                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
+                if params:
+                    param_str = ', '.join(params)
+                    lines.append(f"- `{hook}({param_str})`")
+                else:
+                    lines.append(f"- `{hook}()`")
+            lines.append("")
+
+        if data.hooks_standard:
+            lines.append("#### Standard Hooks (hook.Add/hook.Run)")
+            lines.append("Hooks used with hook.Add, hook.Run, or hook.Call:")
+            for hook in sorted(data.hooks_standard):
+                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
+                if params:
+                    param_str = ', '.join(params)
+                    lines.append(f"- `{hook}({param_str})`")
+                else:
+                    lines.append(f"- `{hook}()`")
+            lines.append("")
 
         if data.hooks_missing:
             lines.append("### Missing Hook Documentation:")

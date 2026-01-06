@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Definitions
+    File:  faction.md
+]]
+--[[
     Faction Definitions
 
     Character faction definition system for the Lilia framework.

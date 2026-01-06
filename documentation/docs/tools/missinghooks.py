@@ -58,7 +58,7 @@ GMOD_HOOKS_BLACKLIST = {
     "PlayerInitialSpawn", "PlayerJoinTeam", "PlayerLeaveVehicle",
     "PlayerLoadout", "PlayerNoClip", "PlayerPostThink", "PlayerRequestTeam",
     "PlayerSay", "PlayerSelectSpawn", "PlayerSelectTeamSpawn",
-    "PlayerSetHandsModel", "PlayerSetModel", "PlayerShouldTakeDamage",
+    "PlayerSetHandsModel", "PlayerSetModel", "PlayerShouldAct", "PlayerShouldTakeDamage",
     "PlayerShouldTaunt", "PlayerSilentDeath", "PlayerSpawn",
     "PlayerSpawnAsSpectator", "PlayerSpray", "PlayerStartTaunt",
     "PlayerStartVoice", "PlayerStepSoundTime", "PlayerSwitchFlashlight",
@@ -176,7 +176,7 @@ FRAMEWORK_HOOKS_WHITELIST = {
     "ValidateDoorPrice", "ValidateHUDInfo", "ValidateModuleStructure", "ValidateRestoredCharacter",
     "AddWarning", "ChooseCharacter", "CreateCharacter", "CreateSalaryTimers", "DeleteCharacter",
     "FetchSpawns", "ForceRecognizeRange", "GetAllCaseClaims", "GetTicketsByRequester",
-    "GetWarningsByIssuer", "InitializeStorage", "OnPlayerDropWeapon", "PlayerShouldAct",
+    "GetWarningsByIssuer", "InitializeStorage", "OnPlayerDropWeapon",
     "RemoveWarning", "SendPopup", "StorageItemRemoved", "StoreSpawns", "SyncCharList", "ToggleLock"
 }
 

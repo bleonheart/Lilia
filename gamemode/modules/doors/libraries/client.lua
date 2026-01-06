@@ -1,4 +1,4 @@
-﻿function MODULE:GetDoorInfo(entity, doorData, doorInfo)
+function MODULE:GetDoorInfo(entity, doorData, doorInfo)
     local owner = entity:GetDTEntity(0)
     local classes = doorData.classes or {}
     local factions = doorData.factions or {}
@@ -70,32 +70,7 @@
     end
 end
 
-function MODULE:DrawEntityInfo(entity, alpha)
-    local client = LocalPlayer()
-    local activeWeapon = client:GetActiveWeapon()
-    if IsValid(client) and IsValid(activeWeapon) and activeWeapon:GetClass() == "lia_adminstick" then return end
-    if entity:isDoor() then
-        local doorData = lia.doors.getData(entity)
-        if not (doorData.hidden or false) then
-            if doorData.disabled then
-                lia.util.drawEntText(entity, L("doorDisabled"), 0, alpha)
-                return
-            end
-
-            local doorInfo = {}
-            hook.Run("GetDoorInfo", entity, doorData, doorInfo)
-            hook.Run("FilterDoorInfo", entity, doorData, doorInfo)
-            local infoTexts = {}
-            for _, info in ipairs(doorInfo) do
-                if info.text and info.text ~= "" then table.insert(infoTexts, info.text) end
-            end
-
-            if #infoTexts > 0 then self:DrawDoorInfoBox(entity, infoTexts, alpha) end
-        end
-    end
-end
-
-function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
+local function DrawDoorInfoBox(entity, infoTexts, alphaOverride)
     if not (IsValid(entity) and infoTexts and #infoTexts > 0) then return end
     local distSqr = EyePos():DistToSqr(entity:GetPos())
     local maxDist = 380
@@ -142,7 +117,7 @@ function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
     if fade <= 0 then return end
     local fadeAlpha = math.Clamp(fade, 0, 1)
     local screenX = ScrW() / 2
-    local screenY = ScrH() - 50
+    local screenY = IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 150) or (ScrH() - 50)
     lia.derma.drawBoxWithText(infoTexts, screenX, screenY, {
         font = "LiliaFont.18",
         textColor = Color(255, 255, 255, math.floor(255 * fadeAlpha)),
@@ -162,6 +137,31 @@ function MODULE:DrawDoorInfoBox(entity, infoTexts, alphaOverride)
             alpha = fadeAlpha * 0.9
         }
     })
+end
+
+function MODULE:DrawEntityInfo(entity, alpha)
+    local client = LocalPlayer()
+    local activeWeapon = client:GetActiveWeapon()
+    if IsValid(client) and IsValid(activeWeapon) and activeWeapon:GetClass() == "lia_adminstick" then return end
+    if entity:isDoor() then
+        local doorData = lia.doors.getData(entity)
+        if not (doorData.hidden or false) then
+            if doorData.disabled then
+                lia.util.drawEntText(entity, L("doorDisabled"), 0, alpha)
+                return
+            end
+
+            local doorInfo = {}
+            hook.Run("GetDoorInfo", entity, doorData, doorInfo)
+            hook.Run("FilterDoorInfo", entity, doorData, doorInfo)
+            local infoTexts = {}
+            for _, info in ipairs(doorInfo) do
+                if info.text and info.text ~= "" then table.insert(infoTexts, info.text) end
+            end
+
+            if #infoTexts > 0 then DrawDoorInfoBox(entity, infoTexts, alpha) end
+        end
+    end
 end
 
 function MODULE:GetAdminStickLists(tgt, lists)

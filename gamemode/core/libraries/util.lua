@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: util.md
+]]
+--[[
     Utility Library
 
     Common operations and helper functions for the Lilia framework.

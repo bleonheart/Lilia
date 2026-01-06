@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: db.md
+]]
+--[[
     Database Library
 
     Comprehensive database management system with SQLite support for the Lilia framework.
@@ -922,10 +926,6 @@ function lia.db.loadSnapshot(fileName)
         end, function(err) d:reject(L("failedToClearTable") .. " " .. tostring(err)) end)
     end, function(err) d:reject(L("tableCheckError") .. " " .. tostring(err)) end)
     return d
-end
-
-function GM:RegisterPreparedStatements()
-    lia.bootstrap(L("database"), L("preparedStatementsAdded"))
 end
 
 function GM:SetupDatabase()

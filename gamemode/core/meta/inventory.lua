@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Meta
+    File:  inventory.md
+]]
+--[[
     Inventory Meta
 
     Inventory management system for the Lilia framework.

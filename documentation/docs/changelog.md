@@ -1,5 +1,205 @@
 # Changelog
 
+## Version 7.212 (January 06, 2026)
+
+### Changes
+
+- Compile already :pray:
+- Documentation Update
+- Auto Save
+- Update config.lua
+- Update client.lua
+- Missing Localization
+- Moved Several Hooks To Local Functions
+- Update generate_docs.py
+- Partially revert documentation updates - keep item changes reverted, restore compatibility library documentation
+- Revert "More Documentation Updates"
+- More Documentation Updates
+- Successfully updated workshop Lilia to 7.20
+- Wiremod Extra Compatibility
+- Successfully updated workshop Lilia to 7.198
+- Update functions.md
+- Bug Fix
+- Successfully updated workshop Lilia to 7.195
+- Update item.lua
+- Badly Named Hook lel
+- Successfully updated workshop Lilia to 7.192
+
+## Version 7.20 (January 05, 2026)
+
+### Changes
+
+- Wiremod Extra Compatibility
+- Successfully updated workshop Lilia to 7.198
+- Update functions.md
+- Bug Fix
+- Successfully updated workshop Lilia to 7.195
+- Update item.lua
+- Badly Named Hook lel
+- Successfully updated workshop Lilia to 7.192
+- Update generate_docs.py
+- UI Name Changes
+- Allowed Schema to have Data Saved
+- Docs Update
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.186
+- Successfully updated workshop Lilia to 7.178
+- Update generate_docs.py
+- Update installation tutorial link in ReadMe.md
+- Update ReadMe.md
+- Update installation links in ReadMe.md
+- Add validation to chardesc command
+
+## Version 7.198 (January 05, 2026)
+
+### Changes
+
+- Update functions.md
+- Bug Fix
+- Successfully updated workshop Lilia to 7.195
+- Update item.lua
+- Badly Named Hook lel
+- Successfully updated workshop Lilia to 7.192
+- Update generate_docs.py
+- UI Name Changes
+- Allowed Schema to have Data Saved
+- Docs Update
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.186
+- Successfully updated workshop Lilia to 7.178
+- Update generate_docs.py
+- Update installation tutorial link in ReadMe.md
+- Update ReadMe.md
+- Update installation links in ReadMe.md
+- Add validation to chardesc command
+- Add validation and debouncing to F1 menu description
+- Add whitespace validation to character description
+
+## Version 7.195 (January 05, 2026)
+
+### Changes
+
+- Update item.lua
+- Badly Named Hook lel
+- Successfully updated workshop Lilia to 7.192
+- Update generate_docs.py
+- UI Name Changes
+- Allowed Schema to have Data Saved
+- Docs Update
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.186
+- Successfully updated workshop Lilia to 7.178
+- Update generate_docs.py
+- Update installation tutorial link in ReadMe.md
+- Update ReadMe.md
+- Update installation links in ReadMe.md
+- Add validation to chardesc command
+- Add validation and debouncing to F1 menu description
+- Add whitespace validation to character description
+- Implement character description length validation
+- Successfully updated workshop Lilia to 7.176
+- Donator Stuff, Interaction Changes & New Chat Notifications
+
+## Version 7.192 (January 05, 2026)
+
+### Changes
+
+- Update generate_docs.py
+- UI Name Changes
+- Allowed Schema to have Data Saved
+- Docs Update
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.186
+- Successfully updated workshop Lilia to 7.178
+- Update generate_docs.py
+- Update installation tutorial link in ReadMe.md
+- Update ReadMe.md
+- Update installation links in ReadMe.md
+- Add validation to chardesc command
+- Add validation and debouncing to F1 menu description
+- Add whitespace validation to character description
+- Implement character description length validation
+- Successfully updated workshop Lilia to 7.176
+- Donator Stuff, Interaction Changes & New Chat Notifications
+- ChatBox Fixes
+- Warning Severities
+- Aid now allows armor
+
+## Version 7.186 (January 05, 2026)
+
+### Changes
+
+- Successfully updated workshop Lilia to 7.178
+- Update generate_docs.py
+- Update installation tutorial link in ReadMe.md
+- Update ReadMe.md
+- Update installation links in ReadMe.md
+- Add validation to chardesc command
+- Add validation and debouncing to F1 menu description
+- Add whitespace validation to character description
+- Implement character description length validation
+- Successfully updated workshop Lilia to 7.176
+- Donator Stuff, Interaction Changes & New Chat Notifications
+- ChatBox Fixes
+- Warning Severities
+- Aid now allows armor
+- More Fonts
+- Clearer Scoreboard
+- Main Menu Improvements
+- Successfully updated workshop Lilia to 7.168
+- Micro Fixes
+- Successfully updated workshop Lilia to 7.166
+
+## Version 7.178 (January 05, 2026)
+
+### Changes
+
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.176
+- Donator Stuff, Interaction Changes & New Chat Notifications
+- ChatBox Fixes
+- Warning Severities
+- Aid now allows armor
+- More Fonts
+- Clearer Scoreboard
+- Main Menu Improvements
+- Successfully updated workshop Lilia to 7.168
+- Micro Fixes
+- Successfully updated workshop Lilia to 7.166
+- Linting
+- Added Args For Clarity + FACTION.Scale Bug Fix
+- Update ci.yml
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.161
+- Update server.lua
+- Successfully updated workshop Lilia to 7.159
+- Better Model in Ammo
+
+## Version 7.176 (January 03, 2026)
+
+### Changes
+
+- Donator Stuff, Interaction Changes & New Chat Notifications
+- ChatBox Fixes
+- Warning Severities
+- Aid now allows armor
+- More Fonts
+- Clearer Scoreboard
+- Main Menu Improvements
+- Successfully updated workshop Lilia to 7.168
+- Micro Fixes
+- Successfully updated workshop Lilia to 7.166
+- Linting
+- Added Args For Clarity + FACTION.Scale Bug Fix
+- Update ci.yml
+- Update generate_docs.py
+- Successfully updated workshop Lilia to 7.161
+- Update server.lua
+- Successfully updated workshop Lilia to 7.159
+- Better Model in Ammo
+- Placing entity items without being in inv
+- Successfully updated workshop Lilia to 7.156
+
 ## Version 7.168 (December 31, 2025)
 
 ### Changes

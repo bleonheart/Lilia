@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 AdminStickIsOpen = false
 AdminStickMenu = nil
 local pksCount, ticketsCount, warningsCount = 0, 0, 0
@@ -3781,7 +3781,7 @@ end)
 local TicketFrames = {}
 local xpos = xpos or 20
 local ypos = ypos or 20
-function MODULE:TicketFrame(requester, message, claimed)
+local function CreateTicketFrame(requester, message, claimed)
     if not IsValid(requester) or not requester:IsPlayer() then return end
     for _, v in pairs(TicketFrames) do
         if v.idiot == requester then
@@ -4001,7 +4001,7 @@ net.Receive("liaTicketSystem", function()
     local pl = net.ReadEntity()
     local msg = net.ReadString()
     local claimed = net.ReadEntity()
-    if IsValid(LocalPlayer()) and (LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("alwaysSeeTickets")) then MODULE:TicketFrame(pl, msg, claimed) end
+    if IsValid(LocalPlayer()) and (LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("alwaysSeeTickets")) then CreateTicketFrame(pl, msg, claimed) end
 end)
 
 net.Receive("liaTicketSystemClaim", function()
@@ -4203,18 +4203,7 @@ function MODULE:AdminStickAddModels(modList)
     end
 end
 
-function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
-    if not client:getChar() then return end
-    local weapon = client:GetActiveWeapon()
-    if not IsValid(weapon) then return end
-    if weapon:GetClass() == "lia_adminstick" then
-        self:DisplayAdminStickHUD(client, hudInfos, weapon)
-    elseif weapon:GetClass() == "lia_distance" then
-        self:DisplayDistanceToolHUD(client, hudInfos, weapon)
-    end
-end
-
-function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
+local function DisplayAdminStickHUD(client, hudInfos, weapon)
     local target = weapon:GetTarget()
     if IsValid(target) then
         local infoLines = {}
@@ -4246,12 +4235,13 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
             table.insert(infoLines, "Entity ID: " .. target:EntIndex())
         end
 
+        hook.Run("AddToAdminStickHUD", client, target, infoLines)
         table.insert(hudInfos, {
             text = infoLines,
             font = "LiliaFont.20",
             position = {
                 x = ScrW() * 0.5,
-                y = ScrH() - 30
+                y = (IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 170) or (ScrH() - 30))
             },
             textAlignX = TEXT_ALIGN_CENTER,
             textAlignY = TEXT_ALIGN_BOTTOM
@@ -4271,7 +4261,7 @@ function MODULE:DisplayAdminStickHUD(client, hudInfos, weapon)
     })
 end
 
-function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
+local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     local instructions = {"Left Click: Set point", "Right Click: Clear points", "Reload: Measure current"}
     table.insert(hudInfos, {
         text = instructions,
@@ -4316,9 +4306,20 @@ function MODULE:DisplayDistanceToolHUD(client, hudInfos, weapon)
         font = "LiliaFont.20",
         position = {
             x = 20,
-            y = ScrH() - 30
+            y = (IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 140) or (ScrH() - 30))
         },
         textAlignX = TEXT_ALIGN_LEFT,
         textAlignY = TEXT_ALIGN_BOTTOM
     })
+end
+
+function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
+    if not client:getChar() then return end
+    local weapon = client:GetActiveWeapon()
+    if not IsValid(weapon) then return end
+    if weapon:GetClass() == "lia_adminstick" then
+        DisplayAdminStickHUD(client, hudInfos, weapon)
+    elseif weapon:GetClass() == "lia_distance" then
+        DisplayDistanceToolHUD(client, hudInfos, weapon)
+    end
 end

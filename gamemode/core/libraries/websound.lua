@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: websound.md
+]]
+--[[
     WebSound Library
 
     Web-based audio content downloading, caching, and playback system for the Lilia framework.

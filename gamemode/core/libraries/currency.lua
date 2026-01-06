@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: currency.md
+]]
+--[[
     Currency Library
 
     In-game currency formatting, display, and management system for the Lilia framework.

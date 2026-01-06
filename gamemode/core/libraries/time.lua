@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: time.md
+]]
+--[[
     Time Library
 
     Time manipulation, formatting, and calculation system for the Lilia framework.

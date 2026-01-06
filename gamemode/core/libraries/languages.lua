@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: lang.md
+]]
+--[[
     Languages Library
 
     Internationalization (i18n) and localization system for the Lilia framework.
@@ -133,4 +137,4 @@ end
 L = lia.lang.getLocalizedString
 lia.lang.loadFromDir("lilia/gamemode/languages")
 hook.Run("OnLocalizationLoaded")
-hook.Add("OnConfigChanged", "lia.lang.cache", function(key, oldValue, newValue) if key == "Language" and oldValue ~= newValue then lia.lang.clearCache() end end)
+hook.Add("OnConfigUpdated", "lia.lang.cache", function(key, oldValue, newValue) if key == "Language" and oldValue ~= newValue then lia.lang.clearCache() end end)

@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Definitions
+    File:  module.md
+]]
+--[[
     Module Definitions
 
     Module definition system for the Lilia framework.

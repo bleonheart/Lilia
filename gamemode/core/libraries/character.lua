@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: char.md
+]]
+--[[
     Character Library
 
     Comprehensive character creation, management, and persistence system for the Lilia framework.
@@ -189,7 +193,9 @@ lia.char.registerVar("desc", {
         local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction, data)
         local minLength = lia.config.get("MinDescLen", 16)
         if isstring(desc) and override then return true end
-        if not value or #string.Trim(value) < minLength then return false, "descMinLen", minLength end
+        local trimmedValue = string.Trim(value or "")
+        local valueWithoutSpaces = string.gsub(trimmedValue, "%s", "")
+        if #valueWithoutSpaces < minLength then return false, "descMinLen", minLength end
         return true
     end,
     onAdjust = function(client, data, value, newData)
@@ -777,7 +783,7 @@ if SERVER then
             if IsValid(ply) then
                 net.Start("liaCharDeleted")
                 net.Send(ply)
-                lia.module.get("mainmenu"):SyncCharList(ply)
+                hook.Run("SyncCharList", ply)
             end
         end
     end

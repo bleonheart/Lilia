@@ -1,4 +1,8 @@
 ﻿--[[
+    Folder: Libraries
+    File: bar.md
+]]
+--[[
     Bars Library
 
     Dynamic progress bar creation and management system for the Lilia framework.
