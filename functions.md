@@ -1756,6 +1756,8 @@ Count: 5 functions
   - Client
 - [ ]`NetVarChanged(client, key, oldValue, value)`
   - Shared
+  - [ ]`DrawPlayerInfoBackground()`
+  - Client
 - [ ]`OnAdminStickMenuClosed()`
   - Client
 - [ ]`OnAdminSystemLoaded(arg1, arg2)`
