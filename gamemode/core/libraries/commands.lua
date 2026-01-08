@@ -13,6 +13,29 @@
 ]]
 lia.command = lia.command or {}
 lia.command.list = lia.command.list or {}
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.command.buildSyntaxFromArguments(args)
     local tokens = {}
     for _, arg in ipairs(args) do
@@ -34,6 +57,29 @@ function lia.command.buildSyntaxFromArguments(args)
     return table.concat(tokens, " ")
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.command.add(command, data)
     data.arguments = data.arguments or {}
     data.syntax = lia.command.buildSyntaxFromArguments(data.arguments)
@@ -135,6 +181,29 @@ function lia.command.add(command, data)
     hook.Run("CommandAdded", command, data)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.command.hasAccess(client, command, data)
     if not data then data = lia.command.list[command] end
     if not data then return false, "unknown" end
@@ -170,6 +239,29 @@ function lia.command.hasAccess(client, command, data)
     return hasAccess, privilegeName
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.command.extractArgs(text)
     local skip = 0
     local arguments = {}
@@ -229,6 +321,29 @@ local function isPlaceholder(arg)
 end
 
 if SERVER then
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.command.run(client, command, arguments)
         local commandTbl = lia.command.list[command:lower()]
         if commandTbl then
@@ -247,6 +362,29 @@ if SERVER then
         end
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.command.parse(client, text, realCommand, arguments)
         if realCommand or utf8.sub(text, 1, 1) == "/" then
             local match = realCommand or text:lower():match("/" .. "([_%w]+)")
@@ -307,6 +445,29 @@ if SERVER then
         return false
     end
 else
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.command.openArgumentPrompt(cmdKey, missing, prefix)
         local command = lia.command.list[cmdKey]
         if not command then return end
@@ -538,6 +699,29 @@ else
         end
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.command.send(command, ...)
         net.Start("liaCommandData")
         net.WriteString(command)

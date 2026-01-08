@@ -15,6 +15,29 @@ lia.faction = lia.faction or {}
 lia.faction.indices = lia.faction.indices or {}
 lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.register(uniqueID, data)
     assert(isstring(uniqueID), L("factionUniqueIDString"))
     assert(istable(data), L("factionDataTable"))
@@ -53,6 +76,29 @@ function lia.faction.register(uniqueID, data)
     return faction.index, faction
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.cacheModels(models)
     for _, modelData in pairs(models or {}) do
         if isstring(modelData) then
@@ -63,6 +109,29 @@ function lia.faction.cacheModels(models)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName
@@ -114,14 +183,83 @@ function lia.faction.loadFromDir(directory)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.get(identifier)
     return lia.faction.indices[identifier] or lia.faction.teams[identifier]
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getIndex(uniqueID)
     return lia.faction.teams[uniqueID] and lia.faction.teams[uniqueID].index
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getClasses(faction)
     local classes = {}
     for _, class in pairs(lia.class.list) do
@@ -130,6 +268,29 @@ function lia.faction.getClasses(faction)
     return classes
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getPlayers(faction)
     local players = {}
     for _, v in player.Iterator() do
@@ -139,6 +300,29 @@ function lia.faction.getPlayers(faction)
     return players
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getPlayerCount(faction)
     local count = 0
     for _, v in player.Iterator() do
@@ -148,11 +332,57 @@ function lia.faction.getPlayerCount(faction)
     return count
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.isFactionCategory(faction, categoryFactions)
     if table.HasValue(categoryFactions, faction) then return true end
     return false
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.jobGenerate(index, name, color, default, models)
     local FACTION = {}
     FACTION.index = index
@@ -218,6 +448,29 @@ local function formatModelDataEntry(name, faction, modelIndex, modelData, catego
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.formatModelData()
     for name, faction in pairs(lia.faction.teams) do
         if faction.models then
@@ -238,6 +491,29 @@ function lia.faction.formatModelData()
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getCategories(teamName)
     local categories = {}
     local faction = lia.faction.teams[teamName]
@@ -249,6 +525,29 @@ function lia.faction.getCategories(teamName)
     return categories
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getModelsFromCategory(teamName, category)
     local models = {}
     local faction = lia.faction.teams[teamName]
@@ -260,6 +559,29 @@ function lia.faction.getModelsFromCategory(teamName, category)
     return models
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.faction.getDefaultClass(id)
     local defaultClass = nil
     for _, class in ipairs(lia.class.list) do
@@ -281,6 +603,29 @@ FACTION_STAFF = lia.faction.register("staff", {
 })
 
 if CLIENT then
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.faction.hasWhitelist(faction)
         local data = lia.faction.indices[faction]
         if data then
@@ -296,6 +641,29 @@ if CLIENT then
         return false
     end
 else
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.faction.hasWhitelist(faction)
         local data = lia.faction.indices[faction]
         if data then

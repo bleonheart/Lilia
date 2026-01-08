@@ -293,6 +293,29 @@ local ConditionalFiles = {
     }
 }
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.include(path, realm)
     if not path then lia.error(L("missingFilePath")) end
     path = path:gsub("\\", "/")
@@ -327,6 +350,29 @@ function lia.loader.include(path, realm)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.includeDir(dir, raw, deep, realm)
     local root = raw and dir or (SCHEMA and SCHEMA.folder and SCHEMA.loading and SCHEMA.folder .. "/schema" or "lilia/gamemode") .. "/" .. dir
     local function loadDir(folder)
@@ -344,6 +390,29 @@ function lia.loader.includeDir(dir, raw, deep, realm)
     loadDir(root)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
     local baseDir = raw and dir or (SCHEMA and SCHEMA.folder and SCHEMA.loading and SCHEMA.folder .. "/schema" or "lilia/gamemode") .. "/" .. dir
     local stack = {baseDir}
@@ -418,6 +487,29 @@ end
 local publicURL = "https://liliaframework.github.io/versioning/modules.json"
 local privateURL = "https://bleonheart.github.io/modules.json"
 local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.checkForUpdates()
     local publicModules = {}
     local privateModules = {}
@@ -540,21 +632,121 @@ lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/data.lua", "shared")
+--[[
+    Purpose:
+        Logs an error message to the console with proper formatting and color coding.
+
+    When Called:
+        Called throughout the framework when errors occur that need to be logged to the console for debugging purposes.
+
+    Parameters:
+        msg (string)
+            The error message to display in the console.
+
+    Returns:
+        nil
+            This function does not return any value.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Log an error when a required file fails to load
+        lia.error("Failed to load configuration file: config.json not found")
+        ```
+]]
 function lia.error(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
+--[[
+    Purpose:
+        Logs a warning message to the console with proper formatting and color coding.
+
+    When Called:
+        Called throughout the framework when non-critical issues occur that should be brought to attention but don't stop execution.
+
+    Parameters:
+        msg (string)
+            The warning message to display in the console.
+
+    Returns:
+        nil
+            This function does not return any value.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Log a warning when an optional dependency is missing
+        lia.warning("Optional addon 'advanced_logging' not found, using basic logging instead")
+        ```
+]]
 function lia.warning(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
     MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
+--[[
+    Purpose:
+        Logs an informational message to the console with proper formatting and color coding.
+
+    When Called:
+        Called throughout the framework to provide general information about system status, initialization progress, or important events.
+
+    Parameters:
+        msg (string)
+            The informational message to display in the console.
+
+    Returns:
+        nil
+            This function does not return any value.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Log information during system initialization
+        lia.information("Database connection established successfully")
+        ```
+]]
 function lia.information(msg)
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
+--[[
+    Purpose:
+        Logs bootstrap/initialization messages to the console with section categorization and color coding.
+
+    When Called:
+        Called during the framework initialization process to log progress and status of different loading sections.
+
+    Parameters:
+        section (string)
+            The name of the bootstrap section being initialized (e.g., "Core", "Modules", "Database").
+
+        msg (string)
+            The message describing what is being initialized or loaded.
+
+    Returns:
+        nil
+            This function does not return any value.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Log bootstrap progress during initialization
+        lia.bootstrap("Database", "Connecting to MySQL server...")
+        lia.bootstrap("Modules", "Loading character system...")
+        ```
+]]
 function lia.bootstrap(section, msg)
     if lia.isReloading and section ~= "HotReload" then return end
     MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
@@ -562,6 +754,35 @@ function lia.bootstrap(section, msg)
     MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
 
+--[[
+    Purpose:
+        Sends formatted messages to a Discord webhook for logging and notifications.
+
+    When Called:
+        Called when important events need to be relayed to Discord, such as server status updates, errors, or administrative actions.
+
+    Parameters:
+        embed (table)
+            A Discord embed object containing message details. Supports fields like title, description, color, timestamp, footer, etc.
+
+    Returns:
+        nil
+            This function does not return any value.
+
+    Realm:
+        Server
+
+    Example Usage:
+        ```lua
+        -- Send a notification when a player achieves something special
+        lia.relaydiscordMessage({
+            title = "Achievement Unlocked!",
+            description = player:Name() .. " unlocked the 'Master Trader' achievement",
+            color = 16776960, -- Yellow
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        })
+        ```
+]]
 function lia.relaydiscordMessage(embed)
     if not lia.discordWebhook or not istable(embed) then return end
     local ForceHTTPMode = not util.IsBinaryModuleInstalled("chttp")
@@ -602,6 +823,29 @@ for _, files in ipairs(FilesToLoad) do
     lia.loader.include(files.path, files.realm)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.includeEntities(path)
     local function IncludeFiles(path2)
         if file.Exists(path2 .. "init.lua", "LUA") then lia.loader.include(path2 .. "init.lua", "server") end
@@ -717,6 +961,29 @@ else
 end
 
 local hasInitializedModules = false
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.loader.initializeGamemode(isReload)
     if isReload then
         if lia.reloadInProgress then return end

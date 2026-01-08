@@ -46,6 +46,29 @@ lia.doors.defaultValues = {
 }
 
 if SERVER then
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.setCachedData(door, data)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return end
@@ -75,6 +98,29 @@ if SERVER then
         lia.doors.syncDoorData(door)
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.getCachedData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return {} end
@@ -94,6 +140,29 @@ if SERVER then
         return fullData
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.syncDoorData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return end
@@ -110,6 +179,29 @@ if SERVER then
         net.Broadcast()
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.syncAllDoorsToClient(client)
         if not IsValid(client) then return end
         net.Start("liaDoorDataBulk")
@@ -122,10 +214,56 @@ if SERVER then
         net.Send(client)
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.setData(door, data)
         lia.doors.setCachedData(door, data)
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.addPreset(mapName, presetData)
         if not mapName or not presetData then
             error("lia.doors.addPreset: Missing required parameters (mapName, presetData)")
@@ -136,10 +274,56 @@ if SERVER then
         lia.information(L("addedDoorPresetForMap") .. ": " .. mapName)
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.getPreset(mapName)
         return lia.doors.presets[mapName]
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.verifyDatabaseSchema()
         lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
             if not res or not res.results then
@@ -176,6 +360,29 @@ if SERVER then
         end):catch(function(err) lia.error(L("failedToVerifyDatabaseSchema") .. " " .. tostring(err)) end)
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.cleanupCorruptedData()
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = lia.data.getEquivalencyMap(game.GetMap())
@@ -215,6 +422,29 @@ if SERVER then
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.doors.getData(door)
     if SERVER then
         return lia.doors.getCachedData(door)
@@ -225,6 +455,29 @@ end
 
 if CLIENT then
     lia.doors.stored = lia.doors.stored or {}
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.getCachedData(door)
         local doorID = door:MapCreationID()
         if not doorID or doorID <= 0 then return {} end
@@ -244,6 +497,29 @@ if CLIENT then
         return fullData
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.doors.updateCachedData(doorID, data)
         if data then
             lia.doors.stored[doorID] = data

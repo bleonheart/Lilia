@@ -125,6 +125,29 @@ local KeybindKeys = {
     ["last"] = KEY_LAST
 }
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.keybind.add(k, d, desc, cb)
     local actionName, key, description, callbacks, category
     if isstring(k) and istable(d) and desc == nil and cb == nil then
@@ -346,12 +369,58 @@ if CLIENT then
         end
     end)
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.keybind.get(a, df)
         local act = lia.keybind.stored[a]
         if act then return act.value or act.default or df end
         return df
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.keybind.save()
         local path = "lilia/keybinds.json"
         local d = {}
@@ -363,6 +432,29 @@ if CLIENT then
         if j then file.Write(path, j) end
     end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.keybind.load()
         local path = "lilia/keybinds.json"
         local d = file.Read(path, "DATA")

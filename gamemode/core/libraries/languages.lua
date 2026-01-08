@@ -17,6 +17,29 @@ lia.lang.stored = lia.lang.stored or {}
 lia.lang.cache = lia.lang.cache or {}
 lia.lang.cache.maxSize = 1000
 lia.lang.cache.currentSize = 0
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.loadFromDir(directory)
     for _, v in ipairs(file.Find(directory .. "/*.lua", "LUA")) do
         local niceName
@@ -44,6 +67,29 @@ function lia.lang.loadFromDir(directory)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.addTable(name, tbl)
     local lowerName = tostring(name):lower()
     lia.lang.stored[lowerName] = lia.lang.stored[lowerName] or {}
@@ -54,6 +100,29 @@ function lia.lang.addTable(name, tbl)
     lia.lang.clearCache()
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.getLanguages()
     local languages = {}
     for key, _ in pairs(lia.lang.stored) do
@@ -65,6 +134,29 @@ function lia.lang.getLanguages()
     return languages
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.generateCacheKey(lang, key, ...)
     local argCount = select("#", ...)
     if argCount == 0 then return lang .. ":" .. key end
@@ -76,6 +168,29 @@ function lia.lang.generateCacheKey(lang, key, ...)
     return lang .. ":" .. key .. paramStr
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.cleanupCache()
     local cache = lia.lang.cache
     local keys = {}
@@ -92,6 +207,29 @@ function lia.lang.cleanupCache()
     cache.currentSize = #keys - removeCount
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.clearCache()
     lia.lang.cache = {
         maxSize = lia.lang.cache.maxSize or 1000,
@@ -99,6 +237,29 @@ function lia.lang.clearCache()
     }
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.lang.getLocalizedString(key, ...)
     local lang = lia.config and lia.config.get("Language", "english") or "english"
     local cacheKey = lia.lang.generateCacheKey(lang, key, ...)

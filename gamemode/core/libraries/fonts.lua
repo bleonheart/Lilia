@@ -13,6 +13,29 @@
 ]]
 lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.font.loadFonts()
     if not CLIENT then return end
     local loadedCount = 0
@@ -29,6 +52,29 @@ function lia.font.loadFonts()
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.font.register(fontName, fontData)
     if not (isstring(fontName) and istable(fontData)) then return lia.error(L("invalidFont")) end
     lia.font.stored[fontName] = SERVER and {
@@ -38,6 +84,29 @@ function lia.font.register(fontName, fontData)
     if CLIENT then surface.CreateFont(fontName, fontData) end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.font.getAvailableFonts()
     local list = {}
     for name in pairs(lia.font.stored) do
@@ -48,6 +117,29 @@ function lia.font.getAvailableFonts()
     return list
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.font.getBoldFontName(fontName)
     if string.find(fontName, "Montserrat") then
         return fontName:gsub(" Medium", " Bold"):gsub("Montserrat$", "Montserrat Bold")
@@ -56,6 +148,29 @@ function lia.font.getBoldFontName(fontName)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.font.registerFonts(fontName)
     local mainFont = fontName or lia.config.get("Font", "Montserrat Medium")
     local fontsToRegister = {

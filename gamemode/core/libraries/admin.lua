@@ -288,6 +288,29 @@ local function camiBootstrapFromExisting()
     rebuildPrivileges()
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
@@ -296,6 +319,29 @@ function lia.administrator.applyPunishment(client, infraction, kick, ban, time, 
     if ban then lia.administrator.execCommand("ban", client, bantime, L(banKey, infraction)) end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.hasAccess(ply, privilege)
     if not isstring(privilege) then
         lia.error(L("hasAccessExpectedString", tostring(privilege)))
@@ -361,6 +407,29 @@ function lia.administrator.hasAccess(ply, privilege)
     return shouldGrant(grp, min)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.save(noNetwork)
     rebuildPrivileges()
     local rows = {}
@@ -395,6 +464,29 @@ function lia.administrator.save(noNetwork)
     lia.administrator.sync()
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.registerPrivilege(priv)
     if not priv or not priv.ID then
         lia.error(L("privilegeRegistrationError"))
@@ -430,6 +522,29 @@ function lia.administrator.registerPrivilege(priv)
     if SERVER then lia.administrator.save() end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.unregisterPrivilege(id)
     id = tostring(id or "")
     if id == "" or lia.administrator.privileges[id] == nil then return end
@@ -450,6 +565,29 @@ function lia.administrator.unregisterPrivilege(id)
     if SERVER then lia.administrator.save() end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.applyInheritance(groupName)
     local groups = lia.administrator.groups or {}
     local g = groups[groupName]
@@ -482,6 +620,29 @@ function lia.administrator.applyInheritance(groupName)
     clearGroupLevelCache()
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.load()
     local function continueLoad(groups)
         lia.administrator.groups = groups or {}
@@ -533,6 +694,29 @@ function lia.administrator.load()
     end)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.createGroup(groupName, info)
     if lia.administrator.groups[groupName] then
         lia.error(L("usergroupExists"))
@@ -554,6 +738,29 @@ function lia.administrator.createGroup(groupName, info)
     if SERVER then lia.administrator.save() end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
         lia.error(L("baseUsergroupCannotBeRemoved"))
@@ -572,6 +779,29 @@ function lia.administrator.removeGroup(groupName)
     if SERVER then lia.administrator.save() end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.administrator.renameGroup(oldName, newName)
     if lia.administrator.DefaultGroups[oldName] then
         lia.error(L("baseUsergroupCannotBeRenamed"))
@@ -602,12 +832,58 @@ function lia.administrator.renameGroup(oldName, newName)
 end
 
 if SERVER then
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.notifyAdmin(notification)
         for _, client in player.Iterator() do
             if IsValid(client) and client:hasPrivilege("canSeeAltingNotifications") then client:notifyAdminLocalized(notification) end
         end
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.addPermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
@@ -624,6 +900,29 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.removePermission(groupName, permission, silent)
         if not lia.administrator.groups[groupName] then
             if lia.administrator._loading then return end
@@ -640,6 +939,29 @@ if SERVER then
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.administrator.groups[groupName])
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.sync(c)
         lia.net.ready = lia.net.ready or setmetatable({}, {
             __mode = "k"
@@ -682,12 +1004,58 @@ if SERVER then
         end
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.hasChanges()
         local currentPrivilegeCount = table.Count(lia.administrator.privileges)
         local currentGroupCount = table.Count(lia.administrator.groups)
         return currentPrivilegeCount ~= lia.administrator._lastSyncPrivilegeCount or currentGroupCount ~= lia.administrator._lastSyncGroupCount
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.setPlayerUsergroup(ply, newGroup, source)
         if not IsValid(ply) then return end
         local old = tostring(ply:GetUserGroup() or "user")
@@ -697,6 +1065,29 @@ if SERVER then
         if CAMI then CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia") end
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
         local sid = tostring(steamId or "")
         if sid == "" then return end
@@ -707,6 +1098,29 @@ if SERVER then
         if CAMI then CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia") end
     end
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.serverExecCommand(cmd, victim, dur, reason, admin)
         local privilegeID = string.lower("command_" .. cmd)
         if not lia.administrator.hasAccess(admin, privilegeID) then
@@ -1034,6 +1448,29 @@ else
         spectate = function(id) RunConsoleCommand("say", "/plyspectate " .. string.format("'%s'", tostring(id))) end
     }
 
+    --[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.administrator.execCommand(cmd, victim, dur, reason)
         local hookResult, callback = hook.Run("RunAdminSystemCommand", cmd, victim, dur, reason)
         if hookResult == true then

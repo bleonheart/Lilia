@@ -102,6 +102,29 @@ local function loadExtras(path)
     hook.Run("DoModuleIncludes", path, MODULE)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.module.load(uniqueID, path, variable, skipSubmodules)
     variable = variable or "MODULE"
     local lowerVar = variable:lower()
@@ -191,6 +214,29 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.module.initialize()
     local schemaPath = engine.ActiveGamemode():gsub("\\", "/")
     lia.module.load("schema", schemaPath .. "/schema", "schema")
@@ -227,6 +273,29 @@ function lia.module.initialize()
     lia.UpdateCheckDone = true
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.module.loadFromDir(directory, group, skip)
     local locationVar = group == "schema" and "SCHEMA" or "MODULE"
     local _, folders = file.Find(directory .. "/*", "LUA")
@@ -235,6 +304,29 @@ function lia.module.loadFromDir(directory, group, skip)
     end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.module.get(identifier)
     return lia.module.list[identifier]
 end

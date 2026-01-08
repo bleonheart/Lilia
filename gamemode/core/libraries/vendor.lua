@@ -156,6 +156,29 @@ else
     addEditor("animation", function(animation) net.WriteString(animation or "") end)
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.addPreset(name, items)
     assert(isstring(name), L("vendorPresetNameString"))
     assert(istable(items), L("vendorPresetItemsTable"))
@@ -167,10 +190,56 @@ function lia.vendor.addPreset(name, items)
     lia.vendor.presets[string.lower(name)] = validItems
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.getPreset(name)
     return lia.vendor.presets[string.lower(name)]
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.getVendorProperty(entity, property)
     if not IsValid(entity) then return lia.vendor.defaults[property] end
     local cached = lia.vendor.stored[entity]
@@ -178,6 +247,29 @@ function lia.vendor.getVendorProperty(entity, property)
     return lia.vendor.defaults[property]
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.setVendorProperty(entity, property, value)
     if not IsValid(entity) then return end
     local defaultValue = lia.vendor.defaults[property]
@@ -199,6 +291,29 @@ function lia.vendor.setVendorProperty(entity, property, value)
     if SERVER then lia.vendor.syncVendorProperty(entity, property, value, isDefault) end
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
     if not SERVER then return end
     net.Start("liaVendorPropertySync")
@@ -214,6 +329,29 @@ function lia.vendor.syncVendorProperty(entity, property, value, isDefault)
     net.Broadcast()
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.vendor.getAllVendorData(entity)
     if not IsValid(entity) then return {} end
     local data = {}

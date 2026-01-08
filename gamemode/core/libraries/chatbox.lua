@@ -13,10 +13,56 @@
 ]]
 lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.chat.timestamp(ooc)
     return lia.option.ChatShowTime and (ooc and " " or "") .. "(" .. lia.time.getHour() .. ")" .. (ooc and "" or " ") or ""
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.chat.register(chatType, data)
     data.arguments = data.arguments or {}
     data.syntax = L(lia.command.buildSyntaxFromArguments(data.arguments))
@@ -93,6 +139,29 @@ function lia.chat.register(chatType, data)
     lia.chat.classes[chatType] = data
 end
 
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
 function lia.chat.parse(client, message, noSend)
     local anonymous = false
     local chatType = "ic"
@@ -134,6 +203,29 @@ function lia.chat.parse(client, message, noSend)
 end
 
 if SERVER then
+--[[
+    Purpose:
+        <Brief, clear description of what the function does.>
+
+    When Called:
+        <Describe when and why this function is invoked.>
+
+    Parameters:
+        <paramName> (<type>)
+            <Description.>
+
+    Returns:
+        <returnType>
+            <Description or "nil".>
+
+    Realm:
+        <Client | Server | Shared>
+
+    Example Usage:
+        ```lua
+            <High Complexity and well documented Function Call Or Use Case Here>
+        ```
+]]
     function lia.chat.send(speaker, chatType, text, anonymous, receivers)
         local class = lia.chat.classes[chatType]
         if class and class.onCanSay(speaker, text) ~= false then
