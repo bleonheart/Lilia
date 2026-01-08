@@ -361,6 +361,64 @@ function lia.administrator.hasAccess(ply, privilege)
     return shouldGrant(grp, min)
 end
 
+--[[
+    Purpose:
+        Applies punishment actions (kick/ban) to a player based on infraction details
+
+    When Called:
+        When an administrative action needs to be taken against a player for rule violations
+
+    Parameters:
+        client (Player)
+            The player who will be punished
+        infraction (string)
+            A simple explanation of what the player did wrong
+        kick (boolean)
+            True if the player should be kicked out of the game
+        ban (boolean)
+            True if the player should be banned from the game
+        time (number)
+            How many minutes to ban the player for (0 means forever)
+        kickKey (string)
+            The language key for the kick message (optional)
+        banKey (string)
+            The language key for the ban message (optional)
+
+    Returns:
+        nil
+
+    Realm:
+        Server
+
+    Example Usage:
+
+        ```lua
+            -- This example chooses how to punish players based on the rule they broke.
+            -- It uses a table of different punishments for different infractions
+            -- and applies the correct punishment accordingly.
+            local punishmentOptions = {
+                ["RDM"] =   {kick = true, ban = false, time = 0},          -- RDM: only kick
+                ["Cheating"] = {kick = true, ban = true, time = 0},        -- Cheating: kick and ban forever
+                ["Spam"] =  {kick = true, ban = false, time = 30}          -- Spam: kick and 30 min ban
+            }
+            local player = getPlayerByName("Bob")  -- Sample function to get a player
+            local infractionType = "Cheating"      -- This would typically come from some infractions check
+            local details = punishmentOptions[infractionType]
+            if details then
+                lia.administrator.applyPunishment(
+                    player,
+                    infractionType,
+                    details.kick,
+                    details.ban,
+                    details.time,
+                    "kickReasonKey",
+                    "banReasonKey"
+                )
+            else
+                print("No punishment set up for this infraction.")
+            end
+        ```
+]]
 function lia.administrator.save(noNetwork)
     rebuildPrivileges()
     local rows = {}

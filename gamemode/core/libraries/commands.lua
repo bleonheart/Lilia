@@ -743,7 +743,15 @@ if SERVER then
     end)
 
     concommand.Add("plysetgroup", function(ply, _, args)
-        local target = lia.util.findPlayer(ply, args[1])
+        local rawIdentifier = args[1] or ""
+        local identifier = string.Trim(rawIdentifier)
+        if #identifier >= 2 then
+            local firstChar = identifier:sub(1, 1)
+            local lastChar = identifier:sub(-1)
+            if (firstChar == "\"" and lastChar == "\"") or (firstChar == "'" and lastChar == "'") then identifier = identifier:sub(2, -2) end
+        end
+
+        local target = lia.util.findPlayer(ply, identifier)
         local usergroup = args[2]
         local function setOfflineUserGroup(steamID, adminPly)
             if not lia.administrator.groups[usergroup] then
@@ -787,10 +795,10 @@ if SERVER then
                     MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup") .. " \"" .. usergroup .. "\"\n")
                 end
             else
-                if string.match(args[1], "^STEAM_%d+:%d+:%d+$") then
-                    setOfflineUserGroup(args[1], nil)
+                if string.match(identifier, "^STEAM_%d+:%d+:%d+$") then
+                    setOfflineUserGroup(identifier, nil)
                 else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. args[1] .. "\"\n")
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer") .. " \"" .. identifier .. "\"\n")
                 end
             end
         elseif ply:hasPrivilege("setUserGroup") then
