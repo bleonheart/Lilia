@@ -757,16 +757,9 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
         output_path = Path(output_dir) / output_filename
 
     # Check if file already exists and has content
-    # In CI environments, force regeneration by removing existing files first
     if output_path.exists() and output_path.stat().st_size > 0:
-        # Only skip if we're not in a CI environment (check for CI env var)
-        if os.environ.get('CI') != 'true':
-            print(f"  {output_path.name} already exists, skipping")
-            return
-        else:
-            # In CI, remove the existing file to force regeneration
-            output_path.unlink()
-            print(f"  {output_path.name} exists, removing to force regeneration")
+        print(f"  {output_path.name} already exists, skipping")
+        return
 
     # Generate markdown content
     sections = []
