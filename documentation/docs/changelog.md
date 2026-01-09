@@ -1,5 +1,180 @@
 # Changelog
 
+## Version 7.244 (January 09, 2026)
+
+### Changes
+
+- Consistency
+- No More Dupes in Example Item
+- Generators
+- Workflow Typo
+- Successfully updated workshop Lilia to 7.239
+- Test Feature
+- Successfully updated workshop Lilia to 7.237
+- Update generate_docs.py
+- CanTakeEntity Hook
+- Weird Error Fix
+- Successfully updated workshop Lilia to 7.233
+- Door Saving Improvements
+- Successfully updated workshop Lilia to 7.231
+- lia.administrator changed to lia.admin for consistency
+- Badly Named Var
+- Successfully updated workshop Lilia to 7.228
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+
+## Version 7.239 (January 09, 2026)
+
+### Changes
+
+- Test Feature
+- Successfully updated workshop Lilia to 7.237
+- Update generate_docs.py
+- CanTakeEntity Hook
+- Weird Error Fix
+- Successfully updated workshop Lilia to 7.233
+- Door Saving Improvements
+- Successfully updated workshop Lilia to 7.231
+- lia.administrator changed to lia.admin for consistency
+- Badly Named Var
+- Successfully updated workshop Lilia to 7.228
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+
+## Version 7.237 (January 09, 2026)
+
+### Changes
+
+- Update generate_docs.py
+- CanTakeEntity Hook
+- Weird Error Fix
+- Successfully updated workshop Lilia to 7.233
+- Door Saving Improvements
+- Successfully updated workshop Lilia to 7.231
+- lia.administrator changed to lia.admin for consistency
+- Badly Named Var
+- Successfully updated workshop Lilia to 7.228
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+- Successfully updated workshop Lilia to 7.216
+- DrawPlayerInfoBackground Hook
+
+## Version 7.233 (January 09, 2026)
+
+### Changes
+
+- Door Saving Improvements
+- Successfully updated workshop Lilia to 7.231
+- lia.administrator changed to lia.admin for consistency
+- Badly Named Var
+- Successfully updated workshop Lilia to 7.228
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+- Successfully updated workshop Lilia to 7.216
+- DrawPlayerInfoBackground Hook
+- Added Circle Panel
+- Update loader.lua
+- Successfully updated workshop Lilia to 7.214
+- Function Order
+
+## Version 7.231 (January 09, 2026)
+
+### Changes
+
+- lia.administrator changed to lia.admin for consistency
+- Badly Named Var
+- Successfully updated workshop Lilia to 7.228
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+- Successfully updated workshop Lilia to 7.216
+- DrawPlayerInfoBackground Hook
+- Added Circle Panel
+- Update loader.lua
+- Successfully updated workshop Lilia to 7.214
+- Function Order
+- Successfully updated workshop Lilia to 7.212
+- Compile already :pray:
+
+## Version 7.228 (January 09, 2026)
+
+### Changes
+
+- Docs Attempt
+- Successfully updated workshop Lilia to 7.226
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+- Successfully updated workshop Lilia to 7.216
+- DrawPlayerInfoBackground Hook
+- Added Circle Panel
+- Update loader.lua
+- Successfully updated workshop Lilia to 7.214
+- Function Order
+- Successfully updated workshop Lilia to 7.212
+- Compile already :pray:
+- Documentation Update
+- Auto Save
+- Update config.lua
+
+## Version 7.226 (January 09, 2026)
+
+### Changes
+
+- Update ci.yml
+- Successfully updated workshop Lilia to 7.224
+- More Docs
+- Added Extra Compatibility Layer To Setting Usergroups
+- SAdmin Compatibility
+- Successfully updated workshop Lilia to 7.220
+- Doors Changes
+- Successfully updated workshop Lilia to 7.216
+- DrawPlayerInfoBackground Hook
+- Added Circle Panel
+- Update loader.lua
+- Successfully updated workshop Lilia to 7.214
+- Function Order
+- Successfully updated workshop Lilia to 7.212
+- Compile already :pray:
+- Documentation Update
+- Auto Save
+- Update config.lua
+- Update client.lua
+- Missing Localization
+
 ## Version 7.224 (January 09, 2026)
 
 ### Changes

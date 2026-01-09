@@ -224,13 +224,13 @@ jobs:
           rm -rf documentation/docs/definitions
           rm -rf documentation/docs/hooks
           rm -rf documentation/docs/modules
-          rm -rf documentation/docs/Compatibility
+          rm -rf documentation/docs/compatibility
       - run: |
-          python3 generate_docs.py meta
-          python3 generate_docs.py library
-          python3 generate_docs.py definitions
-          python3 generate_docs.py hooks
-          python3 generate_docs.py compatibility
+          python3 generate_docs.py meta --force
+          python3 generate_docs.py library --force
+          python3 generate_docs.py definitions --force
+          python3 generate_docs.py hooks --force
+          python3 generate_docs.py compatibility --force
       - run: |
           python3 remove_comments.py gamemode
       - run: |
@@ -416,13 +416,13 @@ jobs:
           rm -rf documentation/docs/definitions
           rm -rf documentation/docs/hooks
           rm -rf documentation/docs/modules
-          rm -rf documentation/docs/Compatibility
+          rm -rf documentation/docs/compatibility
       - run: |
-          python3 generate_docs.py meta
-          python3 generate_docs.py library
-          python3 generate_docs.py definitions
-          python3 generate_docs.py hooks
-          python3 generate_docs.py compatibility
+          python3 generate_docs.py meta --force
+          python3 generate_docs.py library --force
+          python3 generate_docs.py definitions --force
+          python3 generate_docs.py hooks --force
+          python3 generate_docs.py compatibility --force
       - run: |
           python3 remove_comments.py gamemode
       - run: |

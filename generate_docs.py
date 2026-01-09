@@ -126,7 +126,7 @@ def parse_comment_block(comment_text):
         line = line.strip()
 
         # Skip comment markers and empty lines
-        if line.startswith('--[[') or line.startswith('--]]') or not line:
+        if line.startswith('--[[') or line.startswith('--]]') or line.strip() in ['[[', ']]', '--[[', '--]]'] or not line:
             continue
 
         # Check for section headers
@@ -313,6 +313,10 @@ def parse_comment_block(comment_text):
                 section_content.append(line)
         elif current_section == 'examples':
             # Handle example sections - but only if we're not inside a code block
+            # Skip comprehensive example headers (Example Item:, Example Class:, Example Faction:)
+            if line.strip() in ['Example Item:', 'Example Class:', 'Example Faction:']:
+                # These are just headers, not complexity levels - skip them
+                continue
             complexity_match = None
             if not (current_example and current_example.get('in_code_block', False)):
                 complexity_match = re.match(r'(\w+)(?:\s+Complexity)?(?:\s+Example)?:', line)
@@ -510,8 +514,8 @@ def parse_overview_section(overview_text):
     # Remove comment block markers
     content = re.sub(r'--\[\[(.*)\]\]', r'\1', overview_text, flags=re.DOTALL).strip()
 
-    # Remove "Overview:" prefix if present
-    content = re.sub(r'^\s*Overview:\s*', '', content, flags=re.MULTILINE)
+    # Remove "Overview:" or "Improvements Done:" prefix if present
+    content = re.sub(r'^\s*(Overview|Improvements Done):\s*', '', content, flags=re.MULTILINE)
 
     raw_lines = content.split('\n')
     formatted_lines = []
@@ -684,17 +688,17 @@ def find_comment_blocks_in_file(file_path):
         all_comment_blocks.append(comment_text)
 
         # Check if this is a file header (first comment block that doesn't have function structure or overview, and isn't a folder/file directive)
-        if file_header is None and not any(header in comment_text for header in ['Purpose:', 'When Called:', 'Parameters:', 'Returns:', 'Realm:', 'Example Usage:', 'Overview:', 'Example Item:', 'Folder:', 'File:']):
+        if file_header is None and not any(header in comment_text for header in ['Purpose:', 'When Called:', 'Parameters:', 'Returns:', 'Realm:', 'Example Usage:', 'Overview:', 'Improvements Done:', 'Example Item:', 'Folder:', 'File:']):
             file_header = comment_text
-        # Check if this is an overview section (contains "Overview:")
-        elif 'Overview:' in comment_text and overview_section is None:
+        # Check if this is an overview section (contains "Overview:" or "Improvements Done:")
+        elif ('Overview:' in comment_text or 'Improvements Done:' in comment_text) and overview_section is None:
             overview_section = comment_text
 
     # Return all comment blocks for processing
     return all_comment_blocks, file_header, overview_section
 
 
-def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None):
+def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None, force=False):
     """
     Generate documentation for a single Lua file.
     """
@@ -756,8 +760,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
 
         output_path = Path(output_dir) / output_filename
 
-    # Check if file already exists and has content
-    if output_path.exists() and output_path.stat().st_size > 0:
+    if output_path.exists() and output_path.stat().st_size > 0 and not force:
         print(f"  {output_path.name} already exists, skipping")
         return
 
@@ -850,8 +853,11 @@ def parse_definition_property_blocks(file_path: Path, entity_prefixes: Tuple[str
     # Find all comment blocks with their positions
     for match in re.finditer(r'--\[\[.*?\]\]', text, re.DOTALL):
         block_text = match.group(0)
+        # Skip comprehensive example blocks - they're handled separately
+        if any(header in block_text for header in ['Example Item:', 'Example Class:', 'Example Faction:']):
+            continue
         # Only process structured comment blocks
-        if not any(header in block_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:', 'Example Item:']):
+        if not any(header in block_text for header in ['Purpose:', 'When Called:', 'When Used:', 'Parameters:', 'Returns:', 'Realm:', 'Explanation of Panel:', 'Example Usage:']):
             continue
 
         # Find the property name from the line immediately following this comment block
@@ -1325,6 +1331,7 @@ def main():
     parser = argparse.ArgumentParser(description='Generate documentation from Lua comment blocks')
     parser.add_argument('type', choices=['meta', 'library', 'definitions', 'hooks', 'compatibility'], help='Type of files to process')
     parser.add_argument('files', nargs='*', help='Specific files to process (if empty, processes defaults per type)')
+    parser.add_argument('--force', action='store_true', help='Overwrite existing documentation files')
 
     args = parser.parse_args()
 
@@ -1414,7 +1421,7 @@ def main():
     # Process each file
     for file_path in files_to_process:
         if args.type in ('meta', 'library', 'compatibility') and str(file_path).endswith('.lua'):
-            generate_documentation_for_file(file_path, output_dir, True, base_docs_dir)  # compatibility files are library files
+            generate_documentation_for_file(file_path, output_dir, True, base_docs_dir, args.force)  # compatibility files are library files
         elif args.type == 'definitions' and str(file_path).endswith('.lua'):
             generate_documentation_for_definitions_file(Path(file_path), output_dir, base_docs_dir)
         elif args.type == 'hooks' and str(file_path).endswith('.lua'):
