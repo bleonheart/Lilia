@@ -17,25 +17,31 @@ lia.dialog.configurations = lia.dialog.configurations or {}
 lia.dialog.clientHashes = lia.dialog.clientHashes or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Performs a deep comparison of two tables to detect changes, avoiding infinite loops from circular references.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before syncing dialog data to clients to prevent unnecessary network traffic.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tbl1 (table)
+            First table to compare.
+        tbl2 (table)
+            Second table to compare.
+        checked (table|nil)
+            Internal table used to track visited references and prevent cycles.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if tables are identical, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if not lia.dialog.isTableEqual(oldData, newData) then
+            lia.dialog.syncDialogs()
+        end
         ```
 ]]
 function lia.dialog.isTableEqual(tbl1, tbl2, checked)
@@ -72,25 +78,32 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers or updates an NPC configuration entry for customization panels.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During gamemode initialization to define available NPC configuration options.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            Unique identifier for the configuration.
+        data (table)
+            Configuration data containing fields like name, order, shouldShow, onOpen, onApply, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The stored configuration table.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.dialog.registerConfiguration("shop_inventory", {
+            name = "Shop Inventory",
+            order = 5,
+            shouldShow = function(ply) return ply:IsAdmin() end,
+            onOpen = function(npc) OpenShopConfig(npc) end
+        })
         ```
 ]]
 function lia.dialog.registerConfiguration(uniqueID, data)
@@ -116,25 +129,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves a registered configuration entry by its unique identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When accessing configuration menus or checking configuration availability.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique identifier of the configuration to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            The configuration table if found, nil otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local cfg = lia.dialog.getConfiguration("appearance")
+        if cfg and cfg.shouldShow(LocalPlayer()) then
+            cfg.onOpen(npc)
+        end
         ```
 ]]
 function lia.dialog.getConfiguration(uniqueID)
@@ -144,25 +160,26 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves sanitized NPC dialog data by unique identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Server-side when preparing dialog data for clients or internal operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        npcID (string)
+            The unique identifier of the NPC dialog.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Sanitized NPC dialog data, or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local npcData = lia.dialog.getNPCData("tutorial_guide")
+        if npcData then PrintTable(npcData) end
         ```
 ]]
     function lia.dialog.getNPCData(npcID)
@@ -172,25 +189,28 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns the original unsanitized NPC dialog definition including server-only callbacks.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Server-side when re-filtering conversation options per-player or rebuilding client payloads.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        npcID (string)
+            The unique identifier of the NPC dialog.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Original NPC dialog data, or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local raw = lia.dialog.getOriginalNPCData("tutorial_guide")
+        if raw and raw.Conversation then
+            -- inspect server-only callbacks before sanitizing
+        end
         ```
 ]]
     function lia.dialog.getOriginalNPCData(npcID)
@@ -323,25 +343,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sends sanitized dialog data to a specific client or all connected players.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After dialog registration, changes, or on-demand admin refreshes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+            Specific player to sync to, or nil to broadcast to all players.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        concommand.Add("lia_dialog_resync", function(admin)
+            if IsValid(admin) and admin:IsAdmin() then
+                lia.dialog.syncToClients()
+                admin:notifyLocalized("dialogResynced")
+            end
+        end)
         ```
 ]]
     function lia.dialog.syncToClients(client)
@@ -368,25 +392,23 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Broadcasts all dialog data to all connected clients.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After bulk changes, during scheduled refreshes, or maintenance operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        timer.Create("ResyncDialogsHourly", 3600, 0, lia.dialog.syncDialogs)
         ```
 ]]
     function lia.dialog.syncDialogs()
@@ -395,25 +417,41 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers an NPC dialog definition and optionally synchronizes changes to clients.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During gamemode initialization or when hot-loading NPC dialog data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            Unique identifier for the NPC dialog.
+        data (table)
+            Complete NPC dialog definition including Conversation, PrintName, Greeting, etc.
+        shouldSync (boolean|nil)
+            Whether to sync changes to clients immediately (defaults to true).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if successfully registered, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.dialog.registerNPC("quests_barkeep", {
+            PrintName = "Barkeep",
+            Greeting = "What'll it be?",
+            Conversation = {
+                ["Got any work?"] = {
+                    Response = "A few rats in the cellar. Interested?",
+                    options = {
+                        ["I'm in."] = {serverOnly = true, Callback = function(client) StartQuest(client, "cellar_rats") end},
+                        ["No thanks."] = {Response = "Suit yourself."}
+                    }
+                }
+            }
+        })
         ```
 ]]
     function lia.dialog.registerNPC(uniqueID, data, shouldSync)
@@ -560,25 +598,33 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens an NPC dialog for a player, filtering conversation options based on player permissions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a player interacts with an NPC entity.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            The player to open the dialog for.
+        npc (Entity)
+            The NPC entity being interacted with.
+        npcID (string)
+            The unique identifier of the NPC dialog type.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("PlayerUse", "HandleDialogNPCs", function(ply, ent)
+            if ent:GetClass() == "lia_npc" then
+                lia.dialog.openDialog(ply, ent, ent.uniqueID or "tutorial_guide")
+                return false
+            end
+        end)
         ```
 ]]
     function lia.dialog.openDialog(client, npc, npcID)
@@ -673,25 +719,26 @@ if SERVER then
 else
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves sanitized NPC dialog data on the client.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When client UI needs to render or access dialog information.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        npcID (string)
+            The unique identifier of the NPC dialog.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Sanitized NPC dialog data, or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local data = lia.dialog.getNPCData("tutorial_guide")
+        if data then print("Greeting:", data.Greeting) end
         ```
 ]]
     function lia.dialog.getNPCData(npcID)
@@ -701,25 +748,28 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sends NPC customization data to the server for processing.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When submitting changes from NPC customization UI.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        configID (string)
+            The configuration identifier.
+        npc (Entity)
+            The NPC entity being customized.
+        payload (table)
+            The customization data payload.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.dialog.submitConfiguration("appearance", npc, {model = "models/barney.mdl"})
         ```
 ]]
     function lia.dialog.submitConfiguration(configID, npc, payload)
@@ -734,25 +784,29 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens a comprehensive UI for customizing NPC appearance, animations, and dialog types.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        From properties menu or configuration picker interfaces.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        npc (Entity)
+            The NPC entity to customize.
+        configID (string|nil)
+            Configuration identifier, defaults to "appearance".
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        properties.Add("CustomNPCConfig", {
+            Filter = function(_, ent) return ent:GetClass() == "lia_npc" end,
+            Action = function(_, ent) lia.dialog.openCustomizationUI(ent, "appearance") end
+        })
         ```
 ]]
     function lia.dialog.openCustomizationUI(npc, configID)
@@ -1131,25 +1185,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns available NPC configurations for a player, sorted by order and name.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before displaying configuration picker UI to filter accessible options.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ply (Player)
+            The player to check permissions for.
+        npc (Entity|nil)
+            The NPC entity being configured.
+        npcID (string|nil)
+            The NPC's unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Array of accessible configuration tables.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local configs = lia.dialog.getAvailableConfigurations(LocalPlayer(), npc, npc.uniqueID)
+        for _, cfg in ipairs(configs) do print("Config:", cfg.id) end
         ```
 ]]
 function lia.dialog.getAvailableConfigurations(ply, npc, npcID)
@@ -1171,25 +1230,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens the NPC configuration picker UI, prioritizing appearance configuration.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a player selects "Configure NPC" from the properties menu.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        npc (Entity)
+            The NPC entity to configure.
+        npcID (string|nil)
+            The NPC's unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.dialog.openConfigurationPicker(ent, ent.uniqueID)
         ```
 ]]
 function lia.dialog.openConfigurationPicker(npc, npcID)

@@ -17,25 +17,32 @@ lia.faction.teams = lia.faction.teams or {}
 local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group01/male_02.mdl", "models/player/group01/male_03.mdl", "models/player/group01/male_04.mdl", "models/player/group01/male_05.mdl", "models/player/group01/male_06.mdl", "models/player/group01/female_01.mdl", "models/player/group01/female_02.mdl", "models/player/group01/female_03.mdl", "models/player/group01/female_04.mdl", "models/player/group01/female_05.mdl", "models/player/group01/female_06.mdl"}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a new faction with the specified unique ID and data table, setting up team configuration and model caching.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to register factions programmatically, typically in shared files or during faction loading.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique identifier for the faction.
+        data (table)
+            A table containing faction configuration data including name, description, color, models, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number, table
+            Returns the faction index and the faction data table.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local index, faction = lia.faction.register("citizen", {
+            name = "Citizen",
+            desc = "A regular citizen",
+            color = Color(100, 150, 200),
+            models = {"models/player/group01/male_01.mdl"}
+        })
         ```
 ]]
 function lia.faction.register(uniqueID, data)
@@ -78,25 +85,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Precaches model files to ensure they load quickly when needed, handling both string model paths and table-based model data.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called automatically during faction registration to precache all models associated with a faction.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        models (table)
+            A table of model data, where each entry can be a string path or a table with model information.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local models = {"models/player/group01/male_01.mdl", "models/player/group01/female_01.mdl"}
+        lia.faction.cacheModels(models)
         ```
 ]]
 function lia.faction.cacheModels(models)
@@ -111,25 +119,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads faction definitions from Lua files in a specified directory, registering each faction found.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to load faction definitions from organized directory structures.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            The path to the directory containing faction definition files.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.faction.loadFromDir("gamemode/factions")
         ```
 ]]
 function lia.faction.loadFromDir(directory)
@@ -185,25 +193,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves faction data by either its unique ID or index number.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called whenever faction information needs to be accessed by other systems or scripts.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (string|number)
+            The faction's unique ID string or numeric index.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The faction data table, or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local faction = lia.faction.get("citizen")
+        -- or
+        local faction = lia.faction.get(1)
         ```
 ]]
 function lia.faction.get(identifier)
@@ -212,25 +222,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the numeric team index for a faction given its unique ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when the numeric team index is needed for GMod team functions or comparisons.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique identifier of the faction.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            The faction's team index, or nil if the faction doesn't exist.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local index = lia.faction.getIndex("citizen")
+        if index then
+            print("Citizen faction index: " .. index)
+        end
         ```
 ]]
 function lia.faction.getIndex(uniqueID)
@@ -239,25 +252,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all character classes that belong to a specific faction.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to display or work with all classes available to a faction.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            An array of class data tables that belong to the specified faction.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local classes = lia.faction.getClasses("citizen")
+        for _, class in ipairs(classes) do
+            print("Class: " .. class.name)
+        end
         ```
 ]]
 function lia.faction.getClasses(faction)
@@ -270,25 +286,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all players who are currently playing characters in the specified faction.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to iterate over or work with all players belonging to a specific faction.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            An array of player entities who belong to the specified faction.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local players = lia.faction.getPlayers("citizen")
+        for _, player in ipairs(players) do
+            player:ChatPrint("Hello citizens!")
+        end
         ```
 ]]
 function lia.faction.getPlayers(faction)
@@ -302,25 +321,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Counts the number of players currently playing characters in the specified faction.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to know how many players are in a faction for UI display, limits, or statistics.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            The number of players in the specified faction.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local count = lia.faction.getPlayerCount("citizen")
+        print("There are " .. count .. " citizens online")
         ```
 ]]
 function lia.faction.getPlayerCount(faction)
@@ -334,25 +354,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if a faction belongs to a specific category of factions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when determining if a faction is part of a group or category for organizational purposes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier to check.
+        categoryFactions (table)
+            An array of faction identifiers that define the category.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the faction is in the category, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local lawFactions = {"police", "sheriff"}
+        if lia.faction.isFactionCategory("police", lawFactions) then
+            print("This is a law enforcement faction")
+        end
         ```
 ]]
 function lia.faction.isFactionCategory(faction, categoryFactions)
@@ -362,25 +387,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Generates a basic faction configuration programmatically with minimal required parameters.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called for quick faction creation during development or for compatibility with other systems.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        index (number)
+            The numeric team index for the faction.
+        name (string)
+            The display name of the faction.
+        color (Color)
+            The color associated with the faction.
+        default (boolean)
+            Whether this is a default faction that doesn't require whitelisting.
+        models (table)
+            Array of model paths for the faction (optional, uses defaults if not provided).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The created faction data table.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local faction = lia.faction.jobGenerate(5, "Visitor", Color(200, 200, 200), true)
         ```
 ]]
 function lia.faction.jobGenerate(index, name, color, default, models)
@@ -450,25 +483,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Formats and standardizes model data across all factions, converting bodygroup configurations to proper format.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called after faction loading to ensure all model data is properly formatted for use.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Called automatically during faction initialization
+        lia.faction.formatModelData()
         ```
 ]]
 function lia.faction.formatModelData()
@@ -493,25 +526,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all model categories defined for a faction (string keys in the models table).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to display or work with faction model categories in UI or selection systems.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        teamName (string)
+            The unique ID of the faction.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            An array of category names (strings) defined for the faction's models.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local categories = lia.faction.getCategories("citizen")
+        for _, category in ipairs(categories) do
+            print("Category: " .. category)
+        end
         ```
 ]]
 function lia.faction.getCategories(teamName)
@@ -527,25 +563,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all models belonging to a specific category within a faction.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to display or select models from a particular category for character creation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        teamName (string)
+            The unique ID of the faction.
+        category (string)
+            The name of the model category to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            A table of models in the specified category, indexed by their position.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local models = lia.faction.getModelsFromCategory("citizen", "male")
+        for index, model in pairs(models) do
+            print("Model " .. index .. ": " .. (istable(model) and model[1] or model))
+        end
         ```
 ]]
 function lia.faction.getModelsFromCategory(teamName, category)
@@ -561,25 +602,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the default character class for a faction (marked with isDefault = true).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when automatically assigning a class to new characters or when needing the primary class for a faction.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The default class data table for the faction, or nil if no default class exists.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local defaultClass = lia.faction.getDefaultClass("citizen")
+        if defaultClass then
+            print("Default class: " .. defaultClass.name)
+        end
         ```
 ]]
 function lia.faction.getDefaultClass(id)
@@ -605,25 +649,27 @@ FACTION_STAFF = lia.faction.register("staff", {
 if CLIENT then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if the local player has whitelist access to the specified faction on the client side.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called on the client when determining if a faction should be available for character creation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the player has access to the faction, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.faction.hasWhitelist("citizen") then
+            -- Show citizen faction in character creation menu
+        end
         ```
 ]]
     function lia.faction.hasWhitelist(faction)
@@ -643,25 +689,28 @@ if CLIENT then
 else
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks whitelist access for a faction on the server side (currently simplified implementation).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called on the server for faction access validation, though the current implementation is restrictive.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        faction (string|number)
+            The faction identifier (unique ID or index).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True only for default factions, false for all others including staff.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Server-side validation
+        if lia.faction.hasWhitelist("citizen") then
+            -- Allow character creation
+        end
         ```
 ]]
     function lia.faction.hasWhitelist(faction)

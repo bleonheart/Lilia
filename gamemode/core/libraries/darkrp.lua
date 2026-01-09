@@ -19,29 +19,34 @@ DarkRP = DarkRP or {}
 RPExtraTeams = RPExtraTeams or {}
 DarkRP.disabledDefaults = DarkRP.disabledDefaults or {}
 if SERVER then
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Determine whether a position is free of solid contents, players, NPCs, or props.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before spawning DarkRP-style shipments or entities to ensure the destination is clear.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        position (Vector)
+            World position to test.
+        entitiesToIgnore (table|nil)
+            Optional list of entities that should be excluded from the collision check.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true when the spot contains no blocking contents or entities; otherwise false.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local spawnPos = ent:GetPos() + Vector(0, 0, 16)
+        if lia.darkrp.isEmpty(spawnPos) then
+            lia.darkrp.createEntity("Ammo Crate", {ent = "item_ammo_crate", model = "models/Items/ammocrate_smg1.mdl"})
+        end
         ```
-]]
+    ]]
     function lia.darkrp.isEmpty(position, entitiesToIgnore)
         entitiesToIgnore = entitiesToIgnore or {}
         local contents = util.PointContents(position)
@@ -57,29 +62,38 @@ if SERVER then
         return isClear and isEmpty
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Locate the nearest empty position around a starting point within a search radius.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Selecting safe fallback positions for DarkRP-style shipments or NPC spawns.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        startPos (Vector)
+            Origin position to test first.
+        entitiesToIgnore (table|nil)
+            Optional list of entities to ignore while searching.
+        maxDistance (number)
+            Maximum distance to search away from the origin.
+        searchStep (number)
+            Increment used when expanding the search radius.
+        checkArea (Vector)
+            Additional offset tested to ensure enough clearance (for hull height, etc.).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Vector
+            First empty position discovered; if none found, returns startPos.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local spawnPos = lia.darkrp.findEmptyPos(requestPos, nil, 256, 16, Vector(0, 0, 32))
+        npc:SetPos(spawnPos)
         ```
-]]
+    ]]
     function lia.darkrp.findEmptyPos(startPos, entitiesToIgnore, maxDistance, searchStep, checkArea)
         if lia.darkrp.isEmpty(startPos, entitiesToIgnore) and lia.darkrp.isEmpty(startPos + checkArea, entitiesToIgnore) then return startPos end
         for distance = searchStep, maxDistance, searchStep do
@@ -93,29 +107,34 @@ if SERVER then
         return startPos
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Provide a DarkRP-compatible wrapper for Lilia's localized notify system.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        From DarkRP addons or compatibility code that expects DarkRP.notify to exist.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Recipient of the notification.
+        notifyType (number)
+            Unused legacy parameter kept for API parity.
+        duration (number)
+            Unused legacy parameter kept for API parity.
+        message (string)
+            Localization key or message to pass to Lilia's notifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.darkrp.notify(ply, NOTIFY_GENERIC, 4, "You received a paycheck.")
         ```
-]]
+    ]]
     function lia.darkrp.notify(client, notifyType, duration, message)
         client:notifyInfoLocalized(message)
     end
@@ -134,29 +153,34 @@ else
         return text, accumulatedWidth
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Wrap long text to a maximum line width based on the active surface font metrics.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Preparing DarkRP-compatible messages for HUD or chat rendering without overflow.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Message to wrap.
+        fontName (string)
+            Name of the font to measure.
+        maxLineWidth (number)
+            Maximum pixel width allowed per line before inserting a newline.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Wrapped text with newline characters inserted.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local wrapped = lia.darkrp.textWrap("A very long notice message...", "DermaDefault", 240)
+        chat.AddText(color_white, wrapped)
         ```
-]]
+    ]]
     function lia.darkrp.textWrap(text, fontName, maxLineWidth)
         local accumulatedWidth = 0
         surface.SetFont(fontName)
@@ -188,25 +212,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Format a currency amount using Lilia's currency system while matching DarkRP's API.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere DarkRP.formatMoney is expected by compatibility layers or addons.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        amount (number)
+            Currency amount to format.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Localized and formatted currency string.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local paycheck = DarkRP.formatMoney(500)
+        chat.AddText(L("paydayReceived", paycheck))
         ```
 ]]
 function lia.darkrp.formatMoney(amount)
@@ -215,25 +240,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a DarkRP entity definition as a Lilia item for compatibility.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        While converting DarkRP shipments or entities into Lilia items at load time.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Display name for the item.
+        data (table)
+            Supported fields: cmd, ent, model, desc, price, category.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.darkrp.createEntity("Ammo Crate", {
+            ent = "item_ammo_crate",
+            model = "models/Items/ammocrate_smg1.mdl",
+            price = 750,
+            category = "Supplies"
+        })
         ```
 ]]
 function lia.darkrp.createEntity(name, data)
@@ -250,33 +281,80 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Provide an API stub for DarkRP category creation.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Invoked by DarkRP.createCategory during addon initialization; intentionally no-op.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- API parity only; this function performs no actions.
+        lia.darkrp.createCategory()
         ```
 ]]
 function lia.darkrp.createCategory()
 end
 
+--[[
+    Purpose:
+        Placeholder to mirror DarkRP's removeChatCommand; retained for API compatibility.
+
+    When Called:
+        Invoked by addons expecting DarkRP.removeChatCommand to exist; does nothing.
+
+    Parameters:
+        None
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Compatibility stub; no removal is performed.
+        DarkRP.removeChatCommand("ooc")
+        ```
+]]
 function DarkRP.removeChatCommand()
 end
 
+--[[
+    Purpose:
+        Register a DarkRP-style chat command using Lilia's command system.
+
+    When Called:
+        During addon or gamemode initialization to expose chat commands expected by DarkRP.
+
+    Parameters:
+        cmd (string)
+            Chat command name without the leading slash.
+        callback (function)
+            Function invoked as callback(client, ...args); may return a string for error text.
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        DarkRP.defineChatCommand("dropmoney", function(client, amount)
+            -- Custom logic here
+        end)
+        ```
+]]
 function DarkRP.defineChatCommand(cmd, callback)
     cmd = string.lower(cmd)
     lia.command.add(cmd, {
@@ -289,6 +367,34 @@ function DarkRP.defineChatCommand(cmd, callback)
     })
 end
 
+--[[
+    Purpose:
+        Register a privileged DarkRP-style chat command that checks a required privilege.
+
+    When Called:
+        During addon or gamemode initialization for commands that need permission checks.
+
+    Parameters:
+        cmd (string)
+            Chat command name without the leading slash.
+        priv (string)
+            Lilia privilege string required to run the command.
+        callback (function)
+            Function invoked as callback(client, ...args); may return a string for error text.
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        DarkRP.definePrivilegedChatCommand("givelicense", "ManageLicenses", function(client, target)
+            -- Custom logic here
+        end)
+        ```
+]]
 function DarkRP.definePrivilegedChatCommand(cmd, priv, callback)
     cmd = string.lower(cmd)
     lia.command.add(cmd, {

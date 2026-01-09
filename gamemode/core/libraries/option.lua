@@ -15,25 +15,42 @@ lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a configurable option with defaults, callbacks, and metadata.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During initialization to expose settings to the config UI/system.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Option identifier to resolve choices for.
+        name (string)
+            Display name or localization key.
+        desc (string)
+            Description or localization key.
+        default (any)
+            Default value; determines inferred type.
+        callback (function|nil)
+            function(old, new) invoked on change.
+        data (table)
+            Extra fields: category, min/max, options, visible, shouldNetwork, isQuick, type, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.option.add("hudScale", "HUD Scale", "Scale HUD elements", 1.0, function(old, new)
+            hook.Run("HUDScaleChanged", old, new)
+        end, {
+            category = "categoryInterface",
+            min = 0.5,
+            max = 1.5,
+            decimals = 2,
+            isQuick = true
+        })
         ```
 ]]
 function lia.option.add(key, name, desc, default, callback, data)
@@ -78,25 +95,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolve option choices (static or generated) for dropdowns.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        By the config UI before rendering a Table option.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Array/map of options.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local list = lia.option.getOptions("weaponSelectorPosition")
+        for _, opt in pairs(list) do print("Choice:", opt) end
         ```
 ]]
 function lia.option.getOptions(key)
@@ -120,25 +137,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Set an option value, run callbacks/hooks, persist and optionally network it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        From UI interactions or programmatic changes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+        value (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.option.set("BarsAlwaysVisible", true)
         ```
 ]]
 function lia.option.set(key, value)
@@ -154,25 +170,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve an option value with fallback to default or provided default.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere an option influences behavior or UI.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+        default (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local showTime = lia.option.get("ChatShowTime", false)
         ```
 ]]
 function lia.option.get(key, default)
@@ -186,25 +201,23 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Persist option values to disk (data/lilia/options.json).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After option changes; auto-called by lia.option.set.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.option.save()
         ```
 ]]
 function lia.option.save()
@@ -220,25 +233,23 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load option values from disk or initialize defaults when missing.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On client init or config menu load.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("Initialize", "LoadLiliaOptions", lia.option.load)
         ```
 ]]
 function lia.option.load()

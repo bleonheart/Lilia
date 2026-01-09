@@ -16,25 +16,34 @@ lia.config.stored = lia.config.stored or {}
 lia.config._lastSyncedValues = lia.config._lastSyncedValues or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a config entry with defaults, UI metadata, and optional callback.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During schema/module initialization to expose server-stored configuration.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Unique identifier for the config entry.
+        name (string)
+            Display text or localization key for UI.
+        value (any)
+            Default value; type inferred when data.type is omitted.
+        callback (function|nil)
+            Invoked server-side as callback(oldValue, newValue) after set().
+        data (table)
+            Fields such as type, desc, category, options/optionsFunc, noNetworking, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.add("MaxThirdPersonDistance", "maxThirdPersonDistance", 100, function(old, new)
+            lia.option.set("thirdPersonDistance", math.min(lia.option.get("thirdPersonDistance", new), new))
+        end, {category = "categoryGameplay", type = "Int", min = 10, max = 200})
         ```
 ]]
 function lia.config.add(key, name, value, callback, data)
@@ -80,25 +89,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolve a config entry's selectable options, static list or generated.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before rendering dropdown-type configs or validating submitted values.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Config key to resolve options for.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Options array or key/value table; empty when unavailable.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local opts = lia.config.getOptions("Theme")
         ```
 ]]
 function lia.config.getOptions(key)
@@ -122,25 +131,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Override the default value for an already registered config entry.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During migrations, schema overrides, or backward-compatibility fixes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Config key to override.
+        value (any)
+            New default value.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.setDefault("StartingMoney", 300)
         ```
 ]]
 function lia.config.setDefault(key, value)
@@ -150,25 +160,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Force-set a config value and fire update hooks without networking.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Runtime adjustments (admin tools/commands) or hot reload scenarios.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Config key to change.
+        value (any)
+            Value to assign.
+        noSave (boolean|nil)
+            When true, skip persisting to disk.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.forceSet("MaxCharacters", 10, false)
         ```
 ]]
 function lia.config.forceSet(key, value, noSave)
@@ -184,25 +197,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Set a config value, fire update hooks, run server callbacks, network to clients, and persist.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Through admin tools/commands or internal code updating configuration.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Config key to change.
+        value (any)
+            Value to assign and broadcast.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.set("RunSpeed", 420)
         ```
 ]]
 function lia.config.set(key, value)
@@ -227,25 +241,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve a config value with fallback to its stored default or a provided default.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere configuration influences gameplay or UI logic.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Config key to read.
+        default (any)
+            Optional fallback when no stored value or default exists.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
+            Stored value, default value, or supplied fallback.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local walkSpeed = lia.config.get("WalkSpeed", 200)
         ```
 ]]
 function lia.config.get(key, default)
@@ -265,25 +281,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load config values from the database (server) or request them from the server (client).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On initialization to hydrate lia.config.stored after database connectivity.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Server path is asynchronous; client path simply sends a request.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("DatabaseConnected", "LoadLiliaConfig", lia.config.load)
         ```
 ]]
 function lia.config.load()
@@ -348,29 +363,30 @@ function lia.config.load()
 end
 
 if SERVER then
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Collect config entries whose values differ from last synced values or their defaults.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Prior to sending incremental config updates to clients.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        includeDefaults (boolean|nil)
+            When true, compare against defaults instead of last synced values.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            key → value for configs that changed.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local changed = lia.config.getChangedValues()
+        if next(changed) then lia.config.send() end
         ```
-]]
+    ]]
     function lia.config.getChangedValues(includeDefaults)
         local data = {}
         for k, v in pairs(lia.config.stored) do
@@ -395,29 +411,28 @@ if SERVER then
         return data
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Check whether any config values differ from the last synced snapshot.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        To determine if a resync to clients is required.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True when at least one config value has changed.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.config.hasChanges() then lia.config.send() end
         ```
-]]
+    ]]
     function lia.config.hasChanges()
         if table.Count(lia.config._lastSyncedValues) == 0 and table.Count(lia.config.stored) > 0 then
             for key, config in pairs(lia.config.stored) do
@@ -436,29 +451,29 @@ if SERVER then
         return count > 0
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Send config values to one player (full payload) or broadcast only changed values.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After config changes or when a player joins the server.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+            Target player for full sync; nil broadcasts only changed values.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("PlayerInitialSpawn", "SyncConfig", function(ply) lia.config.send(ply) end)
+        lia.config.send() -- broadcast diffs
         ```
-]]
+    ]]
     function lia.config.send(client)
         local data
         if client then
@@ -532,29 +547,27 @@ if SERVER then
         end
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Persist all config values to the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After changes, on shutdown, or during scheduled saves.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.save()
         ```
-]]
+    ]]
     function lia.config.save()
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local rows = {}
@@ -576,29 +589,27 @@ if SERVER then
         if #ops > 0 then deferred.all(ops) end
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Reset all config values to defaults, then save and sync to clients.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During admin resets or troubleshooting.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.config.reset()
         ```
-]]
+    ]]
     function lia.config.reset()
         for _, cfg in pairs(lia.config.stored) do
             local oldValue = cfg.value

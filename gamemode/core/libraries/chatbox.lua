@@ -15,25 +15,25 @@ lia.chat = lia.chat or {}
 lia.chat.classes = lia.chat.classes or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Prepend a timestamp to chat messages based on option settings.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During chat display formatting (client) to show the time.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ooc (boolean)
+            Whether the chat is OOC (affects spacing).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Timestamp text or empty string.
 
     Realm:
-        <Client | Server | Shared>
+        Shared (used clientside)
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        chat.AddText(lia.chat.timestamp(false), Color(255,255,255), message)
         ```
 ]]
 function lia.chat.timestamp(ooc)
@@ -42,25 +42,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a chat class (IC/OOC/whisper/custom) with prefixes and rules.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On initialization to add new chat types and bind aliases/commands.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        chatType (string)
+        data (table)
+            Fields: prefix, radius/onCanHear, onCanSay, format, color, arguments, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared (prefix commands created clientside)
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.chat.register("yell", {
+            prefix = {"/y", "/yell"},
+            radius = 600,
+            format = "chatYellFormat",
+            arguments = {{name = "message", type = "string"}},
+            onChatAdd = function(speaker, text) chat.AddText(Color(255,200,120), "[Y] ", speaker:Name(), ": ", text) end
+        })
         ```
 ]]
 function lia.chat.register(chatType, data)
@@ -141,25 +147,32 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Parse a raw chat message to determine chat type, strip prefixes, and send.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On client (local send) and server (routing) before dispatching chat.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+        message (string)
+        noSend (boolean|nil)
+            If true, do not forward to recipients (client-side parsing only).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string, string, boolean
+            chatType, message, anonymous
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- client
+        lia.chat.parse(LocalPlayer(), "/y Hello there!")
+        -- server hook
+        hook.Add("PlayerSay", "LiliaChatParse", function(ply, txt)
+            if lia.chat.parse(ply, txt) then return "" end
+        end)
         ```
 ]]
 function lia.chat.parse(client, message, noSend)
@@ -205,25 +218,28 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Send a chat message to eligible listeners, honoring canHear/canSay rules.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Server-side after parsing chat or programmatic chat generation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        speaker (Player)
+        chatType (string)
+        text (string)
+        anonymous (boolean)
+        receivers (table|nil)
+            Optional explicit receiver list.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.chat.send(ply, "ic", "Hello world", false)
         ```
 ]]
     function lia.chat.send(speaker, chatType, text, anonymous, receivers)

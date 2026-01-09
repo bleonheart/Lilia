@@ -15,25 +15,25 @@ lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Create all registered fonts on the client and count successes/failures.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After registration or config load to ensure fonts exist before drawing.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("RefreshFonts", "ReloadAllFonts", function()
+                lia.font.loadFonts()
+            end)
         ```
 ]]
 function lia.font.loadFonts()
@@ -54,25 +54,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a single font definition and create it clientside if possible.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During font setup or dynamically when encountering unknown font names.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fontName (string)
+            Unique font identifier.
+        fontData (table)
+            surface.CreateFont data table.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.font.register("liaDialogHeader", {
+                font = "Montserrat Bold",
+                size = 28,
+                weight = 800,
+                antialias = true
+            })
         ```
 ]]
 function lia.font.register(fontName, fontData)
@@ -86,25 +92,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        List all registered font identifiers.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Populate dropdowns or config options for font selection.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Sorted array of font names.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, name in ipairs(lia.font.getAvailableFonts()) do
+                print("Font:", name)
+            end
         ```
 ]]
 function lia.font.getAvailableFonts()
@@ -119,25 +126,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Convert a base font name to its bold variant.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When auto-registering bold/shadow variants of LiliaFont entries.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fontName (string)
+            Base font name.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Best-effort bold font name.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local boldName = lia.font.getBoldFontName("Montserrat Medium")
+            lia.font.register("DialogTitle", {font = boldName, size = 26, weight = 800})
         ```
 ]]
 function lia.font.getBoldFontName(fontName)
@@ -150,25 +158,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register the full suite of Lilia fonts (regular, bold, italic, sizes).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On config load or when switching the base font setting.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fontName (string|nil)
+            Base font name; defaults to config Font.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            concommand.Add("lia_reload_fonts", function()
+                local base = lia.config.get("Font", "Montserrat Medium")
+                lia.font.registerFonts(base)
+                timer.Simple(0.1, lia.font.loadFonts)
+            end)
         ```
 ]]
 function lia.font.registerFonts(fontName)

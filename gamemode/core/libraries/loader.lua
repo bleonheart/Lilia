@@ -295,25 +295,30 @@ local ConditionalFiles = {
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Include a Lua file with realm auto-detection and AddCSLuaFile handling.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Throughout bootstrap to load framework, module, and compatibility files.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        path (string)
+            File path.
+        realm (string|nil)
+            "server" | "client" | "shared". Auto-detected from filename if nil.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Force client-only include for a UI helper.
+            lia.loader.include("lilia/gamemode/core/ui/cl_helper.lua", "client")
+
+            -- Auto-detect realm from prefix (sv_/cl_/sh_).
+            lia.loader.include("schema/plugins/sv_custom.lua")
         ```
 ]]
 function lia.loader.include(path, realm)
@@ -352,25 +357,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Include every Lua file in a directory; optionally recurse subfolders.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        To load plugin folders or schema-specific directories.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dir (string)
+            Directory relative to gamemode root unless raw=true.
+        raw (boolean|nil)
+            If true, treat dir as absolute (no schema/gamemode prefix).
+        deep (boolean|nil)
+            If true, recurse into subfolders.
+        realm (string|nil)
+            Force realm for all files; auto-detect when nil.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load all schema hooks recursively.
+            lia.loader.includeDir("schema/hooks", false, true)
         ```
 ]]
 function lia.loader.includeDir(dir, raw, deep, realm)
@@ -392,25 +403,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Include a directory grouping files by realm (sv_/cl_/sh_) with optional recursion.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Loading modular folders (e.g., plugins, languages, meta) with mixed realms.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dir (string)
+            Directory relative to gamemode root unless raw=true.
+        raw (boolean|nil)
+            If true, treat dir as absolute.
+        recursive (boolean|nil)
+            Recurse into subfolders when true.
+        forceRealm (string|nil)
+            Override realm detection for all files.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load all plugin folders, respecting sv_/cl_/sh_ prefixes.
+            lia.loader.includeGroupedDir("schema/plugins", false, true)
         ```
 ]]
 function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
@@ -489,25 +506,27 @@ local privateURL = "https://bleonheart.github.io/modules.json"
 local versionURL = "https://liliaframework.github.io/versioning/lilia.json"
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Check framework and module versions against remote manifests.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During startup or by admin command to report outdated modules.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            concommand.Add("lia_check_updates", function(ply)
+                if not IsValid(ply) or ply:IsAdmin() then
+                    lia.loader.checkForUpdates()
+                end
+            end)
         ```
 ]]
 function lia.loader.checkForUpdates()
@@ -770,7 +789,7 @@ end
             This function does not return any value.
 
     Realm:
-        Server
+        Shared
 
     Example Usage:
         ```lua
@@ -825,25 +844,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Include and register scripted entities, weapons, and effects under a path.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During initialization to load custom entities from addons/schema.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        path (string)
+            Base path containing entities/weapons/effects subfolders.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load schema-specific entities.
+            lia.loader.includeEntities("schema/entities")
         ```
 ]]
 function lia.loader.includeEntities(path)
@@ -963,25 +982,25 @@ end
 local hasInitializedModules = false
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Initialize modules, apply reload syncs, and announce hot reloads.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On gamemode initialize and OnReloaded; supports hot-reload flow.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        isReload (boolean)
+            true when called from OnReloaded.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Called automatically from GM:Initialize / GM:OnReloaded.
+            lia.loader.initializeGamemode(false)
         ```
 ]]
 function lia.loader.initializeGamemode(isReload)

@@ -174,25 +174,28 @@ lia.meta.item.width = 1
 lia.meta.item.height = 1
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves an item definition (base or regular item) by its unique identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to access item definitions for registration, validation, or manipulation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (string)
+            The unique identifier of the item to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil
+            The item definition table if found, nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local weaponItem = lia.item.get("weapon_pistol")
+            if weaponItem then
+                print("Found weapon:", weaponItem.name)
+            end
         ```
 ]]
 function lia.item.get(identifier)
@@ -201,25 +204,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves an instanced item by its ID and determines its current location.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to access specific item instances, typically for manipulation or inspection.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        itemID (number)
+            The unique ID of the instanced item to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil, string
+            A table containing the item and its location ("inventory", "world", or "unknown"), or nil and an error message if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local itemData, errorMsg = lia.item.getItemByID(123)
+            if itemData then
+                print("Item found at:", itemData.location)
+                -- Use itemData.item for item operations
+            else
+                print("Error:", errorMsg)
+            end
         ```
 ]]
 function lia.item.getItemByID(itemID)
@@ -241,25 +250,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves an instanced item directly by its ID without location information.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to access item instances for direct manipulation without location context.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        itemID (number)
+            The unique ID of the instanced item to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil, string
+            The item instance if found, or nil and an error message if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local item, errorMsg = lia.item.getInstancedItemByID(123)
+            if item then
+                item:setData("customValue", "example")
+            else
+                print("Error:", errorMsg)
+            end
         ```
 ]]
 function lia.item.getInstancedItemByID(itemID)
@@ -271,25 +285,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the data table of an instanced item by its ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to access or inspect the custom data stored on an item instance.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        itemID (number)
+            The unique ID of the instanced item to retrieve data from.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil, string
+            The item's data table if found, or nil and an error message if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local data, errorMsg = lia.item.getItemDataByID(123)
+            if data then
+                print("Item durability:", data.durability or "N/A")
+            else
+                print("Error:", errorMsg)
+            end
         ```
 ]]
 function lia.item.getItemDataByID(itemID)
@@ -301,25 +320,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads and registers an item from a file path by extracting the unique ID and registering it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during item loading process to register items from files in the items directory.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        path (string)
+            The file path of the item to load.
+        baseID (string, optional)
+            The base item ID to inherit from.
+        isBaseItem (boolean, optional)
+            Whether this is a base item definition.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load a regular item
+            lia.item.load("lilia/gamemode/items/food_apple.lua")
+            -- Load a base item
+            lia.item.load("lilia/gamemode/items/base/sh_food.lua", nil, true)
         ```
 ]]
 function lia.item.load(path, baseID, isBaseItem)
@@ -337,25 +362,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if an object is a valid Lilia item instance.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called to validate that an object is an item before performing item-specific operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        object (any)
+            The object to check if it's an item.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the object is a valid item, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local someObject = getSomeObject()
+            if lia.item.isItem(someObject) then
+                someObject:setData("used", true)
+            else
+                print("Object is not an item")
+            end
         ```
 ]]
 function lia.item.isItem(object)
@@ -364,25 +394,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves an inventory instance by its ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to access inventory objects for item operations or inspection.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        invID (number)
+            The unique ID of the inventory to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil
+            The inventory instance if found, nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local inventory = lia.item.getInv(5)
+            if inventory then
+                print("Inventory size:", inventory:getWidth(), "x", inventory:getHeight())
+            end
         ```
 ]]
 function lia.item.getInv(invID)
@@ -391,25 +424,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Adds a new item rarity tier with an associated color for visual identification.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during item system initialization to define available rarity levels for items.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            The name of the rarity tier (e.g., "Common", "Rare", "Legendary").
+        color (Color)
+            The color associated with this rarity tier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.item.addRarities("Mythical", Color(255, 0, 255))
+            lia.item.addRarities("Divine", Color(255, 215, 0))
         ```
 ]]
 function lia.item.addRarities(name, color)
@@ -420,25 +455,36 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers an item definition with the Lilia item system, setting up inheritance and default functions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during item loading to register item definitions, either from files or programmatically generated.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique identifier for the item.
+        baseID (string, optional)
+            The base item ID to inherit from (defaults to lia.meta.item).
+        isBaseItem (boolean, optional)
+            Whether this is a base item definition.
+        path (string, optional)
+            The file path for loading the item (used for shared loading).
+        luaGenerated (boolean, optional)
+            Whether the item is generated programmatically rather than loaded from a file.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The registered item definition table.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Register a base item
+            lia.item.register("base_weapon", nil, true, "path/to/base_weapon.lua")
+            -- Register a regular item
+            lia.item.register("weapon_pistol", "base_weapon", false, "path/to/weapon_pistol.lua")
         ```
 ]]
 function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
@@ -511,25 +557,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Queues property overrides for an item that will be applied when the item is initialized.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during item system setup to modify item properties before they are finalized.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique ID of the item to override.
+        overrides (table)
+            A table of properties to override on the item.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.item.overrideItem("weapon_pistol", {
+                name = "Custom Pistol",
+                width = 2,
+                height = 1,
+                price = 500
+            })
         ```
 ]]
 function lia.item.overrideItem(uniqueID, overrides)
@@ -543,25 +595,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads all items from a directory structure, organizing base items and regular items.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to load all item definitions from the items directory.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            The directory path containing the item files to load.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load all items from the gamemode's items directory
+            lia.item.loadFromDir("lilia/gamemode/items")
         ```
 ]]
 function lia.item.loadFromDir(directory)
@@ -588,25 +640,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new item instance from an item definition with a specific ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when instantiating items from the database or creating new items programmatically.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique ID of the item definition to instantiate.
+        id (number)
+            The unique instance ID for this item.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The newly created item instance.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Create a new pistol item instance
+            local pistol = lia.item.new("weapon_pistol", 123)
+            pistol:setData("durability", 100)
         ```
 ]]
 function lia.item.new(uniqueID, id)
@@ -634,25 +690,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a new inventory type with specified dimensions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during inventory system initialization to define different inventory types.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        invType (string)
+            The unique type identifier for this inventory.
+        w (number)
+            The width of the inventory in grid units.
+        h (number)
+            The height of the inventory in grid units.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Register a backpack inventory type
+            lia.item.registerInv("backpack", 4, 6)
+            -- Register a safe inventory type
+            lia.item.registerInv("safe", 8, 8)
         ```
 ]]
 function lia.item.registerInv(invType, w, h)
@@ -673,25 +735,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new inventory instance for a character and syncs it with the appropriate player.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when creating new inventories for characters, such as during character creation or item operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        owner (number)
+            The character ID that owns this inventory.
+        invType (string)
+            The type of inventory to create.
+        callback (function, optional)
+            Function called when the inventory is created and ready.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Create a backpack inventory for character ID 5
+            lia.item.newInv(5, "backpack", function(inventory)
+                print("Backpack created with ID:", inventory:getID())
+            end)
         ```
 ]]
 function lia.item.newInv(owner, invType, callback)
@@ -714,25 +782,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new inventory instance with specified dimensions and registers it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when creating inventories programmatically, such as for containers or special storage.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        w (number)
+            The width of the inventory in grid units.
+        h (number)
+            The height of the inventory in grid units.
+        id (number)
+            The unique ID for this inventory instance.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The created inventory instance.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Create a 4x6 container inventory
+            local container = lia.item.createInv(4, 6, 1001)
+            print("Container created with ID:", container.id)
         ```
 ]]
 function lia.item.createInv(w, h, id)
@@ -814,25 +888,32 @@ lia.item.holdTypeSizeMapping = {
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Adds custom override data for weapon items during auto-generation.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during weapon item generation to customize properties of specific weapons.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        className (string)
+            The weapon class name to override.
+        data (table)
+            The override data containing weapon properties.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.item.addWeaponOverride("weapon_pistol", {
+                name = "Custom Pistol",
+                width = 2,
+                height = 1,
+                price = 500,
+                model = "models/weapons/custom_pistol.mdl"
+            })
         ```
 ]]
 function lia.item.addWeaponOverride(className, data)
@@ -841,25 +922,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Adds a weapon class to the blacklist to prevent it from being auto-generated as an item.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during weapon generation setup to exclude certain weapons from item creation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        className (string)
+            The weapon class name to blacklist.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Prevent admin tools from being generated as items
+            lia.item.addWeaponToBlacklist("weapon_physgun")
+            lia.item.addWeaponToBlacklist("gmod_tool")
         ```
 ]]
 function lia.item.addWeaponToBlacklist(className)
@@ -868,25 +950,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Auto-generates item definitions for all weapons in the game's weapons list.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization if auto-weapon generation is enabled.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Generate weapon items (usually called automatically)
+            if lia.config.get("AutoWeaponItemGeneration", true) then
+                lia.item.generateWeapons()
+            end
         ```
 ]]
 function lia.item.generateWeapons()
@@ -916,25 +999,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Auto-generates item definitions for ammunition entities from compatible weapon mods.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization if auto-ammo generation is enabled.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Generate ammo items (usually called automatically)
+            if lia.config.get("AutoAmmoItemGeneration", true) then
+                lia.item.generateAmmo()
+            end
         ```
 ]]
 function lia.item.generateAmmo()
@@ -982,25 +1066,40 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sets data on an item instance by its ID and synchronizes the changes.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to modify item data server-side and sync to clients.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        itemID (number)
+            The unique ID of the item instance.
+        key (string)
+            The data key to set.
+        value (any)
+            The value to set for the key.
+        receivers (table, optional)
+            Specific players to sync the data to.
+        noSave (boolean, optional)
+            Whether to skip saving to database.
+        noCheckEntity (boolean, optional)
+            Whether to skip entity validation.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean, string
+            True if successful, false and error message if failed.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local success, errorMsg = lia.item.setItemDataByID(123, "durability", 75)
+            if success then
+                print("Item durability updated")
+            else
+                print("Error:", errorMsg)
+            end
         ```
 ]]
     function lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)
@@ -1014,25 +1113,38 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new item instance in the database and returns the created item.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when creating new items that need to be persisted to the database.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        index (number|string)
+            The inventory ID or unique ID if first parameter is string.
+        uniqueID (string|table)
+            The item definition unique ID or item data if index is string.
+        itemData (table, optional)
+            The item data to set on creation.
+        x (number, optional)
+            The X position in inventory.
+        y (number, optional)
+            The Y position in inventory.
+        callback (function, optional)
+            Function called when item is created.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            A deferred promise that resolves with the created item.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Create a pistol in inventory 5 at position 1,1
+            lia.item.instance(5, "weapon_pistol", {}, 1, 1):next(function(item)
+                print("Created item with ID:", item:getID())
+            end)
         ```
 ]]
     function lia.item.instance(index, uniqueID, itemData, x, y, callback)
@@ -1087,25 +1199,25 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Deletes an item instance by its ID from memory and/or database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when permanently removing items from the game world.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            The unique ID of the item to delete.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Delete item with ID 123
+            lia.item.deleteByID(123)
         ```
 ]]
     function lia.item.deleteByID(id)
@@ -1118,25 +1230,27 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads item instances from the database by their IDs and recreates them in memory.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during server startup or when needing to restore items from the database.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        itemIndex (number|table)
+            Single item ID or array of item IDs to load.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load a single item
+            lia.item.loadItemByID(123)
+            -- Load multiple items
+            lia.item.loadItemByID({123, 456, 789})
         ```
 ]]
     function lia.item.loadItemByID(itemIndex)
@@ -1170,25 +1284,36 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates and spawns an item entity in the world at the specified position.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when dropping items or creating item entities in the game world.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique ID of the item to spawn.
+        position (Vector)
+            The position to spawn the item at.
+        callback (function, optional)
+            Function called when item is spawned.
+        angles (Angle, optional)
+            The angles to set on the spawned item.
+        data (table, optional)
+            The item data to set on creation.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil
+            A deferred promise that resolves with the spawned item, or nil if synchronous.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Spawn a pistol at a position
+            lia.item.spawn("weapon_pistol", Vector(0, 0, 0), function(item)
+                print("Spawned item:", item:getName())
+            end)
         ```
 ]]
     function lia.item.spawn(uniqueID, position, callback, angles, data)
@@ -1222,25 +1347,33 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Restores an inventory from the database and sets its dimensions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when loading saved inventories from the database.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        invID (number)
+            The unique ID of the inventory to restore.
+        w (number)
+            The width of the inventory.
+        h (number)
+            The height of the inventory.
+        callback (function, optional)
+            Function called when inventory is restored.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Restore a 4x6 inventory
+            lia.item.restoreInv(5, 4, 6, function(inventory)
+                print("Restored inventory with", inventory:getItemCount(), "items")
+            end)
         ```
 ]]
     function lia.item.restoreInv(invID, w, h, callback)

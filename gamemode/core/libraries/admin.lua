@@ -12,7 +12,7 @@
         The administrator library provides comprehensive functionality for managing user groups, privileges, and administrative permissions in the Lilia framework. It handles the creation, modification, and deletion of user groups with inheritance-based privilege systems. The library operates on both server and client sides, with the server managing privilege storage and validation while the client provides user interface elements for administrative management. It includes integration with CAMI (Comprehensive Administration Management Interface) for compatibility with other administrative systems. The library ensures proper privilege inheritance, automatic privilege registration for tools and properties, and comprehensive logging of administrative actions. It supports both console-based and GUI-based administrative command execution with proper permission checking and validation.
 
     Setting Superadmin:
-        To set yourself as superadmin in the console, use: plysetgroup [NAME] superadmin
+        To set yourself as superadmin in the console, use: plysetgroup "STEAMID" superadmin
         The system has three default user groups with inheritance levels: user (level 1), admin (level 2), and superadmin (level 3).
         Superadmin automatically has all privileges and cannot be restricted by any permission checks.
 ]]
@@ -290,25 +290,43 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Applies kick or ban punishments to a player based on the provided parameters.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when an automated system or admin action needs to punish a player with a kick or ban.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            The player to punish.
+        infraction (string)
+            Description of the infraction that caused the punishment.
+        kick (boolean)
+            Whether to kick the player.
+        ban (boolean)
+            Whether to ban the player.
+        time (number)
+            Ban duration in minutes (only used if ban is true).
+        kickKey (string)
+            Localization key for kick message (defaults to "kickedForInfraction").
+        banKey (string)
+            Localization key for ban message (defaults to "bannedForInfraction").
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Kick a player for spamming
+        lia.administrator.applyPunishment(player, "Spamming in chat", true, false, nil, nil, nil)
+
+        -- Ban a player for griefing for 24 hours
+        lia.administrator.applyPunishment(player, "Griefing", false, true, 1440, nil, nil)
+
+        -- Both kick and ban with custom messages
+        lia.administrator.applyPunishment(player, "Hacking", true, true, 10080, "kickedForHacking", "bannedForHacking")
         ```
 ]]
 function lia.administrator.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)
@@ -321,25 +339,40 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if a player has access to a specific privilege based on their usergroup and privilege requirements.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when verifying if a player can perform an action that requires specific permissions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ply (Player|string)
+            The player to check access for, or a usergroup string.
+        privilege (string)
+            The privilege ID to check access for (e.g., "command_kick", "property_door", "tool_remover").
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true if the player has access to the privilege, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Check if player can use kick command
+        if lia.administrator.hasAccess(player, "command_kick") then
+            -- Allow kicking
+        end
+
+        -- Check if player has access to a tool
+        if lia.administrator.hasAccess(player, "tool_remover") then
+            -- Give tool access
+        end
+
+        -- Check usergroup access directly
+        if lia.administrator.hasAccess("admin", "command_ban") then
+            -- Admin group has ban access
+        end
         ```
 ]]
 function lia.administrator.hasAccess(ply, privilege)
@@ -409,25 +442,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Saves administrator group configurations and privileges to the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when administrator settings are modified and need to be persisted, or when syncing with clients.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        noNetwork (boolean)
+            If true, skips network synchronization with clients after saving.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Save admin groups without network sync
+        lia.administrator.save(true)
+
+        -- Save and sync with all clients
+        lia.administrator.save(false)
+        -- or simply:
+        lia.administrator.save()
         ```
 ]]
 function lia.administrator.save(noNetwork)
@@ -466,25 +504,42 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a new privilege in the administrator system with specified access levels and categories.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when defining new administrative permissions that can be granted to user groups.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        priv (table)
+            Privilege configuration table with the following fields:
+            - ID (string): Unique identifier for the privilege (required)
+            - Name (string): Display name for the privilege (optional, defaults to ID)
+            - MinAccess (string): Minimum usergroup required ("user", "admin", "superadmin")
+            - Category (string): Category for organizing privileges in menus
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Register a custom admin command privilege
+        lia.administrator.registerPrivilege({
+            ID = "command_customban",
+            Name = "Custom Ban Command",
+            MinAccess = "admin",
+            Category = "staffCommands"
+        })
+
+        -- Register a property privilege
+        lia.administrator.registerPrivilege({
+            ID = "property_teleport",
+            Name = "Teleport Property",
+            MinAccess = "admin",
+            Category = "staffPermissions"
+        })
         ```
 ]]
 function lia.administrator.registerPrivilege(priv)
@@ -524,25 +579,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Removes a privilege from the administrator system and cleans up all associated data.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when a privilege is no longer needed or when cleaning up removed permissions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (string)
+            The privilege ID to unregister.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Unregister a custom privilege
+        lia.administrator.unregisterPrivilege("command_customban")
+
+        -- Clean up a tool privilege
+        lia.administrator.unregisterPrivilege("tool_remover")
         ```
 ]]
 function lia.administrator.unregisterPrivilege(id)
@@ -567,25 +625,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Applies privilege inheritance to a usergroup, copying permissions from parent groups and ensuring appropriate access levels.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when setting up or updating usergroup permissions to ensure inheritance rules are properly applied.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        groupName (string)
+            The name of the usergroup to apply inheritance to.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Apply inheritance to a moderator group
+        lia.administrator.applyInheritance("moderator")
+
+        -- Apply inheritance after creating a new usergroup
+        lia.administrator.applyInheritance("customadmin")
         ```
 ]]
 function lia.administrator.applyInheritance(groupName)
@@ -622,25 +683,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads administrator group configurations from the database and initializes the admin system.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during server startup to restore saved administrator settings and permissions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Load admin system (called automatically during server initialization)
+        lia.administrator.load()
         ```
 ]]
 function lia.administrator.load()
@@ -696,25 +756,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new administrator usergroup with specified configuration and inheritance.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when setting up new administrator roles or permission levels in the system.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        groupName (string)
+            The name of the usergroup to create.
+        info (table)
+            Optional configuration table for the group (privileges, inheritance, etc.).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Create a moderator group
+        lia.administrator.createGroup("moderator", {
+            _info = {
+                inheritance = "user",
+                types = {}
+            },
+            command_kick = true,
+            command_mute = true
+        })
+
+        -- Create a custom admin group
+        lia.administrator.createGroup("customadmin")
         ```
 ]]
 function lia.administrator.createGroup(groupName, info)
@@ -740,25 +812,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Removes an administrator usergroup from the system.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when cleaning up or removing unused administrator roles.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        groupName (string)
+            The name of the usergroup to remove.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Remove a custom moderator group
+        lia.administrator.removeGroup("moderator")
+
+        -- Remove a custom admin group
+        lia.administrator.removeGroup("customadmin")
         ```
 ]]
 function lia.administrator.removeGroup(groupName)
@@ -781,25 +856,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Renames an existing administrator usergroup to a new name.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when reorganizing or rebranding administrator roles.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        oldName (string)
+            The current name of the usergroup to rename.
+        newName (string)
+            The new name for the usergroup.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Rename moderator group to staff
+        lia.administrator.renameGroup("moderator", "staff")
+
+        -- Rename admin group to administrator
+        lia.administrator.renameGroup("admin", "administrator")
         ```
 ]]
 function lia.administrator.renameGroup(oldName, newName)
@@ -834,25 +914,28 @@ end
 if SERVER then
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sends a notification to all administrators who have permission to see admin notifications.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when important administrative events need to be communicated to staff.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        notification (string)
+            The notification message key to send.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Notify admins of a potential exploit
+        lia.administrator.notifyAdmin("exploitDetected")
+
+        -- Notify admins of a player report
+        lia.administrator.notifyAdmin("playerReportReceived")
         ```
 ]]
     function lia.administrator.notifyAdmin(notification)
@@ -863,25 +946,32 @@ if SERVER then
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Grants a specific permission to an administrator usergroup.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when configuring permissions for administrator roles.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        groupName (string)
+            The name of the usergroup to grant the permission to.
+        permission (string)
+            The permission ID to grant.
+        silent (boolean)
+            If true, skips network synchronization.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Grant kick permission to moderators
+        lia.administrator.addPermission("moderator", "command_kick", false)
+
+        -- Grant ban permission to admins silently
+        lia.administrator.addPermission("admin", "command_ban", true)
         ```
 ]]
     function lia.administrator.addPermission(groupName, permission, silent)
@@ -902,25 +992,32 @@ if SERVER then
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Removes a specific permission from an administrator usergroup.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when revoking permissions from administrator roles.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        groupName (string)
+            The name of the usergroup to remove the permission from.
+        permission (string)
+            The permission ID to remove.
+        silent (boolean)
+            If true, skips network synchronization.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Remove kick permission from moderators
+        lia.administrator.removePermission("moderator", "command_kick", false)
+
+        -- Remove ban permission from admins silently
+        lia.administrator.removePermission("admin", "command_ban", true)
         ```
 ]]
     function lia.administrator.removePermission(groupName, permission, silent)
@@ -941,25 +1038,28 @@ if SERVER then
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Synchronizes administrator privileges and usergroups with clients.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when administrator data changes and needs to be updated on clients, or when a player joins.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        c (Player)
+            Optional specific client to sync with. If not provided, syncs with all clients in batches.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Sync admin data with all clients
+        lia.administrator.sync()
+
+        -- Sync admin data with a specific player
+        lia.administrator.sync(specificPlayer)
         ```
 ]]
     function lia.administrator.sync(c)
@@ -1006,25 +1106,27 @@ if SERVER then
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if administrator privileges or groups have changed since the last sync.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called to determine if a sync operation is needed.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true if there are unsynced changes, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Check if admin data needs syncing
+        if lia.administrator.hasChanges() then
+            lia.administrator.sync()
+        end
         ```
 ]]
     function lia.administrator.hasChanges()
@@ -1035,90 +1137,121 @@ if SERVER then
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sets the usergroup of a player entity.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when promoting, demoting, or changing a player's administrative role.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ply (Player)
+            The player to change the usergroup for.
+        newGroup (string)
+            The new usergroup name to assign.
+        source (string)
+            Optional source identifier for logging.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Promote player to admin
+        lia.administrator.setPlayerUsergroup(player, "admin", "promotion")
+
+        -- Demote player to user
+        lia.administrator.setPlayerUsergroup(player, "user", "demotion")
         ```
 ]]
     function lia.administrator.setPlayerUsergroup(ply, newGroup, source)
         if not IsValid(ply) then return end
-        local old = tostring(ply:GetUserGroup() or "user")
-        local new = tostring(newGroup or "user")
-        if old == new then return end
-        ply:SetUserGroup(new)
-        if CAMI then CAMI.SignalUserGroupChanged(ply, old, new, source or "Lilia") end
+        lia.administrator.setSteamIDUsergroup(ply:SteamID(), newGroup, source)
     end
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sets the usergroup of a player by their SteamID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when changing a player's usergroup using their SteamID, useful for offline players.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        steamId (string)
+            The SteamID of the player to change the usergroup for.
+        newGroup (string)
+            The new usergroup name to assign.
+        source (string)
+            Optional source identifier for logging.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Set offline player's usergroup to admin
+        lia.administrator.setSteamIDUsergroup("STEAM_0:1:12345678", "admin", "promotion")
+
+        -- Demote player by SteamID
+        lia.administrator.setSteamIDUsergroup("STEAM_0:1:12345678", "user", "demotion")
         ```
 ]]
     function lia.administrator.setSteamIDUsergroup(steamId, newGroup, source)
-        local sid = tostring(steamId or "")
-        if sid == "" then return end
+        local sid = string.Trim(tostring(steamId or ""))
+        if sid == "" or not string.match(sid, "^STEAM_%d+:%d+:%d+$") then return end
+        local new = tostring(newGroup or "user")
+        if new ~= "user" and not lia.administrator.groups[new] then return end
         local ply = lia.util.getBySteamID(sid)
         local old = IsValid(ply) and tostring(ply:GetUserGroup() or "user") or "user"
-        local new = tostring(newGroup or "user")
+        if old == new then return end
         if IsValid(ply) then ply:SetUserGroup(new) end
         if CAMI then CAMI.SignalSteamIDUserGroupChanged(sid, old, new, source or "Lilia") end
+        hook.Run("OnSetUsergroup", sid, new, source, ply)
     end
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Executes administrative commands on players with proper permission checking and logging.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when an administrator uses commands like kick, ban, mute, gag, freeze, slay, bring, goto, etc.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        cmd (string)
+            The command to execute (e.g., "kick", "ban", "mute", "gag", "freeze", "slay", "bring", "goto", "return", "jail", "cloak", "god", "ignite", "strip", "respawn", "blind").
+        victim (Player|string)
+            The target player entity or SteamID string.
+        dur (number|string)
+            Duration for commands that support time limits (ban, freeze, blind, ignite).
+        reason (string)
+            Reason for the action (used in kick, ban, etc.).
+        admin (Player)
+            The administrator executing the command.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true if the command was executed successfully, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Kick a player for spamming
+        lia.administrator.serverExecCommand("kick", targetPlayer, nil, "Spamming in chat", adminPlayer)
+
+        -- Ban a player for 24 hours
+        lia.administrator.serverExecCommand("ban", targetPlayer, 1440, "Griefing", adminPlayer)
+
+        -- Mute a player
+        lia.administrator.serverExecCommand("mute", targetPlayer, nil, nil, adminPlayer)
+
+        -- Bring a player to admin's position
+        lia.administrator.serverExecCommand("bring", targetPlayer, nil, nil, adminPlayer)
         ```
 ]]
     function lia.administrator.serverExecCommand(cmd, victim, dur, reason, admin)
@@ -1450,25 +1583,35 @@ else
 
     --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Executes an administrative command using the client-side command system.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when running admin commands through console commands or automated systems.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        cmd (string)
+            The command to execute (e.g., "kick", "ban", "mute", "freeze", etc.).
+        victim (Player|string)
+            The target player or identifier.
+        dur (number)
+            Duration for time-based commands.
+        reason (string)
+            Reason for the administrative action.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true if the command was executed successfully, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Kick a player via console command
+        lia.administrator.execCommand("kick", targetPlayer, nil, "Rule violation")
+
+        -- Ban a player for 24 hours
+        lia.administrator.execCommand("ban", targetPlayer, 1440, "Griefing")
         ```
 ]]
     function lia.administrator.execCommand(cmd, victim, dur, reason)

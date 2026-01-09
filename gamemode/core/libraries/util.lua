@@ -13,25 +13,27 @@
 ]]
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Finds all players within an axis-aligned bounding box.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need the players contained inside specific world bounds (e.g. triggers or zones).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        mins (Vector)
+            Minimum corner of the search box.
+        maxs (Vector)
+            Maximum corner of the search box.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            List of player entities inside the box.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local players = lia.util.findPlayersInBox(Vector(-128, -128, 0), Vector(128, 128, 128))
         ```
 ]]
 function lia.util.findPlayersInBox(mins, maxs)
@@ -45,25 +47,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Locates a connected player by SteamID or SteamID64 and requires an active character.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when commands or systems need to resolve a Steam identifier to a live player with a character loaded.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        steamID (string)
+            SteamID (e.g. "STEAM_0:1:12345") or SteamID64; empty/invalid strings are ignored.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Player|nil
+            The matching player with a loaded character, or nil if not found/invalid input.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local ply = lia.util.getBySteamID("76561198000000000")
+            if ply then print("Found", ply:Name()) end
         ```
 ]]
 function lia.util.getBySteamID(steamID)
@@ -77,25 +80,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns all players inside a spherical radius from a point.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to gather players near a position for proximity-based effects or checks.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        origin (Vector)
+            Center of the search sphere.
+        radius (number)
+            Radius of the search sphere.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Players whose positions are within the given radius.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, ply in ipairs(lia.util.findPlayersInSphere(pos, 256)) do
+                ply:ChatPrint("You feel a nearby pulse.")
+            end
         ```
 ]]
 function lia.util.findPlayersInSphere(origin, radius)
@@ -109,25 +116,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolves a player from various identifiers and optionally informs the caller on failure.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use in admin/command handlers that accept flexible player identifiers (SteamID, SteamID64, name, "^", "@").
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+            The player requesting the lookup; used for localized error notifications.
+        identifier (string)
+            Identifier to match: SteamID, SteamID64, "^" (self), "@" (trace target), or partial name.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Player|nil
+            Matched player or nil when no match is found/identifier is invalid.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local target = lia.util.findPlayer(caller, args[1])
+            if not target then return end
+            target:kick("Example")
         ```
 ]]
 function lia.util.findPlayer(client, identifier)
@@ -174,25 +185,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Collects all spawned item entities created by a specific player.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when cleaning up or inspecting items a player has spawned into the world.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose created item entities should be found.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            List of item entities created by the player.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, ent in ipairs(lia.util.findPlayerItems(ply)) do
+                ent:Remove()
+            end
         ```
 ]]
 function lia.util.findPlayerItems(client)
@@ -205,25 +218,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Collects spawned item entities from a player filtered by item class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need only specific item classes (by netvar "id") created by a player.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose item entities are being inspected.
+        class (string)
+            Item class/netvar id to match.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Item entities created by the player that match the class.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local ammo = lia.util.findPlayerItemsByClass(ply, "ammo_9mm")
         ```
 ]]
 function lia.util.findPlayerItemsByClass(client, class)
@@ -236,25 +251,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Finds entities created by or associated with a player, optionally by class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to track props or scripted entities a player spawned or owns.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose entities should be matched.
+        class (string|nil)
+            Optional entity class filter; nil includes all classes.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Entities created by or linked via entity.client to the player that match the class filter.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local ragdolls = lia.util.findPlayerEntities(ply, "prop_ragdoll")
         ```
 ]]
 function lia.util.findPlayerEntities(client, class)
@@ -267,25 +284,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Performs case-insensitive equality and substring comparison between two strings.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for loose name matching where exact case is not important.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        a (string)
+            First string to compare.
+        b (string)
+            Second string to compare.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the strings are equal (case-insensitive) or one contains the other; otherwise false.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            if lia.util.stringMatches(ply:Name(), "john") then print("Matched player") end
         ```
 ]]
 function lia.util.stringMatches(a, b)
@@ -301,25 +320,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns all connected staff members.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when broadcasting staff notifications or iterating over staff-only recipients.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        (none)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Players that pass `isStaff()`.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, admin in ipairs(lia.util.getAdmins()) do
+                admin:notify("Server restart in 5 minutes.")
+            end
         ```
 ]]
 function lia.util.getAdmins()
@@ -333,25 +353,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolves a player from a SteamID64 wrapper around `findPlayerBySteamID`.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you have a 64-bit SteamID and need the corresponding player entity.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        SteamID64 (string)
+            SteamID64 to resolve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Player|nil
+            Matching player or nil when none is found/SteamID64 is invalid.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local ply = lia.util.findPlayerBySteamID64(steamID64)
         ```
 ]]
 function lia.util.findPlayerBySteamID64(SteamID64)
@@ -362,25 +382,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Searches connected players for a matching SteamID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need to map a SteamID string to the in-game player.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        SteamID (string)
+            SteamID in legacy format (e.g. "STEAM_0:1:12345").
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Player|nil
+            Player whose SteamID matches, or nil if none.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local ply = lia.util.findPlayerBySteamID("STEAM_0:1:12345")
         ```
 ]]
 function lia.util.findPlayerBySteamID(SteamID)
@@ -392,25 +412,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks whether a bounding hull can fit at a position without collisions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use before spawning or teleporting entities to ensure the space is clear.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        pos (Vector)
+            Position to test.
+        mins (Vector)
+            Hull minimums; defaults to Vector(16, 16, 0) mirrored if positive.
+        maxs (Vector|nil)
+            Hull maximums; defaults to mins when nil.
+        filter (Entity|table|nil)
+            Entity or filter list to ignore in the trace.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the hull does not hit anything solid, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            if lia.util.canFit(pos, Vector(16, 16, 0)) then
+                ent:SetPos(pos)
+            end
         ```
 ]]
 function lia.util.canFit(pos, mins, maxs, filter)
@@ -428,25 +456,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Finds all players within a given radius.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for proximity-based logic such as AoE effects or notifications.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        pos (Vector)
+            Center position for the search.
+        dist (number)
+            Radius to search, in units.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Players whose distance squared to pos is less than dist^2.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, ply in ipairs(lia.util.playerInRadius(pos, 512)) do
+                ply:notify("You are near the beacon.")
+            end
         ```
 ]]
 function lia.util.playerInRadius(pos, dist)
@@ -460,25 +492,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Formats a string using named placeholders or positional arguments.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to substitute tokens in a template string with table keys or ordered arguments.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        format (string)
+            Template containing placeholders like "{name}".
+        ... (table|any)
+            Either a table of replacements or positional values when no table is provided.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            The formatted string with placeholders replaced.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.formatStringNamed("Hello {who}", {who = "world"})
+            lia.util.formatStringNamed("{1} + {2}", 1, 2)
         ```
 ]]
 function lia.util.formatStringNamed(format, ...)
@@ -502,25 +537,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves and caches a material by path and parameters.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use whenever drawing materials repeatedly to avoid recreating them.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        materialPath (string)
+            Path to the material.
+        materialParameters (string|nil)
+            Optional material creation parameters.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        IMaterial
+            Cached or newly created material instance.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local blurMat = lia.util.getMaterial("pp/blurscreen")
         ```
 ]]
 function lia.util.getMaterial(materialPath, materialParameters)
@@ -531,25 +568,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolves a faction table by name or unique ID and notifies the caller on failure.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use in commands or UI when users input a faction identifier.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player to notify on invalid faction.
+        name (string)
+            Faction name or uniqueID to search for.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Matching faction table, or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local faction = lia.util.findFaction(ply, "combine")
+            if faction then print(faction.name) end
         ```
 ]]
 function lia.util.findFaction(client, name)
@@ -635,25 +675,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Generates a random full name from provided or default name lists.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when creating placeholder or randomized character names.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        firstNames (table|nil)
+            Optional list of first names to draw from; defaults to built-in list when nil/empty.
+        lastNames (table|nil)
+            Optional list of last names to draw from; defaults to built-in list when nil/empty.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Concatenated first and last name.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local name = lia.util.generateRandomName()
         ```
 ]]
 function lia.util.generateRandomName(firstNames, lastNames)
@@ -671,25 +713,35 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sends a localized table UI payload to a client.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when the server needs to present tabular data/options to a specific player.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Recipient player.
+        title (string|nil)
+            Localization key for the window title; defaults to "tableListTitle".
+        columns (table)
+            Column definitions; names are localized if present.
+        data (table)
+            Row data to display.
+        options (table|nil)
+            Optional menu options to accompany the table.
+        characterID (number|nil)
+            Optional character identifier to send with the payload.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Communicates with the client via net message only.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.sendTableUI(ply, "staffList", columns, rows, options, charID)
         ```
 ]]
     function lia.util.sendTableUI(client, title, columns, data, options, characterID)
@@ -714,25 +766,36 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Finds nearby empty positions around an entity using grid sampling.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when spawning items or players near an entity while avoiding collisions and the void.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        entity (Entity)
+            Origin entity to search around.
+        filter (Entity|table|nil)
+            Optional trace filter to ignore certain entities; defaults to the origin entity.
+        spacing (number)
+            Grid spacing between samples; defaults to 32.
+        size (number)
+            Number of steps in each direction from the origin; defaults to 3.
+        height (number)
+            Hull height used for traces; defaults to 36.
+        tolerance (number)
+            Upward offset to avoid starting inside the ground; defaults to 5.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Sorted list of valid origin positions, nearest to farthest from the entity.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local spots = lia.util.findEmptySpace(ent, nil, 24)
+            local pos = spots[1]
         ```
 ]]
     function lia.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)
@@ -775,25 +838,37 @@ else
     lia.util.easeInOutCubic = lia.derma.easeInOutCubic
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Animates a panel appearing from a scaled, transparent state to its target size and opacity.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when showing popups or menus that should ease into view.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel to animate.
+        targetWidth (number)
+            Final width of the panel.
+        targetHeight (number)
+            Final height of the panel.
+        duration (number|nil)
+            Duration for size/position easing; defaults to 0.18 seconds.
+        alphaDuration (number|nil)
+            Duration for alpha easing; defaults to duration.
+        callback (function|nil)
+            Called when the animation finishes.
+        scaleFactor (number|nil)
+            Initial size scale relative to target; defaults to 0.8.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Mutates the panel over time via its Think hook.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.animateAppearance(panel, 300, 200)
         ```
 ]]
     function lia.util.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)
@@ -842,25 +917,25 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Keeps a menu panel within the screen bounds, respecting the character logo space.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use after positioning a menu to prevent it from going off-screen.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Menu panel to clamp.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Adjusts the panel position in place.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.clampMenuPosition(menu)
         ```
 ]]
     function lia.util.clampMenuPosition(panel)
@@ -895,25 +970,39 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a directional gradient rectangle.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use in panel paints when you need simple gradient backgrounds.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position of the gradient.
+        y (number)
+            Y position of the gradient.
+        w (number)
+            Width of the gradient.
+        h (number)
+            Height of the gradient.
+        direction (number)
+            Gradient direction index (1 up, 2 down, 3 left, 4 right).
+        colorShadow (Color)
+            Color tint for the gradient.
+        radius (number|nil)
+            Corner radius for drawing helper; defaults to 0.
+        flags (number|nil)
+            Optional draw flags passed to `drawMaterial`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Performs immediate drawing operations.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.drawGradient(0, 0, w, h, 2, Color(0, 0, 0, 180))
         ```
 ]]
     function lia.util.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)
@@ -924,25 +1013,29 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Wraps text to a maximum width using a specified font.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when drawing text that must fit inside a set horizontal space.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to wrap.
+        width (number)
+            Maximum width in pixels.
+        font (string|nil)
+            Font name to measure with; defaults to "LiliaFont.16".
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table, number
+            Array of wrapped lines and the widest line width.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local lines = lia.util.wrapText(description, 300, "LiliaFont.17")
         ```
 ]]
     function lia.util.wrapText(text, width, font)
@@ -975,25 +1068,31 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a blurred background behind a panel.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use inside a panel's Paint hook to soften the content behind it.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel whose screen area will be blurred.
+        amount (number|nil)
+            Blur strength; defaults to 5.
+        passes (number|nil)
+            Unused; kept for signature compatibility.
+        alpha (number|nil)
+            Draw color alpha; defaults to 255.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Renders blur to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.drawBlur(self, 4)
         ```
 ]]
     function lia.util.drawBlur(panel, amount, passes, alpha)
@@ -1015,25 +1114,33 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a blurred background with a dark overlay in a panel's bounds.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for modal overlays where both blur and darkening are desired.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel area to blur.
+        amount (number|nil)
+            Blur strength; defaults to 6.
+        passes (number|nil)
+            Number of blur passes; defaults to 5.
+        alpha (number|nil)
+            Blur draw alpha; defaults to 255.
+        darkAlpha (number|nil)
+            Alpha for the black overlay; defaults to 220.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Renders blur and overlay.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.drawBlackBlur(self, 6, 4, 255, 200)
         ```
 ]]
     function lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
@@ -1063,25 +1170,37 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a blur effect over a specific rectangle on the screen.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a localized blur that is not tied to a panel.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X coordinate of the rectangle.
+        y (number)
+            Y coordinate of the rectangle.
+        w (number)
+            Width of the rectangle.
+        h (number)
+            Height of the rectangle.
+        amount (number|nil)
+            Blur strength; defaults to 5.
+        passes (number|nil)
+            Number of blur samples; defaults to 0.2 steps when nil.
+        alpha (number|nil)
+            Draw alpha; defaults to 255.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Renders blur to the specified area.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.drawBlurAt(100, 100, 200, 150, 4)
         ```
 ]]
     function lia.util.drawBlurAt(x, y, w, h, amount, passes, alpha)
@@ -1102,25 +1221,29 @@ else
     lia.util.requestArguments = lia.derma.requestArguments
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Prompts the user for entity information and forwards the result.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when a client must supply additional data for an entity action.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        entity (Entity)
+            Entity that the information pertains to; removed if the request fails.
+        argTypes (table)
+            Argument descriptors passed to `requestArguments`.
+        callback (function|nil)
+            Invoked with the collected information on success.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Handles UI flow and optional callback invocation.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.requestEntityInformation(ent, argTypes, function(info) print(info) end)
         ```
 ]]
     function lia.util.requestEntityInformation(entity, argTypes, callback)
@@ -1140,25 +1263,33 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Builds and displays a table UI on the client.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when the client needs to view tabular data with optional menu actions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Localization key for the frame title; defaults to "tableListTitle".
+        columns (table)
+            Column definitions with `name`, `width`, `align`, and `sortable` fields.
+        data (table)
+            Row data keyed by column field names.
+        options (table|nil)
+            Optional menu options with callbacks or net names.
+        charID (number|nil)
+            Character identifier forwarded with net options.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel, Panel
+            The created frame and table list view.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local frame, list = lia.util.createTableUI("myData", cols, rows)
         ```
 ]]
     function lia.util.createTableUI(title, columns, data, options, charID)
@@ -1317,25 +1448,27 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Displays a simple options menu with clickable entries.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to quickly prompt the user with a list of named actions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text to show at the top of the menu; defaults to "options".
+        options (table)
+            Either an array of {name, callback} or a map of name -> callback.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel|nil
+            The created frame, or nil if no valid options exist.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.openOptionsMenu("choose", {{"Yes", onYes}, {"No", onNo}})
         ```
 ]]
     function lia.util.openOptionsMenu(title, options)
@@ -1447,25 +1580,33 @@ else
     lia.util.entsScales = lia.util.entsScales or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws floating text above an entity that eases in based on distance.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use in HUD painting to label world entities when nearby.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ent (Entity)
+            Entity to draw text above.
+        text (string)
+            Text to display.
+        posY (number|nil)
+            Vertical offset in screen space; defaults to 0.
+        alphaOverride (number|nil)
+            Optional alpha multiplier (0-1 or 0-255).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Performs drawing only; caches fade state per-entity.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("HUDPaint", "DrawEntLabels", function()
+                lia.util.drawEntText(ent, "Storage")
+            end)
         ```
 ]]
     function lia.util.drawEntText(ent, text, posY, alphaOverride)
@@ -1525,25 +1666,31 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws text at the player's look position with distance-based easing.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to display contextual prompts or hints where the player is aiming.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to render at the hit position.
+        posY (number|nil)
+            Screen-space vertical offset; defaults to 0.
+        alphaOverride (number|nil)
+            Optional alpha multiplier (0-1 or 0-255).
+        maxDist (number|nil)
+            Maximum trace distance; defaults to 380 units.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws text when a trace hits within range.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.util.drawLookText("Press E to interact")
         ```
 ]]
     function lia.util.drawLookText(text, posY, alphaOverride, maxDist)

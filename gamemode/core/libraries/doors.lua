@@ -48,25 +48,30 @@ lia.doors.defaultValues = {
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Store door data overrides in memory and sync to clients, omitting defaults.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After editing door settings (price, access, flags) server-side.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
+            Door entity.
+        data (table)
+            Door data overrides.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.doors.setCachedData(door, {
+            name = "Police HQ",
+            price = 0,
+            factions = {FACTION_POLICE}
+        })
         ```
 ]]
     function lia.doors.setCachedData(door, data)
@@ -100,25 +105,25 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve cached door data merged with defaults.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before saving/loading or when building UI state for a door.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Complete door data with defaults filled.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local data = lia.doors.getCachedData(door)
+        print("Door price:", data.price)
         ```
 ]]
     function lia.doors.getCachedData(door)
@@ -142,25 +147,23 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Net-sync a single door's cached data to all clients.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After updating a door's data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.doors.syncDoorData(door)
         ```
 ]]
     function lia.doors.syncDoorData(door)
@@ -181,25 +184,25 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Bulk-sync all cached doors to a single client.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On player spawn/join or after admin refresh.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("PlayerInitialSpawn", "SyncDoorsOnJoin", function(ply)
+            lia.doors.syncAllDoorsToClient(ply)
+        end)
         ```
 ]]
     function lia.doors.syncAllDoorsToClient(client)
@@ -216,25 +219,23 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Set data for a door (alias to setCachedData).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Convenience wrapper used by other systems.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
+        data (table)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
-
+        Server
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.doors.setData(door, {locked = true})
         ```
 ]]
     function lia.doors.setData(door, data)
@@ -243,25 +244,27 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a preset of door data for a specific map.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During map setup to predefine door ownership/prices.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        mapName (string)
+        presetData (table)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.doors.addPreset("rp_downtown", {
+            [1234] = {name = "Bank", price = 0, factions = {FACTION_POLICE}},
+            [5678] = {locked = true, hidden = true}
+        })
         ```
 ]]
     function lia.doors.addPreset(mapName, presetData)
@@ -276,25 +279,24 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve a door preset table for a map.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During map load or admin inspection of presets.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        mapName (string)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local preset = lia.doors.getPreset(game.GetMap())
+        if preset then PrintTable(preset) end
         ```
 ]]
     function lia.doors.getPreset(mapName)
@@ -303,25 +305,23 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Validate the doors database schema against expected columns.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On startup or after migrations to detect missing/mismatched columns.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("DatabaseConnected", "VerifyDoorSchema", lia.doors.verifyDatabaseSchema)
         ```
 ]]
     function lia.doors.verifyDatabaseSchema()
@@ -362,25 +362,26 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Detect and repair corrupted faction/class door data in the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Maintenance task to clean malformed data entries.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        concommand.Add("lia_fix_doors", function(admin)
+            if not IsValid(admin) or not admin:IsAdmin() then return end
+            lia.doors.cleanupCorruptedData()
+        end)
         ```
 ]]
     function lia.doors.cleanupCorruptedData()
@@ -424,25 +425,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Access cached door data (server/client wrapper).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere door data is needed without hitting DB.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local data = lia.doors.getData(ent)
+        if data.locked then
+            -- show locked icon
+        end
         ```
 ]]
 function lia.doors.getData(door)
@@ -457,25 +459,24 @@ if CLIENT then
     lia.doors.stored = lia.doors.stored or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Client helper to build full door data from cached entries.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For HUD/tooltips when interacting with doors.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        door (Entity)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local info = lia.doors.getCachedData(door)
+        draw.SimpleText(info.name or "Door", "LiliaFont.18", x, y, color_white)
         ```
 ]]
     function lia.doors.getCachedData(door)
@@ -499,25 +500,25 @@ if CLIENT then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Update the client-side cache for a door ID (or clear it).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After receiving sync updates from the server.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        doorID (number)
+        data (table|nil)
+            nil clears the cache entry.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.doors.updateCachedData(doorID, net.ReadTable())
         ```
 ]]
     function lia.doors.updateCachedData(doorID, data)

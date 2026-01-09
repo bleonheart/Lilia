@@ -15,29 +15,32 @@ lia.data = lia.data or {}
 lia.data.stored = lia.data.stored or {}
 lia.data.equivalencyMaps = lia.data.equivalencyMaps or {}
 if SERVER then
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Encode vectors/angles/colors/tables into JSON-safe structures.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before persisting data to DB or file storage.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
+            Encoded representation.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local payload = lia.data.encodetable({
+            pos = Vector(0, 0, 64),
+            ang = Angle(0, 90, 0),
+            tint = Color(255, 0, 0)
+        })
         ```
-]]
+    ]]
     function lia.data.encodetable(value)
         if isvector(value) then
             return {value.x, value.y, value.z}
@@ -192,56 +195,56 @@ if SERVER then
         return value
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Decode nested structures into native types (Vector/Angle/Color).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After reading serialized data from DB/file.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
+            Decoded value with deep conversion.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local decoded = lia.data.decode(storedJsonTable)
+        local pos = decoded.spawnPos
         ```
-]]
+    ]]
     function lia.data.decode(value)
         return deepDecode(value)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Serialize a value into JSON, pre-encoding special types.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before writing data blobs into DB columns.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            JSON string.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local json = lia.data.serialize({pos = Vector(1,2,3)})
+        lia.db.updateSomewhere(json)
         ```
-]]
+    ]]
     function lia.data.serialize(value)
         local encoded = lia.data.encodetable(value) or {}
         if not istable(encoded) then
@@ -252,29 +255,28 @@ if SERVER then
         return util.TableToJSON(encoded)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Deserialize JSON/pon or raw tables back into native types.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After fetching data rows from DB.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        raw (string|table|any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local row = lia.db.select(...):get()
+        local data = lia.data.deserialize(row.data)
         ```
-]]
+    ]]
     function lia.data.deserialize(raw)
         if not raw then return nil end
         local decoded
@@ -295,29 +297,28 @@ if SERVER then
         return lia.data.decode(decoded)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Decode a vector from various string/table encodings.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        While rebuilding persistent entities or map data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        raw (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Vector|any
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local pos = lia.data.decodeVector(row.pos)
+        if isvector(pos) then ent:SetPos(pos) end
         ```
-]]
+    ]]
     function lia.data.decodeVector(raw)
         if not raw then return nil end
         local direct = _decodeVector(raw)
@@ -337,29 +338,28 @@ if SERVER then
         return _decodeVector(decoded)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Decode an angle from string/table encodings.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During persistence loading or data deserialization.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        raw (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Angle|any
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local ang = lia.data.decodeAngle(row.angles)
+        if isangle(ang) then ent:SetAngles(ang) end
         ```
-]]
+    ]]
     function lia.data.decodeAngle(raw)
         if not raw then return nil end
         local direct = _decodeAngle(raw)
@@ -385,29 +385,31 @@ if SERVER then
         return cond
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Persist a key/value pair scoped to gamemode/map (or global).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        To save configuration/state data into the DB.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+        value (any)
+        global (boolean|nil)
+        ignoreMap (boolean|nil)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Path prefix used for file save fallback.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.data.set("event.active", true, false, false)
         ```
-]]
+    ]]
     function lia.data.set(key, value, global, ignoreMap)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = ignoreMap and NULL or game.GetMap()
@@ -436,29 +438,29 @@ if SERVER then
         return path
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Delete a stored key (and row if empty) from DB cache.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        To remove saved state/config entries.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+        global (boolean|nil)
+        ignoreMap (boolean|nil)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.data.delete("event.active")
         ```
-]]
+    ]]
     function lia.data.delete(key, global, ignoreMap)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = ignoreMap and nil or game.GetMap()
@@ -486,29 +488,27 @@ if SERVER then
         return true
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load stored data rows for global, gamemode, and map scopes.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On database ready to hydrate lia.data.stored cache.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil (async via promises)
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Add("DatabaseConnected", "LoadLiliaData", lia.data.loadTables)
         ```
-]]
+    ]]
     function lia.data.loadTables()
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
@@ -555,56 +555,53 @@ if SERVER then
         return d
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Ensure persistence table has required columns; add if missing.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before saving/loading persistent entities.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        promise
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.data.loadPersistence():next(function() print("Persistence columns ready") end)
         ```
-]]
+    ]]
     function lia.data.loadPersistence()
         return ensurePersistenceColumns(baseCols)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Save persistent entities to the database (with dynamic columns).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On PersistenceSave hook/timer with collected entities.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        entities (table)
+            Array of entity data tables.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        promise|nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        hook.Run("PersistenceSave", collectedEntities)
         ```
-]]
+    ]]
     function lia.data.savePersistence(entities)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
@@ -657,29 +654,32 @@ if SERVER then
         end)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load persistent entities from DB, decode fields, and cache them.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On server start or when manually reloading persistence.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        callback (function|nil)
+            Invoked with entities table once loaded.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        promise
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.data.loadPersistenceData(function(entities)
+            for _, entData in ipairs(entities) do
+                -- spawn logic here
+            end
+        end)
         ```
-]]
+    ]]
     function lia.data.loadPersistenceData(callback)
         local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
         local map = game.GetMap()
@@ -706,29 +706,28 @@ if SERVER then
         end)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Fetch a stored key from cache, deserializing strings on demand.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere stored data is read after loadTables.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+        default (any)
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local eventData = lia.data.get("event.settings", {})
         ```
-]]
+    ]]
     function lia.data.get(key, default)
         local stored = lia.data.stored[key]
         if stored ~= nil then
@@ -741,29 +740,27 @@ if SERVER then
         return default
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Return the cached list of persistent entities (last loaded/saved).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For admin tools or debug displays.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        PrintTable(lia.data.getPersistence())
         ```
-]]
+    ]]
     function lia.data.getPersistence()
         return lia.data.persistCache or {}
     end
@@ -776,27 +773,26 @@ if SERVER then
 end
 
 --[[
-    Purpose:
-        <Brief, clear description of what the function does.>
+Purpose:
+    Register an equivalency between two map names (bidirectional).
 
-    When Called:
-        <Describe when and why this function is invoked.>
+When Called:
+    To share data/persistence across multiple map aliases.
 
-    Parameters:
-        <paramName> (<type>)
-            <Description.>
+Parameters:
+    map1 (string)
+    map2 (string)
 
-    Returns:
-        <returnType>
-            <Description or "nil".>
+Returns:
+    nil
 
-    Realm:
-        <Client | Server | Shared>
+Realm:
+    Shared
 
-    Example Usage:
-        ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
-        ```
+Example Usage:
+    ```lua
+    lia.data.addEquivalencyMap("rp_downtown_v1", "rp_downtown_v2")
+    ```
 ]]
 function lia.data.addEquivalencyMap(map1, map2)
     lia.data.equivalencyMaps[map1] = map2
@@ -804,27 +800,25 @@ function lia.data.addEquivalencyMap(map1, map2)
 end
 
 --[[
-    Purpose:
-        <Brief, clear description of what the function does.>
+Purpose:
+    Resolve a map name to its equivalency (if registered).
 
-    When Called:
-        <Describe when and why this function is invoked.>
+When Called:
+    Before saving/loading data keyed by map name.
 
-    Parameters:
-        <paramName> (<type>)
-            <Description.>
+Parameters:
+    map (string)
 
-    Returns:
-        <returnType>
-            <Description or "nil".>
+Returns:
+    string
 
-    Realm:
-        <Client | Server | Shared>
+Realm:
+    Shared
 
-    Example Usage:
-        ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
-        ```
+Example Usage:
+    ```lua
+    local canonical = lia.data.getEquivalencyMap(game.GetMap())
+    ```
 ]]
 function lia.data.getEquivalencyMap(map)
     return lia.data.equivalencyMaps[map] or map

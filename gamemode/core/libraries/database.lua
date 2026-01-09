@@ -67,25 +67,28 @@ lia.db.escape = lia.db.escape or lia.db.modules.sqlite.escape
 lia.db.query = lia.db.query or function(...) lia.db.queryQueue[#lia.db.queryQueue + 1] = {...} end
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Establishes a connection to the database using the configured database module and initializes the query system.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to set up the database connection, or when reconnecting to the database.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        callback (function)
+            Optional callback function to execute when the connection is established.
+        reconnect (boolean)
+            Optional flag to force reconnection even if already connected.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.connect(function()
+                print("Database connected successfully!")
+            end)
         ```
 ]]
 function lia.db.connect(callback, reconnect)
@@ -112,25 +115,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Completely removes all Lilia-related database tables from the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when performing a complete data wipe/reset of the gamemode's database.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        callback (function)
+            Optional callback function to execute when all tables have been wiped.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.wipeTables(function()
+                print("All Lilia tables have been wiped!")
+            end)
         ```
 ]]
 function lia.db.wipeTables(callback)
@@ -162,25 +166,23 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates all core Lilia database tables if they don't exist, including tables for players, characters, inventories, items, configuration, logs, and administrative data.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to set up the database schema and prepare the database for use.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.loadTables()
         ```
 ]]
 function lia.db.loadTables()
@@ -369,25 +371,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns a deferred promise that resolves when all database tables have finished loading.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when code needs to wait for database tables to be fully initialized before proceeding with database operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves when tables are loaded.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.waitForTablesToLoad():next(function()
+                -- Database tables are now ready
+                lia.db.select("*", "characters"):next(function(results)
+                    print("Characters loaded:", #results)
+                end)
+            end)
         ```
 ]]
 function lia.db.waitForTablesToLoad()
@@ -449,25 +455,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Converts Lua data types to SQL-compatible string formats for database queries.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Automatically called when building SQL queries to ensure proper data type conversion.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (any)
+            The value to convert (string, number, boolean, table, nil).
+        noEscape (boolean)
+            Optional flag to skip SQL escaping for strings and tables.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            The converted value as a SQL-compatible string.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local sqlValue = lia.db.convertDataType("John's Name")
+            -- Returns: "'John''s Name'" (properly escaped)
+
+            local sqlValue2 = lia.db.convertDataType({health = 100})
+            -- Returns: "'{\"health\":100}'" (JSON encoded and escaped)
         ```
 ]]
 function lia.db.convertDataType(value, noEscape)
@@ -495,25 +507,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Inserts a new row into the specified database table with the provided data.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when adding new records to database tables such as characters, items, or player data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (table)
+            Table containing column-value pairs to insert.
+        callback (function)
+            Optional callback function called with (results, lastID) when the query completes.
+        dbTable (string)
+            Optional table name (defaults to "characters" if not specified).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.insertTable({
+                steamID = "STEAM_0:1:12345678",
+                name = "John Doe",
+                money = "1000"
+            }, function(results, lastID)
+                print("Character created with ID:", lastID)
+            end, "characters"):next(function(result)
+                print("Insert completed, last ID:", result.lastID)
+            end)
         ```
 ]]
 function lia.db.insertTable(value, callback, dbTable)
@@ -531,25 +555,41 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Updates existing rows in the specified database table with the provided data.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when modifying existing records in database tables such as updating character data or player information.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (table)
+            Table containing column-value pairs to update.
+        callback (function)
+            Optional callback function called with (results, lastID) when the query completes.
+        dbTable (string)
+            Optional table name without "lia_" prefix (defaults to "characters" if not specified).
+        condition (table|string)
+            Optional WHERE condition to specify which rows to update.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Update character money
+            lia.db.updateTable({
+                money = "500"
+            }, nil, "characters", {id = 123}):next(function()
+                print("Character money updated")
+            end)
+
+            -- Update with string condition
+            lia.db.updateTable({
+                lastJoin = os.date("%Y-%m-%d %H:%M:%S")
+            }, nil, "players", "steamID = 'STEAM_0:1:12345678'")
         ```
 ]]
 function lia.db.updateTable(value, callback, dbTable, condition)
@@ -567,25 +607,49 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Selects data from the specified database table with optional conditions and limits.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when retrieving data from database tables such as fetching character information or player data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fields (string|table)
+            Fields to select - either "*" for all fields, a string field name, or table of field names.
+        dbTable (string)
+            Table name without "lia_" prefix (defaults to "characters" if not specified).
+        condition (table|string)
+            Optional WHERE condition to filter results.
+        limit (number)
+            Optional LIMIT clause to restrict number of results.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Select all characters
+            lia.db.select("*", "characters"):next(function(result)
+                print("Found", #result.results, "characters")
+            end)
+
+            -- Select specific fields with condition
+            lia.db.select({"name", "money"}, "characters", {steamID = "STEAM_0:1:12345678"}):next(function(result)
+                for _, char in ipairs(result.results) do
+                    print(char.name, "has", char.money, "money")
+                end
+            end)
+
+            -- Select with limit
+            lia.db.select("name", "characters", nil, 5):next(function(result)
+                print("First 5 characters:")
+                for _, char in ipairs(result.results) do
+                    print("-", char.name)
+                end
+            end)
         ```
 ]]
 function lia.db.select(fields, dbTable, condition, limit)
@@ -611,25 +675,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Selects data from the specified database table with complex conditions and optional ordering.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing advanced query conditions with operator support and ordering.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fields (string|table)
+            Fields to select - either "*" for all fields, a string field name, or table of field names.
+        dbTable (string)
+            Table name without "lia_" prefix.
+        conditions (table|string)
+            WHERE conditions - can be a string or table with field-operator-value structures.
+        limit (number)
+            Optional LIMIT clause to restrict number of results.
+        orderBy (string)
+            Optional ORDER BY clause for sorting results.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Select with complex conditions and ordering
+            lia.db.selectWithCondition("*", "characters", {
+                money = {operator = ">", value = 1000},
+                faction = "citizen"
+            }, 10, "name ASC"):next(function(result)
+                print("Found", #result.results, "rich citizens")
+            end)
         ```
 ]]
 function lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)
@@ -677,25 +755,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Counts the number of rows in the specified database table that match the given condition.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to determine how many records exist in a table, such as counting characters or items.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbTable (string)
+            Table name without "lia_" prefix.
+        condition (table|string)
+            Optional WHERE condition to filter which rows to count.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with the count as a number.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Count all characters
+            lia.db.count("characters"):next(function(count)
+                print("Total characters:", count)
+            end)
+
+            -- Count characters for a specific player
+            lia.db.count("characters", {steamID = "STEAM_0:1:12345678"}):next(function(count)
+                print("Player has", count, "characters")
+            end)
         ```
 ]]
 function lia.db.count(dbTable, condition)
@@ -714,25 +802,23 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Dynamically adds missing database fields to the characters table based on character variable definitions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during database initialization to ensure all character variables have corresponding database columns.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.addDatabaseFields()
         ```
 ]]
 function lia.db.addDatabaseFields()
@@ -764,25 +850,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if any records exist in the specified table that match the given condition.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called to verify the existence of records before performing operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbTable (string)
+            Table name without "lia_" prefix.
+        condition (table|string)
+            WHERE condition to check for record existence.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if records exist, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.exists("characters", {steamID = "STEAM_0:1:12345678"}):next(function(exists)
+                if exists then
+                    print("Player has characters")
+                else
+                    print("Player has no characters")
+                end
+            end)
         ```
 ]]
 function lia.db.exists(dbTable, condition)
@@ -791,25 +885,43 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Selects a single row from the specified database table that matches the given condition.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when retrieving a specific record from database tables, such as finding a character by ID.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fields (string|table)
+            Fields to select - either "*" for all fields, a string field name, or table of field names.
+        dbTable (string)
+            Table name without "lia_" prefix.
+        condition (table|string)
+            Optional WHERE condition to filter results.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with the first matching row as a table, or nil if no rows found.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Get character by ID
+            lia.db.selectOne("*", "characters", {id = 123}):next(function(character)
+                if character then
+                    print("Found character:", character.name)
+                else
+                    print("Character not found")
+                end
+            end)
+
+            -- Get player data by SteamID
+            lia.db.selectOne({"name", "money"}, "players", {steamID = "STEAM_0:1:12345678"}):next(function(player)
+                if player then
+                    print(player.name, "has", player.money, "money")
+                end
+            end)
         ```
 ]]
 function lia.db.selectOne(fields, dbTable, condition)
@@ -836,25 +948,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Inserts multiple rows into the specified database table in a single query for improved performance.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when inserting large amounts of data at once, such as bulk importing items or characters.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbTable (string)
+            Table name without "lia_" prefix.
+        rows (table)
+            Array of row data tables, where each table contains column-value pairs.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves when the bulk insert completes.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local items = {
+                {uniqueID = "item1", invID = 1, quantity = 5},
+                {uniqueID = "item2", invID = 1, quantity = 3},
+                {uniqueID = "item3", invID = 2, quantity = 1}
+            }
+
+            lia.db.bulkInsert("items", items):next(function()
+                print("Bulk insert completed")
+            end)
         ```
 ]]
 function lia.db.bulkInsert(dbTable, rows)
@@ -884,25 +1006,34 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Performs bulk insert or replace operations on multiple rows in a single query.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when bulk updating/inserting data where existing records should be replaced.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbTable (string)
+            Table name without "lia_" prefix.
+        rows (table)
+            Array of row data tables to insert or replace.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves when the bulk upsert completes.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local data = {
+                {id = 1, name = "Item 1", value = 100},
+                {id = 2, name = "Item 2", value = 200}
+            }
+
+            lia.db.bulkUpsert("custom_items", data):next(function()
+                print("Bulk upsert completed")
+            end)
         ```
 ]]
 function lia.db.bulkUpsert(dbTable, rows)
@@ -932,25 +1063,32 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Inserts a new row into the database table, but ignores the operation if a conflict occurs (such as duplicate keys).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when inserting data that might already exist, where duplicates should be silently ignored.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (table)
+            Table containing column-value pairs to insert.
+        dbTable (string)
+            Optional table name without "lia_" prefix (defaults to "characters").
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.insertOrIgnore({
+                steamID = "STEAM_0:1:12345678",
+                name = "Player Name"
+            }, "players"):next(function(result)
+                print("Player record inserted or already exists")
+            end)
         ```
 ]]
 function lia.db.insertOrIgnore(value, dbTable)
@@ -975,25 +1113,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if a database table with the specified name exists.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called before performing operations on tables to verify they exist, or when checking schema state.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tbl (string)
+            The table name to check for existence.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if the table exists, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.tableExists("lia_characters"):next(function(exists)
+                if exists then
+                    print("Characters table exists")
+                else
+                    print("Characters table does not exist")
+                end
+            end)
         ```
 ]]
 function lia.db.tableExists(tbl)
@@ -1005,25 +1149,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks if a column/field with the specified name exists in the given database table.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called before accessing table columns to verify they exist, or when checking schema modifications.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tbl (string)
+            The table name to check (should include "lia_" prefix).
+        field (string)
+            The field/column name to check for existence.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if the field exists, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.fieldExists("lia_characters", "custom_field"):next(function(exists)
+                if exists then
+                    print("Custom field exists")
+                else
+                    print("Custom field does not exist")
+                end
+            end)
         ```
 ]]
 function lia.db.fieldExists(tbl, field)
@@ -1040,25 +1192,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves a list of all Lilia database tables (tables starting with "lia_").
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to enumerate all database tables, such as for maintenance operations or schema inspection.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with an array of table names.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.getTables():next(function(tables)
+                print("Lilia tables:")
+                for _, tableName in ipairs(tables) do
+                    print("-", tableName)
+                end
+            end)
         ```
 ]]
 function lia.db.getTables()
@@ -1076,25 +1232,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Executes multiple database queries as an atomic transaction - either all queries succeed or all are rolled back.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when performing multiple related database operations that must be atomic, such as transferring items between inventories.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        queries (table)
+            Array of SQL query strings to execute in sequence.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves when the transaction completes successfully, or rejects if any query fails.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local queries = {
+                "UPDATE lia_characters SET money = money - 100 WHERE id = 1",
+                "UPDATE lia_characters SET money = money + 100 WHERE id = 2",
+                "INSERT INTO lia_logs (message) VALUES ('Money transfer completed')"
+            }
+
+            lia.db.transaction(queries):next(function()
+                print("Transaction completed successfully")
+            end):catch(function(err)
+                print("Transaction failed:", err)
+            end)
         ```
 ]]
 function lia.db.transaction(queries)
@@ -1119,25 +1285,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Escapes SQL identifiers (table and column names) by wrapping them in backticks and escaping any backticks within.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Automatically called when building SQL queries to safely handle identifiers that might contain special characters.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (string)
+            The identifier (table name, column name, etc.) to escape.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            The escaped identifier wrapped in backticks.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local escaped = lia.db.escapeIdentifier("user_name")
+            -- Returns: "`user_name`"
+
+            local escaped2 = lia.db.escapeIdentifier("table`with`ticks")
+            -- Returns: "`table``with``ticks`"
         ```
 ]]
 function lia.db.escapeIdentifier(id)
@@ -1146,25 +1316,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Inserts a new row into the database table, or replaces the existing row if it already exists (SQLite UPSERT operation).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when you want to ensure a record exists with specific data, regardless of whether it was previously created.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        value (table)
+            Table containing column-value pairs to insert or update.
+        dbTable (string)
+            Optional table name without "lia_" prefix (defaults to "characters" if not specified).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Ensure a character exists with this data
+            lia.db.upsert({
+                id = 123,
+                steamID = "STEAM_0:1:12345678",
+                name = "John Doe",
+                money = "1000"
+            }, "characters"):next(function(result)
+                print("Character upserted, last ID:", result.lastID)
+            end)
         ```
 ]]
 function lia.db.upsert(value, dbTable)
@@ -1181,25 +1361,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Deletes rows from the specified database table that match the given condition.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when removing records from database tables, such as deleting characters or cleaning up old data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbTable (string)
+            Table name without "lia_" prefix (defaults to "character" if not specified).
+        condition (table|string)
+            WHERE condition to specify which rows to delete.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with {results = results, lastID = lastID}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Delete a specific character
+            lia.db.delete("characters", {id = 123}):next(function()
+                print("Character deleted")
+            end)
+
+            -- Delete all characters for a player
+            lia.db.delete("characters", {steamID = "STEAM_0:1:12345678"}):next(function()
+                print("All player characters deleted")
+            end)
         ```
 ]]
 function lia.db.delete(dbTable, condition)
@@ -1217,25 +1407,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new database table with the specified schema definition.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when creating custom tables for modules or extending the database schema.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        dbName (string)
+            Table name without "lia_" prefix.
+        primaryKey (string)
+            Optional name of the primary key column.
+        schema (table)
+            Array of column definitions with name, type, not_null, and default properties.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true when the table is created.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local schema = {
+                {name = "id", type = "integer", not_null = true},
+                {name = "name", type = "string", not_null = true},
+                {name = "value", type = "integer", default = 0}
+            }
+
+            lia.db.createTable("custom_data", "id", schema):next(function()
+                print("Custom table created")
+            end)
         ```
 ]]
 function lia.db.createTable(dbName, primaryKey, schema)
@@ -1267,25 +1469,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Adds a new column to an existing database table.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when extending database schema by adding new fields to existing tables.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tableName (string)
+            Table name without "lia_" prefix.
+        columnName (string)
+            Name of the new column to add.
+        columnType (string)
+            SQL data type for the column (e.g., "VARCHAR(255)", "INTEGER", "TEXT").
+        defaultValue (any)
+            Optional default value for the new column.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if column was added, false if it already exists.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.createColumn("characters", "custom_field", "VARCHAR(100)", "default_value"):next(function(success)
+                if success then
+                    print("Column added successfully")
+                else
+                    print("Column already exists")
+                end
+            end)
         ```
 ]]
 function lia.db.createColumn(tableName, columnName, columnType, defaultValue)
@@ -1317,25 +1531,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Removes a database table from the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when cleaning up or removing custom tables from the database schema.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tableName (string)
+            Table name without "lia_" prefix.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if table was removed, false if it doesn't exist.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.removeTable("custom_data"):next(function(success)
+                if success then
+                    print("Table removed successfully")
+                else
+                    print("Table does not exist")
+                end
+            end)
         ```
 ]]
 function lia.db.removeTable(tableName)
@@ -1355,25 +1575,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Removes a column from an existing database table by recreating the table without the specified column.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when removing fields from database tables during schema cleanup or refactoring.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tableName (string)
+            Table name without "lia_" prefix.
+        columnName (string)
+            Name of the column to remove.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves to true if column was removed, false if table/column doesn't exist.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.removeColumn("characters", "old_field"):next(function(success)
+                if success then
+                    print("Column removed successfully")
+                else
+                    print("Column or table does not exist")
+                end
+            end)
         ```
 ]]
 function lia.db.removeColumn(tableName, columnName)
@@ -1427,25 +1655,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the column information/schema for the characters table.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when needing to inspect the structure of the characters table for schema operations.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        callback (function)
+            Function to call with the array of column names.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.getCharacterTable(function(columns)
+                print("Character table columns:")
+                for _, column in ipairs(columns) do
+                    print("-", column)
+                end
+            end)
         ```
 ]]
 function lia.db.getCharacterTable(callback)
@@ -1463,25 +1695,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a backup snapshot of all data in the specified table and saves it to a JSON file.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called for backup purposes before major data operations or schema changes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        tableName (string)
+            Table name without "lia_" prefix.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with snapshot info {file = filename, path = filepath, records = count}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.createSnapshot("characters"):next(function(snapshot)
+                print("Snapshot created:", snapshot.file, "with", snapshot.records, "records")
+            end)
         ```
 ]]
 function lia.db.createSnapshot(tableName)
@@ -1522,25 +1756,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads data from a snapshot file and restores it to the corresponding database table.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called to restore database tables from backup snapshots.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        fileName (string)
+            Name of the snapshot file to load.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A promise that resolves with restore info {table = tableName, records = count, timestamp = timestamp}.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.db.loadSnapshot("snapshot_characters_1640995200.json"):next(function(result)
+                print("Restored", result.records, "records to", result.table)
+            end)
         ```
 ]]
 function lia.db.loadSnapshot(fileName)

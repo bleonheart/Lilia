@@ -15,25 +15,26 @@ lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Discover and include attribute definitions from a directory.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During schema/gamemode startup to load all attribute files.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            Path containing attribute Lua files.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load default and custom attributes.
+            lia.attribs.loadFromDir(lia.plugin.getDir() .. "/attribs")
+            lia.attribs.loadFromDir("schema/attribs")
         ```
 ]]
 function lia.attribs.loadFromDir(directory)
@@ -48,25 +49,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register or update an attribute definition in the global list.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After loading an attribute file or when hot-reloading attributes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            Attribute key.
+        data (table)
+            Fields like name, desc, OnSetup, setup, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The stored attribute table.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.attribs.register("strength", {
+                name = "Strength",
+                desc = "Improves melee damage and carry weight.",
+                OnSetup = function(client, value)
+                    client:SetJumpPower(160 + value * 0.5)
+                end
+            })
         ```
 ]]
 function lia.attribs.register(uniqueID, data)
@@ -87,25 +96,26 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Run attribute setup logic for a character on the server.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On player spawn/character load to reapply attribute effects.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose character attributes are being applied.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("PlayerLoadedChar", "ApplyAttributeBonuses", function(ply)
+                lia.attribs.setup(ply)
+            end)
         ```
 ]]
     function lia.attribs.setup(client)

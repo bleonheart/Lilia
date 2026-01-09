@@ -60,25 +60,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Determine if a net payload with given args is still fresh in cache.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before sending large net payloads to avoid duplicate work.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Cache identifier.
+        args (table)
+            Arguments that define cache identity.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            true if cached entry exists within TTL.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if not lia.net.isCacheHit("bigSync", {ply:SteamID64()}) then
+            lia.net.writeBigTable(ply, "liaBigSync", payload)
+            lia.net.addToCache("bigSync", {ply:SteamID64()})
+        end
         ```
 ]]
 function lia.net.isCacheHit(name, args)
@@ -89,25 +94,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Insert a cache marker for a named payload/args combination.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Right after sending a large or expensive net payload.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Cache identifier.
+        args (table)
+            Arguments that define cache identity.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.net.writeBigTable(targets, "liaDialogSync", data)
+        lia.net.addToCache("dialogSync", {table.Count(data)})
         ```
 ]]
 function lia.net.addToCache(name, args)
@@ -121,25 +128,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Receive chunked JSON-compressed tables and reconstruct them.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        To register a receiver for big table streams (both realms).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        netStr (string)
+            Net message name carrying the chunks.
+        callback (function)
+            Function called when table is fully received. Client: function(tbl), Server: function(ply, tbl).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.net.readBigTable("liaDoorDataBulk", function(tbl)
+            if not tbl then return end
+            for doorID, data in pairs(tbl) do
+                lia.doors.updateCachedData(doorID, data)
+            end
+        end)
         ```
 ]]
 function lia.net.readBigTable(netStr, callback)
@@ -232,29 +245,36 @@ if SERVER then
         end)
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Send a large table by compressing and chunking it across the net.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For big payloads (dialog sync, door data, keybinds) that exceed net limits.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        targets (Player|table|nil)
+            Single player, list of players, or nil to broadcast to humans.
+        netStr (string)
+            Net message name to use.
+        tbl (table)
+            Data to serialize.
+        chunkSize (number|nil)
+            Optional override for chunk size.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local payload = {doors = lia.doors.stored, ts = os.time()}
+        lia.net.writeBigTable(player.GetHumans(), "liaDoorDataBulk", payload, 2048)
+        lia.net.addToCache("doorBulk", {payload.ts})
         ```
-]]
+    ]]
     function lia.net.writeBigTable(targets, netStr, tbl, chunkSize)
         if not istable(tbl) then return end
         local json = util.TableToJSON(tbl)
@@ -302,29 +322,31 @@ if SERVER then
         end
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Validate netvar payloads to prevent functions being networked.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Internally before setting globals/locals.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Identifier for error reporting.
+        object (any)
+            Value to validate for networking safety.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean|nil
+            true if bad type detected.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.net.checkBadType("example", someTable) then return end
         ```
-]]
+    ]]
     function lia.net.checkBadType(name, object)
         if isfunction(object) then
             lia.error(L("netVarBadType", name))
@@ -336,32 +358,36 @@ if SERVER then
         end
     end
 
---[[
+    --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Set a global netvar and broadcast it (or send to specific receiver).
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Whenever shared state changes (config sync, feature flags, etc.).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Netvar identifier.
+        value (any)
+            Value to set.
+        receiver (Player|table|nil)
+            Optional target(s); broadcasts when nil.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.net.setNetVar("eventActive", true)
+        lia.net.setNetVar("roundNumber", round, targetPlayers)
         ```
-]]
+    ]]
     function lia.net.setNetVar(key, value, receiver)
-        if checkBadType(key, value) then return end
-        local oldValue = getNetVar(key)
+        if lia.net.checkBadType(key, value) then return end
+        local oldValue = lia.net.getNetVar(key)
         if oldValue == value then return end
         lia.net.globals[key] = value
         if not lia.shuttingDown then
@@ -384,25 +410,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve a global netvar with a fallback default.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Client/server code reading synchronized state.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Netvar identifier.
+        default (any)
+            Fallback value if netvar is not set.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.net.getNetVar("eventActive", false) then
+            DrawEventHUD()
+        end
         ```
 ]]
 function lia.net.getNetVar(key, default)

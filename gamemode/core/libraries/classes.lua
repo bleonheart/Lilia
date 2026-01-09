@@ -15,25 +15,32 @@ lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers or updates a class definition within the global class list.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Invoked during schema initialization or dynamic class creation to
+        ensure a class entry exists before use.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            Unique identifier for the class; must be consistent across loads.
+        data (table)
+            Class metadata such as name, desc, faction, limit, OnCanBe, etc.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The registered class table with applied defaults.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.class.register("soldier", {
+            name = "Soldier",
+            faction = FACTION_MILITARY,
+            limit = 4
+        })
         ```
 ]]
 function lia.class.register(uniqueID, data)
@@ -73,25 +80,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads and registers all class definitions from a directory.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used during schema loading to automatically include class files in a
+        folder following the naming convention.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            Path to the directory containing class Lua files.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Operates for side effects of registering classes.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.class.loadFromDir("lilia/gamemode/classes")
         ```
 ]]
 function lia.class.loadFromDir(directory)
@@ -135,25 +143,32 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Determines whether a client can join a specific class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Checked before class selection to enforce faction, limits, whitelist,
+        and custom restrictions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player attempting to join the class.
+        class (number|string)
+            Class index or unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean|string
+            False and a reason string on failure; otherwise returns the
+            class's isDefault value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local ok, reason = lia.class.canBe(ply, CLASS_CITIZEN)
+        if ok then
+            -- proceed with class change
+        end
         ```
 ]]
 function lia.class.canBe(client, class)
@@ -171,25 +186,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves a class table by index or unique identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used whenever class metadata is needed given a known identifier.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (number|string)
+            Class list index or unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            The class table if found; otherwise nil.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local classData = lia.class.get("soldier")
         ```
 ]]
 function lia.class.get(identifier)
@@ -199,25 +214,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Collects all players currently assigned to the given class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used when enforcing limits or displaying membership lists.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        class (number|string)
+            Class list index or unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Array of player entities in the class.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        for _, ply in ipairs(lia.class.getPlayers("soldier")) do
+            -- notify class members
+        end
         ```
 ]]
 function lia.class.getPlayers(class)
@@ -232,25 +249,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Counts how many players are in the specified class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used to check class limits or display class population.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        class (number|string)
+            Class list index or unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Current number of players in the class.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local count = lia.class.getPlayerCount(CLASS_ENGINEER)
         ```
 ]]
 function lia.class.getPlayerCount(class)
@@ -265,25 +282,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Finds the class index by matching uniqueID or display name.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used to resolve user input to a class entry before further lookups.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        class (string)
+            Text to match against class uniqueID or name.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number|nil
+            The class index if a match is found; otherwise nil.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local idx = lia.class.retrieveClass("Engineer")
         ```
 ]]
 function lia.class.retrieveClass(class)
@@ -296,25 +313,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks whether a class uses whitelist access.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Queried before allowing class selection or displaying class info.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        class (number|string)
+            Class list index or unique identifier.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the class is whitelisted and not default; otherwise false.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.class.hasWhitelist(CLASS_PILOT) then
+            -- restrict to whitelisted players
+        end
         ```
 ]]
 function lia.class.hasWhitelist(class)
@@ -327,25 +346,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns a list of classes the provided client is allowed to join.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Used to build class selection menus and enforce availability.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+            Target player; defaults to LocalPlayer on the client.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Array of class tables the client can currently join.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local options = lia.class.retrieveJoinable(ply)
         ```
 ]]
 function lia.class.retrieveJoinable(client)

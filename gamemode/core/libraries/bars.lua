@@ -24,25 +24,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve a registered bar definition by its identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before updating/removing an existing bar or inspecting its state.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (string|nil)
+            Unique bar id supplied when added.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Stored bar data or nil if not found.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local staminaBar = lia.bar.get("stamina")
+            if staminaBar then
+                print("Current priority:", staminaBar.priority)
+            end
         ```
 ]]
 function lia.bar.get(identifier)
@@ -53,25 +56,36 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a new dynamic bar with optional priority and identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Client HUD setup or when creating temporary action/status bars.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        getValue (function)
+            Returns current fraction (0-1) when called.
+        color (Color|nil)
+            Bar color; random bright color if nil.
+        priority (number|nil)
+            Lower draws earlier; defaults to append order.
+        identifier (string|nil)
+            Unique id; replaces existing bar with same id.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Priority used for the bar.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Add a stamina bar that fades after inactivity.
+            lia.bar.add(function()
+                local client = LocalPlayer()
+                local stamina = client:getLocalVar("stm", 100)
+                return math.Clamp(stamina / 100, 0, 1)
+            end, Color(120, 200, 80), 2, "stamina")
         ```
 ]]
 function lia.bar.add(getValue, color, priority, identifier)
@@ -95,25 +109,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Remove a bar by its identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After a timed action completes or when disabling a HUD element.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (string)
+            Unique id passed during add.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            timer.Simple(5, function() lia.bar.remove("stamina") end)
         ```
 ]]
 function lia.bar.remove(identifier)
@@ -127,25 +140,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draw a single bar at a position with given fill and color.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Internally from drawAll or for custom bars in panels.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x, y, w, h (number)
+            Position and size.
+        pos (number)
+            Current value.
+        max (number)
+            Maximum value.
+        color (Color)
+            Fill color.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Custom panel painting a download progress bar.
+            function PANEL:Paint(w, h)
+                lia.bar.drawBar(10, h - 24, w - 20, 16, self.progress, 1, Color(120, 180, 255))
+            end
         ```
 ]]
 function lia.bar.drawBar(x, y, w, h, pos, max, color)
@@ -158,25 +179,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Show a centered action bar with text and timed progress.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For timed actions like searching, hacking, or channeling abilities.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Label to display.
+        duration (number)
+            Seconds to run before auto-removal.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("OnStartSearch", "ShowSearchBar", function(duration)
+                lia.bar.drawAction(L("searching"), duration)
+            end)
         ```
 ]]
 function lia.bar.drawAction(text, duration)
@@ -211,25 +235,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Render all registered bars with smoothing, lifetimes, and ordering.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Each HUDPaintBackground (hooked at bottom of file).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Bars are drawn automatically via the HUDPaintBackground hook.
+            -- For custom derma panels, you could manually call lia.bar.drawAll().
         ```
 ]]
 function lia.bar.drawAll()

@@ -18,25 +18,33 @@ lia.char.varHooks = lia.char.varHooks or {}
 lia.char.pendingRequests = lia.char.pendingRequests or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve a character by ID from cache or request a load if missing.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anytime code needs a character object by ID (selection, networking, admin tools).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to fetch.
+        client (Player|nil)
+            Owning player; only used server-side when loading.
+        callback (function|nil)
+            Invoked with the character once available (server cached immediately, otherwise after load/network).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            The character object if already cached; otherwise nil while loading.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.getCharacter(targetID, ply, function(char)
+            if char then
+                char:sync(ply)
+            end
+        end)
         ```
 ]]
 function lia.char.getCharacter(charID, client, callback)
@@ -66,25 +74,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Return a table of all players currently holding loaded characters.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For admin panels, diagnostics, or mass operations over active characters.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Keyed by Player with values of their active character objects.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        for ply, char in pairs(lia.char.getAll()) do
+            print(ply:Name(), char:getName())
+        end
         ```
 ]]
 function lia.char.getAll()
@@ -97,25 +106,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Check if a character ID currently exists in the local cache.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before loading or accessing a character to avoid duplicate work.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to test.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if the character is cached, otherwise false.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if not lia.char.isLoaded(id) then
+            lia.char.getCharacter(id)
+        end
         ```
 ]]
 function lia.char.isLoaded(charID)
@@ -124,25 +135,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Insert a character into the cache and resolve any pending requests.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After successfully loading or creating a character object.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            Character database ID.
+        character (table)
+            Character object to store.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.addCharacter(char:getID(), char)
         ```
 ]]
 function lia.char.addCharacter(id, character)
@@ -155,25 +167,24 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Remove a character from the local cache.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After a character is deleted, unloaded, or no longer needed.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            Character database ID to remove.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.removeCharacter(charID)
         ```
 ]]
 function lia.char.removeCharacter(id)
@@ -182,25 +193,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Construct a character object and populate its variables with provided data or defaults.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During character creation or when rebuilding a character from stored data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        data (table)
+            Raw character data keyed by variable name.
+        id (number|nil)
+            Database ID; defaults to 0 when nil.
+        client (Player|nil)
+            Owning player entity, if available.
+        steamID (string|nil)
+            SteamID string used when no player entity is provided.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            New character object.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local char = lia.char.new(row, row.id, ply)
         ```
 ]]
 function lia.char.new(data, id, client, steamID)
@@ -232,25 +249,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a hook function that runs when a specific character variable changes.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When modules need to react to updates of a given character variable.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        varName (string)
+            Character variable name.
+        hookName (string)
+            Unique identifier for the hook.
+        func (function)
+            Callback invoked with (character, oldValue, newValue).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.hookVar("money", "OnMoneyChanged", function(char, old, new)
+            hook.Run("OnCharMoneyChanged", char, old, new)
+        end)
         ```
 ]]
 function lia.char.hookVar(varName, hookName, func)
@@ -260,25 +282,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a character variable and generate accessor/mutator helpers with optional networking.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During schema load to declare character fields such as name, money, or custom data.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Variable identifier.
+        data (table)
+            Configuration table defining defaults, validation, networking, and callbacks.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.registerVar("title", {
+            field = "title",
+            fieldType = "string",
+            default = "",
+        })
         ```
 ]]
 function lia.char.registerVar(key, data)
@@ -700,25 +727,27 @@ lia.char.registerVar("banned", {
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Read character data key/value pairs stored in the chardata table.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When modules need arbitrary persisted data for a character, optionally scoped to a single key.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to query.
+        key (string|nil)
+            Optional specific data key to return.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|any|nil
+            Table of all key/value pairs, a single value when key is provided, or nil if not found/invalid.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local prestige = lia.char.getCharData(charID, "prestige")
         ```
 ]]
 function lia.char.getCharData(charID, key)
@@ -739,25 +768,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieve raw character data from chardata without touching the cache.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a direct database read is needed, bypassing any loaded character state.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to query.
+        key (string|nil)
+            Optional key for a single value; omit to fetch all.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any|table|false|nil
+            Decoded value for the key, a table of all key/value pairs, false if a keyed lookup is missing, or nil on invalid input.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local allData = lia.char.getCharDataRaw(charID)
         ```
 ]]
 function lia.char.getCharDataRaw(charID, key)
@@ -783,25 +814,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Find the player entity that owns a given character ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When needing to target or notify the current owner of a loaded character.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ID (number)
+            Character database ID.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Player|nil
+            Player who currently has the character loaded, or nil if none.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local owner = lia.char.getOwnerByID(charID)
         ```
 ]]
 function lia.char.getOwnerByID(ID)
@@ -813,25 +844,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Get the active character of an online player by SteamID/SteamID64.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        For lookups across connected players when only a Steam identifier is known.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        steamID (string)
+            SteamID or SteamID64 string.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            Character object if the player is online and has one loaded, else nil.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local char = lia.char.getBySteamID(targetSteamID)
         ```
 ]]
 function lia.char.getBySteamID(steamID)
@@ -845,25 +876,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Return the team/class color for a player, falling back to team color.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Whenever UI or drawing code needs a consistent color for the player's current class.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose color is requested.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Color table sourced from class definition or team color.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local color = lia.char.getTeamColor(ply)
         ```
 ]]
 function lia.char.getTeamColor(client)
@@ -879,25 +910,26 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Create a new character row, build its object, and initialize inventories.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During character creation after validation to persist and ready the new character.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        data (table)
+            Prepared character data including steamID, faction, and name.
+        callback (function|nil)
+            Invoked with the new character ID once creation finishes.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.create(payload, function(charID) print("created", charID) end)
         ```
 ]]
     function lia.char.create(data, callback)
@@ -943,25 +975,28 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load all characters for a player (or a specific ID) into memory and inventory.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        On player connect or when an admin requests to restore a specific character.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose characters should be loaded.
+        callback (function|nil)
+            Invoked with a list of loaded character IDs once complete.
+        id (number|nil)
+            Optional single character ID to restrict the load.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.restore(ply, function(chars) print("loaded", #chars) end)
         ```
 ]]
     function lia.char.restore(client, callback, id)
@@ -1066,25 +1101,24 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Unload and save all characters cached for a player.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a player disconnects or is cleaned up to free memory and inventories.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose cached characters should be unloaded.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.cleanUpForPlayer(ply)
         ```
 ]]
     function lia.char.cleanUpForPlayer(client)
@@ -1107,25 +1141,26 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Delete a character, its data, and inventories, and notify affected players.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        By admin or player actions that permanently remove a character.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            Character database ID to delete.
+        client (Player|nil)
+            Player requesting deletion, if any.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.delete(charID, ply)
         ```
 ]]
     function lia.char.delete(id, client)
@@ -1181,25 +1216,25 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Check the ban state of a character in the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before allowing a character to load or when displaying ban info.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number|nil
+            Ban flag/value (0 if not banned), or nil on invalid input.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.char.getCharBanned(id) ~= 0 then return end
         ```
 ]]
     function lia.char.getCharBanned(charID)
@@ -1211,25 +1246,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Write a character variable to the database and update any loaded instance.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Whenever persistent character fields or custom data need to be changed.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID.
+        field (string)
+            Character var or custom data key.
+        value (any)
+            Value to store; nil removes custom data entries.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True on success, false on immediate failure.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.setCharDatabase(charID, "money", newAmount)
         ```
 ]]
     function lia.char.setCharDatabase(charID, field, value)
@@ -1334,25 +1373,25 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Save and unload a character from memory, clearing associated data vars.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a character is no longer active or needs to be freed from cache.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to unload.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if a character was unloaded, false if none was loaded.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.unloadCharacter(charID)
         ```
 ]]
     function lia.char.unloadCharacter(charID)
@@ -1385,25 +1424,27 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Unload all cached characters for a player except the currently active one.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        After character switches to reduce memory and inventory usage.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose cached characters should be reduced.
+        activeCharID (number)
+            Character ID to keep loaded.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Count of characters that were unloaded.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.unloadUnusedCharacters(ply, newCharID)
         ```
 ]]
     function lia.char.unloadUnusedCharacters(client, activeCharID)
@@ -1416,25 +1457,28 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load a single character from the database, building inventories and caching it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When a specific character is selected, restored, or fetched server-side.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number)
+            Character database ID to load.
+        client (Player|nil)
+            Owning player, used for permission checks and inventory linking.
+        callback (function|nil)
+            Invoked with the loaded character or nil on failure.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.char.loadSingleCharacter(id, ply, function(char) if char then char:sync(ply) end end)
         ```
 ]]
     function lia.char.loadSingleCharacter(charID, client, callback)

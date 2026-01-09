@@ -20,25 +20,26 @@ local color_accept = Color(44, 124, 62)
 local color_target = Color(255, 255, 255, 200)
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens a fresh `liaDermaMenu` at the current cursor position and tracks it in `lia.gui.menuDermaMenu`.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a standard context menu for interaction options and want any previous one closed first.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The newly created `liaDermaMenu` panel.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local menu = lia.derma.dermaMenu()
+            menu:AddOption("Say hi", function() chat.AddText("hi") end)
+            menu:Open()
         ```
 ]]
 function lia.derma.dermaMenu()
@@ -63,25 +64,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Builds and shows the configurable options/interaction menu, filtering and categorising provided options before rendering buttons.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when presenting interaction, action, or custom options to the player, optionally tied to a targeted entity and network message.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        rawOptions (table)
+            Option definitions keyed by id or stored in an array; entries can include `type`, `range`, `target`, `shouldShow`, `callback`, and `onSelect`.
+        config (table)
+            Optional settings such as `mode` ("interaction", "action", or "custom"), `entity`, `netMsg`, `preFiltered`, `registryKey`, sizing fields, and behaviour toggles like `closeOnSelect`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel|nil
+            The created frame when options are available; otherwise nil.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.optionsMenu({
+                greet = {type = "action", callback = function(client) chat.AddText(client, " waves") end}
+            }, {mode = "action"})
         ```
 ]]
 function lia.derma.optionsMenu(rawOptions, config)
@@ -369,25 +374,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Displays a modal color picker window that lets the user pick a hue and saturation/value, then returns the chosen color.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need the player to choose a color for a UI element or configuration field.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        func (function)
+            Callback invoked with the selected Color when the user confirms.
+        colorStandard (Color)
+            Optional starting color; defaults to white.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Operates through UI side effects and the supplied callback.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestColorPicker(function(col) print("Picked", col) end, Color(0, 200, 255))
         ```
 ]]
 function lia.derma.requestColorPicker(func, colorStandard)
@@ -555,25 +562,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Spawns a radial selection menu using `liaRadialPanel` and stores the reference on `lia.gui.menu_radial`.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for quick circular option pickers, such as pie-menu interactions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        options (table)
+            Table passed directly to `liaRadialPanel:Init`, defining each radial entry.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created `liaRadialPanel` instance.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.radialMenu({{label = "Yes", callback = function() print("yes") end}})
         ```
 ]]
 function lia.derma.radialMenu(options)
@@ -586,25 +593,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens a player selector window listing all connected players and runs a callback when one is chosen.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when an action needs the user to target a specific player from the current server list.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        doClick (function)
+            Called with the selected player entity after the user clicks a card.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created selector frame stored on `lia.gui.menuPlayerSelector`.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestPlayerSelector(function(pl) chat.AddText("Selected ", pl:Name()) end)
         ```
 ]]
 function lia.derma.requestPlayerSelector(doClick)
@@ -904,25 +911,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a rounded rectangle using the shader-based derma pipeline with the same radius on every corner.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when rendering a simple rounded box with optional shape or blur flags.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Corner radius to apply to all corners.
+        x (number)
+            X position of the box.
+        y (number)
+            Y position of the box.
+        w (number)
+            Width of the box.
+        h (number)
+            Height of the box.
+        col (Color|nil)
+            Fill color; defaults to solid white if omitted.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flag constants (shape, blur, corner suppression).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.draw(8, 10, 10, 140, 48, Color(30, 30, 30, 220))
         ```
 ]]
 function lia.derma.draw(radius, x, y, w, h, col, flags)
@@ -931,25 +950,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws only the outline of a rounded rectangle with configurable thickness.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a stroked rounded box while leaving the interior transparent.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Corner radius for all corners.
+        x (number)
+            X position of the outline.
+        y (number)
+            Y position of the outline.
+        w (number)
+            Width of the outline box.
+        h (number)
+            Height of the outline box.
+        col (Color|nil)
+            Outline color; defaults to white when nil.
+        thickness (number|nil)
+            Outline thickness in pixels; defaults to 1.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawOutlined(10, 20, 20, 180, 60, lia.color.theme.text, 2)
         ```
 ]]
 function lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)
@@ -958,25 +991,40 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a rounded rectangle filled with the provided texture.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a textured rounded box instead of a solid color.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Corner radius for all corners.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
+        col (Color|nil)
+            Modulation color for the texture; defaults to white.
+        texture (ITexture)
+            Texture handle to apply to the rectangle.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local tex = Material("vgui/gradient-u"):GetTexture("$basetexture")
+            lia.derma.drawTexture(6, 50, 50, 128, 64, color_white, tex)
         ```
 ]]
 function lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)
@@ -985,25 +1033,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Convenience wrapper that draws a rounded rectangle using the base texture from a material.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you have an `IMaterial` and want its base texture applied to a rounded box.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Corner radius for all corners.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
+        col (Color|nil)
+            Color modulation for the material.
+        mat (IMaterial)
+            Material whose base texture will be drawn.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawMaterial(6, 80, 80, 100, 40, color_white, Material("vgui/gradient-d"))
         ```
 ]]
 function lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)
@@ -1013,25 +1075,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a filled circle using the rounded rectangle shader configured for circular output.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a smooth circle without manually handling radii or shapes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Center X position.
+        y (number)
+            Center Y position.
+        radius (number)
+            Circle diameter; internally halved for corner radii.
+        col (Color|nil)
+            Fill color; defaults to white.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawCircle(100, 100, 48, Color(200, 80, 80, 255))
         ```
 ]]
 function lia.derma.drawCircle(x, y, radius, col, flags)
@@ -1040,25 +1110,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws only the outline of a circle with configurable thickness.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for circular strokes such as selection rings or markers.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Center X position.
+        y (number)
+            Center Y position.
+        radius (number)
+            Circle diameter.
+        col (Color|nil)
+            Outline color.
+        thickness (number|nil)
+            Outline thickness; defaults to 1.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawCircleOutlined(200, 120, 40, lia.color.theme.accent, 2)
         ```
 ]]
 function lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)
@@ -1067,25 +1147,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a textured circle using a supplied texture handle.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want a circular render that uses a specific texture rather than a solid color.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Center X position.
+        y (number)
+            Center Y position.
+        radius (number)
+            Circle diameter.
+        col (Color|nil)
+            Color modulation for the texture.
+        texture (ITexture)
+            Texture handle to apply.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawCircleTexture(64, 64, 32, color_white, Material("icon16/star.png"):GetTexture("$basetexture"))
         ```
 ]]
 function lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)
@@ -1094,25 +1184,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a textured circle using the base texture from an `IMaterial`.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you have a material and need to render its base texture within a circular mask.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Center X position.
+        y (number)
+            Center Y position.
+        radius (number)
+            Circle diameter.
+        col (Color|nil)
+            Color modulation for the material.
+        mat (IMaterial)
+            Material whose base texture will be drawn.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawCircleMaterial(48, 48, 28, color_white, Material("vgui/gradient-l"))
         ```
 ]]
 function lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)
@@ -1139,25 +1239,43 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Renders a blurred rounded shape using the blur shader while respecting per-corner radii and optional outline thickness.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to blur a rectangular region (or other supported shapes) without drawing a solid fill.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position of the blurred region.
+        y (number)
+            Y position of the blurred region.
+        w (number)
+            Width of the blurred region.
+        h (number)
+            Height of the blurred region.
+        flags (number|nil)
+            Bitmask using `lia.derma` flags to control shape, blur, and disabled corners.
+        tl (number|nil)
+            Top-left radius override.
+        tr (number|nil)
+            Top-right radius override.
+        bl (number|nil)
+            Bottom-left radius override.
+        br (number|nil)
+            Bottom-right radius override.
+        thickness (number|nil)
+            Optional outline thickness for partial arcs.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawBlur(0, 0, 220, 80, lia.derma.BLUR, 12, 12, 12, 12)
         ```
 ]]
 function lia.derma.drawBlur(x, y, w, h, flags, tl, tr, bl, br, thickness)
@@ -1202,25 +1320,49 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a configurable drop shadow behind a rounded shape, optionally using blur and manual color control.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want a soft shadow around a shape with fine control over radii, spread, intensity, and flags.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position of the shape casting the shadow.
+        y (number)
+            Y position of the shape casting the shadow.
+        w (number)
+            Width of the shape.
+        h (number)
+            Height of the shape.
+        col (Color|nil|boolean)
+            Shadow color; pass `false` to skip color modulation.
+        flags (number|nil)
+            Bitmask using `lia.derma` flags (shape, blur, corner suppression).
+        tl (number|nil)
+            Top-left radius override.
+        tr (number|nil)
+            Top-right radius override.
+        bl (number|nil)
+            Bottom-left radius override.
+        br (number|nil)
+            Bottom-right radius override.
+        spread (number|nil)
+            Pixel spread of the shadow; defaults to 30.
+        intensity (number|nil)
+            Shadow alpha scaling; defaults to `spread * 1.2`.
+        thickness (number|nil)
+            Optional outline thickness when rendering arcs.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawShadowsEx(40, 40, 200, 80, Color(0, 0, 0, 180), nil, 12, 12, 12, 12, 26, 32)
         ```
 ]]
 function lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)
@@ -1243,25 +1385,41 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Convenience wrapper to draw a drop shadow with the same radius on every corner.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a uniform-radius shadow without manually specifying each corner.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Radius applied to all corners.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
+        col (Color|nil)
+            Shadow color.
+        spread (number|nil)
+            Pixel spread of the shadow.
+        intensity (number|nil)
+            Shadow alpha scaling.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawShadows(10, 60, 60, 180, 70, Color(0, 0, 0, 150))
         ```
 ]]
 function lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)
@@ -1270,25 +1428,43 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Convenience wrapper that draws only the shadow outline for a uniform-radius shape.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a stroked shadow ring around a rounded box.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        radius (number)
+            Radius applied to all corners.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
+        col (Color|nil)
+            Shadow color.
+        thickness (number|nil)
+            Outline thickness for the shadow.
+        spread (number|nil)
+            Pixel spread of the shadow.
+        intensity (number|nil)
+            Shadow alpha scaling.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawShadowsOutlined(12, 40, 40, 160, 60, Color(0, 0, 0, 180), 2)
         ```
 ]]
 function lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)
@@ -1472,25 +1648,31 @@ lia.derma.Types = {
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Starts a chainable rectangle draw builder using the derma shader helpers.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want to configure a rectangle (radius, color, outline, blur, etc.) through a fluent API before drawing.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position of the rectangle.
+        y (number)
+            Y position of the rectangle.
+        w (number)
+            Width of the rectangle.
+        h (number)
+            Height of the rectangle.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Chainable rectangle builder supporting methods like `:Rad`, `:Color`, `:Outline`, and `:Draw`.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.rect(12, 12, 220, 80):Rad(10):Color(Color(40, 40, 40, 220)):Shadow():Draw()
         ```
 ]]
 function lia.derma.rect(x, y, w, h)
@@ -1499,25 +1681,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Starts a chainable circle draw builder using the derma shader helpers.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want to configure a circle (color, outline, blur, etc.) before drawing it.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Center X position.
+        y (number)
+            Center Y position.
+        r (number)
+            Circle diameter.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Chainable circle builder supporting methods like `:Color`, `:Outline`, `:Shadow`, and `:Draw`.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.circle(100, 100, 50):Color(lia.color.theme.accent):Outline(2):Draw()
         ```
 ]]
 function lia.derma.circle(x, y, r)
@@ -1535,25 +1721,29 @@ lia.derma.BLUR = BLUR
 lia.derma.MANUAL_COLOR = manualColor
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Sets or clears a specific drawing flag on a bitmask using a flag value or named constant.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when toggling derma drawing flags such as shapes or corner suppression.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        flags (number)
+            Current flag bitmask.
+        flag (number|string)
+            Flag value or key in `lia.derma` (e.g., "BLUR").
+        bool (boolean)
+            Whether to enable (`true`) or disable (`false`) the flag.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Updated flag bitmask.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            flags = lia.derma.setFlag(flags, "BLUR", true)
         ```
 ]]
 function lia.derma.setFlag(flags, flag, bool)
@@ -1567,25 +1757,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Updates the default shape flag used by the draw helpers (rectangles and circles) when no explicit flag is provided.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to globally change the base rounding style (e.g., figma, iOS, circle) for subsequent draw calls.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        shape (number)
+            Shape flag constant such as `lia.derma.SHAPE_FIGMA`; defaults to `SHAPE_FIGMA` when nil.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Updates internal default state.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.setDefaultShape(lia.derma.SHAPE_IOS)
         ```
 ]]
 function lia.derma.setDefaultShape(shape)
@@ -1595,25 +1785,41 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws text with a single offset shadow before the main text for lightweight legibility.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a subtle shadow behind text without a full outline.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to draw.
+        font (string)
+            Font name.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        colortext (Color)
+            Foreground text color.
+        colorshadow (Color)
+            Shadow color.
+        dist (number)
+            Pixel offset for both X and Y shadow directions.
+        xalign (number)
+            Horizontal alignment (`TEXT_ALIGN_*`).
+        yalign (number)
+            Vertical alignment (`TEXT_ALIGN_*`).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.shadowText("Hello", "LiliaFont.18", 200, 100, color_white, Color(0, 0, 0, 180), 1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         ```
 ]]
 function lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)
@@ -1631,25 +1837,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws text with a configurable outline by repeatedly rendering offset copies around the glyphs.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need high-contrast text that stays legible on varied backgrounds.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to draw.
+        font (string)
+            Font name.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        colour (Color)
+            Main text color.
+        xalign (number)
+            Horizontal alignment (`TEXT_ALIGN_*`).
+        outlinewidth (number)
+            Total outline thickness in pixels.
+        outlinecolour (Color)
+            Color applied to the outline renders.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            The value returned by `draw.DrawText` for the final text render.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawTextOutlined("Warning", "LiliaFont.16", 50, 50, color_white, TEXT_ALIGN_LEFT, 2, Color(0, 0, 0, 200))
         ```
 ]]
 function lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)
@@ -1665,25 +1885,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a speech-bubble style tooltip with a triangular pointer and centered label.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for lightweight tooltip rendering when you need a callout pointing to a position.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            Left position of the bubble.
+        y (number)
+            Top position of the bubble.
+        w (number)
+            Bubble width.
+        h (number)
+            Bubble height including pointer.
+        text (string)
+            Text to display inside the bubble.
+        font (string)
+            Font used for the text.
+        textCol (Color)
+            Color of the label text.
+        outlineCol (Color)
+            Color used to draw the bubble outline/fill.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawTip(300, 200, 160, 60, "Hint", "LiliaFont.16", color_white, Color(20, 20, 20, 220))
         ```
 ]]
 function lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)
@@ -1728,25 +1962,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws text with a subtle shadow using `draw.TextShadow`, defaulting to common derma font and colors.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when rendering HUD/UI text that benefits from a small shadow for readability.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to render.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        color (Color|nil)
+            Text color; defaults to white.
+        alignX (number|nil)
+            Horizontal alignment (`TEXT_ALIGN_*`), defaults to left.
+        alignY (number|nil)
+            Vertical alignment (`TEXT_ALIGN_*`), defaults to top.
+        font (string|nil)
+            Font name; defaults to `LiliaFont.16`.
+        alpha (number|nil)
+            Shadow alpha override; defaults to 57.5% of text alpha.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Width returned by `draw.TextShadow`.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawText("Objective updated", 20, 20, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
         ```
 ]]
 function lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)
@@ -1763,25 +2011,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Renders a configurable blurred box with optional border and draws one or more text lines inside it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for notification overlays, labels, or caption boxes that need automatic sizing and padding.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string|table)
+            Single string or table of lines to display.
+        x (number)
+            Reference X coordinate.
+        y (number)
+            Reference Y coordinate.
+        options (table|nil)
+            Customisation table supporting `font`, `textColor`, `backgroundColor`, `borderColor`, `borderRadius`, `borderThickness`, `padding`, `blur`, `textAlignX`, `textAlignY`, `autoSize`, `width`, `height`, and `lineSpacing`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number, number
+            The final box width and height.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local w, h = lia.derma.drawBoxWithText("Saved", ScrW() * 0.5, 120, {textAlignX = TEXT_ALIGN_CENTER})
         ```
 ]]
 function lia.derma.drawBoxWithText(text, x, y, options)
@@ -1872,25 +2126,35 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a textured rectangle using either a supplied material or a material path.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need to render a texture/material directly without rounded corners.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        material (IMaterial|string)
+            Material instance or path to the material.
+        color (Color|nil)
+            Color modulation for the draw; defaults to white.
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawSurfaceTexture("vgui/gradient-l", color_white, 10, 10, 64, 64)
         ```
 ]]
 function lia.derma.drawSurfaceTexture(material, color, x, y, w, h)
@@ -1906,25 +2170,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Calls a named skin function on the panel's active skin (or the default skin) with the provided arguments.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to defer drawing or layout to the current Derma skin implementation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Skin function name to invoke.
+        panel (Panel|nil)
+            Target panel whose skin should be used; falls back to the default skin.
+        a, b, c, d, e, f, g (any)
+            Optional arguments forwarded to the skin function.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        any
+            Whatever the skin function returns, or nil if unavailable.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.skinFunc("PaintButton", someButton, w, h)
         ```
 ]]
 function lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)
@@ -1937,25 +2205,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Smoothly moves a value toward a target using an exponential approach based on delta time.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for UI animations or interpolations that should ease toward a target without overshoot.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        current (number)
+            Current value.
+        target (number)
+            Desired target value.
+        speed (number)
+            Exponential speed factor.
+        dt (number)
+            Frame delta time.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            The updated value after applying the exponential approach.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            scale = lia.derma.approachExp(scale, 1, 4, FrameTime())
         ```
 ]]
 function lia.derma.approachExp(current, target, speed, dt)
@@ -1965,25 +2239,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns a cubic ease-out interpolation for values between 0 and 1.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for easing animations that should start quickly and slow toward the end.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        t (number)
+            Normalized time between 0 and 1.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Eased value.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local eased = lia.derma.easeOutCubic(progress)
         ```
 ]]
 function lia.derma.easeOutCubic(t)
@@ -1992,25 +2266,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Returns a cubic ease-in/ease-out interpolation for values between 0 and 1.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want acceleration at the start and deceleration at the end of an animation.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        t (number)
+            Normalized time between 0 and 1.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        number
+            Eased value.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local eased = lia.derma.easeInOutCubic(progress)
         ```
 ]]
 function lia.derma.easeInOutCubic(t)
@@ -2023,25 +2297,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Animates a panel from a scaled, transparent state to a target size/position with exponential easing and optional callback.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to show panels with a smooth pop-in animation that scales and fades into place.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel to animate.
+        targetWidth (number)
+            Final width.
+        targetHeight (number)
+            Final height.
+        duration (number|nil)
+            Time in seconds for the size/position animation; defaults to 0.18s.
+        alphaDuration (number|nil)
+            Time in seconds for the fade animation; defaults to the duration.
+        callback (function|nil)
+            Called once the animation finishes.
+        scaleFactor (number|nil)
+            Starting scale factor relative to the final size; defaults to 0.8.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Mutates the panel in-place and assigns a Think hook.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local pnl = vgui.Create("DPanel")
+            pnl:SetPos(100, 100)
+            lia.derma.animateAppearance(pnl, 300, 200, 0.2, nil, function() pnl:SetMouseInputEnabled(true) end)
         ```
 ]]
 function lia.derma.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)
@@ -2090,25 +2378,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Repositions a panel so it remains within the visible screen area with a small padding.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use after moving or resizing a popup to prevent it from clipping off-screen.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel to clamp.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Mutates the panel position in-place.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.clampMenuPosition(myPanel)
         ```
 ]]
 function lia.derma.clampMenuPosition(panel)
@@ -2133,25 +2421,39 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a rectangular gradient using common VGUI gradient materials and optional rounding.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need a directional gradient fill without creating custom materials.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position.
+        y (number)
+            Y position.
+        w (number)
+            Width.
+        h (number)
+            Height.
+        direction (number)
+            Gradient index (1 = up, 2 = down, 3 = left, 4 = right).
+        colorShadow (Color)
+            Color modulation for the gradient texture.
+        radius (number|nil)
+            Corner radius; defaults to 0.
+        flags (number|nil)
+            Optional bitmask using `lia.derma` flags.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawGradient(0, 0, 200, 40, 2, Color(0, 0, 0, 180), 6)
         ```
 ]]
 function lia.derma.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)
@@ -2162,25 +2464,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Splits text into lines that fit within a maximum width using the specified font.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use before rendering multi-line text to avoid manual word wrapping.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        text (string)
+            Text to wrap.
+        width (number)
+            Maximum line width in pixels.
+        font (string|nil)
+            Font to measure with; defaults to `LiliaFont.16`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table, number
+            A table of wrapped lines and the widest measured width.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local lines, maxW = lia.derma.wrapText("Hello world", 180, "LiliaFont.16")
         ```
 ]]
 function lia.derma.wrapText(text, width, font)
@@ -2213,25 +2519,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Applies a screen-space blur behind the given panel by repeatedly sampling the blur material.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you want a translucent blurred background behind a Derma panel.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel whose bounds define the blur area.
+        amount (number|nil)
+            Blur strength multiplier; defaults to 5.
+        passes (number|nil)
+            Number of blur passes; defaults to 0.2 steps up to 1.
+        alpha (number|nil)
+            Alpha applied to the blur draw; defaults to 255.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawBlur(myPanel, 4, 1, 200)
         ```
 ]]
 function lia.derma.drawBlur(panel, amount, passes, alpha)
@@ -2250,25 +2562,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws a blur behind a panel and overlays a dark tint to emphasize foreground elements.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for modal backdrops or to dim the UI behind dialogs.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        panel (Panel)
+            Panel whose bounds define the blur and tint area.
+        amount (number|nil)
+            Blur strength; defaults to 6.
+        passes (number|nil)
+            Number of blur passes; defaults to 5.
+        alpha (number|nil)
+            Alpha applied to the blur draw; defaults to 255.
+        darkAlpha (number|nil)
+            Alpha of the dark overlay; defaults to 220.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawBlackBlur(myPanel, 8, 4, 255, 180)
         ```
 ]]
 function lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)
@@ -2298,25 +2618,37 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Applies a blur effect to a specific screen-space rectangle defined by coordinates and size.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to blur a custom area of the screen that is not tied to a panel.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        x (number)
+            X position of the blur rectangle.
+        y (number)
+            Y position of the blur rectangle.
+        w (number)
+            Width of the blur rectangle.
+        h (number)
+            Height of the blur rectangle.
+        amount (number|nil)
+            Blur strength; defaults to 5.
+        passes (number|nil)
+            Number of blur passes; defaults to 0.2 steps up to 1.
+        alpha (number|nil)
+            Alpha applied to the blur draw; defaults to 255.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.drawBlurAt(100, 100, 200, 120, 6, 1, 180)
         ```
 ]]
 function lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)
@@ -2336,25 +2668,34 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Builds a dynamic argument entry form with typed controls and validates input before submission.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when a command or action requires the player to supply multiple typed arguments.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"enterArguments"`.
+        argTypes (table)
+            Ordered list or map describing fields; entries can be `"string"`, `"boolean"`, `"number"/"int"`, `"table"` (dropdown), or `"player"`, optionally with data and default values.
+        onSubmit (function|nil)
+            Callback receiving `(true, resultsTable)` on submit or `(false)` on cancel.
+        defaults (table|nil)
+            Default values keyed by field name.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Operates through UI side effects and the provided callback.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.createTableUI("Players", {
+                {name = "name", field = "name"},
+                {name = "steamid", field = "steamid"}
+            }, playerRows)
         ```
 ]]
 function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
@@ -2610,25 +2951,36 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Builds a full-screen table UI with optional context actions, populating rows from provided data and column definitions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need to display tabular data (e.g., admin lists) with right-click options and copy support.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to localized table list title.
+        columns (table)
+            Array of column definitions `{name = <lang key>, field = <data key>, width = <optional>}`.
+        data (table)
+            Array of row tables keyed by column fields.
+        options (table|nil)
+            Optional array of context menu option tables with `name`, `net`, and optional `ExtraFields`.
+        charID (number|nil)
+            Character identifier forwarded to network options.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel, Panel
+            The created frame and the underlying `DListView`.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.createTableUI("Players", {
+                {name = "name", field = "name"},
+                {name = "steamid", field = "steamid"}
+            }, playerRows)
         ```
 ]]
 function lia.derma.createTableUI(title, columns, data, options, charID)
@@ -2791,25 +3143,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Opens a compact options window from either a keyed table or an array of `{name, callback}` entries.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for lightweight choice prompts where each option triggers a callback and then closes the window.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Localized title text key; defaults to `"options"`.
+        options (table)
+            Either an array of option tables `{name=<text>, callback=<fn>}` or a map of `name -> callback`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created options frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.openOptionsMenu("Actions", {
+                {name = "Heal", callback = function() net.Start("Heal") net.SendToServer() end}
+            })
         ```
 ]]
 function lia.derma.openOptionsMenu(title, options)
@@ -2914,25 +3270,35 @@ end
 lia.derma.entsScales = lia.derma.entsScales or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Draws floating text above an entity with distance-based fade and easing, caching per-entity scales.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use to display labels or names above entities that appear when nearby.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        ent (Entity)
+            Target entity to label.
+        text (string)
+            Text to display.
+        posY (number|nil)
+            Vertical offset for the text; defaults to 0.
+        alphaOverride (number|nil)
+            Optional alpha multiplier or raw alpha value.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            Draws directly to the screen and tracks internal fade state.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("PostDrawTranslucentRenderables", "DrawNames", function()
+                for _, ent in ipairs(ents.FindByClass("npc_*")) do
+                    lia.derma.drawEntText(ent, ent:GetClass(), 0)
+                end
+            end)
         ```
 ]]
 function lia.derma.drawEntText(ent, text, posY, alphaOverride)
@@ -2993,25 +3359,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Shows a modal dropdown prompt and returns the selected entry through a callback.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need the player to choose a single option from a list with optional default selection.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"selectOption"`.
+        options (table)
+            Array of options, either strings or `{text, data}` tables.
+        callback (function|nil)
+            Invoked with `selectedText` and optional `selectedData`, or `false` if cancelled.
+        defaultValue (any|table|nil)
+            Optional default selection value or `{text, data}` pair.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created dropdown frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestDropdown("Choose color", {"Red", "Green", "Blue"}, function(choice) print("Picked", choice) end)
         ```
 ]]
 function lia.derma.requestDropdown(title, options, callback, defaultValue)
@@ -3119,25 +3491,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Prompts the user for a single line of text with an optional description and default value.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for simple text input such as renaming or entering custom values.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"enterText"`.
+        description (string|nil)
+            Helper text displayed above the entry field.
+        callback (function|nil)
+            Invoked with the entered string, or `false` when cancelled.
+        defaultValue (any|nil)
+            Pre-filled value for the input field.
+        maxLength (number|nil)
+            Optional character limit.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created input frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestString("Rename", "Enter a new name:", function(val) if val then print("New name", val) end end, "Default")
         ```
 ]]
 function lia.derma.requestString(title, description, callback, defaultValue, maxLength)
@@ -3202,25 +3582,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Presents multiple selectable options, supporting dropdowns and checkboxes, and returns the chosen set.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for multi-field configuration prompts where each option can be a boolean or a list of choices.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"selectOptions"`.
+        options (table)
+            Array where each entry is either a value or `{display, data}` table; tables create dropdowns, values create checkboxes.
+        callback (function|nil)
+            Invoked with a table of selected values or `false` when cancelled.
+        defaults (table|nil)
+            Default selections; for dropdowns this can map option names to selected values.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created options frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestOptions("Permissions", {{"Rank", {"User", "Admin"}}, "CanKick"}, function(result) PrintTable(result) end)
         ```
 ]]
 function lia.derma.requestOptions(title, options, callback, defaults)
@@ -3349,25 +3735,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Displays a yes/no style modal dialog with customizable labels and forwards the response.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use when you need explicit confirmation from the player before executing an action.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"question"`.
+        question (string|nil)
+            Prompt text; defaults to `"areYouSure"`.
+        callback (function|nil)
+            Invoked with `true` for yes, `false` for no.
+        yesText (string|nil)
+            Custom text for the affirmative button; defaults to `"yes"`.
+        noText (string|nil)
+            Custom text for the negative button; defaults to `"no"`.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created dialog frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestBinaryQuestion("Confirm", "Delete item?", function(ok) if ok then print("Deleted") end end)
         ```
 ]]
 function lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)
@@ -3418,25 +3812,31 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a dialog with a list of custom buttons and optional description, forwarding clicks to provided callbacks.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for multi-action prompts where each button can perform custom logic and optionally prevent auto-close by returning false.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        title (string|nil)
+            Title text key; defaults to `"selectOption"`.
+        buttons (table)
+            Array of button definitions; each can be a string or a table with `text`, `callback`, and optional `icon`.
+        callback (function|nil)
+            Fallback invoked with `(index, buttonText)` when a button lacks its own callback; returning false keeps the dialog open.
+        description (string|nil)
+            Optional descriptive text shown above the buttons.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel, table
+            The created frame and a table of created button panels.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestButtons("Choose action", {"Heal", "Damage"}, function(_, text) print("Pressed", text) end, "Pick an effect:")
         ```
 ]]
 function lia.derma.requestButtons(title, buttons, callback, description)
@@ -3517,25 +3917,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Shows a small popup question with custom buttons, closing automatically unless a button callback prevents it.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Use for quick confirmation prompts that need more than a binary choice.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        question (string|nil)
+            Prompt text; defaults to `"areYouSure"`.
+        buttons (table)
+            Array of button definitions; each can be a string or `{text, callback}` table.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created popup frame.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.derma.requestPopupQuestion("Teleport where?", {{"City", function() net.Start("tp_city") net.SendToServer() end}, "Cancel"})
         ```
 ]]
 function lia.derma.requestPopupQuestion(question, buttons)

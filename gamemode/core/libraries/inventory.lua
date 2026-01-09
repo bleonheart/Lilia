@@ -42,25 +42,33 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a new inventory type with the specified ID and structure.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization or when defining custom inventory types that extend the base inventory system.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        typeID (string)
+            Unique identifier for the inventory type.
+        invTypeStruct (table)
+            Table containing the inventory type definition with required fields like className, config, and methods.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            No return value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.newType("grid", {
+            className = "GridInv",
+            config = {w = 10, h = 10},
+            add = function(self, item) end,
+            remove = function(self, item) end,
+            sync = function(self, client) end
+        })
         ```
 ]]
 function lia.inventory.newType(typeID, invTypeStruct)
@@ -73,25 +81,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new inventory instance of the specified type.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when instantiating inventories during loading, character creation, or when creating new storage containers.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        typeID (string)
+            The inventory type identifier that was previously registered with newType.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            A new inventory instance with items table and copied config from the type definition.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local myInventory = lia.inventory.new("grid")
+        -- Creates a new grid-based inventory instance
         ```
 ]]
 function lia.inventory.new(typeID)
@@ -111,25 +120,29 @@ if SERVER then
     local ITEMS_TABLE = "items"
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads an inventory instance by its ID, checking cache first and falling back to storage loading.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when accessing inventories by ID, typically during character loading, item operations, or storage access.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            The unique inventory ID to load.
+        noCache (boolean)
+            Optional flag to bypass cache and force loading from storage.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A deferred object that resolves to the loaded inventory instance, or rejects if loading fails.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.loadByID(123):next(function(inventory)
+            print("Loaded inventory:", inventory.id)
+        end)
         ```
 ]]
     function lia.inventory.loadByID(id, noCache)
@@ -154,25 +167,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads an inventory from the default database storage, including associated data and items.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called by loadByID when no custom storage loader is found, or when directly loading from database storage.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            The inventory ID to load from database storage.
+        noCache (boolean)
+            Optional flag to bypass cache and force fresh loading.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A deferred object that resolves to the fully loaded inventory instance with data and items.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.loadFromDefaultStorage(456, true):next(function(inventory)
+            -- Inventory loaded with fresh data, bypassing cache
+        end)
         ```
 ]]
     function lia.inventory.loadFromDefaultStorage(id, noCache)
@@ -207,25 +224,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates a new inventory instance with persistent storage initialization.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when creating new inventories that need database persistence, such as character inventories or storage containers.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        typeID (string)
+            The inventory type identifier.
+        initialData (table)
+            Optional initial data to store with the inventory instance.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A deferred object that resolves to the created inventory instance after storage initialization.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.instance("grid", {char = 1}):next(function(inventory)
+            -- New inventory created and stored in database
+        end)
         ```
 ]]
     function lia.inventory.instance(typeID, initialData)
@@ -245,25 +266,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads all inventories associated with a specific character ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during character loading to restore all inventory data for a character.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        charID (number|string)
+            The character ID to load inventories for (will be converted to number).
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Deferred
+            A deferred object that resolves to an array of loaded inventory instances.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.loadAllFromCharID(42):next(function(inventories)
+            for _, inv in ipairs(inventories) do
+                print("Loaded inventory:", inv.id)
+            end
+        end)
         ```
 ]]
     function lia.inventory.loadAllFromCharID(charID)
@@ -278,25 +303,26 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Permanently deletes an inventory and all its associated data from the database.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when removing inventories, such as during character deletion or storage cleanup.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        id (number)
+            The inventory ID to delete.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            No return value.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.deleteByID(123)
+        -- Inventory 123 and all its data/items are permanently removed
         ```
 ]]
     function lia.inventory.deleteByID(id)
@@ -309,25 +335,26 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Destroys all inventories associated with a character during cleanup.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during character deletion or when cleaning up character data to prevent memory leaks.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        character (table)
+            The character object whose inventories should be destroyed.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            No return value.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.cleanUpForCharacter(player:getChar())
+        -- All inventories for this character are destroyed
         ```
 ]]
     function lia.inventory.cleanUpForCharacter(character)
@@ -338,25 +365,33 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Checks for items that no longer fit in an inventory after resizing and moves them to overflow storage.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when inventory dimensions change (like when upgrading inventory size) to handle items that no longer fit.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        inv (table)
+            The inventory instance to check for overflow.
+        character (table)
+            The character object to store overflow items on.
+        oldW (number)
+            The previous width of the inventory.
+        oldH (number)
+            The previous height of the inventory.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        boolean
+            True if overflow items were found and moved, false otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        if lia.inventory.checkOverflow(inventory, player:getChar(), 5, 5) then
+            -- Items were moved to overflow storage
+        end
         ```
 ]]
     function lia.inventory.checkOverflow(inv, character, oldW, oldH)
@@ -392,25 +427,31 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a storage container configuration for entities with the specified model.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to define storage containers like lockers, crates, or other inventory-holding entities.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        model (string)
+            The model path of the entity that will have storage capability.
+        data (table)
+            Configuration table containing name, invType, invData, and other storage properties.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The registered storage data table.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.registerStorage("models/props_c17/lockers001a.mdl", {
+            name = "Locker",
+            invType = "grid",
+            invData = {w = 4, h = 6}
+        })
         ```
 ]]
     function lia.inventory.registerStorage(model, data)
@@ -425,25 +466,28 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the storage configuration for a specific model.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when checking if an entity model has storage capabilities or retrieving storage properties.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        model (string)
+            The model path to look up storage configuration for.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            The storage configuration table if found, nil otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local storage = lia.inventory.getStorage("models/props_c17/lockers001a.mdl")
+        if storage then
+            print("Storage name:", storage.name)
+        end
         ```
 ]]
     function lia.inventory.getStorage(model)
@@ -453,25 +497,31 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Registers a vehicle trunk configuration for vehicles with the specified class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during gamemode initialization to define vehicle trunk storage capabilities.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        vehicleClass (string)
+            The vehicle class name that will have trunk capability.
+        data (table)
+            Configuration table containing name, invType, invData, and trunk-specific properties.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            The registered trunk data table with trunk flags set.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        lia.inventory.registerTrunk("vehicle_class", {
+            name = "Car Trunk",
+            invType = "grid",
+            invData = {w = 8, h = 4}
+        })
         ```
 ]]
     function lia.inventory.registerTrunk(vehicleClass, data)
@@ -490,25 +540,28 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves the trunk configuration for a specific vehicle class.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when checking if a vehicle class has trunk capabilities or retrieving trunk properties.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        vehicleClass (string)
+            The vehicle class name to look up trunk configuration for.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table|nil
+            The trunk configuration table if found and it's a trunk, nil otherwise.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local trunk = lia.inventory.getTrunk("vehicle_class")
+        if trunk then
+            print("Trunk capacity:", trunk.invData.w, "x", trunk.invData.h)
+        end
         ```
 ]]
     function lia.inventory.getTrunk(vehicleClass)
@@ -519,25 +572,27 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all registered trunk configurations.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when listing all available vehicle trunk types or for administrative purposes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            A table containing all registered trunk configurations keyed by vehicle class.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local trunks = lia.inventory.getAllTrunks()
+        for class, config in pairs(trunks) do
+            print("Trunk for", class, ":", config.name)
+        end
         ```
 ]]
     function lia.inventory.getAllTrunks()
@@ -550,25 +605,29 @@ if SERVER then
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves all registered storage configurations, optionally excluding trunks.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when listing all available storage types or for administrative purposes.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        includeTrunks (boolean)
+            Optional flag to include (true) or exclude (false) trunk configurations. Defaults to true.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            A table containing all registered storage configurations, optionally filtered.
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        -- Get all storage including trunks
+        local allStorage = lia.inventory.getAllStorage(true)
+
+        -- Get only non-trunk storage
+        local storageOnly = lia.inventory.getAllStorage(false)
         ```
 ]]
     function lia.inventory.getAllStorage(includeTrunks)
@@ -585,25 +644,28 @@ if SERVER then
 else
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates and displays an inventory panel for the specified inventory.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when opening inventory interfaces, such as character inventories, storage containers, or other inventory UIs.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        inventory (table)
+            The inventory instance to display in the panel.
+        parent (Panel)
+            Optional parent panel for the inventory panel.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        Panel
+            The created inventory panel instance.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local panel = lia.inventory.show(myInventory)
+        -- Opens the inventory UI for myInventory
         ```
 ]]
     function lia.inventory.show(inventory, parent)
@@ -623,25 +685,30 @@ else
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Creates and displays two inventory panels side by side for dual inventory interactions.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called when opening dual inventory interfaces, such as trading, transferring items between inventories, or accessing storage.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        inventory1 (table)
+            The first inventory instance to display.
+        inventory2 (table)
+            The second inventory instance to display.
+        parent (Panel)
+            Optional parent panel for the inventory panels.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            An array containing both created inventory panel instances {panel1, panel2}.
 
     Realm:
-        <Client | Server | Shared>
+        Client
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+        local panels = lia.inventory.showDual(playerInv, storageInv)
+        -- Opens dual inventory UI for trading between player and storage
         ```
 ]]
     function lia.inventory.showDual(inventory1, inventory2, parent)

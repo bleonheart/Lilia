@@ -104,25 +104,32 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads and initializes a module from a specified directory path with the given unique ID.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during module initialization to load individual modules, their dependencies, and register them in the system.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        uniqueID (string)
+            The unique identifier for the module.
+        path (string)
+            The file system path to the module directory.
+        variable (string, optional)
+            The global variable name to assign the module to (defaults to "MODULE").
+        skipSubmodules (boolean, optional)
+            Whether to skip loading submodules for this module.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load a custom module
+            lia.module.load("mymodule", "gamemodes/my_schema/modules/mymodule")
         ```
 ]]
 function lia.module.load(uniqueID, path, variable, skipSubmodules)
@@ -216,25 +223,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Initializes the entire module system by loading the schema, preload modules, and all available modules in the correct order.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called once during gamemode initialization to set up the module loading system and load all modules.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Initialize the module system (called automatically by the framework)
+            lia.module.initialize()
         ```
 ]]
 function lia.module.initialize()
@@ -275,25 +282,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Loads all modules found in the specified directory, optionally skipping certain modules.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called during module initialization to load groups of modules from directories like preload, modules, and overrides.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            The directory path to search for modules.
+        group (string)
+            The type of modules being loaded ("schema" or "module").
+        skip (table, optional)
+            A table of module IDs to skip loading.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
+            This function does not return a value.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load all modules from the gamemode's modules directory
+            lia.module.loadFromDir("gamemodes/my_schema/modules", "module")
         ```
 ]]
 function lia.module.loadFromDir(directory, group, skip)
@@ -306,25 +318,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Retrieves a loaded module by its unique identifier.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Called whenever code needs to access a specific module's data or functions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        identifier (string)
+            The unique identifier of the module to retrieve.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table or nil
+            The module table if found, nil if the module doesn't exist.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Get a reference to the inventory module
+            local inventoryModule = lia.module.get("inventory")
+            if inventoryModule then
+                -- Use the module
+            end
         ```
 ]]
 function lia.module.get(identifier)

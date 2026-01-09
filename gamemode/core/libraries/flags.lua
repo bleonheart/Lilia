@@ -15,25 +15,34 @@ lia.flag = lia.flag or {}
 lia.flag.list = lia.flag.list or {}
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a flag with description and optional grant/remove callback.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During framework setup to define permission flags.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        flag (string)
+            Single-character flag id.
+        desc (string)
+            Localization key or plain description.
+        callback (function|nil)
+            function(client, isGiven) for grant/remove side effects.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.flag.add("B", "flagBuildMenu", function(client, isGiven)
+                if isGiven then
+                    client:Give("weapon_physgun")
+                else
+                    client:StripWeapon("weapon_physgun")
+                end
+            end)
         ```
 ]]
 function lia.flag.add(flag, desc, callback)
@@ -47,25 +56,24 @@ end
 if SERVER then
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Execute flag callbacks for a player on spawn, ensuring each flag runs once.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Automatically when characters spawn; can be hooked for reapplication.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player)
+            Player whose flags should be processed.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Server
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("PlayerSpawn", "ApplyFlagWeapons", lia.flag.onSpawn)
         ```
 ]]
     function lia.flag.onSpawn(client)
@@ -108,7 +116,27 @@ lia.flag.add("t", "flagToolgun", function(client, isGiven)
         client:StripWeapon("gmod_tool")
     end
 end)
+--[[
+    Purpose:
+        Creates a character information panel displaying flag status for the local player.
 
+    When Called:
+        When the character information menu is opened to show available flag information panels.
+
+    Parameters:
+        pages (table)
+            Array of information panel configurations to add the flags panel to.
+
+    Returns:
+        nil
+
+    Realm:
+        Client
+
+    Example Usage:
+        This hook is automatically called by the framework when building information panels.
+        No manual calling is required.
+]]
 hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(pages)
     local client = LocalPlayer()
     table.insert(pages, {

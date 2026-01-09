@@ -19,25 +19,26 @@ lia.lang.cache.maxSize = 1000
 lia.lang.cache.currentSize = 0
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Load language files from a directory and merge them into storage.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During startup to load built-in and schema-specific localization.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        directory (string)
+            Path containing language Lua files.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            -- Load base languages and a custom pack.
+            lia.lang.loadFromDir("lilia/gamemode/languages")
+            lia.lang.loadFromDir("schema/languages")
         ```
 ]]
 function lia.lang.loadFromDir(directory)
@@ -69,25 +70,29 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Merge a table of localized strings into a named language.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When adding runtime localization or extending a language.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        name (string)
+            Language id (e.g., "english").
+        tbl (table)
+            Key/value pairs to merge.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.lang.addTable("english", {
+                customGreeting = "Hello, %s!",
+                adminOnly = "You must be an admin."
+            })
         ```
 ]]
 function lia.lang.addTable(name, tbl)
@@ -102,25 +107,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        List available languages by display name.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When populating language selection menus or config options.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        table
+            Sorted array of language display names.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            for _, langName in ipairs(lia.lang.getLanguages()) do
+                print("Language option:", langName)
+            end
         ```
 ]]
 function lia.lang.getLanguages()
@@ -136,25 +142,26 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Build a cache key for a localized string with parameters.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Before caching formatted localization results.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        lang (string)
+        key (string)
+        ... (vararg)
+            Parameters passed to string.format.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local cacheKey = lia.lang.generateCacheKey("english", "hello", "John")
         ```
 ]]
 function lia.lang.generateCacheKey(lang, key, ...)
@@ -170,25 +177,25 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Evict half of the cached localization entries when over capacity.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Automatically from getLocalizedString when cache exceeds maxSize.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            if lia.lang.cache.currentSize > lia.lang.cache.maxSize then
+                lia.lang.cleanupCache()
+            end
         ```
 ]]
 function lia.lang.cleanupCache()
@@ -209,25 +216,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Reset the localization cache to its initial state.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        When changing languages or when flushing cached strings.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        None
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            hook.Add("OnConfigUpdated", "ClearLangCache", function(key, old, new)
+                if key == "Language" and old ~= new then
+                    lia.lang.clearCache()
+                end
+            end)
         ```
 ]]
 function lia.lang.clearCache()
@@ -239,25 +248,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Resolve and format a localized string with caching and fallbacks.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Every time L() is used to display text with parameters.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        key (string)
+            Localization key.
+        ... (vararg)
+            Values for string.format substitution.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string
+            Formatted localized string or key when missing.
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local msg = lia.lang.getLocalizedString("welcomeUser", ply:Name(), os.date())
+            chat.AddText(msg)
         ```
 ]]
 function lia.lang.getLocalizedString(key, ...)

@@ -255,25 +255,30 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Register a new log type with formatter and category.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        During init to add custom audit events (e.g., quests, crafting).
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        logType (string)
+            Unique log key.
+        func (function)
+            Formatter function (client, ... ) -> string.
+        category (string)
+            Category label used in console output and DB.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.log.addType("questComplete", function(client, questID, reward)
+                return L("logQuestComplete", client:Name(), questID, reward)
+            end, L("quests"))
         ```
 ]]
 function lia.log.addType(logType, func, category)
@@ -285,25 +290,28 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Build a formatted log string and return its category.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Internally by lia.log.add before printing/persisting logs.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+        logType (string)
+        ... (vararg)
+            Arguments passed to formatter.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        string|nil, string|nil
+            logString, category
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            local text, category = lia.log.getString(ply, "playerDeath", attackerName)
+            if text then print(category, text) end
         ```
 ]]
 function lia.log.getString(client, logType, ...)
@@ -317,25 +325,27 @@ end
 
 --[[
     Purpose:
-        <Brief, clear description of what the function does.>
+        Create and store a log entry (console + database) using a logType.
 
     When Called:
-        <Describe when and why this function is invoked.>
+        Anywhere you need to audit player/admin/system actions.
 
     Parameters:
-        <paramName> (<type>)
-            <Description.>
+        client (Player|nil)
+        logType (string)
+        ... (vararg)
+            Formatter args for the log type.
 
     Returns:
-        <returnType>
-            <Description or "nil".>
+        nil
 
     Realm:
-        <Client | Server | Shared>
+        Shared
 
     Example Usage:
         ```lua
-            <High Complexity and well documented Function Call Or Use Case Here>
+            lia.log.add(client, "itemTake", itemName)
+            lia.log.add(nil, "frameworkOutdated") -- system log without player
         ```
 ]]
 function lia.log.add(client, logType, ...)
