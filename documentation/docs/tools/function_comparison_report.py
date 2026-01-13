@@ -188,7 +188,49 @@ FUNCTIONS_TO_CHECK = {
     "lia.util.*",
     "lia.config.*",
     "lia.database.*",
-
+    "lia.admin.*",
+    "lia.attribs.*",
+    "lia.bar.*",
+    "lia.char.*",
+    "lia.chat.*",
+    "lia.class.*",
+    "lia.color.*",
+    "lia.command.*",
+    "lia.currency.*",
+    "lia.darkrp.*",
+    "lia.data.*",
+    "lia.derma.*",
+    "lia.dialog.*",
+    "lia.doors.*",
+    "lia.faction.*",
+    "lia.flag.*",
+    "lia.font.*",
+    "lia.inventory.*",
+    "lia.item.*",
+    "lia.keybind.*",
+    "lia.lang.*",
+    "lia.loader.*",
+    "lia.log.*",
+    "lia.menu.*",
+    "lia.module.*",
+    "lia.net.*",
+    "lia.notice.*",
+    "lia.option.*",
+    "lia.performance.*",
+    "lia.playerinteract.*",
+    "lia.thirdparty.*",
+    "lia.time.*",
+    "lia.vendor.*",
+    "lia.webimage.*",
+    "lia.websound.*",
+    "lia.workshop.*",
+    # Meta table functions
+    "characterMeta:*",
+    "itemMeta:*",
+    "inventoryMeta:*",
+    "entityMeta:*",
+    "panelMeta:*",
+    "playerMeta:*",
     # Add other patterns here as needed
 }
 
@@ -1083,8 +1125,16 @@ class FunctionComparisonReportGenerator:
         lua_files = list(self.base_path.rglob("*.lua"))
 
         for lua_file in lua_files:
-            # Skip certain directories
-            if 'docs' in lua_file.parts or 'documentation' in lua_file.parts or 'languages' in lua_file.parts:
+            # Skip certain directories, but include docs/hooks for hook examples
+            skip_file = False
+            if 'languages' in lua_file.parts:
+                skip_file = True
+            elif 'docs' in lua_file.parts or 'documentation' in lua_file.parts:
+                # Only include docs/hooks directory, skip other docs
+                if 'hooks' not in lua_file.parts:
+                    skip_file = True
+
+            if skip_file:
                 continue
 
             try:
@@ -1392,6 +1442,15 @@ class FunctionComparisonReportGenerator:
                     if panel_name and panel_name.strip():
                         panels.add(panel_name.strip())
 
+                # Also find RegisterButton() calls (Lilia-specific panel registration)
+                # Pattern: RegisterButton("PanelName", ...)
+                button_pattern = r'RegisterButton\s*\(\s*["\']([^"\']+)["\']'
+                button_matches = re.findall(button_pattern, content, re.IGNORECASE)
+
+                for panel_name in button_matches:
+                    if panel_name and panel_name.strip():
+                        panels.add(panel_name.strip())
+
             except Exception as e:
                 print(f"Warning: Error scanning {lua_file}: {e}")
                 continue
@@ -1418,11 +1477,14 @@ class FunctionComparisonReportGenerator:
             for line in lines:
                 line = line.strip()
                 # Check for headers like ### liaMenu or # liaMenu
-                if line.startswith('#') and len(line) > 1:
-                    # Extract panel name from header (remove # symbols and get first word)
-                    header_content = line.lstrip('#').strip()
+                # Only consider headers that start with exactly ### (panel headers)
+                # Ignore #### headers (section headers within panels)
+                if line.startswith('### ') and not line.startswith('#### ') and len(line) > 4:
+                    # Extract panel name from header (remove ### and get first word)
+                    header_content = line[4:].strip()  # Remove '### '
                     panel_name = header_content.split()[0] if header_content else ""
-                    if panel_name and panel_name not in ['Panels', 'Panel']:
+                    # Only add if it looks like a panel name (starts with letter, contains valid chars)
+                    if panel_name and re.match(r'^[a-zA-Z][a-zA-Z0-9_]*', panel_name):
                         documented_panels.add(panel_name)
 
                 # Also check for vgui.Register mentions in content

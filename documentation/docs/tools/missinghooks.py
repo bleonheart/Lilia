@@ -263,13 +263,15 @@ def read_documented_hooks(hooks_doc_path: str) -> List[str]:
         if in_code_block:
             continue
 
-        # Look for hook names in backticks - be more specific about what constitutes a hook name
-        # Only match backticks that contain what looks like a hook name (starts with capital letter, contains only alphanumeric and underscores)
-        hook_match = re.search(r'`([A-Z][A-Za-z0-9_]+)`', line)
-        if hook_match:
-            hook_name = hook_match.group(1).strip()
-            if hook_name and len(hook_name) > 2 and hook_name not in GMOD_HOOKS_BLACKLIST:  # Filter out very short matches and blacklisted hooks
-                documented_hooks.add(hook_name)
+        # Look for hook names in backticks - be more selective
+        # Only match backticks that appear to be hook names in hook.Add examples
+        # Exclude backticks in parameter tables (| `ParamName` |) and config references
+        if not line.strip().startswith('|') and 'hook.Add(' in line:
+            hook_match = re.search(r'hook\.Add\s*\(\s*["\']([^"\']+)["\']', line)
+            if hook_match:
+                hook_name = hook_match.group(1).strip()
+                if hook_name and len(hook_name) > 2 and hook_name not in GMOD_HOOKS_BLACKLIST:
+                    documented_hooks.add(hook_name)
 
         # Check for markdown headers that look like hook names
         # Only match headers that start with capital letter and look like hook names

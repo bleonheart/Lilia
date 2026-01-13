@@ -10,37 +10,94 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 
+# Functions that should NOT be checked during documentation analysis
+# These are typically internal functions, callbacks, or auto-generated code
+FUNCTIONS_NOT_TO_CHECK = {
+    # Derma/UI related functions that are internal callbacks
+    "lia.derma.menuPlayerSelector.btn_close.DoClick",
+
+    # GUI library functions - these are internal and don't need documentation
+    "lia.gui.*",
+
+    # Add other functions here as needed
+}
+
+# Functions that should be checked (explicit allowlist)
+# If a function is not in this list and not in FUNCTIONS_NOT_TO_CHECK,
+# it will be flagged for documentation review
+FUNCTIONS_TO_CHECK = {
+    # Core framework functions that need documentation
+    "lia.util.*",
+    "lia.config.*",
+    "lia.database.*",
+    "lia.admin.*",
+    "lia.attribs.*",
+    "lia.bar.*",
+    "lia.char.*",
+    "lia.chat.*",
+    "lia.class.*",
+    "lia.color.*",
+    "lia.command.*",
+    "lia.currency.*",
+    "lia.darkrp.*",
+    "lia.data.*",
+    "lia.derma.*",
+    "lia.dialog.*",
+    "lia.doors.*",
+    "lia.faction.*",
+    "lia.flag.*",
+    "lia.font.*",
+    "lia.inventory.*",
+    "lia.item.*",
+    "lia.keybind.*",
+    "lia.lang.*",
+    "lia.loader.*",
+    "lia.log.*",
+    "lia.menu.*",
+    "lia.module.*",
+    "lia.net.*",
+    "lia.notice.*",
+    "lia.option.*",
+    "lia.performance.*",
+    "lia.playerinteract.*",
+    "lia.thirdparty.*",
+    "lia.time.*",
+    "lia.vendor.*",
+    "lia.webimage.*",
+    "lia.websound.*",
+    "lia.workshop.*",
+    # Meta table functions
+    "characterMeta:*",
+    "itemMeta:*",
+    "inventoryMeta:*",
+    "entityMeta:*",
+    "panelMeta:*",
+    "playerMeta:*",
+    # Add other patterns here as needed
+}
+
 # Define the functions locally to avoid circular import
 def should_check_function(func_name):
     """
     Determine if a function should be checked for documentation.
-    
+
     Args:
         func_name (str): The name of the function to check
-        
+
     Returns:
         bool: True if the function should be checked, False otherwise
     """
-    # Functions that should NOT be checked during documentation analysis
-    FUNCTIONS_NOT_TO_CHECK = {
-        # Derma/UI related functions that are internal callbacks
-        "lia.derma.menuPlayerSelector.btn_close.DoClick",
 
-        # GUI library functions - these are internal and don't need documentation
-        "lia.gui.*",
+def should_check_function(func_name):
+    """
+    Determine if a function should be checked for documentation.
 
-        # Add other functions here as needed
-    }
-    
-    # Functions that should be checked (explicit allowlist)
-    FUNCTIONS_TO_CHECK = {
-        # Core framework functions that need documentation
-        "lia.util.*",
-        "lia.config.*",
-        "lia.database.*",
-        # Add other patterns here as needed
-    }
-    
+    Args:
+        func_name (str): The name of the function to check
+
+    Returns:
+        bool: True if the function should be checked, False otherwise
+    """
     # First check if it's explicitly in the "not to check" list
     if func_name in FUNCTIONS_NOT_TO_CHECK:
         return False
@@ -230,10 +287,12 @@ class DocumentationParser:
         libraries_path = self.docs_path / "docs" / "libraries"
         if libraries_path.exists():
             for md_file in libraries_path.glob("*.md"):
-                if md_file.name.startswith("lia."):
-                    functions = self._parse_library_file(md_file)
-                    if functions:
-                        documented_functions[md_file.name] = functions
+                # Skip index.md and other non-library files
+                if md_file.name == "index.md":
+                    continue
+                functions = self._parse_library_file(md_file)
+                if functions:
+                    documented_functions[md_file.name] = functions
 
         # Look for meta documentation files
         meta_path = self.docs_path / "docs" / "meta"
