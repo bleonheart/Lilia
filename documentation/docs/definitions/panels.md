@@ -417,17 +417,6 @@ In tabbed interfaces or tab navigation
 
 ---
 
-### liaLoadingFailure
-
-#### 📋 Purpose
-Loading failure display
-A panel shown when loading fails
-
-#### ⏰ When Called
-When content fails to load
-
----
-
 ### liaModelPanel
 
 #### 📋 Purpose

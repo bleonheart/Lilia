@@ -1,5 +1,180 @@
 # Changelog
 
+## Version 7.269 (January 10, 2026)
+
+### Changes
+
+- Missing Localization and Docs
+- Successfully updated workshop Lilia to 7.267
+- Hooks Docs
+- Successfully updated workshop Lilia to 7.265
+- More Docs
+- Update functions.md
+- Update server.lua
+- Successfully updated workshop Lilia to 7.261
+- More Docs
+- Successfully updated workshop Lilia to 7.259
+- More Docs
+- Linting
+- Update generate_docs.py
+- Removed Legacy
+- Successfully updated workshop Lilia to 7.254
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+
+## Version 7.267 (January 10, 2026)
+
+### Changes
+
+- Hooks Docs
+- Successfully updated workshop Lilia to 7.265
+- More Docs
+- Update functions.md
+- Update server.lua
+- Successfully updated workshop Lilia to 7.261
+- More Docs
+- Successfully updated workshop Lilia to 7.259
+- More Docs
+- Linting
+- Update generate_docs.py
+- Removed Legacy
+- Successfully updated workshop Lilia to 7.254
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+
+## Version 7.265 (January 10, 2026)
+
+### Changes
+
+- More Docs
+- Update functions.md
+- Update server.lua
+- Successfully updated workshop Lilia to 7.261
+- More Docs
+- Successfully updated workshop Lilia to 7.259
+- More Docs
+- Linting
+- Update generate_docs.py
+- Removed Legacy
+- Successfully updated workshop Lilia to 7.254
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+- Successfully updated workshop Lilia to 7.246
+- Renamed
+
+## Version 7.261 (January 10, 2026)
+
+### Changes
+
+- More Docs
+- Successfully updated workshop Lilia to 7.259
+- More Docs
+- Linting
+- Update generate_docs.py
+- Removed Legacy
+- Successfully updated workshop Lilia to 7.254
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+- Successfully updated workshop Lilia to 7.246
+- Renamed
+- Successfully updated workshop Lilia to 7.244
+- Consistency
+- No More Dupes in Example Item
+- Generators
+
+## Version 7.259 (January 09, 2026)
+
+### Changes
+
+- More Docs
+- Linting
+- Update generate_docs.py
+- Removed Legacy
+- Successfully updated workshop Lilia to 7.254
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+- Successfully updated workshop Lilia to 7.246
+- Renamed
+- Successfully updated workshop Lilia to 7.244
+- Consistency
+- No More Dupes in Example Item
+- Generators
+- Workflow Typo
+- Successfully updated workshop Lilia to 7.239
+
+## Version 7.254 (January 09, 2026)
+
+### Changes
+
+- Update generate_docs.py
+- Generators
+- Many Changes
+- Successfully updated workshop Lilia to 7.250
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+- Successfully updated workshop Lilia to 7.246
+- Renamed
+- Successfully updated workshop Lilia to 7.244
+- Consistency
+- No More Dupes in Example Item
+- Generators
+- Workflow Typo
+- Successfully updated workshop Lilia to 7.239
+- Test Feature
+- Successfully updated workshop Lilia to 7.237
+- Update generate_docs.py
+- CanTakeEntity Hook
+- Weird Error Fix
+
+## Version 7.250 (January 09, 2026)
+
+### Changes
+
+- Delete index.md
+- Successfully updated workshop Lilia to 7.248
+- Generators
+- Successfully updated workshop Lilia to 7.246
+- Renamed
+- Successfully updated workshop Lilia to 7.244
+- Consistency
+- No More Dupes in Example Item
+- Generators
+- Workflow Typo
+- Successfully updated workshop Lilia to 7.239
+- Test Feature
+- Successfully updated workshop Lilia to 7.237
+- Update generate_docs.py
+- CanTakeEntity Hook
+- Weird Error Fix
+- Successfully updated workshop Lilia to 7.233
+- Door Saving Improvements
+- Successfully updated workshop Lilia to 7.231
+- lia.administrator changed to lia.admin for consistency
+
 ## Version 7.248 (January 09, 2026)
 
 ### Changes

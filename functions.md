@@ -1,2154 +1,414 @@
-
-### Missing Library Functions
-Total: 412 functions
-
-#### lia
-Count: 5 functions
-
-- [ ]`lia.bootstrap(section, msg)`
-  - Shared
-- [ ]`lia.error(msg)`
-  - Shared
-- [ ]`lia.information(msg)`
-  - Shared
-- [ ]`lia.relaydiscordMessage(embed)`
-  - Shared
-- [ ]`lia.warning(msg)`
-  - Shared
-
-#### lia.admin
-Count: 19 functions
-
-- [ ]`lia.admin.addPermission(groupName, permission, silent)`
-  - Shared
-- [ ]`lia.admin.applyInheritance(groupName)`
-  - Shared
-- [ ]`lia.admin.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)`
-  - Shared
-- [ ]`lia.admin.createGroup(groupName, info)`
-  - Shared
-- [ ]`lia.admin.execCommand(cmd, victim, dur, reason)`
-  - Shared
-- [ ]`lia.admin.hasAccess(ply, privilege)`
-  - Shared
-- [ ]`lia.admin.hasChanges()`
-  - Shared
-- [ ]`lia.admin.load()`
-  - Shared
-- [ ]`lia.admin.notifyAdmin(notification)`
-  - Shared
-- [ ]`lia.admin.registerPrivilege(priv)`
-  - Shared
-- [ ]`lia.admin.removeGroup(groupName)`
-  - Shared
-- [ ]`lia.admin.removePermission(groupName, permission, silent)`
-  - Shared
-- [ ]`lia.admin.renameGroup(oldName, newName)`
-  - Shared
-- [ ]`lia.admin.save(noNetwork)`
-  - Shared
-- [ ]`lia.admin.serverExecCommand(cmd, victim, dur, reason, admin)`
-  - Shared
-- [ ]`lia.admin.setPlayerUsergroup(ply, newGroup, source)`
-  - Shared
-- [ ]`lia.admin.setSteamIDUsergroup(steamId, newGroup, source)`
-  - Shared
-- [ ]`lia.admin.sync(c)`
-  - Shared
-- [ ]`lia.admin.unregisterPrivilege(id)`
-  - Shared
-
-#### lia.attribs
-Count: 3 functions
-
-- [ ]`lia.attribs.loadFromDir(directory)`
-  - Shared
-- [ ]`lia.attribs.register(uniqueID, data)`
-  - Shared
-- [ ]`lia.attribs.setup(client)`
-  - Shared
-
-#### lia.bar
-Count: 6 functions
-
-- [ ]`lia.bar.add(getValue, color, priority, identifier)`
-  - Client
-- [ ]`lia.bar.drawAction(text, duration)`
-  - Client
-- [ ]`lia.bar.drawAll()`
-  - Client
-- [ ]`lia.bar.drawBar(x, y, w, h, pos, max, color)`
-  - Client
-- [ ]`lia.bar.get(identifier)`
-  - Client
-- [ ]`lia.bar.remove(identifier)`
-  - Client
-
-#### lia.char
-Count: 22 functions
-
-- [ ]`lia.char.addCharacter(id, character)`
-  - Shared
-- [ ]`lia.char.cleanUpForPlayer(client)`
-  - Shared
-- [ ]`lia.char.create(data, callback)`
-  - Shared
-- [ ]`lia.char.delete(id, client)`
-  - Shared
-- [ ]`lia.char.getAll()`
-  - Shared
-- [ ]`lia.char.getBySteamID(steamID)`
-  - Shared
-- [ ]`lia.char.getCharBanned(charID)`
-  - Shared
-- [ ]`lia.char.getCharData(charID, key)`
-  - Shared
-- [ ]`lia.char.getCharDataRaw(charID, key)`
-  - Shared
-- [ ]`lia.char.getCharacter(charID, client, callback)`
-  - Shared
-- [ ]`lia.char.getOwnerByID(ID)`
-  - Shared
-- [ ]`lia.char.getTeamColor(client)`
-  - Shared
-- [ ]`lia.char.hookVar(varName, hookName, func)`
-  - Shared
-- [ ]`lia.char.isLoaded(charID)`
-  - Shared
-- [ ]`lia.char.loadSingleCharacter(charID, client, callback)`
-  - Shared
-- [ ]`lia.char.new(data, id, client, steamID)`
-  - Shared
-- [ ]`lia.char.registerVar(key, data)`
-  - Shared
-- [ ]`lia.char.removeCharacter(id)`
-  - Shared
-- [ ]`lia.char.restore(client, callback, id)`
-  - Shared
-- [ ]`lia.char.setCharDatabase(charID, field, value)`
-  - Shared
-- [ ]`lia.char.unloadCharacter(charID)`
-  - Shared
-- [ ]`lia.char.unloadUnusedCharacters(client, activeCharID)`
-  - Shared
-
-#### lia.chat
-Count: 4 functions
-
-- [ ]`lia.chat.parse(client, message, noSend)`
-  - Shared
-- [ ]`lia.chat.register(chatType, data)`
-  - Shared
-- [ ]`lia.chat.send(speaker, chatType, text, anonymous, receivers)`
-  - Shared
-- [ ]`lia.chat.timestamp(ooc)`
-  - Shared
-
-#### lia.class
-Count: 9 functions
-
-- [ ]`lia.class.canBe(client, class)`
-  - Shared
-- [ ]`lia.class.get(identifier)`
-  - Shared
-- [ ]`lia.class.getPlayerCount(class)`
-  - Shared
-- [ ]`lia.class.getPlayers(class)`
-  - Shared
-- [ ]`lia.class.hasWhitelist(class)`
-  - Shared
-- [ ]`lia.class.loadFromDir(directory)`
-  - Shared
-- [ ]`lia.class.register(uniqueID, data)`
-  - Shared
-- [ ]`lia.class.retrieveClass(class)`
-  - Shared
-- [ ]`lia.class.retrieveJoinable(client)`
-  - Shared
-
-#### lia.color
-Count: 16 functions
-
-- [ ]`lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)`
-  - Shared
-- [ ]`lia.color.applyTheme(themeName, useTransition)`
-  - Shared
-- [ ]`lia.color.calculateNegativeColor(mainColor)`
-  - Shared
-- [ ]`lia.color.darken(color, factor)`
-  - Shared
-- [ ]`lia.color.getAllThemes()`
-  - Shared
-- [ ]`lia.color.getCurrentTheme()`
-  - Shared
-- [ ]`lia.color.getCurrentThemeName()`
-  - Shared
-- [ ]`lia.color.getMainColor()`
-  - Shared
-- [ ]`lia.color.isColor(v)`
-  - Shared
-- [ ]`lia.color.isTransitionActive()`
-  - Shared
-- [ ]`lia.color.lerp(frac, col1, col2)`
-  - Shared
-- [ ]`lia.color.register(name, color)`
-  - Shared
-- [ ]`lia.color.registerTheme(name, themeData)`
-  - Shared
-- [ ]`lia.color.returnMainAdjustedColors()`
-  - Shared
-- [ ]`lia.color.startThemeTransition(name)`
-  - Shared
-- [ ]`lia.color.testThemeTransition(themeName)`
-  - Shared
-
-#### lia.command
-Count: 8 functions
-
-- [ ]`lia.command.add(command, data)`
-  - Shared
-- [ ]`lia.command.buildSyntaxFromArguments(args)`
-  - Shared
-- [ ]`lia.command.extractArgs(text)`
-  - Shared
-- [ ]`lia.command.hasAccess(client, command, data)`
-  - Shared
-- [ ]`lia.command.openArgumentPrompt(cmdKey, missing, prefix)`
-  - Shared
-- [ ]`lia.command.parse(client, text, realCommand, arguments)`
-  - Shared
-- [ ]`lia.command.run(client, command, arguments)`
-  - Shared
-- [ ]`lia.command.send(command, ...)`
-  - Shared
-
-#### lia.config
-Count: 12 functions
-
-- [ ]`lia.config.add(key, name, value, callback, data)`
-  - Shared
-- [ ]`lia.config.forceSet(key, value, noSave)`
-  - Shared
-- [ ]`lia.config.get(key, default)`
-  - Shared
-- [ ]`lia.config.getChangedValues(includeDefaults)`
-  - Shared
-- [ ]`lia.config.getOptions(key)`
-  - Shared
-- [ ]`lia.config.hasChanges()`
-  - Shared
-- [ ]`lia.config.load()`
-  - Shared
-- [ ]`lia.config.reset()`
-  - Shared
-- [ ]`lia.config.save()`
-  - Shared
-- [ ]`lia.config.send(client)`
-  - Shared
-- [ ]`lia.config.set(key, value)`
-  - Shared
-- [ ]`lia.config.setDefault(key, value)`
-  - Shared
-
-#### lia.currency
-Count: 2 functions
-
-- [ ]`lia.currency.get(amount)`
-  - Shared
-- [ ]`lia.currency.spawn(pos, amount, angle)`
-  - Shared
-
-#### lia.darkrp
-Count: 7 functions
-
-- [ ]`lia.darkrp.createCategory()`
-  - Shared
-- [ ]`lia.darkrp.createEntity(name, data)`
-  - Shared
-- [ ]`lia.darkrp.findEmptyPos(startPos, entitiesToIgnore, maxDistance, searchStep, checkArea)`
-  - Shared
-- [ ]`lia.darkrp.formatMoney(amount)`
-  - Shared
-- [ ]`lia.darkrp.isEmpty(position, entitiesToIgnore)`
-  - Shared
-- [ ]`lia.darkrp.notify(client, notifyType, duration, message)`
-  - Shared
-- [ ]`lia.darkrp.textWrap(text, fontName, maxLineWidth)`
-  - Shared
-
-#### lia.data
-Count: 16 functions
-
-- [ ]`lia.data.addEquivalencyMap(map1, map2)`
-  - Shared
-- [ ]`lia.data.decode(value)`
-  - Shared
-- [ ]`lia.data.decodeAngle(raw)`
-  - Shared
-- [ ]`lia.data.decodeVector(raw)`
-  - Shared
-- [ ]`lia.data.delete(key, global, ignoreMap)`
-  - Shared
-- [ ]`lia.data.deserialize(raw)`
-  - Shared
-- [ ]`lia.data.encodetable(value)`
-  - Shared
-- [ ]`lia.data.get(key, default)`
-  - Shared
-- [ ]`lia.data.getEquivalencyMap(map)`
-  - Shared
-- [ ]`lia.data.getPersistence()`
-  - Shared
-- [ ]`lia.data.loadPersistence()`
-  - Shared
-- [ ]`lia.data.loadPersistenceData(callback)`
-  - Shared
-- [ ]`lia.data.loadTables()`
-  - Shared
-- [ ]`lia.data.savePersistence(entities)`
-  - Shared
-- [ ]`lia.data.serialize(value)`
-  - Shared
-- [ ]`lia.data.set(key, value, global, ignoreMap)`
-  - Shared
-
-#### lia.db
-Count: 30 functions
-
-- [ ]`lia.db.addDatabaseFields()`
-  - Server
-- [ ]`lia.db.bulkInsert(dbTable, rows)`
-  - Server
-- [ ]`lia.db.bulkUpsert(dbTable, rows)`
-  - Server
-- [ ]`lia.db.connect(callback, reconnect)`
-  - Server
-- [ ]`lia.db.convertDataType(value, noEscape)`
-  - Server
-- [ ]`lia.db.count(dbTable, condition)`
-  - Server
-- [ ]`lia.db.createColumn(tableName, columnName, columnType, defaultValue)`
-  - Server
-- [ ]`lia.db.createSnapshot(tableName)`
-  - Server
-- [ ]`lia.db.createTable(dbName, primaryKey, schema)`
-  - Server
-- [ ]`lia.db.delete(dbTable, condition)`
-  - Server
-- [ ]`lia.db.escapeIdentifier(id)`
-  - Server
-- [ ]`lia.db.exists(dbTable, condition)`
-  - Server
-- [ ]`lia.db.fieldExists(tbl, field)`
-  - Server
-- [ ]`lia.db.getCharacterTable(callback)`
-  - Server
-- [ ]`lia.db.getTables()`
-  - Server
-- [ ]`lia.db.insertOrIgnore(value, dbTable)`
-  - Server
-- [ ]`lia.db.insertTable(value, callback, dbTable)`
-  - Server
-- [ ]`lia.db.loadSnapshot(fileName)`
-  - Server
-- [ ]`lia.db.loadTables()`
-  - Server
-- [ ]`lia.db.removeColumn(tableName, columnName)`
-  - Server
-- [ ]`lia.db.removeTable(tableName)`
-  - Server
-- [ ]`lia.db.select(fields, dbTable, condition, limit)`
-  - Server
-- [ ]`lia.db.selectOne(fields, dbTable, condition)`
-  - Server
-- [ ]`lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)`
-  - Server
-- [ ]`lia.db.tableExists(tbl)`
-  - Server
-- [ ]`lia.db.transaction(queries)`
-  - Server
-- [ ]`lia.db.updateTable(value, callback, dbTable, condition)`
-  - Server
-- [ ]`lia.db.upsert(value, dbTable)`
-  - Server
-- [ ]`lia.db.waitForTablesToLoad()`
-  - Server
-- [ ]`lia.db.wipeTables(callback)`
-  - Server
-
-#### lia.derma
-Count: 47 functions
-
-- [ ]`lia.derma.animateAppearance(panel, target_w, target_h, duration, alpha_dur, callback, scale_factor)`
-  - Client
-- [ ]`lia.derma.approachExp(current, target, speed, dt)`
-  - Client
-- [ ]`lia.derma.circle(x, y, r)`
-  - Client
-- [ ]`lia.derma.clampMenuPosition(panel)`
-  - Client
-- [ ]`lia.derma.createTableUI(title, columns, data, options, charID)`
-  - Client
-- [ ]`lia.derma.dermaMenu()`
-  - Client
-- [ ]`lia.derma.draw(radius, x, y, w, h, col, flags)`
-  - Client
-- [ ]`lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-  - Client
-- [ ]`lia.derma.drawBlur(panel, amount, passes, alpha)`
-  - Client
-- [ ]`lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-  - Client
-- [ ]`lia.derma.drawBoxWithText(text, x, y, options)`
-  - Client
-- [ ]`lia.derma.drawCircle(x, y, radius, col, flags)`
-  - Client
-- [ ]`lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)`
-  - Client
-- [ ]`lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)`
-  - Client
-- [ ]`lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)`
-  - Client
-- [ ]`lia.derma.drawEntText(ent, text, posY, alphaOverride)`
-  - Client
-- [ ]`lia.derma.drawGradient(x, y, w, h, direction, color_shadow, radius, flags)`
-  - Client
-- [ ]`lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)`
-  - Client
-- [ ]`lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)`
-  - Client
-- [ ]`lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)`
-  - Client
-- [ ]`lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)`
-  - Client
-- [ ]`lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)`
-  - Client
-- [ ]`lia.derma.drawSurfaceTexture(material, color, x, y, w, h)`
-  - Client
-- [ ]`lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)`
-  - Client
-- [ ]`lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)`
-  - Client
-- [ ]`lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)`
-  - Client
-- [ ]`lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)`
-  - Client
-- [ ]`lia.derma.easeInOutCubic(t)`
-  - Client
-- [ ]`lia.derma.easeOutCubic(t)`
-  - Client
-- [ ]`lia.derma.openOptionsMenu(title, options)`
-  - Client
-- [ ]`lia.derma.optionsMenu(rawOptions, config)`
-  - Client
-- [ ]`lia.derma.radialMenu(options)`
-  - Client
-- [ ]`lia.derma.rect(x, y, w, h)`
-  - Client
-- [ ]`lia.derma.requestArguments(title, argTypes, onSubmit, defaults)`
-  - Client
-- [ ]`lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)`
-  - Client
-- [ ]`lia.derma.requestButtons(title, buttons, callback, description)`
-  - Client
-- [ ]`lia.derma.requestColorPicker(func, color_standart)`
-  - Client
-- [ ]`lia.derma.requestDropdown(title, options, callback, defaultValue)`
-  - Client
-- [ ]`lia.derma.requestOptions(title, options, callback, defaults)`
-  - Client
-- [ ]`lia.derma.requestPlayerSelector(do_click)`
-  - Client
-- [ ]`lia.derma.requestPopupQuestion(question, buttons)`
-  - Client
-- [ ]`lia.derma.requestString(title, description, callback, defaultValue, maxLength)`
-  - Client
-- [ ]`lia.derma.setDefaultShape(shape)`
-  - Client
-- [ ]`lia.derma.setFlag(flags, flag, bool)`
-  - Client
-- [ ]`lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)`
-  - Client
-- [ ]`lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)`
-  - Client
-- [ ]`lia.derma.wrapText(text, width, font)`
-  - Client
-
-#### lia.dialog
-Count: 13 functions
-
-- [ ]`lia.dialog.getAvailableConfigurations(ply, npc, npcID)`
-  - Shared
-- [ ]`lia.dialog.getConfiguration(uniqueID)`
-  - Shared
-- [ ]`lia.dialog.getNPCData(npcID)`
-  - Shared
-- [ ]`lia.dialog.getOriginalNPCData(npcID)`
-  - Shared
-- [ ]`lia.dialog.isTableEqual(tbl1, tbl2, checked)`
-  - Shared
-- [ ]`lia.dialog.openConfigurationPicker(npc, npcID)`
-  - Shared
-- [ ]`lia.dialog.openCustomizationUI(npc, configID)`
-  - Shared
-- [ ]`lia.dialog.openDialog(client, npc, npcID)`
-  - Shared
-- [ ]`lia.dialog.registerConfiguration(uniqueID, data)`
-  - Shared
-- [ ]`lia.dialog.registerNPC(uniqueID, data, shouldSync)`
-  - Shared
-- [ ]`lia.dialog.submitConfiguration(configID, npc, payload)`
-  - Shared
-- [ ]`lia.dialog.syncDialogs()`
-  - Shared
-- [ ]`lia.dialog.syncToClients(client)`
-  - Shared
-
-#### lia.doors
-Count: 11 functions
-
-- [ ]`lia.doors.addPreset(mapName, presetData)`
-  - Shared
-- [ ]`lia.doors.cleanupCorruptedData()`
-  - Shared
-- [ ]`lia.doors.getCachedData(door)`
-  - Shared
-- [ ]`lia.doors.getData(door)`
-  - Shared
-- [ ]`lia.doors.getPreset(mapName)`
-  - Shared
-- [ ]`lia.doors.setCachedData(door, data)`
-  - Shared
-- [ ]`lia.doors.setData(door, data)`
-  - Shared
-- [ ]`lia.doors.syncAllDoorsToClient(client)`
-  - Shared
-- [ ]`lia.doors.syncDoorData(door)`
-  - Shared
-- [ ]`lia.doors.updateCachedData(doorID, data)`
-  - Shared
-- [ ]`lia.doors.verifyDatabaseSchema()`
-  - Shared
-
-#### lia.faction
-Count: 15 functions
-
-- [ ]`lia.faction.cacheModels(models)`
-  - Shared
-- [ ]`lia.faction.formatModelData()`
-  - Shared
-- [ ]`lia.faction.get(identifier)`
-  - Shared
-- [ ]`lia.faction.getCategories(teamName)`
-  - Shared
-- [ ]`lia.faction.getClasses(faction)`
-  - Shared
-- [ ]`lia.faction.getDefaultClass(id)`
-  - Shared
-- [ ]`lia.faction.getIndex(uniqueID)`
-  - Shared
-- [ ]`lia.faction.getModelsFromCategory(teamName, category)`
-  - Shared
-- [ ]`lia.faction.getPlayerCount(faction)`
-  - Shared
-- [ ]`lia.faction.getPlayers(faction)`
-  - Shared
-- [ ]`lia.faction.hasWhitelist(faction)`
-  - Shared
-- [ ]`lia.faction.isFactionCategory(faction, categoryFactions)`
-  - Shared
-- [ ]`lia.faction.jobGenerate(index, name, color, default, models)`
-  - Shared
-- [ ]`lia.faction.loadFromDir(directory)`
-  - Shared
-- [ ]`lia.faction.register(uniqueID, data)`
-  - Shared
-
-#### lia.flag
-Count: 2 functions
-
-- [ ]`lia.flag.add(flag, desc, callback)`
-  - Shared
-- [ ]`lia.flag.onSpawn(client)`
-  - Shared
-
-#### lia.font
-Count: 5 functions
-
-- [ ]`lia.font.getAvailableFonts()`
-  - Shared
-- [ ]`lia.font.getBoldFontName(fontName)`
-  - Shared
-- [ ]`lia.font.loadFonts()`
-  - Shared
-- [ ]`lia.font.register(fontName, fontData)`
-  - Shared
-- [ ]`lia.font.registerFonts(fontName)`
-  - Shared
-
-#### lia.inventory
-Count: 17 functions
-
-- [ ]`lia.inventory.checkOverflow(inv, character, oldW, oldH)`
-  - Shared
-- [ ]`lia.inventory.cleanUpForCharacter(character)`
-  - Shared
-- [ ]`lia.inventory.deleteByID(id)`
-  - Shared
-- [ ]`lia.inventory.getAllStorage(includeTrunks)`
-  - Shared
-- [ ]`lia.inventory.getAllTrunks()`
-  - Shared
-- [ ]`lia.inventory.getStorage(model)`
-  - Shared
-- [ ]`lia.inventory.getTrunk(vehicleClass)`
-  - Shared
-- [ ]`lia.inventory.instance(typeID, initialData)`
-  - Shared
-- [ ]`lia.inventory.loadAllFromCharID(charID)`
-  - Shared
-- [ ]`lia.inventory.loadByID(id, noCache)`
-  - Shared
-- [ ]`lia.inventory.loadFromDefaultStorage(id, noCache)`
-  - Shared
-- [ ]`lia.inventory.new(typeID)`
-  - Shared
-- [ ]`lia.inventory.newType(typeID, invTypeStruct)`
-  - Shared
-- [ ]`lia.inventory.registerStorage(model, data)`
-  - Shared
-- [ ]`lia.inventory.registerTrunk(vehicleClass, data)`
-  - Shared
-- [ ]`lia.inventory.show(inventory, parent)`
-  - Shared
-- [ ]`lia.inventory.showDual(inventory1, inventory2, parent)`
-  - Shared
-
-#### lia.item
-Count: 25 functions
-
-- [ ]`lia.item.addRarities(name, color)`
-  - Shared
-- [ ]`lia.item.addWeaponOverride(className, data)`
-  - Shared
-- [ ]`lia.item.addWeaponToBlacklist(className)`
-  - Shared
-- [ ]`lia.item.createInv(w, h, id)`
-  - Shared
-- [ ]`lia.item.deleteByID(id)`
-  - Shared
-- [ ]`lia.item.generateAmmo()`
-  - Shared
-- [ ]`lia.item.generateWeapons()`
-  - Shared
-- [ ]`lia.item.get(identifier)`
-  - Shared
-- [ ]`lia.item.getInstancedItemByID(itemID)`
-  - Shared
-- [ ]`lia.item.getInv(invID)`
-  - Shared
-- [ ]`lia.item.getItemByID(itemID)`
-  - Shared
-- [ ]`lia.item.getItemDataByID(itemID)`
-  - Shared
-- [ ]`lia.item.instance(index, uniqueID, itemData, x, y, callback)`
-  - Shared
-- [ ]`lia.item.isItem(object)`
-  - Shared
-- [ ]`lia.item.load(path, baseID, isBaseItem)`
-  - Shared
-- [ ]`lia.item.loadFromDir(directory)`
-  - Shared
-- [ ]`lia.item.loadItemByID(itemIndex)`
-  - Shared
-- [ ]`lia.item.new(uniqueID, id)`
-  - Shared
-- [ ]`lia.item.newInv(owner, invType, callback)`
-  - Shared
-- [ ]`lia.item.overrideItem(uniqueID, overrides)`
-  - Shared
-- [ ]`lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)`
-  - Shared
-- [ ]`lia.item.registerInv(invType, w, h)`
-  - Shared
-- [ ]`lia.item.restoreInv(invID, w, h, callback)`
-  - Shared
-- [ ]`lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)`
-  - Shared
-- [ ]`lia.item.spawn(uniqueID, position, callback, angles, data)`
-  - Shared
-
-#### lia.keybind
-Count: 4 functions
-
-- [ ]`lia.keybind.add(k, d, desc, cb)`
-  - Shared
-- [ ]`lia.keybind.get(a, df)`
-  - Shared
-- [ ]`lia.keybind.load()`
-  - Shared
-- [ ]`lia.keybind.save()`
-  - Shared
-
-#### lia.lang
-Count: 7 functions
-
-- [ ]`lia.lang.addTable(name, tbl)`
-  - Shared
-- [ ]`lia.lang.cleanupCache()`
-  - Shared
-- [ ]`lia.lang.clearCache()`
-  - Shared
-- [ ]`lia.lang.generateCacheKey(lang, key, ...)`
-  - Shared
-- [ ]`lia.lang.getLanguages()`
-  - Shared
-- [ ]`lia.lang.getLocalizedString(key, ...)`
-  - Shared
-- [ ]`lia.lang.loadFromDir(directory)`
-  - Shared
-
-#### lia.loader
-Count: 6 functions
-
-- [ ]`lia.loader.checkForUpdates()`
-  - Shared
-- [ ]`lia.loader.include(path, realm)`
-  - Shared
-- [ ]`lia.loader.includeDir(dir, raw, deep, realm)`
-  - Shared
-- [ ]`lia.loader.includeEntities(path)`
-  - Shared
-- [ ]`lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)`
-  - Shared
-- [ ]`lia.loader.initializeGamemode(isReload)`
-  - Shared
-
-#### lia.log
-Count: 3 functions
-
-- [ ]`lia.log.add(client, logType, ...)`
-  - Server
-- [ ]`lia.log.addType(logType, func, category)`
-  - Server
-- [ ]`lia.log.getString(client, logType, ...)`
-  - Server
-
-#### lia.menu
-Count: 4 functions
-
-- [ ]`lia.menu.add(opts, pos, onRemove)`
-  - Client
-- [ ]`lia.menu.drawAll()`
-  - Client
-- [ ]`lia.menu.getActiveMenu()`
-  - Client
-- [ ]`lia.menu.onButtonPressed(id, cb)`
-  - Client
-
-#### lia.module
-Count: 4 functions
-
-- [ ]`lia.module.get(identifier)`
-  - Shared
-- [ ]`lia.module.initialize()`
-  - Shared
-- [ ]`lia.module.load(uniqueID, path, variable, skipSubmodules)`
-  - Shared
-- [ ]`lia.module.loadFromDir(directory, group, skip)`
-  - Shared
-
-#### lia.net
-Count: 7 functions
-
-- [ ]`lia.net.addToCache(name, args)`
-  - Shared
-- [ ]`lia.net.checkBadType(name, object)`
-  - Shared
-- [ ]`lia.net.getNetVar(key, default)`
-  - Shared
-- [ ]`lia.net.isCacheHit(name, args)`
-  - Shared
-- [ ]`lia.net.readBigTable(netStr, callback)`
-  - Shared
-- [ ]`lia.net.setNetVar(key, value, receiver)`
-  - Shared
-- [ ]`lia.net.writeBigTable(targets, netStr, tbl, chunkSize)`
-  - Shared
-
-#### lia.notices
-Count: 10 functions
-
-- [ ]`lia.notices.notify(client, message, notifType)`
-  - Shared
-- [ ]`lia.notices.notifyAdminLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.notifyErrorLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.notifyInfoLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.notifyLocalized(client, key, notifType, ...)`
-  - Shared
-- [ ]`lia.notices.notifyMoneyLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.notifySuccessLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.notifyWarningLocalized(client, key, ...)`
-  - Shared
-- [ ]`lia.notices.receiveNotify()`
-  - Shared
-- [ ]`lia.notices.receiveNotifyL()`
-  - Shared
-
-#### lia.option
-Count: 6 functions
-
-- [ ]`lia.option.add(key, name, desc, default, callback, data)`
-  - Shared
-- [ ]`lia.option.get(key, default)`
-  - Shared
-- [ ]`lia.option.getOptions(key)`
-  - Shared
-- [ ]`lia.option.load()`
-  - Shared
-- [ ]`lia.option.save()`
-  - Shared
-- [ ]`lia.option.set(key, value)`
-  - Shared
-
-#### lia.playerinteract
-Count: 9 functions
-
-- [ ]`lia.playerinteract.addAction(name, data)`
-  - Shared
-- [ ]`lia.playerinteract.addInteraction(name, data)`
-  - Shared
-- [ ]`lia.playerinteract.getActions(client)`
-  - Shared
-- [ ]`lia.playerinteract.getCategorizedOptions(options)`
-  - Shared
-- [ ]`lia.playerinteract.getInteractions(client)`
-  - Shared
-- [ ]`lia.playerinteract.hasChanges()`
-  - Shared
-- [ ]`lia.playerinteract.isWithinRange(client, entity, customRange)`
-  - Shared
-- [ ]`lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)`
-  - Shared
-- [ ]`lia.playerinteract.sync(client)`
-  - Shared
-
-#### lia.time
-Count: 5 functions
-
-- [ ]`lia.time.formatDHM(seconds)`
-  - Shared
-- [ ]`lia.time.getDate()`
-  - Shared
-- [ ]`lia.time.getHour()`
-  - Shared
-- [ ]`lia.time.timeSince(strTime)`
-  - Shared
-- [ ]`lia.time.toNumber(str)`
-  - Shared
-
-#### lia.util
-Count: 31 functions
-
-- [ ]`lia.util.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)`
-  - Shared
-- [ ]`lia.util.canFit(pos, mins, maxs, filter)`
-  - Shared
-- [ ]`lia.util.clampMenuPosition(panel)`
-  - Shared
-- [ ]`lia.util.createTableUI(title, columns, data, options, charID)`
-  - Shared
-- [ ]`lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-  - Shared
-- [ ]`lia.util.drawBlur(panel, amount, passes, alpha)`
-  - Shared
-- [ ]`lia.util.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-  - Shared
-- [ ]`lia.util.drawEntText(ent, text, posY, alphaOverride)`
-  - Shared
-- [ ]`lia.util.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)`
-  - Shared
-- [ ]`lia.util.drawLookText(text, posY, alphaOverride, maxDist)`
-  - Shared
-- [ ]`lia.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)`
-  - Shared
-- [ ]`lia.util.findFaction(client, name)`
-  - Shared
-- [ ]`lia.util.findPlayer(client, identifier)`
-  - Shared
-- [ ]`lia.util.findPlayerBySteamID(SteamID)`
-  - Shared
-- [ ]`lia.util.findPlayerBySteamID64(SteamID64)`
-  - Shared
-- [ ]`lia.util.findPlayerEntities(client, class)`
-  - Shared
-- [ ]`lia.util.findPlayerItems(client)`
-  - Shared
-- [ ]`lia.util.findPlayerItemsByClass(client, class)`
-  - Shared
-- [ ]`lia.util.findPlayersInBox(mins, maxs)`
-  - Shared
-- [ ]`lia.util.findPlayersInSphere(origin, radius)`
-  - Shared
-- [ ]`lia.util.formatStringNamed(format, ...)`
-  - Shared
-- [ ]`lia.util.generateRandomName(firstNames, lastNames)`
-  - Shared
-- [ ]`lia.util.getAdmins()`
-  - Shared
-- [ ]`lia.util.getBySteamID(steamID)`
-  - Shared
-- [ ]`lia.util.getMaterial(materialPath, materialParameters)`
-  - Shared
-- [ ]`lia.util.openOptionsMenu(title, options)`
-  - Shared
-- [ ]`lia.util.playerInRadius(pos, dist)`
-  - Shared
-- [ ]`lia.util.requestEntityInformation(entity, argTypes, callback)`
-  - Shared
-- [ ]`lia.util.sendTableUI(client, title, columns, data, options, characterID)`
-  - Shared
-- [ ]`lia.util.stringMatches(a, b)`
-  - Shared
-- [ ]`lia.util.wrapText(text, width, font)`
-  - Shared
-
-#### lia.vendor
-Count: 6 functions
-
-- [ ]`lia.vendor.addPreset(name, items)`
-  - Shared
-- [ ]`lia.vendor.getAllVendorData(entity)`
-  - Shared
-- [ ]`lia.vendor.getPreset(name)`
-  - Shared
-- [ ]`lia.vendor.getVendorProperty(entity, property)`
-  - Shared
-- [ ]`lia.vendor.setVendorProperty(entity, property, value)`
-  - Shared
-- [ ]`lia.vendor.syncVendorProperty(entity, property, value, isDefault)`
-  - Shared
-
-#### lia.webimage
-Count: 5 functions
-
-- [ ]`lia.webimage.clearCache(skipReRegister)`
-  - Client
-- [ ]`lia.webimage.download(n, u, cb, flags)`
-  - Client
-- [ ]`lia.webimage.get(n, flags)`
-  - Client
-- [ ]`lia.webimage.getStats()`
-  - Client
-- [ ]`lia.webimage.register(n, u, cb, flags)`
-  - Client
-
-#### lia.websound
-Count: 6 functions
-
-- [ ]`lia.websound.clearCache(skipReRegister)`
-  - Client
-- [ ]`lia.websound.download(name, url, cb)`
-  - Client
-- [ ]`lia.websound.get(name)`
-  - Client
-- [ ]`lia.websound.getStats()`
-  - Client
-- [ ]`lia.websound.playButtonSound(customSound, callback)`
-  - Client
-- [ ]`lia.websound.register(name, url, cb)`
-  - Client
-
-#### lia.workshop
-Count: 5 functions
-
-- [ ]`lia.workshop.addWorkshop(id)`
-  - Shared
-- [ ]`lia.workshop.gather()`
-  - Shared
-- [ ]`lia.workshop.hasContentToDownload()`
-  - Shared
-- [ ]`lia.workshop.mountContent()`
-  - Shared
-- [ ]`lia.workshop.send(ply)`
-  - Shared
-
-#### characterMeta
-- [ ]`characterMeta:addBoost(boostID, attribID, boostAmount)`
-  - Shared
-- [ ]`characterMeta:ban(time)`
-  - Shared
-- [ ]`characterMeta:clearAllBoosts()`
-  - Shared
-- [ ]`characterMeta:delete()`
-  - Shared
-- [ ]`characterMeta:destroy()`
-  - Shared
-- [ ]`characterMeta:doesFakeRecognize(id)`
-  - Shared
-- [ ]`characterMeta:doesRecognize(id)`
-  - Shared
-- [ ]`characterMeta:getAttrib(key, default)`
-  - Shared
-- [ ]`characterMeta:getData(key, default)`
-  - Shared
-- [ ]`characterMeta:getDisplayedName(client)`
-  - Shared
-- [ ]`characterMeta:getID()`
-  - Shared
-- [ ]`characterMeta:getPlayer()`
-  - Shared
-- [ ]`characterMeta:giveFlags(flags)`
-  - Shared
-- [ ]`characterMeta:giveMoney(amount)`
-  - Shared
-- [ ]`characterMeta:hasFlags(flagStr)`
-  - Shared
-- [ ]`characterMeta:hasMoney(amount)`
-  - Shared
-- [ ]`characterMeta:isBanned()`
-  - Shared
-- [ ]`characterMeta:isMainCharacter()`
-  - Shared
-- [ ]`characterMeta:joinClass(class, isForced)`
-  - Shared
-- [ ]`characterMeta:kick()`
-  - Shared
-- [ ]`characterMeta:kickClass()`
-  - Shared
-- [ ]`characterMeta:recognize(character, name)`
-  - Shared
-- [ ]`characterMeta:removeBoost(boostID, attribID)`
-  - Shared
-- [ ]`characterMeta:save(callback)`
-  - Shared
-- [ ]`characterMeta:setAttrib(key, value)`
-  - Shared
-- [ ]`characterMeta:setData(k, v, noReplication, receiver)`
-  - Shared
-- [ ]`characterMeta:setFlags(flags)`
-  - Shared
-- [ ]`characterMeta:setup(noNetworking)`
-  - Shared
-- [ ]`characterMeta:sync(receiver)`
-  - Shared
-- [ ]`characterMeta:takeFlags(flags)`
-  - Shared
-- [ ]`characterMeta:takeMoney(amount)`
-  - Shared
-- [ ]`characterMeta:updateAttrib(key, value)`
-  - Shared
-
-#### entityMeta
-- [ ]`entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)`
-  - Shared
-- [ ]`entityMeta:checkDoorAccess(client, access)`
-  - Shared
-- [ ]`entityMeta:clearNetVars(receiver)`
-  - Shared
-- [ ]`entityMeta:getDoorOwner()`
-  - Shared
-- [ ]`entityMeta:getDoorPartner()`
-  - Shared
-- [ ]`entityMeta:getLocalVar(key, default)`
-  - Shared
-- [ ]`entityMeta:getNetVar(key, default)`
-  - Shared
-- [ ]`entityMeta:isDoor()`
-  - Shared
-- [ ]`entityMeta:isDoorLocked()`
-  - Shared
-- [ ]`entityMeta:isFemale()`
-  - Shared
-- [ ]`entityMeta:isItem()`
-  - Shared
-- [ ]`entityMeta:isLocked()`
-  - Shared
-- [ ]`entityMeta:isMoney()`
-  - Shared
-- [ ]`entityMeta:isProp()`
-  - Shared
-- [ ]`entityMeta:isSimfphysCar()`
-  - Shared
-- [ ]`entityMeta:keysLock()`
-  - Shared
-- [ ]`entityMeta:keysOwn(client)`
-  - Shared
-- [ ]`entityMeta:keysUnLock()`
-  - Shared
-- [ ]`entityMeta:playFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, soundLevel, dsp)`
-  - Shared
-- [ ]`entityMeta:removeDoorAccessData()`
-  - Shared
-- [ ]`entityMeta:sendNetVar(key, receiver)`
-  - Shared
-- [ ]`entityMeta:setKeysNonOwnable(state)`
-  - Shared
-- [ ]`entityMeta:setLocalVar(key, value)`
-  - Shared
-- [ ]`entityMeta:setLocked(state)`
-  - Shared
-- [ ]`entityMeta:setNetVar(key, value, receiver)`
-  - Shared
-
-#### panelMeta
-- [ ]`panelMeta:AvatarMask(mask)`
-  - Client
-- [ ]`panelMeta:Background(col, rad, rtl, rtr, rbl, rbr)`
-  - Client
-- [ ]`panelMeta:BarHover(col, height, speed)`
-  - Client
-- [ ]`panelMeta:Blur(amount)`
-  - Client
-- [ ]`panelMeta:Circle(col)`
-  - Client
-- [ ]`panelMeta:CircleAvatar()`
-  - Client
-- [ ]`panelMeta:CircleCheckbox(inner, outer, speed)`
-  - Client
-- [ ]`panelMeta:CircleClick(col, speed, trad)`
-  - Client
-- [ ]`panelMeta:CircleExpandHover(col, speed)`
-  - Client
-- [ ]`panelMeta:CircleFadeHover(col, speed)`
-  - Client
-- [ ]`panelMeta:CircleHover(col, speed, trad)`
-  - Client
-- [ ]`panelMeta:ClearAppendOverwrite()`
-  - Client
-- [ ]`panelMeta:ClearPaint()`
-  - Client
-- [ ]`panelMeta:ClearTransitionFunc()`
-  - Client
-- [ ]`panelMeta:DivTall(frac, target)`
-  - Client
-- [ ]`panelMeta:DivWide(frac, target)`
-  - Client
-- [ ]`panelMeta:DualText(toptext, topfont, topcol, bottomtext, bottomfont, bottomcol, alignment, centerSpacing)`
-  - Client
-- [ ]`panelMeta:FadeHover(col, speed, rad)`
-  - Client
-- [ ]`panelMeta:FadeIn(time, alpha)`
-  - Client
-- [ ]`panelMeta:FillHover(col, dir, speed, mat)`
-  - Client
-- [ ]`panelMeta:Gradient(col, dir, frac, op)`
-  - Client
-- [ ]`panelMeta:HideVBar()`
-  - Client
-- [ ]`panelMeta:LinedCorners(col, cornerLen)`
-  - Client
-- [ ]`panelMeta:Material(mat, col)`
-  - Client
-- [ ]`panelMeta:NetMessage(name, data)`
-  - Client
-- [ ]`panelMeta:On(name, fn)`
-  - Client
-- [ ]`panelMeta:Outline(col, width)`
-  - Client
-- [ ]`panelMeta:ReadyTextbox()`
-  - Client
-- [ ]`panelMeta:SetAppendOverwrite(fn)`
-  - Client
-- [ ]`panelMeta:SetOpenURL(url)`
-  - Client
-- [ ]`panelMeta:SetRemove(target)`
-  - Client
-- [ ]`panelMeta:SetTransitionFunc(fn)`
-  - Client
-- [ ]`panelMeta:SetupTransition(name, speed, fn)`
-  - Client
-- [ ]`panelMeta:SideBlock(col, size, side)`
-  - Client
-- [ ]`panelMeta:SquareCheckbox(inner, outer, speed)`
-  - Client
-- [ ]`panelMeta:SquareFromHeight()`
-  - Client
-- [ ]`panelMeta:SquareFromWidth()`
-  - Client
-- [ ]`panelMeta:Stick(dock, margin, dontInvalidate)`
-  - Client
-- [ ]`panelMeta:Text(text, font, col, alignment, ox, oy, paint)`
-  - Client
-- [ ]`panelMeta:TiledMaterial(mat, tw, th, col)`
-  - Client
-- [ ]`panelMeta:liaDeleteInventoryHooks(id)`
-  - Client
-- [ ]`panelMeta:liaListenForInventoryChanges(inventory)`
-  - Client
-- [ ]`panelMeta:setScaledPos(x, y)`
-  - Client
-- [ ]`panelMeta:setScaledSize(w, h)`
-  - Client
-
-#### playerMeta
-- [ ]`playerMeta:Name()`
-  - Shared
-- [ ]`playerMeta:addMoney(amount)`
-  - Shared
-- [ ]`playerMeta:addPart(partID)`
-  - Shared
-- [ ]`playerMeta:banPlayer(reason, duration, banner)`
-  - Shared
-- [ ]`playerMeta:canAfford(amount)`
-  - Shared
-- [ ]`playerMeta:canEditVendor(vendor)`
-  - Shared
-- [ ]`playerMeta:consumeStamina(amount)`
-  - Shared
-- [ ]`playerMeta:doGesture(a, b, c)`
-  - Shared
-- [ ]`playerMeta:doStaredAction(entity, callback, time, onCancel, distance)`
-  - Shared
-- [ ]`playerMeta:forceSequence(sequenceName, callback, time, noFreeze)`
-  - Shared
-- [ ]`playerMeta:getAllLiliaData()`
-  - Shared
-- [ ]`playerMeta:getChar()`
-  - Shared
-- [ ]`playerMeta:getClassData()`
-  - Shared
-- [ ]`playerMeta:getDarkRPVar(var)`
-  - Shared
-- [ ]`playerMeta:getFlags()`
-  - Shared
-- [ ]`playerMeta:getItemDropPos()`
-  - Shared
-- [ ]`playerMeta:getItemWeapon()`
-  - Shared
-- [ ]`playerMeta:getItems()`
-  - Shared
-- [ ]`playerMeta:getLiliaData(key, default)`
-  - Shared
-- [ ]`playerMeta:getLocalVar(key, default)`
-  - Shared
-- [ ]`playerMeta:getMainCharacter()`
-  - Shared
-- [ ]`playerMeta:getMoney()`
-  - Shared
-- [ ]`playerMeta:getParts()`
-  - Shared
-- [ ]`playerMeta:getPlayTime()`
-  - Shared
-- [ ]`playerMeta:getTracedEntity(distance)`
-  - Shared
-- [ ]`playerMeta:giveFlags(flags)`
-  - Shared
-- [ ]`playerMeta:hasFlags(flags)`
-  - Shared
-- [ ]`playerMeta:hasPrivilege(privilegeName)`
-  - Shared
-- [ ]`playerMeta:hasSkillLevel(skill, level)`
-  - Shared
-- [ ]`playerMeta:hasWhitelist(faction)`
-  - Shared
-- [ ]`playerMeta:isFamilySharedAccount()`
-  - Shared
-- [ ]`playerMeta:isStaff()`
-  - Shared
-- [ ]`playerMeta:isStaffOnDuty()`
-  - Shared
-- [ ]`playerMeta:leaveSequence()`
-  - Shared
-- [ ]`playerMeta:loadLiliaData(callback)`
-  - Shared
-- [ ]`playerMeta:meetsRequiredSkills(requiredSkillLevels)`
-  - Shared
-- [ ]`playerMeta:networkAnimation(active, boneData)`
-  - Shared
-- [ ]`playerMeta:notify(message, notifType)`
-  - Shared
-- [ ]`playerMeta:notifyAdmin(message)`
-  - Shared
-- [ ]`playerMeta:notifyAdminLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:notifyError(message)`
-  - Shared
-- [ ]`playerMeta:notifyErrorLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:notifyInfo(message)`
-  - Shared
-- [ ]`playerMeta:notifyInfoLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:notifyLocalized(message, notifType, ...)`
-  - Shared
-- [ ]`playerMeta:notifyMoney(message)`
-  - Shared
-- [ ]`playerMeta:notifyMoneyLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:notifySuccess(message)`
-  - Shared
-- [ ]`playerMeta:notifySuccessLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:notifyWarning(message)`
-  - Shared
-- [ ]`playerMeta:notifyWarningLocalized(key, ...)`
-  - Shared
-- [ ]`playerMeta:playTimeGreaterThan(time)`
-  - Shared
-- [ ]`playerMeta:removePart(partID)`
-  - Shared
-- [ ]`playerMeta:removeRagdoll()`
-  - Shared
-- [ ]`playerMeta:requestArguments(title, argTypes, callback)`
-  - Shared
-- [ ]`playerMeta:requestBinaryQuestion(question, option1, option2, manualDismiss, callback)`
-  - Shared
-- [ ]`playerMeta:requestButtons(title, buttons)`
-  - Shared
-- [ ]`playerMeta:requestDropdown(title, subTitle, options, callback)`
-  - Shared
-- [ ]`playerMeta:requestOptions(title, subTitle, options, limit, callback)`
-  - Shared
-- [ ]`playerMeta:requestPopupQuestion(question, buttons)`
-  - Shared
-- [ ]`playerMeta:requestString(title, subTitle, callback, default)`
-  - Shared
-- [ ]`playerMeta:resetParts()`
-  - Shared
-- [ ]`playerMeta:restoreStamina(amount)`
-  - Shared
-- [ ]`playerMeta:saveLiliaData()`
-  - Shared
-- [ ]`playerMeta:setAction(text, time, callback)`
-  - Shared
-- [ ]`playerMeta:setLiliaData(key, value, noNetworking, noSave)`
-  - Shared
-- [ ]`playerMeta:setLocalVar(key, value)`
-  - Shared
-- [ ]`playerMeta:setMainCharacter(charID)`
-  - Shared
-- [ ]`playerMeta:setNetVar(key, value)`
-  - Shared
-- [ ]`playerMeta:setRagdolled(state, baseTime, getUpGrace, getUpMessage)`
-  - Shared
-- [ ]`playerMeta:setWaypoint(name, vector, logo, onReach)`
-  - Shared
-- [ ]`playerMeta:stopAction()`
-  - Shared
-- [ ]`playerMeta:syncParts()`
-  - Shared
-- [ ]`playerMeta:syncVars()`
-  - Shared
-- [ ]`playerMeta:takeFlags(flags)`
-  - Shared
-- [ ]`playerMeta:takeMoney(amount)`
-  - Shared
-- [ ]`playerMeta:tostring()`
-  - Shared
-
 # Hooks
 
+## Client
+
 - [ ]`AddBarField(sectionName, fieldName, labelText, minFunc, maxFunc, valueFunc)`
-  - Client
 - [ ]`AddSection(sectionName, color, priority, location)`
-  - Client
 - [ ]`AddTextField(sectionName, fieldName, labelText, valueFunc)`
-  - Client
 - [ ]`AddToAdminStickHUD(client, target, information)`
-  - Client
-- [ ]`AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)`
-  - Server
-- [ ]`AdjustCreationData(client, data, newData, originalData)`
-  - Shared
-- [ ]`AdjustPACPartData(wearer, id, data)`
-  - Shared
-- [ ]`AdjustStaminaOffset(client, offset)`
-  - Shared
 - [ ]`AdminPrivilegesUpdated()`
-  - Client
 - [ ]`AdminStickAddModels(allModList, tgt)`
-  - Client
-- [ ]`AdvDupe_FinishPasting(tbl)`
-  - Shared
-- [ ]`AttachPart(client, id)`
-  - Shared
-- [ ]`BagInventoryReady(self, inventory)`
-  - Shared
-- [ ]`BagInventoryRemoved(self, inv)`
-  - Shared
-- [ ]`CalcStaminaChange(client)`
-  - Shared
-- [ ]`CanCharBeTransfered(tChar, faction, arg3)`
-  - Shared
 - [ ]`CanDeleteChar(client, character)`
-  - Client
 - [ ]`CanDisplayCharInfo(name)`
-  - Client
-- [ ]`CanInviteToClass(client, target)`
-  - Shared
-- [ ]`CanInviteToFaction(client, target)`
-  - Shared
-- [ ]`CanItemBeTransfered(item, inventory, VENDOR_INVENTORY_MEASURE, client)`
-  - Server
 - [ ]`CanOpenBagPanel(item)`
-  - Client
-- [ ]`CanOutfitChangeModel(self)`
-  - Shared
-- [ ]`CanPerformVendorEdit(self, vendor)`
-  - Shared
-- [ ]`CanPersistEntity(entity)`
-  - Server
-- [ ]`CanPickupMoney(activator, self)`
-  - Shared
-- [ ]`CanPlayerAccessDoor(client, self, access)`
-  - Server
-- [ ]`CanPlayerAccessVendor(client, vendor)`
-  - Server
-- [ ]`CanPlayerChooseWeapon(weapon)`
-  - Shared
-- [ ]`CanPlayerCreateChar(client, data)`
-  - Shared
-- [ ]`CanPlayerDropItem(client, item)`
-  - Server
-- [ ]`CanPlayerEarnSalary(client)`
-  - Server
-- [ ]`CanPlayerEquipItem(client, item)`
-  - Server
-- [ ]`CanPlayerHoldObject(client, entity)`
-  - Server
-- [ ]`CanPlayerInteractItem(client, action, self, data)`
-  - Server
-- [ ]`CanPlayerJoinClass(client, class, info)`
-  - Shared
-- [ ]`CanPlayerKnock(arg1)`
-  - Shared
-- [ ]`CanPlayerLock(client, door)`
-  - Server
-- [ ]`CanPlayerModifyConfig(client, key)`
-  - Shared
 - [ ]`CanPlayerOpenScoreboard(arg1)`
-  - Client
-- [ ]`CanPlayerRotateItem(client, item)`
-  - Shared
-- [ ]`CanPlayerSeeLogCategory(client, category)`
-  - Server
-- [ ]`CanPlayerSpawnStorage(client, entity, info)`
-  - Server
-- [ ]`CanPlayerSwitchChar(client, currentCharacter, newCharacter)`
-  - Server
-- [ ]`CanPlayerTakeItem(client, item)`
-  - Server
-- [ ]`CanPlayerThrowPunch(client)`
-  - Shared
-- [ ]`CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)`
-  - Server
-- [ ]`CanPlayerUnequipItem(client, item)`
-  - Server
-- [ ]`CanPlayerUnlock(client, door)`
-  - Server
-- [ ]`CanPlayerUseChar(client, character)`
-  - Server
-- [ ]`CanPlayerUseCommand(client, command)`
-  - Shared
-- [ ]`CanPlayerUseDoor(client, door)`
-  - Server
 - [ ]`CanPlayerViewInventory()`
-  - Client
-- [ ]`CanRunItemAction(tempItem, key)`
-  - Shared
-- [ ]`CanSaveData(ent, inventory)`
-  - Server
-- [ ]`CharCleanUp(character)`
-  - Server
-- [ ]`CharDeleted(client, character)`
-  - Server
-- [ ]`CharForceRecognized(ply, range)`
-  - Shared
-- [ ]`CharHasFlags(self, flags)`
-  - Shared
 - [ ]`CharListColumns(columns)`
-  - Client
 - [ ]`CharListEntry(entry, row)`
-  - Client
-- [ ]`CharListExtraDetails(client, entry, stored)`
-  - Server
 - [ ]`CharListLoaded(newCharList)`
-  - Client
 - [ ]`CharListUpdated(oldCharList, newCharList)`
-  - Client
 - [ ]`CharLoaded(character)`
-  - Client
 - [ ]`CharMenuClosed()`
-  - Client
-- [ ]`CharMenuOpened(self)`
-  - Client
-- [ ]`CharPostSave(self)`
-  - Server
-- [ ]`CharPreSave(character)`
-  - Server
+- [ ]`CharMenuOpened(charMenu)`
 - [ ]`CharRestored(character)`
-  - Client
 - [ ]`ChatAddText(text, ...)`
-  - Client
-- [ ]`ChatParsed(client, chatType, message, anonymous)`
-  - Shared
 - [ ]`ChatboxPanelCreated(arg1)`
-  - Client
 - [ ]`ChatboxTextAdded(arg1)`
-  - Client
-- [ ]`CheckFactionLimitReached(faction, character, client)`
-  - Server
 - [ ]`ChooseCharacter(id)`
-  - Client
-- [ ]`CommandAdded(command, data)`
-  - Shared
 - [ ]`CommandRan(client, command, arg3, results)`
-  - Client
-- [ ]`ConfigChanged(key, value, oldValue, client)`
-  - Shared
-- [ ]`ConfigureCharacterCreationSteps(self)`
-  - Client
+- [ ]`ConfigureCharacterCreationSteps(creationPanel)`
 - [ ]`CreateCharacter(data)`
-  - Client
 - [ ]`CreateDefaultInventory(character)`
-  - Client
 - [ ]`CreateInformationButtons(pages)`
-  - Client
 - [ ]`CreateInventoryPanel(inventory, parent)`
-  - Client
 - [ ]`CreateMenuButtons(tabs)`
-  - Client
-- [ ]`DatabaseConnected()`
-  - Server
 - [ ]`DeleteCharacter(id)`
-  - Client
 - [ ]`DermaSkinChanged(newSkin)`
-  - Client
-- [ ]`DiscordRelaySend(embed)`
-  - Server
-- [ ]`DiscordRelayUnavailable()`
-  - Server
-- [ ]`DiscordRelayed(embed)`
-  - Server
 - [ ]`DisplayPlayerHUDInformation(client, hudInfos)`
-  - Client
-- [ ]`DoModuleIncludes(path, MODULE)`
-  - Shared
 - [ ]`DoorDataReceived(door, syncData)`
-  - Client
-- [ ]`DoorEnabledToggled(client, door, newState)`
-  - Server
-- [ ]`DoorHiddenToggled(client, entity, newState)`
-  - Server
-- [ ]`DoorLockToggled(client, door, state)`
-  - Server
-- [ ]`DoorOwnableToggled(client, door, newState)`
-  - Server
-- [ ]`DoorPriceSet(client, door, price)`
-  - Server
-- [ ]`DoorTitleSet(client, door, name)`
-  - Server
 - [ ]`DrawCharInfo(client, character, info)`
-  - Client
 - [ ]`DrawEntityInfo(e, a, pos)`
-  - Client
-- [ ]`DrawItemEntityInfo(self, item, infoTable, alpha)`
-  - Client
+- [ ]`DrawItemEntityInfo(itemEntity, item, infoTable, alpha)`
 - [ ]`DrawLiliaModelView(client, entity)`
-  - Client
 - [ ]`DrawPlayerRagdoll(entity)`
-  - Client
 - [ ]`ExitStorage()`
-  - Client
 - [ ]`F1MenuClosed()`
-  - Client
-- [ ]`F1MenuOpened(self)`
-  - Client
-- [ ]`FetchSpawns()`
-  - Server
+- [ ]`F1MenuOpened(f1MenuPanel)`
 - [ ]`FilterCharModels(arg1)`
-  - Client
 - [ ]`FilterDoorInfo(entity, doorData, doorInfo)`
-  - Client
-- [ ]`ForceRecognizeRange(ply, range, fakeName)`
-  - Shared
 - [ ]`GetAdjustedPartData(wearer, id)`
-  - Client
 - [ ]`GetAdminESPTarget(ent, client)`
-  - Client
 - [ ]`GetAdminStickLists(tgt, lists)`
-  - Client
-- [ ]`GetAllCaseClaims()`
-  - Server
-- [ ]`GetAttributeMax(client, id)`
-  - Shared
-- [ ]`GetAttributeStartingMax(client, attribute)`
-  - Shared
-- [ ]`GetBotModel(client, faction)`
-  - Server
-- [ ]`GetCharMaxStamina(char)`
-  - Shared
-- [ ]`GetDamageScale(hitgroup, dmgInfo, damageScale)`
-  - Server
-- [ ]`GetDefaultCharDesc(client, arg2, data)`
-  - Shared
-- [ ]`GetDefaultCharName(client, faction, data)`
-  - Shared
-- [ ]`GetDefaultInventorySize(client, char)`
-  - Shared
-- [ ]`GetDefaultInventoryType(character)`
-  - Server
 - [ ]`GetDisplayedDescription(client, isHUD)`
-  - Client
-- [ ]`GetDisplayedName(client, chatType)`
-  - Shared
 - [ ]`GetDoorInfo(entity, doorData, doorInfo)`
-  - Client
 - [ ]`GetDoorInfoForAdminStick(target, extraInfo)`
-  - Client
-- [ ]`GetEntitySaveData(ent)`
-  - Server
-- [ ]`GetHandsAttackSpeed(arg1)`
-  - Shared
 - [ ]`GetInjuredText(c)`
-  - Client
-- [ ]`GetItemDropModel(itemTable, self)`
-  - Shared
 - [ ]`GetMainCharacterID()`
-  - Client
 - [ ]`GetMainMenuPosition(character)`
-  - Client
-- [ ]`GetMaxPlayerChar(client)`
-  - Shared
-- [ ]`GetMaxStartingAttributePoints(client, count)`
-  - Shared
-- [ ]`GetModelGender(model)`
-  - Shared
-- [ ]`GetMoneyModel(arg1)`
-  - Shared
-- [ ]`GetNPCDialogOptions(arg1)`
-  - Shared
-- [ ]`GetOOCDelay(speaker)`
-  - Server
-- [ ]`GetPlayTime(self)`
-  - Server
-- [ ]`GetPlayerDeathSound(client, isFemale)`
-  - Server
-- [ ]`GetPlayerPainSound(client, paintype, isFemale)`
-  - Server
-- [ ]`GetPlayerPunchDamage(arg1)`
-  - Shared
-- [ ]`GetPlayerPunchRagdollTime(arg1)`
-  - Shared
-- [ ]`GetPlayerRespawnLocation(client, character)`
-  - Server
-- [ ]`GetPlayerSpawnLocation(client, character)`
-  - Server
-- [ ]`GetPrestigePayBonus(client, char, pay, faction, class)`
-  - Server
-- [ ]`GetPriceOverride(self, uniqueID, price, isSellingToVendor)`
-  - Shared
-- [ ]`GetRagdollTime(self, time)`
-  - Shared
-- [ ]`GetSalaryAmount(client, faction, class)`
-  - Server
-- [ ]`GetTicketsByRequester(steamID)`
-  - Server
-- [ ]`GetVendorSaleScale(self)`
-  - Shared
-- [ ]`GetWarnings(charID)`
-  - Server
-- [ ]`GetWarningsByIssuer(steamID)`
-  - Server
-- [ ]`GetWeaponName(weapon)`
-  - Shared
-- [ ]`HandleItemTransferRequest(client, itemID, x, y, invID)`
-  - Server
-- [ ]`InitializeStorage(entity)`
-  - Shared
-- [ ]`InitializedConfig()`
-  - Shared
-- [ ]`InitializedItems()`
-  - Shared
-- [ ]`InitializedKeybinds()`
-  - Shared
-- [ ]`InitializedModules()`
-  - Shared
-- [ ]`InitializedOptions()`
-  - Shared
-- [ ]`InitializedSchema()`
-  - Shared
 - [ ]`InteractionMenuClosed()`
-  - Client
 - [ ]`InteractionMenuOpened(frame)`
-  - Client
-- [ ]`InterceptClickItemIcon(self, itemIcon, keyCode)`
-  - Client
-- [ ]`InventoryClosed(self, inventory)`
-  - Client
-- [ ]`InventoryDataChanged(instance, key, oldValue, value)`
-  - Shared
-- [ ]`InventoryDeleted(instance)`
-  - Server
-- [ ]`InventoryInitialized(instance)`
-  - Shared
-- [ ]`InventoryItemAdded(inventory, item)`
-  - Shared
+- [ ]`InterceptClickItemIcon(inventoryPanel, itemIcon, keyCode)`
+- [ ]`InventoryClosed(inventoryPanel, inventory)`
 - [ ]`InventoryItemDataChanged(item, key, oldValue, newValue, inventory)`
-  - Client
-- [ ]`InventoryItemIconCreated(icon, item, self)`
-  - Client
-- [ ]`InventoryItemRemoved(self, instance, preserveItem)`
-  - Shared
+- [ ]`InventoryItemIconCreated(icon, item, inventoryPanel)`
 - [ ]`InventoryOpened(panel, inventory)`
-  - Client
 - [ ]`InventoryPanelCreated(panel, inventory, parent)`
-  - Client
-- [ ]`IsCharFakeRecognized(character, id)`
-  - Shared
-- [ ]`IsCharRecognized(a, arg2)`
-  - Shared
-- [ ]`IsRecognizedChatType(chatType)`
-  - Shared
-- [ ]`IsSuitableForTrunk(ent)`
-  - Shared
-- [ ]`ItemCombine(client, item, target)`
-  - Server
-- [ ]`ItemDataChanged(item, key, oldValue, newValue)`
-  - Shared
-- [ ]`ItemDefaultFunctions(arg1)`
-  - Shared
-- [ ]`ItemDeleted(instance)`
-  - Server
 - [ ]`ItemDraggedOutOfInventory(client, item)`
-  - Client
-- [ ]`ItemFunctionCalled(self, method, client, entity, results)`
-  - Server
-- [ ]`ItemInitialized(item)`
-  - Shared
-- [ ]`ItemPaintOver(self, itemTable, w, h)`
-  - Client
-- [ ]`ItemQuantityChanged(item, oldValue, quantity)`
-  - Shared
+- [ ]`ItemPaintOver(itemIcon, itemTable, w, h)`
 - [ ]`ItemShowEntityMenu(entity)`
-  - Client
-- [ ]`ItemTransfered(context)`
-  - Server
-- [ ]`KeyLock(client, door, time)`
-  - Server
-- [ ]`KeyUnlock(client, door, time)`
-  - Server
-- [ ]`KickedFromChar(characterID, isCurrentChar)`
-  - Server
-- [ ]`LiliaLoaded()`
-  - Shared
-- [ ]`LiliaTablesLoaded()`
-  - Server
 - [ ]`LoadCharInformation()`
-  - Client
-- [ ]`LoadData()`
-  - Server
 - [ ]`LoadMainCharacter()`
-  - Client
 - [ ]`LoadMainMenuInformation(info, character)`
-  - Client
-- [ ]`ModifyCharacterModel(arg1, character)`
-  - Server
 - [ ]`ModifyScoreboardModel(arg1, ply)`
-  - Client
 - [ ]`ModifyVoiceIndicatorText(client, voiceText, voiceType)`
-  - Client
-- [ ]`NetVarChanged(client, key, oldValue, value)`
-  - Shared
-  - [ ]`DrawPlayerInfoBackground()`
-  - Client
+- [ ]`DrawPlayerInfoBackground()`
 - [ ]`OnAdminStickMenuClosed()`
-  - Client
-- [ ]`OnAdminSystemLoaded(arg1, arg2)`
-  - Shared
-- [ ]`OnCharAttribBoosted(client, self, attribID, boostID, arg5)`
-  - Server
-- [ ]`OnCharAttribUpdated(client, self, key, arg4)`
-  - Server
-- [ ]`OnCharCreated(client, character, originalData)`
-  - Server
-- [ ]`OnCharDelete(client, id)`
-  - Server
-- [ ]`OnCharDisconnect(client, character)`
-  - Server
-- [ ]`OnCharFlagsGiven(ply, self, addedFlags)`
-  - Server
-- [ ]`OnCharFlagsTaken(ply, self, removedFlags)`
-  - Server
-- [ ]`OnCharGetup(target, entity)`
-  - Shared
-- [ ]`OnCharKick(self, client)`
-  - Server
-- [ ]`OnCharNetVarChanged(character, key, oldVar, value)`
-  - Server
-- [ ]`OnCharPermakilled(self, arg2)`
-  - Server
-- [ ]`OnCharRecognized(client, arg2)`
-  - Server
-- [ ]`OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)`
-  - Server
-- [ ]`OnCharVarChanged(character, varName, oldVar, newVar)`
-  - Shared
 - [ ]`OnChatReceived(client, chatType, text, anonymous)`
-  - Client
-- [ ]`OnCheaterCaught(client)`
-  - Server
-- [ ]`OnConfigUpdated(key, oldValue, value)`
-  - Shared
 - [ ]`OnCreateDualInventoryPanels(panel1, panel2, inventory1, inventory2)`
-  - Client
-- [ ]`OnCreateItemInteractionMenu(self, menu, itemTable)`
-  - Client
+- [ ]`OnCreateItemInteractionMenu(itemIcon, menu, itemTable)`
 - [ ]`OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)`
-  - Client
-- [ ]`OnDataSet(key, value, gamemode, map)`
-  - Server
-- [ ]`OnDatabaseLoaded()`
-  - Server
-- [ ]`OnDeathSoundPlayed(client, deathSound)`
-  - Server
-- [ ]`OnEntityLoaded(ent, data)`
-  - Server
-- [ ]`OnEntityPersistUpdated(ent, data)`
-  - Server
-- [ ]`OnEntityPersisted(ent, entData)`
-  - Server
-- [ ]`OnItemAdded(owner, item)`
-  - Shared
-- [ ]`OnItemCreated(itemTable, self)`
-  - Shared
-- [ ]`OnItemOverridden(item, overrides)`
-  - Shared
-- [ ]`OnItemRegistered(ITEM)`
-  - Shared
-- [ ]`OnItemSpawned(self)`
-  - Server
-- [ ]`OnLoadTables()`
-  - Server
 - [ ]`OnLocalVarSet(key, value)`
-  - Client
-- [ ]`OnLocalizationLoaded()`
-  - Shared
-- [ ]`OnNPCTypeSet(client, npc, npcID, filteredData)`
-  - Server
-- [ ]`OnOOCMessageSent(client, message)`
-  - Server
-- [ ]`OnOpenVendorMenu(self, vendor)`
-  - Client
-- [ ]`OnPAC3PartTransfered(part)`
-  - Shared
-- [ ]`OnPainSoundPlayed(entity, painSound)`
-  - Server
-- [ ]`OnPickupMoney(activator, self)`
-  - Server
-- [ ]`OnPlayerEnterSequence(self, sequenceName, callback, time, noFreeze)`
-  - Server
-- [ ]`OnPlayerInteractItem(client, action, self, result, data)`
-  - Server
-- [ ]`OnPlayerJoinClass(target, arg2, oldClass)`
-  - Server
-- [ ]`OnPlayerLeaveSequence(self)`
-  - Server
-- [ ]`OnPlayerLostStackItem(itemTypeOrItem)`
-  - Server
-- [ ]`OnPlayerObserve(client, state)`
-  - Server
-- [ ]`OnPlayerPurchaseDoor(client, door, arg3)`
-  - Shared
-- [ ]`OnPlayerRagdolled(self, entity)`
-  - Server
-- [ ]`OnPlayerSwitchClass(client, class, oldClass)`
-  - Server
-- [ ]`OnPrivilegeRegistered(arg1, arg2, arg3, arg4)`
-  - Shared
-- [ ]`OnPrivilegeUnregistered(arg1, arg2)`
-  - Shared
-- [ ]`OnRequestItemTransfer(self, arg2)`
-  - Server
-- [ ]`OnSalaryAdjust(client)`
-  - Server
-- [ ]`OnSalaryGiven(client, char, pay, faction, class)`
-  - Server
-- [ ]`OnSavedItemLoaded(loadedItems)`
-  - Server
-- [ ]`OnServerLog(client, logType, logString, category)`
-  - Server
-- [ ]`OnThemeChanged(themeName, useTransition)`
-  - Shared
-- [ ]`OnTicketClaimed(client, requester, ticketMessage)`
-  - Server
-- [ ]`OnTicketClosed(client, requester, ticketMessage)`
-  - Server
-- [ ]`OnTicketCreated(noob, message)`
-  - Server
-- [ ]`OnTransferred(target)`
-  - Shared
-- [ ]`OnUsergroupCreated(groupName, arg2)`
-  - Shared
-- [ ]`OnUsergroupPermissionsChanged(groupName, arg2)`
-  - Server
-- [ ]`OnUsergroupRemoved(groupName)`
-  - Shared
-- [ ]`OnUsergroupRenamed(oldName, newName)`
-  - Shared
-- [ ]`OnVendorEdited(client, vendor, key)`
-  - Server
-- [ ]`OnVoiceTypeChanged(client)`
-  - Server
+- [ ]`OnOpenVendorMenu(vendorPanel, vendor)`
 - [ ]`OnlineStaffDataReceived(staffData)`
-  - Client
 - [ ]`OpenAdminStickUI(tgt)`
-  - Client
-- [ ]`OptionAdded(key, name, option)`
-  - Shared
-- [ ]`OptionChanged(key, old, value)`
-  - Shared
-- [ ]`OptionReceived(arg1, key, value)`
-  - Server
-- [ ]`OverrideFactionDesc(uniqueID, arg2)`
-  - Shared
-- [ ]`OverrideFactionModels(uniqueID, arg2)`
-  - Shared
-- [ ]`OverrideFactionName(uniqueID, arg2)`
-  - Shared
-- [ ]`OverrideSpawnTime(ply, baseTime)`
-  - Shared
 - [ ]`PaintItem(item)`
-  - Client
-- [ ]`PlayerAccessVendor(client, vendor)`
-  - Server
-- [ ]`PlayerCheatDetected(client)`
-  - Server
-- [ ]`PlayerGagged(target, admin)`
-  - Server
-- [ ]`PlayerLiliaDataLoaded(client)`
-  - Server
-- [ ]`PlayerLoadedChar(client, character, currentChar)`
-  - Server
-- [ ]`PlayerMessageSend(speaker, chatType, text, anonymous, receivers)`
-  - Server
-- [ ]`PlayerModelChanged(client, value)`
-  - Server
-- [ ]`PlayerMuted(target, admin)`
-  - Server
-- [ ]`PlayerShouldPermaKill(client, inflictor, attacker)`
-  - Server
-- [ ]`PlayerSpawnPointSelected(client, pos, ang)`
-  - Server
-- [ ]`PlayerStaminaGained(client)`
-  - Server
-- [ ]`PlayerStaminaLost(client)`
-  - Server
-- [ ]`PlayerThrowPunch(client)`
-  - Shared
-- [ ]`PlayerUngagged(target, admin)`
-  - Server
-- [ ]`PlayerUnmuted(target, admin)`
-  - Server
-- [ ]`PlayerUseDoor(client, door)`
-  - Server
 - [ ]`PopulateAdminStick(currentMenu, currentTarget, currentStores)`
-  - Client
 - [ ]`PopulateAdminTabs(pages)`
-  - Client
 - [ ]`PopulateConfigurationButtons(pages)`
-  - Client
 - [ ]`PopulateInventoryItems(pnlContent, tree)`
-  - Client
-- [ ]`PostDoorDataLoad(ent, doorData)`
-  - Server
 - [ ]`PostDrawInventory(mainPanel, parentPanel)`
-  - Client
-- [ ]`PostLoadData()`
-  - Server
 - [ ]`PostLoadFonts(mainFont, mainFont)`
-  - Client
-- [ ]`PostPlayerInitialSpawn(client)`
-  - Server
-- [ ]`PostPlayerLoadedChar(client, character, currentChar)`
-  - Server
-- [ ]`PostPlayerLoadout(client)`
-  - Server
-- [ ]`PostPlayerSay(client, message, chatType, anonymous)`
-  - Server
-- [ ]`PostScaleDamage(hitgroup, dmgInfo, damageScale)`
-  - Server
-- [ ]`PreCharDelete(id)`
-  - Server
-- [ ]`PreDoorDataSave(door, doorData)`
-  - Server
 - [ ]`DrawPhysgunBeam()`
-  - Client
-- [ ]`PreLiliaLoaded()`
-  - Shared
-- [ ]`PrePlayerInteractItem(client, action, self)`
-  - Server
-- [ ]`PrePlayerLoadedChar(client, character, currentChar)`
-  - Server
-- [ ]`PreSalaryGive(client, char, pay, faction, class)`
-  - Server
-- [ ]`PreScaleDamage(hitgroup, dmgInfo, damageScale)`
-  - Server
 - [ ]`RefreshFonts()`
-  - Client
 - [ ]`RegisterAdminStickSubcategories(categories)`
-  - Client
-- [ ]`RemovePart(client, id)`
-  - Shared
-- [ ]`RemoveWarning(charID, index)`
-  - Server
 - [ ]`ResetCharacterPanel()`
-  - Client
 - [ ]`RunAdminSystemCommand(cmd, admin, victim, dur, reason)`
-  - Client
-- [ ]`SaveData()`
-  - Server
-- [ ]`ScoreboardClosed(self)`
-  - Client
-- [ ]`ScoreboardOpened(self)`
-  - Client
+- [ ]`ScoreboardClosed(scoreboardPanel)`
+- [ ]`ScoreboardOpened(scoreboardPanel)`
 - [ ]`ScoreboardRowCreated(slot, ply)`
-  - Client
-- [ ]`ScoreboardRowRemoved(self, ply)`
-  - Client
-- [ ]`SendPopup(noob, message)`
-  - Server
+- [ ]`ScoreboardRowRemoved(scoreboardPanel, ply)`
 - [ ]`SetMainCharacter(charID)`
-  - Client
-- [ ]`SetupBagInventoryAccessRules(inventory)`
-  - Shared
-- [ ]`SetupBotPlayer(client)`
-  - Server
-- [ ]`SetupDatabase()`
-  - Server
-- [ ]`SetupPACDataFromItems()`
-  - Shared
-- [ ]`SetupPlayerModel(client, self)`
-  - Server
-- [ ]`SetupQuickMenu(self)`
-  - Client
+- [ ]`SetupQuickMenu(quickMenuPanel)`
 - [ ]`ShouldAllowScoreboardOverride(client, var)`
-  - Client
 - [ ]`ShouldBarDraw(bar)`
-  - Client
-- [ ]`ShouldDataBeSaved()`
-  - Server
-- [ ]`ShouldDeleteSavedItems()`
-  - Server
 - [ ]`ShouldDisableThirdperson(client)`
-  - Client
 - [ ]`ShouldDrawAmmo(wpn)`
-  - Client
 - [ ]`ShouldDrawEntityInfo(e)`
-  - Client
 - [ ]`ShouldDrawPlayerInfo(e)`
-  - Client
 - [ ]`ShouldDrawWepSelect(client)`
-  - Client
 - [ ]`ShouldHideBars()`
-  - Client
 - [ ]`ShouldMenuButtonShow(arg1)`
-  - Client
-- [ ]`ShouldPlayDeathSound(client, deathSound)`
-  - Server
-- [ ]`ShouldPlayPainSound(entity, painSound)`
-  - Server
 - [ ]`ShouldRespawnScreenAppear()`
-  - Client
 - [ ]`ShouldShowCharVarInCreation(key)`
-  - Client
 - [ ]`ShouldShowClassOnScoreboard(clsData)`
-  - Client
 - [ ]`ShouldShowFactionOnScoreboard(ply)`
-  - Client
 - [ ]`ShouldShowPlayerOnScoreboard(ply)`
-  - Client
 - [ ]`ShouldShowQuickMenu()`
-  - Client
-- [ ]`ShouldSpawnClientRagdoll(client)`
-  - Server
 - [ ]`ShowPlayerOptions(target, options)`
-  - Client
-- [ ]`StorageCanTransferItem(client, storage, item)`
-  - Server
-- [ ]`StorageEntityRemoved(self, inventory)`
-  - Server
-- [ ]`StorageInventorySet(entity, inventory, isCar)`
-  - Server
-- [ ]`StorageItemRemoved()`
-  - Server
 - [ ]`StorageOpen(storage, isCar)`
-  - Client
-- [ ]`StorageRestored(ent, inventory)`
-  - Server
 - [ ]`StorageUnlockPrompt(entity)`
-  - Client
-- [ ]`StoreSpawns(spawns)`
-  - Server
-- [ ]`SyncCharList(client)`
-  - Server
 - [ ]`ThirdPersonToggled(arg1)`
-  - Client
-- [ ]`TicketSystemClaim(client, requester, ticketMessage)`
-  - Server
-- [ ]`TicketSystemClose(client, requester, ticketMessage)`
-  - Server
-- [ ]`ToggleLock(client, door, state)`
-  - Server
 - [ ]`TooltipInitialize(var, panel)`
-  - Client
 - [ ]`TooltipLayout(var)`
-  - Client
 - [ ]`TooltipPaint(var, w, h)`
-  - Client
-- [ ]`UpdateEntityPersistence(vendor)`
-  - Server
-- [ ]`VendorClassUpdated(vendor, id, allowed)`
-  - Server
-- [ ]`VendorEdited(liaVendorEnt, key)`
-  - Server
 - [ ]`VendorExited()`
-  - Client
-- [ ]`VendorFactionBuyScaleUpdated(vendor, factionID, scale)`
-  - Server
-- [ ]`VendorFactionSellScaleUpdated(vendor, factionID, scale)`
-  - Server
-- [ ]`VendorFactionUpdated(vendor, id, allowed)`
-  - Server
-- [ ]`VendorItemMaxStockUpdated(vendor, itemType, value)`
-  - Server
-- [ ]`VendorItemModeUpdated(vendor, itemType, value)`
-  - Server
-- [ ]`VendorItemPriceUpdated(vendor, itemType, value)`
-  - Server
-- [ ]`VendorItemStockUpdated(vendor, itemType, value)`
-  - Server
-- [ ]`VendorMessagesUpdated(vendor)`
-  - Server
 - [ ]`VendorOpened(vendor)`
-  - Client
-- [ ]`VendorSynchronized(vendor)`
-  - Server
-- [ ]`VendorTradeEvent(client, vendor, itemType, isSellingToVendor)`
-  - Server
 - [ ]`VoiceToggled(enabled)`
-  - Client
-- [ ]`WarningIssued(client, target, reason, severity, count, warnerSteamID, targetSteamID)`
-  - Server
-- [ ]`WarningRemoved(client, targetClient, arg3, arg4, arg5, arg6)`
-  - Server
 - [ ]`WeaponCycleSound()`
-  - Client
 - [ ]`WeaponSelectSound()`
-  - Client
 - [ ]`WebImageDownloaded(n, arg2)`
-  - Client
 - [ ]`WebSoundDownloaded(name, path)`
-  - Client
-- [ ]`getData(default)`
-  - Shared
+
+## Server
+
+- [ ]`AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)`
+- [ ]`CanItemBeTransfered(item, inventory, VendorInventoryMeasure, client)`
+- [ ]`CanPersistEntity(entity)`
+- [ ]`CanPlayerAccessDoor(client, door, access)`
+- [ ]`CanPlayerAccessVendor(client, vendor)`
+- [ ]`CanPlayerDropItem(client, item)`
+- [ ]`CanPlayerEarnSalary(client)`
+- [ ]`CanPlayerEquipItem(client, item)`
+- [ ]`CanPlayerHoldObject(client, entity)`
+- [ ]`CanPlayerInteractItem(client, action, item, data)`
+- [ ]`CanPlayerLock(client, door)`
+- [ ]`CanPlayerSeeLogCategory(client, category)`
+- [ ]`CanPlayerSpawnStorage(client, entity, info)`
+- [ ]`CanPlayerSwitchChar(client, currentCharacter, newCharacter)`
+- [ ]`CanPlayerTakeItem(client, item)`
+- [ ]`CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)`
+- [ ]`CanPlayerUnequipItem(client, item)`
+- [ ]`CanPlayerUnlock(client, door)`
+- [ ]`CanPlayerUseChar(client, character)`
+- [ ]`CanPlayerUseDoor(client, door)`
+- [ ]`CanSaveData(ent, inventory)`
+- [ ]`CharCleanUp(character)`
+- [ ]`CharDeleted(client, character)`
+- [ ]`CharListExtraDetails(client, entry, stored)`
+- [ ]`CharPostSave(character)`
+- [ ]`CharPreSave(character)`
+- [ ]`CheckFactionLimitReached(faction, character, client)`
+- [ ]`DatabaseConnected()`
+- [ ]`DiscordRelaySend(embed)`
+- [ ]`DiscordRelayUnavailable()`
+- [ ]`DiscordRelayed(embed)`
+- [ ]`DoorEnabledToggled(client, door, newState)`
+- [ ]`DoorHiddenToggled(client, entity, newState)`
+- [ ]`DoorLockToggled(client, door, state)`
+- [ ]`DoorOwnableToggled(client, door, newState)`
+- [ ]`DoorPriceSet(client, door, price)`
+- [ ]`DoorTitleSet(client, door, name)`
+- [ ]`FetchSpawns()`
+- [ ]`GetAllCaseClaims()`
+- [ ]`GetBotModel(client, faction)`
+- [ ]`GetDamageScale(hitgroup, dmgInfo, damageScale)`
+- [ ]`GetDefaultInventoryType(character)`
+- [ ]`GetEntitySaveData(ent)`
+- [ ]`GetOOCDelay(speaker)`
+- [ ]`GetPlayTime(client)`
+- [ ]`GetPlayerDeathSound(client, isFemale)`
+- [ ]`GetPlayerPainSound(client, paintype, isFemale)`
+- [ ]`GetPlayerRespawnLocation(client, character)`
+- [ ]`GetPlayerSpawnLocation(client, character)`
+- [ ]`GetPrestigePayBonus(client, char, pay, faction, class)`
+- [ ]`GetSalaryAmount(client, faction, class)`
+- [ ]`GetTicketsByRequester(steamID)`
+- [ ]`GetWarnings(charID)`
+- [ ]`GetWarningsByIssuer(steamID)`
+- [ ]`HandleItemTransferRequest(client, itemID, x, y, invID)`
+- [ ]`InventoryDeleted(instance)`
+- [ ]`ItemCombine(client, item, target)`
+- [ ]`ItemDeleted(instance)`
+- [ ]`ItemFunctionCalled(item, method, client, entity, results)`
+- [ ]`ItemTransfered(context)`
+- [ ]`KeyLock(client, door, time)`
+- [ ]`KeyUnlock(client, door, time)`
+- [ ]`KickedFromChar(characterID, isCurrentChar)`
+- [ ]`LiliaTablesLoaded()`
+- [ ]`LoadData()`
+- [ ]`ModifyCharacterModel(arg1, character)`
+- [ ]`OnCharAttribBoosted(client, character, attribID, boostID, arg5)`
+- [ ]`OnCharAttribUpdated(client, character, key, arg4)`
+- [ ]`OnCharCreated(client, character, originalData)`
+- [ ]`OnCharDelete(client, id)`
+- [ ]`OnCharDisconnect(client, character)`
+- [ ]`OnCharFlagsGiven(ply, character, addedFlags)`
+- [ ]`OnCharFlagsTaken(ply, character, removedFlags)`
+- [ ]`OnCharKick(character, client)`
+- [ ]`OnCharNetVarChanged(character, key, oldVar, value)`
+- [ ]`OnCharPermakilled(character, time)`
+- [ ]`OnCharRecognized(client, arg2)`
+- [ ]`OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)`
+- [ ]`OnCheaterCaught(client)`
+- [ ]`OnDataSet(key, value, gamemode, map)`
+- [ ]`OnDatabaseLoaded()`
+- [ ]`OnDeathSoundPlayed(client, deathSound)`
+- [ ]`OnEntityLoaded(ent, data)`
+- [ ]`OnEntityPersistUpdated(ent, data)`
+- [ ]`OnEntityPersisted(ent, entData)`
+- [ ]`OnItemSpawned(itemEntity)`
+- [ ]`OnLoadTables()`
+- [ ]`OnNPCTypeSet(client, npc, npcID, filteredData)`
+- [ ]`OnOOCMessageSent(client, message)`
+- [ ]`OnPainSoundPlayed(entity, painSound)`
+- [ ]`OnPickupMoney(activator, moneyEntity)`
+- [ ]`OnPlayerEnterSequence(client, sequenceName, callback, time, noFreeze)`
+- [ ]`OnPlayerInteractItem(client, action, item, result, data)`
+- [ ]`OnPlayerJoinClass(target, arg2, oldClass)`
+- [ ]`OnPlayerLeaveSequence(client)`
+- [ ]`OnPlayerLostStackItem(itemTypeOrItem)`
+- [ ]`OnPlayerObserve(client, state)`
+- [ ]`OnPlayerRagdolled(client, ragdoll)`
+- [ ]`OnPlayerSwitchClass(client, class, oldClass)`
+- [ ]`OnRequestItemTransfer(inventoryPanel, itemID, targetInventoryID, x, y)`
+- [ ]`OnSalaryAdjust(client)`
+- [ ]`OnSalaryGiven(client, char, pay, faction, class)`
+- [ ]`OnSavedItemLoaded(loadedItems)`
+- [ ]`OnServerLog(client, logType, logString, category)`
+- [ ]`OnTicketClaimed(client, requester, ticketMessage)`
+- [ ]`OnTicketClosed(client, requester, ticketMessage)`
+- [ ]`OnTicketCreated(noob, message)`
+- [ ]`OnUsergroupPermissionsChanged(groupName, arg2)`
+- [ ]`OnVendorEdited(client, vendor, key)`
+- [ ]`OnVoiceTypeChanged(client)`
+- [ ]`OptionReceived(arg1, key, value)`
+- [ ]`PlayerAccessVendor(client, vendor)`
+- [ ]`PlayerCheatDetected(client)`
+- [ ]`PlayerGagged(target, admin)`
+- [ ]`PlayerLiliaDataLoaded(client)`
+- [ ]`PlayerLoadedChar(client, character, currentChar)`
+- [ ]`PlayerMessageSend(speaker, chatType, text, anonymous, receivers)`
+- [ ]`PlayerModelChanged(client, value)`
+- [ ]`PlayerMuted(target, admin)`
+- [ ]`PlayerShouldPermaKill(client, inflictor, attacker)`
+- [ ]`PlayerSpawnPointSelected(client, pos, ang)`
+- [ ]`PlayerStaminaGained(client)`
+- [ ]`PlayerStaminaLost(client)`
+- [ ]`PlayerUngagged(target, admin)`
+- [ ]`PlayerUnmuted(target, admin)`
+- [ ]`PlayerUseDoor(client, door)`
+- [ ]`PostDoorDataLoad(ent, doorData)`
+- [ ]`PostLoadData()`
+- [ ]`PostPlayerInitialSpawn(client)`
+- [ ]`PostPlayerLoadedChar(client, character, currentChar)`
+- [ ]`PostPlayerLoadout(client)`
+- [ ]`PostPlayerSay(client, message, chatType, anonymous)`
+- [ ]`PostScaleDamage(hitgroup, dmgInfo, damageScale)`
+- [ ]`PreCharDelete(id)`
+- [ ]`PreDoorDataSave(door, doorData)`
+- [ ]`PrePlayerInteractItem(client, action, item)`
+- [ ]`PrePlayerLoadedChar(client, character, currentChar)`
+- [ ]`PreSalaryGive(client, char, pay, faction, class)`
+- [ ]`PreScaleDamage(hitgroup, dmgInfo, damageScale)`
+- [ ]`RemoveWarning(charID, index)`
+- [ ]`SaveData()`
+- [ ]`SendPopup(noob, message)`
+- [ ]`SetupBotPlayer(client)`
+- [ ]`SetupDatabase()`
+- [ ]`SetupPlayerModel(modelEntity, character)`
+- [ ]`ShouldDataBeSaved()`
+- [ ]`ShouldDeleteSavedItems()`
+- [ ]`ShouldPlayDeathSound(client, deathSound)`
+- [ ]`ShouldPlayPainSound(entity, painSound)`
+- [ ]`ShouldSpawnClientRagdoll(client)`
+- [ ]`StorageCanTransferItem(client, storage, item)`
+- [ ]`StorageEntityRemoved(storageEntity, inventory)`
+- [ ]`StorageInventorySet(entity, inventory, isCar)`
+- [ ]`StorageItemRemoved()`
+- [ ]`StorageRestored(ent, inventory)`
+- [ ]`StoreSpawns(spawns)`
+- [ ]`SyncCharList(client)`
+- [ ]`TicketSystemClaim(client, requester, ticketMessage)`
+- [ ]`TicketSystemClose(client, requester, ticketMessage)`
+- [ ]`ToggleLock(client, door, state)`
+- [ ]`UpdateEntityPersistence(vendor)`
+- [ ]`VendorClassUpdated(vendor, id, allowed)`
+- [ ]`VendorEdited(liaVendorEnt, key)`
+- [ ]`VendorFactionBuyScaleUpdated(vendor, factionID, scale)`
+- [ ]`VendorFactionSellScaleUpdated(vendor, factionID, scale)`
+- [ ]`VendorFactionUpdated(vendor, id, allowed)`
+- [ ]`VendorItemMaxStockUpdated(vendor, itemType, value)`
+- [ ]`VendorItemModeUpdated(vendor, itemType, value)`
+- [ ]`VendorItemPriceUpdated(vendor, itemType, value)`
+- [ ]`VendorItemStockUpdated(vendor, itemType, value)`
+- [ ]`VendorMessagesUpdated(vendor)`
+- [ ]`VendorSynchronized(vendor)`
+- [ ]`VendorTradeEvent(client, vendor, itemType, isSellingToVendor)`
+- [ ]`WarningIssued(client, target, reason, severity, count, warnerSteamID, targetSteamID)`
+- [ ]`WarningRemoved(client, targetClient, arg3, arg4, arg5, arg6)`
 - [ ]`setData(value, global, ignoreMap)`
-  - Server
 - [ ]`syncVendorDataToClient(client)`
-  - Server
+
+## Shared
+
+- [ ]`AdjustCreationData(client, data, newData, originalData)`
+- [ ]`AdjustPACPartData(wearer, id, data)`
+- [ ]`AdjustStaminaOffset(client, offset)`
+- [ ]`AdvDupe_FinishPasting(tbl)`
+- [ ]`AttachPart(client, id)`
+- [ ]`BagInventoryReady(bagItem, inventory)`
+- [ ]`BagInventoryRemoved(bagItem, inventory)`
+- [ ]`CalcStaminaChange(client)`
+- [ ]`CanCharBeTransfered(tChar, faction, arg3)`
+- [ ]`CanInviteToClass(client, target)`
+- [ ]`CanInviteToFaction(client, target)`
+- [ ]`CanOutfitChangeModel(item)`
+- [ ]`CanPerformVendorEdit(client, vendor)`
+- [ ]`CanPickupMoney(activator, moneyEntity)`
+- [ ]`CanPlayerChooseWeapon(weapon)`
+- [ ]`CanPlayerCreateChar(client, data)`
+- [ ]`CanPlayerJoinClass(client, class, info)`
+- [ ]`CanPlayerKnock(arg1)`
+- [ ]`CanPlayerModifyConfig(client, key)`
+- [ ]`CanPlayerRotateItem(client, item)`
+- [ ]`CanPlayerThrowPunch(client)`
+- [ ]`CanPlayerUseCommand(client, command)`
+- [ ]`CanRunItemAction(tempItem, key)`
+- [ ]`CharForceRecognized(ply, range)`
+- [ ]`CharHasFlags(client, flags)`
+- [ ]`ChatParsed(client, chatType, message, anonymous)`
+- [ ]`CommandAdded(command, data)`
+- [ ]`ConfigChanged(key, value, oldValue, client)`
+- [ ]`DoModuleIncludes(path, MODULE)`
+- [ ]`ForceRecognizeRange(ply, range, fakeName)`
+- [ ]`GetAttributeMax(client, id)`
+- [ ]`GetAttributeStartingMax(client, attribute)`
+- [ ]`GetCharMaxStamina(char)`
+- [ ]`GetDefaultCharDesc(client, arg2, data)`
+- [ ]`GetDefaultCharName(client, faction, data)`
+- [ ]`GetDefaultInventorySize(client, char)`
+- [ ]`GetDisplayedName(client, chatType)`
+- [ ]`GetHandsAttackSpeed(arg1)`
+- [ ]`GetItemDropModel(itemTable, itemEntity)`
+- [ ]`GetMaxPlayerChar(client)`
+- [ ]`GetMaxStartingAttributePoints(client, count)`
+- [ ]`GetModelGender(model)`
+- [ ]`GetMoneyModel(arg1)`
+- [ ]`GetNPCDialogOptions(arg1)`
+- [ ]`GetPlayerPunchDamage(arg1)`
+- [ ]`GetPlayerPunchRagdollTime(arg1)`
+- [ ]`GetPriceOverride(vendor, uniqueID, price, isSellingToVendor)`
+- [ ]`GetRagdollTime(client, time)`
+- [ ]`GetVendorSaleScale(vendor)`
+- [ ]`GetWeaponName(weapon)`
+- [ ]`InitializeStorage(entity)`
+- [ ]`InitializedConfig()`
+- [ ]`InitializedItems()`
+- [ ]`InitializedKeybinds()`
+- [ ]`InitializedModules()`
+- [ ]`InitializedOptions()`
+- [ ]`InitializedSchema()`
+- [ ]`InventoryDataChanged(instance, key, oldValue, value)`
+- [ ]`InventoryInitialized(instance)`
+- [ ]`InventoryItemAdded(inventory, item)`
+- [ ]`InventoryItemRemoved(inventory, instance, preserveItem)`
+- [ ]`IsCharFakeRecognized(character, id)`
+- [ ]`IsCharRecognized(a, arg2)`
+- [ ]`IsRecognizedChatType(chatType)`
+- [ ]`IsSuitableForTrunk(ent)`
+- [ ]`ItemDataChanged(item, key, oldValue, newValue)`
+- [ ]`ItemDefaultFunctions(arg1)`
+- [ ]`ItemInitialized(item)`
+- [ ]`ItemQuantityChanged(item, oldValue, quantity)`
+- [ ]`LiliaLoaded()`
+- [ ]`NetVarChanged(client, key, oldValue, value)`
+- [ ]`OnAdminSystemLoaded(arg1, arg2)`
+- [ ]`OnCharGetup(target, entity)`
+- [ ]`OnCharVarChanged(character, varName, oldVar, newVar)`
+- [ ]`OnConfigUpdated(key, oldValue, value)`
+- [ ]`OnItemAdded(owner, item)`
+- [ ]`OnItemCreated(itemTable, itemEntity)`
+- [ ]`OnItemOverridden(item, overrides)`
+- [ ]`OnItemRegistered(ITEM)`
+- [ ]`OnLocalizationLoaded()`
+- [ ]`OnPAC3PartTransfered(part)`
+- [ ]`OnPlayerPurchaseDoor(client, door, arg3)`
+- [ ]`OnPrivilegeRegistered(arg1, arg2, arg3, arg4)`
+- [ ]`OnPrivilegeUnregistered(arg1, arg2)`
+- [ ]`OnThemeChanged(themeName, useTransition)`
+- [ ]`OnTransferred(target)`
+- [ ]`OnUsergroupCreated(groupName, arg2)`
+- [ ]`OnUsergroupRemoved(groupName)`
+- [ ]`OnUsergroupRenamed(oldName, newName)`
+- [ ]`OptionAdded(key, name, option)`
+- [ ]`OptionChanged(key, old, value)`
+- [ ]`OverrideFactionDesc(uniqueID, arg2)`
+- [ ]`OverrideFactionModels(uniqueID, arg2)`
+- [ ]`OverrideFactionName(uniqueID, arg2)`
+- [ ]`OverrideSpawnTime(ply, baseTime)`
+- [ ]`PlayerThrowPunch(client)`
+- [ ]`PreLiliaLoaded()`
+- [ ]`RemovePart(client, id)`
+- [ ]`SetupBagInventoryAccessRules(inventory)`
+- [ ]`SetupPACDataFromItems()`
+- [ ]`getData(default)`

@@ -332,14 +332,6 @@ liaItemIcon
 liaTabButton
 --[[
     Purpose:
-        Loading failure display
-        A panel shown when loading fails
-    When Used:
-        When content fails to load
-]]
-liaLoadingFailure
---[[
-    Purpose:
         Interactive 3D model viewer with controls
         A 3D model display panel with mouse controls, zoom, rotation, and lighting for comprehensive model inspection
     When Used:

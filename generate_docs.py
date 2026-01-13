@@ -313,6 +313,7 @@ def parse_folder_directives(file_content):
     lines = file_content.split('\n')
     folder = None
     filename = None
+    append = False
 
     in_comment = False
     for line in lines:
@@ -331,8 +332,11 @@ def parse_folder_directives(file_content):
                 folder = line_content.replace('Folder:', '').strip()
             elif line_content.startswith('File:'):
                 filename = line_content.replace('File:', '').strip()
+            elif line_content.startswith('Append:'):
+                append_value = line_content.replace('Append:', '').strip().lower()
+                append = append_value in ('true', 'yes', '1')
 
-    return folder, filename
+    return folder, filename, append
 
 
 def format_lua_code(code_lines):
@@ -533,7 +537,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
         print(f"Warning: Could not read {file_path} due to encoding issues")
         return
 
-    custom_folder, custom_filename = parse_folder_directives(file_content)
+    custom_folder, custom_filename, append = parse_folder_directives(file_content)
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
 
     if file_header and ('Folder:' in file_header or 'File:' in file_header):
@@ -599,33 +603,35 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_filename = output_path.name
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        if custom_filename:
-            display_name = custom_filename.replace('.md', '').title()
-        else:
-            display_name = Path(file_path).stem.title()
+    file_mode = 'a' if append else 'w'
+    with open(output_path, file_mode, encoding='utf-8') as f:
+        if not append:
+            if custom_filename:
+                display_name = custom_filename.replace('.md', '').title()
+            else:
+                display_name = Path(file_path).stem.title()
 
-        title = display_name
-        subtitle = f'This page documents the functions and methods in the { "Lilia library" if is_library else "meta table" }.'
+            title = display_name
+            subtitle = f'This page documents the functions and methods in the { "Lilia library" if is_library else "meta table" }.'
 
-        if file_header:
-            parsed_header = parse_file_header(file_header)
-            if '\n\n' in parsed_header:
-                parts = parsed_header.split('\n\n', 1)
-                title = parts[0].replace('**', '').replace('*', '').strip()
-                if len(parts) > 1 and parts[1].strip():
-                    subtitle = parts[1].strip()
+            if file_header:
+                parsed_header = parse_file_header(file_header)
+                if '\n\n' in parsed_header:
+                    parts = parsed_header.split('\n\n', 1)
+                    title = parts[0].replace('**', '').replace('*', '').strip()
+                    if len(parts) > 1 and parts[1].strip():
+                        subtitle = parts[1].strip()
 
-        f.write(f'# {title}\n\n')
-        f.write(f'{subtitle}\n\n')
-        f.write('---\n\n')
-
-        if overview_section:
-            f.write('Overview\n\n')
-            overview_content = parse_overview_section(overview_section)
-            f.write(overview_content)
-            f.write('\n\n')
+            f.write(f'# {title}\n\n')
+            f.write(f'{subtitle}\n\n')
             f.write('---\n\n')
+
+            if overview_section:
+                f.write('Overview\n\n')
+                overview_content = parse_overview_section(overview_section)
+                f.write(overview_content)
+                f.write('\n\n')
+                f.write('---\n\n')
 
         for section in sections:
             f.write(section)
@@ -791,7 +797,7 @@ def generate_documentation_for_definitions_file(file_path: Path, output_dir: Pat
         return
 
     is_item_file = 'items' in str(file_path)
-    custom_folder, custom_filename = parse_folder_directives(file_content)
+    custom_folder, custom_filename, append = parse_folder_directives(file_content)
 
     if custom_folder and custom_filename:
         output_path = base_docs_dir / custom_folder / custom_filename
@@ -865,7 +871,8 @@ def generate_documentation_for_definitions_file(file_path: Path, output_dir: Pat
     final_overview = overview_section
     md = generate_markdown_for_definition_entries(title, subtitle, final_overview, entries)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'w', encoding='utf-8') as f:
+    file_mode = 'a' if append else 'w'
+    with open(output_path, file_mode, encoding='utf-8') as f:
         f.write(md)
     print(f"  Generated {output_path.name}")
 
@@ -880,7 +887,7 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
         print(f"Warning: Could not read {file_path} due to encoding issues")
         return
 
-    custom_folder, custom_filename = parse_folder_directives(file_content)
+    custom_folder, custom_filename, append = parse_folder_directives(file_content)
 
     if custom_folder and custom_filename:
         output_path = base_docs_dir / custom_folder / custom_filename
@@ -919,67 +926,25 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
                 subtitle = parts[1].strip()
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(f'# {title}\n\n')
-        f.write(subtitle + '\n\n')
-        f.write('---\n\n')
-        if overview_section:
-            f.write('Overview\n\n')
-            f.write(parse_overview_section(overview_section) + '\n\n')
+    file_mode = 'a' if append else 'w'
+    with open(output_path, file_mode, encoding='utf-8') as f:
+        if not append:
+            f.write(f'# {title}\n\n')
+            f.write(subtitle + '\n\n')
             f.write('---\n\n')
+            if overview_section:
+                f.write('Overview\n\n')
+                f.write(parse_overview_section(overview_section) + '\n\n')
+                f.write('---\n\n')
         for section in sections:
             f.write(section)
             f.write('---\n\n')
     print(f"  Generated {output_path.name}")
 
 
-def generate_compatibility_index(output_dir: Path) -> None:
-    compatibility_dir = output_dir / 'Compatibility'
-
-    if not compatibility_dir.exists():
-        return
-
-    compatibility_files = []
-    for md_file in compatibility_dir.glob('*.md'):
-        if md_file.name != 'index.md':
-            compatibility_files.append(md_file.stem)
-
-    compatibility_files.sort()
-
-    friendly_names = {
-        'advdupe': 'Advanced Duplicator',
-        'advdupe2': 'Advanced Duplicator 2',
-        'arccw': 'ARC9/ARCCW',
-        'cami': 'CAMI',
-        'lvs': 'LVS',
-        'pac': 'PAC3',
-        'permaprops': 'Perma Props',
-        'prone': 'Prone Mod',
-        'sam': 'SAM',
-        'serverguard': 'ServerGuard',
-        'simfphys': 'Simfphys',
-        'sitanywhere': 'Sit Anywhere',
-        'ulx': 'ULX',
-        'vcmod': 'VCMOD',
-        'vjbase': 'VJ Base',
-        'wiremod': 'Wiremod'
-    }
-
-    index_content = '# Compatibility Libraries\n\n'
-    for filename in compatibility_files:
-        friendly_name = friendly_names.get(filename, filename.title())
-        index_content += f'- [{friendly_name}](https://liliaframework.github.io/Compatibility/{filename}/)\n\n'
-
-    index_path = compatibility_dir / 'index.md'
-    with open(index_path, 'w', encoding='utf-8') as f:
-        f.write(index_content)
-
-    print(f"  Generated compatibility index with {len(compatibility_files)} libraries")
-
-
 def main():
     parser = argparse.ArgumentParser(description='Generate documentation from Lua comment blocks')
-    parser.add_argument('type', choices=['meta', 'library', 'definitions', 'hooks'], help='Type of files to process')
+    parser.add_argument('type', choices=['meta', 'library', 'compatibility', 'definitions', 'hooks'], help='Type of files to process')
     parser.add_argument('files', nargs='*', help='Specific files to process (if empty, processes defaults per type)')
     parser.add_argument('--force', action='store_true', help='Overwrite existing documentation files')
 
@@ -998,6 +963,9 @@ def main():
     elif args.type == 'library':
         input_dir = base_dir / 'libraries'
         output_dir = script_dir / 'documentation' / 'docs' / 'libraries'
+    elif args.type == 'compatibility':
+        input_dir = base_dir / 'libraries' / 'compatibility'
+        output_dir = script_dir / 'documentation' / 'docs' / 'compatibility'
     elif args.type == 'definitions':
         input_dir = docs_definitions_dir
         output_dir = script_dir / 'documentation' / 'docs' / 'definitions'
@@ -1019,7 +987,7 @@ def main():
                 matches = glob.glob(file_pattern)
                 files_to_process.extend(matches)
     else:
-        if args.type in ('meta', 'library'):
+        if args.type in ('meta', 'library', 'compatibility'):
             files_to_process.extend(list(input_dir.glob('*.lua')))
 
             if args.type == 'library':
@@ -1056,15 +1024,89 @@ def main():
     print(f"Processing {len(files_to_process)} {args.type} files...")
 
     for file_path in files_to_process:
-        if args.type in ('meta', 'library') and str(file_path).endswith('.lua'):
+        if args.type == 'meta' and str(file_path).endswith('.lua'):
+            generate_documentation_for_file(file_path, output_dir, False, base_docs_dir, args.force)
+        elif args.type == 'library' and str(file_path).endswith('.lua'):
             generate_documentation_for_file(file_path, output_dir, True, base_docs_dir, args.force)
+        elif args.type == 'compatibility' and str(file_path).endswith('.lua'):
+            # Check if this is a meta file with custom directives
+            try:
+                with open(file_path, 'r', encoding='utf-8-sig') as f:
+                    content = f.read()
+                custom_folder, custom_filename, _ = parse_folder_directives(content)
+                is_meta_file = custom_folder and custom_folder.lower() == 'meta'
+                generate_documentation_for_file(file_path, output_dir, not is_meta_file, base_docs_dir, args.force)
+            except:
+                generate_documentation_for_file(file_path, output_dir, True, base_docs_dir, args.force)
         elif args.type == 'definitions' and str(file_path).endswith('.lua'):
             generate_documentation_for_definitions_file(Path(file_path), output_dir, base_docs_dir)
         elif args.type == 'hooks' and str(file_path).endswith('.lua'):
             generate_documentation_for_hooks_file(Path(file_path), output_dir, base_docs_dir)
 
 
+    if args.type in ('meta', 'library', 'compatibility', 'definitions', 'hooks'):
+        output_dir.mkdir(parents=True, exist_ok=True)
+        generate_index_file(output_dir, args.type)
+        
+        items_dir = output_dir / 'items'
+        if items_dir.exists():
+            generate_index_file(items_dir, 'items')
+
     print("Documentation generation complete!")
+
+
+def generate_index_file(output_dir: Path, doc_type: str) -> None:
+    """Generate an index.md file listing all documentation files in the directory."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    if not output_dir.exists():
+        return
+
+    md_files = sorted([f for f in output_dir.glob('*.md') if f.name != 'index.md'])
+    
+    subdirs = []
+    if doc_type == 'definitions':
+        items_dir = output_dir / 'items'
+        if items_dir.exists():
+            items_files = sorted([f for f in items_dir.glob('*.md') if f.name != 'index.md'])
+            if items_files:
+                subdirs.append(('items', items_files))
+    
+    if not md_files and not subdirs:
+        return
+
+    title_map = {
+        'meta': 'Meta Tables',
+        'library': 'Libraries',
+        'compatibility': 'Compatibility',
+        'definitions': 'Definitions',
+        'hooks': 'Hooks',
+        'items': 'Item Definitions'
+    }
+    
+    title = title_map.get(doc_type, doc_type.title())
+    
+    index_path = output_dir / 'index.md'
+    
+    with open(index_path, 'w', encoding='utf-8') as f:
+        f.write(f'# {title}\n\n')
+        
+        if md_files:
+            for md_file in md_files:
+                name = md_file.stem
+                display_name = name.replace('lia.', '').replace('_', ' ').title()
+                link_name = md_file.name
+                f.write(f'- [{display_name}](./{link_name})\n\n')
+        
+        for subdir_name, subdir_files in subdirs:
+            f.write(f'## {subdir_name.title()}\n\n')
+            for md_file in subdir_files:
+                name = md_file.stem
+                display_name = name.replace('lia.', '').replace('_', ' ').title()
+                link_name = f'{subdir_name}/{md_file.name}'
+                f.write(f'- [{display_name}](./{link_name})\n\n')
+    
+    print(f"  Generated index.md for {doc_type}")
 
 
 if __name__ == '__main__':
