@@ -274,17 +274,6 @@ For entity interaction menus, admin tools, inventory actions, or any context-sen
 
 ---
 
-### liaDialogMenu
-
-#### 📋 Purpose
-NPC dialog interface
-A comprehensive dialog system for NPC conversations with conversation history, response options, and server-side callbacks
-
-#### ⏰ When Called
-For NPC interactions, quest dialogs, or scripted conversations with non-player characters
-
----
-
 ### DialogMenu
 
 #### 📋 Purpose
