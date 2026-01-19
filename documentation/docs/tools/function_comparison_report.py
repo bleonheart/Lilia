@@ -17,10 +17,10 @@ def _get_paths_from_file_location():
     current_file = Path(__file__).resolve()
     file_path_str = str(current_file)
 
-    # Check if file is in the E:\Server\garrysmod\gamemodes\Lilia\ structure
-    if r"E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
-        # File is in E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
-        lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
+    # Check if file is in the D:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure
+    if r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia")
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
@@ -34,10 +34,10 @@ def _get_paths_from_file_location():
         ]
         output_dir = docs_root
 
-    # Check if file is in the E:\Server\garrysmod\gamemodes\Lilia\ structure (legacy support)
-    elif r"E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
-        # File is in E:\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
-        lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
+    # Check if file is in the D:\GMOD\Server\garrysmod\gamemodes\Lilia\ structure (legacy support)
+    elif r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools" in file_path_str:
+        # File is in D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        lilia_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia")
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
@@ -58,12 +58,50 @@ def _get_paths_from_file_location():
         gamemode_root = lilia_root / "gamemode"
         docs_root = lilia_root / "documentation"
         language_file = gamemode_root / "languages" / "english.lua"
-        # For D:\ drive, we can't derive metrorp path, so use E:\Server as fallback
+        # For D:\ drive, we can't derive metrorp path, so use D:\GMOD\Server as fallback
         modules_paths = [
-            Path(r"E:\Server\garrysmod\gamemodes\metrorp\gitmodules"),
-            Path(r"E:\Server\garrysmod\gamemodes\metrorp\modules"),
+            Path(r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"),
+            Path(r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"),
         ]
         output_dir = docs_root
+
+    # Check if file is in the D:\GMOD\Server\ structure
+    elif r"D:\GMOD\Server" in file_path_str or r"d:\gmod\server" in file_path_str.lower():
+        # File is in D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation\docs\tools\
+        # Derive lilia_root from current file location
+        current_dir = current_file.parent
+        lilia_root = None
+        check_dir = current_dir
+        # Go up the directory tree to find the Lilia root
+        for _ in range(6):
+            if (check_dir / "gamemode").exists() and (check_dir / "documentation").exists():
+                lilia_root = check_dir
+                break
+            check_dir = check_dir.parent
+        
+        if lilia_root:
+            gamemode_root = lilia_root / "gamemode"
+            docs_root = lilia_root / "documentation"
+            language_file = gamemode_root / "languages" / "english.lua"
+            # Derive metrorp path relative to lilia_root
+            metrorp_root = lilia_root.parent / "metrorp"
+            modules_paths = [
+                metrorp_root / "gitmodules",
+                metrorp_root / "modules",
+            ]
+            output_dir = docs_root
+        else:
+            # Fallback for D:\GMOD\Server structure
+            lilia_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia")
+            gamemode_root = lilia_root / "gamemode"
+            docs_root = lilia_root / "documentation"
+            language_file = gamemode_root / "languages" / "english.lua"
+            metrorp_root = lilia_root.parent / "metrorp"
+            modules_paths = [
+                metrorp_root / "gitmodules",
+                metrorp_root / "modules",
+            ]
+            output_dir = docs_root
 
     else:
         # Fallback for other locations - try to derive from current file location
@@ -96,11 +134,11 @@ def _get_paths_from_file_location():
         else:
             # Ultimate fallback - use hardcoded defaults
             print("Warning: Could not determine Lilia root from file location, using hardcoded defaults")
-            gamemode_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode")
-            docs_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia\documentation")
-            language_file = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
+            gamemode_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode")
+            docs_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\documentation")
+            language_file = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
             # Derive metrorp path relative to lilia_root
-            lilia_root = Path(r"E:\Server\garrysmod\gamemodes\Lilia")
+            lilia_root = Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia")
             metrorp_root = lilia_root.parent / "metrorp"
             modules_paths = [
                 metrorp_root / "gitmodules",
@@ -124,9 +162,19 @@ _paths = _get_paths_from_file_location()
 DEFAULT_GAMEMODE_ROOT = _paths['gamemode_root']
 DEFAULT_DOCS_ROOT = _paths['docs_root']
 DEFAULT_LANGUAGE_FILE = _paths['language_file']
-# Ensure correct path for E:\Server structure
-if str(DEFAULT_LANGUAGE_FILE).startswith(r'E:\Server'):
-    DEFAULT_LANGUAGE_FILE = Path(r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua")
+# Ensure the language file path is correct - verify it exists, if not try to find it
+if not DEFAULT_LANGUAGE_FILE.exists():
+    # Try to find the language file by going up from the script location
+    script_dir = Path(__file__).parent
+    potential_paths = [
+        script_dir.parent.parent.parent / "gamemode" / "languages" / "english.lua",
+        Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"),
+        Path(r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"),
+    ]
+    for path in potential_paths:
+        if path.exists():
+            DEFAULT_LANGUAGE_FILE = path
+            break
 DEFAULT_MODULES_PATHS = _paths['modules_paths']
 DEFAULT_OUTPUT_DIR = _paths['output_dir']
 
@@ -320,7 +368,23 @@ class FunctionComparisonReportGenerator:
                  modules_paths: List[str] = None, generate_module_docs: bool = True):
         self.base_path = Path(base_path) if base_path else DEFAULT_GAMEMODE_ROOT
         self.docs_path = Path(docs_path) if docs_path else DEFAULT_DOCS_ROOT
-        self.language_file = language_file or str(DEFAULT_LANGUAGE_FILE)
+        # Use the language_file parameter if provided, otherwise use DEFAULT_LANGUAGE_FILE
+        # But verify it exists, and if not, try to find the correct path
+        if language_file:
+            self.language_file = str(language_file) if isinstance(language_file, Path) else language_file
+        else:
+            lang_file_path = Path(DEFAULT_LANGUAGE_FILE) if isinstance(DEFAULT_LANGUAGE_FILE, (str, Path)) else DEFAULT_LANGUAGE_FILE
+            if not lang_file_path.exists():
+                # Try to find the language file relative to base_path
+                potential_lang_file = self.base_path / "languages" / "english.lua"
+                if potential_lang_file.exists():
+                    self.language_file = str(potential_lang_file)
+                else:
+                    # Last resort: try to construct from base_path
+                    fallback_lang_file = self.base_path / "languages" / "english.lua"
+                    self.language_file = str(fallback_lang_file)
+            else:
+                self.language_file = str(lang_file_path)
         self.generate_module_docs = generate_module_docs
 
         # Handle modules_paths - convert to list of strings if provided
@@ -1503,7 +1567,12 @@ class FunctionComparisonReportGenerator:
         """Run localization analysis and detect conflicting module localization keys"""
         try:
             # Framework analysis
-            framework_data = analyze_data(self.language_file, str(self.base_path))
+            # Ensure language_file is a string and uses correct path
+            lang_file_str = str(self.language_file)
+            # Fix any remaining E:\Server references
+            if lang_file_str.startswith(r'E:\Server'):
+                lang_file_str = lang_file_str.replace(r'E:\Server', r'D:\GMOD\Server')
+            framework_data = analyze_data(lang_file_str, str(self.base_path))
 
             # Modules analysis (only if module docs generation is enabled)
             modules: List[Dict] = []
@@ -3002,10 +3071,10 @@ Examples:
                        help=f"Base path to gamemode directory (default: {DEFAULT_GAMEMODE_ROOT})")
     parser.add_argument("--docs-path", default=str(DEFAULT_DOCS_ROOT),
                        help=f"Path to documentation directory (default: {DEFAULT_DOCS_ROOT})")
-    # Use correct language file path for E:\Server structure
+    # Use correct language file path for D:\GMOD\Server structure
     default_lang_file = str(DEFAULT_LANGUAGE_FILE)
-    if default_lang_file.startswith(r'E:\Server'):
-        default_lang_file = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
+    if default_lang_file.startswith(r'D:\GMOD\Server'):
+        default_lang_file = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
     parser.add_argument("--language-file", default=default_lang_file,
                        help=f"Path to main language file (default: {default_lang_file})")
     parser.add_argument("--modules-path", action="append",

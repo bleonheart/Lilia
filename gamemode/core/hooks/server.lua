@@ -1,4 +1,4 @@
-﻿local GM = GM or GAMEMODE
+local GM = GM or GAMEMODE
 local VOICE_WHISPERING = "whispering"
 local VOICE_TALKING = "talking"
 local VOICE_YELLING = "yelling"
@@ -103,13 +103,13 @@ local function UpdateVoiceHearing()
             local baseRange = voiceType == VOICE_WHISPERING and lia.config.get("WhisperRange", 70) or voiceType == VOICE_TALKING and lia.config.get("TalkRange", 280) or voiceType == VOICE_YELLING and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)
             local distance = listener:GetPos():Distance(speaker:GetPos())
             listener.liaVoiceHear[speaker] = distance <= baseRange
+
+            local hookResult = hook.Run("UpdateVoiceHearing", listener, speaker, listener.liaVoiceHear[speaker])
+            if hookResult ~= nil then
+                listener.liaVoiceHear[speaker] = hookResult
+            end
         end
     end
-end
-
-local function CreateVoiceUpdateTimer()
-    if timer.Exists("liaVoiceUpdate") then return end
-    timer.Create("liaVoiceUpdate", 0.5, 0, function() UpdateVoiceHearing() end)
 end
 
 function GM:PlayerDeath(client, inflictor, attacker)
@@ -157,7 +157,7 @@ function GM:PlayerLoadedChar(client, character)
     character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
     if not timer.Exists("liaSalaryGlobal") then hook.Run("CreateSalaryTimers") end
-    if not timer.Exists("liaVoiceUpdate") then CreateVoiceUpdateTimer() end
+    if not timer.Exists("liaVoiceUpdate") then timer.Create("liaVoiceUpdate", 0.5, 0, function() UpdateVoiceHearing() end) end
     local ammoTable = character:getData("ammo")
     if character:getFaction() == FACTION_STAFF then
         local storedDiscord = client:getLiliaData("staffDiscord")

@@ -119,8 +119,9 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
     gamemode_path = Path(gamemode_path)
 
     # Patterns for localization calls - comprehensive coverage of all localization methods
+    # Updated patterns to handle both single and double quotes, and be more robust
     patterns = [
-        # L("xxxxx",...)
+        # L("xxxxx",...) or L('xxxxx',...)
         (r'\bL\s*\(\s*["\']([^"\']+)["\']', 'L'),
         # lia.lang.getLocalizedString("xxxxx",...)
         (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']([^"\']+)["\']', 'lia.lang.getLocalizedString'),
@@ -145,12 +146,22 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
     # Scan all Lua files
     for root, dirs, files in os.walk(gamemode_path):
         # Skip certain directories
-        dirs[:] = [d for d in dirs if d not in ['node_modules', '.git']]
+        skip_dirs = ['node_modules', '.git', 'docs', 'documentation']
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
 
         for file in files:
             if file.endswith('.lua'):
                 file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(file_path, gamemode_path)
+                # Normalize path separators to match report format (use backslashes on Windows)
+                if os.sep == '\\':
+                    relative_path = relative_path.replace('/', '\\')
+                else:
+                    relative_path = relative_path.replace('\\', '/')
+
+                # Skip language files themselves to avoid false positives
+                if 'languages' in str(file_path) and file.endswith('.lua'):
+                    continue
 
                 try:
                     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -207,6 +218,7 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
         # Skip keys that start with [[ (special format keys)
         if key.startswith('[['):
             continue
+        # Check if key is in the keys dict (case-sensitive exact match)
         if key not in keys and key not in undefined_keys_seen:
             undefined_keys_seen.add(key)
             # Use the first usage as representative
@@ -355,9 +367,9 @@ def _generate_localization_summary(data: Dict) -> List[str]:
 
 
 # Default paths for backwards compatibility
-DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode"
-DEFAULT_LANGUAGE_FILE = r"E:\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
+DEFAULT_FRAMEWORK_GAMEMODE_DIR = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode"
+DEFAULT_LANGUAGE_FILE = r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\languages\english.lua"
 DEFAULT_MODULES_PATHS = [
-    r"E:\Server\garrysmod\gamemodes\metrorp\gitmodules",
-    r"E:\Server\garrysmod\gamemodes\metrorp\modules"
+    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules",
+    r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\modules"
 ]

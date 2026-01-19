@@ -357,7 +357,7 @@
 - [ ]`GetNPCDialogOptions(arg1)`
 - [ ]`GetPlayerPunchDamage(arg1)`
 - [ ]`GetPlayerPunchRagdollTime(arg1)`
-- [ ]`GetPriceOverride(vendor, uniqueID, price, isSellingToVendor)`
+- [ ]`GetPriceOverride(client, vendor, uniqueID, price, isSellingToVendor)`
 - [ ]`GetRagdollTime(client, time)`
 - [ ]`GetVendorSaleScale(vendor)`
 - [ ]`GetWeaponName(weapon)`

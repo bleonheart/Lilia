@@ -1595,6 +1595,7 @@ When a vendor calculates price for buying from or selling to a player.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
+| `client` | **Player** | Player entity. |
 | `vendor` | **Entity** | Vendor entity. |
 | `uniqueID` | **string** | Item unique ID being priced. |
 | `price` | **number** | Base price before modifiers. |
@@ -1610,8 +1611,8 @@ Shared
 #### 💡 Example Usage
 
 ```lua
-    hook.Add("GetPriceOverride", "FactionDiscount", function(vendor, uniqueID, price, selling)
-        if vendor.factionDiscount and not selling then return math.Round(price * vendor.factionDiscount) end
+    hook.Add("GetPriceOverride", "FactionDiscount", function(client, vendor, uniqueID, price, isSellingToVendor)
+        if vendor.factionDiscount and not isSellingToVendor then return math.Round(price * vendor.factionDiscount) end
     end)
 
 ```
