@@ -10,6 +10,37 @@ The entity meta table provides comprehensive functionality for extending Garry's
 
 ---
 
+## Index
+
+- [EmitSound](#emitsound)
+- [isProp](#isprop)
+- [isItem](#isitem)
+- [isMoney](#ismoney)
+- [isSimfphysCar](#issimfphyscar)
+- [checkDoorAccess](#checkdooraccess)
+- [keysOwn](#keysown)
+- [keysLock](#keyslock)
+- [keysUnLock](#keysunlock)
+- [getDoorOwner](#getdoorowner)
+- [isLocked](#islocked)
+- [isDoorLocked](#isdoorlocked)
+- [isFemale](#isfemale)
+- [getDoorPartner](#getdoorpartner)
+- [sendNetVar](#sendnetvar)
+- [clearNetVars](#clearnetvars)
+- [removeDoorAccessData](#removedooraccessdata)
+- [setLocked](#setlocked)
+- [setKeysNonOwnable](#setkeysnonownable)
+- [setNetVar](#setnetvar)
+- [setLocalVar](#setlocalvar)
+- [getLocalVar](#getlocalvar)
+- [playFollowingSound](#playfollowingsound)
+- [isDoor](#isdoor)
+- [getNetVar](#getnetvar)
+
+---
+
+<a id="emitsound"></a>
 ### EmitSound
 
 #### 📋 Purpose
@@ -20,15 +51,13 @@ Use whenever an entity needs to emit a sound that may be streamed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `soundName` | **string** | File path or URL to play. |
-| `soundLevel` | **number** | Sound level for attenuation. |
-| `pitchPercent` | **number** | Pitch modifier. |
-| `volume` | **number** | Volume from 0-100. |
-| `channel` | **number** | Optional sound channel. |
-| `flags` | **number** | Optional emit flags. |
-| `dsp` | **number** | Optional DSP effect index. |
+- `soundName` (string) - File path or URL to play.
+- `soundLevel` (number) - Sound level for attenuation.
+- `pitchPercent` (number) - Pitch modifier.
+- `volume` (number) - Volume from 0-100.
+- `channel` (number) - Optional sound channel.
+- `flags` (number) - Optional emit flags.
+- `dsp` (number) - Optional DSP effect index.
 
 #### ↩️ Returns
 * boolean
@@ -46,6 +75,7 @@ Shared
 
 ---
 
+<a id="isprop"></a>
 ### isProp
 
 #### 📋 Purpose
@@ -70,6 +100,7 @@ Shared
 
 ---
 
+<a id="isitem"></a>
 ### isItem
 
 #### 📋 Purpose
@@ -94,6 +125,7 @@ Shared
 
 ---
 
+<a id="ismoney"></a>
 ### isMoney
 
 #### 📋 Purpose
@@ -118,6 +150,7 @@ Shared
 
 ---
 
+<a id="issimfphyscar"></a>
 ### isSimfphysCar
 
 #### 📋 Purpose
@@ -142,6 +175,7 @@ Shared
 
 ---
 
+<a id="checkdooraccess"></a>
 ### checkDoorAccess
 
 #### 📋 Purpose
@@ -152,10 +186,8 @@ Use when opening menus or performing actions gated by door access.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player requesting access. |
-| `access` | **number** | Required access level, defaults to DOOR_GUEST. |
+- `client` (Player) - Player requesting access.
+- `access` (number) - Required access level, defaults to DOOR_GUEST.
 
 #### ↩️ Returns
 * boolean
@@ -173,6 +205,7 @@ Shared
 
 ---
 
+<a id="keysown"></a>
 ### keysOwn
 
 #### 📋 Purpose
@@ -183,9 +216,7 @@ Use when a player purchases or claims a vehicle entity.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player to set as owner. |
+- `client` (Player) - Player to set as owner.
 
 #### ↩️ Returns
 * nil
@@ -202,6 +233,7 @@ Shared
 
 ---
 
+<a id="keyslock"></a>
 ### keysLock
 
 #### 📋 Purpose
@@ -225,6 +257,7 @@ Shared
 
 ---
 
+<a id="keysunlock"></a>
 ### keysUnLock
 
 #### 📋 Purpose
@@ -248,6 +281,7 @@ Shared
 
 ---
 
+<a id="getdoorowner"></a>
 ### getDoorOwner
 
 #### 📋 Purpose
@@ -272,6 +306,7 @@ Shared
 
 ---
 
+<a id="islocked"></a>
 ### isLocked
 
 #### 📋 Purpose
@@ -296,6 +331,7 @@ Shared
 
 ---
 
+<a id="isdoorlocked"></a>
 ### isDoorLocked
 
 #### 📋 Purpose
@@ -320,6 +356,7 @@ Shared
 
 ---
 
+<a id="isfemale"></a>
 ### isFemale
 
 #### 📋 Purpose
@@ -344,6 +381,7 @@ Shared
 
 ---
 
+<a id="getdoorpartner"></a>
 ### getDoorPartner
 
 #### 📋 Purpose
@@ -368,6 +406,7 @@ Shared
 
 ---
 
+<a id="sendnetvar"></a>
 ### sendNetVar
 
 #### 📋 Purpose
@@ -378,10 +417,8 @@ Use immediately after changing lia.net values to sync them.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Net variable name to send. |
-| `receiver` | **Player|nil** | Optional player to send to; broadcasts when nil. |
+- `key` (string) - Net variable name to send.
+- `receiver` (Player|nil) - Optional player to send to; broadcasts when nil.
 
 #### ↩️ Returns
 * nil
@@ -398,6 +435,7 @@ Server
 
 ---
 
+<a id="clearnetvars"></a>
 ### clearNetVars
 
 #### 📋 Purpose
@@ -408,9 +446,7 @@ Use when an entity is being removed or reset.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `receiver` | **Player|nil** | Optional target to notify; broadcasts when nil. |
+- `receiver` (Player|nil) - Optional target to notify; broadcasts when nil.
 
 #### ↩️ Returns
 * nil
@@ -427,6 +463,7 @@ Server
 
 ---
 
+<a id="removedooraccessdata"></a>
 ### removeDoorAccessData
 
 #### 📋 Purpose
@@ -450,6 +487,7 @@ Server
 
 ---
 
+<a id="setlocked"></a>
 ### setLocked
 
 #### 📋 Purpose
@@ -460,9 +498,7 @@ Use when toggling lock status server-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `state` | **boolean** | Whether the entity should be considered locked. |
+- `state` (boolean) - Whether the entity should be considered locked.
 
 #### ↩️ Returns
 * nil
@@ -479,6 +515,7 @@ Server
 
 ---
 
+<a id="setkeysnonownable"></a>
 ### setKeysNonOwnable
 
 #### 📋 Purpose
@@ -489,9 +526,7 @@ Use when preventing selling or owning of a door/vehicle.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `state` | **boolean** | True to make the entity non-ownable. |
+- `state` (boolean) - True to make the entity non-ownable.
 
 #### ↩️ Returns
 * nil
@@ -508,6 +543,7 @@ Server
 
 ---
 
+<a id="setnetvar"></a>
 ### setNetVar
 
 #### 📋 Purpose
@@ -518,11 +554,9 @@ Use when updating shared entity state that clients need.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Net variable name. |
-| `value` | **any** | Value to store and broadcast. |
-| `receiver` | **Player|nil** | Optional player to send to; broadcasts when nil. |
+- `key` (string) - Net variable name.
+- `value` (any) - Value to store and broadcast.
+- `receiver` (Player|nil) - Optional player to send to; broadcasts when nil.
 
 #### ↩️ Returns
 * nil
@@ -539,6 +573,7 @@ Server
 
 ---
 
+<a id="setlocalvar"></a>
 ### setLocalVar
 
 #### 📋 Purpose
@@ -549,10 +584,8 @@ Use for transient server state that should not be networked.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Local variable name. |
-| `value` | **any** | Value to store. |
+- `key` (string) - Local variable name.
+- `value` (any) - Value to store.
 
 #### ↩️ Returns
 * nil
@@ -569,6 +602,7 @@ Server
 
 ---
 
+<a id="getlocalvar"></a>
 ### getLocalVar
 
 #### 📋 Purpose
@@ -579,10 +613,8 @@ Use when retrieving transient server-only state.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Local variable name. |
-| `default` | **any** | Value to return if unset. |
+- `key` (string) - Local variable name.
+- `default` (any) - Value to return if unset.
 
 #### ↩️ Returns
 * any
@@ -600,6 +632,7 @@ Server
 
 ---
 
+<a id="playfollowingsound"></a>
 ### playFollowingSound
 
 #### 📋 Purpose
@@ -610,17 +643,15 @@ Use when the client must play a streamed sound attached to an entity.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `soundPath` | **string** | URL or path to the sound. |
-| `volume` | **number** | Volume from 0-1. |
-| `shouldFollow` | **boolean** | Whether the sound follows the entity. |
-| `maxDistance` | **number** | Maximum audible distance. |
-| `startDelay` | **number** | Delay before playback starts. |
-| `minDistance` | **number** | Minimum distance for attenuation. |
-| `pitch` | **number** | Playback rate multiplier. |
-| `soundLevel` | **number** | Optional sound level for attenuation. |
-| `dsp` | **number** | Optional DSP effect index. |
+- `soundPath` (string) - URL or path to the sound.
+- `volume` (number) - Volume from 0-1.
+- `shouldFollow` (boolean) - Whether the sound follows the entity.
+- `maxDistance` (number) - Maximum audible distance.
+- `startDelay` (number) - Delay before playback starts.
+- `minDistance` (number) - Minimum distance for attenuation.
+- `pitch` (number) - Playback rate multiplier.
+- `soundLevel` (number) - Optional sound level for attenuation.
+- `dsp` (number) - Optional DSP effect index.
 
 #### ↩️ Returns
 * nil
@@ -637,6 +668,7 @@ Client
 
 ---
 
+<a id="isdoor"></a>
 ### isDoor
 
 #### 📋 Purpose
@@ -661,6 +693,7 @@ Shared
 
 ---
 
+<a id="getnetvar"></a>
 ### getNetVar
 
 #### 📋 Purpose
@@ -671,10 +704,8 @@ Use when reading shared entity state on either server or client.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Net variable name. |
-| `default` | **any** | Fallback value if none is set. |
+- `key` (string) - Net variable name.
+- `default` (any) - Fallback value if none is set.
 
 #### ↩️ Returns
 * any

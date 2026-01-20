@@ -162,14 +162,12 @@ During character info build, before the F1 menu renders the bar sections.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sectionName` | **string** | Localized or raw section label to group the bar under. |
-| `fieldName` | **string** | Unique key for the bar entry. |
-| `labelText` | **string** | Text shown next to the bar. |
-| `minFunc` | **function** | Callback returning the minimum numeric value. |
-| `maxFunc` | **function** | Callback returning the maximum numeric value. |
-| `valueFunc` | **function** | Callback returning the current numeric value to display. |
+- `sectionName` (string) - Localized or raw section label to group the bar under.
+- `fieldName` (string) - Unique key for the bar entry.
+- `labelText` (string) - Text shown next to the bar.
+- `minFunc` (function) - Callback returning the minimum numeric value.
+- `maxFunc` (function) - Callback returning the maximum numeric value.
+- `valueFunc` (function) - Callback returning the current numeric value to display.
 
 #### ↩️ Returns
 * nil
@@ -200,12 +198,10 @@ When the F1 character info UI is initialized or refreshed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sectionName` | **string** | Localized or raw name of the section (e.g., “generalInfo”). |
-| `color` | **Color** | Accent color used for the section header. |
-| `priority` | **number** | Sort order; lower numbers appear first. |
-| `location` | **number** | Column index in the character info layout. |
+- `sectionName` (string) - Localized or raw name of the section (e.g., “generalInfo”).
+- `color` (Color) - Accent color used for the section header.
+- `priority` (number) - Sort order; lower numbers appear first.
+- `location` (number) - Column index in the character info layout.
 
 #### ↩️ Returns
 * nil
@@ -236,12 +232,10 @@ While building character info just before the F1 menu renders.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sectionName` | **string** | Target section to append the field to. |
-| `fieldName` | **string** | Unique identifier for the field. |
-| `labelText` | **string** | Caption displayed before the value. |
-| `valueFunc` | **function** | Callback that returns the string to render. |
+- `sectionName` (string) - Target section to append the field to.
+- `fieldName` (string) - Unique identifier for the field.
+- `labelText` (string) - Caption displayed before the value.
+- `valueFunc` (function) - Callback that returns the string to render.
 
 #### ↩️ Returns
 * nil
@@ -272,11 +266,9 @@ Each HUDPaint tick when the admin stick is active and a target is valid.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player using the admin stick. |
-| `target` | **Entity** | Entity currently traced by the admin stick. |
-| `information` | **table** | Table of strings; insert new lines to show additional info. |
+- `client` (Player) - Local player using the admin stick.
+- `target` (Entity) - Entity currently traced by the admin stick.
+- `information` (table) - Table of strings; insert new lines to show additional info.
 
 #### ↩️ Returns
 * nil
@@ -334,10 +326,8 @@ When the admin stick UI collects available models and props to display.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `allModList` | **table** | Table of model entries to be displayed; append or modify entries here. |
-| `tgt` | **Entity** | Entity currently targeted by the admin stick. |
+- `allModList` (table) - Table of model entries to be displayed; append or modify entries here.
+- `tgt` (Entity) - Entity currently targeted by the admin stick.
 
 #### ↩️ Returns
 * nil
@@ -368,10 +358,8 @@ When the delete character button is pressed in the character menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player requesting the deletion. |
-| `character` | **Character|table** | Character object slated for deletion. |
+- `client` (Player) - Player requesting the deletion.
+- `character` (Character|table) - Character object slated for deletion.
 
 #### ↩️ Returns
 * boolean
@@ -402,9 +390,7 @@ Before drawing a player’s overhead information.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | The formatted name that would be displayed. |
+- `name` (string) - The formatted name that would be displayed.
 
 #### ↩️ Returns
 * boolean
@@ -435,9 +421,7 @@ When a bag or storage item icon is activated to open its contents.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | The bag item whose inventory is being opened. |
+- `item` (Item) - The bag item whose inventory is being opened.
 
 #### ↩️ Returns
 * boolean
@@ -468,9 +452,7 @@ When the scoreboard key is pressed and before building the panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Player attempting to open the scoreboard. |
+- `arg1` (Player) - Player attempting to open the scoreboard.
 
 #### ↩️ Returns
 * boolean
@@ -501,11 +483,9 @@ Before attempting to convert an entity into an item using the take entity keybin
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player attempting to take the entity. |
-| `targetEntity` | **Entity** | The entity being targeted for conversion. |
-| `itemUniqueID` | **string** | The unique ID of the item that would be created. |
+- `client` (Player) - The player attempting to take the entity.
+- `targetEntity` (Entity) - The entity being targeted for conversion.
+- `itemUniqueID` (string) - The unique ID of the item that would be created.
 
 #### ↩️ Returns
 * boolean
@@ -564,9 +544,7 @@ Right before the character selection table is rendered.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `columns` | **table** | Table of column definitions; modify in place to add/remove columns. |
+- `columns` (table) - Table of column definitions; modify in place to add/remove columns.
 
 #### ↩️ Returns
 * nil
@@ -597,10 +575,8 @@ For every row when the character list is constructed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entry` | **table** | Data for the character (id, name, faction, etc.). |
-| `row` | **Panel** | The row panel being built. |
+- `entry` (table) - Data for the character (id, name, faction, etc.).
+- `row` (Panel) - The row panel being built.
 
 #### ↩️ Returns
 * nil
@@ -631,9 +607,7 @@ Once the client finishes downloading the character list from the server.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `newCharList` | **table** | Array of character summaries. |
+- `newCharList` (table) - Array of character summaries.
 
 #### ↩️ Returns
 * nil
@@ -664,10 +638,8 @@ After the server sends an updated character list (e.g., after delete/create).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `oldCharList` | **table** | Previous list snapshot. |
-| `newCharList` | **table** | Updated list snapshot. |
+- `oldCharList` (table) - Previous list snapshot.
+- `newCharList` (table) - Updated list snapshot.
 
 #### ↩️ Returns
 * nil
@@ -698,9 +670,7 @@ After the server confirms the character load and sets netvars.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character|number** | Character object or id that was loaded. |
+- `character` (Character|number) - Character object or id that was loaded.
 
 #### ↩️ Returns
 * nil
@@ -758,9 +728,7 @@ Immediately after constructing the character menu panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `charMenu` | **Panel** | The created menu panel. |
+- `charMenu` (Panel) - The created menu panel.
 
 #### ↩️ Returns
 * nil
@@ -791,9 +759,7 @@ When the server finishes restoring a deleted character.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character|number** | The restored character object or id. |
+- `character` (Character|number) - The restored character object or id.
 
 #### ↩️ Returns
 * nil
@@ -824,9 +790,7 @@ Whenever chat text is about to be printed locally.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `text` | **any** | First argument passed to chat.AddText. |
+- `text` (any) - First argument passed to chat.AddText.
 
 #### ↩️ Returns
 * nil
@@ -857,9 +821,7 @@ Once the chat UI instance is built client-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Panel** | The chatbox panel instance. |
+- `arg1` (Panel) - The chatbox panel instance.
 
 #### ↩️ Returns
 * nil
@@ -890,9 +852,7 @@ After chat text is parsed but before it is drawn in the panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Panel** | Chat panel or message object being added. |
+- `arg1` (Panel) - Chat panel or message object being added.
 
 #### ↩️ Returns
 * nil
@@ -923,9 +883,7 @@ When a user clicks the play button on a character slot.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | **number** | The selected character’s id. |
+- `id` (number) - The selected character’s id.
 
 #### ↩️ Returns
 * nil
@@ -956,12 +914,10 @@ Immediately after a console/chat command is processed on the client.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player who ran the command. |
-| `command` | **string** | Command name. |
-| `arg3` | **table|string** | Arguments or raw text passed. |
-| `results` | **any** | Return data from the command handler, if any. |
+- `client` (Player) - Player who ran the command.
+- `command` (string) - Command name.
+- `arg3` (table|string) - Arguments or raw text passed.
+- `results` (any) - Return data from the command handler, if any.
 
 #### ↩️ Returns
 * nil
@@ -992,9 +948,7 @@ When the creation UI is building its step list.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `creationPanel` | **Panel** | The root creation panel containing step definitions. |
+- `creationPanel` (Panel) - The root creation panel containing step definitions.
 
 #### ↩️ Returns
 * nil
@@ -1025,9 +979,7 @@ When the user presses the final create/submit button.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `data` | **table** | Character creation payload (name, model, faction, etc.). |
+- `data` (table) - Character creation payload (name, model, faction, etc.).
 
 #### ↩️ Returns
 * boolean
@@ -1085,9 +1037,7 @@ After the client finishes character creation but before the inventory is built.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character** | The character being initialized. |
+- `character` (Character) - The character being initialized.
 
 #### ↩️ Returns
 * string
@@ -1118,9 +1068,7 @@ When the Information tab is created and ready to collect pages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `pages` | **table** | Table of page descriptors; insert entries with name/icon/build function. |
+- `pages` (table) - Table of page descriptors; insert entries with name/icon/build function.
 
 #### ↩️ Returns
 * nil
@@ -1151,10 +1099,8 @@ Each time an inventory needs a panel representation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventory` | **Inventory** | Inventory object to show. |
-| `parent` | **Panel** | Parent UI element the panel should attach to. |
+- `inventory` (Inventory) - Inventory object to show.
+- `parent` (Panel) - Parent UI element the panel should attach to.
 
 #### ↩️ Returns
 * Panel
@@ -1185,9 +1131,7 @@ When the F1 menu initializes its tab definitions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tabs` | **table** | Table of tab constructors keyed by tab id; add new entries to inject tabs. |
+- `tabs` (table) - Table of tab constructors keyed by tab id; add new entries to inject tabs.
 
 #### ↩️ Returns
 * nil
@@ -1218,9 +1162,7 @@ After a deletion request succeeds.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | **number** | ID of the character that was removed. |
+- `id` (number) - ID of the character that was removed.
 
 #### ↩️ Returns
 * nil
@@ -1251,9 +1193,7 @@ Immediately after the skin is switched.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `newSkin` | **string** | Name of the newly applied skin. |
+- `newSkin` (string) - Name of the newly applied skin.
 
 #### ↩️ Returns
 * nil
@@ -1284,10 +1224,8 @@ Every HUDPaint frame while the player is alive and has a character.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player. |
-| `hudInfos` | **table** | Array to be filled with info tables (text, position, styling). |
+- `client` (Player) - Local player.
+- `hudInfos` (table) - Array to be filled with info tables (text, position, styling).
 
 #### ↩️ Returns
 * nil
@@ -1318,10 +1256,8 @@ When the server sends door ownership or data updates.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `door` | **Entity** | Door entity being updated. |
-| `syncData` | **table** | Data payload containing door state/owners. |
+- `door` (Entity) - Door entity being updated.
+- `syncData` (table) - Data payload containing door state/owners.
 
 #### ↩️ Returns
 * nil
@@ -1352,11 +1288,9 @@ Right before drawing info for a player (name/description).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player whose info is being drawn. |
-| `character` | **Character** | Character belonging to the player. |
-| `info` | **table** | Array of `{text, color}` rows; append to extend display. |
+- `client` (Player) - Player whose info is being drawn.
+- `character` (Character) - Character belonging to the player.
+- `info` (table) - Array of `{text, color}` rows; append to extend display.
 
 #### ↩️ Returns
 * nil
@@ -1387,11 +1321,9 @@ When an entity has been marked to display info and is being drawn.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `e` | **Entity** | Target entity. |
-| `a` | **number** | Alpha value (0-255) for fade in/out. |
-| `pos` | **table|Vector** | Screen position for the info panel (optional). |
+- `e` (Entity) - Target entity.
+- `a` (number) - Alpha value (0-255) for fade in/out.
+- `pos` (table|Vector) - Screen position for the info panel (optional).
 
 #### ↩️ Returns
 * nil
@@ -1422,12 +1354,10 @@ When hovering/aiming at a dropped item that is rendering its info.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemEntity` | **Entity** | World entity representing the item. |
-| `item` | **Item** | Item table attached to the entity. |
-| `infoTable` | **table** | Lines describing the item; modify to add details. |
-| `alpha` | **number** | Current alpha used for drawing. |
+- `itemEntity` (Entity) - World entity representing the item.
+- `item` (Item) - Item table attached to the entity.
+- `infoTable` (table) - Lines describing the item; modify to add details.
+- `alpha` (number) - Current alpha used for drawing.
 
 #### ↩️ Returns
 * nil
@@ -1458,10 +1388,8 @@ When the character model view panel paints.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player being previewed. |
-| `entity` | **Entity** | The model panel entity. |
+- `client` (Player) - Local player being previewed.
+- `entity` (Entity) - The model panel entity.
 
 #### ↩️ Returns
 * nil
@@ -1492,9 +1420,7 @@ During ragdoll RenderOverride when a player’s corpse is rendered.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | The ragdoll entity being drawn. |
+- `entity` (Entity) - The ragdoll entity being drawn.
 
 #### ↩️ Returns
 * nil
@@ -1552,9 +1478,7 @@ Immediately after the F1 menu is created.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `f1MenuPanel` | **Panel** | The opened menu panel. |
+- `f1MenuPanel` (Panel) - The opened menu panel.
 
 #### ↩️ Returns
 * nil
@@ -1585,9 +1509,7 @@ While building the selectable model list for character creation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table** | Table of available model paths; mutate to filter. |
+- `arg1` (table) - Table of available model paths; mutate to filter.
 
 #### ↩️ Returns
 * nil
@@ -1618,11 +1540,9 @@ After door data is prepared for display but before drawing text.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | The door being inspected. |
-| `doorData` | **table** | Raw door data (owners, title, etc.). |
-| `doorInfo` | **table** | Table of display lines; mutate to change output. |
+- `entity` (Entity) - The door being inspected.
+- `doorData` (table) - Raw door data (owners, title, etc.).
+- `doorInfo` (table) - Table of display lines; mutate to change output.
 
 #### ↩️ Returns
 * nil
@@ -1653,10 +1573,8 @@ When a PAC part is requested for attachment.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `wearer` | **Player** | Player the part will attach to. |
-| `id` | **string** | Identifier for the part/item. |
+- `wearer` (Player) - Player the part will attach to.
+- `id` (string) - Identifier for the part/item.
 
 #### ↩️ Returns
 * table
@@ -1687,11 +1605,9 @@ When the character creation button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
-| `currentChars` | **number** | Number of characters the player currently has. |
-| `maxChars` | **number** | Maximum number of characters allowed. |
+- `client` (Player) - The player viewing the menu.
+- `currentChars` (number) - Number of characters the player currently has.
+- `maxChars` (number) - Maximum number of characters allowed.
 
 #### ↩️ Returns
 * string|nil
@@ -1722,9 +1638,7 @@ When the character disconnect button tooltip is being determined in the main men
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
+- `client` (Player) - The player viewing the menu.
 
 #### ↩️ Returns
 * string|nil
@@ -1755,10 +1669,8 @@ When the Discord button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
-| `discordURL` | **string** | The Discord server URL. |
+- `client` (Player) - The player viewing the menu.
+- `discordURL` (string) - The Discord server URL.
 
 #### ↩️ Returns
 * string|nil
@@ -1789,9 +1701,7 @@ When the character load button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
+- `client` (Player) - The player viewing the menu.
 
 #### ↩️ Returns
 * string|nil
@@ -1822,9 +1732,7 @@ When the main character load button tooltip is being determined in the main menu
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
+- `client` (Player) - The player viewing the menu.
 
 #### ↩️ Returns
 * string|nil
@@ -1855,9 +1763,7 @@ When the character mount button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
+- `client` (Player) - The player viewing the menu.
 
 #### ↩️ Returns
 * string|nil
@@ -1888,9 +1794,7 @@ When the character return button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
+- `client` (Player) - The player viewing the menu.
 
 #### ↩️ Returns
 * string|nil
@@ -1921,10 +1825,8 @@ When the staff character button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
-| `hasStaffChar` | **boolean** | Whether the player has a staff character. |
+- `client` (Player) - The player viewing the menu.
+- `hasStaffChar` (boolean) - Whether the player has a staff character.
 
 #### ↩️ Returns
 * string|nil
@@ -1955,10 +1857,8 @@ When the workshop button tooltip is being determined in the main menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player viewing the menu. |
-| `workshopURL` | **string** | The workshop URL. |
+- `client` (Player) - The player viewing the menu.
+- `workshopURL` (string) - The workshop URL.
 
 #### ↩️ Returns
 * string|nil
@@ -1989,10 +1889,8 @@ When the admin ESP overlay evaluates the current trace target.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ent` | **Entity** | Entity under the admin’s crosshair. |
-| `client` | **Player** | Admin requesting the ESP target. |
+- `ent` (Entity) - Entity under the admin’s crosshair.
+- `client` (Player) - Admin requesting the ESP target.
 
 #### ↩️ Returns
 * Entity|nil
@@ -2023,10 +1921,8 @@ While compiling list definitions for the admin stick UI.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tgt` | **Entity** | Current admin stick target. |
-| `lists` | **table** | Table of list definitions; append your own entries. |
+- `tgt` (Entity) - Current admin stick target.
+- `lists` (table) - Table of list definitions; append your own entries.
 
 #### ↩️ Returns
 * nil
@@ -2057,10 +1953,8 @@ When building a player’s info panel for HUD or menus.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player being described. |
-| `isHUD` | **boolean** | True when drawing the 3D HUD info; false for menus. |
+- `client` (Player) - Player being described.
+- `isHUD` (boolean) - True when drawing the 3D HUD info; false for menus.
 
 #### ↩️ Returns
 * string
@@ -2091,11 +1985,9 @@ When a door is targeted and info lines are generated.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | Door entity. |
-| `doorData` | **table** | Data about owners, titles, etc. |
-| `doorInfo` | **table** | Display lines; modify to add/remove fields. |
+- `entity` (Entity) - Door entity.
+- `doorData` (table) - Data about owners, titles, etc.
+- `doorInfo` (table) - Display lines; modify to add/remove fields.
 
 #### ↩️ Returns
 * nil
@@ -2126,10 +2018,8 @@ When the admin stick inspects a door and builds its detail view.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `target` | **Entity** | Door or entity being inspected. |
-| `extraInfo` | **table** | Table of strings to display; append data here. |
+- `target` (Entity) - Door or entity being inspected.
+- `extraInfo` (table) - Table of strings to display; append data here.
 
 #### ↩️ Returns
 * nil
@@ -2160,9 +2050,7 @@ When drawing player info overlays that show health status.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `c` | **Player** | Target player. |
+- `c` (Player) - Target player.
 
 #### ↩️ Returns
 * table
@@ -2220,9 +2108,7 @@ Each time the main menu loads and needs a camera transform.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character** | Character to base the position on. |
+- `character` (Character) - Character to base the position on.
 
 #### ↩️ Returns
 * Vector, Angle
@@ -2280,9 +2166,7 @@ Immediately after the interaction menu frame is instantiated.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `frame` | **Panel** | The interaction menu frame. |
+- `frame` (Panel) - The interaction menu frame.
 
 #### ↩️ Returns
 * nil
@@ -2313,11 +2197,9 @@ Whenever an inventory icon receives an input event.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventoryPanel` | **Panel** | Panel hosting the inventory grid. |
-| `itemIcon` | **Panel** | Icon that was clicked. |
-| `keyCode` | **number** | Mouse or keyboard code that triggered the event. |
+- `inventoryPanel` (Panel) - Panel hosting the inventory grid.
+- `itemIcon` (Panel) - Icon that was clicked.
+- `keyCode` (number) - Mouse or keyboard code that triggered the event.
 
 #### ↩️ Returns
 * boolean
@@ -2348,10 +2230,8 @@ Immediately after an inventory panel is removed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventoryPanel` | **Panel** | The panel that was closed. |
-| `inventory` | **Inventory** | Inventory instance tied to the panel. |
+- `inventoryPanel` (Panel) - The panel that was closed.
+- `inventory` (Inventory) - Inventory instance tied to the panel.
 
 #### ↩️ Returns
 * nil
@@ -2382,13 +2262,11 @@ After an item’s data table updates (networked from the server).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | The item that changed. |
-| `key` | **string** | Data key that changed. |
-| `oldValue` | **any** | Previous value. |
-| `newValue` | **any** | New value. |
-| `inventory` | **Inventory** | Inventory containing the item. |
+- `item` (Item) - The item that changed.
+- `key` (string) - Data key that changed.
+- `oldValue` (any) - Previous value.
+- `newValue` (any) - New value.
+- `inventory` (Inventory) - Inventory containing the item.
 
 #### ↩️ Returns
 * nil
@@ -2419,11 +2297,9 @@ When a new icon panel is spawned for an item.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `icon` | **Panel** | Icon panel. |
-| `item` | **Item** | Item represented by the icon. |
-| `inventoryPanel` | **Panel** | Parent inventory panel. |
+- `icon` (Panel) - Icon panel.
+- `item` (Item) - Item represented by the icon.
+- `inventoryPanel` (Panel) - Parent inventory panel.
 
 #### ↩️ Returns
 * nil
@@ -2454,10 +2330,8 @@ When an inventory is displayed on screen.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `panel` | **Panel** | Inventory panel. |
-| `inventory` | **Inventory** | Inventory instance. |
+- `panel` (Panel) - Inventory panel.
+- `inventory` (Inventory) - Inventory instance.
 
 #### ↩️ Returns
 * nil
@@ -2488,11 +2362,9 @@ Immediately after constructing a panel for an inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `panel` | **Panel** | The new inventory panel. |
-| `inventory` | **Inventory** | Inventory the panel represents. |
-| `parent` | **Panel** | Parent container. |
+- `panel` (Panel) - The new inventory panel.
+- `inventory` (Inventory) - Inventory the panel represents.
+- `parent` (Panel) - Parent container.
 
 #### ↩️ Returns
 * nil
@@ -2523,10 +2395,8 @@ When an item is released outside valid slots.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player performing the drag. |
-| `item` | **Item** | Item being dragged. |
+- `client` (Player) - Local player performing the drag.
+- `item` (Item) - Item being dragged.
 
 #### ↩️ Returns
 * nil
@@ -2557,12 +2427,10 @@ During icon paint for each inventory slot.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemIcon` | **Panel** | Icon panel being drawn. |
-| `itemTable` | **Item** | Item represented. |
-| `w` | **number** | Icon width. |
-| `h` | **number** | Icon height. |
+- `itemIcon` (Panel) - Icon panel being drawn.
+- `itemTable` (Item) - Item represented.
+- `w` (number) - Icon width.
+- `h` (number) - Icon height.
 
 #### ↩️ Returns
 * nil
@@ -2593,9 +2461,7 @@ When the use key/menu key is pressed on a dropped item with actions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | Item entity in the world. |
+- `entity` (Entity) - Item entity in the world.
 
 #### ↩️ Returns
 * nil
@@ -2680,10 +2546,8 @@ When the main menu needs to show summary info for a character.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `info` | **table** | Table to fill with display fields. |
-| `character` | **Character** | Character being previewed. |
+- `info` (table) - Table to fill with display fields.
+- `character` (Character) - Character being previewed.
 
 #### ↩️ Returns
 * nil
@@ -2714,10 +2578,8 @@ When a scoreboard slot builds its player model preview.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Panel** | Model panel or data table for the slot. |
-| `ply` | **Player** | Player represented by the slot. |
+- `arg1` (Panel) - Model panel or data table for the slot.
+- `ply` (Player) - Player represented by the slot.
 
 #### ↩️ Returns
 * nil
@@ -2748,11 +2610,9 @@ Each frame the local player is speaking.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Speaking player (local). |
-| `voiceText` | **string** | Default text to display. |
-| `voiceType` | **string** | Current voice range (“whispering”, “talking”, “yelling”). |
+- `client` (Player) - Speaking player (local).
+- `voiceText` (string) - Default text to display.
+- `voiceType` (string) - Current voice range (“whispering”, “talking”, “yelling”).
 
 #### ↩️ Returns
 * string
@@ -2837,12 +2697,10 @@ After a chat message is parsed and before it is displayed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Sender of the message. |
-| `chatType` | **string** | Chat channel identifier. |
-| `text` | **string** | Message content. |
-| `anonymous` | **boolean** | Whether the message should hide the sender. |
+- `client` (Player) - Sender of the message.
+- `chatType` (string) - Chat channel identifier.
+- `text` (string) - Message content.
+- `anonymous` (boolean) - Whether the message should hide the sender.
 
 #### ↩️ Returns
 * nil
@@ -2873,12 +2731,10 @@ Right after both inventory panels are created (e.g., player + storage).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `panel1` | **Panel** | First inventory panel. |
-| `panel2` | **Panel** | Second inventory panel. |
-| `inventory1` | **Inventory** | Inventory bound to panel1. |
-| `inventory2` | **Inventory** | Inventory bound to panel2. |
+- `panel1` (Panel) - First inventory panel.
+- `panel2` (Panel) - Second inventory panel.
+- `inventory1` (Inventory) - Inventory bound to panel1.
+- `inventory2` (Inventory) - Inventory bound to panel2.
 
 #### ↩️ Returns
 * nil
@@ -2909,11 +2765,9 @@ Immediately after the interaction menu for an item icon is built.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemIcon` | **Panel** | The icon being interacted with. |
-| `menu` | **Panel** | The context menu object. |
-| `itemTable` | **Item** | Item associated with the icon. |
+- `itemIcon` (Panel) - The icon being interacted with.
+- `menu` (Panel) - The context menu object.
+- `itemTable` (Item) - Item associated with the icon.
 
 #### ↩️ Returns
 * nil
@@ -2944,11 +2798,9 @@ After the local and storage inventory panels are created for a storage entity.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `localInvPanel` | **Panel** | Panel showing the player inventory. |
-| `storageInvPanel` | **Panel** | Panel showing the storage inventory. |
-| `storage` | **Entity|table** | Storage object or entity. |
+- `localInvPanel` (Panel) - Panel showing the player inventory.
+- `storageInvPanel` (Panel) - Panel showing the storage inventory.
+- `storage` (Entity|table) - Storage object or entity.
 
 #### ↩️ Returns
 * nil
@@ -2979,10 +2831,8 @@ Whenever a net var assigned to the local player changes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Variable name. |
-| `value` | **any** | New value. |
+- `key` (string) - Variable name.
+- `value` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -3013,10 +2863,8 @@ After the vendor panel is created client-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `vendorPanel` | **Panel** | Panel used to display vendor goods. |
-| `vendor` | **Entity** | Vendor entity interacted with. |
+- `vendorPanel` (Panel) - Panel used to display vendor goods.
+- `vendor` (Entity) - Vendor entity interacted with.
 
 #### ↩️ Returns
 * nil
@@ -3047,9 +2895,7 @@ When staff data is synchronized to the client.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `staffData` | **table** | Array of staff entries (name, steamID, duty status). |
+- `staffData` (table) - Array of staff entries (name, steamID, duty status).
 
 #### ↩️ Returns
 * nil
@@ -3080,9 +2926,7 @@ When the admin stick weapon requests to show its UI.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tgt` | **Entity** | Target entity/player selected by the admin stick. |
+- `tgt` (Entity) - Target entity/player selected by the admin stick.
 
 #### ↩️ Returns
 * nil
@@ -3113,9 +2957,7 @@ Prior to rendering each item icon surface.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item being drawn. |
+- `item` (Item) - Item being drawn.
 
 #### ↩️ Returns
 * nil
@@ -3146,11 +2988,9 @@ While constructing the admin stick menu for the current target.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `currentMenu` | **Panel** | Root menu panel. |
-| `currentTarget` | **Entity** | Entity being acted upon. |
-| `currentStores` | **table** | Cached admin stick data (lists, categories). |
+- `currentMenu` (Panel) - Root menu panel.
+- `currentTarget` (Entity) - Entity being acted upon.
+- `currentStores` (table) - Cached admin stick data (lists, categories).
 
 #### ↩️ Returns
 * nil
@@ -3181,9 +3021,7 @@ When building the admin tab list.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `pages` | **table** | Table to append tab definitions `{name, icon, build=function}`. |
+- `pages` (table) - Table to append tab definitions `{name, icon, build=function}`.
 
 #### ↩️ Returns
 * nil
@@ -3214,9 +3052,7 @@ When creating the configuration pages in the menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `pages` | **table** | Collection of page descriptors to populate. |
+- `pages` (table) - Collection of page descriptors to populate.
 
 #### ↩️ Returns
 * nil
@@ -3247,10 +3083,8 @@ When the inventory item browser is built.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `pnlContent` | **Panel** | Content panel to fill. |
-| `tree` | **Panel** | Tree/list control to populate. |
+- `pnlContent` (Panel) - Content panel to fill.
+- `tree` (Panel) - Tree/list control to populate.
 
 #### ↩️ Returns
 * nil
@@ -3281,10 +3115,8 @@ After inventory drawing completes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `mainPanel` | **Panel** | Primary inventory panel. |
-| `parentPanel` | **Panel** | Parent container. |
+- `mainPanel` (Panel) - Primary inventory panel.
+- `parentPanel` (Panel) - Parent container.
 
 #### ↩️ Returns
 * nil
@@ -3315,10 +3147,8 @@ Immediately after main fonts are initialized.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `mainFont` | **string** | Primary font name (duplicate parameter kept for API compatibility). |
-| `mainFont` | **string** | Alias of the same font name. |
+- `mainFont` (string) - Primary font name (duplicate parameter kept for API compatibility).
+- `mainFont` (string) - Alias of the same font name.
 
 #### ↩️ Returns
 * nil
@@ -3403,9 +3233,7 @@ When assembling the category tree for the admin stick.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `categories` | **table** | Table of category -> subcategory mappings; modify in place. |
+- `categories` (table) - Table of category -> subcategory mappings; modify in place.
 
 #### ↩️ Returns
 * nil
@@ -3463,13 +3291,11 @@ When the admin stick or admin menu triggers a command.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `cmd` | **string** | Command identifier. |
-| `admin` | **Player** | Admin issuing the command. |
-| `victim` | **Entity|Player** | Target of the command. |
-| `dur` | **number|string** | Duration parameter if applicable. |
-| `reason` | **string** | Optional reason text. |
+- `cmd` (string) - Command identifier.
+- `admin` (Player) - Admin issuing the command.
+- `victim` (Entity|Player) - Target of the command.
+- `dur` (number|string) - Duration parameter if applicable.
+- `reason` (string) - Optional reason text.
 
 #### ↩️ Returns
 * nil
@@ -3500,9 +3326,7 @@ After the scoreboard panel is hidden or destroyed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `scoreboardPanel` | **Panel** | The scoreboard instance that was closed. |
+- `scoreboardPanel` (Panel) - The scoreboard instance that was closed.
 
 #### ↩️ Returns
 * nil
@@ -3533,9 +3357,7 @@ Right after the scoreboard panel is shown.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `scoreboardPanel` | **Panel** | The scoreboard instance that opened. |
+- `scoreboardPanel` (Panel) - The scoreboard instance that opened.
 
 #### ↩️ Returns
 * nil
@@ -3566,10 +3388,8 @@ When a player slot is added to the scoreboard.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `slot` | **Panel** | Scoreboard row panel. |
-| `ply` | **Player** | Player represented by the row. |
+- `slot` (Panel) - Scoreboard row panel.
+- `ply` (Player) - Player represented by the row.
 
 #### ↩️ Returns
 * nil
@@ -3600,10 +3420,8 @@ When a player leaves or is otherwise removed from the scoreboard.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `scoreboardPanel` | **Panel** | Scoreboard instance. |
-| `ply` | **Player** | Player whose row was removed. |
+- `scoreboardPanel` (Panel) - Scoreboard instance.
+- `ply` (Player) - Player whose row was removed.
 
 #### ↩️ Returns
 * nil
@@ -3634,9 +3452,7 @@ When the player chooses a character to become their main.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `charID` | **number** | Chosen character ID. |
+- `charID` (number) - Chosen character ID.
 
 #### ↩️ Returns
 * nil
@@ -3667,9 +3483,7 @@ After the quick menu panel is created.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `quickMenuPanel` | **Panel** | Panel that holds quick actions. |
+- `quickMenuPanel` (Panel) - Panel that holds quick actions.
 
 #### ↩️ Returns
 * nil
@@ -3700,10 +3514,8 @@ Before applying any scoreboard override logic.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player requesting the override. |
-| `var` | **any** | Additional context or override data. |
+- `client` (Player) - Player requesting the override.
+- `var` (any) - Additional context or override data.
 
 #### ↩️ Returns
 * boolean
@@ -3734,9 +3546,7 @@ When evaluating each registered bar before drawing.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `bar` | **table** | Bar definition. |
+- `bar` (table) - Bar definition.
 
 #### ↩️ Returns
 * boolean
@@ -3767,9 +3577,7 @@ When the third-person toggle state changes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player toggling third person. |
+- `client` (Player) - Local player toggling third person.
 
 #### ↩️ Returns
 * boolean
@@ -3800,9 +3608,7 @@ Each HUDPaint frame before ammo boxes render.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `wpn` | **Weapon** | Active weapon. |
+- `wpn` (Weapon) - Active weapon.
 
 #### ↩️ Returns
 * boolean
@@ -3833,9 +3639,7 @@ When deciding if entity info overlays should be generated.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `e` | **Entity** | Entity under consideration. |
+- `e` (Entity) - Entity under consideration.
 
 #### ↩️ Returns
 * boolean
@@ -3866,9 +3670,7 @@ Before rendering the player info panel above a player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `e` | **Player** | Player entity being drawn. |
+- `e` (Player) - Player entity being drawn.
 
 #### ↩️ Returns
 * boolean
@@ -3899,9 +3701,7 @@ Each frame the selector evaluates visibility.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Local player. |
+- `client` (Player) - Local player.
 
 #### ↩️ Returns
 * boolean
@@ -3959,9 +3759,7 @@ When building quick menu buttons.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table|string** | Button identifier or data. |
+- `arg1` (table|string) - Button identifier or data.
 
 #### ↩️ Returns
 * boolean
@@ -4019,9 +3817,7 @@ While assembling the list of editable character variables.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Character variable identifier. |
+- `key` (string) - Character variable identifier.
 
 #### ↩️ Returns
 * boolean
@@ -4052,9 +3848,7 @@ When rendering scoreboard rows that include class info.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `clsData` | **table** | Class data table for the player. |
+- `clsData` (table) - Class data table for the player.
 
 #### ↩️ Returns
 * boolean
@@ -4085,9 +3879,7 @@ When rendering a scoreboard row.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ply` | **Player** | Player being displayed. |
+- `ply` (Player) - Player being displayed.
 
 #### ↩️ Returns
 * boolean
@@ -4118,9 +3910,7 @@ Before adding a player row to the scoreboard.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ply` | **Player** | Player under consideration. |
+- `ply` (Player) - Player under consideration.
 
 #### ↩️ Returns
 * boolean
@@ -4178,10 +3968,8 @@ When opening a player interaction context menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `target` | **Player** | Player the options apply to. |
-| `options` | **table** | Table of options to display; modify in place. |
+- `target` (Player) - Player the options apply to.
+- `options` (table) - Table of options to display; modify in place.
 
 #### ↩️ Returns
 * nil
@@ -4212,10 +4000,8 @@ When storage access is approved and panels are about to show.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `storage` | **Entity|table** | Storage entity or custom storage table. |
-| `isCar` | **boolean** | True if the storage is a vehicle trunk. |
+- `storage` (Entity|table) - Storage entity or custom storage table.
+- `isCar` (boolean) - True if the storage is a vehicle trunk.
 
 #### ↩️ Returns
 * nil
@@ -4246,9 +4032,7 @@ When the client interacts with a locked storage container.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | Storage entity requiring an unlock prompt. |
+- `entity` (Entity) - Storage entity requiring an unlock prompt.
 
 #### ↩️ Returns
 * nil
@@ -4279,9 +4063,7 @@ After third-person mode is turned on or off.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **boolean** | New third-person enabled state. |
+- `arg1` (boolean) - New third-person enabled state.
 
 #### ↩️ Returns
 * nil
@@ -4312,10 +4094,8 @@ When a tooltip panel is created.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `var` | **Panel** | Tooltip panel. |
-| `panel` | **Panel** | Source panel that spawned the tooltip. |
+- `var` (Panel) - Tooltip panel.
+- `panel` (Panel) - Source panel that spawned the tooltip.
 
 #### ↩️ Returns
 * nil
@@ -4346,9 +4126,7 @@ Each frame the tooltip is laid out.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `var` | **Panel** | Tooltip panel. |
+- `var` (Panel) - Tooltip panel.
 
 #### ↩️ Returns
 * boolean
@@ -4379,11 +4157,9 @@ When a tooltip panel is drawn.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `var` | **Panel** | Tooltip panel. |
-| `w` | **number** | Width. |
-| `h` | **number** | Height. |
+- `var` (Panel) - Tooltip panel.
+- `w` (number) - Width.
+- `h` (number) - Height.
 
 #### ↩️ Returns
 * boolean
@@ -4441,9 +4217,7 @@ Immediately after opening the vendor UI.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `vendor` | **Entity|table** | Vendor being accessed. |
+- `vendor` (Entity|table) - Vendor being accessed.
 
 #### ↩️ Returns
 * nil
@@ -4474,9 +4248,7 @@ When the client enables or disables in-game voice.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `enabled` | **boolean** | New voice toggle state. |
+- `enabled` (boolean) - New voice toggle state.
 
 #### ↩️ Returns
 * nil
@@ -4561,10 +4333,8 @@ After a remote image finishes downloading.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `n` | **string** | Image identifier. |
-| `arg2` | **string** | Local path or URL of the image. |
+- `n` (string) - Image identifier.
+- `arg2` (string) - Local path or URL of the image.
 
 #### ↩️ Returns
 * nil
@@ -4595,10 +4365,8 @@ After a remote sound file is fetched.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Sound identifier. |
-| `path` | **string** | Local file path where the sound was saved. |
+- `name` (string) - Sound identifier.
+- `path` (string) - Local file path where the sound was saved.
 
 #### ↩️ Returns
 * nil

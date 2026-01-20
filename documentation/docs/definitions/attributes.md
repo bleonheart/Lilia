@@ -125,10 +125,8 @@ Server
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The client whose character is being set up |
-| `value` | **number** | The current attribute value |
+- `client` (Player) - The client whose character is being set up
+- `value` (number) - The current attribute value
 
 #### ↩️ Returns
 * None

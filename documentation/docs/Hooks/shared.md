@@ -131,12 +131,10 @@ After creation data is sanitized and validated in `liaCharCreate`, before the fi
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `data` | **table** | Sanitized values for registered character variables. |
-| `newData` | **table** | Table you can populate with overrides that will be merged into `data`. |
-| `originalData` | **table** | Copy of the raw client payload prior to sanitation. |
+- `client` (Player) - Player creating the character.
+- `data` (table) - Sanitized values for registered character variables.
+- `newData` (table) - Table you can populate with overrides that will be merged into `data`.
+- `originalData` (table) - Copy of the raw client payload prior to sanitation.
 
 #### ↩️ Returns
 * nil
@@ -167,11 +165,9 @@ Client-side when PAC3 builds part data for an outfit id before `AttachPart` runs
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `wearer` | **Player** | Entity that will wear the PAC part. |
-| `id` | **string** | Unique part identifier, usually an item uniqueID. |
-| `data` | **table** | PAC3 data table that can be edited. |
+- `wearer` (Player) - Entity that will wear the PAC part.
+- `id` (string) - Unique part identifier, usually an item uniqueID.
+- `data` (table) - PAC3 data table that can be edited.
 
 #### ↩️ Returns
 * table|nil
@@ -202,10 +198,8 @@ Each stamina update before the offset is clamped and written to the player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player whose stamina is being processed. |
-| `offset` | **number** | Positive regen or negative drain calculated from movement. |
+- `client` (Player) - Player whose stamina is being processed.
+- `offset` (number) - Positive regen or negative drain calculated from movement.
 
 #### ↩️ Returns
 * number|nil
@@ -236,9 +230,7 @@ After AdvDupe2 completes the paste queue so compatibility state can be reset.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tbl` | **table** | Paste context provided by AdvDupe2 (first entry is the player). |
+- `tbl` (table) - Paste context provided by AdvDupe2 (first entry is the player).
 
 #### ↩️ Returns
 * nil
@@ -270,10 +262,8 @@ Client-side after PAC3 part data is retrieved and before it is tracked locally.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player receiving the PAC part. |
-| `id` | **string** | Identifier of the part or outfit. |
+- `client` (Player) - Player receiving the PAC part.
+- `id` (string) - Identifier of the part or outfit.
 
 #### ↩️ Returns
 * nil
@@ -304,10 +294,8 @@ After a bag instance allocates an inventory (on instancing or restore) and acces
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `bagItem` | **Item** | The bag item that owns the inventory. |
-| `inventory` | **Inventory** | Child inventory created for the bag. |
+- `bagItem` (Item) - The bag item that owns the inventory.
+- `inventory` (Inventory) - Child inventory created for the bag.
 
 #### ↩️ Returns
 * nil
@@ -338,10 +326,8 @@ Before a bag item deletes its child inventory (e.g., on item removal).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `bagItem` | **Item** | Bag being removed. |
-| `inventory` | **Inventory** | Child inventory scheduled for deletion. |
+- `bagItem` (Item) - Bag being removed.
+- `inventory` (Inventory) - Child inventory scheduled for deletion.
 
 #### ↩️ Returns
 * nil
@@ -372,9 +358,7 @@ From the stamina timer in the attributes module every 0.25s and on client predic
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player being processed. |
+- `client` (Player) - Player being processed.
 
 #### ↩️ Returns
 * number
@@ -407,9 +391,7 @@ From the stamina timer in the attributes module every 0.25s and on client predic
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player being processed. |
+- `client` (Player) - Player being processed.
 
 #### ↩️ Returns
 * number
@@ -442,11 +424,9 @@ Before character transfer commands/classes move a character to another faction/c
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tChar` | **Character** | Character being transferred. |
-| `faction` | **number|string** | Target faction or class identifier. |
-| `arg3` | **number|string** | Current faction or class being left. |
+- `tChar` (Character) - Character being transferred.
+- `faction` (number|string) - Target faction or class identifier.
+- `arg3` (number|string) - Current faction or class being left.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -483,10 +463,8 @@ Before sending a class invite through the team management menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player issuing the invite. |
-| `target` | **Player** | Player being invited. |
+- `client` (Player) - Player issuing the invite.
+- `target` (Player) - Player being invited.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -517,10 +495,8 @@ When a player tries to invite someone to join their faction in the team menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player issuing the invite. |
-| `target` | **Player** | Player being invited. |
+- `client` (Player) - Player issuing the invite.
+- `target` (Player) - Player being invited.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -554,9 +530,7 @@ Before an outfit applies its model change during equip or removal.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Outfit attempting to change the player's model. |
+- `item` (Item) - Outfit attempting to change the player's model.
 
 #### ↩️ Returns
 * boolean
@@ -587,10 +561,8 @@ When opening the vendor editor or applying vendor changes through the UI.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player attempting to edit. |
-| `vendor` | **Entity** | Vendor entity being edited. |
+- `client` (Player) - Player attempting to edit.
+- `vendor` (Entity) - Vendor entity being edited.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -621,10 +593,8 @@ When a player uses a `lia_money` entity to collect currency.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `activator` | **Entity** | Entity attempting to pick up the money (usually a Player). |
-| `moneyEntity` | **Entity** | Money entity being collected. |
+- `activator` (Entity) - Entity attempting to pick up the money (usually a Player).
+- `moneyEntity` (Entity) - Money entity being collected.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -655,9 +625,7 @@ When building the client weapon selection UI before allowing a weapon choice.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `weapon` | **Weapon** | Weapon entity being considered. |
+- `weapon` (Weapon) - Weapon entity being considered.
 
 #### ↩️ Returns
 * boolean
@@ -688,10 +656,8 @@ On the server when a player submits the creation form and before processing begi
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `data` | **table** | Raw creation data received from the client. |
+- `client` (Player) - Player creating the character.
+- `data` (table) - Raw creation data received from the client.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -722,11 +688,9 @@ Before assigning a class in the class library and character selection.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player requesting the class. |
-| `class` | **number** | Target class index. |
-| `info` | **table** | Class data table for convenience. |
+- `client` (Player) - Player requesting the class.
+- `class` (number) - Target class index.
+- `info` (table) - Class data table for convenience.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -759,10 +723,8 @@ When the hands SWEP secondary attack is used on a door entity.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Player attempting to knock. |
-| `arg2` | **Entity** | Door entity being knocked on. |
+- `arg1` (Player) - Player attempting to knock.
+- `arg2` (Entity) - Door entity being knocked on.
 
 #### ↩️ Returns
 * boolean
@@ -793,10 +755,8 @@ Client- and server-side when a config edit is attempted through the admin tools 
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player attempting the change. |
-| `key` | **string** | Config key being modified. |
+- `client` (Player) - Player attempting the change.
+- `key` (string) - Config key being modified.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -827,10 +787,8 @@ When handling the client drag/drop rotate action for an item slot.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player requesting the rotation. |
-| `item` | **Item** | Item instance being rotated. |
+- `client` (Player) - Player requesting the rotation.
+- `item` (Item) - Item instance being rotated.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -861,9 +819,7 @@ Before the hands SWEP starts a punch, after playtime and stamina checks.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player attempting to punch. |
+- `client` (Player) - Player attempting to punch.
 
 #### ↩️ Returns
 * boolean|string|nil
@@ -894,10 +850,8 @@ Each time a command is run through the command library before execution.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player running the command. |
-| `command` | **table** | Command definition table. |
+- `client` (Player) - Player running the command.
+- `command` (table) - Command definition table.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -928,10 +882,8 @@ While building item action menus both client-side (UI) and server-side (validati
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `tempItem` | **Item** | Item being acted on. |
-| `key` | **string** | Action identifier (e.g., "equip", "drop"). |
+- `tempItem` (Item) - Item being acted on.
+- `key` (string) - Action identifier (e.g., "equip", "drop").
 
 #### ↩️ Returns
 * boolean
@@ -962,10 +914,8 @@ When the recognition module sets recognition for every character around a player
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ply` | **Player** | Player whose character will recognize others. |
-| `range` | **string|number** | Range preset ("whisper", "normal", "yell") or numeric distance. |
+- `ply` (Player) - Player whose character will recognize others.
+- `range` (string|number) - Range preset ("whisper", "normal", "yell") or numeric distance.
 
 #### ↩️ Returns
 * nil
@@ -996,10 +946,8 @@ Whenever `playerMeta:hasFlags` is queried to determine character permissions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player whose character is being checked. |
-| `flags` | **string** | Flag string to test. |
+- `client` (Player) - Player whose character is being checked.
+- `flags` (string) - Flag string to test.
 
 #### ↩️ Returns
 * boolean
@@ -1030,12 +978,10 @@ After chat parsing but before the chat type and message are sent to recipients.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Speaker. |
-| `chatType` | **string** | Parsed chat command (ic, ooc, etc.). |
-| `message` | **string** | Original chat text. |
-| `anonymous` | **boolean** | Whether the message is anonymous. |
+- `client` (Player) - Speaker.
+- `chatType` (string) - Parsed chat command (ic, ooc, etc.).
+- `message` (string) - Original chat text.
+- `anonymous` (boolean) - Whether the message is anonymous.
 
 #### ↩️ Returns
 * string, string, boolean|nil
@@ -1066,10 +1012,8 @@ Immediately after a command is added to the command library.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `command` | **string** | Command identifier. |
-| `data` | **table** | Command definition table. |
+- `command` (string) - Command identifier.
+- `data` (table) - Command definition table.
 
 #### ↩️ Returns
 * nil
@@ -1100,12 +1044,10 @@ When a config entry is updated via admin tools or code on the server.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Config key that changed. |
-| `value` | **any** | New value. |
-| `oldValue` | **any** | Previous value. |
-| `client` | **Player|nil** | Player who made the change, if any. |
+- `key` (string) - Config key that changed.
+- `value` (any) - New value.
+- `oldValue` (any) - Previous value.
+- `client` (Player|nil) - Player who made the change, if any.
 
 #### ↩️ Returns
 * nil
@@ -1136,10 +1078,8 @@ During module loading in the modularity library for each include path.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `path` | **string** | Path of the file being included. |
-| `MODULE` | **table** | Module table receiving the include. |
+- `path` (string) - Path of the file being included.
+- `MODULE` (table) - Module table receiving the include.
 
 #### ↩️ Returns
 * nil
@@ -1171,11 +1111,9 @@ By recognition commands to mark nearby characters as recognized.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ply` | **Player** | Player whose recognition list is being updated. |
-| `range` | **string|number** | Range preset ("whisper", "normal", "yell") or numeric distance. |
-| `fakeName` | **string|nil** | Optional fake name to record for recognition. |
+- `ply` (Player) - Player whose recognition list is being updated.
+- `range` (string|number) - Range preset ("whisper", "normal", "yell") or numeric distance.
+- `fakeName` (string|nil) - Optional fake name to record for recognition.
 
 #### ↩️ Returns
 * nil
@@ -1206,10 +1144,8 @@ Whenever attribute caps are checked, such as when spending points or granting bo
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player whose attribute cap is being queried. |
-| `id` | **string** | Attribute identifier. |
+- `client` (Player) - Player whose attribute cap is being queried.
+- `id` (string) - Attribute identifier.
 
 #### ↩️ Returns
 * number|nil
@@ -1240,10 +1176,8 @@ While allocating starting attribute points to limit each stat.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `attribute` | **string** | Attribute identifier. |
+- `client` (Player) - Player creating the character.
+- `attribute` (string) - Attribute identifier.
 
 #### ↩️ Returns
 * number|nil
@@ -1274,9 +1208,7 @@ Whenever stamina is clamped, restored, or initialized.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `char` | **Character** | Character whose stamina cap is being read. |
+- `char` (Character) - Character whose stamina cap is being read.
 
 #### ↩️ Returns
 * number|nil
@@ -1307,11 +1239,9 @@ During creation validation and adjustment for the `desc` character variable.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `arg2` | **number** | Faction index being created. |
-| `data` | **table** | Creation payload. |
+- `client` (Player) - Player creating the character.
+- `arg2` (number) - Faction index being created.
+- `data` (table) - Creation payload.
 
 #### ↩️ Returns
 * string, boolean|nil
@@ -1342,11 +1272,9 @@ During creation validation and adjustment for the `name` character variable.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `faction` | **number** | Target faction index. |
-| `data` | **table** | Creation payload. |
+- `client` (Player) - Player creating the character.
+- `faction` (number) - Target faction index.
+- `data` (table) - Creation payload.
 
 #### ↩️ Returns
 * string, boolean|nil
@@ -1377,10 +1305,8 @@ During inventory setup on character creation and load.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player owning the character. |
-| `char` | **Character** | Character whose inventory size is being set. |
+- `client` (Player) - Player owning the character.
+- `char` (Character) - Character whose inventory size is being set.
 
 #### ↩️ Returns
 * number, number|nil
@@ -1411,10 +1337,8 @@ Client-side when rendering chat messages to resolve a display name.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Speaker whose name is being displayed. |
-| `chatType` | **string** | Chat channel identifier. |
+- `client` (Player) - Speaker whose name is being displayed.
+- `chatType` (string) - Chat channel identifier.
 
 #### ↩️ Returns
 * string|nil
@@ -1445,10 +1369,8 @@ Each time the fists are swung to determine the next attack delay.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Player punching. |
-| `arg2` | **number** | Default delay before the next punch. |
+- `arg1` (Player) - Player punching.
+- `arg2` (number) - Default delay before the next punch.
 
 #### ↩️ Returns
 * number|nil
@@ -1479,10 +1401,8 @@ When an item entity is created server-side to set its model.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemTable` | **table** | Item definition table. |
-| `itemEntity` | **Entity** | Spawned item entity. |
+- `itemTable` (table) - Item definition table.
+- `itemEntity` (Entity) - Spawned item entity.
 
 #### ↩️ Returns
 * string|nil
@@ -1513,9 +1433,7 @@ When rendering the character list and validating new character creation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player whose limit is being checked. |
+- `client` (Player) - Player whose limit is being checked.
 
 #### ↩️ Returns
 * number|nil
@@ -1546,10 +1464,8 @@ On the creation screen when allocating starting attributes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player creating the character. |
-| `count` | **number** | Default maximum points. |
+- `client` (Player) - Player creating the character.
+- `count` (number) - Default maximum points.
 
 #### ↩️ Returns
 * number|nil
@@ -1580,9 +1496,7 @@ When entity meta needs to know if a model is treated as female for voice/animati
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | **string** | Model path being inspected. |
+- `model` (string) - Model path being inspected.
 
 #### ↩️ Returns
 * string|nil
@@ -1613,9 +1527,7 @@ When a `lia_money` entity initializes and sets its model.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **number** | Amount of currency the entity holds. |
+- `arg1` (number) - Amount of currency the entity holds.
 
 #### ↩️ Returns
 * string|nil
@@ -1646,11 +1558,9 @@ When the client requests dialog options for an NPC and builds the menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Player interacting with the NPC. |
-| `arg2` | **Entity** | NPC being talked to. |
-| `arg3` | **boolean** | Whether the NPC supports customization options. |
+- `arg1` (Player) - Player interacting with the NPC.
+- `arg2` (Entity) - NPC being talked to.
+- `arg3` (boolean) - Whether the NPC supports customization options.
 
 #### ↩️ Returns
 * table|nil
@@ -1681,11 +1591,9 @@ Just before a punch trace applies damage in the hands SWEP.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Punching player. |
-| `arg2` | **number** | Default damage. |
-| `arg3` | **table** | Context table you may mutate (e.g., `context.damage`). |
+- `arg1` (Player) - Punching player.
+- `arg2` (number) - Default damage.
+- `arg3` (table) - Context table you may mutate (e.g., `context.damage`).
 
 #### ↩️ Returns
 * number|nil
@@ -1717,10 +1625,8 @@ When a punch would kill a player while lethality is disabled.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | Attacker. |
-| `arg2` | **Entity** | Target player being knocked out. |
+- `arg1` (Player) - Attacker.
+- `arg2` (Entity) - Target player being knocked out.
 
 #### ↩️ Returns
 * number|nil
@@ -1751,13 +1657,11 @@ When a vendor calculates price for buying from or selling to a player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player entity. |
-| `vendor` | **Entity** | Vendor entity. |
-| `uniqueID` | **string** | Item unique ID being priced. |
-| `price` | **number** | Base price before modifiers. |
-| `isSellingToVendor` | **boolean** | True if the player is selling an item to the vendor. |
+- `client` (Player) - Player entity.
+- `vendor` (Entity) - Vendor entity.
+- `uniqueID` (string) - Item unique ID being priced.
+- `price` (number) - Base price before modifiers.
+- `isSellingToVendor` (boolean) - True if the player is selling an item to the vendor.
 
 #### ↩️ Returns
 * number|nil
@@ -1788,10 +1692,8 @@ Whenever `playerMeta:setRagdolled` determines the ragdoll time.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player being ragdolled. |
-| `time` | **number** | Proposed ragdoll time. |
+- `client` (Player) - Player being ragdolled.
+- `time` (number) - Proposed ragdoll time.
 
 #### ↩️ Returns
 * number|nil
@@ -1822,9 +1724,7 @@ When vendors compute sale or purchase totals.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `vendor` | **Entity** | Vendor entity performing the sale. |
+- `vendor` (Entity) - Vendor entity performing the sale.
 
 #### ↩️ Returns
 * number|nil
@@ -1855,9 +1755,7 @@ When generating item data from a weapon or showing weapon names in selectors.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `weapon` | **Entity** | Weapon entity whose name is being resolved. |
+- `weapon` (Entity) - Weapon entity whose name is being resolved.
 
 #### ↩️ Returns
 * string|nil
@@ -1888,9 +1786,7 @@ After a storage entity is created or loaded and before player interaction.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | Storage entity being prepared. |
+- `entity` (Entity) - Storage entity being prepared.
 
 #### ↩️ Returns
 * nil
@@ -2083,12 +1979,10 @@ When an inventory's data key is updated and replicated to clients.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `instance` | **Inventory** | Inventory whose data changed. |
-| `key` | **string** | Data key. |
-| `oldValue` | **any** | Previous value. |
-| `value` | **any** | New value. |
+- `instance` (Inventory) - Inventory whose data changed.
+- `key` (string) - Data key.
+- `oldValue` (any) - Previous value.
+- `value` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -2119,9 +2013,7 @@ After an inventory is created or received over the network.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `instance` | **Inventory** | Inventory that is ready. |
+- `instance` (Inventory) - Inventory that is ready.
 
 #### ↩️ Returns
 * nil
@@ -2152,10 +2044,8 @@ After an item successfully enters an inventory, both server- and client-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventory` | **Inventory** | Inventory receiving the item. |
-| `item` | **Item** | Item instance added. |
+- `inventory` (Inventory) - Inventory receiving the item.
+- `item` (Item) - Item instance added.
 
 #### ↩️ Returns
 * nil
@@ -2187,11 +2077,9 @@ After an item is removed from an inventory, optionally preserving the instance.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventory` | **Inventory** | Inventory losing the item. |
-| `instance` | **Item** | Item removed. |
-| `preserveItem` | **boolean** | True if the item instance is kept alive (e.g., dropped) instead of deleted. |
+- `inventory` (Inventory) - Inventory losing the item.
+- `instance` (Item) - Item removed.
+- `preserveItem` (boolean) - True if the item instance is kept alive (e.g., dropped) instead of deleted.
 
 #### ↩️ Returns
 * nil
@@ -2222,10 +2110,8 @@ When checking recognition with fake names enabled.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character** | Character performing the recognition check. |
-| `id` | **number** | Target character ID. |
+- `character` (Character) - Character performing the recognition check.
+- `id` (number) - Target character ID.
 
 #### ↩️ Returns
 * boolean
@@ -2256,10 +2142,8 @@ Whenever recognition checks are performed for chat or display logic.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `a` | **Character** | Character performing the check. |
-| `arg2` | **number** | Target character ID. |
+- `a` (Character) - Character performing the check.
+- `arg2` (number) - Target character ID.
 
 #### ↩️ Returns
 * boolean
@@ -2291,9 +2175,7 @@ Client-side when choosing to display `[Unknown]` instead of a name.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `chatType` | **string** | Chat channel identifier. |
+- `chatType` (string) - Chat channel identifier.
 
 #### ↩️ Returns
 * boolean
@@ -2324,9 +2206,7 @@ Before creating or opening storage tied to an entity (e.g., vehicles).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ent` | **Entity** | Entity being evaluated. |
+- `ent` (Entity) - Entity being evaluated.
 
 #### ↩️ Returns
 * boolean
@@ -2357,12 +2237,10 @@ When an item's data key is updated via networking and propagated to clients.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item whose data changed. |
-| `key` | **string** | Data key. |
-| `oldValue` | **any** | Previous value. |
-| `newValue` | **any** | Updated value. |
+- `item` (Item) - Item whose data changed.
+- `key` (string) - Data key.
+- `oldValue` (any) - Previous value.
+- `newValue` (any) - Updated value.
 
 #### ↩️ Returns
 * nil
@@ -2393,9 +2271,7 @@ During item registration when the base functions table is copied to a new item.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table** | Functions table for the item being registered. |
+- `arg1` (table) - Functions table for the item being registered.
 
 #### ↩️ Returns
 * nil
@@ -2429,9 +2305,7 @@ When item data is received over the network and the item is constructed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Newly initialized item instance. |
+- `item` (Item) - Newly initialized item instance.
 
 #### ↩️ Returns
 * nil
@@ -2462,11 +2336,9 @@ After quantity is updated and replicated to clients.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item whose quantity changed. |
-| `oldValue` | **number** | Previous quantity. |
-| `quantity` | **number** | New quantity. |
+- `item` (Item) - Item whose quantity changed.
+- `oldValue` (number) - Previous quantity.
+- `quantity` (number) - New quantity.
 
 #### ↩️ Returns
 * nil
@@ -2524,12 +2396,10 @@ Whenever a netVar is updated via `setNetVar` on players, entities, or characters
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Entity** | Entity whose netVar changed (player or entity). |
-| `key` | **string** | NetVar key. |
-| `oldValue` | **any** | Previous value. |
-| `value` | **any** | New value. |
+- `client` (Entity) - Entity whose netVar changed (player or entity).
+- `key` (string) - NetVar key.
+- `oldValue` (any) - Previous value.
+- `value` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -2560,10 +2430,8 @@ After administration modules finish initializing and privileges are available.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table|nil** | Admin integration data, if provided. |
-| `arg2` | **table|nil** | Additional metadata from the admin system. |
+- `arg1` (table|nil) - Admin integration data, if provided.
+- `arg2` (table|nil) - Additional metadata from the admin system.
 
 #### ↩️ Returns
 * nil
@@ -2594,10 +2462,8 @@ After a get-up action completes and the ragdoll entity is removed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `target` | **Player** | Player whose character stood up. |
-| `entity` | **Entity** | Ragdoll entity that was removed. |
+- `target` (Player) - Player whose character stood up.
+- `entity` (Entity) - Ragdoll entity that was removed.
 
 #### ↩️ Returns
 * nil
@@ -2628,12 +2494,10 @@ After a char var setter updates a value and broadcasts it.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **Character** | Character whose variable changed. |
-| `varName` | **string** | Variable key. |
-| `oldVar` | **any** | Previous value. |
-| `newVar` | **any** | New value. |
+- `character` (Character) - Character whose variable changed.
+- `varName` (string) - Variable key.
+- `oldVar` (any) - Previous value.
+- `newVar` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -2664,11 +2528,9 @@ Client-side after a config entry changes and is broadcast.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Config key. |
-| `oldValue` | **any** | Previous value. |
-| `value` | **any** | New value. |
+- `key` (string) - Config key.
+- `oldValue` (any) - Previous value.
+- `value` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -2699,10 +2561,8 @@ After an item successfully enters an inventory on the server.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `owner` | **Player|nil** | Owner player of the inventory, if applicable. |
-| `item` | **Item** | Item instance that was added. |
+- `owner` (Player|nil) - Owner player of the inventory, if applicable.
+- `item` (Item) - Item instance that was added.
 
 #### ↩️ Returns
 * nil
@@ -2733,10 +2593,8 @@ When `lia_item` entities are created for dropped or spawned items.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemTable` | **table** | Static item definition. |
-| `itemEntity` | **Entity** | Spawned entity representing the item. |
+- `itemTable` (table) - Static item definition.
+- `itemEntity` (Entity) - Spawned entity representing the item.
 
 #### ↩️ Returns
 * nil
@@ -2767,10 +2625,8 @@ When overrides are applied to an item definition at load time.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **table** | Item definition being overridden. |
-| `overrides` | **table** | Table of override values. |
+- `item` (table) - Item definition being overridden.
+- `overrides` (table) - Table of override values.
 
 #### ↩️ Returns
 * nil
@@ -2801,9 +2657,7 @@ At the end of `lia.item.register` once the item table is stored.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ITEM` | **table** | Registered item definition. |
+- `ITEM` (table) - Registered item definition.
 
 #### ↩️ Returns
 * nil
@@ -2861,9 +2715,7 @@ When a player's PAC parts transfer to their ragdoll entity during rendering.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `part` | **Entity|table** | PAC3 part being transferred. |
+- `part` (Entity|table) - PAC3 part being transferred.
 
 #### ↩️ Returns
 * nil
@@ -2894,11 +2746,9 @@ During door buy/sell commands after payment/ownership changes are processed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player performing the transaction. |
-| `door` | **Entity** | Door entity involved. |
-| `arg3` | **boolean** | True if selling/refunding, false if buying. |
+- `client` (Player) - Player performing the transaction.
+- `door` (Entity) - Door entity involved.
+- `arg3` (boolean) - True if selling/refunding, false if buying.
 
 #### ↩️ Returns
 * nil
@@ -2929,10 +2779,8 @@ After an item has been successfully dropped from a player's inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player who dropped the item. |
-| `spawnedItem` | **Entity** | The spawned item entity that was created. |
+- `client` (Player) - The player who dropped the item.
+- `spawnedItem` (Entity) - The spawned item entity that was created.
 
 #### ↩️ Returns
 * nil
@@ -2962,11 +2810,9 @@ After an item has been successfully rotated in a player's inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **Player** | The player who rotated the item. |
-| `item` | **Item** | The item that was rotated. |
-| `newRot` | **number** | The new rotation value. |
+- `arg1` (Player) - The player who rotated the item.
+- `item` (Item) - The item that was rotated.
+- `newRot` (number) - The new rotation value.
 
 #### ↩️ Returns
 * nil
@@ -2996,10 +2842,8 @@ After an item has been successfully taken into a player's inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The player who took the item. |
-| `item` | **Item** | The item that was taken. |
+- `client` (Player) - The player who took the item.
+- `item` (Item) - The item that was taken.
 
 #### ↩️ Returns
 * nil
@@ -3029,12 +2873,10 @@ When CAMI/compatibility layers add a new privilege.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table** | CAMI privilege table or simplified privilege data. |
-| `arg2` | **any** | Optional extra data from the source integration. |
-| `arg3` | **any** | Optional extra data from the source integration. |
-| `arg4` | **any** | Optional extra data from the source integration. |
+- `arg1` (table) - CAMI privilege table or simplified privilege data.
+- `arg2` (any) - Optional extra data from the source integration.
+- `arg3` (any) - Optional extra data from the source integration.
+- `arg4` (any) - Optional extra data from the source integration.
 
 #### ↩️ Returns
 * nil
@@ -3065,10 +2907,8 @@ When CAMI/compatibility layers unregister a privilege.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `arg1` | **table** | Privilege data being removed. |
-| `arg2` | **any** | Optional extra data. |
+- `arg1` (table) - Privilege data being removed.
+- `arg2` (any) - Optional extra data.
 
 #### ↩️ Returns
 * nil
@@ -3099,10 +2939,8 @@ After a theme is applied or a transition completes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `themeName` | **string** | Name of the theme applied. |
-| `useTransition` | **boolean** | True if the theme is transitioning over time. |
+- `themeName` (string) - Name of the theme applied.
+- `useTransition` (boolean) - True if the theme is transitioning over time.
 
 #### ↩️ Returns
 * nil
@@ -3133,9 +2971,7 @@ Immediately after transfer logic completes in team management.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `target` | **Player** | Player whose character was transferred. |
+- `target` (Player) - Player whose character was transferred.
 
 #### ↩️ Returns
 * nil
@@ -3166,10 +3002,8 @@ When an admin integration registers a new group.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `groupName` | **string** | Name of the new group. |
-| `arg2` | **any** | Optional extra data (e.g., privilege list). |
+- `groupName` (string) - Name of the new group.
+- `arg2` (any) - Optional extra data (e.g., privilege list).
 
 #### ↩️ Returns
 * nil
@@ -3200,9 +3034,7 @@ When an admin integration deletes a group.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `groupName` | **string** | Name of the removed group. |
+- `groupName` (string) - Name of the removed group.
 
 #### ↩️ Returns
 * nil
@@ -3233,10 +3065,8 @@ After the admin system renames an existing group.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `oldName` | **string** | Previous group name. |
-| `newName` | **string** | Updated group name. |
+- `oldName` (string) - Previous group name.
+- `newName` (string) - Updated group name.
 
 #### ↩️ Returns
 * nil
@@ -3268,11 +3098,9 @@ Immediately after `lia.option.add` stores an option.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Option key. |
-| `name` | **table** | Stored option table (name is the localized display name). |
-| `option` | **table** | Option metadata table. |
+- `key` (string) - Option key.
+- `name` (table) - Stored option table (name is the localized display name).
+- `option` (table) - Option metadata table.
 
 #### ↩️ Returns
 * nil
@@ -3303,11 +3131,9 @@ After `lia.option.set` changes a value (client or server).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Option key. |
-| `old` | **any** | Previous value. |
-| `value` | **any** | New value. |
+- `key` (string) - Option key.
+- `old` (any) - Previous value.
+- `value` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -3338,10 +3164,8 @@ During faction registration/loading while assembling faction data.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `uniqueID` | **string** | Faction unique identifier. |
-| `arg2` | **string** | Current description. |
+- `uniqueID` (string) - Faction unique identifier.
+- `arg2` (string) - Current description.
 
 #### ↩️ Returns
 * string|nil
@@ -3372,10 +3196,8 @@ During faction registration/loading while choosing models.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `uniqueID` | **string** | Faction identifier. |
-| `arg2` | **table** | Default models table. |
+- `uniqueID` (string) - Faction identifier.
+- `arg2` (table) - Default models table.
 
 #### ↩️ Returns
 * table|nil
@@ -3406,10 +3228,8 @@ During faction registration/loading before teams are created.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `uniqueID` | **string** | Faction identifier. |
-| `arg2` | **string** | Default faction name. |
+- `uniqueID` (string) - Faction identifier.
+- `arg2` (string) - Default faction name.
 
 #### ↩️ Returns
 * string|nil
@@ -3440,10 +3260,8 @@ When calculating respawn delay on client and server.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `ply` | **Player** | Player that will respawn. |
-| `baseTime` | **number** | Base respawn time in seconds. |
+- `ply` (Player) - Player that will respawn.
+- `baseTime` (number) - Base respawn time in seconds.
 
 #### ↩️ Returns
 * number|nil
@@ -3474,9 +3292,7 @@ After a punch trace completes in the hands SWEP.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player who just punched. |
+- `client` (Player) - Player who just punched.
 
 #### ↩️ Returns
 * nil
@@ -3534,10 +3350,8 @@ Client-side when a part id is marked for removal from a player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | Player losing the part. |
-| `id` | **string** | Identifier of the part to remove. |
+- `client` (Player) - Player losing the part.
+- `id` (string) - Identifier of the part to remove.
 
 #### ↩️ Returns
 * nil
@@ -3568,9 +3382,7 @@ Immediately after a bag inventory is created or loaded.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventory` | **Inventory** | Bag inventory being configured. |
+- `inventory` (Inventory) - Bag inventory being configured.
 
 #### ↩️ Returns
 * nil
@@ -3628,9 +3440,7 @@ When determining the view model entity for PAC events.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | The potential view model entity. |
+- `entity` (Entity) - The potential view model entity.
 
 #### ↩️ Returns
 * Entity

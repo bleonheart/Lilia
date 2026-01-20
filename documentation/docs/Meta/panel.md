@@ -10,6 +10,56 @@ The panel meta table provides comprehensive functionality for managing VGUI pane
 
 ---
 
+## Index
+
+- [liaListenForInventoryChanges](#lialistenforinventorychanges)
+- [liaDeleteInventoryHooks](#liadeleteinventoryhooks)
+- [setScaledPos](#setscaledpos)
+- [setScaledSize](#setscaledsize)
+- [On](#on)
+- [SetupTransition](#setuptransition)
+- [FadeHover](#fadehover)
+- [BarHover](#barhover)
+- [FillHover](#fillhover)
+- [Background](#background)
+- [Material](#material)
+- [TiledMaterial](#tiledmaterial)
+- [Outline](#outline)
+- [LinedCorners](#linedcorners)
+- [SideBlock](#sideblock)
+- [Text](#text)
+- [DualText](#dualtext)
+- [Blur](#blur)
+- [CircleClick](#circleclick)
+- [CircleHover](#circlehover)
+- [SquareCheckbox](#squarecheckbox)
+- [CircleCheckbox](#circlecheckbox)
+- [AvatarMask](#avatarmask)
+- [CircleAvatar](#circleavatar)
+- [Circle](#circle)
+- [CircleFadeHover](#circlefadehover)
+- [CircleExpandHover](#circleexpandhover)
+- [Gradient](#gradient)
+- [SetOpenURL](#setopenurl)
+- [NetMessage](#netmessage)
+- [Stick](#stick)
+- [DivTall](#divtall)
+- [DivWide](#divwide)
+- [SquareFromHeight](#squarefromheight)
+- [SquareFromWidth](#squarefromwidth)
+- [SetRemove](#setremove)
+- [FadeIn](#fadein)
+- [HideVBar](#hidevbar)
+- [SetTransitionFunc](#settransitionfunc)
+- [ClearTransitionFunc](#cleartransitionfunc)
+- [SetAppendOverwrite](#setappendoverwrite)
+- [ClearAppendOverwrite](#clearappendoverwrite)
+- [ClearPaint](#clearpaint)
+- [ReadyTextbox](#readytextbox)
+
+---
+
+<a id="lialistenforinventorychanges"></a>
 ### liaListenForInventoryChanges
 
 #### 📋 Purpose
@@ -20,9 +70,7 @@ Use when a panel needs to react to changes in a specific inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inventory` | **Inventory** | Inventory instance whose events should be listened to. |
+- `inventory` (Inventory) - Inventory instance whose events should be listened to.
 
 #### ↩️ Returns
 * nil
@@ -40,6 +88,7 @@ Client
 
 ---
 
+<a id="liadeleteinventoryhooks"></a>
 ### liaDeleteInventoryHooks
 
 #### 📋 Purpose
@@ -50,9 +99,7 @@ Call when tearing down a panel or when an inventory is no longer tracked.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | **number|nil** | Optional inventory ID to target; nil clears all known hooks. |
+- `id` (number|nil) - Optional inventory ID to target; nil clears all known hooks.
 
 #### ↩️ Returns
 * nil
@@ -70,6 +117,7 @@ Client
 
 ---
 
+<a id="setscaledpos"></a>
 ### setScaledPos
 
 #### 📋 Purpose
@@ -80,10 +128,8 @@ Use when positioning should respect different resolutions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `x` | **number** | Horizontal position before scaling. |
-| `y` | **number** | Vertical position before scaling. |
+- `x` (number) - Horizontal position before scaling.
+- `y` (number) - Vertical position before scaling.
 
 #### ↩️ Returns
 * nil
@@ -101,6 +147,7 @@ Client
 
 ---
 
+<a id="setscaledsize"></a>
 ### setScaledSize
 
 #### 📋 Purpose
@@ -111,10 +158,8 @@ Use when sizing should scale with screen resolution.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `w` | **number** | Width before scaling. |
-| `h` | **number** | Height before scaling. |
+- `w` (number) - Width before scaling.
+- `h` (number) - Height before scaling.
 
 #### ↩️ Returns
 * nil
@@ -132,6 +177,7 @@ Client
 
 ---
 
+<a id="on"></a>
 ### On
 
 #### 📋 Purpose
@@ -142,10 +188,8 @@ Use to extend an existing panel callback (e.g., Paint, Think) while preserving p
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Panel function name to wrap. |
-| `fn` | **function** | Function to run after the original callback. |
+- `name` (string) - Panel function name to wrap.
+- `fn` (function) - Function to run after the original callback.
 
 #### ↩️ Returns
 * nil
@@ -163,6 +207,7 @@ Client
 
 ---
 
+<a id="setuptransition"></a>
 ### SetupTransition
 
 #### 📋 Purpose
@@ -173,11 +218,9 @@ Use when a panel needs an animated transition flag (e.g., hover fades).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Property name to animate on the panel. |
-| `speed` | **number** | Lerp speed multiplier. |
-| `fn` | **function** | Predicate returning true when the property should approach 1. |
+- `name` (string) - Property name to animate on the panel.
+- `speed` (number) - Lerp speed multiplier.
+- `fn` (function) - Predicate returning true when the property should approach 1.
 
 #### ↩️ Returns
 * nil
@@ -195,6 +238,7 @@ Client
 
 ---
 
+<a id="fadehover"></a>
 ### FadeHover
 
 #### 📋 Purpose
@@ -205,11 +249,9 @@ Apply to panels that need a simple hover highlight.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Overlay color and base alpha. |
-| `speed` | **number** | Transition speed toward hover state. |
-| `rad` | **number|nil** | Optional corner radius for rounded boxes. |
+- `col` (Color) - Overlay color and base alpha.
+- `speed` (number) - Transition speed toward hover state.
+- `rad` (number|nil) - Optional corner radius for rounded boxes.
 
 #### ↩️ Returns
 * nil
@@ -227,6 +269,7 @@ Client
 
 ---
 
+<a id="barhover"></a>
 ### BarHover
 
 #### 📋 Purpose
@@ -237,11 +280,9 @@ Use for button underlines or similar hover indicators.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Bar color. |
-| `height` | **number** | Bar thickness in pixels. |
-| `speed` | **number** | Transition speed toward hover state. |
+- `col` (Color) - Bar color.
+- `height` (number) - Bar thickness in pixels.
+- `speed` (number) - Transition speed toward hover state.
 
 #### ↩️ Returns
 * nil
@@ -259,6 +300,7 @@ Client
 
 ---
 
+<a id="fillhover"></a>
 ### FillHover
 
 #### 📋 Purpose
@@ -269,12 +311,10 @@ Use when a directional hover fill effect is desired.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Fill color. |
-| `dir` | **number** | Direction constant (LEFT, RIGHT, TOP, BOTTOM). |
-| `speed` | **number** | Transition speed toward hover state. |
-| `mat` | **IMaterial|nil** | Optional material to draw instead of a solid color. |
+- `col` (Color) - Fill color.
+- `dir` (number) - Direction constant (LEFT, RIGHT, TOP, BOTTOM).
+- `speed` (number) - Transition speed toward hover state.
+- `mat` (IMaterial|nil) - Optional material to draw instead of a solid color.
 
 #### ↩️ Returns
 * nil
@@ -292,6 +332,7 @@ Client
 
 ---
 
+<a id="background"></a>
 ### Background
 
 #### 📋 Purpose
@@ -302,10 +343,8 @@ Use when a panel needs a consistent background fill.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Fill color. |
-| `rad` | **number|nil** | Corner radius; nil or 0 draws a square rect. |
+- `col` (Color) - Fill color.
+- `rad` (number|nil) - Corner radius; nil or 0 draws a square rect.
 
 #### ↩️ Returns
 * nil
@@ -323,6 +362,7 @@ Client
 
 ---
 
+<a id="material"></a>
 ### Material
 
 #### 📋 Purpose
@@ -333,10 +373,8 @@ Use when a static material should cover the panel area.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `mat` | **IMaterial** | Material to render. |
-| `col` | **Color** | Color tint applied to the material. |
+- `mat` (IMaterial) - Material to render.
+- `col` (Color) - Color tint applied to the material.
 
 #### ↩️ Returns
 * nil
@@ -354,6 +392,7 @@ Client
 
 ---
 
+<a id="tiledmaterial"></a>
 ### TiledMaterial
 
 #### 📋 Purpose
@@ -364,12 +403,10 @@ Use when repeating patterns should fill the panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `mat` | **IMaterial** | Material to tile. |
-| `tw` | **number** | Tile width in texture units. |
-| `th` | **number** | Tile height in texture units. |
-| `col` | **Color** | Color tint for the material. |
+- `mat` (IMaterial) - Material to tile.
+- `tw` (number) - Tile width in texture units.
+- `th` (number) - Tile height in texture units.
+- `col` (Color) - Color tint for the material.
 
 #### ↩️ Returns
 * nil
@@ -387,6 +424,7 @@ Client
 
 ---
 
+<a id="outline"></a>
 ### Outline
 
 #### 📋 Purpose
@@ -397,10 +435,8 @@ Use to give a panel a simple border.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Outline color. |
-| `width` | **number** | Border thickness in pixels. |
+- `col` (Color) - Outline color.
+- `width` (number) - Border thickness in pixels.
 
 #### ↩️ Returns
 * nil
@@ -418,6 +454,7 @@ Client
 
 ---
 
+<a id="linedcorners"></a>
 ### LinedCorners
 
 #### 📋 Purpose
@@ -428,10 +465,8 @@ Use for a lightweight corner accent instead of a full border.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Corner line color. |
-| `cornerLen` | **number** | Length of each corner arm in pixels. |
+- `col` (Color) - Corner line color.
+- `cornerLen` (number) - Length of each corner arm in pixels.
 
 #### ↩️ Returns
 * nil
@@ -449,6 +484,7 @@ Client
 
 ---
 
+<a id="sideblock"></a>
 ### SideBlock
 
 #### 📋 Purpose
@@ -459,11 +495,9 @@ Use for side indicators or separators on panels.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Strip color. |
-| `size` | **number** | Strip thickness in pixels. |
-| `side` | **number** | Side constant (LEFT, RIGHT, TOP, BOTTOM). |
+- `col` (Color) - Strip color.
+- `size` (number) - Strip thickness in pixels.
+- `side` (number) - Side constant (LEFT, RIGHT, TOP, BOTTOM).
 
 #### ↩️ Returns
 * nil
@@ -481,6 +515,7 @@ Client
 
 ---
 
+<a id="text"></a>
 ### Text
 
 #### 📋 Purpose
@@ -491,13 +526,11 @@ Use to quickly add centered or aligned text to a panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `text` | **string** | Text to display. |
-| `font` | **string** | Font name to use. |
-| `col` | **Color** | Text color. |
-| `alignment` | **number** | TEXT_ALIGN_* constant controlling horizontal alignment. |
-| `paint` | **boolean** | Force paint-based rendering even if label setters exist. |
+- `text` (string) - Text to display.
+- `font` (string) - Font name to use.
+- `col` (Color) - Text color.
+- `alignment` (number) - TEXT_ALIGN_* constant controlling horizontal alignment.
+- `paint` (boolean) - Force paint-based rendering even if label setters exist.
 
 #### ↩️ Returns
 * nil
@@ -515,6 +548,7 @@ Client
 
 ---
 
+<a id="dualtext"></a>
 ### DualText
 
 #### 📋 Purpose
@@ -525,10 +559,8 @@ Use when a panel needs a title and subtitle aligned together.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `alignment` | **number** | TEXT_ALIGN_* horizontal alignment. |
-| `centerSpacing` | **number** | Offset to spread the two lines from the center point. |
+- `alignment` (number) - TEXT_ALIGN_* horizontal alignment.
+- `centerSpacing` (number) - Offset to spread the two lines from the center point.
 
 #### ↩️ Returns
 * nil
@@ -546,6 +578,7 @@ Client
 
 ---
 
+<a id="blur"></a>
 ### Blur
 
 #### 📋 Purpose
@@ -556,9 +589,7 @@ Use to blur the world/UI behind a panel while it is painted.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Blur intensity multiplier. |
+- `amount` (number) - Blur intensity multiplier.
 
 #### ↩️ Returns
 * nil
@@ -576,6 +607,7 @@ Client
 
 ---
 
+<a id="circleclick"></a>
 ### CircleClick
 
 #### 📋 Purpose
@@ -586,11 +618,9 @@ Use for buttons that need animated click feedback.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Ripple color and opacity. |
-| `speed` | **number** | Lerp speed for expansion and fade. |
-| `trad` | **number|nil** | Target radius override; defaults to panel width. |
+- `col` (Color) - Ripple color and opacity.
+- `speed` (number) - Lerp speed for expansion and fade.
+- `trad` (number|nil) - Target radius override; defaults to panel width.
 
 #### ↩️ Returns
 * nil
@@ -608,6 +638,7 @@ Client
 
 ---
 
+<a id="circlehover"></a>
 ### CircleHover
 
 #### 📋 Purpose
@@ -618,11 +649,9 @@ Use for hover feedback centered on the cursor position.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Highlight color and base opacity. |
-| `speed` | **number** | Transition speed for appearing/disappearing. |
-| `trad` | **number|nil** | Target radius; defaults to panel width. |
+- `col` (Color) - Highlight color and base opacity.
+- `speed` (number) - Transition speed for appearing/disappearing.
+- `trad` (number|nil) - Target radius; defaults to panel width.
 
 #### ↩️ Returns
 * nil
@@ -640,6 +669,7 @@ Client
 
 ---
 
+<a id="squarecheckbox"></a>
 ### SquareCheckbox
 
 #### 📋 Purpose
@@ -650,11 +680,9 @@ Use on checkbox panels to visualize toggled state.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inner` | **Color** | Color of the filled square. |
-| `outer` | **Color** | Color of the outline/background. |
-| `speed` | **number** | Transition speed for filling. |
+- `inner` (Color) - Color of the filled square.
+- `outer` (Color) - Color of the outline/background.
+- `speed` (number) - Transition speed for filling.
 
 #### ↩️ Returns
 * nil
@@ -672,6 +700,7 @@ Client
 
 ---
 
+<a id="circlecheckbox"></a>
 ### CircleCheckbox
 
 #### 📋 Purpose
@@ -682,11 +711,9 @@ Use on checkbox panels that should appear circular.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `inner` | **Color** | Color of the inner filled circle. |
-| `outer` | **Color** | Outline color. |
-| `speed` | **number** | Transition speed for filling. |
+- `inner` (Color) - Color of the inner filled circle.
+- `outer` (Color) - Outline color.
+- `speed` (number) - Transition speed for filling.
 
 #### ↩️ Returns
 * nil
@@ -704,6 +731,7 @@ Client
 
 ---
 
+<a id="avatarmask"></a>
 ### AvatarMask
 
 #### 📋 Purpose
@@ -714,9 +742,7 @@ Use when an avatar needs to be clipped to a non-rectangular mask.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `mask` | **function** | Draw callback that defines the stencil shape. |
+- `mask` (function) - Draw callback that defines the stencil shape.
 
 #### ↩️ Returns
 * nil
@@ -734,6 +760,7 @@ Client
 
 ---
 
+<a id="circleavatar"></a>
 ### CircleAvatar
 
 #### 📋 Purpose
@@ -758,6 +785,7 @@ Client
 
 ---
 
+<a id="circle"></a>
 ### Circle
 
 #### 📋 Purpose
@@ -768,9 +796,7 @@ Use for circular panels or backgrounds.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Circle color. |
+- `col` (Color) - Circle color.
 
 #### ↩️ Returns
 * nil
@@ -788,6 +814,7 @@ Client
 
 ---
 
+<a id="circlefadehover"></a>
 ### CircleFadeHover
 
 #### 📋 Purpose
@@ -798,10 +825,8 @@ Use for subtle hover feedback on circular elements.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Overlay color and base alpha. |
-| `speed` | **number** | Transition speed toward hover state. |
+- `col` (Color) - Overlay color and base alpha.
+- `speed` (number) - Transition speed toward hover state.
 
 #### ↩️ Returns
 * nil
@@ -819,6 +844,7 @@ Client
 
 ---
 
+<a id="circleexpandhover"></a>
 ### CircleExpandHover
 
 #### 📋 Purpose
@@ -829,10 +855,8 @@ Use when a growing highlight is needed on hover.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Circle color and alpha. |
-| `speed` | **number** | Transition speed toward hover state. |
+- `col` (Color) - Circle color and alpha.
+- `speed` (number) - Transition speed toward hover state.
 
 #### ↩️ Returns
 * nil
@@ -850,6 +874,7 @@ Client
 
 ---
 
+<a id="gradient"></a>
 ### Gradient
 
 #### 📋 Purpose
@@ -860,12 +885,10 @@ Use to overlay a gradient tint from a chosen side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `col` | **Color** | Gradient color. |
-| `dir` | **number** | Direction constant (LEFT, RIGHT, TOP, BOTTOM). |
-| `frac` | **number** | Fraction of the panel to cover with the gradient. |
-| `op` | **boolean** | When true, flips the gradient material for the given direction. |
+- `col` (Color) - Gradient color.
+- `dir` (number) - Direction constant (LEFT, RIGHT, TOP, BOTTOM).
+- `frac` (number) - Fraction of the panel to cover with the gradient.
+- `op` (boolean) - When true, flips the gradient material for the given direction.
 
 #### ↩️ Returns
 * nil
@@ -883,6 +906,7 @@ Client
 
 ---
 
+<a id="setopenurl"></a>
 ### SetOpenURL
 
 #### 📋 Purpose
@@ -893,9 +917,7 @@ Attach to clickable panels that should launch an external link.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `url` | **string** | URL to open. |
+- `url` (string) - URL to open.
 
 #### ↩️ Returns
 * nil
@@ -913,6 +935,7 @@ Client
 
 ---
 
+<a id="netmessage"></a>
 ### NetMessage
 
 #### 📋 Purpose
@@ -923,10 +946,8 @@ Use for UI buttons that trigger server-side actions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Net message name. |
-| `data` | **function** | Optional writer that populates the net message payload. |
+- `name` (string) - Net message name.
+- `data` (function) - Optional writer that populates the net message payload.
 
 #### ↩️ Returns
 * nil
@@ -944,6 +965,7 @@ Client
 
 ---
 
+<a id="stick"></a>
 ### Stick
 
 #### 📋 Purpose
@@ -954,11 +976,9 @@ Use to pin a panel to a dock position with minimal boilerplate.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `dock` | **number** | DOCK constant to apply; defaults to FILL. |
-| `margin` | **number** | Optional uniform margin after docking. |
-| `dontInvalidate` | **boolean** | Skip invalidating the parent when true. |
+- `dock` (number) - DOCK constant to apply; defaults to FILL.
+- `margin` (number) - Optional uniform margin after docking.
+- `dontInvalidate` (boolean) - Skip invalidating the parent when true.
 
 #### ↩️ Returns
 * nil
@@ -976,6 +996,7 @@ Client
 
 ---
 
+<a id="divtall"></a>
 ### DivTall
 
 #### 📋 Purpose
@@ -986,10 +1007,8 @@ Use for proportional layout against a parent or target panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `frac` | **number** | Divisor applied to the target height. |
-| `target` | **Panel** | Panel to reference; defaults to the parent. |
+- `frac` (number) - Divisor applied to the target height.
+- `target` (Panel) - Panel to reference; defaults to the parent.
 
 #### ↩️ Returns
 * nil
@@ -1007,6 +1026,7 @@ Client
 
 ---
 
+<a id="divwide"></a>
 ### DivWide
 
 #### 📋 Purpose
@@ -1017,10 +1037,8 @@ Use for proportional layout against a parent or target panel.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `frac` | **number** | Divisor applied to the target width. |
-| `target` | **Panel** | Panel to reference; defaults to the parent. |
+- `frac` (number) - Divisor applied to the target width.
+- `target` (Panel) - Panel to reference; defaults to the parent.
 
 #### ↩️ Returns
 * nil
@@ -1038,6 +1056,7 @@ Client
 
 ---
 
+<a id="squarefromheight"></a>
 ### SquareFromHeight
 
 #### 📋 Purpose
@@ -1062,6 +1081,7 @@ Client
 
 ---
 
+<a id="squarefromwidth"></a>
 ### SquareFromWidth
 
 #### 📋 Purpose
@@ -1086,6 +1106,7 @@ Client
 
 ---
 
+<a id="setremove"></a>
 ### SetRemove
 
 #### 📋 Purpose
@@ -1096,9 +1117,7 @@ Use for close buttons or dismiss actions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `target` | **Panel|nil** | Panel to remove; defaults to the panel itself. |
+- `target` (Panel|nil) - Panel to remove; defaults to the panel itself.
 
 #### ↩️ Returns
 * nil
@@ -1116,6 +1135,7 @@ Client
 
 ---
 
+<a id="fadein"></a>
 ### FadeIn
 
 #### 📋 Purpose
@@ -1126,10 +1146,8 @@ Use when showing a panel with a quick fade animation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `time` | **number** | Duration of the fade in seconds. |
-| `alpha` | **number** | Target opacity after fading. |
+- `time` (number) - Duration of the fade in seconds.
+- `alpha` (number) - Target opacity after fading.
 
 #### ↩️ Returns
 * nil
@@ -1147,6 +1165,7 @@ Client
 
 ---
 
+<a id="hidevbar"></a>
 ### HideVBar
 
 #### 📋 Purpose
@@ -1171,6 +1190,7 @@ Client
 
 ---
 
+<a id="settransitionfunc"></a>
 ### SetTransitionFunc
 
 #### 📋 Purpose
@@ -1181,9 +1201,7 @@ Use before invoking helpers like SetupTransition to change their condition.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `fn` | **function** | Predicate returning true when the transition should be active. |
+- `fn` (function) - Predicate returning true when the transition should be active.
 
 #### ↩️ Returns
 * nil
@@ -1201,6 +1219,7 @@ Client
 
 ---
 
+<a id="cleartransitionfunc"></a>
 ### ClearTransitionFunc
 
 #### 📋 Purpose
@@ -1225,6 +1244,7 @@ Client
 
 ---
 
+<a id="setappendoverwrite"></a>
 ### SetAppendOverwrite
 
 #### 📋 Purpose
@@ -1235,9 +1255,7 @@ Use when On should wrap a different function name than the provided one.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `fn` | **string** | Function name to force On to wrap. |
+- `fn` (string) - Function name to force On to wrap.
 
 #### ↩️ Returns
 * nil
@@ -1255,6 +1273,7 @@ Client
 
 ---
 
+<a id="clearappendoverwrite"></a>
 ### ClearAppendOverwrite
 
 #### 📋 Purpose
@@ -1279,6 +1298,7 @@ Client
 
 ---
 
+<a id="clearpaint"></a>
 ### ClearPaint
 
 #### 📋 Purpose
@@ -1303,6 +1323,7 @@ Client
 
 ---
 
+<a id="readytextbox"></a>
 ### ReadyTextbox
 
 #### 📋 Purpose

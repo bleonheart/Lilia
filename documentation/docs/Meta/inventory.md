@@ -10,6 +10,55 @@ The inventory meta table provides comprehensive functionality for managing inven
 
 ---
 
+## Index
+
+- [getData](#getdata)
+- [extend](#extend)
+- [configure](#configure)
+- [configure](#configure)
+- [addDataProxy](#adddataproxy)
+- [getItemsByUniqueID](#getitemsbyuniqueid)
+- [register](#register)
+- [new](#new)
+- [tostring](#tostring)
+- [getType](#gettype)
+- [onDataChanged](#ondatachanged)
+- [getItems](#getitems)
+- [getItemsOfType](#getitemsoftype)
+- [getFirstItemOfType](#getfirstitemoftype)
+- [hasItem](#hasitem)
+- [getItemCount](#getitemcount)
+- [getID](#getid)
+- [addItem](#additem)
+- [add](#add)
+- [syncItemAdded](#syncitemadded)
+- [initializeStorage](#initializestorage)
+- [restoreFromStorage](#restorefromstorage)
+- [restoreFromStorage](#restorefromstorage)
+- [removeItem](#removeitem)
+- [remove](#remove)
+- [setData](#setdata)
+- [canAccess](#canaccess)
+- [addAccessRule](#addaccessrule)
+- [removeAccessRule](#removeaccessrule)
+- [getRecipients](#getrecipients)
+- [onInstanced](#oninstanced)
+- [onInstanced](#oninstanced)
+- [onLoaded](#onloaded)
+- [onLoaded](#onloaded)
+- [loadItems](#loaditems)
+- [onItemsLoaded](#onitemsloaded)
+- [onItemsLoaded](#onitemsloaded)
+- [instance](#instance)
+- [syncData](#syncdata)
+- [sync](#sync)
+- [delete](#delete)
+- [destroy](#destroy)
+- [show](#show)
+
+---
+
+<a id="getdata"></a>
 ### getData
 
 #### 📋 Purpose
@@ -20,10 +69,8 @@ Use whenever reading custom inventory metadata.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to read. |
-| `default` | **any** | Value returned when the key is missing. |
+- `key` (string) - Data key to read.
+- `default` (any) - Value returned when the key is missing.
 
 #### ↩️ Returns
 * any
@@ -41,6 +88,7 @@ Shared
 
 ---
 
+<a id="extend"></a>
 ### extend
 
 #### 📋 Purpose
@@ -51,9 +99,7 @@ Use when defining a new inventory type.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `className` | **string** | Registry name for the new subclass. |
+- `className` (string) - Registry name for the new subclass.
 
 #### ↩️ Returns
 * table
@@ -71,6 +117,7 @@ Shared
 
 ---
 
+<a id="configure"></a>
 ### configure
 
 #### 📋 Purpose
@@ -94,6 +141,7 @@ Shared
 
 ---
 
+<a id="configure"></a>
 ### configure
 
 #### 📋 Purpose
@@ -117,6 +165,7 @@ Shared
 
 ---
 
+<a id="adddataproxy"></a>
 ### addDataProxy
 
 #### 📋 Purpose
@@ -127,10 +176,8 @@ Use when you need to react to data changes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to watch. |
-| `onChange` | **function** | Callback receiving old and new values. |
+- `key` (string) - Data key to watch.
+- `onChange` (function) - Callback receiving old and new values.
 
 #### ↩️ Returns
 * nil
@@ -147,6 +194,7 @@ Shared
 
 ---
 
+<a id="getitemsbyuniqueid"></a>
 ### getItemsByUniqueID
 
 #### 📋 Purpose
@@ -157,10 +205,8 @@ Use when finding all copies of a specific item type.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `uniqueID` | **string** | Item unique identifier. |
-| `onlyMain` | **boolean** | Restrict search to main inventory when true. |
+- `uniqueID` (string) - Item unique identifier.
+- `onlyMain` (boolean) - Restrict search to main inventory when true.
 
 #### ↩️ Returns
 * table
@@ -178,6 +224,7 @@ Shared
 
 ---
 
+<a id="register"></a>
 ### register
 
 #### 📋 Purpose
@@ -188,9 +235,7 @@ Invoke once per subclass to set type ID and defaults.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `typeID` | **string** | Unique identifier for this inventory type. |
+- `typeID` (string) - Unique identifier for this inventory type.
 
 #### ↩️ Returns
 * nil
@@ -207,6 +252,7 @@ Shared
 
 ---
 
+<a id="new"></a>
 ### new
 
 #### 📋 Purpose
@@ -231,6 +277,7 @@ Shared
 
 ---
 
+<a id="tostring"></a>
 ### tostring
 
 #### 📋 Purpose
@@ -255,6 +302,7 @@ Shared
 
 ---
 
+<a id="gettype"></a>
 ### getType
 
 #### 📋 Purpose
@@ -279,6 +327,7 @@ Shared
 
 ---
 
+<a id="ondatachanged"></a>
 ### onDataChanged
 
 #### 📋 Purpose
@@ -289,11 +338,9 @@ Internally after setData updates.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key that changed. |
-| `oldValue` | **any** | Previous value. |
-| `newValue` | **any** | New value. |
+- `key` (string) - Data key that changed.
+- `oldValue` (any) - Previous value.
+- `newValue` (any) - New value.
 
 #### ↩️ Returns
 * nil
@@ -310,6 +357,7 @@ Shared
 
 ---
 
+<a id="getitems"></a>
 ### getItems
 
 #### 📋 Purpose
@@ -334,6 +382,7 @@ Shared
 
 ---
 
+<a id="getitemsoftype"></a>
 ### getItemsOfType
 
 #### 📋 Purpose
@@ -344,9 +393,7 @@ Use when filtering for a specific item uniqueID.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemType` | **string** | Unique item identifier to match. |
+- `itemType` (string) - Unique item identifier to match.
 
 #### ↩️ Returns
 * table
@@ -364,6 +411,7 @@ Shared
 
 ---
 
+<a id="getfirstitemoftype"></a>
 ### getFirstItemOfType
 
 #### 📋 Purpose
@@ -374,9 +422,7 @@ Use when only one instance of a type is needed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemType` | **string** | Unique item identifier to find. |
+- `itemType` (string) - Unique item identifier to find.
 
 #### ↩️ Returns
 * table|nil
@@ -394,6 +440,7 @@ Shared
 
 ---
 
+<a id="hasitem"></a>
 ### hasItem
 
 #### 📋 Purpose
@@ -404,9 +451,7 @@ Use before consuming or requiring an item.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemType` | **string** | Unique item identifier to check. |
+- `itemType` (string) - Unique item identifier to check.
 
 #### ↩️ Returns
 * boolean
@@ -424,6 +469,7 @@ Shared
 
 ---
 
+<a id="getitemcount"></a>
 ### getItemCount
 
 #### 📋 Purpose
@@ -434,9 +480,7 @@ Use for capacity checks or UI badge counts.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemType` | **string|nil** | Unique ID to filter by; nil counts all. |
+- `itemType` (string|nil) - Unique ID to filter by; nil counts all.
 
 #### ↩️ Returns
 * number
@@ -454,6 +498,7 @@ Shared
 
 ---
 
+<a id="getid"></a>
 ### getID
 
 #### 📋 Purpose
@@ -478,6 +523,7 @@ Shared
 
 ---
 
+<a id="additem"></a>
 ### addItem
 
 #### 📋 Purpose
@@ -488,10 +534,8 @@ Use when adding an item to the inventory on the server.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item instance to add. |
-| `noReplicate` | **boolean** | Skip replication hooks when true. |
+- `item` (Item) - Item instance to add.
+- `noReplicate` (boolean) - Skip replication hooks when true.
 
 #### ↩️ Returns
 * Inventory
@@ -509,6 +553,7 @@ Server
 
 ---
 
+<a id="add"></a>
 ### add
 
 #### 📋 Purpose
@@ -519,9 +564,7 @@ Use wherever you would call addItem.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item instance to add. |
+- `item` (Item) - Item instance to add.
 
 #### ↩️ Returns
 * Inventory
@@ -539,6 +582,7 @@ Server
 
 ---
 
+<a id="syncitemadded"></a>
 ### syncItemAdded
 
 #### 📋 Purpose
@@ -549,9 +593,7 @@ Invoked after addItem to replicate state.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **Item** | Item instance already inserted. |
+- `item` (Item) - Item instance already inserted.
 
 #### ↩️ Returns
 * nil
@@ -568,6 +610,7 @@ Server
 
 ---
 
+<a id="initializestorage"></a>
 ### initializeStorage
 
 #### 📋 Purpose
@@ -578,9 +621,7 @@ Use during initial inventory creation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `initialData` | **table** | Key/value pairs to seed invdata rows; may include char. |
+- `initialData` (table) - Key/value pairs to seed invdata rows; may include char.
 
 #### ↩️ Returns
 * Promise
@@ -598,6 +639,7 @@ Server
 
 ---
 
+<a id="restorefromstorage"></a>
 ### restoreFromStorage
 
 #### 📋 Purpose
@@ -621,6 +663,7 @@ Server
 
 ---
 
+<a id="restorefromstorage"></a>
 ### restoreFromStorage
 
 #### 📋 Purpose
@@ -644,6 +687,7 @@ Server
 
 ---
 
+<a id="removeitem"></a>
 ### removeItem
 
 #### 📋 Purpose
@@ -654,10 +698,8 @@ Use when deleting or moving items out of the inventory.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemID` | **number** | ID of the item to remove. |
-| `preserveItem` | **boolean** | Keep the instance and DB row when true. |
+- `itemID` (number) - ID of the item to remove.
+- `preserveItem` (boolean) - Keep the instance and DB row when true.
 
 #### ↩️ Returns
 * Promise
@@ -675,6 +717,7 @@ Server
 
 ---
 
+<a id="remove"></a>
 ### remove
 
 #### 📋 Purpose
@@ -685,9 +728,7 @@ Use interchangeably with removeItem.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `itemID` | **number** | ID of the item to remove. |
+- `itemID` (number) - ID of the item to remove.
 
 #### ↩️ Returns
 * Promise
@@ -705,6 +746,7 @@ Server
 
 ---
 
+<a id="setdata"></a>
 ### setData
 
 #### 📋 Purpose
@@ -715,10 +757,8 @@ Use to change stored metadata such as character assignment.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to set. |
-| `value` | **any** | New value or nil to delete. |
+- `key` (string) - Data key to set.
+- `value` (any) - New value or nil to delete.
 
 #### ↩️ Returns
 * Inventory
@@ -736,6 +776,7 @@ Server
 
 ---
 
+<a id="canaccess"></a>
 ### canAccess
 
 #### 📋 Purpose
@@ -746,10 +787,8 @@ Use before allowing inventory interactions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `action` | **string** | Action name (e.g., "repl", "transfer"). |
-| `context` | **table** | Additional data such as client. |
+- `action` (string) - Action name (e.g., "repl", "transfer").
+- `context` (table) - Additional data such as client.
 
 #### ↩️ Returns
 * boolean|nil, string|nil
@@ -767,6 +806,7 @@ Server
 
 ---
 
+<a id="addaccessrule"></a>
 ### addAccessRule
 
 #### 📋 Purpose
@@ -777,10 +817,8 @@ Use when configuring permissions for this inventory type.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `rule` | **function** | Function returning decision and reason. |
-| `priority` | **number|nil** | Optional insert position. |
+- `rule` (function) - Function returning decision and reason.
+- `priority` (number|nil) - Optional insert position.
 
 #### ↩️ Returns
 * Inventory
@@ -798,6 +836,7 @@ Server
 
 ---
 
+<a id="removeaccessrule"></a>
 ### removeAccessRule
 
 #### 📋 Purpose
@@ -808,9 +847,7 @@ Use when unregistering dynamic permission logic.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `rule` | **function** | The rule function to remove. |
+- `rule` (function) - The rule function to remove.
 
 #### ↩️ Returns
 * Inventory
@@ -828,6 +865,7 @@ Server
 
 ---
 
+<a id="getrecipients"></a>
 ### getRecipients
 
 #### 📋 Purpose
@@ -852,6 +890,7 @@ Server
 
 ---
 
+<a id="oninstanced"></a>
 ### onInstanced
 
 #### 📋 Purpose
@@ -875,6 +914,7 @@ Server
 
 ---
 
+<a id="oninstanced"></a>
 ### onInstanced
 
 #### 📋 Purpose
@@ -898,6 +938,7 @@ Server
 
 ---
 
+<a id="onloaded"></a>
 ### onLoaded
 
 #### 📋 Purpose
@@ -921,6 +962,7 @@ Server
 
 ---
 
+<a id="onloaded"></a>
 ### onLoaded
 
 #### 📋 Purpose
@@ -944,6 +986,7 @@ Server
 
 ---
 
+<a id="loaditems"></a>
 ### loadItems
 
 #### 📋 Purpose
@@ -968,6 +1011,7 @@ Server
 
 ---
 
+<a id="onitemsloaded"></a>
 ### onItemsLoaded
 
 #### 📋 Purpose
@@ -978,9 +1022,7 @@ Override to run logic after contents are ready.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `items` | **table** | Loaded items table. |
+- `items` (table) - Loaded items table.
 
 #### ↩️ Returns
 * nil
@@ -997,6 +1039,7 @@ Server
 
 ---
 
+<a id="onitemsloaded"></a>
 ### onItemsLoaded
 
 #### 📋 Purpose
@@ -1007,9 +1050,7 @@ Override to run logic after contents are ready.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `items` | **table** | Loaded items table. |
+- `items` (table) - Loaded items table.
 
 #### ↩️ Returns
 * nil
@@ -1026,6 +1067,7 @@ Server
 
 ---
 
+<a id="instance"></a>
 ### instance
 
 #### 📋 Purpose
@@ -1036,9 +1078,7 @@ Use to instantiate a server-side inventory of this type.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `initialData` | **table** | Data used during creation (e.g., char assignment). |
+- `initialData` (table) - Data used during creation (e.g., char assignment).
 
 #### ↩️ Returns
 * Promise
@@ -1056,6 +1096,7 @@ Server
 
 ---
 
+<a id="syncdata"></a>
 ### syncData
 
 #### 📋 Purpose
@@ -1066,10 +1107,8 @@ Use after setData to replicate a specific field.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to send. |
-| `recipients` | **Player|table|nil** | Targets to notify; defaults to recipients with access. |
+- `key` (string) - Data key to send.
+- `recipients` (Player|table|nil) - Targets to notify; defaults to recipients with access.
 
 #### ↩️ Returns
 * nil
@@ -1086,6 +1125,7 @@ Server
 
 ---
 
+<a id="sync"></a>
 ### sync
 
 #### 📋 Purpose
@@ -1096,9 +1136,7 @@ Use when initializing or resyncing an inventory for clients.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `recipients` | **Player|table|nil** | Targets to receive the update; defaults to access list. |
+- `recipients` (Player|table|nil) - Targets to receive the update; defaults to access list.
 
 #### ↩️ Returns
 * nil
@@ -1115,6 +1153,7 @@ Server
 
 ---
 
+<a id="delete"></a>
 ### delete
 
 #### 📋 Purpose
@@ -1138,6 +1177,7 @@ Server
 
 ---
 
+<a id="destroy"></a>
 ### destroy
 
 #### 📋 Purpose
@@ -1161,6 +1201,7 @@ Server
 
 ---
 
+<a id="show"></a>
 ### show
 
 #### 📋 Purpose
@@ -1171,9 +1212,7 @@ Use to display this inventory to the player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `parent` | **Panel** | Optional parent panel. |
+- `parent` (Panel) - Optional parent panel.
 
 #### ↩️ Returns
 * Panel

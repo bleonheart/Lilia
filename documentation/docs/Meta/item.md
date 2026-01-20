@@ -10,6 +10,56 @@ The item meta table provides comprehensive functionality for managing item data,
 
 ---
 
+## Index
+
+- [isRotated](#isrotated)
+- [getWidth](#getwidth)
+- [getHeight](#getheight)
+- [getQuantity](#getquantity)
+- [tostring](#tostring)
+- [getID](#getid)
+- [getModel](#getmodel)
+- [getSkin](#getskin)
+- [getBodygroups](#getbodygroups)
+- [getPrice](#getprice)
+- [call](#call)
+- [getOwner](#getowner)
+- [getData](#getdata)
+- [getAllData](#getalldata)
+- [hook](#hook)
+- [postHook](#posthook)
+- [onRegistered](#onregistered)
+- [print](#print)
+- [printData](#printdata)
+- [getName](#getname)
+- [getDesc](#getdesc)
+- [removeFromInventory](#removefrominventory)
+- [delete](#delete)
+- [remove](#remove)
+- [destroy](#destroy)
+- [onDisposed](#ondisposed)
+- [onDisposed](#ondisposed)
+- [getEntity](#getentity)
+- [spawn](#spawn)
+- [transfer](#transfer)
+- [onInstanced](#oninstanced)
+- [onInstanced](#oninstanced)
+- [onSync](#onsync)
+- [onSync](#onsync)
+- [onRemoved](#onremoved)
+- [onRemoved](#onremoved)
+- [onRestored](#onrestored)
+- [onRestored](#onrestored)
+- [sync](#sync)
+- [setData](#setdata)
+- [addQuantity](#addquantity)
+- [setQuantity](#setquantity)
+- [interact](#interact)
+- [getCategory](#getcategory)
+
+---
+
+<a id="isrotated"></a>
 ### isRotated
 
 #### 📋 Purpose
@@ -34,6 +84,7 @@ Shared
 
 ---
 
+<a id="getwidth"></a>
 ### getWidth
 
 #### 📋 Purpose
@@ -58,6 +109,7 @@ Shared
 
 ---
 
+<a id="getheight"></a>
 ### getHeight
 
 #### 📋 Purpose
@@ -82,6 +134,7 @@ Shared
 
 ---
 
+<a id="getquantity"></a>
 ### getQuantity
 
 #### 📋 Purpose
@@ -106,6 +159,7 @@ Shared
 
 ---
 
+<a id="tostring"></a>
 ### tostring
 
 #### 📋 Purpose
@@ -130,6 +184,7 @@ Shared
 
 ---
 
+<a id="getid"></a>
 ### getID
 
 #### 📋 Purpose
@@ -154,6 +209,7 @@ Shared
 
 ---
 
+<a id="getmodel"></a>
 ### getModel
 
 #### 📋 Purpose
@@ -178,6 +234,7 @@ Shared
 
 ---
 
+<a id="getskin"></a>
 ### getSkin
 
 #### 📋 Purpose
@@ -202,6 +259,7 @@ Shared
 
 ---
 
+<a id="getbodygroups"></a>
 ### getBodygroups
 
 #### 📋 Purpose
@@ -226,6 +284,7 @@ Shared
 
 ---
 
+<a id="getprice"></a>
 ### getPrice
 
 #### 📋 Purpose
@@ -250,6 +309,7 @@ Shared
 
 ---
 
+<a id="call"></a>
 ### call
 
 #### 📋 Purpose
@@ -260,11 +320,9 @@ Use when you need to call an item function with player/entity context.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `method` | **string** | Name of the item method to invoke. |
-| `client` | **Player|nil** | Player to treat as the caller. |
-| `entity` | **Entity|nil** | Entity representing the item. |
+- `method` (string) - Name of the item method to invoke.
+- `client` (Player|nil) - Player to treat as the caller.
+- `entity` (Entity|nil) - Entity representing the item.
 
 #### ↩️ Returns
 * any
@@ -282,6 +340,7 @@ Shared
 
 ---
 
+<a id="getowner"></a>
 ### getOwner
 
 #### 📋 Purpose
@@ -306,6 +365,7 @@ Shared
 
 ---
 
+<a id="getdata"></a>
 ### getData
 
 #### 📋 Purpose
@@ -316,10 +376,8 @@ Use for custom item metadata such as durability or rotation.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to read. |
-| `default` | **any** | Value to return when the key is missing. |
+- `key` (string) - Data key to read.
+- `default` (any) - Value to return when the key is missing.
 
 #### ↩️ Returns
 * any
@@ -337,6 +395,7 @@ Shared
 
 ---
 
+<a id="getalldata"></a>
 ### getAllData
 
 #### 📋 Purpose
@@ -361,6 +420,7 @@ Shared
 
 ---
 
+<a id="hook"></a>
 ### hook
 
 #### 📋 Purpose
@@ -371,10 +431,8 @@ Use when adding custom behavior before an action executes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Hook name to bind. |
-| `func` | **function** | Callback to execute. |
+- `name` (string) - Hook name to bind.
+- `func` (function) - Callback to execute.
 
 #### ↩️ Returns
 * nil
@@ -391,6 +449,7 @@ Shared
 
 ---
 
+<a id="posthook"></a>
 ### postHook
 
 #### 📋 Purpose
@@ -401,10 +460,8 @@ Use when you need to react after an action completes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Hook name to bind. |
-| `func` | **function** | Callback to execute with results. |
+- `name` (string) - Hook name to bind.
+- `func` (function) - Callback to execute with results.
 
 #### ↩️ Returns
 * nil
@@ -421,6 +478,7 @@ Shared
 
 ---
 
+<a id="onregistered"></a>
 ### onRegistered
 
 #### 📋 Purpose
@@ -444,6 +502,7 @@ Shared
 
 ---
 
+<a id="print"></a>
 ### print
 
 #### 📋 Purpose
@@ -454,9 +513,7 @@ Use during debugging or admin commands.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `detail` | **boolean** | Include owner and grid info when true. |
+- `detail` (boolean) - Include owner and grid info when true.
 
 #### ↩️ Returns
 * nil
@@ -473,6 +530,7 @@ Shared
 
 ---
 
+<a id="printdata"></a>
 ### printData
 
 #### 📋 Purpose
@@ -496,6 +554,7 @@ Shared
 
 ---
 
+<a id="getname"></a>
 ### getName
 
 #### 📋 Purpose
@@ -520,6 +579,7 @@ Shared
 
 ---
 
+<a id="getdesc"></a>
 ### getDesc
 
 #### 📋 Purpose
@@ -544,6 +604,7 @@ Shared
 
 ---
 
+<a id="removefrominventory"></a>
 ### removeFromInventory
 
 #### 📋 Purpose
@@ -554,9 +615,7 @@ Use when dropping, deleting, or transferring the item out.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `preserveItem` | **boolean** | When true, keeps the instance for later use. |
+- `preserveItem` (boolean) - When true, keeps the instance for later use.
 
 #### ↩️ Returns
 * Promise
@@ -574,6 +633,7 @@ Server
 
 ---
 
+<a id="delete"></a>
 ### delete
 
 #### 📋 Purpose
@@ -598,6 +658,7 @@ Server
 
 ---
 
+<a id="remove"></a>
 ### remove
 
 #### 📋 Purpose
@@ -622,6 +683,7 @@ Server
 
 ---
 
+<a id="destroy"></a>
 ### destroy
 
 #### 📋 Purpose
@@ -645,6 +707,7 @@ Server
 
 ---
 
+<a id="ondisposed"></a>
 ### onDisposed
 
 #### 📋 Purpose
@@ -668,6 +731,7 @@ Server
 
 ---
 
+<a id="ondisposed"></a>
 ### onDisposed
 
 #### 📋 Purpose
@@ -691,6 +755,7 @@ Server
 
 ---
 
+<a id="getentity"></a>
 ### getEntity
 
 #### 📋 Purpose
@@ -715,6 +780,7 @@ Server
 
 ---
 
+<a id="spawn"></a>
 ### spawn
 
 #### 📋 Purpose
@@ -725,10 +791,8 @@ Use when dropping an item into the world.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `position` | **Vector|table|Entity** | Where to spawn, or the player dropping the item. |
-| `angles` | **Angle|Vector|table|nil** | Orientation for the spawned entity. |
+- `position` (Vector|table|Entity) - Where to spawn, or the player dropping the item.
+- `angles` (Angle|Vector|table|nil) - Orientation for the spawned entity.
 
 #### ↩️ Returns
 * Entity|nil
@@ -746,6 +810,7 @@ Server
 
 ---
 
+<a id="transfer"></a>
 ### transfer
 
 #### 📋 Purpose
@@ -756,10 +821,8 @@ Use when transferring items between containers or players.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `newInventory` | **Inventory** | Destination inventory. |
-| `bBypass` | **boolean** | Skip access checks when true. |
+- `newInventory` (Inventory) - Destination inventory.
+- `bBypass` (boolean) - Skip access checks when true.
 
 #### ↩️ Returns
 * boolean
@@ -777,6 +840,7 @@ Server
 
 ---
 
+<a id="oninstanced"></a>
 ### onInstanced
 
 #### 📋 Purpose
@@ -800,6 +864,7 @@ Server
 
 ---
 
+<a id="oninstanced"></a>
 ### onInstanced
 
 #### 📋 Purpose
@@ -823,6 +888,7 @@ Server
 
 ---
 
+<a id="onsync"></a>
 ### onSync
 
 #### 📋 Purpose
@@ -833,9 +899,7 @@ Triggered by sync calls; override for custom behavior.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `recipient` | **Player|nil** | The player who received the sync, or nil for broadcast. |
+- `recipient` (Player|nil) - The player who received the sync, or nil for broadcast.
 
 #### ↩️ Returns
 * nil
@@ -852,6 +916,7 @@ Server
 
 ---
 
+<a id="onsync"></a>
 ### onSync
 
 #### 📋 Purpose
@@ -862,9 +927,7 @@ Triggered by sync calls; override for custom behavior.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `recipient` | **Player|nil** | The player who received the sync, or nil for broadcast. |
+- `recipient` (Player|nil) - The player who received the sync, or nil for broadcast.
 
 #### ↩️ Returns
 * nil
@@ -881,6 +944,7 @@ Server
 
 ---
 
+<a id="onremoved"></a>
 ### onRemoved
 
 #### 📋 Purpose
@@ -904,6 +968,7 @@ Server
 
 ---
 
+<a id="onremoved"></a>
 ### onRemoved
 
 #### 📋 Purpose
@@ -927,6 +992,7 @@ Server
 
 ---
 
+<a id="onrestored"></a>
 ### onRestored
 
 #### 📋 Purpose
@@ -950,6 +1016,7 @@ Server
 
 ---
 
+<a id="onrestored"></a>
 ### onRestored
 
 #### 📋 Purpose
@@ -973,6 +1040,7 @@ Server
 
 ---
 
+<a id="sync"></a>
 ### sync
 
 #### 📋 Purpose
@@ -983,9 +1051,7 @@ Use after creating or updating an item instance.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `recipient` | **Player|nil** | Specific player to sync; broadcasts when nil. |
+- `recipient` (Player|nil) - Specific player to sync; broadcasts when nil.
 
 #### ↩️ Returns
 * nil
@@ -1002,6 +1068,7 @@ Server
 
 ---
 
+<a id="setdata"></a>
 ### setData
 
 #### 📋 Purpose
@@ -1012,13 +1079,11 @@ Use when updating item metadata that clients or persistence require.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to set. |
-| `value` | **any** | Value to store. |
-| `receivers` | **Player|table|nil** | Targets to send the update to; defaults to owner. |
-| `noSave` | **boolean** | Skip database write when true. |
-| `noCheckEntity` | **boolean** | Skip updating the world entity netvar when true. |
+- `key` (string) - Data key to set.
+- `value` (any) - Value to store.
+- `receivers` (Player|table|nil) - Targets to send the update to; defaults to owner.
+- `noSave` (boolean) - Skip database write when true.
+- `noCheckEntity` (boolean) - Skip updating the world entity netvar when true.
 
 #### ↩️ Returns
 * nil
@@ -1035,6 +1100,7 @@ Server
 
 ---
 
+<a id="addquantity"></a>
 ### addQuantity
 
 #### 📋 Purpose
@@ -1045,11 +1111,9 @@ Use for stacking items or consuming partial quantities.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `quantity` | **number** | Amount to add (can be negative). |
-| `receivers` | **Player|table|nil** | Targets to notify; defaults to owner. |
-| `noCheckEntity` | **boolean** | Skip updating the entity netvar when true. |
+- `quantity` (number) - Amount to add (can be negative).
+- `receivers` (Player|table|nil) - Targets to notify; defaults to owner.
+- `noCheckEntity` (boolean) - Skip updating the entity netvar when true.
 
 #### ↩️ Returns
 * nil
@@ -1066,6 +1130,7 @@ Server
 
 ---
 
+<a id="setquantity"></a>
 ### setQuantity
 
 #### 📋 Purpose
@@ -1076,11 +1141,9 @@ Use after splitting stacks or consuming items.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `quantity` | **number** | New stack amount. |
-| `receivers` | **Player|table|nil** | Targets to notify; defaults to owner. |
-| `noCheckEntity` | **boolean** | Skip updating the world entity netvar when true. |
+- `quantity` (number) - New stack amount.
+- `receivers` (Player|table|nil) - Targets to notify; defaults to owner.
+- `noCheckEntity` (boolean) - Skip updating the world entity netvar when true.
 
 #### ↩️ Returns
 * nil
@@ -1097,6 +1160,7 @@ Server
 
 ---
 
+<a id="interact"></a>
 ### interact
 
 #### 📋 Purpose
@@ -1107,12 +1171,10 @@ Use when a player selects an action from an item's context menu.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `action` | **string** | Action identifier from the item's functions table. |
-| `client` | **Player** | Player performing the action. |
-| `entity` | **Entity|nil** | World entity representing the item, if any. |
-| `data` | **any** | Additional data for multi-option actions. |
+- `action` (string) - Action identifier from the item's functions table.
+- `client` (Player) - Player performing the action.
+- `entity` (Entity|nil) - World entity representing the item, if any.
+- `data` (any) - Additional data for multi-option actions.
 
 #### ↩️ Returns
 * boolean
@@ -1130,6 +1192,7 @@ Server
 
 ---
 
+<a id="getcategory"></a>
 ### getCategory
 
 #### 📋 Purpose

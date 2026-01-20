@@ -483,10 +483,8 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
 
     if parsed_comment['parameters']:
         md += '#### ⚙️ Parameters\n\n'
-        md += '| Parameter | Type | Description |\n'
-        md += '|-----------|------|-------------|\n'
         for param in parsed_comment['parameters']:
-            md += f'| `{param["name"]}` | **{param["type"]}** | {param["description"]} |\n'
+            md += f'- `{param["name"]}` ({param["type"]}) - {param["description"]}\n'
         md += '\n'
 
     if parsed_comment['returns']:
@@ -751,10 +749,8 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
             md_parts.append(f'#### 📋 Purpose\n{parsed["explanation"]}\n\n')
         if parsed.get('parameters'):
             md_parts.append('#### ⚙️ Parameters\n\n')
-            md_parts.append('| Parameter | Type | Description |\n')
-            md_parts.append('|-----------|------|-------------|\n')
             for p in parsed['parameters']:
-                md_parts.append(f'| `{p["name"]}` | **{p["type"]}** | {p["description"]} |\n')
+                md_parts.append(f'- `{p["name"]}` ({p["type"]}) - {p["description"]}\n')
             md_parts.append('\n')
         if parsed.get('returns'):
             md_parts.append(f'#### ↩️ Returns\n* {parsed["returns"]}\n\n')

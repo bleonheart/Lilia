@@ -10,6 +10,86 @@ The player meta table provides comprehensive functionality for managing player d
 
 ---
 
+## Index
+
+- [getChar](#getchar)
+- [tostring](#tostring)
+- [Name](#name)
+- [doGesture](#dogesture)
+- [setAction](#setaction)
+- [doStaredAction](#dostaredaction)
+- [stopAction](#stopaction)
+- [hasPrivilege](#hasprivilege)
+- [removeRagdoll](#removeragdoll)
+- [getItemWeapon](#getitemweapon)
+- [isFamilySharedAccount](#isfamilysharedaccount)
+- [getItemDropPos](#getitemdroppos)
+- [getItems](#getitems)
+- [getTracedEntity](#gettracedentity)
+- [notify](#notify)
+- [notifyLocalized](#notifylocalized)
+- [notifyError](#notifyerror)
+- [notifyWarning](#notifywarning)
+- [notifyInfo](#notifyinfo)
+- [notifySuccess](#notifysuccess)
+- [notifyMoney](#notifymoney)
+- [notifyAdmin](#notifyadmin)
+- [notifyErrorLocalized](#notifyerrorlocalized)
+- [notifyWarningLocalized](#notifywarninglocalized)
+- [notifyInfoLocalized](#notifyinfolocalized)
+- [notifySuccessLocalized](#notifysuccesslocalized)
+- [notifyMoneyLocalized](#notifymoneylocalized)
+- [notifyAdminLocalized](#notifyadminlocalized)
+- [canEditVendor](#caneditvendor)
+- [isStaff](#isstaff)
+- [isStaffOnDuty](#isstaffonduty)
+- [hasWhitelist](#haswhitelist)
+- [getClassData](#getclassdata)
+- [getDarkRPVar](#getdarkrpvar)
+- [getMoney](#getmoney)
+- [canAfford](#canafford)
+- [hasSkillLevel](#hasskilllevel)
+- [meetsRequiredSkills](#meetsrequiredskills)
+- [forceSequence](#forcesequence)
+- [leaveSequence](#leavesequence)
+- [getFlags](#getflags)
+- [giveFlags](#giveflags)
+- [takeFlags](#takeflags)
+- [networkAnimation](#networkanimation)
+- [getAllLiliaData](#getallliliadata)
+- [setWaypoint](#setwaypoint)
+- [getLiliaData](#getliliadata)
+- [getMainCharacter](#getmaincharacter)
+- [setMainCharacter](#setmaincharacter)
+- [hasFlags](#hasflags)
+- [playTimeGreaterThan](#playtimegreaterthan)
+- [requestOptions](#requestoptions)
+- [requestString](#requeststring)
+- [requestArguments](#requestarguments)
+- [requestBinaryQuestion](#requestbinaryquestion)
+- [requestPopupQuestion](#requestpopupquestion)
+- [requestButtons](#requestbuttons)
+- [requestDropdown](#requestdropdown)
+- [restoreStamina](#restorestamina)
+- [consumeStamina](#consumestamina)
+- [addMoney](#addmoney)
+- [takeMoney](#takemoney)
+- [loadLiliaData](#loadliliadata)
+- [saveLiliaData](#saveliliadata)
+- [setLiliaData](#setliliadata)
+- [banPlayer](#banplayer)
+- [getPlayTime](#getplaytime)
+- [setRagdolled](#setragdolled)
+- [syncVars](#syncvars)
+- [setNetVar](#setnetvar)
+- [setLocalVar](#setlocalvar)
+- [getLocalVar](#getlocalvar)
+- [getLocalVar](#getlocalvar)
+- [getPlayTime](#getplaytime)
+
+---
+
+<a id="getchar"></a>
 ### getChar
 
 #### 📋 Purpose
@@ -34,6 +114,7 @@ Shared
 
 ---
 
+<a id="tostring"></a>
 ### tostring
 
 #### 📋 Purpose
@@ -58,6 +139,7 @@ Shared
 
 ---
 
+<a id="name"></a>
 ### Name
 
 #### 📋 Purpose
@@ -82,6 +164,7 @@ Shared
 
 ---
 
+<a id="dogesture"></a>
 ### doGesture
 
 #### 📋 Purpose
@@ -92,11 +175,9 @@ Use to play a gesture on the player and sync to others.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `a` | **number** | Gesture activity. |
-| `b` | **number** | Layer or slot. |
-| `c` | **number** | Playback rate or weight. |
+- `a` (number) - Gesture activity.
+- `b` (number) - Layer or slot.
+- `c` (number) - Playback rate or weight.
 
 #### ↩️ Returns
 * nil
@@ -113,6 +194,7 @@ Shared
 
 ---
 
+<a id="setaction"></a>
 ### setAction
 
 #### 📋 Purpose
@@ -123,11 +205,9 @@ Use to gate actions behind a timed progress bar.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `text` | **string|nil** | Message to display; nil cancels the bar. |
-| `time` | **number** | Duration in seconds. |
-| `callback` | **function|nil** | Invoked when the timer completes. |
+- `text` (string|nil) - Message to display; nil cancels the bar.
+- `time` (number) - Duration in seconds.
+- `callback` (function|nil) - Invoked when the timer completes.
 
 #### ↩️ Returns
 * nil
@@ -144,6 +224,7 @@ Shared
 
 ---
 
+<a id="dostaredaction"></a>
 ### doStaredAction
 
 #### 📋 Purpose
@@ -154,13 +235,11 @@ Use for interactions requiring sustained aim on a target.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `entity` | **Entity** | Target entity to watch. |
-| `callback` | **function** | Function called after staring completes. |
-| `time` | **number** | Duration in seconds required. |
-| `onCancel` | **function|nil** | Called if the stare is interrupted. |
-| `distance` | **number|nil** | Max distance trace length. |
+- `entity` (Entity) - Target entity to watch.
+- `callback` (function) - Function called after staring completes.
+- `time` (number) - Duration in seconds required.
+- `onCancel` (function|nil) - Called if the stare is interrupted.
+- `distance` (number|nil) - Max distance trace length.
 
 #### ↩️ Returns
 * nil
@@ -177,6 +256,7 @@ Shared
 
 ---
 
+<a id="stopaction"></a>
 ### stopAction
 
 #### 📋 Purpose
@@ -200,6 +280,7 @@ Shared
 
 ---
 
+<a id="hasprivilege"></a>
 ### hasPrivilege
 
 #### 📋 Purpose
@@ -210,9 +291,7 @@ Use before allowing privileged actions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `privilegeName` | **string** | Permission to query. |
+- `privilegeName` (string) - Permission to query.
 
 #### ↩️ Returns
 * boolean
@@ -230,6 +309,7 @@ Shared
 
 ---
 
+<a id="removeragdoll"></a>
 ### removeRagdoll
 
 #### 📋 Purpose
@@ -253,6 +333,7 @@ Shared
 
 ---
 
+<a id="getitemweapon"></a>
 ### getItemWeapon
 
 #### 📋 Purpose
@@ -277,6 +358,7 @@ Shared
 
 ---
 
+<a id="isfamilysharedaccount"></a>
 ### isFamilySharedAccount
 
 #### 📋 Purpose
@@ -301,6 +383,7 @@ Shared
 
 ---
 
+<a id="getitemdroppos"></a>
 ### getItemDropPos
 
 #### 📋 Purpose
@@ -325,6 +408,7 @@ Shared
 
 ---
 
+<a id="getitems"></a>
 ### getItems
 
 #### 📋 Purpose
@@ -349,6 +433,7 @@ Shared
 
 ---
 
+<a id="gettracedentity"></a>
 ### getTracedEntity
 
 #### 📋 Purpose
@@ -359,9 +444,7 @@ Use for interaction traces.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `distance` | **number** | Max trace length; default 96. |
+- `distance` (number) - Max trace length; default 96.
 
 #### ↩️ Returns
 * Entity|nil
@@ -379,6 +462,7 @@ Shared
 
 ---
 
+<a id="notify"></a>
 ### notify
 
 #### 📋 Purpose
@@ -389,10 +473,8 @@ Use to display a generic notice.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to show. |
-| `notifType` | **string** | Optional type key. |
+- `message` (string) - Text to show.
+- `notifType` (string) - Optional type key.
 
 #### ↩️ Returns
 * nil
@@ -409,6 +491,7 @@ Shared
 
 ---
 
+<a id="notifylocalized"></a>
 ### notifyLocalized
 
 #### 📋 Purpose
@@ -419,10 +502,8 @@ Use when the message is a localization token.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Localization key. |
-| `notifType` | **string** | Optional type key. |
+- `message` (string) - Localization key.
+- `notifType` (string) - Optional type key.
 
 #### ↩️ Returns
 * nil
@@ -439,6 +520,7 @@ Shared
 
 ---
 
+<a id="notifyerror"></a>
 ### notifyError
 
 #### 📋 Purpose
@@ -449,9 +531,7 @@ Use to display error messages in a consistent style.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Error text. |
+- `message` (string) - Error text.
 
 #### ↩️ Returns
 * nil
@@ -468,6 +548,7 @@ Shared
 
 ---
 
+<a id="notifywarning"></a>
 ### notifyWarning
 
 #### 📋 Purpose
@@ -478,9 +559,7 @@ Use for cautionary messages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to display. |
+- `message` (string) - Text to display.
 
 #### ↩️ Returns
 * nil
@@ -497,6 +576,7 @@ Shared
 
 ---
 
+<a id="notifyinfo"></a>
 ### notifyInfo
 
 #### 📋 Purpose
@@ -507,9 +587,7 @@ Use for neutral informational messages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to display. |
+- `message` (string) - Text to display.
 
 #### ↩️ Returns
 * nil
@@ -526,6 +604,7 @@ Shared
 
 ---
 
+<a id="notifysuccess"></a>
 ### notifySuccess
 
 #### 📋 Purpose
@@ -536,9 +615,7 @@ Use to indicate successful actions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to display. |
+- `message` (string) - Text to display.
 
 #### ↩️ Returns
 * nil
@@ -555,6 +632,7 @@ Shared
 
 ---
 
+<a id="notifymoney"></a>
 ### notifyMoney
 
 #### 📋 Purpose
@@ -565,9 +643,7 @@ Use for currency gain/spend messages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to display. |
+- `message` (string) - Text to display.
 
 #### ↩️ Returns
 * nil
@@ -584,6 +660,7 @@ Shared
 
 ---
 
+<a id="notifyadmin"></a>
 ### notifyAdmin
 
 #### 📋 Purpose
@@ -594,9 +671,7 @@ Use for staff-oriented alerts.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `message` | **string** | Text to display. |
+- `message` (string) - Text to display.
 
 #### ↩️ Returns
 * nil
@@ -613,6 +688,7 @@ Shared
 
 ---
 
+<a id="notifyerrorlocalized"></a>
 ### notifyErrorLocalized
 
 #### 📋 Purpose
@@ -623,9 +699,7 @@ Use for localized error tokens.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -642,6 +716,7 @@ Shared
 
 ---
 
+<a id="notifywarninglocalized"></a>
 ### notifyWarningLocalized
 
 #### 📋 Purpose
@@ -652,9 +727,7 @@ Use for localized warnings.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -671,6 +744,7 @@ Shared
 
 ---
 
+<a id="notifyinfolocalized"></a>
 ### notifyInfoLocalized
 
 #### 📋 Purpose
@@ -681,9 +755,7 @@ Use for localized informational messages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -700,6 +772,7 @@ Shared
 
 ---
 
+<a id="notifysuccesslocalized"></a>
 ### notifySuccessLocalized
 
 #### 📋 Purpose
@@ -710,9 +783,7 @@ Use for localized success confirmations.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -729,6 +800,7 @@ Shared
 
 ---
 
+<a id="notifymoneylocalized"></a>
 ### notifyMoneyLocalized
 
 #### 📋 Purpose
@@ -739,9 +811,7 @@ Use for localized currency messages.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -758,6 +828,7 @@ Shared
 
 ---
 
+<a id="notifyadminlocalized"></a>
 ### notifyAdminLocalized
 
 #### 📋 Purpose
@@ -768,9 +839,7 @@ Use for staff messages with localization.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Localization key. |
+- `key` (string) - Localization key.
 
 #### ↩️ Returns
 * nil
@@ -787,6 +856,7 @@ Shared
 
 ---
 
+<a id="caneditvendor"></a>
 ### canEditVendor
 
 #### 📋 Purpose
@@ -797,9 +867,7 @@ Use before opening vendor edit interfaces.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `vendor` | **Entity** | Vendor entity to check. |
+- `vendor` (Entity) - Vendor entity to check.
 
 #### ↩️ Returns
 * boolean
@@ -817,6 +885,7 @@ Shared
 
 ---
 
+<a id="isstaff"></a>
 ### isStaff
 
 #### 📋 Purpose
@@ -841,6 +910,7 @@ Shared
 
 ---
 
+<a id="isstaffonduty"></a>
 ### isStaffOnDuty
 
 #### 📋 Purpose
@@ -865,6 +935,7 @@ Shared
 
 ---
 
+<a id="haswhitelist"></a>
 ### hasWhitelist
 
 #### 📋 Purpose
@@ -875,9 +946,7 @@ Use before allowing faction selection.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `faction` | **number** | Faction ID. |
+- `faction` (number) - Faction ID.
 
 #### ↩️ Returns
 * boolean
@@ -895,6 +964,7 @@ Shared
 
 ---
 
+<a id="getclassdata"></a>
 ### getClassData
 
 #### 📋 Purpose
@@ -919,6 +989,7 @@ Shared
 
 ---
 
+<a id="getdarkrpvar"></a>
 ### getDarkRPVar
 
 #### 📋 Purpose
@@ -929,9 +1000,7 @@ Use when DarkRP expects getDarkRPVar("money").
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `var` | **string** | Variable name, only "money" supported. |
+- `var` (string) - Variable name, only "money" supported.
 
 #### ↩️ Returns
 * number|nil
@@ -949,6 +1018,7 @@ Shared
 
 ---
 
+<a id="getmoney"></a>
 ### getMoney
 
 #### 📋 Purpose
@@ -973,6 +1043,7 @@ Shared
 
 ---
 
+<a id="canafford"></a>
 ### canAfford
 
 #### 📋 Purpose
@@ -983,9 +1054,7 @@ Use before charging the player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Cost to check. |
+- `amount` (number) - Cost to check.
 
 #### ↩️ Returns
 * boolean
@@ -1003,6 +1072,7 @@ Shared
 
 ---
 
+<a id="hasskilllevel"></a>
 ### hasSkillLevel
 
 #### 📋 Purpose
@@ -1013,10 +1083,8 @@ Use for gating actions behind skills.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `skill` | **string** | Attribute key. |
-| `level` | **number** | Required level. |
+- `skill` (string) - Attribute key.
+- `level` (number) - Required level.
 
 #### ↩️ Returns
 * boolean
@@ -1034,6 +1102,7 @@ Shared
 
 ---
 
+<a id="meetsrequiredskills"></a>
 ### meetsRequiredSkills
 
 #### 📋 Purpose
@@ -1044,9 +1113,7 @@ Use when checking multiple skill prerequisites.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `requiredSkillLevels` | **table** | Map of skill keys to required levels. |
+- `requiredSkillLevels` (table) - Map of skill keys to required levels.
 
 #### ↩️ Returns
 * boolean
@@ -1064,6 +1131,7 @@ Shared
 
 ---
 
+<a id="forcesequence"></a>
 ### forceSequence
 
 #### 📋 Purpose
@@ -1074,12 +1142,10 @@ Use for scripted animations like sit or interact sequences.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sequenceName` | **string|nil** | Sequence to play; nil clears the current sequence. |
-| `callback` | **function|nil** | Called when the sequence ends. |
-| `time` | **number|nil** | Override duration. |
-| `noFreeze` | **boolean** | Prevent movement freeze when true. |
+- `sequenceName` (string|nil) - Sequence to play; nil clears the current sequence.
+- `callback` (function|nil) - Called when the sequence ends.
+- `time` (number|nil) - Override duration.
+- `noFreeze` (boolean) - Prevent movement freeze when true.
 
 #### ↩️ Returns
 * number|boolean|nil
@@ -1097,6 +1163,7 @@ Shared
 
 ---
 
+<a id="leavesequence"></a>
 ### leaveSequence
 
 #### 📋 Purpose
@@ -1120,6 +1187,7 @@ Shared
 
 ---
 
+<a id="getflags"></a>
 ### getFlags
 
 #### 📋 Purpose
@@ -1144,6 +1212,7 @@ Shared
 
 ---
 
+<a id="giveflags"></a>
 ### giveFlags
 
 #### 📋 Purpose
@@ -1154,9 +1223,7 @@ Use when adding privileges.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | Flags to give. |
+- `flags` (string) - Flags to give.
 
 #### ↩️ Returns
 * nil
@@ -1173,6 +1240,7 @@ Shared
 
 ---
 
+<a id="takeflags"></a>
 ### takeFlags
 
 #### 📋 Purpose
@@ -1183,9 +1251,7 @@ Use when revoking privileges.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | Flags to remove. |
+- `flags` (string) - Flags to remove.
 
 #### ↩️ Returns
 * nil
@@ -1202,6 +1268,7 @@ Shared
 
 ---
 
+<a id="networkanimation"></a>
 ### networkAnimation
 
 #### 📋 Purpose
@@ -1212,10 +1279,8 @@ Use when enabling or disabling custom bone angles.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `active` | **boolean** | Whether the animation is active. |
-| `boneData` | **table** | Map of bone names to Angle values. |
+- `active` (boolean) - Whether the animation is active.
+- `boneData` (table) - Map of bone names to Angle values.
 
 #### ↩️ Returns
 * nil
@@ -1232,6 +1297,7 @@ Shared
 
 ---
 
+<a id="getallliliadata"></a>
 ### getAllLiliaData
 
 #### 📋 Purpose
@@ -1256,6 +1322,7 @@ Shared
 
 ---
 
+<a id="setwaypoint"></a>
 ### setWaypoint
 
 #### 📋 Purpose
@@ -1266,12 +1333,10 @@ Use when directing a player to a position or objective.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | **string** | Label shown on the HUD. |
-| `vector` | **Vector** | Target world position. |
-| `logo` | **string|nil** | Optional material path for the icon. |
-| `onReach` | **function|nil** | Callback fired when the waypoint is reached. |
+- `name` (string) - Label shown on the HUD.
+- `vector` (Vector) - Target world position.
+- `logo` (string|nil) - Optional material path for the icon.
+- `onReach` (function|nil) - Callback fired when the waypoint is reached.
 
 #### ↩️ Returns
 * nil
@@ -1288,6 +1353,7 @@ Shared
 
 ---
 
+<a id="getliliadata"></a>
 ### getLiliaData
 
 #### 📋 Purpose
@@ -1298,10 +1364,8 @@ Use for persistent per-player data such as settings or cooldowns.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key to fetch. |
-| `default` | **any** | Value to return when unset. |
+- `key` (string) - Data key to fetch.
+- `default` (any) - Value to return when unset.
 
 #### ↩️ Returns
 * any
@@ -1319,6 +1383,7 @@ Shared
 
 ---
 
+<a id="getmaincharacter"></a>
 ### getMainCharacter
 
 #### 📋 Purpose
@@ -1343,6 +1408,7 @@ Shared
 
 ---
 
+<a id="setmaincharacter"></a>
 ### setMainCharacter
 
 #### 📋 Purpose
@@ -1353,9 +1419,7 @@ Use when a player picks or clears their main character.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `charID` | **number|nil** | Character ID to set, or nil/0 to clear. |
+- `charID` (number|nil) - Character ID to set, or nil/0 to clear.
 
 #### ↩️ Returns
 * boolean, string|nil
@@ -1373,6 +1437,7 @@ Shared
 
 ---
 
+<a id="hasflags"></a>
 ### hasFlags
 
 #### 📋 Purpose
@@ -1383,9 +1448,7 @@ Use when gating actions behind flag permissions.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | One or more flag characters to test. |
+- `flags` (string) - One or more flag characters to test.
 
 #### ↩️ Returns
 * boolean
@@ -1403,6 +1466,7 @@ Shared
 
 ---
 
+<a id="playtimegreaterthan"></a>
 ### playTimeGreaterThan
 
 #### 📋 Purpose
@@ -1413,9 +1477,7 @@ Use for requirements based on time played.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `time` | **number** | Threshold in seconds. |
+- `time` (number) - Threshold in seconds.
 
 #### ↩️ Returns
 * boolean
@@ -1433,6 +1495,7 @@ Shared
 
 ---
 
+<a id="requestoptions"></a>
 ### requestOptions
 
 #### 📋 Purpose
@@ -1443,13 +1506,11 @@ Use for multi-choice prompts that may return multiple selections.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | **string** | Dialog title. |
-| `subTitle` | **string** | Subtitle/description. |
-| `options` | **table** | Array of option labels. |
-| `limit` | **number** | Max selections allowed. |
-| `callback` | **function** | Called with selections when chosen. |
+- `title` (string) - Dialog title.
+- `subTitle` (string) - Subtitle/description.
+- `options` (table) - Array of option labels.
+- `limit` (number) - Max selections allowed.
+- `callback` (function) - Called with selections when chosen.
 
 #### ↩️ Returns
 * deferred|nil
@@ -1467,6 +1528,7 @@ Shared
 
 ---
 
+<a id="requeststring"></a>
 ### requestString
 
 #### 📋 Purpose
@@ -1477,12 +1539,10 @@ Use when collecting free-form text input.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | **string** |  |
-| `subTitle` | **string** |  |
-| `callback` | **function|nil** | Receives the string result; optional if using deferred. |
-| `default` | **string|nil** | Prefilled value. |
+- `title` (string) - 
+- `subTitle` (string) - 
+- `callback` (function|nil) - Receives the string result; optional if using deferred.
+- `default` (string|nil) - Prefilled value.
 
 #### ↩️ Returns
 * deferred|nil
@@ -1500,6 +1560,7 @@ Shared
 
 ---
 
+<a id="requestarguments"></a>
 ### requestArguments
 
 #### 📋 Purpose
@@ -1510,11 +1571,9 @@ Use for admin commands requiring typed input.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | **string** | Dialog title. |
-| `argTypes` | **table** | Schema describing required arguments. |
-| `callback` | **function|nil** | Receives parsed values; optional if using deferred. |
+- `title` (string) - Dialog title.
+- `argTypes` (table) - Schema describing required arguments.
+- `callback` (function|nil) - Receives parsed values; optional if using deferred.
 
 #### ↩️ Returns
 * deferred|nil
@@ -1532,6 +1591,7 @@ Shared
 
 ---
 
+<a id="requestbinaryquestion"></a>
 ### requestBinaryQuestion
 
 #### 📋 Purpose
@@ -1542,13 +1602,11 @@ Use for yes/no confirmations.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `question` | **string** | Prompt text. |
-| `option1` | **string** | Label for first option. |
-| `option2` | **string** | Label for second option. |
-| `manualDismiss` | **boolean** | Require manual close; optional. |
-| `callback` | **function** | Receives 0/1 result. |
+- `question` (string) - Prompt text.
+- `option1` (string) - Label for first option.
+- `option2` (string) - Label for second option.
+- `manualDismiss` (boolean) - Require manual close; optional.
+- `callback` (function) - Receives 0/1 result.
 
 #### ↩️ Returns
 * nil
@@ -1565,6 +1623,7 @@ Shared
 
 ---
 
+<a id="requestpopupquestion"></a>
 ### requestPopupQuestion
 
 #### 📋 Purpose
@@ -1575,10 +1634,8 @@ Use for multi-button confirmations or admin prompts.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `question` | **string** | Prompt text. |
-| `buttons` | **table** | Array of strings or {label, callback} pairs. |
+- `question` (string) - Prompt text.
+- `buttons` (table) - Array of strings or {label, callback} pairs.
 
 #### ↩️ Returns
 * nil
@@ -1595,6 +1652,7 @@ Shared
 
 ---
 
+<a id="requestbuttons"></a>
 ### requestButtons
 
 #### 📋 Purpose
@@ -1605,10 +1663,8 @@ Use when a simple list of actions is needed.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | **string** | Dialog title. |
-| `buttons` | **table** | Array of {text=, callback=} entries. |
+- `title` (string) - Dialog title.
+- `buttons` (table) - Array of {text=, callback=} entries.
 
 #### ↩️ Returns
 * nil
@@ -1625,6 +1681,7 @@ Shared
 
 ---
 
+<a id="requestdropdown"></a>
 ### requestDropdown
 
 #### 📋 Purpose
@@ -1635,12 +1692,10 @@ Use for single-choice option selection.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `title` | **string** |  |
-| `subTitle` | **string** |  |
-| `options` | **table** | Available options. |
-| `callback` | **function** | Invoked with chosen option. |
+- `title` (string) - 
+- `subTitle` (string) - 
+- `options` (table) - Available options.
+- `callback` (function) - Invoked with chosen option.
 
 #### ↩️ Returns
 * nil
@@ -1657,6 +1712,7 @@ Shared
 
 ---
 
+<a id="restorestamina"></a>
 ### restoreStamina
 
 #### 📋 Purpose
@@ -1667,9 +1723,7 @@ Use when giving the player stamina back (e.g., resting or items).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Stamina to add. |
+- `amount` (number) - Stamina to add.
 
 #### ↩️ Returns
 * nil
@@ -1686,6 +1740,7 @@ Server
 
 ---
 
+<a id="consumestamina"></a>
 ### consumeStamina
 
 #### 📋 Purpose
@@ -1696,9 +1751,7 @@ Use when sprinting or performing actions that consume stamina.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Stamina to subtract. |
+- `amount` (number) - Stamina to subtract.
 
 #### ↩️ Returns
 * nil
@@ -1715,6 +1768,7 @@ Server
 
 ---
 
+<a id="addmoney"></a>
 ### addMoney
 
 #### 📋 Purpose
@@ -1725,9 +1779,7 @@ Use when rewarding currency server-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Amount to add (can be negative via takeMoney). |
+- `amount` (number) - Amount to add (can be negative via takeMoney).
 
 #### ↩️ Returns
 * boolean
@@ -1745,6 +1797,7 @@ Server
 
 ---
 
+<a id="takemoney"></a>
 ### takeMoney
 
 #### 📋 Purpose
@@ -1755,9 +1808,7 @@ Use when charging the player server-side.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Amount to deduct. |
+- `amount` (number) - Amount to deduct.
 
 #### ↩️ Returns
 * nil
@@ -1774,6 +1825,7 @@ Server
 
 ---
 
+<a id="loadliliadata"></a>
 ### loadLiliaData
 
 #### 📋 Purpose
@@ -1784,9 +1836,7 @@ Use during player initial spawn to hydrate data.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `callback` | **function|nil** | Invoked with loaded data table. |
+- `callback` (function|nil) - Invoked with loaded data table.
 
 #### ↩️ Returns
 * nil
@@ -1803,6 +1853,7 @@ Server
 
 ---
 
+<a id="saveliliadata"></a>
 ### saveLiliaData
 
 #### 📋 Purpose
@@ -1826,6 +1877,7 @@ Server
 
 ---
 
+<a id="setliliadata"></a>
 ### setLiliaData
 
 #### 📋 Purpose
@@ -1836,12 +1888,10 @@ Use when updating persistent player-specific values.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Data key. |
-| `value` | **any** | Value to store. |
-| `noNetworking` | **boolean** | Skip net sync when true. |
-| `noSave` | **boolean** | Skip immediate DB save when true. |
+- `key` (string) - Data key.
+- `value` (any) - Value to store.
+- `noNetworking` (boolean) - Skip net sync when true.
+- `noSave` (boolean) - Skip immediate DB save when true.
 
 #### ↩️ Returns
 * nil
@@ -1858,6 +1908,7 @@ Server
 
 ---
 
+<a id="banplayer"></a>
 ### banPlayer
 
 #### 📋 Purpose
@@ -1868,11 +1919,9 @@ Use when banning a player via scripts.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `reason` | **string** | Ban reason. |
-| `duration` | **number** | Duration in minutes; 0 or nil for perm. |
-| `banner` | **Player|nil** | Staff issuing the ban. |
+- `reason` (string) - Ban reason.
+- `duration` (number) - Duration in minutes; 0 or nil for perm.
+- `banner` (Player|nil) - Staff issuing the ban.
 
 #### ↩️ Returns
 * nil
@@ -1889,6 +1938,7 @@ Server
 
 ---
 
+<a id="getplaytime"></a>
 ### getPlayTime
 
 #### 📋 Purpose
@@ -1913,6 +1963,7 @@ Server
 
 ---
 
+<a id="setragdolled"></a>
 ### setRagdolled
 
 #### 📋 Purpose
@@ -1923,12 +1974,10 @@ Use when knocking out or reviving a player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `state` | **boolean** | True to ragdoll, false to restore. |
-| `baseTime` | **number|nil** | Duration to stay ragdolled. |
-| `getUpGrace` | **number|nil** | Additional grace time before getting up. |
-| `getUpMessage` | **string|nil** | Action bar text while ragdolled. |
+- `state` (boolean) - True to ragdoll, false to restore.
+- `baseTime` (number|nil) - Duration to stay ragdolled.
+- `getUpGrace` (number|nil) - Additional grace time before getting up.
+- `getUpMessage` (string|nil) - Action bar text while ragdolled.
 
 #### ↩️ Returns
 * nil
@@ -1945,6 +1994,7 @@ Server
 
 ---
 
+<a id="syncvars"></a>
 ### syncVars
 
 #### 📋 Purpose
@@ -1968,6 +2018,7 @@ Server
 
 ---
 
+<a id="setnetvar"></a>
 ### setNetVar
 
 #### 📋 Purpose
@@ -1978,10 +2029,8 @@ Use when updating shared player state.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Variable name. |
-| `value` | **any** | Value to store. |
+- `key` (string) - Variable name.
+- `value` (any) - Value to store.
 
 #### ↩️ Returns
 * nil
@@ -1998,6 +2047,7 @@ Server
 
 ---
 
+<a id="setlocalvar"></a>
 ### setLocalVar
 
 #### 📋 Purpose
@@ -2008,10 +2058,8 @@ Use for per-player state that should not broadcast.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Variable name. |
-| `value` | **any** | Value to store. |
+- `key` (string) - Variable name.
+- `value` (any) - Value to store.
 
 #### ↩️ Returns
 * nil
@@ -2028,6 +2076,7 @@ Server
 
 ---
 
+<a id="getlocalvar"></a>
 ### getLocalVar
 
 #### 📋 Purpose
@@ -2038,10 +2087,8 @@ Use when accessing non-networked state.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Variable name. |
-| `default` | **any** | Fallback when unset. |
+- `key` (string) - Variable name.
+- `default` (any) - Fallback when unset.
 
 #### ↩️ Returns
 * any
@@ -2059,6 +2106,7 @@ Server
 
 ---
 
+<a id="getlocalvar"></a>
 ### getLocalVar
 
 #### 📋 Purpose
@@ -2069,10 +2117,8 @@ Use clientside when accessing shared netvars.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Variable name. |
-| `default` | **any** | Fallback when unset. |
+- `key` (string) - Variable name.
+- `default` (any) - Fallback when unset.
 
 #### ↩️ Returns
 * any
@@ -2090,6 +2136,7 @@ Client
 
 ---
 
+<a id="getplaytime"></a>
 ### getPlayTime
 
 #### 📋 Purpose
@@ -2109,160 +2156,6 @@ Client
 
 ```lua
     local t = ply:getPlayTime()
-
-```
-
----
-
-### getParts
-
-#### 📋 Purpose
-Returns the player's active PAC parts.
-
-#### ⏰ When Called
-Use to check which PAC parts are currently equipped on the player.
-
-#### ↩️ Returns
-* table
-Table of active PAC part IDs.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local parts = ply:getParts()
-    if parts["helmet"] then
-        print("Player has helmet equipped")
-    end
-
-```
-
----
-
-### syncParts
-
-#### 📋 Purpose
-Synchronizes the player's PAC parts with the client.
-
-#### ⏰ When Called
-Use to ensure the client has the correct PAC parts data.
-
-#### ↩️ Returns
-* None.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    ply:syncParts()
-
-```
-
----
-
-### addPart
-
-#### 📋 Purpose
-Adds a PAC part to the player.
-
-#### ⏰ When Called
-Use when equipping PAC parts on a player.
-
-#### ⚙️ Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `partID` | **string** | The unique ID of the PAC part to add. |
-
-#### ↩️ Returns
-* None.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    ply:addPart("helmet_model")
-
-```
-
----
-
-### removePart
-
-#### 📋 Purpose
-Removes a PAC part from the player.
-
-#### ⏰ When Called
-Use when unequipping PAC parts from a player.
-
-#### ⚙️ Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `partID` | **string** | The unique ID of the PAC part to remove. |
-
-#### ↩️ Returns
-* None.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    ply:removePart("helmet_model")
-
-```
-
----
-
-### resetParts
-
-#### 📋 Purpose
-Removes all PAC parts from the player.
-
-#### ⏰ When Called
-Use to clear all equipped PAC parts from a player.
-
-#### ↩️ Returns
-* None.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    ply:resetParts()
-
-```
-
----
-
-### IsAvailable
-
-#### 📋 Purpose
-Removes all PAC parts from the player.
-
-#### ⏰ When Called
-Use to clear all equipped PAC parts from a player.
-
-#### ↩️ Returns
-* None.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    ply:resetParts()
 
 ```
 

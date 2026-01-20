@@ -10,6 +10,44 @@ The character meta table provides comprehensive functionality for managing chara
 
 ---
 
+## Index
+
+- [getID](#getid)
+- [getPlayer](#getplayer)
+- [getDisplayedName](#getdisplayedname)
+- [hasMoney](#hasmoney)
+- [hasFlags](#hasflags)
+- [getAttrib](#getattrib)
+- [doesRecognize](#doesrecognize)
+- [doesFakeRecognize](#doesfakerecognize)
+- [setData](#setdata)
+- [getData](#getdata)
+- [isBanned](#isbanned)
+- [recognize](#recognize)
+- [joinClass](#joinclass)
+- [kickClass](#kickclass)
+- [updateAttrib](#updateattrib)
+- [setAttrib](#setattrib)
+- [addBoost](#addboost)
+- [removeBoost](#removeboost)
+- [clearAllBoosts](#clearallboosts)
+- [setFlags](#setflags)
+- [giveFlags](#giveflags)
+- [takeFlags](#takeflags)
+- [save](#save)
+- [sync](#sync)
+- [setup](#setup)
+- [kick](#kick)
+- [ban](#ban)
+- [delete](#delete)
+- [destroy](#destroy)
+- [giveMoney](#givemoney)
+- [takeMoney](#takemoney)
+- [isMainCharacter](#ismaincharacter)
+
+---
+
+<a id="getid"></a>
 ### getID
 
 #### 📋 Purpose
@@ -34,6 +72,7 @@ Shared
 
 ---
 
+<a id="getplayer"></a>
 ### getPlayer
 
 #### 📋 Purpose
@@ -58,6 +97,7 @@ Shared
 
 ---
 
+<a id="getdisplayedname"></a>
 ### getDisplayedName
 
 #### 📋 Purpose
@@ -68,9 +108,7 @@ Use when rendering a character's name to another player.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `client` | **Player** | The viewer whose recognition determines the name. |
+- `client` (Player) - The viewer whose recognition determines the name.
 
 #### ↩️ Returns
 * string
@@ -88,6 +126,7 @@ Shared
 
 ---
 
+<a id="hasmoney"></a>
 ### hasMoney
 
 #### 📋 Purpose
@@ -98,9 +137,7 @@ Use before charging a character to ensure they can afford a cost.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | The amount to verify. |
+- `amount` (number) - The amount to verify.
 
 #### ↩️ Returns
 * boolean
@@ -118,6 +155,7 @@ Shared
 
 ---
 
+<a id="hasflags"></a>
 ### hasFlags
 
 #### 📋 Purpose
@@ -128,9 +166,7 @@ Use when gating actions behind one or more privilege flags.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flagStr` | **string** | One or more flag characters to test. |
+- `flagStr` (string) - One or more flag characters to test.
 
 #### ↩️ Returns
 * boolean
@@ -148,6 +184,7 @@ Shared
 
 ---
 
+<a id="getattrib"></a>
 ### getAttrib
 
 #### 📋 Purpose
@@ -158,10 +195,8 @@ Use when calculating rolls or stats that depend on attributes.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Attribute identifier. |
-| `default` | **number** | Fallback value if the attribute is missing. |
+- `key` (string) - Attribute identifier.
+- `default` (number) - Fallback value if the attribute is missing.
 
 #### ↩️ Returns
 * number
@@ -179,6 +214,7 @@ Shared
 
 ---
 
+<a id="doesrecognize"></a>
 ### doesRecognize
 
 #### 📋 Purpose
@@ -189,9 +225,7 @@ Use when deciding if a viewer should see a real name or remain unknown.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | **number|table** | Character ID or object implementing getID. |
+- `id` (number|table) - Character ID or object implementing getID.
 
 #### ↩️ Returns
 * boolean
@@ -209,6 +243,7 @@ Shared
 
 ---
 
+<a id="doesfakerecognize"></a>
 ### doesFakeRecognize
 
 #### 📋 Purpose
@@ -219,9 +254,7 @@ Use when evaluating disguise or alias recognition logic.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `id` | **number|table** | Character ID or object implementing getID. |
+- `id` (number|table) - Character ID or object implementing getID.
 
 #### ↩️ Returns
 * boolean
@@ -239,6 +272,7 @@ Shared
 
 ---
 
+<a id="setdata"></a>
 ### setData
 
 #### 📋 Purpose
@@ -249,12 +283,10 @@ Use when adding persistent or networked character metadata.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `k` | **string|table** | Key to set or table of key/value pairs. |
-| `v` | **any** | Value to store when k is a string. |
-| `noReplication` | **boolean** | Skip networking when true. |
-| `receiver` | **Player|nil** | Specific client to receive the update instead of owner. |
+- `k` (string|table) - Key to set or table of key/value pairs.
+- `v` (any) - Value to store when k is a string.
+- `noReplication` (boolean) - Skip networking when true.
+- `receiver` (Player|nil) - Specific client to receive the update instead of owner.
 
 #### ↩️ Returns
 * nil
@@ -271,6 +303,7 @@ Shared
 
 ---
 
+<a id="getdata"></a>
 ### getData
 
 #### 📋 Purpose
@@ -281,10 +314,8 @@ Use when you need saved custom fields or default fallbacks.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string|nil** | Specific key to fetch or nil for the whole table. |
-| `default` | **any** | Value to return if the key is unset. |
+- `key` (string|nil) - Specific key to fetch or nil for the whole table.
+- `default` (any) - Value to return if the key is unset.
 
 #### ↩️ Returns
 * any
@@ -302,6 +333,7 @@ Shared
 
 ---
 
+<a id="isbanned"></a>
 ### isBanned
 
 #### 📋 Purpose
@@ -326,6 +358,7 @@ Shared
 
 ---
 
+<a id="recognize"></a>
 ### recognize
 
 #### 📋 Purpose
@@ -336,10 +369,8 @@ Invoke when a player learns or is assigned recognition of someone.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `character` | **number|table** | Target character ID or object implementing getID. |
-| `name` | **string|nil** | Optional alias to remember instead of real recognition. |
+- `character` (number|table) - Target character ID or object implementing getID.
+- `name` (string|nil) - Optional alias to remember instead of real recognition.
 
 #### ↩️ Returns
 * boolean
@@ -357,6 +388,7 @@ Server
 
 ---
 
+<a id="joinclass"></a>
 ### joinClass
 
 #### 📋 Purpose
@@ -367,10 +399,8 @@ Use during class selection or forced reassignment.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `class` | **number** | Class ID to join. |
-| `isForced` | **boolean** | Skip eligibility checks when true. |
+- `class` (number) - Class ID to join.
+- `isForced` (boolean) - Skip eligibility checks when true.
 
 #### ↩️ Returns
 * boolean
@@ -388,6 +418,7 @@ Server
 
 ---
 
+<a id="kickclass"></a>
 ### kickClass
 
 #### 📋 Purpose
@@ -411,6 +442,7 @@ Server
 
 ---
 
+<a id="updateattrib"></a>
 ### updateAttrib
 
 #### 📋 Purpose
@@ -421,10 +453,8 @@ Use when awarding experience toward an attribute.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Attribute identifier. |
-| `value` | **number** | Amount to add. |
+- `key` (string) - Attribute identifier.
+- `value` (number) - Amount to add.
 
 #### ↩️ Returns
 * nil
@@ -441,6 +471,7 @@ Server
 
 ---
 
+<a id="setattrib"></a>
 ### setAttrib
 
 #### 📋 Purpose
@@ -451,10 +482,8 @@ Use when loading characters or forcing an attribute level.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `key` | **string** | Attribute identifier. |
-| `value` | **number** | New attribute level. |
+- `key` (string) - Attribute identifier.
+- `value` (number) - New attribute level.
 
 #### ↩️ Returns
 * nil
@@ -471,6 +500,7 @@ Server
 
 ---
 
+<a id="addboost"></a>
 ### addBoost
 
 #### 📋 Purpose
@@ -481,11 +511,9 @@ Use when buffs or debuffs modify an attribute value.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `boostID` | **string** | Unique identifier for the boost source. |
-| `attribID` | **string** | Attribute being boosted. |
-| `boostAmount` | **number** | Amount to add (can be negative). |
+- `boostID` (string) - Unique identifier for the boost source.
+- `attribID` (string) - Attribute being boosted.
+- `boostAmount` (number) - Amount to add (can be negative).
 
 #### ↩️ Returns
 * boolean
@@ -503,6 +531,7 @@ Server
 
 ---
 
+<a id="removeboost"></a>
 ### removeBoost
 
 #### 📋 Purpose
@@ -513,10 +542,8 @@ Use when a buff expires or is cancelled.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `boostID` | **string** | Identifier of the boost source. |
-| `attribID` | **string** | Attribute to adjust. |
+- `boostID` (string) - Identifier of the boost source.
+- `attribID` (string) - Attribute to adjust.
 
 #### ↩️ Returns
 * boolean
@@ -534,6 +561,7 @@ Server
 
 ---
 
+<a id="clearallboosts"></a>
 ### clearAllBoosts
 
 #### 📋 Purpose
@@ -558,6 +586,7 @@ Server
 
 ---
 
+<a id="setflags"></a>
 ### setFlags
 
 #### 📋 Purpose
@@ -568,9 +597,7 @@ Use when setting privileges wholesale (e.g., admin changes).
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | Complete set of flags to apply. |
+- `flags` (string) - Complete set of flags to apply.
 
 #### ↩️ Returns
 * nil
@@ -587,6 +614,7 @@ Server
 
 ---
 
+<a id="giveflags"></a>
 ### giveFlags
 
 #### 📋 Purpose
@@ -597,9 +625,7 @@ Use when granting new permissions or perks.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | Concatenated flag characters to grant. |
+- `flags` (string) - Concatenated flag characters to grant.
 
 #### ↩️ Returns
 * nil
@@ -616,6 +642,7 @@ Server
 
 ---
 
+<a id="takeflags"></a>
 ### takeFlags
 
 #### 📋 Purpose
@@ -626,9 +653,7 @@ Use when revoking privileges or perks.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `flags` | **string** | Concatenated flag characters to remove. |
+- `flags` (string) - Concatenated flag characters to remove.
 
 #### ↩️ Returns
 * nil
@@ -645,6 +670,7 @@ Server
 
 ---
 
+<a id="save"></a>
 ### save
 
 #### 📋 Purpose
@@ -655,9 +681,7 @@ Use during saves, character switches, or shutdown to keep data.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `callback` | **function|nil** | Invoked after the save completes. |
+- `callback` (function|nil) - Invoked after the save completes.
 
 #### ↩️ Returns
 * nil
@@ -674,6 +698,7 @@ Server
 
 ---
 
+<a id="sync"></a>
 ### sync
 
 #### 📋 Purpose
@@ -684,9 +709,7 @@ Use after character creation, load, or when vars change.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `receiver` | **Player|nil** | Target player to sync to; nil broadcasts to everyone. |
+- `receiver` (Player|nil) - Target player to sync to; nil broadcasts to everyone.
 
 #### ↩️ Returns
 * nil
@@ -703,6 +726,7 @@ Server
 
 ---
 
+<a id="setup"></a>
 ### setup
 
 #### 📋 Purpose
@@ -713,9 +737,7 @@ Use right after a character is loaded or swapped in.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `noNetworking` | **boolean** | Skip inventory and char networking when true. |
+- `noNetworking` (boolean) - Skip inventory and char networking when true.
 
 #### ↩️ Returns
 * nil
@@ -732,6 +754,7 @@ Server
 
 ---
 
+<a id="kick"></a>
 ### kick
 
 #### 📋 Purpose
@@ -755,6 +778,7 @@ Server
 
 ---
 
+<a id="ban"></a>
 ### ban
 
 #### 📋 Purpose
@@ -765,9 +789,7 @@ Use for disciplinary actions like permakill or timed bans.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `time` | **number|nil** | Ban duration in seconds; nil makes it permanent. |
+- `time` (number|nil) - Ban duration in seconds; nil makes it permanent.
 
 #### ↩️ Returns
 * nil
@@ -784,6 +806,7 @@ Server
 
 ---
 
+<a id="delete"></a>
 ### delete
 
 #### 📋 Purpose
@@ -807,6 +830,7 @@ Server
 
 ---
 
+<a id="destroy"></a>
 ### destroy
 
 #### 📋 Purpose
@@ -830,6 +854,7 @@ Server
 
 ---
 
+<a id="givemoney"></a>
 ### giveMoney
 
 #### 📋 Purpose
@@ -840,9 +865,7 @@ Use when rewarding or refunding currency.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Amount to add (can be negative to deduct). |
+- `amount` (number) - Amount to add (can be negative to deduct).
 
 #### ↩️ Returns
 * boolean
@@ -860,6 +883,7 @@ Server
 
 ---
 
+<a id="takemoney"></a>
 ### takeMoney
 
 #### 📋 Purpose
@@ -870,9 +894,7 @@ Use when charging a player for purchases or penalties.
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `amount` | **number** | Amount to remove; the absolute value is used. |
+- `amount` (number) - Amount to remove; the absolute value is used.
 
 #### ↩️ Returns
 * boolean
@@ -890,6 +912,7 @@ Server
 
 ---
 
+<a id="ismaincharacter"></a>
 ### isMainCharacter
 
 #### 📋 Purpose

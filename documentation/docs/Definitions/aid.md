@@ -24,6 +24,7 @@ USAGE:
 
 ## Index
 
+- [name](#name)
 - [desc](#desc)
 - [model](#model)
 - [width](#width)

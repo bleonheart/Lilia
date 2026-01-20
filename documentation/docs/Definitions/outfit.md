@@ -195,11 +195,9 @@ Client
 
 #### ⚙️ Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `item` | **unknown** | The item instance being drawn |
-| `w` | **unknown** | Width of the item slot |
-| `h` | **unknown** | Height of the item slot |
+- `item` (unknown) - The item instance being drawn
+- `w` (unknown) - Width of the item slot
+- `h` (unknown) - Height of the item slot
 
 #### ↩️ Returns
 * nil
