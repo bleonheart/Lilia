@@ -3,7 +3,7 @@
     File:  shared.md
 ]]
 --[[
-    Shared Hooks
+    Shared
 
     Shared hook system for the Lilia framework.
     These hooks run on both client and server and are used for shared functionality and data synchronization.
