@@ -3,7 +3,7 @@
     File:  server.md
 ]]
 --[[
-    Server-Side Hooks
+    Server Hooks
 
     Server-side hook system for the Lilia framework.
     These hooks run on the server and are used for server-side logic, data management, and game state handling.

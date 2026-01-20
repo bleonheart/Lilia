@@ -455,6 +455,12 @@ def find_functions_in_file(file_path, is_library=False):
     return functions
 
 
+def generate_anchor_from_name(name):
+    anchor = name.lower()
+    anchor = re.sub(r'[^\w\s-]', '', anchor)
+    anchor = re.sub(r'[-\s]+', '-', anchor)
+    return anchor
+
 def generate_markdown_for_function(function_name, parsed_comment, is_library=False):
     display_name = function_name
     if is_library and not function_name.startswith('lia.'):
@@ -464,7 +470,8 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
     elif is_library and function_name.startswith('lia.'):
         display_name = function_name
 
-    md = f'### {display_name}\n\n'
+    anchor = generate_anchor_from_name(display_name)
+    md = f'<a id="{anchor}"></a>\n### {display_name}\n\n'
 
     if parsed_comment['purpose']:
         md += f'#### 📋 Purpose\n{parsed_comment["purpose"]}\n\n'
@@ -581,6 +588,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
         return
 
     sections = []
+    function_names = []
 
     for func in functions:
         parsed = parse_comment_block(func['comment'])
@@ -593,6 +601,15 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
                         print(f"  Skipping hook implementation: {func_name} (documented centrally)")
                         continue
 
+            display_name = func['name']
+            if is_library and not func['name'].startswith('lia.'):
+                display_name = f'lia.{func["name"]}'
+            elif not is_library and ':' in func['name']:
+                display_name = func['name'].split(':', 1)[1]
+            elif is_library and func['name'].startswith('lia.'):
+                display_name = func['name']
+            
+            function_names.append(display_name)
             section = generate_markdown_for_function(func['name'], parsed, is_library)
             sections.append(section)
 
@@ -632,6 +649,13 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
                 f.write(overview_content)
                 f.write('\n\n')
                 f.write('---\n\n')
+
+            if function_names:
+                f.write('## Index\n\n')
+                for func_name in function_names:
+                    anchor = generate_anchor_from_name(func_name)
+                    f.write(f'- [{func_name}](#{anchor})\n')
+                f.write('\n---\n\n')
 
         for section in sections:
             f.write(section)
@@ -702,10 +726,19 @@ def generate_markdown_for_definition_entries(title: str, subtitle: str, overview
         md_parts.append(parse_overview_section(overview_section) + '\n\n')
         md_parts.append('---\n\n')
 
+    if entries:
+        md_parts.append('## Index\n\n')
+        for entry in entries:
+            name = entry['name']
+            anchor = generate_anchor_from_name(name)
+            md_parts.append(f'- [{name}](#{anchor})\n')
+        md_parts.append('\n---\n\n')
+
     for entry in entries:
         name = entry['name']
         parsed = entry['parsed']
-        md_parts.append(f'### {name}\n\n')
+        anchor = generate_anchor_from_name(name)
+        md_parts.append(f'<a id="{anchor}"></a>\n### {name}\n\n')
         if parsed.get('purpose'):
             md_parts.append(f'#### 📋 Purpose\n{parsed["purpose"]}\n\n')
         if parsed.get('when_called'):
@@ -906,8 +939,15 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
         return
 
     sections: List[str] = []
+    function_names = []
     for func in functions:
         parsed = parse_comment_block(func['comment'])
+        func_name = func['name']
+        if ':' in func_name:
+            display_name = func_name.split(':', 1)[1]
+        else:
+            display_name = func_name
+        function_names.append(display_name)
         sections.append(generate_markdown_for_function(func['name'], parsed, is_library=False))
 
     if custom_filename:
@@ -936,6 +976,12 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
                 f.write('Overview\n\n')
                 f.write(parse_overview_section(overview_section) + '\n\n')
                 f.write('---\n\n')
+            if function_names:
+                f.write('## Index\n\n')
+                for func_name in function_names:
+                    anchor = generate_anchor_from_name(func_name)
+                    f.write(f'- [{func_name}](#{anchor})\n')
+                f.write('\n---\n\n')
         for section in sections:
             f.write(section)
             f.write('---\n\n')
@@ -1055,8 +1101,65 @@ def main():
     print("Documentation generation complete!")
 
 
+def extract_title_and_summary(md_file: Path) -> Tuple[str, str]:
+    """Extract title and summary from a markdown file."""
+    try:
+        with open(md_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+    except Exception:
+        name = md_file.stem
+        display_name = name.replace('lia.', '').replace('_', ' ').title()
+        return display_name, ''
+    
+    lines = content.split('\n')
+    title = ''
+    summary = ''
+    
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        if stripped.startswith('# ') and not title:
+            title = stripped[2:].strip()
+            if i + 1 < len(lines):
+                next_line = lines[i + 1].strip()
+                if next_line and not next_line.startswith('#') and not next_line.startswith('---'):
+                    summary = next_line
+                    break
+        elif stripped.startswith('## ') and not title:
+            title = stripped[3:].strip()
+            if i + 1 < len(lines):
+                next_line = lines[i + 1].strip()
+                if next_line and not next_line.startswith('#') and not next_line.startswith('---'):
+                    summary = next_line
+                    break
+    
+    if not title:
+        name = md_file.stem
+        title = name.replace('lia.', '').replace('_', ' ').title()
+    
+    if not summary:
+        overview_match = re.search(r'Overview\s*\n\s*\n(.+?)(?:\n\n---|\n\n###|$)', content, re.DOTALL)
+        if overview_match:
+            overview_text = overview_match.group(1).strip()
+            overview_text = re.sub(r'\n+', ' ', overview_text)
+            first_sentence = re.split(r'[.!?]\s+', overview_text)[0]
+            if first_sentence:
+                summary = first_sentence.strip()
+                if len(summary) > 200:
+                    summary = summary[:197] + '...'
+                if not summary.endswith(('.', '!', '?')):
+                    summary += '.'
+    
+    if not summary:
+        summary = f'Documentation for {title.lower()}.'
+    
+    summary = summary.replace('|', '\\|')
+    
+    return title, summary
+
+
 def generate_index_file(output_dir: Path, doc_type: str) -> None:
-    """Generate an index.md file listing all documentation files in the directory."""
+    """Generate an index.md file listing all documentation files in the directory with summaries."""
     output_dir.mkdir(parents=True, exist_ok=True)
     
     if not output_dir.exists():
@@ -1092,19 +1195,23 @@ def generate_index_file(output_dir: Path, doc_type: str) -> None:
         f.write(f'# {title}\n\n')
         
         if md_files:
+            f.write('| Name | Summary |\n')
+            f.write('|------|---------|\n')
             for md_file in md_files:
-                name = md_file.stem
-                display_name = name.replace('lia.', '').replace('_', ' ').title()
+                file_title, summary = extract_title_and_summary(md_file)
                 link_name = md_file.name
-                f.write(f'- [{display_name}](./{link_name})\n\n')
+                f.write(f'| [{file_title}](./{link_name}) | {summary} |\n')
+            f.write('\n')
         
         for subdir_name, subdir_files in subdirs:
             f.write(f'## {subdir_name.title()}\n\n')
+            f.write('| Name | Summary |\n')
+            f.write('|------|---------|\n')
             for md_file in subdir_files:
-                name = md_file.stem
-                display_name = name.replace('lia.', '').replace('_', ' ').title()
+                file_title, summary = extract_title_and_summary(md_file)
                 link_name = f'{subdir_name}/{md_file.name}'
-                f.write(f'- [{display_name}](./{link_name})\n\n')
+                f.write(f'| [{file_title}](./{link_name}) | {summary} |\n')
+            f.write('\n')
     
     print(f"  Generated index.md for {doc_type}")
 

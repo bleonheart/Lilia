@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Definitions
     File:  faction.md
 ]]
@@ -424,6 +424,20 @@ FACTION.limit = 0
         ```
 ]]
 FACTION.pay = 0
+--[[
+    Purpose:
+        Sets the pay timer interval in seconds for this faction. When a pay event triggers, it does so for all members of this faction using this timer.
+
+    When Called:
+        During faction definition
+
+    Example Usage:
+        ```lua
+        FACTION.payTimer = 1000  -- All members of this faction receive pay every 1000 seconds
+        FACTION.payTimer = nil   -- Uses the default SalaryInterval config value (default: 300 seconds)
+        ```
+]]
+FACTION.payTimer = nil
 --[[
     Purpose:
         Controls whether this faction appears in scoreboard categories

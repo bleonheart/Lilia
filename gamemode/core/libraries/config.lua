@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: config.md
 ]]
@@ -1790,6 +1790,9 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
 
             table.sort(categoryNames)
             allCategoryItems = categories
+            local function getCategoryIcon(categoryName)
+                return nil
+            end
             local function populateCategoryTab(categoryName, scrollPanel, searchFilter)
                 local canvas = scrollPanel:GetCanvas()
                 canvas:Clear()

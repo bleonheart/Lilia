@@ -1,4 +1,4 @@
-﻿local function getGameList()
+local function getGameList()
     local games = engine.GetGames()
     table.insert(games, {
         title = L("spawnmenuAll"),
@@ -300,42 +300,6 @@ hook.Add("PopulateContent", "liaExtendedSpawnMenuPopulateContent", function(pnlC
                 spawnmenu.CreateContentIcon("postprocess", panel, t)
                 spawnmenu.CreateContentIcon("postprocess", node.PropPanel, t)
             end
-        end
-
-        sub.DoClick = function() pnlContent:SwitchPanel(panel) end
-    end
-end)
-
-hook.Add("PopulateContent", "liaExtendedSpawnMenuPopulateContent", function(pnlContent, tree)
-    local node = tree:AddNode("#spawnmenu.category.npcs", "icon16/monkey.png")
-    node.PropPanel = vgui.Create("ContentContainer", pnlContent)
-    node.PropPanel:SetVisible(false)
-    node.DoClick = function() pnlContent:SwitchPanel(node.PropPanel) end
-    local cats = {}
-    for className, ent in pairs(list.Get("NPC") or {}) do
-        local cat = ent.Category or L("other")
-        cats[cat] = cats[cat] or {}
-        cats[cat][className] = ent
-    end
-
-    for catName, ents in SortedPairs(cats) do
-        local sub = node:AddNode(catName, "icon16/monkey.png")
-        local panel = vgui.Create("ContentContainer", pnlContent)
-        panel:SetVisible(false)
-        local header = vgui.Create("ContentHeader", node.PropPanel)
-        header:SetText(catName)
-        node.PropPanel:Add(header)
-        for className, ent in SortedPairsByMemberValue(ents, "Name") do
-            local t = {
-                nicename = ent.Name or className,
-                spawnname = className,
-                material = "entities/" .. className .. ".png",
-                weapon = ent.Weapons,
-                admin = ent.AdminOnly
-            }
-
-            spawnmenu.CreateContentIcon("npc", panel, t)
-            spawnmenu.CreateContentIcon("npc", node.PropPanel, t)
         end
 
         sub.DoClick = function() pnlContent:SwitchPanel(panel) end
