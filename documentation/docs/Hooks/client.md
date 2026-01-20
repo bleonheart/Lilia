@@ -1,4 +1,4 @@
-# Client-Side Hooks
+# Client Hooks
 
 Client-side hook system for the Lilia framework.
 
@@ -10,6 +10,148 @@ Client-side hooks in the Lilia framework handle UI, rendering, input, and other 
 
 ---
 
+## Index
+
+- [AddBarField](#addbarfield)
+- [AddSection](#addsection)
+- [AddTextField](#addtextfield)
+- [AddToAdminStickHUD](#addtoadminstickhud)
+- [AdminPrivilegesUpdated](#adminprivilegesupdated)
+- [AdminStickAddModels](#adminstickaddmodels)
+- [CanDeleteChar](#candeletechar)
+- [CanDisplayCharInfo](#candisplaycharinfo)
+- [CanOpenBagPanel](#canopenbagpanel)
+- [CanPlayerOpenScoreboard](#canplayeropenscoreboard)
+- [CanTakeEntity](#cantakeentity)
+- [CanPlayerViewInventory](#canplayerviewinventory)
+- [CharListColumns](#charlistcolumns)
+- [CharListEntry](#charlistentry)
+- [CharListLoaded](#charlistloaded)
+- [CharListUpdated](#charlistupdated)
+- [CharLoaded](#charloaded)
+- [CharMenuClosed](#charmenuclosed)
+- [CharMenuOpened](#charmenuopened)
+- [CharRestored](#charrestored)
+- [ChatAddText](#chataddtext)
+- [ChatboxPanelCreated](#chatboxpanelcreated)
+- [ChatboxTextAdded](#chatboxtextadded)
+- [ChooseCharacter](#choosecharacter)
+- [CommandRan](#commandran)
+- [ConfigureCharacterCreationSteps](#configurecharactercreationsteps)
+- [CreateCharacter](#createcharacter)
+- [CreateChatboxPanel](#createchatboxpanel)
+- [CreateDefaultInventory](#createdefaultinventory)
+- [CreateInformationButtons](#createinformationbuttons)
+- [CreateInventoryPanel](#createinventorypanel)
+- [CreateMenuButtons](#createmenubuttons)
+- [DeleteCharacter](#deletecharacter)
+- [DermaSkinChanged](#dermaskinchanged)
+- [DisplayPlayerHUDInformation](#displayplayerhudinformation)
+- [DoorDataReceived](#doordatareceived)
+- [DrawCharInfo](#drawcharinfo)
+- [DrawEntityInfo](#drawentityinfo)
+- [DrawItemEntityInfo](#drawitementityinfo)
+- [DrawLiliaModelView](#drawliliamodelview)
+- [DrawPlayerRagdoll](#drawplayerragdoll)
+- [F1MenuClosed](#f1menuclosed)
+- [F1MenuOpened](#f1menuopened)
+- [FilterCharModels](#filtercharmodels)
+- [FilterDoorInfo](#filterdoorinfo)
+- [GetAdjustedPartData](#getadjustedpartdata)
+- [GetCharacterCreateButtonTooltip](#getcharactercreatebuttontooltip)
+- [GetCharacterDisconnectButtonTooltip](#getcharacterdisconnectbuttontooltip)
+- [GetCharacterDiscordButtonTooltip](#getcharacterdiscordbuttontooltip)
+- [GetCharacterLoadButtonTooltip](#getcharacterloadbuttontooltip)
+- [GetCharacterLoadMainButtonTooltip](#getcharacterloadmainbuttontooltip)
+- [GetCharacterMountButtonTooltip](#getcharactermountbuttontooltip)
+- [GetCharacterReturnButtonTooltip](#getcharacterreturnbuttontooltip)
+- [GetCharacterStaffButtonTooltip](#getcharacterstaffbuttontooltip)
+- [GetCharacterWorkshopButtonTooltip](#getcharacterworkshopbuttontooltip)
+- [GetAdminESPTarget](#getadminesptarget)
+- [GetAdminStickLists](#getadminsticklists)
+- [GetDisplayedDescription](#getdisplayeddescription)
+- [GetDoorInfo](#getdoorinfo)
+- [GetDoorInfoForAdminStick](#getdoorinfoforadminstick)
+- [GetInjuredText](#getinjuredtext)
+- [GetMainCharacterID](#getmaincharacterid)
+- [GetMainMenuPosition](#getmainmenuposition)
+- [InteractionMenuClosed](#interactionmenuclosed)
+- [InteractionMenuOpened](#interactionmenuopened)
+- [InterceptClickItemIcon](#interceptclickitemicon)
+- [InventoryClosed](#inventoryclosed)
+- [InventoryItemDataChanged](#inventoryitemdatachanged)
+- [InventoryItemIconCreated](#inventoryitemiconcreated)
+- [InventoryOpened](#inventoryopened)
+- [InventoryPanelCreated](#inventorypanelcreated)
+- [ItemDraggedOutOfInventory](#itemdraggedoutofinventory)
+- [ItemPaintOver](#itempaintover)
+- [ItemShowEntityMenu](#itemshowentitymenu)
+- [LoadCharInformation](#loadcharinformation)
+- [LoadMainCharacter](#loadmaincharacter)
+- [LoadMainMenuInformation](#loadmainmenuinformation)
+- [ModifyScoreboardModel](#modifyscoreboardmodel)
+- [ModifyVoiceIndicatorText](#modifyvoiceindicatortext)
+- [DrawPlayerInfoBackground](#drawplayerinfobackground)
+- [OnAdminStickMenuClosed](#onadminstickmenuclosed)
+- [OnChatReceived](#onchatreceived)
+- [OnCreateDualInventoryPanels](#oncreatedualinventorypanels)
+- [OnCreateItemInteractionMenu](#oncreateiteminteractionmenu)
+- [OnCreateStoragePanel](#oncreatestoragepanel)
+- [OnLocalVarSet](#onlocalvarset)
+- [OnOpenVendorMenu](#onopenvendormenu)
+- [OnlineStaffDataReceived](#onlinestaffdatareceived)
+- [OpenAdminStickUI](#openadminstickui)
+- [PaintItem](#paintitem)
+- [PopulateAdminStick](#populateadminstick)
+- [PopulateAdminTabs](#populateadmintabs)
+- [PopulateConfigurationButtons](#populateconfigurationbuttons)
+- [PopulateInventoryItems](#populateinventoryitems)
+- [PostDrawInventory](#postdrawinventory)
+- [PostLoadFonts](#postloadfonts)
+- [DrawPhysgunBeam](#drawphysgunbeam)
+- [RefreshFonts](#refreshfonts)
+- [RegisterAdminStickSubcategories](#registeradminsticksubcategories)
+- [ResetCharacterPanel](#resetcharacterpanel)
+- [RunAdminSystemCommand](#runadminsystemcommand)
+- [ScoreboardClosed](#scoreboardclosed)
+- [ScoreboardOpened](#scoreboardopened)
+- [ScoreboardRowCreated](#scoreboardrowcreated)
+- [ScoreboardRowRemoved](#scoreboardrowremoved)
+- [SetMainCharacter](#setmaincharacter)
+- [SetupQuickMenu](#setupquickmenu)
+- [ShouldAllowScoreboardOverride](#shouldallowscoreboardoverride)
+- [ShouldBarDraw](#shouldbardraw)
+- [ShouldDisableThirdperson](#shoulddisablethirdperson)
+- [ShouldDrawAmmo](#shoulddrawammo)
+- [ShouldDrawEntityInfo](#shoulddrawentityinfo)
+- [ShouldDrawPlayerInfo](#shoulddrawplayerinfo)
+- [ShouldDrawWepSelect](#shoulddrawwepselect)
+- [ShouldHideBars](#shouldhidebars)
+- [ShouldMenuButtonShow](#shouldmenubuttonshow)
+- [ShouldRespawnScreenAppear](#shouldrespawnscreenappear)
+- [ShouldShowCharVarInCreation](#shouldshowcharvarincreation)
+- [ShouldShowClassOnScoreboard](#shouldshowclassonscoreboard)
+- [ShouldShowFactionOnScoreboard](#shouldshowfactiononscoreboard)
+- [ShouldShowPlayerOnScoreboard](#shouldshowplayeronscoreboard)
+- [ShouldShowQuickMenu](#shouldshowquickmenu)
+- [ShowPlayerOptions](#showplayeroptions)
+- [StorageOpen](#storageopen)
+- [StorageUnlockPrompt](#storageunlockprompt)
+- [ThirdPersonToggled](#thirdpersontoggled)
+- [TooltipInitialize](#tooltipinitialize)
+- [TooltipLayout](#tooltiplayout)
+- [TooltipPaint](#tooltippaint)
+- [VendorExited](#vendorexited)
+- [VendorOpened](#vendoropened)
+- [VoiceToggled](#voicetoggled)
+- [WeaponCycleSound](#weaponcyclesound)
+- [WeaponSelectSound](#weaponselectsound)
+- [WebImageDownloaded](#webimagedownloaded)
+- [WebSoundDownloaded](#websounddownloaded)
+
+---
+
+<a id="addbarfield"></a>
 ### AddBarField
 
 #### 📋 Purpose
@@ -47,6 +189,7 @@ Client
 
 ---
 
+<a id="addsection"></a>
 ### AddSection
 
 #### 📋 Purpose
@@ -82,6 +225,7 @@ Client
 
 ---
 
+<a id="addtextfield"></a>
 ### AddTextField
 
 #### 📋 Purpose
@@ -117,6 +261,7 @@ Client
 
 ---
 
+<a id="addtoadminstickhud"></a>
 ### AddToAdminStickHUD
 
 #### 📋 Purpose
@@ -151,6 +296,7 @@ Client
 
 ---
 
+<a id="adminprivilegesupdated"></a>
 ### AdminPrivilegesUpdated
 
 #### 📋 Purpose
@@ -177,6 +323,7 @@ Client
 
 ---
 
+<a id="adminstickaddmodels"></a>
 ### AdminStickAddModels
 
 #### 📋 Purpose
@@ -210,6 +357,7 @@ Client
 
 ---
 
+<a id="candeletechar"></a>
 ### CanDeleteChar
 
 #### 📋 Purpose
@@ -243,6 +391,7 @@ Client
 
 ---
 
+<a id="candisplaycharinfo"></a>
 ### CanDisplayCharInfo
 
 #### 📋 Purpose
@@ -275,6 +424,7 @@ Client
 
 ---
 
+<a id="canopenbagpanel"></a>
 ### CanOpenBagPanel
 
 #### 📋 Purpose
@@ -307,6 +457,7 @@ Client
 
 ---
 
+<a id="canplayeropenscoreboard"></a>
 ### CanPlayerOpenScoreboard
 
 #### 📋 Purpose
@@ -339,6 +490,7 @@ Client
 
 ---
 
+<a id="cantakeentity"></a>
 ### CanTakeEntity
 
 #### 📋 Purpose
@@ -374,6 +526,7 @@ Client
 
 ---
 
+<a id="canplayerviewinventory"></a>
 ### CanPlayerViewInventory
 
 #### 📋 Purpose
@@ -400,6 +553,7 @@ Client
 
 ---
 
+<a id="charlistcolumns"></a>
 ### CharListColumns
 
 #### 📋 Purpose
@@ -432,6 +586,7 @@ Client
 
 ---
 
+<a id="charlistentry"></a>
 ### CharListEntry
 
 #### 📋 Purpose
@@ -465,6 +620,7 @@ Client
 
 ---
 
+<a id="charlistloaded"></a>
 ### CharListLoaded
 
 #### 📋 Purpose
@@ -497,6 +653,7 @@ Client
 
 ---
 
+<a id="charlistupdated"></a>
 ### CharListUpdated
 
 #### 📋 Purpose
@@ -530,6 +687,7 @@ Client
 
 ---
 
+<a id="charloaded"></a>
 ### CharLoaded
 
 #### 📋 Purpose
@@ -562,6 +720,7 @@ Client
 
 ---
 
+<a id="charmenuclosed"></a>
 ### CharMenuClosed
 
 #### 📋 Purpose
@@ -588,6 +747,7 @@ Client
 
 ---
 
+<a id="charmenuopened"></a>
 ### CharMenuOpened
 
 #### 📋 Purpose
@@ -620,6 +780,7 @@ Client
 
 ---
 
+<a id="charrestored"></a>
 ### CharRestored
 
 #### 📋 Purpose
@@ -652,6 +813,7 @@ Client
 
 ---
 
+<a id="chataddtext"></a>
 ### ChatAddText
 
 #### 📋 Purpose
@@ -684,6 +846,7 @@ Client
 
 ---
 
+<a id="chatboxpanelcreated"></a>
 ### ChatboxPanelCreated
 
 #### 📋 Purpose
@@ -716,6 +879,7 @@ Client
 
 ---
 
+<a id="chatboxtextadded"></a>
 ### ChatboxTextAdded
 
 #### 📋 Purpose
@@ -748,6 +912,7 @@ Client
 
 ---
 
+<a id="choosecharacter"></a>
 ### ChooseCharacter
 
 #### 📋 Purpose
@@ -780,6 +945,7 @@ Client
 
 ---
 
+<a id="commandran"></a>
 ### CommandRan
 
 #### 📋 Purpose
@@ -815,6 +981,7 @@ Client
 
 ---
 
+<a id="configurecharactercreationsteps"></a>
 ### ConfigureCharacterCreationSteps
 
 #### 📋 Purpose
@@ -847,6 +1014,7 @@ Client
 
 ---
 
+<a id="createcharacter"></a>
 ### CreateCharacter
 
 #### 📋 Purpose
@@ -879,6 +1047,7 @@ Client
 
 ---
 
+<a id="createchatboxpanel"></a>
 ### CreateChatboxPanel
 
 #### 📋 Purpose
@@ -905,6 +1074,7 @@ Client
 
 ---
 
+<a id="createdefaultinventory"></a>
 ### CreateDefaultInventory
 
 #### 📋 Purpose
@@ -937,6 +1107,7 @@ Client
 
 ---
 
+<a id="createinformationbuttons"></a>
 ### CreateInformationButtons
 
 #### 📋 Purpose
@@ -969,6 +1140,7 @@ Client
 
 ---
 
+<a id="createinventorypanel"></a>
 ### CreateInventoryPanel
 
 #### 📋 Purpose
@@ -1002,6 +1174,7 @@ Client
 
 ---
 
+<a id="createmenubuttons"></a>
 ### CreateMenuButtons
 
 #### 📋 Purpose
@@ -1034,6 +1207,7 @@ Client
 
 ---
 
+<a id="deletecharacter"></a>
 ### DeleteCharacter
 
 #### 📋 Purpose
@@ -1066,6 +1240,7 @@ Client
 
 ---
 
+<a id="dermaskinchanged"></a>
 ### DermaSkinChanged
 
 #### 📋 Purpose
@@ -1098,6 +1273,7 @@ Client
 
 ---
 
+<a id="displayplayerhudinformation"></a>
 ### DisplayPlayerHUDInformation
 
 #### 📋 Purpose
@@ -1131,6 +1307,7 @@ Client
 
 ---
 
+<a id="doordatareceived"></a>
 ### DoorDataReceived
 
 #### 📋 Purpose
@@ -1164,6 +1341,7 @@ Client
 
 ---
 
+<a id="drawcharinfo"></a>
 ### DrawCharInfo
 
 #### 📋 Purpose
@@ -1198,6 +1376,7 @@ Client
 
 ---
 
+<a id="drawentityinfo"></a>
 ### DrawEntityInfo
 
 #### 📋 Purpose
@@ -1232,6 +1411,7 @@ Client
 
 ---
 
+<a id="drawitementityinfo"></a>
 ### DrawItemEntityInfo
 
 #### 📋 Purpose
@@ -1267,6 +1447,7 @@ Client
 
 ---
 
+<a id="drawliliamodelview"></a>
 ### DrawLiliaModelView
 
 #### 📋 Purpose
@@ -1300,6 +1481,7 @@ Client
 
 ---
 
+<a id="drawplayerragdoll"></a>
 ### DrawPlayerRagdoll
 
 #### 📋 Purpose
@@ -1332,6 +1514,7 @@ Client
 
 ---
 
+<a id="f1menuclosed"></a>
 ### F1MenuClosed
 
 #### 📋 Purpose
@@ -1358,6 +1541,7 @@ Client
 
 ---
 
+<a id="f1menuopened"></a>
 ### F1MenuOpened
 
 #### 📋 Purpose
@@ -1390,6 +1574,7 @@ Client
 
 ---
 
+<a id="filtercharmodels"></a>
 ### FilterCharModels
 
 #### 📋 Purpose
@@ -1422,6 +1607,7 @@ Client
 
 ---
 
+<a id="filterdoorinfo"></a>
 ### FilterDoorInfo
 
 #### 📋 Purpose
@@ -1456,6 +1642,7 @@ Client
 
 ---
 
+<a id="getadjustedpartdata"></a>
 ### GetAdjustedPartData
 
 #### 📋 Purpose
@@ -1489,6 +1676,7 @@ Client
 
 ---
 
+<a id="getcharactercreatebuttontooltip"></a>
 ### GetCharacterCreateButtonTooltip
 
 #### 📋 Purpose
@@ -1523,6 +1711,7 @@ Client
 
 ---
 
+<a id="getcharacterdisconnectbuttontooltip"></a>
 ### GetCharacterDisconnectButtonTooltip
 
 #### 📋 Purpose
@@ -1555,6 +1744,7 @@ Client
 
 ---
 
+<a id="getcharacterdiscordbuttontooltip"></a>
 ### GetCharacterDiscordButtonTooltip
 
 #### 📋 Purpose
@@ -1588,6 +1778,7 @@ Client
 
 ---
 
+<a id="getcharacterloadbuttontooltip"></a>
 ### GetCharacterLoadButtonTooltip
 
 #### 📋 Purpose
@@ -1620,6 +1811,7 @@ Client
 
 ---
 
+<a id="getcharacterloadmainbuttontooltip"></a>
 ### GetCharacterLoadMainButtonTooltip
 
 #### 📋 Purpose
@@ -1652,6 +1844,7 @@ Client
 
 ---
 
+<a id="getcharactermountbuttontooltip"></a>
 ### GetCharacterMountButtonTooltip
 
 #### 📋 Purpose
@@ -1684,6 +1877,7 @@ Client
 
 ---
 
+<a id="getcharacterreturnbuttontooltip"></a>
 ### GetCharacterReturnButtonTooltip
 
 #### 📋 Purpose
@@ -1716,6 +1910,7 @@ Client
 
 ---
 
+<a id="getcharacterstaffbuttontooltip"></a>
 ### GetCharacterStaffButtonTooltip
 
 #### 📋 Purpose
@@ -1749,6 +1944,7 @@ Client
 
 ---
 
+<a id="getcharacterworkshopbuttontooltip"></a>
 ### GetCharacterWorkshopButtonTooltip
 
 #### 📋 Purpose
@@ -1782,6 +1978,7 @@ Client
 
 ---
 
+<a id="getadminesptarget"></a>
 ### GetAdminESPTarget
 
 #### 📋 Purpose
@@ -1815,6 +2012,7 @@ Client
 
 ---
 
+<a id="getadminsticklists"></a>
 ### GetAdminStickLists
 
 #### 📋 Purpose
@@ -1848,6 +2046,7 @@ Client
 
 ---
 
+<a id="getdisplayeddescription"></a>
 ### GetDisplayedDescription
 
 #### 📋 Purpose
@@ -1881,6 +2080,7 @@ Client
 
 ---
 
+<a id="getdoorinfo"></a>
 ### GetDoorInfo
 
 #### 📋 Purpose
@@ -1915,6 +2115,7 @@ Client
 
 ---
 
+<a id="getdoorinfoforadminstick"></a>
 ### GetDoorInfoForAdminStick
 
 #### 📋 Purpose
@@ -1948,6 +2149,7 @@ Client
 
 ---
 
+<a id="getinjuredtext"></a>
 ### GetInjuredText
 
 #### 📋 Purpose
@@ -1980,6 +2182,7 @@ Client
 
 ---
 
+<a id="getmaincharacterid"></a>
 ### GetMainCharacterID
 
 #### 📋 Purpose
@@ -2006,6 +2209,7 @@ Client
 
 ---
 
+<a id="getmainmenuposition"></a>
 ### GetMainMenuPosition
 
 #### 📋 Purpose
@@ -2038,6 +2242,7 @@ Client
 
 ---
 
+<a id="interactionmenuclosed"></a>
 ### InteractionMenuClosed
 
 #### 📋 Purpose
@@ -2064,6 +2269,7 @@ Client
 
 ---
 
+<a id="interactionmenuopened"></a>
 ### InteractionMenuOpened
 
 #### 📋 Purpose
@@ -2096,6 +2302,7 @@ Client
 
 ---
 
+<a id="interceptclickitemicon"></a>
 ### InterceptClickItemIcon
 
 #### 📋 Purpose
@@ -2130,6 +2337,7 @@ Client
 
 ---
 
+<a id="inventoryclosed"></a>
 ### InventoryClosed
 
 #### 📋 Purpose
@@ -2163,6 +2371,7 @@ Client
 
 ---
 
+<a id="inventoryitemdatachanged"></a>
 ### InventoryItemDataChanged
 
 #### 📋 Purpose
@@ -2199,6 +2408,7 @@ Client
 
 ---
 
+<a id="inventoryitemiconcreated"></a>
 ### InventoryItemIconCreated
 
 #### 📋 Purpose
@@ -2233,6 +2443,7 @@ Client
 
 ---
 
+<a id="inventoryopened"></a>
 ### InventoryOpened
 
 #### 📋 Purpose
@@ -2266,6 +2477,7 @@ Client
 
 ---
 
+<a id="inventorypanelcreated"></a>
 ### InventoryPanelCreated
 
 #### 📋 Purpose
@@ -2300,6 +2512,7 @@ Client
 
 ---
 
+<a id="itemdraggedoutofinventory"></a>
 ### ItemDraggedOutOfInventory
 
 #### 📋 Purpose
@@ -2333,6 +2546,7 @@ Client
 
 ---
 
+<a id="itempaintover"></a>
 ### ItemPaintOver
 
 #### 📋 Purpose
@@ -2368,6 +2582,7 @@ Client
 
 ---
 
+<a id="itemshowentitymenu"></a>
 ### ItemShowEntityMenu
 
 #### 📋 Purpose
@@ -2400,6 +2615,7 @@ Client
 
 ---
 
+<a id="loadcharinformation"></a>
 ### LoadCharInformation
 
 #### 📋 Purpose
@@ -2426,6 +2642,7 @@ Client
 
 ---
 
+<a id="loadmaincharacter"></a>
 ### LoadMainCharacter
 
 #### 📋 Purpose
@@ -2452,6 +2669,7 @@ Client
 
 ---
 
+<a id="loadmainmenuinformation"></a>
 ### LoadMainMenuInformation
 
 #### 📋 Purpose
@@ -2485,6 +2703,7 @@ Client
 
 ---
 
+<a id="modifyscoreboardmodel"></a>
 ### ModifyScoreboardModel
 
 #### 📋 Purpose
@@ -2518,6 +2737,7 @@ Client
 
 ---
 
+<a id="modifyvoiceindicatortext"></a>
 ### ModifyVoiceIndicatorText
 
 #### 📋 Purpose
@@ -2552,6 +2772,7 @@ Client
 
 ---
 
+<a id="drawplayerinfobackground"></a>
 ### DrawPlayerInfoBackground
 
 #### 📋 Purpose
@@ -2578,6 +2799,7 @@ Client
 
 ---
 
+<a id="onadminstickmenuclosed"></a>
 ### OnAdminStickMenuClosed
 
 #### 📋 Purpose
@@ -2604,6 +2826,7 @@ Client
 
 ---
 
+<a id="onchatreceived"></a>
 ### OnChatReceived
 
 #### 📋 Purpose
@@ -2639,6 +2862,7 @@ Client
 
 ---
 
+<a id="oncreatedualinventorypanels"></a>
 ### OnCreateDualInventoryPanels
 
 #### 📋 Purpose
@@ -2674,6 +2898,7 @@ Client
 
 ---
 
+<a id="oncreateiteminteractionmenu"></a>
 ### OnCreateItemInteractionMenu
 
 #### 📋 Purpose
@@ -2708,6 +2933,7 @@ Client
 
 ---
 
+<a id="oncreatestoragepanel"></a>
 ### OnCreateStoragePanel
 
 #### 📋 Purpose
@@ -2742,6 +2968,7 @@ Client
 
 ---
 
+<a id="onlocalvarset"></a>
 ### OnLocalVarSet
 
 #### 📋 Purpose
@@ -2775,6 +3002,7 @@ Client
 
 ---
 
+<a id="onopenvendormenu"></a>
 ### OnOpenVendorMenu
 
 #### 📋 Purpose
@@ -2808,6 +3036,7 @@ Client
 
 ---
 
+<a id="onlinestaffdatareceived"></a>
 ### OnlineStaffDataReceived
 
 #### 📋 Purpose
@@ -2840,6 +3069,7 @@ Client
 
 ---
 
+<a id="openadminstickui"></a>
 ### OpenAdminStickUI
 
 #### 📋 Purpose
@@ -2872,6 +3102,7 @@ Client
 
 ---
 
+<a id="paintitem"></a>
 ### PaintItem
 
 #### 📋 Purpose
@@ -2904,6 +3135,7 @@ Client
 
 ---
 
+<a id="populateadminstick"></a>
 ### PopulateAdminStick
 
 #### 📋 Purpose
@@ -2938,6 +3170,7 @@ Client
 
 ---
 
+<a id="populateadmintabs"></a>
 ### PopulateAdminTabs
 
 #### 📋 Purpose
@@ -2970,6 +3203,7 @@ Client
 
 ---
 
+<a id="populateconfigurationbuttons"></a>
 ### PopulateConfigurationButtons
 
 #### 📋 Purpose
@@ -3002,6 +3236,7 @@ Client
 
 ---
 
+<a id="populateinventoryitems"></a>
 ### PopulateInventoryItems
 
 #### 📋 Purpose
@@ -3035,6 +3270,7 @@ Client
 
 ---
 
+<a id="postdrawinventory"></a>
 ### PostDrawInventory
 
 #### 📋 Purpose
@@ -3068,6 +3304,7 @@ Client
 
 ---
 
+<a id="postloadfonts"></a>
 ### PostLoadFonts
 
 #### 📋 Purpose
@@ -3101,6 +3338,7 @@ Client
 
 ---
 
+<a id="drawphysgunbeam"></a>
 ### DrawPhysgunBeam
 
 #### 📋 Purpose
@@ -3127,6 +3365,7 @@ Client
 
 ---
 
+<a id="refreshfonts"></a>
 ### RefreshFonts
 
 #### 📋 Purpose
@@ -3153,6 +3392,7 @@ Client
 
 ---
 
+<a id="registeradminsticksubcategories"></a>
 ### RegisterAdminStickSubcategories
 
 #### 📋 Purpose
@@ -3185,6 +3425,7 @@ Client
 
 ---
 
+<a id="resetcharacterpanel"></a>
 ### ResetCharacterPanel
 
 #### 📋 Purpose
@@ -3211,6 +3452,7 @@ Client
 
 ---
 
+<a id="runadminsystemcommand"></a>
 ### RunAdminSystemCommand
 
 #### 📋 Purpose
@@ -3247,6 +3489,7 @@ Client
 
 ---
 
+<a id="scoreboardclosed"></a>
 ### ScoreboardClosed
 
 #### 📋 Purpose
@@ -3279,6 +3522,7 @@ Client
 
 ---
 
+<a id="scoreboardopened"></a>
 ### ScoreboardOpened
 
 #### 📋 Purpose
@@ -3311,6 +3555,7 @@ Client
 
 ---
 
+<a id="scoreboardrowcreated"></a>
 ### ScoreboardRowCreated
 
 #### 📋 Purpose
@@ -3344,6 +3589,7 @@ Client
 
 ---
 
+<a id="scoreboardrowremoved"></a>
 ### ScoreboardRowRemoved
 
 #### 📋 Purpose
@@ -3377,6 +3623,7 @@ Client
 
 ---
 
+<a id="setmaincharacter"></a>
 ### SetMainCharacter
 
 #### 📋 Purpose
@@ -3409,6 +3656,7 @@ Client
 
 ---
 
+<a id="setupquickmenu"></a>
 ### SetupQuickMenu
 
 #### 📋 Purpose
@@ -3441,6 +3689,7 @@ Client
 
 ---
 
+<a id="shouldallowscoreboardoverride"></a>
 ### ShouldAllowScoreboardOverride
 
 #### 📋 Purpose
@@ -3474,6 +3723,7 @@ Client
 
 ---
 
+<a id="shouldbardraw"></a>
 ### ShouldBarDraw
 
 #### 📋 Purpose
@@ -3506,6 +3756,7 @@ Client
 
 ---
 
+<a id="shoulddisablethirdperson"></a>
 ### ShouldDisableThirdperson
 
 #### 📋 Purpose
@@ -3538,6 +3789,7 @@ Client
 
 ---
 
+<a id="shoulddrawammo"></a>
 ### ShouldDrawAmmo
 
 #### 📋 Purpose
@@ -3570,6 +3822,7 @@ Client
 
 ---
 
+<a id="shoulddrawentityinfo"></a>
 ### ShouldDrawEntityInfo
 
 #### 📋 Purpose
@@ -3602,6 +3855,7 @@ Client
 
 ---
 
+<a id="shoulddrawplayerinfo"></a>
 ### ShouldDrawPlayerInfo
 
 #### 📋 Purpose
@@ -3634,6 +3888,7 @@ Client
 
 ---
 
+<a id="shoulddrawwepselect"></a>
 ### ShouldDrawWepSelect
 
 #### 📋 Purpose
@@ -3666,6 +3921,7 @@ Client
 
 ---
 
+<a id="shouldhidebars"></a>
 ### ShouldHideBars
 
 #### 📋 Purpose
@@ -3692,6 +3948,7 @@ Client
 
 ---
 
+<a id="shouldmenubuttonshow"></a>
 ### ShouldMenuButtonShow
 
 #### 📋 Purpose
@@ -3724,6 +3981,7 @@ Client
 
 ---
 
+<a id="shouldrespawnscreenappear"></a>
 ### ShouldRespawnScreenAppear
 
 #### 📋 Purpose
@@ -3750,6 +4008,7 @@ Client
 
 ---
 
+<a id="shouldshowcharvarincreation"></a>
 ### ShouldShowCharVarInCreation
 
 #### 📋 Purpose
@@ -3782,6 +4041,7 @@ Client
 
 ---
 
+<a id="shouldshowclassonscoreboard"></a>
 ### ShouldShowClassOnScoreboard
 
 #### 📋 Purpose
@@ -3814,6 +4074,7 @@ Client
 
 ---
 
+<a id="shouldshowfactiononscoreboard"></a>
 ### ShouldShowFactionOnScoreboard
 
 #### 📋 Purpose
@@ -3846,6 +4107,7 @@ Client
 
 ---
 
+<a id="shouldshowplayeronscoreboard"></a>
 ### ShouldShowPlayerOnScoreboard
 
 #### 📋 Purpose
@@ -3878,6 +4140,7 @@ Client
 
 ---
 
+<a id="shouldshowquickmenu"></a>
 ### ShouldShowQuickMenu
 
 #### 📋 Purpose
@@ -3904,6 +4167,7 @@ Client
 
 ---
 
+<a id="showplayeroptions"></a>
 ### ShowPlayerOptions
 
 #### 📋 Purpose
@@ -3937,6 +4201,7 @@ Client
 
 ---
 
+<a id="storageopen"></a>
 ### StorageOpen
 
 #### 📋 Purpose
@@ -3970,6 +4235,7 @@ Client
 
 ---
 
+<a id="storageunlockprompt"></a>
 ### StorageUnlockPrompt
 
 #### 📋 Purpose
@@ -4002,6 +4268,7 @@ Client
 
 ---
 
+<a id="thirdpersontoggled"></a>
 ### ThirdPersonToggled
 
 #### 📋 Purpose
@@ -4034,6 +4301,7 @@ Client
 
 ---
 
+<a id="tooltipinitialize"></a>
 ### TooltipInitialize
 
 #### 📋 Purpose
@@ -4067,6 +4335,7 @@ Client
 
 ---
 
+<a id="tooltiplayout"></a>
 ### TooltipLayout
 
 #### 📋 Purpose
@@ -4099,6 +4368,7 @@ Client
 
 ---
 
+<a id="tooltippaint"></a>
 ### TooltipPaint
 
 #### 📋 Purpose
@@ -4133,6 +4403,7 @@ Client
 
 ---
 
+<a id="vendorexited"></a>
 ### VendorExited
 
 #### 📋 Purpose
@@ -4159,6 +4430,7 @@ Client
 
 ---
 
+<a id="vendoropened"></a>
 ### VendorOpened
 
 #### 📋 Purpose
@@ -4191,6 +4463,7 @@ Client
 
 ---
 
+<a id="voicetoggled"></a>
 ### VoiceToggled
 
 #### 📋 Purpose
@@ -4223,6 +4496,7 @@ Client
 
 ---
 
+<a id="weaponcyclesound"></a>
 ### WeaponCycleSound
 
 #### 📋 Purpose
@@ -4249,6 +4523,7 @@ Client
 
 ---
 
+<a id="weaponselectsound"></a>
 ### WeaponSelectSound
 
 #### 📋 Purpose
@@ -4275,6 +4550,7 @@ Client
 
 ---
 
+<a id="webimagedownloaded"></a>
 ### WebImageDownloaded
 
 #### 📋 Purpose
@@ -4308,6 +4584,7 @@ Client
 
 ---
 
+<a id="websounddownloaded"></a>
 ### WebSoundDownloaded
 
 #### 📋 Purpose

@@ -22,6 +22,22 @@ USAGE:
 
 ---
 
+## Index
+
+- [name](#name)
+- [desc](#desc)
+- [category](#category)
+- [model](#model)
+- [width](#width)
+- [height](#height)
+- [outfitCategory](#outfitcategory)
+- [pacData](#pacdata)
+- [isOutfit](#isoutfit)
+- [paintOver](#paintover)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -37,6 +53,7 @@ Sets the display name shown to players
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -52,6 +69,7 @@ Sets the description text shown to players
 
 ---
 
+<a id="category"></a>
 ### category
 
 #### 📋 Purpose
@@ -67,6 +85,7 @@ Sets the category for inventory sorting
 
 ---
 
+<a id="model"></a>
 ### model
 
 #### 📋 Purpose
@@ -82,6 +101,7 @@ Sets the 3D model used for the item
 
 ---
 
+<a id="width"></a>
 ### width
 
 #### 📋 Purpose
@@ -97,6 +117,7 @@ Sets the inventory width in slots
 
 ---
 
+<a id="height"></a>
 ### height
 
 #### 📋 Purpose
@@ -112,6 +133,7 @@ Sets the inventory height in slots
 
 ---
 
+<a id="outfitcategory"></a>
 ### outfitCategory
 
 #### 📋 Purpose
@@ -127,6 +149,7 @@ Sets the category to prevent conflicting outfits
 
 ---
 
+<a id="pacdata"></a>
 ### pacData
 
 #### 📋 Purpose
@@ -142,6 +165,7 @@ Defines PAC3 outfit data for visual effects
 
 ---
 
+<a id="isoutfit"></a>
 ### isOutfit
 
 #### 📋 Purpose
@@ -157,6 +181,7 @@ Marks this item as an outfit
 
 ---
 
+<a id="paintover"></a>
 ### paintOver
 
 #### 📋 Purpose

@@ -1,4 +1,4 @@
-# Server-Side Hooks
+# Server Hooks
 
 Server-side hook system for the Lilia framework.
 
@@ -10,6 +10,191 @@ Server-side hooks in the Lilia framework handle server-side logic, data persiste
 
 ---
 
+## Index
+
+- [AddWarning](#addwarning)
+- [CollectDoorDataFields](#collectdoordatafields)
+- [CanItemBeTransfered](#canitembetransfered)
+- [CanPersistEntity](#canpersistentity)
+- [CanPlayerAccessDoor](#canplayeraccessdoor)
+- [CanPlayerAccessVendor](#canplayeraccessvendor)
+- [CanPlayerDropItem](#canplayerdropitem)
+- [CanPlayerEarnSalary](#canplayerearnsalary)
+- [CanPlayerEquipItem](#canplayerequipitem)
+- [CanPlayerHoldObject](#canplayerholdobject)
+- [CanPlayerInteractItem](#canplayerinteractitem)
+- [CanPlayerLock](#canplayerlock)
+- [CanPlayerSeeLogCategory](#canplayerseelogcategory)
+- [CanPlayerSpawnStorage](#canplayerspawnstorage)
+- [CanPlayerSwitchChar](#canplayerswitchchar)
+- [CanPlayerTakeItem](#canplayertakeitem)
+- [CanPlayerTradeWithVendor](#canplayertradewithvendor)
+- [CanPlayerUnequipItem](#canplayerunequipitem)
+- [CanPlayerUnlock](#canplayerunlock)
+- [CanPlayerUseChar](#canplayerusechar)
+- [CanPlayerUseDoor](#canplayerusedoor)
+- [CanSaveData](#cansavedata)
+- [CreateSalaryTimers](#createsalarytimers)
+- [CharCleanUp](#charcleanup)
+- [CharDeleted](#chardeleted)
+- [CharListExtraDetails](#charlistextradetails)
+- [CharPostSave](#charpostsave)
+- [CharPreSave](#charpresave)
+- [CheckFactionLimitReached](#checkfactionlimitreached)
+- [DatabaseConnected](#databaseconnected)
+- [DiscordRelaySend](#discordrelaysend)
+- [DiscordRelayUnavailable](#discordrelayunavailable)
+- [DiscordRelayed](#discordrelayed)
+- [DoorEnabledToggled](#doorenabledtoggled)
+- [DoorHiddenToggled](#doorhiddentoggled)
+- [DoorLockToggled](#doorlocktoggled)
+- [DoorOwnableToggled](#doorownabletoggled)
+- [DoorPriceSet](#doorpriceset)
+- [DoorTitleSet](#doortitleset)
+- [FetchSpawns](#fetchspawns)
+- [GetAllCaseClaims](#getallcaseclaims)
+- [GetBotModel](#getbotmodel)
+- [GetDamageScale](#getdamagescale)
+- [GetDefaultInventoryType](#getdefaultinventorytype)
+- [GetEntitySaveData](#getentitysavedata)
+- [GetOOCDelay](#getoocdelay)
+- [GetPlayTime](#getplaytime)
+- [GetPlayerDeathSound](#getplayerdeathsound)
+- [GetPlayerPainSound](#getplayerpainsound)
+- [GetPlayerRespawnLocation](#getplayerrespawnlocation)
+- [GetPlayerSpawnLocation](#getplayerspawnlocation)
+- [GetPrestigePayBonus](#getprestigepaybonus)
+- [GetSalaryAmount](#getsalaryamount)
+- [GetTicketsByRequester](#getticketsbyrequester)
+- [GetWarnings](#getwarnings)
+- [GetWarningsByIssuer](#getwarningsbyissuer)
+- [HandleItemTransferRequest](#handleitemtransferrequest)
+- [InventoryDeleted](#inventorydeleted)
+- [ItemCombine](#itemcombine)
+- [ItemDeleted](#itemdeleted)
+- [ItemFunctionCalled](#itemfunctioncalled)
+- [ItemTransfered](#itemtransfered)
+- [KeyLock](#keylock)
+- [KeyUnlock](#keyunlock)
+- [KickedFromChar](#kickedfromchar)
+- [LiliaTablesLoaded](#liliatablesloaded)
+- [LoadData](#loaddata)
+- [ModifyCharacterModel](#modifycharactermodel)
+- [OnCharAttribBoosted](#oncharattribboosted)
+- [OnCharAttribUpdated](#oncharattribupdated)
+- [OnCharCreated](#oncharcreated)
+- [OnCharDelete](#onchardelete)
+- [OnCharDisconnect](#onchardisconnect)
+- [OnCharFlagsGiven](#oncharflagsgiven)
+- [OnCharFlagsTaken](#oncharflagstaken)
+- [OnCharKick](#oncharkick)
+- [OnCharNetVarChanged](#oncharnetvarchanged)
+- [OnCharPermakilled](#oncharpermakilled)
+- [OnCharRecognized](#oncharrecognized)
+- [OnCharTradeVendor](#onchartradevendor)
+- [OnCheaterCaught](#oncheatercaught)
+- [OnDataSet](#ondataset)
+- [OnDatabaseLoaded](#ondatabaseloaded)
+- [OnDeathSoundPlayed](#ondeathsoundplayed)
+- [OnEntityLoaded](#onentityloaded)
+- [OnEntityPersistUpdated](#onentitypersistupdated)
+- [OnEntityPersisted](#onentitypersisted)
+- [OnItemSpawned](#onitemspawned)
+- [OnLoadTables](#onloadtables)
+- [OnNPCTypeSet](#onnpctypeset)
+- [OnOOCMessageSent](#onoocmessagesent)
+- [OnPainSoundPlayed](#onpainsoundplayed)
+- [OnPickupMoney](#onpickupmoney)
+- [OnPlayerEnterSequence](#onplayerentersequence)
+- [OnPlayerInteractItem](#onplayerinteractitem)
+- [OnPlayerJoinClass](#onplayerjoinclass)
+- [OnPlayerLeaveSequence](#onplayerleavesequence)
+- [OnPlayerLostStackItem](#onplayerloststackitem)
+- [OnPlayerObserve](#onplayerobserve)
+- [OnPlayerRagdolled](#onplayerragdolled)
+- [OnPlayerSwitchClass](#onplayerswitchclass)
+- [OnRequestItemTransfer](#onrequestitemtransfer)
+- [OnSalaryAdjust](#onsalaryadjust)
+- [OnSalaryGiven](#onsalarygiven)
+- [OnSetUsergroup](#onsetusergroup)
+- [OnSavedItemLoaded](#onsaveditemloaded)
+- [OnServerLog](#onserverlog)
+- [OnTicketClaimed](#onticketclaimed)
+- [OnTicketClosed](#onticketclosed)
+- [OnTicketCreated](#onticketcreated)
+- [OnUsergroupPermissionsChanged](#onusergrouppermissionschanged)
+- [OnVendorEdited](#onvendoredited)
+- [OnVoiceTypeChanged](#onvoicetypechanged)
+- [OptionReceived](#optionreceived)
+- [PlayerAccessVendor](#playeraccessvendor)
+- [PlayerCheatDetected](#playercheatdetected)
+- [PlayerGagged](#playergagged)
+- [PlayerLiliaDataLoaded](#playerliliadataloaded)
+- [PlayerLoadedChar](#playerloadedchar)
+- [PlayerMessageSend](#playermessagesend)
+- [PlayerModelChanged](#playermodelchanged)
+- [PlayerMuted](#playermuted)
+- [PlayerShouldPermaKill](#playershouldpermakill)
+- [PlayerSpawnPointSelected](#playerspawnpointselected)
+- [PlayerStaminaGained](#playerstaminagained)
+- [PlayerStaminaLost](#playerstaminalost)
+- [PlayerUngagged](#playerungagged)
+- [PlayerUnmuted](#playerunmuted)
+- [PlayerUseDoor](#playerusedoor)
+- [PostDoorDataLoad](#postdoordataload)
+- [PostLoadData](#postloaddata)
+- [PostPlayerInitialSpawn](#postplayerinitialspawn)
+- [PostPlayerLoadedChar](#postplayerloadedchar)
+- [PostPlayerLoadout](#postplayerloadout)
+- [PostPlayerSay](#postplayersay)
+- [PostScaleDamage](#postscaledamage)
+- [PreCharDelete](#prechardelete)
+- [PreDoorDataSave](#predoordatasave)
+- [PrePlayerInteractItem](#preplayerinteractitem)
+- [PrePlayerLoadedChar](#preplayerloadedchar)
+- [PreSalaryGive](#presalarygive)
+- [PreScaleDamage](#prescaledamage)
+- [RemoveWarning](#removewarning)
+- [SaveData](#savedata)
+- [SendPopup](#sendpopup)
+- [SetupBotPlayer](#setupbotplayer)
+- [SetupDatabase](#setupdatabase)
+- [SetupPlayerModel](#setupplayermodel)
+- [ShouldDataBeSaved](#shoulddatabesaved)
+- [ShouldOverrideSalaryTimers](#shouldoverridesalarytimers)
+- [ShouldDeleteSavedItems](#shoulddeletesaveditems)
+- [ShouldPlayDeathSound](#shouldplaydeathsound)
+- [ShouldPlayPainSound](#shouldplaypainsound)
+- [ShouldSpawnClientRagdoll](#shouldspawnclientragdoll)
+- [StorageCanTransferItem](#storagecantransferitem)
+- [StorageEntityRemoved](#storageentityremoved)
+- [StorageInventorySet](#storageinventoryset)
+- [StorageItemRemoved](#storageitemremoved)
+- [StorageRestored](#storagerestored)
+- [StoreSpawns](#storespawns)
+- [SyncCharList](#synccharlist)
+- [TicketSystemClaim](#ticketsystemclaim)
+- [TicketSystemClose](#ticketsystemclose)
+- [ToggleLock](#togglelock)
+- [UpdateEntityPersistence](#updateentitypersistence)
+- [VendorClassUpdated](#vendorclassupdated)
+- [VendorEdited](#vendoredited)
+- [VendorFactionBuyScaleUpdated](#vendorfactionbuyscaleupdated)
+- [VendorFactionSellScaleUpdated](#vendorfactionsellscaleupdated)
+- [VendorFactionUpdated](#vendorfactionupdated)
+- [VendorItemMaxStockUpdated](#vendoritemmaxstockupdated)
+- [VendorItemModeUpdated](#vendoritemmodeupdated)
+- [VendorItemPriceUpdated](#vendoritempriceupdated)
+- [VendorItemStockUpdated](#vendoritemstockupdated)
+- [VendorMessagesUpdated](#vendormessagesupdated)
+- [VendorSynchronized](#vendorsynchronized)
+- [VendorTradeEvent](#vendortradeevent)
+- [WarningIssued](#warningissued)
+- [WarningRemoved](#warningremoved)
+
+---
+
+<a id="addwarning"></a>
 ### AddWarning
 
 #### 📋 Purpose
@@ -49,6 +234,7 @@ Server
 
 ---
 
+<a id="collectdoordatafields"></a>
 ### CollectDoorDataFields
 
 #### 📋 Purpose
@@ -81,6 +267,7 @@ Server
 
 ---
 
+<a id="canitembetransfered"></a>
 ### CanItemBeTransfered
 
 #### 📋 Purpose
@@ -116,6 +303,7 @@ Server
 
 ---
 
+<a id="canpersistentity"></a>
 ### CanPersistEntity
 
 #### 📋 Purpose
@@ -148,6 +336,7 @@ Server
 
 ---
 
+<a id="canplayeraccessdoor"></a>
 ### CanPlayerAccessDoor
 
 #### 📋 Purpose
@@ -182,6 +371,7 @@ Server
 
 ---
 
+<a id="canplayeraccessvendor"></a>
 ### CanPlayerAccessVendor
 
 #### 📋 Purpose
@@ -215,6 +405,7 @@ Server
 
 ---
 
+<a id="canplayerdropitem"></a>
 ### CanPlayerDropItem
 
 #### 📋 Purpose
@@ -248,6 +439,7 @@ Server
 
 ---
 
+<a id="canplayerearnsalary"></a>
 ### CanPlayerEarnSalary
 
 #### 📋 Purpose
@@ -280,6 +472,7 @@ Server
 
 ---
 
+<a id="canplayerequipitem"></a>
 ### CanPlayerEquipItem
 
 #### 📋 Purpose
@@ -313,6 +506,7 @@ Server
 
 ---
 
+<a id="canplayerholdobject"></a>
 ### CanPlayerHoldObject
 
 #### 📋 Purpose
@@ -346,6 +540,7 @@ Server
 
 ---
 
+<a id="canplayerinteractitem"></a>
 ### CanPlayerInteractItem
 
 #### 📋 Purpose
@@ -381,6 +576,7 @@ Server
 
 ---
 
+<a id="canplayerlock"></a>
 ### CanPlayerLock
 
 #### 📋 Purpose
@@ -414,6 +610,7 @@ Server
 
 ---
 
+<a id="canplayerseelogcategory"></a>
 ### CanPlayerSeeLogCategory
 
 #### 📋 Purpose
@@ -447,6 +644,7 @@ Server
 
 ---
 
+<a id="canplayerspawnstorage"></a>
 ### CanPlayerSpawnStorage
 
 #### 📋 Purpose
@@ -481,6 +679,7 @@ Server
 
 ---
 
+<a id="canplayerswitchchar"></a>
 ### CanPlayerSwitchChar
 
 #### 📋 Purpose
@@ -515,6 +714,7 @@ Server
 
 ---
 
+<a id="canplayertakeitem"></a>
 ### CanPlayerTakeItem
 
 #### 📋 Purpose
@@ -548,6 +748,7 @@ Server
 
 ---
 
+<a id="canplayertradewithvendor"></a>
 ### CanPlayerTradeWithVendor
 
 #### 📋 Purpose
@@ -585,6 +786,7 @@ Server
 
 ---
 
+<a id="canplayerunequipitem"></a>
 ### CanPlayerUnequipItem
 
 #### 📋 Purpose
@@ -618,6 +820,7 @@ Server
 
 ---
 
+<a id="canplayerunlock"></a>
 ### CanPlayerUnlock
 
 #### 📋 Purpose
@@ -651,6 +854,7 @@ Server
 
 ---
 
+<a id="canplayerusechar"></a>
 ### CanPlayerUseChar
 
 #### 📋 Purpose
@@ -684,6 +888,7 @@ Server
 
 ---
 
+<a id="canplayerusedoor"></a>
 ### CanPlayerUseDoor
 
 #### 📋 Purpose
@@ -717,6 +922,7 @@ Server
 
 ---
 
+<a id="cansavedata"></a>
 ### CanSaveData
 
 #### 📋 Purpose
@@ -750,6 +956,7 @@ Server
 
 ---
 
+<a id="createsalarytimers"></a>
 ### CreateSalaryTimers
 
 #### 📋 Purpose
@@ -776,6 +983,7 @@ Server
 
 ---
 
+<a id="charcleanup"></a>
 ### CharCleanUp
 
 #### 📋 Purpose
@@ -808,6 +1016,7 @@ Server
 
 ---
 
+<a id="chardeleted"></a>
 ### CharDeleted
 
 #### 📋 Purpose
@@ -841,6 +1050,7 @@ Server
 
 ---
 
+<a id="charlistextradetails"></a>
 ### CharListExtraDetails
 
 #### 📋 Purpose
@@ -876,6 +1086,7 @@ Server
 
 ---
 
+<a id="charpostsave"></a>
 ### CharPostSave
 
 #### 📋 Purpose
@@ -908,6 +1119,7 @@ Server
 
 ---
 
+<a id="charpresave"></a>
 ### CharPreSave
 
 #### 📋 Purpose
@@ -941,6 +1153,7 @@ Server
 
 ---
 
+<a id="checkfactionlimitreached"></a>
 ### CheckFactionLimitReached
 
 #### 📋 Purpose
@@ -975,6 +1188,7 @@ Server
 
 ---
 
+<a id="databaseconnected"></a>
 ### DatabaseConnected
 
 #### 📋 Purpose
@@ -1001,6 +1215,7 @@ Server
 
 ---
 
+<a id="discordrelaysend"></a>
 ### DiscordRelaySend
 
 #### 📋 Purpose
@@ -1034,6 +1249,7 @@ Server
 
 ---
 
+<a id="discordrelayunavailable"></a>
 ### DiscordRelayUnavailable
 
 #### 📋 Purpose
@@ -1060,6 +1276,7 @@ Server
 
 ---
 
+<a id="discordrelayed"></a>
 ### DiscordRelayed
 
 #### 📋 Purpose
@@ -1092,6 +1309,7 @@ Server
 
 ---
 
+<a id="doorenabledtoggled"></a>
 ### DoorEnabledToggled
 
 #### 📋 Purpose
@@ -1126,6 +1344,7 @@ Server
 
 ---
 
+<a id="doorhiddentoggled"></a>
 ### DoorHiddenToggled
 
 #### 📋 Purpose
@@ -1160,6 +1379,7 @@ Server
 
 ---
 
+<a id="doorlocktoggled"></a>
 ### DoorLockToggled
 
 #### 📋 Purpose
@@ -1194,6 +1414,7 @@ Server
 
 ---
 
+<a id="doorownabletoggled"></a>
 ### DoorOwnableToggled
 
 #### 📋 Purpose
@@ -1227,6 +1448,7 @@ Server
 
 ---
 
+<a id="doorpriceset"></a>
 ### DoorPriceSet
 
 #### 📋 Purpose
@@ -1260,6 +1482,7 @@ Server
 
 ---
 
+<a id="doortitleset"></a>
 ### DoorTitleSet
 
 #### 📋 Purpose
@@ -1293,6 +1516,7 @@ Server
 
 ---
 
+<a id="fetchspawns"></a>
 ### FetchSpawns
 
 #### 📋 Purpose
@@ -1319,6 +1543,7 @@ Server
 
 ---
 
+<a id="getallcaseclaims"></a>
 ### GetAllCaseClaims
 
 #### 📋 Purpose
@@ -1345,6 +1570,7 @@ Server
 
 ---
 
+<a id="getbotmodel"></a>
 ### GetBotModel
 
 #### 📋 Purpose
@@ -1378,6 +1604,7 @@ Server
 
 ---
 
+<a id="getdamagescale"></a>
 ### GetDamageScale
 
 #### 📋 Purpose
@@ -1412,6 +1639,7 @@ Server
 
 ---
 
+<a id="getdefaultinventorytype"></a>
 ### GetDefaultInventoryType
 
 #### 📋 Purpose
@@ -1444,6 +1672,7 @@ Server
 
 ---
 
+<a id="getentitysavedata"></a>
 ### GetEntitySaveData
 
 #### 📋 Purpose
@@ -1476,6 +1705,7 @@ Server
 
 ---
 
+<a id="getoocdelay"></a>
 ### GetOOCDelay
 
 #### 📋 Purpose
@@ -1508,6 +1738,7 @@ Server
 
 ---
 
+<a id="getplaytime"></a>
 ### GetPlayTime
 
 #### 📋 Purpose
@@ -1540,6 +1771,7 @@ Server
 
 ---
 
+<a id="getplayerdeathsound"></a>
 ### GetPlayerDeathSound
 
 #### 📋 Purpose
@@ -1573,6 +1805,7 @@ Server
 
 ---
 
+<a id="getplayerpainsound"></a>
 ### GetPlayerPainSound
 
 #### 📋 Purpose
@@ -1607,6 +1840,7 @@ Server
 
 ---
 
+<a id="getplayerrespawnlocation"></a>
 ### GetPlayerRespawnLocation
 
 #### 📋 Purpose
@@ -1640,6 +1874,7 @@ Server
 
 ---
 
+<a id="getplayerspawnlocation"></a>
 ### GetPlayerSpawnLocation
 
 #### 📋 Purpose
@@ -1673,6 +1908,7 @@ Server
 
 ---
 
+<a id="getprestigepaybonus"></a>
 ### GetPrestigePayBonus
 
 #### 📋 Purpose
@@ -1709,6 +1945,7 @@ Server
 
 ---
 
+<a id="getsalaryamount"></a>
 ### GetSalaryAmount
 
 #### 📋 Purpose
@@ -1743,6 +1980,7 @@ Server
 
 ---
 
+<a id="getticketsbyrequester"></a>
 ### GetTicketsByRequester
 
 #### 📋 Purpose
@@ -1775,6 +2013,7 @@ Server
 
 ---
 
+<a id="getwarnings"></a>
 ### GetWarnings
 
 #### 📋 Purpose
@@ -1807,6 +2046,7 @@ Server
 
 ---
 
+<a id="getwarningsbyissuer"></a>
 ### GetWarningsByIssuer
 
 #### 📋 Purpose
@@ -1839,6 +2079,7 @@ Server
 
 ---
 
+<a id="handleitemtransferrequest"></a>
 ### HandleItemTransferRequest
 
 #### 📋 Purpose
@@ -1875,6 +2116,7 @@ Server
 
 ---
 
+<a id="inventorydeleted"></a>
 ### InventoryDeleted
 
 #### 📋 Purpose
@@ -1906,6 +2148,7 @@ Server
 
 ---
 
+<a id="itemcombine"></a>
 ### ItemCombine
 
 #### 📋 Purpose
@@ -1940,6 +2183,7 @@ Server
 
 ---
 
+<a id="itemdeleted"></a>
 ### ItemDeleted
 
 #### 📋 Purpose
@@ -1971,6 +2215,7 @@ Server
 
 ---
 
+<a id="itemfunctioncalled"></a>
 ### ItemFunctionCalled
 
 #### 📋 Purpose
@@ -2006,6 +2251,7 @@ Server
 
 ---
 
+<a id="itemtransfered"></a>
 ### ItemTransfered
 
 #### 📋 Purpose
@@ -2037,6 +2283,7 @@ Server
 
 ---
 
+<a id="keylock"></a>
 ### KeyLock
 
 #### 📋 Purpose
@@ -2072,6 +2319,7 @@ Server
 
 ---
 
+<a id="keyunlock"></a>
 ### KeyUnlock
 
 #### 📋 Purpose
@@ -2107,6 +2355,7 @@ Server
 
 ---
 
+<a id="kickedfromchar"></a>
 ### KickedFromChar
 
 #### 📋 Purpose
@@ -2139,6 +2388,7 @@ Server
 
 ---
 
+<a id="liliatablesloaded"></a>
 ### LiliaTablesLoaded
 
 #### 📋 Purpose
@@ -2164,6 +2414,7 @@ Server
 
 ---
 
+<a id="loaddata"></a>
 ### LoadData
 
 #### 📋 Purpose
@@ -2189,6 +2440,7 @@ Server
 
 ---
 
+<a id="modifycharactermodel"></a>
 ### ModifyCharacterModel
 
 #### 📋 Purpose
@@ -2222,6 +2474,7 @@ Server
 
 ---
 
+<a id="oncharattribboosted"></a>
 ### OnCharAttribBoosted
 
 #### 📋 Purpose
@@ -2257,6 +2510,7 @@ Server
 
 ---
 
+<a id="oncharattribupdated"></a>
 ### OnCharAttribUpdated
 
 #### 📋 Purpose
@@ -2291,6 +2545,7 @@ Server
 
 ---
 
+<a id="oncharcreated"></a>
 ### OnCharCreated
 
 #### 📋 Purpose
@@ -2324,6 +2579,7 @@ Server
 
 ---
 
+<a id="onchardelete"></a>
 ### OnCharDelete
 
 #### 📋 Purpose
@@ -2356,6 +2612,7 @@ Server
 
 ---
 
+<a id="onchardisconnect"></a>
 ### OnCharDisconnect
 
 #### 📋 Purpose
@@ -2388,6 +2645,7 @@ Server
 
 ---
 
+<a id="oncharflagsgiven"></a>
 ### OnCharFlagsGiven
 
 #### 📋 Purpose
@@ -2421,6 +2679,7 @@ Server
 
 ---
 
+<a id="oncharflagstaken"></a>
 ### OnCharFlagsTaken
 
 #### 📋 Purpose
@@ -2454,6 +2713,7 @@ Server
 
 ---
 
+<a id="oncharkick"></a>
 ### OnCharKick
 
 #### 📋 Purpose
@@ -2486,6 +2746,7 @@ Server
 
 ---
 
+<a id="oncharnetvarchanged"></a>
 ### OnCharNetVarChanged
 
 #### 📋 Purpose
@@ -2520,6 +2781,7 @@ Server
 
 ---
 
+<a id="oncharpermakilled"></a>
 ### OnCharPermakilled
 
 #### 📋 Purpose
@@ -2552,6 +2814,7 @@ Server
 
 ---
 
+<a id="oncharrecognized"></a>
 ### OnCharRecognized
 
 #### 📋 Purpose
@@ -2585,6 +2848,7 @@ Server
 
 ---
 
+<a id="onchartradevendor"></a>
 ### OnCharTradeVendor
 
 #### 📋 Purpose
@@ -2622,6 +2886,7 @@ Server
 
 ---
 
+<a id="oncheatercaught"></a>
 ### OnCheaterCaught
 
 #### 📋 Purpose
@@ -2653,6 +2918,7 @@ Server
 
 ---
 
+<a id="ondataset"></a>
 ### OnDataSet
 
 #### 📋 Purpose
@@ -2687,6 +2953,7 @@ Server
 
 ---
 
+<a id="ondatabaseloaded"></a>
 ### OnDatabaseLoaded
 
 #### 📋 Purpose
@@ -2712,6 +2979,7 @@ Server
 
 ---
 
+<a id="ondeathsoundplayed"></a>
 ### OnDeathSoundPlayed
 
 #### 📋 Purpose
@@ -2744,6 +3012,7 @@ Server
 
 ---
 
+<a id="onentityloaded"></a>
 ### OnEntityLoaded
 
 #### 📋 Purpose
@@ -2776,6 +3045,7 @@ Server
 
 ---
 
+<a id="onentitypersistupdated"></a>
 ### OnEntityPersistUpdated
 
 #### 📋 Purpose
@@ -2808,6 +3078,7 @@ Server
 
 ---
 
+<a id="onentitypersisted"></a>
 ### OnEntityPersisted
 
 #### 📋 Purpose
@@ -2840,6 +3111,7 @@ Server
 
 ---
 
+<a id="onitemspawned"></a>
 ### OnItemSpawned
 
 #### 📋 Purpose
@@ -2871,6 +3143,7 @@ Server
 
 ---
 
+<a id="onloadtables"></a>
 ### OnLoadTables
 
 #### 📋 Purpose
@@ -2896,6 +3169,7 @@ Server
 
 ---
 
+<a id="onnpctypeset"></a>
 ### OnNPCTypeSet
 
 #### 📋 Purpose
@@ -2930,6 +3204,7 @@ Server
 
 ---
 
+<a id="onoocmessagesent"></a>
 ### OnOOCMessageSent
 
 #### 📋 Purpose
@@ -2962,6 +3237,7 @@ Server
 
 ---
 
+<a id="onpainsoundplayed"></a>
 ### OnPainSoundPlayed
 
 #### 📋 Purpose
@@ -2994,6 +3270,7 @@ Server
 
 ---
 
+<a id="onpickupmoney"></a>
 ### OnPickupMoney
 
 #### 📋 Purpose
@@ -3026,6 +3303,7 @@ Server
 
 ---
 
+<a id="onplayerentersequence"></a>
 ### OnPlayerEnterSequence
 
 #### 📋 Purpose
@@ -3061,6 +3339,7 @@ Server
 
 ---
 
+<a id="onplayerinteractitem"></a>
 ### OnPlayerInteractItem
 
 #### 📋 Purpose
@@ -3096,6 +3375,7 @@ Server
 
 ---
 
+<a id="onplayerjoinclass"></a>
 ### OnPlayerJoinClass
 
 #### 📋 Purpose
@@ -3129,6 +3409,7 @@ Server
 
 ---
 
+<a id="onplayerleavesequence"></a>
 ### OnPlayerLeaveSequence
 
 #### 📋 Purpose
@@ -3160,6 +3441,7 @@ Server
 
 ---
 
+<a id="onplayerloststackitem"></a>
 ### OnPlayerLostStackItem
 
 #### 📋 Purpose
@@ -3191,6 +3473,7 @@ Server
 
 ---
 
+<a id="onplayerobserve"></a>
 ### OnPlayerObserve
 
 #### 📋 Purpose
@@ -3223,6 +3506,7 @@ Server
 
 ---
 
+<a id="onplayerragdolled"></a>
 ### OnPlayerRagdolled
 
 #### 📋 Purpose
@@ -3255,6 +3539,7 @@ Server
 
 ---
 
+<a id="onplayerswitchclass"></a>
 ### OnPlayerSwitchClass
 
 #### 📋 Purpose
@@ -3288,6 +3573,7 @@ Server
 
 ---
 
+<a id="onrequestitemtransfer"></a>
 ### OnRequestItemTransfer
 
 #### 📋 Purpose
@@ -3324,6 +3610,7 @@ Server
 
 ---
 
+<a id="onsalaryadjust"></a>
 ### OnSalaryAdjust
 
 #### 📋 Purpose
@@ -3356,6 +3643,7 @@ Server
 
 ---
 
+<a id="onsalarygiven"></a>
 ### OnSalaryGiven
 
 #### 📋 Purpose
@@ -3391,6 +3679,7 @@ Server
 
 ---
 
+<a id="onsetusergroup"></a>
 ### OnSetUsergroup
 
 #### 📋 Purpose
@@ -3425,6 +3714,7 @@ Server
 
 ---
 
+<a id="onsaveditemloaded"></a>
 ### OnSavedItemLoaded
 
 #### 📋 Purpose
@@ -3456,6 +3746,7 @@ Server
 
 ---
 
+<a id="onserverlog"></a>
 ### OnServerLog
 
 #### 📋 Purpose
@@ -3490,6 +3781,7 @@ Server
 
 ---
 
+<a id="onticketclaimed"></a>
 ### OnTicketClaimed
 
 #### 📋 Purpose
@@ -3523,6 +3815,7 @@ Server
 
 ---
 
+<a id="onticketclosed"></a>
 ### OnTicketClosed
 
 #### 📋 Purpose
@@ -3556,6 +3849,7 @@ Server
 
 ---
 
+<a id="onticketcreated"></a>
 ### OnTicketCreated
 
 #### 📋 Purpose
@@ -3588,6 +3882,7 @@ Server
 
 ---
 
+<a id="onusergrouppermissionschanged"></a>
 ### OnUsergroupPermissionsChanged
 
 #### 📋 Purpose
@@ -3620,6 +3915,7 @@ Server
 
 ---
 
+<a id="onvendoredited"></a>
 ### OnVendorEdited
 
 #### 📋 Purpose
@@ -3653,6 +3949,7 @@ Server
 
 ---
 
+<a id="onvoicetypechanged"></a>
 ### OnVoiceTypeChanged
 
 #### 📋 Purpose
@@ -3684,6 +3981,7 @@ Server
 
 ---
 
+<a id="optionreceived"></a>
 ### OptionReceived
 
 #### 📋 Purpose
@@ -3717,6 +4015,7 @@ Server
 
 ---
 
+<a id="playeraccessvendor"></a>
 ### PlayerAccessVendor
 
 #### 📋 Purpose
@@ -3750,6 +4049,7 @@ Server
 
 ---
 
+<a id="playercheatdetected"></a>
 ### PlayerCheatDetected
 
 #### 📋 Purpose
@@ -3781,6 +4081,7 @@ Server
 
 ---
 
+<a id="playergagged"></a>
 ### PlayerGagged
 
 #### 📋 Purpose
@@ -3813,6 +4114,7 @@ Server
 
 ---
 
+<a id="playerliliadataloaded"></a>
 ### PlayerLiliaDataLoaded
 
 #### 📋 Purpose
@@ -3844,6 +4146,7 @@ Server
 
 ---
 
+<a id="playerloadedchar"></a>
 ### PlayerLoadedChar
 
 #### 📋 Purpose
@@ -3877,6 +4180,7 @@ Server
 
 ---
 
+<a id="playermessagesend"></a>
 ### PlayerMessageSend
 
 #### 📋 Purpose
@@ -3913,6 +4217,7 @@ Server
 
 ---
 
+<a id="playermodelchanged"></a>
 ### PlayerModelChanged
 
 #### 📋 Purpose
@@ -3945,6 +4250,7 @@ Server
 
 ---
 
+<a id="playermuted"></a>
 ### PlayerMuted
 
 #### 📋 Purpose
@@ -3977,6 +4283,7 @@ Server
 
 ---
 
+<a id="playershouldpermakill"></a>
 ### PlayerShouldPermaKill
 
 #### 📋 Purpose
@@ -4011,6 +4318,7 @@ Server
 
 ---
 
+<a id="playerspawnpointselected"></a>
 ### PlayerSpawnPointSelected
 
 #### 📋 Purpose
@@ -4045,6 +4353,7 @@ Server
 
 ---
 
+<a id="playerstaminagained"></a>
 ### PlayerStaminaGained
 
 #### 📋 Purpose
@@ -4076,6 +4385,7 @@ Server
 
 ---
 
+<a id="playerstaminalost"></a>
 ### PlayerStaminaLost
 
 #### 📋 Purpose
@@ -4107,6 +4417,7 @@ Server
 
 ---
 
+<a id="playerungagged"></a>
 ### PlayerUngagged
 
 #### 📋 Purpose
@@ -4139,6 +4450,7 @@ Server
 
 ---
 
+<a id="playerunmuted"></a>
 ### PlayerUnmuted
 
 #### 📋 Purpose
@@ -4171,6 +4483,7 @@ Server
 
 ---
 
+<a id="playerusedoor"></a>
 ### PlayerUseDoor
 
 #### 📋 Purpose
@@ -4204,6 +4517,7 @@ Server
 
 ---
 
+<a id="postdoordataload"></a>
 ### PostDoorDataLoad
 
 #### 📋 Purpose
@@ -4236,6 +4550,7 @@ Server
 
 ---
 
+<a id="postloaddata"></a>
 ### PostLoadData
 
 #### 📋 Purpose
@@ -4261,6 +4576,7 @@ Server
 
 ---
 
+<a id="postplayerinitialspawn"></a>
 ### PostPlayerInitialSpawn
 
 #### 📋 Purpose
@@ -4292,6 +4608,7 @@ Server
 
 ---
 
+<a id="postplayerloadedchar"></a>
 ### PostPlayerLoadedChar
 
 #### 📋 Purpose
@@ -4325,6 +4642,7 @@ Server
 
 ---
 
+<a id="postplayerloadout"></a>
 ### PostPlayerLoadout
 
 #### 📋 Purpose
@@ -4356,6 +4674,7 @@ Server
 
 ---
 
+<a id="postplayersay"></a>
 ### PostPlayerSay
 
 #### 📋 Purpose
@@ -4391,6 +4710,7 @@ Server
 
 ---
 
+<a id="postscaledamage"></a>
 ### PostScaleDamage
 
 #### 📋 Purpose
@@ -4424,6 +4744,7 @@ Server
 
 ---
 
+<a id="prechardelete"></a>
 ### PreCharDelete
 
 #### 📋 Purpose
@@ -4455,6 +4776,7 @@ Server
 
 ---
 
+<a id="predoordatasave"></a>
 ### PreDoorDataSave
 
 #### 📋 Purpose
@@ -4487,6 +4809,7 @@ Server
 
 ---
 
+<a id="preplayerinteractitem"></a>
 ### PrePlayerInteractItem
 
 #### 📋 Purpose
@@ -4521,6 +4844,7 @@ Server
 
 ---
 
+<a id="preplayerloadedchar"></a>
 ### PrePlayerLoadedChar
 
 #### 📋 Purpose
@@ -4554,6 +4878,7 @@ Server
 
 ---
 
+<a id="presalarygive"></a>
 ### PreSalaryGive
 
 #### 📋 Purpose
@@ -4590,6 +4915,7 @@ Server
 
 ---
 
+<a id="prescaledamage"></a>
 ### PreScaleDamage
 
 #### 📋 Purpose
@@ -4623,6 +4949,7 @@ Server
 
 ---
 
+<a id="removewarning"></a>
 ### RemoveWarning
 
 #### 📋 Purpose
@@ -4656,6 +4983,7 @@ Server
 
 ---
 
+<a id="savedata"></a>
 ### SaveData
 
 #### 📋 Purpose
@@ -4681,6 +5009,7 @@ Server
 
 ---
 
+<a id="sendpopup"></a>
 ### SendPopup
 
 #### 📋 Purpose
@@ -4713,6 +5042,7 @@ Server
 
 ---
 
+<a id="setupbotplayer"></a>
 ### SetupBotPlayer
 
 #### 📋 Purpose
@@ -4744,6 +5074,7 @@ Server
 
 ---
 
+<a id="setupdatabase"></a>
 ### SetupDatabase
 
 #### 📋 Purpose
@@ -4769,6 +5100,7 @@ Server
 
 ---
 
+<a id="setupplayermodel"></a>
 ### SetupPlayerModel
 
 #### 📋 Purpose
@@ -4801,6 +5133,7 @@ Server
 
 ---
 
+<a id="shoulddatabesaved"></a>
 ### ShouldDataBeSaved
 
 #### 📋 Purpose
@@ -4827,6 +5160,7 @@ Server
 
 ---
 
+<a id="shouldoverridesalarytimers"></a>
 ### ShouldOverrideSalaryTimers
 
 #### 📋 Purpose
@@ -4853,6 +5187,7 @@ Server
 
 ---
 
+<a id="shoulddeletesaveditems"></a>
 ### ShouldDeleteSavedItems
 
 #### 📋 Purpose
@@ -4879,6 +5214,7 @@ Server
 
 ---
 
+<a id="shouldplaydeathsound"></a>
 ### ShouldPlayDeathSound
 
 #### 📋 Purpose
@@ -4912,6 +5248,7 @@ Server
 
 ---
 
+<a id="shouldplaypainsound"></a>
 ### ShouldPlayPainSound
 
 #### 📋 Purpose
@@ -4945,6 +5282,7 @@ Server
 
 ---
 
+<a id="shouldspawnclientragdoll"></a>
 ### ShouldSpawnClientRagdoll
 
 #### 📋 Purpose
@@ -4977,6 +5315,7 @@ Server
 
 ---
 
+<a id="storagecantransferitem"></a>
 ### StorageCanTransferItem
 
 #### 📋 Purpose
@@ -5011,6 +5350,7 @@ Server
 
 ---
 
+<a id="storageentityremoved"></a>
 ### StorageEntityRemoved
 
 #### 📋 Purpose
@@ -5043,6 +5383,7 @@ Server
 
 ---
 
+<a id="storageinventoryset"></a>
 ### StorageInventorySet
 
 #### 📋 Purpose
@@ -5076,6 +5417,7 @@ Server
 
 ---
 
+<a id="storageitemremoved"></a>
 ### StorageItemRemoved
 
 #### 📋 Purpose
@@ -5101,6 +5443,7 @@ Server
 
 ---
 
+<a id="storagerestored"></a>
 ### StorageRestored
 
 #### 📋 Purpose
@@ -5133,6 +5476,7 @@ Server
 
 ---
 
+<a id="storespawns"></a>
 ### StoreSpawns
 
 #### 📋 Purpose
@@ -5164,6 +5508,7 @@ Server
 
 ---
 
+<a id="synccharlist"></a>
 ### SyncCharList
 
 #### 📋 Purpose
@@ -5195,6 +5540,7 @@ Server
 
 ---
 
+<a id="ticketsystemclaim"></a>
 ### TicketSystemClaim
 
 #### 📋 Purpose
@@ -5229,6 +5575,7 @@ Server
 
 ---
 
+<a id="ticketsystemclose"></a>
 ### TicketSystemClose
 
 #### 📋 Purpose
@@ -5263,6 +5610,7 @@ Server
 
 ---
 
+<a id="togglelock"></a>
 ### ToggleLock
 
 #### 📋 Purpose
@@ -5296,6 +5644,7 @@ Server
 
 ---
 
+<a id="updateentitypersistence"></a>
 ### UpdateEntityPersistence
 
 #### 📋 Purpose
@@ -5327,6 +5676,7 @@ Server
 
 ---
 
+<a id="vendorclassupdated"></a>
 ### VendorClassUpdated
 
 #### 📋 Purpose
@@ -5360,6 +5710,7 @@ Server
 
 ---
 
+<a id="vendoredited"></a>
 ### VendorEdited
 
 #### 📋 Purpose
@@ -5392,6 +5743,7 @@ Server
 
 ---
 
+<a id="vendorfactionbuyscaleupdated"></a>
 ### VendorFactionBuyScaleUpdated
 
 #### 📋 Purpose
@@ -5425,6 +5777,7 @@ Server
 
 ---
 
+<a id="vendorfactionsellscaleupdated"></a>
 ### VendorFactionSellScaleUpdated
 
 #### 📋 Purpose
@@ -5458,6 +5811,7 @@ Server
 
 ---
 
+<a id="vendorfactionupdated"></a>
 ### VendorFactionUpdated
 
 #### 📋 Purpose
@@ -5491,6 +5845,7 @@ Server
 
 ---
 
+<a id="vendoritemmaxstockupdated"></a>
 ### VendorItemMaxStockUpdated
 
 #### 📋 Purpose
@@ -5524,6 +5879,7 @@ Server
 
 ---
 
+<a id="vendoritemmodeupdated"></a>
 ### VendorItemModeUpdated
 
 #### 📋 Purpose
@@ -5557,6 +5913,7 @@ Server
 
 ---
 
+<a id="vendoritempriceupdated"></a>
 ### VendorItemPriceUpdated
 
 #### 📋 Purpose
@@ -5590,6 +5947,7 @@ Server
 
 ---
 
+<a id="vendoritemstockupdated"></a>
 ### VendorItemStockUpdated
 
 #### 📋 Purpose
@@ -5623,6 +5981,7 @@ Server
 
 ---
 
+<a id="vendormessagesupdated"></a>
 ### VendorMessagesUpdated
 
 #### 📋 Purpose
@@ -5654,6 +6013,7 @@ Server
 
 ---
 
+<a id="vendorsynchronized"></a>
 ### VendorSynchronized
 
 #### 📋 Purpose
@@ -5685,6 +6045,7 @@ Server
 
 ---
 
+<a id="vendortradeevent"></a>
 ### VendorTradeEvent
 
 #### 📋 Purpose
@@ -5719,6 +6080,7 @@ Server
 
 ---
 
+<a id="warningissued"></a>
 ### WarningIssued
 
 #### 📋 Purpose
@@ -5756,6 +6118,7 @@ Server
 
 ---
 
+<a id="warningremoved"></a>
 ### WarningRemoved
 
 #### 📋 Purpose

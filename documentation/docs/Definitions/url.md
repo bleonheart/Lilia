@@ -22,6 +22,16 @@ USAGE:
 
 ---
 
+## Index
+
+- [name](#name)
+- [desc](#desc)
+- [model](#model)
+- [url](#url)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -37,6 +47,7 @@ Sets the display name shown to players
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -52,6 +63,7 @@ Sets the description text shown to players
 
 ---
 
+<a id="model"></a>
 ### model
 
 #### 📋 Purpose
@@ -67,6 +79,7 @@ Sets the 3D model used for the item
 
 ---
 
+<a id="url"></a>
 ### url
 
 #### 📋 Purpose

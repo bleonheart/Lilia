@@ -54,6 +54,48 @@ classwhitelists to control which classes a character has access to within the fa
 
 ---
 
+## Index
+
+- [name](#name)
+- [desc](#desc)
+- [color](#color)
+- [models](#models)
+- [weapons](#weapons)
+- [isDefault](#isdefault)
+- [uniqueID](#uniqueid)
+- [index](#index)
+- [health](#health)
+- [armor](#armor)
+- [scale](#scale)
+- [runSpeed](#runspeed)
+- [walkSpeed](#walkspeed)
+- [jumpPower](#jumppower)
+- [NPCRelations](#npcrelations)
+- [bloodcolor](#bloodcolor)
+- [runSpeedMultiplier](#runspeedmultiplier)
+- [walkSpeedMultiplier](#walkspeedmultiplier)
+- [jumpPowerMultiplier](#jumppowermultiplier)
+- [items](#items)
+- [oneCharOnly](#onecharonly)
+- [limit](#limit)
+- [pay](#pay)
+- [payTimer](#paytimer)
+- [scoreboardHidden](#scoreboardhidden)
+- [mainMenuPosition](#mainmenuposition)
+- [commands](#commands)
+- [RecognizesGlobally](#recognizesglobally)
+- [isGloballyRecognized](#isgloballyrecognized)
+- [MemberToMemberAutoRecognition](#membertomemberautorecognition)
+- [NameTemplate](#nametemplate)
+- [GetDefaultName](#getdefaultname)
+- [GetDefaultDesc](#getdefaultdesc)
+- [OnCheckLimitReached](#onchecklimitreached)
+- [OnTransferred](#ontransferred)
+- [OnSpawn](#onspawn)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -71,6 +113,7 @@ During faction definition
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -88,6 +131,7 @@ During faction definition
 
 ---
 
+<a id="color"></a>
 ### color
 
 #### 📋 Purpose
@@ -105,6 +149,7 @@ During faction definition
 
 ---
 
+<a id="models"></a>
 ### models
 
 #### 📋 Purpose
@@ -133,6 +178,7 @@ During faction definition
 
 ---
 
+<a id="weapons"></a>
 ### weapons
 
 #### 📋 Purpose
@@ -151,6 +197,7 @@ During faction definition (applied when player spawns)
 
 ---
 
+<a id="isdefault"></a>
 ### isDefault
 
 #### 📋 Purpose
@@ -169,6 +216,7 @@ During faction definition
 
 ---
 
+<a id="uniqueid"></a>
 ### uniqueID
 
 #### 📋 Purpose
@@ -196,6 +244,7 @@ Auto-Assignment: If not explicitly defined, the uniqueID is automatically set to
 
 ---
 
+<a id="index"></a>
 ### index
 
 #### 📋 Purpose
@@ -219,6 +268,7 @@ Set automatically during faction registration, or manually specified
 
 ---
 
+<a id="health"></a>
 ### health
 
 #### 📋 Purpose
@@ -236,6 +286,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="armor"></a>
 ### armor
 
 #### 📋 Purpose
@@ -253,6 +304,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="scale"></a>
 ### scale
 
 #### 📋 Purpose
@@ -270,6 +322,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="runspeed"></a>
 ### runSpeed
 
 #### 📋 Purpose
@@ -289,6 +342,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="walkspeed"></a>
 ### walkSpeed
 
 #### 📋 Purpose
@@ -308,6 +362,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="jumppower"></a>
 ### jumpPower
 
 #### 📋 Purpose
@@ -327,6 +382,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="npcrelations"></a>
 ### NPCRelations
 
 #### 📋 Purpose
@@ -347,6 +403,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="bloodcolor"></a>
 ### bloodcolor
 
 #### 📋 Purpose
@@ -365,6 +422,7 @@ During faction definition (applied when player joins faction)
 
 ---
 
+<a id="runspeedmultiplier"></a>
 ### runSpeedMultiplier
 
 #### 📋 Purpose
@@ -383,6 +441,7 @@ During faction definition (used with runSpeed property)
 
 ---
 
+<a id="walkspeedmultiplier"></a>
 ### walkSpeedMultiplier
 
 #### 📋 Purpose
@@ -401,6 +460,7 @@ During faction definition (used with walkSpeed property)
 
 ---
 
+<a id="jumppowermultiplier"></a>
 ### jumpPowerMultiplier
 
 #### 📋 Purpose
@@ -419,6 +479,7 @@ During faction definition (used with jumpPower property)
 
 ---
 
+<a id="items"></a>
 ### items
 
 #### 📋 Purpose
@@ -436,6 +497,7 @@ During faction definition (applied when character is created)
 
 ---
 
+<a id="onecharonly"></a>
 ### oneCharOnly
 
 #### 📋 Purpose
@@ -454,6 +516,7 @@ During faction definition
 
 ---
 
+<a id="limit"></a>
 ### limit
 
 #### 📋 Purpose
@@ -473,6 +536,7 @@ During faction definition
 
 ---
 
+<a id="pay"></a>
 ### pay
 
 #### 📋 Purpose
@@ -491,6 +555,26 @@ During faction definition
 
 ---
 
+<a id="paytimer"></a>
+### payTimer
+
+#### 📋 Purpose
+Sets the pay timer interval in seconds for this faction. When a pay event triggers, it does so for all members of this faction using this timer.
+
+#### ⏰ When Called
+During faction definition
+
+#### 💡 Example Usage
+
+```lua
+    FACTION.payTimer = 1000  -- All members of this faction receive pay every 1000 seconds
+    FACTION.payTimer = nil   -- Uses the default SalaryInterval config value (default: 300 seconds)
+
+```
+
+---
+
+<a id="scoreboardhidden"></a>
 ### scoreboardHidden
 
 #### 📋 Purpose
@@ -509,6 +593,7 @@ During faction definition
 
 ---
 
+<a id="mainmenuposition"></a>
 ### mainMenuPosition
 
 #### 📋 Purpose
@@ -532,6 +617,7 @@ During faction definition (used by GM:GetMainMenuPosition)
 
 ---
 
+<a id="commands"></a>
 ### commands
 
 #### 📋 Purpose
@@ -551,6 +637,7 @@ During faction definition (evaluated by lia.command.hasAccess)
 
 ---
 
+<a id="recognizesglobally"></a>
 ### RecognizesGlobally
 
 #### 📋 Purpose
@@ -568,6 +655,7 @@ During faction definition (read by the recognition module)
 
 ---
 
+<a id="isgloballyrecognized"></a>
 ### isGloballyRecognized
 
 #### 📋 Purpose
@@ -585,6 +673,7 @@ During faction definition (evaluated in the recognition module)
 
 ---
 
+<a id="membertomemberautorecognition"></a>
 ### MemberToMemberAutoRecognition
 
 #### 📋 Purpose
@@ -602,6 +691,7 @@ During faction definition (part of the recognition checks)
 
 ---
 
+<a id="nametemplate"></a>
 ### NameTemplate
 
 #### 📋 Purpose
@@ -622,6 +712,7 @@ During faction definition
 
 ---
 
+<a id="getdefaultname"></a>
 ### GetDefaultName
 
 #### 📋 Purpose
@@ -641,6 +732,7 @@ During faction definition
 
 ---
 
+<a id="getdefaultdesc"></a>
 ### GetDefaultDesc
 
 #### 📋 Purpose
@@ -660,6 +752,7 @@ During faction definition
 
 ---
 
+<a id="onchecklimitreached"></a>
 ### OnCheckLimitReached
 
 #### 📋 Purpose
@@ -696,6 +789,7 @@ When a player tries to join a faction that might be at capacity
 
 ---
 
+<a id="ontransferred"></a>
 ### OnTransferred
 
 #### 📋 Purpose
@@ -726,6 +820,7 @@ Server
 
 ---
 
+<a id="onspawn"></a>
 ### OnSpawn
 
 #### 📋 Purpose

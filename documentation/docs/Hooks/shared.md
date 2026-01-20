@@ -10,6 +10,117 @@ Shared hooks in the Lilia framework handle functionality available on both clien
 
 ---
 
+## Index
+
+- [AdjustCreationData](#adjustcreationdata)
+- [AdjustPACPartData](#adjustpacpartdata)
+- [AdjustStaminaOffset](#adjuststaminaoffset)
+- [AdvDupe_FinishPasting](#advdupe_finishpasting)
+- [AttachPart](#attachpart)
+- [BagInventoryReady](#baginventoryready)
+- [BagInventoryRemoved](#baginventoryremoved)
+- [CalcStaminaChange](#calcstaminachange)
+- [CalcStaminaChange](#calcstaminachange)
+- [CanCharBeTransfered](#cancharbetransfered)
+- [CanInviteToClass](#caninvitetoclass)
+- [CanInviteToFaction](#caninvitetofaction)
+- [CanOutfitChangeModel](#canoutfitchangemodel)
+- [CanPerformVendorEdit](#canperformvendoredit)
+- [CanPickupMoney](#canpickupmoney)
+- [CanPlayerChooseWeapon](#canplayerchooseweapon)
+- [CanPlayerCreateChar](#canplayercreatechar)
+- [CanPlayerJoinClass](#canplayerjoinclass)
+- [CanPlayerKnock](#canplayerknock)
+- [CanPlayerModifyConfig](#canplayermodifyconfig)
+- [CanPlayerRotateItem](#canplayerrotateitem)
+- [CanPlayerThrowPunch](#canplayerthrowpunch)
+- [CanPlayerUseCommand](#canplayerusecommand)
+- [CanRunItemAction](#canrunitemaction)
+- [CharForceRecognized](#charforcerecognized)
+- [CharHasFlags](#charhasflags)
+- [ChatParsed](#chatparsed)
+- [CommandAdded](#commandadded)
+- [ConfigChanged](#configchanged)
+- [DoModuleIncludes](#domoduleincludes)
+- [ForceRecognizeRange](#forcerecognizerange)
+- [GetAttributeMax](#getattributemax)
+- [GetAttributeStartingMax](#getattributestartingmax)
+- [GetCharMaxStamina](#getcharmaxstamina)
+- [GetDefaultCharDesc](#getdefaultchardesc)
+- [GetDefaultCharName](#getdefaultcharname)
+- [GetDefaultInventorySize](#getdefaultinventorysize)
+- [GetDisplayedName](#getdisplayedname)
+- [GetHandsAttackSpeed](#gethandsattackspeed)
+- [GetItemDropModel](#getitemdropmodel)
+- [GetMaxPlayerChar](#getmaxplayerchar)
+- [GetMaxStartingAttributePoints](#getmaxstartingattributepoints)
+- [GetModelGender](#getmodelgender)
+- [GetMoneyModel](#getmoneymodel)
+- [GetNPCDialogOptions](#getnpcdialogoptions)
+- [GetPlayerPunchDamage](#getplayerpunchdamage)
+- [GetPlayerPunchRagdollTime](#getplayerpunchragdolltime)
+- [GetPriceOverride](#getpriceoverride)
+- [GetRagdollTime](#getragdolltime)
+- [GetVendorSaleScale](#getvendorsalescale)
+- [GetWeaponName](#getweaponname)
+- [InitializeStorage](#initializestorage)
+- [InitializedConfig](#initializedconfig)
+- [InitializedItems](#initializeditems)
+- [InitializedKeybinds](#initializedkeybinds)
+- [InitializedModules](#initializedmodules)
+- [InitializedOptions](#initializedoptions)
+- [InitializedSchema](#initializedschema)
+- [InventoryDataChanged](#inventorydatachanged)
+- [InventoryInitialized](#inventoryinitialized)
+- [InventoryItemAdded](#inventoryitemadded)
+- [InventoryItemRemoved](#inventoryitemremoved)
+- [IsCharFakeRecognized](#ischarfakerecognized)
+- [IsCharRecognized](#ischarrecognized)
+- [IsRecognizedChatType](#isrecognizedchattype)
+- [IsSuitableForTrunk](#issuitablefortrunk)
+- [ItemDataChanged](#itemdatachanged)
+- [ItemDefaultFunctions](#itemdefaultfunctions)
+- [ItemInitialized](#iteminitialized)
+- [ItemQuantityChanged](#itemquantitychanged)
+- [LiliaLoaded](#lilialoaded)
+- [NetVarChanged](#netvarchanged)
+- [OnAdminSystemLoaded](#onadminsystemloaded)
+- [OnCharGetup](#onchargetup)
+- [OnCharVarChanged](#oncharvarchanged)
+- [OnConfigUpdated](#onconfigupdated)
+- [OnItemAdded](#onitemadded)
+- [OnItemCreated](#onitemcreated)
+- [OnItemOverridden](#onitemoverridden)
+- [OnItemRegistered](#onitemregistered)
+- [OnLocalizationLoaded](#onlocalizationloaded)
+- [OnPAC3PartTransfered](#onpac3parttransfered)
+- [OnPlayerPurchaseDoor](#onplayerpurchasedoor)
+- [OnPlayerDroppedItem](#onplayerdroppeditem)
+- [OnPlayerRotateItem](#onplayerrotateitem)
+- [OnPlayerTakeItem](#onplayertakeitem)
+- [OnPrivilegeRegistered](#onprivilegeregistered)
+- [OnPrivilegeUnregistered](#onprivilegeunregistered)
+- [OnThemeChanged](#onthemechanged)
+- [OnTransferred](#ontransferred)
+- [OnUsergroupCreated](#onusergroupcreated)
+- [OnUsergroupRemoved](#onusergroupremoved)
+- [OnUsergroupRenamed](#onusergrouprenamed)
+- [OptionAdded](#optionadded)
+- [OptionChanged](#optionchanged)
+- [OverrideFactionDesc](#overridefactiondesc)
+- [OverrideFactionModels](#overridefactionmodels)
+- [OverrideFactionName](#overridefactionname)
+- [OverrideSpawnTime](#overridespawntime)
+- [PlayerThrowPunch](#playerthrowpunch)
+- [PreLiliaLoaded](#prelilialoaded)
+- [RemovePart](#removepart)
+- [SetupBagInventoryAccessRules](#setupbaginventoryaccessrules)
+- [SetupPACDataFromItems](#setuppacdatafromitems)
+- [TryViewModel](#tryviewmodel)
+
+---
+
+<a id="adjustcreationdata"></a>
 ### AdjustCreationData
 
 #### 📋 Purpose
@@ -45,6 +156,7 @@ Shared
 
 ---
 
+<a id="adjustpacpartdata"></a>
 ### AdjustPACPartData
 
 #### 📋 Purpose
@@ -79,6 +191,7 @@ Shared
 
 ---
 
+<a id="adjuststaminaoffset"></a>
 ### AdjustStaminaOffset
 
 #### 📋 Purpose
@@ -112,6 +225,7 @@ Shared
 
 ---
 
+<a id="advdupe_finishpasting"></a>
 ### AdvDupe_FinishPasting
 
 #### 📋 Purpose
@@ -145,6 +259,7 @@ Shared
 
 ---
 
+<a id="attachpart"></a>
 ### AttachPart
 
 #### 📋 Purpose
@@ -178,6 +293,7 @@ Shared
 
 ---
 
+<a id="baginventoryready"></a>
 ### BagInventoryReady
 
 #### 📋 Purpose
@@ -211,6 +327,7 @@ Shared
 
 ---
 
+<a id="baginventoryremoved"></a>
 ### BagInventoryRemoved
 
 #### 📋 Purpose
@@ -244,6 +361,7 @@ Shared
 
 ---
 
+<a id="calcstaminachange"></a>
 ### CalcStaminaChange
 
 #### 📋 Purpose
@@ -278,6 +396,7 @@ Shared
 
 ---
 
+<a id="calcstaminachange"></a>
 ### CalcStaminaChange
 
 #### 📋 Purpose
@@ -312,6 +431,7 @@ Shared
 
 ---
 
+<a id="cancharbetransfered"></a>
 ### CanCharBeTransfered
 
 #### 📋 Purpose
@@ -352,6 +472,7 @@ Shared
 
 ---
 
+<a id="caninvitetoclass"></a>
 ### CanInviteToClass
 
 #### 📋 Purpose
@@ -385,6 +506,7 @@ Shared
 
 ---
 
+<a id="caninvitetofaction"></a>
 ### CanInviteToFaction
 
 #### 📋 Purpose
@@ -421,6 +543,7 @@ Shared
 
 ---
 
+<a id="canoutfitchangemodel"></a>
 ### CanOutfitChangeModel
 
 #### 📋 Purpose
@@ -453,6 +576,7 @@ Shared
 
 ---
 
+<a id="canperformvendoredit"></a>
 ### CanPerformVendorEdit
 
 #### 📋 Purpose
@@ -486,6 +610,7 @@ Shared
 
 ---
 
+<a id="canpickupmoney"></a>
 ### CanPickupMoney
 
 #### 📋 Purpose
@@ -519,6 +644,7 @@ Shared
 
 ---
 
+<a id="canplayerchooseweapon"></a>
 ### CanPlayerChooseWeapon
 
 #### 📋 Purpose
@@ -551,6 +677,7 @@ Shared
 
 ---
 
+<a id="canplayercreatechar"></a>
 ### CanPlayerCreateChar
 
 #### 📋 Purpose
@@ -584,6 +711,7 @@ Shared
 
 ---
 
+<a id="canplayerjoinclass"></a>
 ### CanPlayerJoinClass
 
 #### 📋 Purpose
@@ -620,6 +748,7 @@ Shared
 
 ---
 
+<a id="canplayerknock"></a>
 ### CanPlayerKnock
 
 #### 📋 Purpose
@@ -653,6 +782,7 @@ Shared
 
 ---
 
+<a id="canplayermodifyconfig"></a>
 ### CanPlayerModifyConfig
 
 #### 📋 Purpose
@@ -686,6 +816,7 @@ Shared
 
 ---
 
+<a id="canplayerrotateitem"></a>
 ### CanPlayerRotateItem
 
 #### 📋 Purpose
@@ -719,6 +850,7 @@ Shared
 
 ---
 
+<a id="canplayerthrowpunch"></a>
 ### CanPlayerThrowPunch
 
 #### 📋 Purpose
@@ -751,6 +883,7 @@ Shared
 
 ---
 
+<a id="canplayerusecommand"></a>
 ### CanPlayerUseCommand
 
 #### 📋 Purpose
@@ -784,6 +917,7 @@ Shared
 
 ---
 
+<a id="canrunitemaction"></a>
 ### CanRunItemAction
 
 #### 📋 Purpose
@@ -817,6 +951,7 @@ Shared
 
 ---
 
+<a id="charforcerecognized"></a>
 ### CharForceRecognized
 
 #### 📋 Purpose
@@ -850,6 +985,7 @@ Shared
 
 ---
 
+<a id="charhasflags"></a>
 ### CharHasFlags
 
 #### 📋 Purpose
@@ -883,6 +1019,7 @@ Shared
 
 ---
 
+<a id="chatparsed"></a>
 ### ChatParsed
 
 #### 📋 Purpose
@@ -918,6 +1055,7 @@ Shared
 
 ---
 
+<a id="commandadded"></a>
 ### CommandAdded
 
 #### 📋 Purpose
@@ -951,6 +1089,7 @@ Shared
 
 ---
 
+<a id="configchanged"></a>
 ### ConfigChanged
 
 #### 📋 Purpose
@@ -986,6 +1125,7 @@ Shared
 
 ---
 
+<a id="domoduleincludes"></a>
 ### DoModuleIncludes
 
 #### 📋 Purpose
@@ -1020,6 +1160,7 @@ Shared
 
 ---
 
+<a id="forcerecognizerange"></a>
 ### ForceRecognizeRange
 
 #### 📋 Purpose
@@ -1054,6 +1195,7 @@ Shared
 
 ---
 
+<a id="getattributemax"></a>
 ### GetAttributeMax
 
 #### 📋 Purpose
@@ -1087,6 +1229,7 @@ Shared
 
 ---
 
+<a id="getattributestartingmax"></a>
 ### GetAttributeStartingMax
 
 #### 📋 Purpose
@@ -1120,6 +1263,7 @@ Shared
 
 ---
 
+<a id="getcharmaxstamina"></a>
 ### GetCharMaxStamina
 
 #### 📋 Purpose
@@ -1152,6 +1296,7 @@ Shared
 
 ---
 
+<a id="getdefaultchardesc"></a>
 ### GetDefaultCharDesc
 
 #### 📋 Purpose
@@ -1186,6 +1331,7 @@ Shared
 
 ---
 
+<a id="getdefaultcharname"></a>
 ### GetDefaultCharName
 
 #### 📋 Purpose
@@ -1220,6 +1366,7 @@ Shared
 
 ---
 
+<a id="getdefaultinventorysize"></a>
 ### GetDefaultInventorySize
 
 #### 📋 Purpose
@@ -1253,6 +1400,7 @@ Shared
 
 ---
 
+<a id="getdisplayedname"></a>
 ### GetDisplayedName
 
 #### 📋 Purpose
@@ -1286,6 +1434,7 @@ Shared
 
 ---
 
+<a id="gethandsattackspeed"></a>
 ### GetHandsAttackSpeed
 
 #### 📋 Purpose
@@ -1319,6 +1468,7 @@ Shared
 
 ---
 
+<a id="getitemdropmodel"></a>
 ### GetItemDropModel
 
 #### 📋 Purpose
@@ -1352,6 +1502,7 @@ Shared
 
 ---
 
+<a id="getmaxplayerchar"></a>
 ### GetMaxPlayerChar
 
 #### 📋 Purpose
@@ -1384,6 +1535,7 @@ Shared
 
 ---
 
+<a id="getmaxstartingattributepoints"></a>
 ### GetMaxStartingAttributePoints
 
 #### 📋 Purpose
@@ -1417,6 +1569,7 @@ Shared
 
 ---
 
+<a id="getmodelgender"></a>
 ### GetModelGender
 
 #### 📋 Purpose
@@ -1449,6 +1602,7 @@ Shared
 
 ---
 
+<a id="getmoneymodel"></a>
 ### GetMoneyModel
 
 #### 📋 Purpose
@@ -1481,6 +1635,7 @@ Shared
 
 ---
 
+<a id="getnpcdialogoptions"></a>
 ### GetNPCDialogOptions
 
 #### 📋 Purpose
@@ -1515,6 +1670,7 @@ Shared
 
 ---
 
+<a id="getplayerpunchdamage"></a>
 ### GetPlayerPunchDamage
 
 #### 📋 Purpose
@@ -1550,6 +1706,7 @@ Shared
 
 ---
 
+<a id="getplayerpunchragdolltime"></a>
 ### GetPlayerPunchRagdollTime
 
 #### 📋 Purpose
@@ -1583,6 +1740,7 @@ Shared
 
 ---
 
+<a id="getpriceoverride"></a>
 ### GetPriceOverride
 
 #### 📋 Purpose
@@ -1619,6 +1777,7 @@ Shared
 
 ---
 
+<a id="getragdolltime"></a>
 ### GetRagdollTime
 
 #### 📋 Purpose
@@ -1652,6 +1811,7 @@ Shared
 
 ---
 
+<a id="getvendorsalescale"></a>
 ### GetVendorSaleScale
 
 #### 📋 Purpose
@@ -1684,6 +1844,7 @@ Shared
 
 ---
 
+<a id="getweaponname"></a>
 ### GetWeaponName
 
 #### 📋 Purpose
@@ -1716,6 +1877,7 @@ Shared
 
 ---
 
+<a id="initializestorage"></a>
 ### InitializeStorage
 
 #### 📋 Purpose
@@ -1748,6 +1910,7 @@ Shared
 
 ---
 
+<a id="initializedconfig"></a>
 ### InitializedConfig
 
 #### 📋 Purpose
@@ -1774,6 +1937,7 @@ Shared
 
 ---
 
+<a id="initializeditems"></a>
 ### InitializedItems
 
 #### 📋 Purpose
@@ -1800,6 +1964,7 @@ Shared
 
 ---
 
+<a id="initializedkeybinds"></a>
 ### InitializedKeybinds
 
 #### 📋 Purpose
@@ -1826,6 +1991,7 @@ Shared
 
 ---
 
+<a id="initializedmodules"></a>
 ### InitializedModules
 
 #### 📋 Purpose
@@ -1852,6 +2018,7 @@ Shared
 
 ---
 
+<a id="initializedoptions"></a>
 ### InitializedOptions
 
 #### 📋 Purpose
@@ -1878,6 +2045,7 @@ Shared
 
 ---
 
+<a id="initializedschema"></a>
 ### InitializedSchema
 
 #### 📋 Purpose
@@ -1904,6 +2072,7 @@ Shared
 
 ---
 
+<a id="inventorydatachanged"></a>
 ### InventoryDataChanged
 
 #### 📋 Purpose
@@ -1939,6 +2108,7 @@ Shared
 
 ---
 
+<a id="inventoryinitialized"></a>
 ### InventoryInitialized
 
 #### 📋 Purpose
@@ -1971,6 +2141,7 @@ Shared
 
 ---
 
+<a id="inventoryitemadded"></a>
 ### InventoryItemAdded
 
 #### 📋 Purpose
@@ -2005,6 +2176,7 @@ Shared
 
 ---
 
+<a id="inventoryitemremoved"></a>
 ### InventoryItemRemoved
 
 #### 📋 Purpose
@@ -2039,6 +2211,7 @@ Shared
 
 ---
 
+<a id="ischarfakerecognized"></a>
 ### IsCharFakeRecognized
 
 #### 📋 Purpose
@@ -2072,6 +2245,7 @@ Shared
 
 ---
 
+<a id="ischarrecognized"></a>
 ### IsCharRecognized
 
 #### 📋 Purpose
@@ -2106,6 +2280,7 @@ Shared
 
 ---
 
+<a id="isrecognizedchattype"></a>
 ### IsRecognizedChatType
 
 #### 📋 Purpose
@@ -2138,6 +2313,7 @@ Shared
 
 ---
 
+<a id="issuitablefortrunk"></a>
 ### IsSuitableForTrunk
 
 #### 📋 Purpose
@@ -2170,6 +2346,7 @@ Shared
 
 ---
 
+<a id="itemdatachanged"></a>
 ### ItemDataChanged
 
 #### 📋 Purpose
@@ -2205,6 +2382,7 @@ Shared
 
 ---
 
+<a id="itemdefaultfunctions"></a>
 ### ItemDefaultFunctions
 
 #### 📋 Purpose
@@ -2240,6 +2418,7 @@ Shared
 
 ---
 
+<a id="iteminitialized"></a>
 ### ItemInitialized
 
 #### 📋 Purpose
@@ -2272,6 +2451,7 @@ Shared
 
 ---
 
+<a id="itemquantitychanged"></a>
 ### ItemQuantityChanged
 
 #### 📋 Purpose
@@ -2306,6 +2486,7 @@ Shared
 
 ---
 
+<a id="lilialoaded"></a>
 ### LiliaLoaded
 
 #### 📋 Purpose
@@ -2332,6 +2513,7 @@ Shared
 
 ---
 
+<a id="netvarchanged"></a>
 ### NetVarChanged
 
 #### 📋 Purpose
@@ -2367,6 +2549,7 @@ Shared
 
 ---
 
+<a id="onadminsystemloaded"></a>
 ### OnAdminSystemLoaded
 
 #### 📋 Purpose
@@ -2400,6 +2583,7 @@ Shared
 
 ---
 
+<a id="onchargetup"></a>
 ### OnCharGetup
 
 #### 📋 Purpose
@@ -2433,6 +2617,7 @@ Shared
 
 ---
 
+<a id="oncharvarchanged"></a>
 ### OnCharVarChanged
 
 #### 📋 Purpose
@@ -2468,6 +2653,7 @@ Shared
 
 ---
 
+<a id="onconfigupdated"></a>
 ### OnConfigUpdated
 
 #### 📋 Purpose
@@ -2502,6 +2688,7 @@ Shared
 
 ---
 
+<a id="onitemadded"></a>
 ### OnItemAdded
 
 #### 📋 Purpose
@@ -2535,6 +2722,7 @@ Shared
 
 ---
 
+<a id="onitemcreated"></a>
 ### OnItemCreated
 
 #### 📋 Purpose
@@ -2568,6 +2756,7 @@ Shared
 
 ---
 
+<a id="onitemoverridden"></a>
 ### OnItemOverridden
 
 #### 📋 Purpose
@@ -2601,6 +2790,7 @@ Shared
 
 ---
 
+<a id="onitemregistered"></a>
 ### OnItemRegistered
 
 #### 📋 Purpose
@@ -2633,6 +2823,7 @@ Shared
 
 ---
 
+<a id="onlocalizationloaded"></a>
 ### OnLocalizationLoaded
 
 #### 📋 Purpose
@@ -2659,6 +2850,7 @@ Shared
 
 ---
 
+<a id="onpac3parttransfered"></a>
 ### OnPAC3PartTransfered
 
 #### 📋 Purpose
@@ -2691,6 +2883,7 @@ Shared
 
 ---
 
+<a id="onplayerpurchasedoor"></a>
 ### OnPlayerPurchaseDoor
 
 #### 📋 Purpose
@@ -2725,6 +2918,7 @@ Shared
 
 ---
 
+<a id="onplayerdroppeditem"></a>
 ### OnPlayerDroppedItem
 
 #### 📋 Purpose
@@ -2757,6 +2951,7 @@ Shared
 
 ---
 
+<a id="onplayerrotateitem"></a>
 ### OnPlayerRotateItem
 
 #### 📋 Purpose
@@ -2790,6 +2985,7 @@ Shared
 
 ---
 
+<a id="onplayertakeitem"></a>
 ### OnPlayerTakeItem
 
 #### 📋 Purpose
@@ -2822,6 +3018,7 @@ Shared
 
 ---
 
+<a id="onprivilegeregistered"></a>
 ### OnPrivilegeRegistered
 
 #### 📋 Purpose
@@ -2857,6 +3054,7 @@ Shared
 
 ---
 
+<a id="onprivilegeunregistered"></a>
 ### OnPrivilegeUnregistered
 
 #### 📋 Purpose
@@ -2890,6 +3088,7 @@ Shared
 
 ---
 
+<a id="onthemechanged"></a>
 ### OnThemeChanged
 
 #### 📋 Purpose
@@ -2923,6 +3122,7 @@ Shared
 
 ---
 
+<a id="ontransferred"></a>
 ### OnTransferred
 
 #### 📋 Purpose
@@ -2955,6 +3155,7 @@ Shared
 
 ---
 
+<a id="onusergroupcreated"></a>
 ### OnUsergroupCreated
 
 #### 📋 Purpose
@@ -2988,6 +3189,7 @@ Shared
 
 ---
 
+<a id="onusergroupremoved"></a>
 ### OnUsergroupRemoved
 
 #### 📋 Purpose
@@ -3020,6 +3222,7 @@ Shared
 
 ---
 
+<a id="onusergrouprenamed"></a>
 ### OnUsergroupRenamed
 
 #### 📋 Purpose
@@ -3054,6 +3257,7 @@ Shared
 
 ---
 
+<a id="optionadded"></a>
 ### OptionAdded
 
 #### 📋 Purpose
@@ -3088,6 +3292,7 @@ Shared
 
 ---
 
+<a id="optionchanged"></a>
 ### OptionChanged
 
 #### 📋 Purpose
@@ -3122,6 +3327,7 @@ Shared
 
 ---
 
+<a id="overridefactiondesc"></a>
 ### OverrideFactionDesc
 
 #### 📋 Purpose
@@ -3155,6 +3361,7 @@ Shared
 
 ---
 
+<a id="overridefactionmodels"></a>
 ### OverrideFactionModels
 
 #### 📋 Purpose
@@ -3188,6 +3395,7 @@ Shared
 
 ---
 
+<a id="overridefactionname"></a>
 ### OverrideFactionName
 
 #### 📋 Purpose
@@ -3221,6 +3429,7 @@ Shared
 
 ---
 
+<a id="overridespawntime"></a>
 ### OverrideSpawnTime
 
 #### 📋 Purpose
@@ -3254,6 +3463,7 @@ Shared
 
 ---
 
+<a id="playerthrowpunch"></a>
 ### PlayerThrowPunch
 
 #### 📋 Purpose
@@ -3286,6 +3496,7 @@ Shared
 
 ---
 
+<a id="prelilialoaded"></a>
 ### PreLiliaLoaded
 
 #### 📋 Purpose
@@ -3312,6 +3523,7 @@ Shared
 
 ---
 
+<a id="removepart"></a>
 ### RemovePart
 
 #### 📋 Purpose
@@ -3345,6 +3557,7 @@ Shared
 
 ---
 
+<a id="setupbaginventoryaccessrules"></a>
 ### SetupBagInventoryAccessRules
 
 #### 📋 Purpose
@@ -3377,6 +3590,7 @@ Shared
 
 ---
 
+<a id="setuppacdatafromitems"></a>
 ### SetupPACDataFromItems
 
 #### 📋 Purpose
@@ -3403,6 +3617,7 @@ Shared
 
 ---
 
+<a id="tryviewmodel"></a>
 ### TryViewModel
 
 #### 📋 Purpose

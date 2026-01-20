@@ -10,6 +10,18 @@ The attribute system provides functionality for defining character attributes wi
 
 ---
 
+## Index
+
+- [name](#name)
+- [desc](#desc)
+- [maxValue](#maxvalue)
+- [startingMax](#startingmax)
+- [noStartBonus](#nostartbonus)
+- [OnSetup](#onsetup)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -27,6 +39,7 @@ During attribute definition
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -44,6 +57,7 @@ During attribute definition
 
 ---
 
+<a id="maxvalue"></a>
 ### maxValue
 
 #### 📋 Purpose
@@ -61,6 +75,7 @@ During attribute definition (used by GetAttributeMax hook)
 
 ---
 
+<a id="startingmax"></a>
 ### startingMax
 
 #### 📋 Purpose
@@ -78,6 +93,7 @@ During attribute definition (used by GetAttributeStartingMax hook)
 
 ---
 
+<a id="nostartbonus"></a>
 ### noStartBonus
 
 #### 📋 Purpose
@@ -95,6 +111,7 @@ During attribute definition (checked in character creation UI)
 
 ---
 
+<a id="onsetup"></a>
 ### OnSetup
 
 #### 📋 Purpose

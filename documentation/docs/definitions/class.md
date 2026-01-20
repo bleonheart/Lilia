@@ -52,6 +52,51 @@ classwhitelists to control which classes a character has access to.
 
 ---
 
+## Index
+
+- [name](#name)
+- [desc](#desc)
+- [requirements](#requirements)
+- [faction](#faction)
+- [team](#team)
+- [limit](#limit)
+- [commands](#commands)
+- [model](#model)
+- [logo](#logo)
+- [skin](#skin)
+- [bodyGroups](#bodygroups)
+- [subMaterials](#submaterials)
+- [isWhitelisted](#iswhitelisted)
+- [isDefault](#isdefault)
+- [canInviteToFaction](#caninvitetofaction)
+- [canInviteToClass](#caninvitetoclass)
+- [scoreboardHidden](#scoreboardhidden)
+- [pay](#pay)
+- [uniqueID](#uniqueid)
+- [index](#index)
+- [Color](#color)
+- [color](#color)
+- [health](#health)
+- [armor](#armor)
+- [weapons](#weapons)
+- [scale](#scale)
+- [runSpeed](#runspeed)
+- [walkSpeed](#walkspeed)
+- [jumpPower](#jumppower)
+- [NPCRelations](#npcrelations)
+- [bloodcolor](#bloodcolor)
+- [runSpeedMultiplier](#runspeedmultiplier)
+- [walkSpeedMultiplier](#walkspeedmultiplier)
+- [jumpPowerMultiplier](#jumppowermultiplier)
+- [OnCanBe](#oncanbe)
+- [OnSet](#onset)
+- [OnTransferred](#ontransferred)
+- [OnSpawn](#onspawn)
+- [OnLeave](#onleave)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -69,6 +114,7 @@ During class definition
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -86,6 +132,7 @@ During class definition
 
 ---
 
+<a id="requirements"></a>
 ### requirements
 
 #### 📋 Purpose
@@ -106,6 +153,7 @@ During class definition
 
 ---
 
+<a id="faction"></a>
 ### faction
 
 #### 📋 Purpose
@@ -123,6 +171,7 @@ During class definition
 
 ---
 
+<a id="team"></a>
 ### team
 
 #### 📋 Purpose
@@ -141,6 +190,7 @@ During class definition
 
 ---
 
+<a id="limit"></a>
 ### limit
 
 #### 📋 Purpose
@@ -159,6 +209,7 @@ During class definition
 
 ---
 
+<a id="commands"></a>
 ### commands
 
 #### 📋 Purpose
@@ -179,6 +230,7 @@ During class definition
 
 ---
 
+<a id="model"></a>
 ### model
 
 #### 📋 Purpose
@@ -200,6 +252,7 @@ During class definition
 
 ---
 
+<a id="logo"></a>
 ### logo
 
 #### 📋 Purpose
@@ -217,6 +270,7 @@ During class definition
 
 ---
 
+<a id="skin"></a>
 ### skin
 
 #### 📋 Purpose
@@ -234,6 +288,7 @@ During class definition
 
 ---
 
+<a id="bodygroups"></a>
 ### bodyGroups
 
 #### 📋 Purpose
@@ -253,6 +308,7 @@ During class definition
 
 ---
 
+<a id="submaterials"></a>
 ### subMaterials
 
 #### 📋 Purpose
@@ -273,6 +329,7 @@ During class definition
 
 ---
 
+<a id="iswhitelisted"></a>
 ### isWhitelisted
 
 #### 📋 Purpose
@@ -294,6 +351,7 @@ During class definition
 
 ---
 
+<a id="isdefault"></a>
 ### isDefault
 
 #### 📋 Purpose
@@ -311,6 +369,7 @@ During class definition
 
 ---
 
+<a id="caninvitetofaction"></a>
 ### canInviteToFaction
 
 #### 📋 Purpose
@@ -328,6 +387,7 @@ During class definition
 
 ---
 
+<a id="caninvitetoclass"></a>
 ### canInviteToClass
 
 #### 📋 Purpose
@@ -345,6 +405,7 @@ During class definition
 
 ---
 
+<a id="scoreboardhidden"></a>
 ### scoreboardHidden
 
 #### 📋 Purpose
@@ -362,6 +423,7 @@ During class definition
 
 ---
 
+<a id="pay"></a>
 ### pay
 
 #### 📋 Purpose
@@ -379,6 +441,7 @@ During class definition
 
 ---
 
+<a id="uniqueid"></a>
 ### uniqueID
 
 #### 📋 Purpose
@@ -401,6 +464,7 @@ Note: This property is internal and should not be modified directly
 
 ---
 
+<a id="index"></a>
 ### index
 
 #### 📋 Purpose
@@ -422,6 +486,7 @@ Set automatically during class registration
 
 ---
 
+<a id="color"></a>
 ### Color
 
 #### 📋 Purpose
@@ -439,6 +504,7 @@ During class definition
 
 ---
 
+<a id="color"></a>
 ### color
 
 #### 📋 Purpose
@@ -456,6 +522,7 @@ During class definition
 
 ---
 
+<a id="health"></a>
 ### health
 
 #### 📋 Purpose
@@ -473,6 +540,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="armor"></a>
 ### armor
 
 #### 📋 Purpose
@@ -490,6 +558,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="weapons"></a>
 ### weapons
 
 #### 📋 Purpose
@@ -508,6 +577,7 @@ During class definition (applied when player spawns)
 
 ---
 
+<a id="scale"></a>
 ### scale
 
 #### 📋 Purpose
@@ -525,6 +595,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="runspeed"></a>
 ### runSpeed
 
 #### 📋 Purpose
@@ -544,6 +615,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="walkspeed"></a>
 ### walkSpeed
 
 #### 📋 Purpose
@@ -563,6 +635,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="jumppower"></a>
 ### jumpPower
 
 #### 📋 Purpose
@@ -582,6 +655,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="npcrelations"></a>
 ### NPCRelations
 
 #### 📋 Purpose
@@ -602,6 +676,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="bloodcolor"></a>
 ### bloodcolor
 
 #### 📋 Purpose
@@ -620,6 +695,7 @@ During class definition (applied when player joins class)
 
 ---
 
+<a id="runspeedmultiplier"></a>
 ### runSpeedMultiplier
 
 #### 📋 Purpose
@@ -638,6 +714,7 @@ During class definition (used with runSpeed property)
 
 ---
 
+<a id="walkspeedmultiplier"></a>
 ### walkSpeedMultiplier
 
 #### 📋 Purpose
@@ -656,6 +733,7 @@ During class definition (used with walkSpeed property)
 
 ---
 
+<a id="jumppowermultiplier"></a>
 ### jumpPowerMultiplier
 
 #### 📋 Purpose
@@ -674,6 +752,7 @@ During class definition (used with jumpPower property)
 
 ---
 
+<a id="oncanbe"></a>
 ### OnCanBe
 
 #### 📋 Purpose
@@ -720,6 +799,7 @@ When a player attempts to join this class
 
 ---
 
+<a id="onset"></a>
 ### OnSet
 
 #### 📋 Purpose
@@ -748,6 +828,7 @@ Server
 
 ---
 
+<a id="ontransferred"></a>
 ### OnTransferred
 
 #### 📋 Purpose
@@ -779,6 +860,7 @@ Server
 
 ---
 
+<a id="onspawn"></a>
 ### OnSpawn
 
 #### 📋 Purpose
@@ -809,6 +891,7 @@ Server
 
 ---
 
+<a id="onleave"></a>
 ### OnLeave
 
 #### 📋 Purpose

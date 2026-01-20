@@ -22,6 +22,17 @@ USAGE:
 
 ---
 
+## Index
+
+- [name](#name)
+- [model](#model)
+- [desc](#desc)
+- [category](#category)
+- [entityid](#entityid)
+
+---
+
+<a id="name"></a>
 ### name
 
 #### 📋 Purpose
@@ -37,6 +48,7 @@ Sets the display name shown to players
 
 ---
 
+<a id="model"></a>
 ### model
 
 #### 📋 Purpose
@@ -52,6 +64,7 @@ Sets the 3D model used for the item
 
 ---
 
+<a id="desc"></a>
 ### desc
 
 #### 📋 Purpose
@@ -67,6 +80,7 @@ Sets the description text shown to players
 
 ---
 
+<a id="category"></a>
 ### category
 
 #### 📋 Purpose
@@ -82,6 +96,7 @@ Sets the category for inventory sorting
 
 ---
 
+<a id="entityid"></a>
 ### entityid
 
 #### 📋 Purpose
