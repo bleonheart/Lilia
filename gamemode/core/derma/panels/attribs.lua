@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
@@ -149,15 +149,10 @@ function PANEL:onDisplay()
         self.total = hook.Run("GetStartAttribPoints", client, self:getContext()) or lia.config.MaxAttributePoints or 0
     end
 
-    if not self.attribs then
-        self.attribs = {}
-    end
-
+    if not self.attribs then self.attribs = {} end
     for k, v in SortedPairsByMemberValue(lia.attribs.list, "name") do
         if v.noStartBonus then continue end
-        if not self.attribs[k] then
-            self.attribs[k] = self:addAttribute(k, v)
-        end
+        if not self.attribs[k] then self.attribs[k] = self:addAttribute(k, v) end
     end
 
     local attribs = self:getContext("attribs", {})

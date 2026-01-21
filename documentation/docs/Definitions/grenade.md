@@ -22,19 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [category](#category)
-- [model](#model)
-- [class](#class)
-- [width](#width)
-- [height](#height)
-- [DropOnDeath](#dropondeath)
-
----
-
 <a id="name"></a>
 ### name
 

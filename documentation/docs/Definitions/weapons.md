@@ -22,21 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [category](#category)
-- [model](#model)
-- [class](#class)
-- [width](#width)
-- [height](#height)
-- [isWeapon](#isweapon)
-- [RequiredSkillLevels](#requiredskilllevels)
-- [DropOnDeath](#dropondeath)
-
----
-
 <a id="name"></a>
 ### name
 

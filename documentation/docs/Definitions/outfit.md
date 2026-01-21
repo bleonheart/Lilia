@@ -22,21 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [category](#category)
-- [model](#model)
-- [width](#width)
-- [height](#height)
-- [outfitCategory](#outfitcategory)
-- [pacData](#pacdata)
-- [isOutfit](#isoutfit)
-- [paintOver](#paintover)
-
----
-
 <a id="name"></a>
 ### name
 
@@ -193,14 +178,13 @@ Called in function ITEM:paintOver
 #### 🌐 Realm
 Client
 
-#### ⚙️ Parameters
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">unknown</a></span> <span class="parameter">item</span> The item instance being drawn</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">unknown</a></span> <span class="parameter">w</span> Width of the item slot</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">unknown</a></span> <span class="parameter">h</span> Height of the item slot</p>
 
-- `item` (unknown) - The item instance being drawn
-- `w` (unknown) - Width of the item slot
-- `h` (unknown) - Height of the item slot
-
-#### ↩️ Returns
-* nil
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.1">nil</a></span></p>
 
 #### 💡 Example Usage
 

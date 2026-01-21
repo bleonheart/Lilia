@@ -10,17 +10,6 @@ The attribute system provides functionality for defining character attributes wi
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [maxValue](#maxvalue)
-- [startingMax](#startingmax)
-- [noStartBonus](#nostartbonus)
-- [OnSetup](#onsetup)
-
----
-
 <a id="name"></a>
 ### name
 
@@ -123,13 +112,12 @@ When a character spawns or when their attributes are initialized
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The client whose character is being set up</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">value</span> The current attribute value</p>
 
-- `client` (Player) - The client whose character is being set up
-- `value` (number) - The current attribute value
-
-#### ↩️ Returns
-* None
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None</a></span></p>
 
 #### 💡 Example Usage
 

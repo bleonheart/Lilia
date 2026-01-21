@@ -52,50 +52,6 @@ classwhitelists to control which classes a character has access to.
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [requirements](#requirements)
-- [faction](#faction)
-- [team](#team)
-- [limit](#limit)
-- [commands](#commands)
-- [model](#model)
-- [logo](#logo)
-- [skin](#skin)
-- [bodyGroups](#bodygroups)
-- [subMaterials](#submaterials)
-- [isWhitelisted](#iswhitelisted)
-- [isDefault](#isdefault)
-- [canInviteToFaction](#caninvitetofaction)
-- [canInviteToClass](#caninvitetoclass)
-- [scoreboardHidden](#scoreboardhidden)
-- [pay](#pay)
-- [uniqueID](#uniqueid)
-- [index](#index)
-- [Color](#color)
-- [color](#color)
-- [health](#health)
-- [armor](#armor)
-- [weapons](#weapons)
-- [scale](#scale)
-- [runSpeed](#runspeed)
-- [walkSpeed](#walkspeed)
-- [jumpPower](#jumppower)
-- [NPCRelations](#npcrelations)
-- [bloodcolor](#bloodcolor)
-- [runSpeedMultiplier](#runspeedmultiplier)
-- [walkSpeedMultiplier](#walkspeedmultiplier)
-- [jumpPowerMultiplier](#jumppowermultiplier)
-- [OnCanBe](#oncanbe)
-- [OnSet](#onset)
-- [OnTransferred](#ontransferred)
-- [OnSpawn](#onspawn)
-- [OnLeave](#onleave)
-
----
-
 <a id="name"></a>
 ### name
 
@@ -761,12 +717,11 @@ Check if a player can join this class
 #### ⏰ When Called
 When a player attempts to join this class
 
-#### ⚙️ Parameters
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player trying to join</p>
 
-- `client` (Player) - The player trying to join
-
-#### ↩️ Returns
-* true to allow, false to deny
+<p><h3>Returns:</h3>
+true to allow, false to deny</p>
 
 #### 💡 Example Usage
 
@@ -809,9 +764,8 @@ When a player is assigned to this class
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player joining the class
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player joining the class</p>
 
 #### 💡 Example Usage
 
@@ -836,10 +790,9 @@ When a player switches classes and this becomes the new class
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player switching classes
-- `oldClass` (table) - The previous class data
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player switching classes</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">oldClass</span> The previous class data</p>
 
 #### 💡 Example Usage
 
@@ -866,9 +819,8 @@ When a player spawns with this class
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player spawning
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player spawning</p>
 
 #### 💡 Example Usage
 
@@ -895,9 +847,8 @@ When a player leaves this class
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player leaving
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player leaving</p>
 
 #### 💡 Example Usage
 

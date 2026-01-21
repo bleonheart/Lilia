@@ -6,6 +6,12 @@
     <div class="generator-section">
         <h3>Basic Information</h3>
         <div class="input-group">
+            <label for="item-id">Unique ID:</label>
+            <input type="text" id="item-id" placeholder="e.g., health_kit">
+            <small>Unique identifier for this item (no spaces, lowercase)</small>
+        </div>
+
+        <div class="input-group">
             <label for="item-name">Item Name:</label>
             <input type="text" id="item-name" placeholder="e.g., Health Kit">
         </div>
@@ -280,6 +286,7 @@ code {
 
 <script>
 function generateAidItem() {
+    const uniqueId = (document.getElementById('item-id').value || '').trim() || 'aid_example';
     const name = (document.getElementById('item-name').value || '').trim() || 'Aid Item';
     const desc = (document.getElementById('item-desc').value || '').trim() || 'An aid item that provides healing';
     const category = (document.getElementById('item-category').value || '').trim() || 'aid';
@@ -292,20 +299,24 @@ function generateAidItem() {
     const healthValue = healthAmount || '0';
     const armorValue = armorAmount || '0';
 
+    const properties = [
+        `    name = ${JSON.stringify(name)}`,
+        `    desc = ${JSON.stringify(desc)}`,
+        `    category = ${JSON.stringify(category)}`,
+        `    model = ${JSON.stringify(model)}`,
+        `    width = ${width}`,
+        `    height = ${height}`,
+        `    health = ${healthValue}`,
+        `    armor = ${armorValue}`
+    ];
+
     const lines = [
-        '-- Copy and paste this code into your aid item file',
-        '-- Example: gamemode/items/aid/health_kit.lua',
+        '-- Copy and paste this code into any Lua file that loads during initialization',
+        '-- Example: gamemode/items/aid.lua or gamemode/sh_items.lua',
         '',
-        `ITEM.name = ${JSON.stringify(name)}`,
-        `ITEM.desc = ${JSON.stringify(desc)}`,
-        `ITEM.category = ${JSON.stringify(category)}`,
-        '',
-        `ITEM.model = ${JSON.stringify(model)}`,
-        `ITEM.width = ${width}`,
-        `ITEM.height = ${height}`,
-        '',
-        `ITEM.health = ${healthValue}`,
-        `ITEM.armor = ${armorValue}`
+        `lia.item.registerItem(${JSON.stringify(uniqueId)}, "base_aid", {`,
+        ...properties,
+        '})'
     ];
 
     const code = `${lines.join('\n')}\n`;

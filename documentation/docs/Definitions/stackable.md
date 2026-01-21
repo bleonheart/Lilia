@@ -22,18 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [model](#model)
-- [width](#width)
-- [height](#height)
-- [isStackable](#isstackable)
-- [maxQuantity](#maxquantity)
-- [canSplit](#cansplit)
-
----
-
 <a id="name"></a>
 ### name
 

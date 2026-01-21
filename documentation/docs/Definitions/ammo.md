@@ -22,17 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [model](#model)
-- [width](#width)
-- [height](#height)
-- [ammo](#ammo)
-- [category](#category)
-
----
-
 <a id="name"></a>
 ### name
 

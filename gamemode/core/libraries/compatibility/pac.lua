@@ -1,34 +1,14 @@
-local playerMeta = FindMetaTable("Player")
---- Returns the player's active PAC parts.
--- @realm shared
--- @parent player.md
--- @treturn table Table of active PAC part IDs.
--- @usage
--- local parts = ply:getParts()
--- if parts["helmet"] then
---     print("Player has helmet equipped")
--- end
+﻿local playerMeta = FindMetaTable("Player")
 function playerMeta:getParts()
     return self:getNetVar("parts", {})
 end
 
 if SERVER then
-    --- Synchronizes the player's PAC parts with the client.
-    -- @realm server
-    -- @parent player.md
-    -- @usage
-    -- ply:syncParts()
     function playerMeta:syncParts()
         net.Start("liaPacSync")
         net.Send(self)
     end
 
-    --- Adds a PAC part to the player.
-    -- @realm server
-    -- @parent player.md
-    -- @param partID The unique ID of the PAC part to add.
-    -- @usage
-    -- ply:addPart("helmet_model")
     function playerMeta:addPart(partID)
         if self:getParts()[partID] then return end
         net.Start("liaPacPartAdd")
@@ -40,12 +20,6 @@ if SERVER then
         self:setNetVar("parts", parts)
     end
 
-    --- Removes a PAC part from the player.
-    -- @realm server
-    -- @parent player.md
-    -- @param partID The unique ID of the PAC part to remove.
-    -- @usage
-    -- ply:removePart("helmet_model")
     function playerMeta:removePart(partID)
         net.Start("liaPacPartRemove")
         net.WriteEntity(self)
@@ -56,11 +30,6 @@ if SERVER then
         self:setNetVar("parts", parts)
     end
 
-    --- Removes all PAC parts from the player.
-    -- @realm server
-    -- @parent player.md
-    -- @usage
-    -- ply:resetParts()
     function playerMeta:resetParts()
         net.Start("liaPacPartReset")
         net.WriteEntity(self)

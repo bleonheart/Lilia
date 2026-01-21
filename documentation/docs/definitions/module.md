@@ -10,32 +10,6 @@ The module system provides comprehensive functionality for defining modules with
 
 ---
 
-## Index
-
-- [name](#name)
-- [author](#author)
-- [discord](#discord)
-- [desc](#desc)
-- [version](#version)
-- [versionID](#versionid)
-- [uniqueID](#uniqueid)
-- [Privileges](#privileges)
-- [Dependencies](#dependencies)
-- [NetworkStrings](#networkstrings)
-- [WorkshopContent](#workshopcontent)
-- [WebSounds](#websounds)
-- [WebImages](#webimages)
-- [enabled](#enabled)
-- [folder](#folder)
-- [path](#path)
-- [variable](#variable)
-- [loading](#loading)
-- [setData](#setdata)
-- [getData](#getdata)
-- [ModuleLoaded](#moduleloaded)
-
----
-
 <a id="name"></a>
 ### name
 

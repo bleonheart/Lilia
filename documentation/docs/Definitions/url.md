@@ -22,15 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [model](#model)
-- [url](#url)
-
----
-
 <a id="name"></a>
 ### name
 

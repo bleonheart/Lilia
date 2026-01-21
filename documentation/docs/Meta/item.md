@@ -10,1210 +10,666 @@ The item meta table provides comprehensive functionality for managing item data,
 
 ---
 
-## Index
-
-- [isRotated](#isrotated)
-- [getWidth](#getwidth)
-- [getHeight](#getheight)
-- [getQuantity](#getquantity)
-- [tostring](#tostring)
-- [getID](#getid)
-- [getModel](#getmodel)
-- [getSkin](#getskin)
-- [getBodygroups](#getbodygroups)
-- [getPrice](#getprice)
-- [call](#call)
-- [getOwner](#getowner)
-- [getData](#getdata)
-- [getAllData](#getalldata)
-- [hook](#hook)
-- [postHook](#posthook)
-- [onRegistered](#onregistered)
-- [print](#print)
-- [printData](#printdata)
-- [getName](#getname)
-- [getDesc](#getdesc)
-- [removeFromInventory](#removefrominventory)
-- [delete](#delete)
-- [remove](#remove)
-- [destroy](#destroy)
-- [onDisposed](#ondisposed)
-- [onDisposed](#ondisposed)
-- [getEntity](#getentity)
-- [spawn](#spawn)
-- [transfer](#transfer)
-- [onInstanced](#oninstanced)
-- [onInstanced](#oninstanced)
-- [onSync](#onsync)
-- [onSync](#onsync)
-- [onRemoved](#onremoved)
-- [onRemoved](#onremoved)
-- [onRestored](#onrestored)
-- [onRestored](#onrestored)
-- [sync](#sync)
-- [setData](#setdata)
-- [addQuantity](#addquantity)
-- [setQuantity](#setquantity)
-- [interact](#interact)
-- [getCategory](#getcategory)
-
----
-
+<details class="realm-shared">
+<summary><a id=isRotated></a>isRotated()</summary>
 <a id="isrotated"></a>
-### isRotated
+<p>Reports whether the item is stored in a rotated state.</p>
+<p>Use when calculating grid dimensions or rendering the item icon.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True if the item is rotated.</p>
 
-#### 📋 Purpose
-Reports whether the item is stored in a rotated state.
-
-#### ⏰ When Called
-Use when calculating grid dimensions or rendering the item icon.
-
-#### ↩️ Returns
-* boolean
-True if the item is rotated.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    if item:isRotated() then swapDims() end
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    if item:isRotated() then swapDims() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getWidth></a>getWidth()</summary>
 <a id="getwidth"></a>
-### getWidth
+<p>Returns the item's width considering rotation and defaults.</p>
+<p>Use when placing the item into a grid inventory.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Width in grid cells.</p>
 
-#### 📋 Purpose
-Returns the item's width considering rotation and defaults.
-
-#### ⏰ When Called
-Use when placing the item into a grid inventory.
-
-#### ↩️ Returns
-* number
-Width in grid cells.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local w = item:getWidth()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local w = item:getWidth()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getHeight></a>getHeight()</summary>
 <a id="getheight"></a>
-### getHeight
+<p>Returns the item's height considering rotation and defaults.</p>
+<p>Use when calculating how much vertical space an item needs.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Height in grid cells.</p>
 
-#### 📋 Purpose
-Returns the item's height considering rotation and defaults.
-
-#### ⏰ When Called
-Use when calculating how much vertical space an item needs.
-
-#### ↩️ Returns
-* number
-Height in grid cells.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local h = item:getHeight()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local h = item:getHeight()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getQuantity></a>getQuantity()</summary>
 <a id="getquantity"></a>
-### getQuantity
+<p>Returns the current stack quantity for this item.</p>
+<p>Use when showing stack counts or validating transfers.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Quantity within the stack.</p>
 
-#### 📋 Purpose
-Returns the current stack quantity for this item.
-
-#### ⏰ When Called
-Use when showing stack counts or validating transfers.
-
-#### ↩️ Returns
-* number
-Quantity within the stack.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local count = item:getQuantity()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local count = item:getQuantity()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=tostring></a>tostring()</summary>
 <a id="tostring"></a>
-### tostring
+<p>Builds a readable string identifier for the item.</p>
+<p>Use for logging, debugging, or console output.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Formatted identifier including uniqueID and item id.</p>
 
-#### 📋 Purpose
-Builds a readable string identifier for the item.
-
-#### ⏰ When Called
-Use for logging, debugging, or console output.
-
-#### ↩️ Returns
-* string
-Formatted identifier including uniqueID and item id.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    print(item:tostring())
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    print(item:tostring())
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getID></a>getID()</summary>
 <a id="getid"></a>
-### getID
+<p>Retrieves the numeric identifier for this item instance.</p>
+<p>Use when persisting, networking, or comparing items.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Unique item ID.</p>
 
-#### 📋 Purpose
-Retrieves the numeric identifier for this item instance.
-
-#### ⏰ When Called
-Use when persisting, networking, or comparing items.
-
-#### ↩️ Returns
-* number
-Unique item ID.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local id = item:getID()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local id = item:getID()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getModel></a>getModel()</summary>
 <a id="getmodel"></a>
-### getModel
+<p>Returns the model path assigned to this item.</p>
+<p>Use when spawning an entity or rendering the item icon.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Model file path.</p>
 
-#### 📋 Purpose
-Returns the model path assigned to this item.
-
-#### ⏰ When Called
-Use when spawning an entity or rendering the item icon.
-
-#### ↩️ Returns
-* string
-Model file path.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local mdl = item:getModel()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local mdl = item:getModel()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getSkin></a>getSkin()</summary>
 <a id="getskin"></a>
-### getSkin
+<p>Returns the skin index assigned to this item.</p>
+<p>Use when spawning the entity or applying cosmetics.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="optional">optional</span> Skin index or nil when not set.</p>
 
-#### 📋 Purpose
-Returns the skin index assigned to this item.
-
-#### ⏰ When Called
-Use when spawning the entity or applying cosmetics.
-
-#### ↩️ Returns
-* number|nil
-Skin index or nil when not set.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local skin = item:getSkin()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local skin = item:getSkin()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getBodygroups></a>getBodygroups()</summary>
 <a id="getbodygroups"></a>
-### getBodygroups
+<p>Provides the bodygroup configuration for the item model.</p>
+<p>Use when spawning or rendering to ensure correct bodygroups.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Key-value pairs of bodygroup indexes to values.</p>
 
-#### 📋 Purpose
-Provides the bodygroup configuration for the item model.
-
-#### ⏰ When Called
-Use when spawning or rendering to ensure correct bodygroups.
-
-#### ↩️ Returns
-* table
-Key-value pairs of bodygroup indexes to values.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local groups = item:getBodygroups()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local groups = item:getBodygroups()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getPrice></a>getPrice()</summary>
 <a id="getprice"></a>
-### getPrice
+<p>Calculates the current sale price for the item.</p>
+<p>Use when selling, buying, or displaying item cost.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Price value, possibly adjusted by calcPrice.</p>
 
-#### 📋 Purpose
-Calculates the current sale price for the item.
-
-#### ⏰ When Called
-Use when selling, buying, or displaying item cost.
-
-#### ↩️ Returns
-* number
-Price value, possibly adjusted by calcPrice.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local cost = item:getPrice()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local cost = item:getPrice()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=call></a>call(method, client, entity)</summary>
 <a id="call"></a>
-### call
+<p>Invokes an item method while temporarily setting context.</p>
+<p>Use when you need to call an item function with player/entity context.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">method</span> Name of the item method to invoke.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> <span class="optional">optional</span> Player to treat as the caller.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> <span class="optional">optional</span> Entity representing the item.</p>
 
-#### 📋 Purpose
-Invokes an item method while temporarily setting context.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> Return values from the invoked method.</p>
 
-#### ⏰ When Called
-Use when you need to call an item function with player/entity context.
-
-#### ⚙️ Parameters
-
-- `method` (string) - Name of the item method to invoke.
-- `client` (Player|nil) - Player to treat as the caller.
-- `entity` (Entity|nil) - Entity representing the item.
-
-#### ↩️ Returns
-* any
-Return values from the invoked method.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:call("onUse", ply, ent)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:call("onUse", ply, ent)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getOwner></a>getOwner()</summary>
 <a id="getowner"></a>
-### getOwner
+<p>Attempts to find the player that currently owns this item.</p>
+<p>Use when routing notifications or networking to the item owner.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="optional">optional</span> Owning player if found.</p>
 
-#### 📋 Purpose
-Attempts to find the player that currently owns this item.
-
-#### ⏰ When Called
-Use when routing notifications or networking to the item owner.
-
-#### ↩️ Returns
-* Player|nil
-Owning player if found.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local owner = item:getOwner()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local owner = item:getOwner()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getData></a>getData(key, default)</summary>
 <a id="getdata"></a>
-### getData
+<p>Reads a stored data value from the item or its entity.</p>
+<p>Use for custom item metadata such as durability or rotation.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Data key to read.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">default</span> Value to return when the key is missing.</p>
 
-#### 📋 Purpose
-Reads a stored data value from the item or its entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> Stored value or default.</p>
 
-#### ⏰ When Called
-Use for custom item metadata such as durability or rotation.
-
-#### ⚙️ Parameters
-
-- `key` (string) - Data key to read.
-- `default` (any) - Value to return when the key is missing.
-
-#### ↩️ Returns
-* any
-Stored value or default.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local durability = item:getData("durability", 100)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local durability = item:getData("durability", 100)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getAllData></a>getAllData()</summary>
 <a id="getalldata"></a>
-### getAllData
+<p>Returns a merged table of all item data, including entity netvars.</p>
+<p>Use when syncing the entire data payload to clients.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Combined data table.</p>
 
-#### 📋 Purpose
-Returns a merged table of all item data, including entity netvars.
-
-#### ⏰ When Called
-Use when syncing the entire data payload to clients.
-
-#### ↩️ Returns
-* table
-Combined data table.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local data = item:getAllData()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local data = item:getAllData()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=hook></a>hook(name, func)</summary>
 <a id="hook"></a>
-### hook
+<p>Registers a pre-run hook for an item interaction.</p>
+<p>Use when adding custom behavior before an action executes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">name</span> Hook name to bind.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.6">function</a></span> <span class="parameter">func</span> Callback to execute.</p>
 
-#### 📋 Purpose
-Registers a pre-run hook for an item interaction.
-
-#### ⏰ When Called
-Use when adding custom behavior before an action executes.
-
-#### ⚙️ Parameters
-
-- `name` (string) - Hook name to bind.
-- `func` (function) - Callback to execute.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:hook("use", function(itm) end)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:hook("use", function(itm) end)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=postHook></a>postHook(name, func)</summary>
 <a id="posthook"></a>
-### postHook
+<p>Registers a post-run hook for an item interaction.</p>
+<p>Use when you need to react after an action completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">name</span> Hook name to bind.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.6">function</a></span> <span class="parameter">func</span> Callback to execute with results.</p>
 
-#### 📋 Purpose
-Registers a post-run hook for an item interaction.
-
-#### ⏰ When Called
-Use when you need to react after an action completes.
-
-#### ⚙️ Parameters
-
-- `name` (string) - Hook name to bind.
-- `func` (function) - Callback to execute with results.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:postHook("use", function(itm, result) end)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:postHook("use", function(itm, result) end)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=onRegistered></a>onRegistered()</summary>
 <a id="onregistered"></a>
-### onRegistered
-
-#### 📋 Purpose
-Performs setup tasks after an item definition is registered.
-
-#### ⏰ When Called
-Automatically invoked once the item type is loaded.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:onRegistered()
-
-```
+<p>Performs setup tasks after an item definition is registered.</p>
+<p>Automatically invoked once the item type is loaded.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:onRegistered()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=print></a>print(detail)</summary>
 <a id="print"></a>
-### print
+<p>Prints a concise or detailed identifier for the item.</p>
+<p>Use during debugging or admin commands.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">detail</span> Include owner and grid info when true.</p>
 
-#### 📋 Purpose
-Prints a concise or detailed identifier for the item.
-
-#### ⏰ When Called
-Use during debugging or admin commands.
-
-#### ⚙️ Parameters
-
-- `detail` (boolean) - Include owner and grid info when true.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:print(true)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:print(true)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=printData></a>printData()</summary>
 <a id="printdata"></a>
-### printData
-
-#### 📋 Purpose
-Outputs item metadata and all stored data fields.
-
-#### ⏰ When Called
-Use for diagnostics to inspect an item's state.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    item:printData()
-
-```
+<p>Outputs item metadata and all stored data fields.</p>
+<p>Use for diagnostics to inspect an item's state.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:printData()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getName></a>getName()</summary>
 <a id="getname"></a>
-### getName
+<p>Returns the display name of the item.</p>
+<p>Use for UI labels, tooltips, and logs.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Item name.</p>
 
-#### 📋 Purpose
-Returns the display name of the item.
-
-#### ⏰ When Called
-Use for UI labels, tooltips, and logs.
-
-#### ↩️ Returns
-* string
-Item name.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local name = item:getName()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local name = item:getName()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getDesc></a>getDesc()</summary>
 <a id="getdesc"></a>
-### getDesc
+<p>Returns the description text for the item.</p>
+<p>Use in tooltips or inventory details.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Item description.</p>
 
-#### 📋 Purpose
-Returns the description text for the item.
-
-#### ⏰ When Called
-Use in tooltips or inventory details.
-
-#### ↩️ Returns
-* string
-Item description.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local desc = item:getDesc()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local desc = item:getDesc()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=removeFromInventory></a>removeFromInventory(preserveItem)</summary>
 <a id="removefrominventory"></a>
-### removeFromInventory
+<p>Removes the item from its current inventory instance.</p>
+<p>Use when dropping, deleting, or transferring the item out.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">preserveItem</span> When true, keeps the instance for later use.</p>
 
-#### 📋 Purpose
-Removes the item from its current inventory instance.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Promise</a></span> Deferred resolution for removal completion.</p>
 
-#### ⏰ When Called
-Use when dropping, deleting, or transferring the item out.
-
-#### ⚙️ Parameters
-
-- `preserveItem` (boolean) - When true, keeps the instance for later use.
-
-#### ↩️ Returns
-* Promise
-Deferred resolution for removal completion.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:removeFromInventory():next(function() end)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:removeFromInventory():next(function() end)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=delete></a>delete()</summary>
 <a id="delete"></a>
-### delete
+<p>Deletes the item record from storage after destroying it in-game.</p>
+<p>Use when an item should be permanently removed.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Promise</a></span> Resolves after the database delete and callbacks run.</p>
 
-#### 📋 Purpose
-Deletes the item record from storage after destroying it in-game.
-
-#### ⏰ When Called
-Use when an item should be permanently removed.
-
-#### ↩️ Returns
-* Promise
-Resolves after the database delete and callbacks run.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:delete()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:delete()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=remove></a>remove()</summary>
 <a id="remove"></a>
-### remove
+<p>Removes the world entity, inventory reference, and database entry.</p>
+<p>Use when the item is consumed or otherwise removed entirely.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Promise</a></span> Resolves once removal and deletion complete.</p>
 
-#### 📋 Purpose
-Removes the world entity, inventory reference, and database entry.
-
-#### ⏰ When Called
-Use when the item is consumed or otherwise removed entirely.
-
-#### ↩️ Returns
-* Promise
-Resolves once removal and deletion complete.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:remove()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:remove()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=destroy></a>destroy()</summary>
 <a id="destroy"></a>
-### destroy
-
-#### 📋 Purpose
-Broadcasts item deletion to clients and frees the instance.
-
-#### ⏰ When Called
-Use internally before removing an item from memory.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:destroy()
-
-```
+<p>Broadcasts item deletion to clients and frees the instance.</p>
+<p>Use internally before removing an item from memory.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:destroy()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onDisposed></a>onDisposed()</summary>
 <a id="ondisposed"></a>
-### onDisposed
-
-#### 📋 Purpose
-Hook called after an item is destroyed; intended for overrides.
-
-#### ⏰ When Called
-Automatically triggered when the item instance is disposed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onDisposed() end
-
-```
+<p>Hook called after an item is destroyed; intended for overrides.</p>
+<p>Automatically triggered when the item instance is disposed.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onDisposed() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onDisposed></a>onDisposed()</summary>
 <a id="ondisposed"></a>
-### onDisposed
-
-#### 📋 Purpose
-Hook called after an item is destroyed; intended for overrides.
-
-#### ⏰ When Called
-Automatically triggered when the item instance is disposed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onDisposed() end
-
-```
+<p>Hook called after an item is destroyed; intended for overrides.</p>
+<p>Automatically triggered when the item instance is disposed.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onDisposed() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=getEntity></a>getEntity()</summary>
 <a id="getentity"></a>
-### getEntity
+<p>Finds the world entity representing this item instance.</p>
+<p>Use when needing the spawned entity from the item data.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="optional">optional</span> Spawned item entity if present.</p>
 
-#### 📋 Purpose
-Finds the world entity representing this item instance.
-
-#### ⏰ When Called
-Use when needing the spawned entity from the item data.
-
-#### ↩️ Returns
-* Entity|nil
-Spawned item entity if present.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    local ent = item:getEntity()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local ent = item:getEntity()
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=spawn></a>spawn(position, angles)</summary>
 <a id="spawn"></a>
-### spawn
+<p>Spawns a world entity for this item at the given position and angle.</p>
+<p>Use when dropping an item into the world.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Vector">Vector|table|Entity</a></span> <span class="parameter">position</span> Where to spawn, or the player dropping the item.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Angle">Angle|Vector|table</a></span> <span class="parameter">angles</span> <span class="optional">optional</span> Orientation for the spawned entity.</p>
 
-#### 📋 Purpose
-Spawns a world entity for this item at the given position and angle.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="optional">optional</span> Spawned entity on success.</p>
 
-#### ⏰ When Called
-Use when dropping an item into the world.
-
-#### ⚙️ Parameters
-
-- `position` (Vector|table|Entity) - Where to spawn, or the player dropping the item.
-- `angles` (Angle|Vector|table|nil) - Orientation for the spawned entity.
-
-#### ↩️ Returns
-* Entity|nil
-Spawned entity on success.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    local ent = item:spawn(ply, Angle(0, 0, 0))
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local ent = item:spawn(ply, Angle(0, 0, 0))
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=transfer></a>transfer(newInventory, bBypass)</summary>
 <a id="transfer"></a>
-### transfer
+<p>Moves the item into another inventory if access rules allow.</p>
+<p>Use when transferring items between containers or players.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">newInventory</span> Destination inventory.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">bBypass</span> Skip access checks when true.</p>
 
-#### 📋 Purpose
-Moves the item into another inventory if access rules allow.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True if the transfer was initiated.</p>
 
-#### ⏰ When Called
-Use when transferring items between containers or players.
-
-#### ⚙️ Parameters
-
-- `newInventory` (Inventory) - Destination inventory.
-- `bBypass` (boolean) - Skip access checks when true.
-
-#### ↩️ Returns
-* boolean
-True if the transfer was initiated.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:transfer(otherInv)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:transfer(otherInv)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onInstanced></a>onInstanced()</summary>
 <a id="oninstanced"></a>
-### onInstanced
-
-#### 📋 Purpose
-Hook called when a new item instance is created.
-
-#### ⏰ When Called
-Automatically invoked after instancing; override to customize.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onInstanced() end
-
-```
+<p>Hook called when a new item instance is created.</p>
+<p>Automatically invoked after instancing; override to customize.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onInstanced() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onInstanced></a>onInstanced()</summary>
 <a id="oninstanced"></a>
-### onInstanced
-
-#### 📋 Purpose
-Hook called when a new item instance is created.
-
-#### ⏰ When Called
-Automatically invoked after instancing; override to customize.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onInstanced() end
-
-```
+<p>Hook called when a new item instance is created.</p>
+<p>Automatically invoked after instancing; override to customize.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onInstanced() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onSync></a>onSync(recipient)</summary>
 <a id="onsync"></a>
-### onSync
+<p>Hook called after the item data is synchronized to clients.</p>
+<p>Triggered by sync calls; override for custom behavior.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">recipient</span> <span class="optional">optional</span> The player who received the sync, or nil for broadcast.</p>
 
-#### 📋 Purpose
-Hook called after the item data is synchronized to clients.
-
-#### ⏰ When Called
-Triggered by sync calls; override for custom behavior.
-
-#### ⚙️ Parameters
-
-- `recipient` (Player|nil) - The player who received the sync, or nil for broadcast.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onSync(ply) end
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onSync(ply) end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onSync></a>onSync(recipient)</summary>
 <a id="onsync"></a>
-### onSync
+<p>Hook called after the item data is synchronized to clients.</p>
+<p>Triggered by sync calls; override for custom behavior.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">recipient</span> <span class="optional">optional</span> The player who received the sync, or nil for broadcast.</p>
 
-#### 📋 Purpose
-Hook called after the item data is synchronized to clients.
-
-#### ⏰ When Called
-Triggered by sync calls; override for custom behavior.
-
-#### ⚙️ Parameters
-
-- `recipient` (Player|nil) - The player who received the sync, or nil for broadcast.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onSync(ply) end
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onSync(ply) end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onRemoved></a>onRemoved()</summary>
 <a id="onremoved"></a>
-### onRemoved
-
-#### 📋 Purpose
-Hook called after the item has been removed from the world/inventory.
-
-#### ⏰ When Called
-Automatically invoked once deletion finishes.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onRemoved() end
-
-```
+<p>Hook called after the item has been removed from the world/inventory.</p>
+<p>Automatically invoked once deletion finishes.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onRemoved() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onRemoved></a>onRemoved()</summary>
 <a id="onremoved"></a>
-### onRemoved
-
-#### 📋 Purpose
-Hook called after the item has been removed from the world/inventory.
-
-#### ⏰ When Called
-Automatically invoked once deletion finishes.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onRemoved() end
-
-```
+<p>Hook called after the item has been removed from the world/inventory.</p>
+<p>Automatically invoked once deletion finishes.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onRemoved() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onRestored></a>onRestored()</summary>
 <a id="onrestored"></a>
-### onRestored
-
-#### 📋 Purpose
-Hook called after an item is restored from persistence.
-
-#### ⏰ When Called
-Automatically invoked after loading an item from the database.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onRestored() end
-
-```
+<p>Hook called after an item is restored from persistence.</p>
+<p>Automatically invoked after loading an item from the database.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onRestored() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=onRestored></a>onRestored()</summary>
 <a id="onrestored"></a>
-### onRestored
-
-#### 📋 Purpose
-Hook called after an item is restored from persistence.
-
-#### ⏰ When Called
-Automatically invoked after loading an item from the database.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    function ITEM:onRestored() end
-
-```
+<p>Hook called after an item is restored from persistence.</p>
+<p>Automatically invoked after loading an item from the database.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    function ITEM:onRestored() end
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=sync></a>sync(recipient)</summary>
 <a id="sync"></a>
-### sync
+<p>Sends this item instance to a recipient or all clients for syncing.</p>
+<p>Use after creating or updating an item instance.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">recipient</span> <span class="optional">optional</span> Specific player to sync; broadcasts when nil.</p>
 
-#### 📋 Purpose
-Sends this item instance to a recipient or all clients for syncing.
-
-#### ⏰ When Called
-Use after creating or updating an item instance.
-
-#### ⚙️ Parameters
-
-- `recipient` (Player|nil) - Specific player to sync; broadcasts when nil.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:sync(ply)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:sync(ply)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=setData></a>setData(key, value, receivers, noSave, noCheckEntity)</summary>
 <a id="setdata"></a>
-### setData
+<p>Sets a custom data value on the item, networking and saving as needed.</p>
+<p>Use when updating item metadata that clients or persistence require.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Data key to set.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">value</span> Value to store.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player|table</a></span> <span class="parameter">receivers</span> <span class="optional">optional</span> Targets to send the update to; defaults to owner.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">noSave</span> Skip database write when true.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">noCheckEntity</span> Skip updating the world entity netvar when true.</p>
 
-#### 📋 Purpose
-Sets a custom data value on the item, networking and saving as needed.
-
-#### ⏰ When Called
-Use when updating item metadata that clients or persistence require.
-
-#### ⚙️ Parameters
-
-- `key` (string) - Data key to set.
-- `value` (any) - Value to store.
-- `receivers` (Player|table|nil) - Targets to send the update to; defaults to owner.
-- `noSave` (boolean) - Skip database write when true.
-- `noCheckEntity` (boolean) - Skip updating the world entity netvar when true.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:setData("durability", 80, item:getOwner())
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:setData("durability", 80, item:getOwner())
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=addQuantity></a>addQuantity(quantity, receivers, noCheckEntity)</summary>
 <a id="addquantity"></a>
-### addQuantity
+<p>Increases the item quantity by the given amount.</p>
+<p>Use for stacking items or consuming partial quantities.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">quantity</span> Amount to add (can be negative).</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player|table</a></span> <span class="parameter">receivers</span> <span class="optional">optional</span> Targets to notify; defaults to owner.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">noCheckEntity</span> Skip updating the entity netvar when true.</p>
 
-#### 📋 Purpose
-Increases the item quantity by the given amount.
-
-#### ⏰ When Called
-Use for stacking items or consuming partial quantities.
-
-#### ⚙️ Parameters
-
-- `quantity` (number) - Amount to add (can be negative).
-- `receivers` (Player|table|nil) - Targets to notify; defaults to owner.
-- `noCheckEntity` (boolean) - Skip updating the entity netvar when true.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:addQuantity(-1, ply)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:addQuantity(-1, ply)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=setQuantity></a>setQuantity(quantity, receivers, noCheckEntity)</summary>
 <a id="setquantity"></a>
-### setQuantity
+<p>Sets the item quantity, updating entities, clients, and storage.</p>
+<p>Use after splitting stacks or consuming items.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">quantity</span> New stack amount.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player|table</a></span> <span class="parameter">receivers</span> <span class="optional">optional</span> Targets to notify; defaults to owner.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">noCheckEntity</span> Skip updating the world entity netvar when true.</p>
 
-#### 📋 Purpose
-Sets the item quantity, updating entities, clients, and storage.
-
-#### ⏰ When Called
-Use after splitting stacks or consuming items.
-
-#### ⚙️ Parameters
-
-- `quantity` (number) - New stack amount.
-- `receivers` (Player|table|nil) - Targets to notify; defaults to owner.
-- `noCheckEntity` (boolean) - Skip updating the world entity netvar when true.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:setQuantity(5, ply)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:setQuantity(5, ply)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=interact></a>interact(action, client, entity, data)</summary>
 <a id="interact"></a>
-### interact
+<p>Handles an item interaction action, running hooks and callbacks.</p>
+<p>Use when a player selects an action from an item's context menu.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">action</span> Action identifier from the item's functions table.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the action.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> <span class="optional">optional</span> World entity representing the item, if any.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">data</span> Additional data for multi-option actions.</p>
 
-#### 📋 Purpose
-Handles an item interaction action, running hooks and callbacks.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True if the action was processed; false otherwise.</p>
 
-#### ⏰ When Called
-Use when a player selects an action from an item's context menu.
-
-#### ⚙️ Parameters
-
-- `action` (string) - Action identifier from the item's functions table.
-- `client` (Player) - Player performing the action.
-- `entity` (Entity|nil) - World entity representing the item, if any.
-- `data` (any) - Additional data for multi-option actions.
-
-#### ↩️ Returns
-* boolean
-True if the action was processed; false otherwise.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    item:interact("use", ply, ent)
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    item:interact("use", ply, ent)
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getCategory></a>getCategory()</summary>
 <a id="getcategory"></a>
-### getCategory
+<p>Returns the item's localized category label.</p>
+<p>Use when grouping or displaying items by category.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Localized category name, or "misc" if undefined.</p>
 
-#### 📋 Purpose
-Returns the item's localized category label.
-
-#### ⏰ When Called
-Use when grouping or displaying items by category.
-
-#### ↩️ Returns
-* string
-Localized category name, or "misc" if undefined.
-
-#### 🌐 Realm
-Shared
-
-#### 💡 Example Usage
-
-```lua
-    local category = item:getCategory()
-
-```
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    local category = item:getCategory()
+</code></pre>
+</details>
 
 ---
 

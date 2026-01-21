@@ -22,18 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [model](#model)
-- [width](#width)
-- [height](#height)
-- [health](#health)
-- [armor](#armor)
-
----
-
 <a id="name"></a>
 ### name
 
@@ -141,6 +129,22 @@ Sets the amount of armor restored when used
 ```lua
     -- Set armor restoration amount
     ITEM.armor = 10
+
+```
+
+---
+
+<a id="stamina"></a>
+### stamina
+
+#### 📋 Purpose
+Sets the amount of stamina restored when used
+
+#### 💡 Example Usage
+
+```lua
+    -- Set stamina restoration amount
+    ITEM.stamina = 15
 
 ```
 

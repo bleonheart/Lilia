@@ -1,5 +1,12 @@
 @echo off
 cd /d "%~dp0"
+echo Cleaning existing documentation...
+if exist "..\documentation\docs\meta" rd /s /q "..\documentation\docs\meta"
+if exist "..\documentation\docs\libraries" rd /s /q "..\documentation\docs\libraries"
+if exist "..\documentation\docs\definitions" rd /s /q "..\documentation\docs\definitions"
+if exist "..\documentation\docs\hooks" rd /s /q "..\documentation\docs\hooks"
+if exist "..\documentation\docs\modules" rd /s /q "..\documentation\docs\modules"
+if exist "..\documentation\docs\compatibility" rd /s /q "..\documentation\docs\compatibility"
 echo Re-compiling documentation...
 python ..\generate_docs.py meta
 if errorlevel 1 (

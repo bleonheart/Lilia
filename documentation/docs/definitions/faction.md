@@ -54,47 +54,6 @@ classwhitelists to control which classes a character has access to within the fa
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [color](#color)
-- [models](#models)
-- [weapons](#weapons)
-- [isDefault](#isdefault)
-- [uniqueID](#uniqueid)
-- [index](#index)
-- [health](#health)
-- [armor](#armor)
-- [scale](#scale)
-- [runSpeed](#runspeed)
-- [walkSpeed](#walkspeed)
-- [jumpPower](#jumppower)
-- [NPCRelations](#npcrelations)
-- [bloodcolor](#bloodcolor)
-- [runSpeedMultiplier](#runspeedmultiplier)
-- [walkSpeedMultiplier](#walkspeedmultiplier)
-- [jumpPowerMultiplier](#jumppowermultiplier)
-- [items](#items)
-- [oneCharOnly](#onecharonly)
-- [limit](#limit)
-- [pay](#pay)
-- [payTimer](#paytimer)
-- [scoreboardHidden](#scoreboardhidden)
-- [mainMenuPosition](#mainmenuposition)
-- [commands](#commands)
-- [RecognizesGlobally](#recognizesglobally)
-- [isGloballyRecognized](#isgloballyrecognized)
-- [MemberToMemberAutoRecognition](#membertomemberautorecognition)
-- [NameTemplate](#nametemplate)
-- [GetDefaultName](#getdefaultname)
-- [GetDefaultDesc](#getdefaultdesc)
-- [OnCheckLimitReached](#onchecklimitreached)
-- [OnTransferred](#ontransferred)
-- [OnSpawn](#onspawn)
-
----
-
 <a id="name"></a>
 ### name
 
@@ -761,13 +720,12 @@ Custom callback to check if faction player limit is reached
 #### ⏰ When Called
 When a player tries to join a faction that might be at capacity
 
-#### ⚙️ Parameters
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> The character trying to join</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player whose character is joining</p>
 
-- `character` (Character) - The character trying to join
-- `client` (Player) - The player whose character is joining
-
-#### ↩️ Returns
-* true if limit reached, false if not
+<p><h3>Returns:</h3>
+true if limit reached, false if not</p>
 
 #### 💡 Example Usage
 
@@ -799,9 +757,8 @@ When a player changes factions and this becomes their new faction
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player transferring to this faction
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player transferring to this faction</p>
 
 #### 💡 Example Usage
 
@@ -828,9 +785,8 @@ When a player spawns with this faction
 #### 🌐 Realm
 Server
 
-#### ⚙️ Parameters
-
-- `client` (Player) - The player spawning
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> The player spawning</p>
 
 #### 💡 Example Usage
 

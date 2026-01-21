@@ -22,19 +22,6 @@ USAGE:
 
 ---
 
-## Index
-
-- [name](#name)
-- [desc](#desc)
-- [category](#category)
-- [model](#model)
-- [width](#width)
-- [height](#height)
-- [outfitCategory](#outfitcategory)
-- [pacData](#pacdata)
-
----
-
 <a id="name"></a>
 ### name
 

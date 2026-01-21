@@ -1,4 +1,4 @@
-# Server Hooks
+# Server
 
 Server-side hook system for the Lilia framework.
 
@@ -10,5822 +10,3437 @@ Server-side hooks in the Lilia framework handle server-side logic, data persiste
 
 ---
 
-## Index
-
-- [AddWarning](#addwarning)
-- [CollectDoorDataFields](#collectdoordatafields)
-- [CanItemBeTransfered](#canitembetransfered)
-- [CanPersistEntity](#canpersistentity)
-- [CanPlayerAccessDoor](#canplayeraccessdoor)
-- [CanPlayerAccessVendor](#canplayeraccessvendor)
-- [CanPlayerDropItem](#canplayerdropitem)
-- [CanPlayerEarnSalary](#canplayerearnsalary)
-- [CanPlayerEquipItem](#canplayerequipitem)
-- [CanPlayerHoldObject](#canplayerholdobject)
-- [CanPlayerInteractItem](#canplayerinteractitem)
-- [CanPlayerLock](#canplayerlock)
-- [CanPlayerSeeLogCategory](#canplayerseelogcategory)
-- [CanPlayerSpawnStorage](#canplayerspawnstorage)
-- [CanPlayerSwitchChar](#canplayerswitchchar)
-- [CanPlayerTakeItem](#canplayertakeitem)
-- [CanPlayerTradeWithVendor](#canplayertradewithvendor)
-- [CanPlayerUnequipItem](#canplayerunequipitem)
-- [CanPlayerUnlock](#canplayerunlock)
-- [CanPlayerUseChar](#canplayerusechar)
-- [CanPlayerUseDoor](#canplayerusedoor)
-- [CanSaveData](#cansavedata)
-- [CreateSalaryTimers](#createsalarytimers)
-- [CharCleanUp](#charcleanup)
-- [CharDeleted](#chardeleted)
-- [CharListExtraDetails](#charlistextradetails)
-- [CharPostSave](#charpostsave)
-- [CharPreSave](#charpresave)
-- [CheckFactionLimitReached](#checkfactionlimitreached)
-- [DatabaseConnected](#databaseconnected)
-- [DiscordRelaySend](#discordrelaysend)
-- [DiscordRelayUnavailable](#discordrelayunavailable)
-- [DiscordRelayed](#discordrelayed)
-- [DoorEnabledToggled](#doorenabledtoggled)
-- [DoorHiddenToggled](#doorhiddentoggled)
-- [DoorLockToggled](#doorlocktoggled)
-- [DoorOwnableToggled](#doorownabletoggled)
-- [DoorPriceSet](#doorpriceset)
-- [DoorTitleSet](#doortitleset)
-- [FetchSpawns](#fetchspawns)
-- [GetAllCaseClaims](#getallcaseclaims)
-- [GetBotModel](#getbotmodel)
-- [GetDamageScale](#getdamagescale)
-- [GetDefaultInventoryType](#getdefaultinventorytype)
-- [GetEntitySaveData](#getentitysavedata)
-- [GetOOCDelay](#getoocdelay)
-- [GetPlayTime](#getplaytime)
-- [GetPlayerDeathSound](#getplayerdeathsound)
-- [GetPlayerPainSound](#getplayerpainsound)
-- [GetPlayerRespawnLocation](#getplayerrespawnlocation)
-- [GetPlayerSpawnLocation](#getplayerspawnlocation)
-- [GetPrestigePayBonus](#getprestigepaybonus)
-- [GetSalaryAmount](#getsalaryamount)
-- [GetTicketsByRequester](#getticketsbyrequester)
-- [GetWarnings](#getwarnings)
-- [GetWarningsByIssuer](#getwarningsbyissuer)
-- [HandleItemTransferRequest](#handleitemtransferrequest)
-- [InventoryDeleted](#inventorydeleted)
-- [ItemCombine](#itemcombine)
-- [ItemDeleted](#itemdeleted)
-- [ItemFunctionCalled](#itemfunctioncalled)
-- [ItemTransfered](#itemtransfered)
-- [KeyLock](#keylock)
-- [KeyUnlock](#keyunlock)
-- [KickedFromChar](#kickedfromchar)
-- [LiliaTablesLoaded](#liliatablesloaded)
-- [LoadData](#loaddata)
-- [ModifyCharacterModel](#modifycharactermodel)
-- [OnCharAttribBoosted](#oncharattribboosted)
-- [OnCharAttribUpdated](#oncharattribupdated)
-- [OnCharCreated](#oncharcreated)
-- [OnCharDelete](#onchardelete)
-- [OnCharDisconnect](#onchardisconnect)
-- [OnCharFlagsGiven](#oncharflagsgiven)
-- [OnCharFlagsTaken](#oncharflagstaken)
-- [OnCharKick](#oncharkick)
-- [OnCharNetVarChanged](#oncharnetvarchanged)
-- [OnCharPermakilled](#oncharpermakilled)
-- [OnCharRecognized](#oncharrecognized)
-- [OnCharTradeVendor](#onchartradevendor)
-- [OnCheaterCaught](#oncheatercaught)
-- [OnDataSet](#ondataset)
-- [OnDatabaseLoaded](#ondatabaseloaded)
-- [OnDeathSoundPlayed](#ondeathsoundplayed)
-- [OnEntityLoaded](#onentityloaded)
-- [OnEntityPersistUpdated](#onentitypersistupdated)
-- [OnEntityPersisted](#onentitypersisted)
-- [OnItemSpawned](#onitemspawned)
-- [OnLoadTables](#onloadtables)
-- [OnNPCTypeSet](#onnpctypeset)
-- [OnOOCMessageSent](#onoocmessagesent)
-- [OnPainSoundPlayed](#onpainsoundplayed)
-- [OnPickupMoney](#onpickupmoney)
-- [OnPlayerEnterSequence](#onplayerentersequence)
-- [OnPlayerInteractItem](#onplayerinteractitem)
-- [OnPlayerJoinClass](#onplayerjoinclass)
-- [OnPlayerLeaveSequence](#onplayerleavesequence)
-- [OnPlayerLostStackItem](#onplayerloststackitem)
-- [OnPlayerObserve](#onplayerobserve)
-- [OnPlayerRagdolled](#onplayerragdolled)
-- [OnPlayerSwitchClass](#onplayerswitchclass)
-- [OnRequestItemTransfer](#onrequestitemtransfer)
-- [OnSalaryAdjust](#onsalaryadjust)
-- [OnSalaryGiven](#onsalarygiven)
-- [OnSetUsergroup](#onsetusergroup)
-- [OnSavedItemLoaded](#onsaveditemloaded)
-- [OnServerLog](#onserverlog)
-- [OnTicketClaimed](#onticketclaimed)
-- [OnTicketClosed](#onticketclosed)
-- [OnTicketCreated](#onticketcreated)
-- [OnUsergroupPermissionsChanged](#onusergrouppermissionschanged)
-- [OnVendorEdited](#onvendoredited)
-- [OnVoiceTypeChanged](#onvoicetypechanged)
-- [OptionReceived](#optionreceived)
-- [PlayerAccessVendor](#playeraccessvendor)
-- [PlayerCheatDetected](#playercheatdetected)
-- [PlayerGagged](#playergagged)
-- [PlayerLiliaDataLoaded](#playerliliadataloaded)
-- [PlayerLoadedChar](#playerloadedchar)
-- [PlayerMessageSend](#playermessagesend)
-- [PlayerModelChanged](#playermodelchanged)
-- [PlayerMuted](#playermuted)
-- [PlayerShouldPermaKill](#playershouldpermakill)
-- [PlayerSpawnPointSelected](#playerspawnpointselected)
-- [PlayerStaminaGained](#playerstaminagained)
-- [PlayerStaminaLost](#playerstaminalost)
-- [PlayerUngagged](#playerungagged)
-- [PlayerUnmuted](#playerunmuted)
-- [PlayerUseDoor](#playerusedoor)
-- [PostDoorDataLoad](#postdoordataload)
-- [PostLoadData](#postloaddata)
-- [PostPlayerInitialSpawn](#postplayerinitialspawn)
-- [PostPlayerLoadedChar](#postplayerloadedchar)
-- [PostPlayerLoadout](#postplayerloadout)
-- [PostPlayerSay](#postplayersay)
-- [PostScaleDamage](#postscaledamage)
-- [PreCharDelete](#prechardelete)
-- [PreDoorDataSave](#predoordatasave)
-- [PrePlayerInteractItem](#preplayerinteractitem)
-- [PrePlayerLoadedChar](#preplayerloadedchar)
-- [PreSalaryGive](#presalarygive)
-- [PreScaleDamage](#prescaledamage)
-- [RemoveWarning](#removewarning)
-- [SaveData](#savedata)
-- [SendPopup](#sendpopup)
-- [SetupBotPlayer](#setupbotplayer)
-- [SetupDatabase](#setupdatabase)
-- [SetupPlayerModel](#setupplayermodel)
-- [ShouldDataBeSaved](#shoulddatabesaved)
-- [ShouldOverrideSalaryTimers](#shouldoverridesalarytimers)
-- [ShouldDeleteSavedItems](#shoulddeletesaveditems)
-- [ShouldPlayDeathSound](#shouldplaydeathsound)
-- [ShouldPlayPainSound](#shouldplaypainsound)
-- [ShouldSpawnClientRagdoll](#shouldspawnclientragdoll)
-- [StorageCanTransferItem](#storagecantransferitem)
-- [StorageEntityRemoved](#storageentityremoved)
-- [StorageInventorySet](#storageinventoryset)
-- [StorageItemRemoved](#storageitemremoved)
-- [StorageRestored](#storagerestored)
-- [StoreSpawns](#storespawns)
-- [SyncCharList](#synccharlist)
-- [TicketSystemClaim](#ticketsystemclaim)
-- [TicketSystemClose](#ticketsystemclose)
-- [ToggleLock](#togglelock)
-- [UpdateEntityPersistence](#updateentitypersistence)
-- [VendorClassUpdated](#vendorclassupdated)
-- [VendorEdited](#vendoredited)
-- [VendorFactionBuyScaleUpdated](#vendorfactionbuyscaleupdated)
-- [VendorFactionSellScaleUpdated](#vendorfactionsellscaleupdated)
-- [VendorFactionUpdated](#vendorfactionupdated)
-- [VendorItemMaxStockUpdated](#vendoritemmaxstockupdated)
-- [VendorItemModeUpdated](#vendoritemmodeupdated)
-- [VendorItemPriceUpdated](#vendoritempriceupdated)
-- [VendorItemStockUpdated](#vendoritemstockupdated)
-- [VendorMessagesUpdated](#vendormessagesupdated)
-- [VendorSynchronized](#vendorsynchronized)
-- [VendorTradeEvent](#vendortradeevent)
-- [WarningIssued](#warningissued)
-- [WarningRemoved](#warningremoved)
-
----
-
+<details class="realm-server">
+<summary><a id=AddWarning></a>AddWarning(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)</summary>
 <a id="addwarning"></a>
-### AddWarning
+<p>Records a warning entry for a character and lets modules react to the new warning.</p>
+<p>Fired whenever a warning is issued via admin commands, anti-cheat triggers, or net requests.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">charID</span> Character database identifier being warned.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">warned</span> Display name of the warned player.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">warnedSteamID</span> SteamID of the warned player.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">timestamp</span> Unix timestamp when the warning was created.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">message</span> Reason text for the warning.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">warner</span> Name of the admin or system issuing the warning.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">warnerSteamID</span> SteamID of the issuer.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">severity</span> Severity label such as Low/Medium/High.</p>
 
-#### 📋 Purpose
-Records a warning entry for a character and lets modules react to the new warning.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Final severity value chosen (if modified) or nil.</p>
 
-#### ⏰ When Called
-Fired whenever a warning is issued via admin commands, anti-cheat triggers, or net requests.
-
-#### ⚙️ Parameters
-
-- `charID` (number|string) - Character database identifier being warned.
-- `warned` (string) - Display name of the warned player.
-- `warnedSteamID` (string) - SteamID of the warned player.
-- `timestamp` (number) - Unix timestamp when the warning was created.
-- `message` (string) - Reason text for the warning.
-- `warner` (string) - Name of the admin or system issuing the warning.
-- `warnerSteamID` (string) - SteamID of the issuer.
-- `severity` (string) - Severity label such as Low/Medium/High.
-
-#### ↩️ Returns
-* string
-Final severity value chosen (if modified) or nil.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("AddWarning", "LogWarning", function(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("AddWarning", "LogWarning", function(charID, warned, warnedSteamID, timestamp, message, warner, warnerSteamID, severity)
         lia.log.add(warner, "warningIssued", warned, severity, message)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CollectDoorDataFields></a>CollectDoorDataFields(extras)</summary>
 <a id="collectdoordatafields"></a>
-### CollectDoorDataFields
+<p>Collect additional field definitions for door data.</p>
+<p>When retrieving default door values and field definitions.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">extras</span> Table to populate with additional field definitions in the format {fieldName = {default = value, ...}}.</p>
 
-#### 📋 Purpose
-Collect additional field definitions for door data.
-
-#### ⏰ When Called
-When retrieving default door values and field definitions.
-
-#### ⚙️ Parameters
-
-- `extras` (table) - Table to populate with additional field definitions in the format {fieldName = {default = value, ...}}.
-
-#### ↩️ Returns
-* nil
-Modify the extras table directly.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CollectDoorDataFields", "ExampleCollectDoorDataFields", function(extras)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CollectDoorDataFields", "ExampleCollectDoorDataFields", function(extras)
         extras.customField = {default = false, type = "boolean"}
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanItemBeTransfered></a>CanItemBeTransfered(item, inventory, VendorInventoryMeasure, client)</summary>
 <a id="canitembetransfered"></a>
-### CanItemBeTransfered
+<p>Determines if an item move is allowed before completing a transfer between inventories.</p>
+<p>Checked whenever an item is about to be moved to another inventory (including vendors).</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance being transferred.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">inventory</span> Destination inventory.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">VendorInventoryMeasure</span> True when the transfer originates from a vendor panel.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting the transfer.</p>
 
-#### 📋 Purpose
-Determines if an item move is allowed before completing a transfer between inventories.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block the transfer; nil/true to allow.</p>
 
-#### ⏰ When Called
-Checked whenever an item is about to be moved to another inventory (including vendors).
-
-#### ⚙️ Parameters
-
-- `item` (Item) - Item instance being transferred.
-- `inventory` (Inventory) - Destination inventory.
-- `VendorInventoryMeasure` (boolean) - True when the transfer originates from a vendor panel.
-- `client` (Player) - Player requesting the transfer.
-
-#### ↩️ Returns
-* boolean
-False to block the transfer; nil/true to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanItemBeTransfered", "LimitAmmoMoves", function(item, inventory, isVendor, client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanItemBeTransfered", "LimitAmmoMoves", function(item, inventory, isVendor, client)
         if isVendor and item.isWeapon then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPersistEntity></a>CanPersistEntity(entity)</summary>
 <a id="canpersistentity"></a>
-### CanPersistEntity
+<p>Decides if an entity should be recorded in the persistence system.</p>
+<p>Invoked while scanning entities for persistence during map saves.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> The world entity being evaluated.</p>
 
-#### 📋 Purpose
-Decides if an entity should be recorded in the persistence system.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to skip saving this entity; nil/true to include it.</p>
 
-#### ⏰ When Called
-Invoked while scanning entities for persistence during map saves.
-
-#### ⚙️ Parameters
-
-- `entity` (Entity) - The world entity being evaluated.
-
-#### ↩️ Returns
-* boolean
-False to skip saving this entity; nil/true to include it.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPersistEntity", "IgnoreRagdolls", function(ent)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPersistEntity", "IgnoreRagdolls", function(ent)
         if ent:IsRagdoll() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerAccessDoor></a>CanPlayerAccessDoor(client, door, access)</summary>
 <a id="canplayeraccessdoor"></a>
-### CanPlayerAccessDoor
+<p>Lets modules override door access checks before built-in permissions are evaluated.</p>
+<p>Queried whenever door access is validated in entity:checkDoorAccess.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting access.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity being checked.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">access</span> Required access level (e.g., DOOR_OWNER, DOOR_TENANT, DOOR_GUEST).</p>
 
-#### 📋 Purpose
-Lets modules override door access checks before built-in permissions are evaluated.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True to grant access regardless of stored permissions; nil to fall back to defaults.</p>
 
-#### ⏰ When Called
-Queried whenever door access is validated in entity:checkDoorAccess.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting access.
-- `door` (Entity) - Door entity being checked.
-- `access` (number) - Required access level (e.g., DOOR_OWNER, DOOR_TENANT, DOOR_GUEST).
-
-#### ↩️ Returns
-* boolean
-True to grant access regardless of stored permissions; nil to fall back to defaults.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerAccessDoor", "StaffOverrideDoor", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerAccessDoor", "StaffOverrideDoor", function(client, door)
         if client:isStaffOnDuty() then return true end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerAccessVendor></a>CanPlayerAccessVendor(client, vendor)</summary>
 <a id="canplayeraccessvendor"></a>
-### CanPlayerAccessVendor
+<p>Allows or denies a player opening/using a vendor entity.</p>
+<p>Checked when a player attempts to access a vendor UI.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player interacting with the vendor.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity being accessed.</p>
 
-#### 📋 Purpose
-Allows or denies a player opening/using a vendor entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block interaction; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked when a player attempts to access a vendor UI.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player interacting with the vendor.
-- `vendor` (Entity) - Vendor entity being accessed.
-
-#### ↩️ Returns
-* boolean
-False to block interaction; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerAccessVendor", "FactionLockVendors", function(client, vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerAccessVendor", "FactionLockVendors", function(client, vendor)
         if not vendor:isFactionAllowed(client:Team()) then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerDropItem></a>CanPlayerDropItem(client, item)</summary>
 <a id="canplayerdropitem"></a>
-### CanPlayerDropItem
+<p>Controls whether a player may drop a specific item from their inventory.</p>
+<p>Triggered before an item drop is performed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player attempting to drop the item.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance being dropped.</p>
 
-#### 📋 Purpose
-Controls whether a player may drop a specific item from their inventory.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block the drop; true/nil to permit.</p>
 
-#### ⏰ When Called
-Triggered before an item drop is performed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player attempting to drop the item.
-- `item` (Item) - Item instance being dropped.
-
-#### ↩️ Returns
-* boolean
-False to block the drop; true/nil to permit.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerDropItem", "NoQuestItemDrops", function(client, item)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerDropItem", "NoQuestItemDrops", function(client, item)
         if item.isQuestItem then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerEarnSalary></a>CanPlayerEarnSalary(client)</summary>
 <a id="canplayerearnsalary"></a>
-### CanPlayerEarnSalary
+<p>Checks whether a player is eligible to receive their periodic salary.</p>
+<p>Evaluated each time salary is about to be granted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player due to receive salary.</p>
 
-#### 📋 Purpose
-Checks whether a player is eligible to receive their periodic salary.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block salary payment; true/nil to allow.</p>
 
-#### ⏰ When Called
-Evaluated each time salary is about to be granted.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player due to receive salary.
-
-#### ↩️ Returns
-* boolean
-False to block salary payment; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerEarnSalary", "JailedNoSalary", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerEarnSalary", "JailedNoSalary", function(client)
         if client:isJailed() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerEquipItem></a>CanPlayerEquipItem(client, item)</summary>
 <a id="canplayerequipitem"></a>
-### CanPlayerEquipItem
+<p>Decides if a player is allowed to equip a given item.</p>
+<p>Checked before the equip logic for any item runs.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player equipping the item.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance being equipped.</p>
 
-#### 📋 Purpose
-Decides if a player is allowed to equip a given item.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to prevent equipping; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked before the equip logic for any item runs.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player equipping the item.
-- `item` (Item) - Item instance being equipped.
-
-#### ↩️ Returns
-* boolean
-False to prevent equipping; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerEquipItem", "RestrictHeavyArmor", function(client, item)
-        if item.weight and item.weight > 20 then return false end
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerEquipItem", "RestrictHeavyArmor", function(client, item)
+        if item.weight and item.weight &gt; 20 then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerHoldObject></a>CanPlayerHoldObject(client, entity)</summary>
 <a id="canplayerholdobject"></a>
-### CanPlayerHoldObject
+<p>Allows or blocks a player from picking up physics objects with their hands tool.</p>
+<p>Checked before a player grabs an entity with lia_hands.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player attempting to hold the object.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Target entity being picked up.</p>
 
-#### 📋 Purpose
-Allows or blocks a player from picking up physics objects with their hands tool.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to prevent picking up; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked before a player grabs an entity with lia_hands.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player attempting to hold the object.
-- `entity` (Entity) - Target entity being picked up.
-
-#### ↩️ Returns
-* boolean
-False to prevent picking up; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerHoldObject", "NoHoldingDoors", function(client, ent)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerHoldObject", "NoHoldingDoors", function(client, ent)
         if ent:isDoor() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerInteractItem></a>CanPlayerInteractItem(client, action, item, data)</summary>
 <a id="canplayerinteractitem"></a>
-### CanPlayerInteractItem
+<p>Lets modules validate or modify player item interactions (use, drop, split, etc.).</p>
+<p>Fired before an inventory action runs on an item.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the action.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">action</span> Interaction verb such as "drop", "combine", or a custom action ID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance being interacted with.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">data</span> Extra data supplied by the action (position, merge target, etc.).</p>
 
-#### 📋 Purpose
-Lets modules validate or modify player item interactions (use, drop, split, etc.).
+<p><h3>Returns:</h3>
+boolean, string False or false,reason to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-Fired before an inventory action runs on an item.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the action.
-- `action` (string) - Interaction verb such as "drop", "combine", or a custom action ID.
-- `item` (Item) - Item instance being interacted with.
-- `data` (table) - Extra data supplied by the action (position, merge target, etc.).
-
-#### ↩️ Returns
-* boolean, string
-False or false,reason to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerInteractItem", "StopHotbarDrop", function(client, action, item)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerInteractItem", "StopHotbarDrop", function(client, action, item)
         if action == "drop" and item.noDrop then return false, L("cannotDrop") end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerLock></a>CanPlayerLock(client, door)</summary>
 <a id="canplayerlock"></a>
-### CanPlayerLock
+<p>Decides if a player may lock a door or vehicle using provided access rights.</p>
+<p>Evaluated before lock attempts are processed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the lock.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door or vehicle entity targeted.</p>
 
-#### 📋 Purpose
-Decides if a player may lock a door or vehicle using provided access rights.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to prevent locking; true/nil to allow.</p>
 
-#### ⏰ When Called
-Evaluated before lock attempts are processed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the lock.
-- `door` (Entity) - Door or vehicle entity targeted.
-
-#### ↩️ Returns
-* boolean
-False to prevent locking; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerLock", "OnlyOwnersLock", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerLock", "OnlyOwnersLock", function(client, door)
         if not door:checkDoorAccess(client, DOOR_OWNER) then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerSeeLogCategory></a>CanPlayerSeeLogCategory(client, category)</summary>
 <a id="canplayerseelogcategory"></a>
-### CanPlayerSeeLogCategory
+<p>Controls visibility of specific log categories to a player.</p>
+<p>Checked before sending a log entry or opening the log viewer.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting or receiving logs.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">category</span> Category identifier of the log.</p>
 
-#### 📋 Purpose
-Controls visibility of specific log categories to a player.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to hide the category; true/nil to show.</p>
 
-#### ⏰ When Called
-Checked before sending a log entry or opening the log viewer.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting or receiving logs.
-- `category` (string) - Category identifier of the log.
-
-#### ↩️ Returns
-* boolean
-False to hide the category; true/nil to show.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerSeeLogCategory", "HideAdminLogs", function(client, category)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerSeeLogCategory", "HideAdminLogs", function(client, category)
         if category == "admin" and not client:isStaffOnDuty() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerSpawnStorage></a>CanPlayerSpawnStorage(client, entity, info)</summary>
 <a id="canplayerspawnstorage"></a>
-### CanPlayerSpawnStorage
+<p>Determines whether a player is permitted to spawn a storage entity.</p>
+<p>Invoked when a storage deploy action is requested.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player spawning the storage.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Storage entity class about to be created.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">info</span> Context info such as item data or position.</p>
 
-#### 📋 Purpose
-Determines whether a player is permitted to spawn a storage entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block spawning; true/nil to allow.</p>
 
-#### ⏰ When Called
-Invoked when a storage deploy action is requested.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player spawning the storage.
-- `entity` (Entity) - Storage entity class about to be created.
-- `info` (table) - Context info such as item data or position.
-
-#### ↩️ Returns
-* boolean
-False to block spawning; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerSpawnStorage", "LimitStoragePerPlayer", function(client, entity)
-        if client:GetCount("lia_storage") >= 2 then return false end
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerSpawnStorage", "LimitStoragePerPlayer", function(client, entity)
+        if client:GetCount("lia_storage") &gt;= 2 then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerSwitchChar></a>CanPlayerSwitchChar(client, currentCharacter, newCharacter)</summary>
 <a id="canplayerswitchchar"></a>
-### CanPlayerSwitchChar
+<p>Validates whether a player may switch from their current character to another.</p>
+<p>Checked when a player initiates a character switch.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting the swap.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">currentCharacter</span> Active character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">newCharacter</span> Target character to switch to.</p>
 
-#### 📋 Purpose
-Validates whether a player may switch from their current character to another.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to deny the swap; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked when a player initiates a character switch.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting the swap.
-- `currentCharacter` (Character) - Active character.
-- `newCharacter` (Character) - Target character to switch to.
-
-#### ↩️ Returns
-* boolean
-False to deny the swap; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerSwitchChar", "BlockDuringCombat", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerSwitchChar", "BlockDuringCombat", function(client)
         if client:isInCombat() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerTakeItem></a>CanPlayerTakeItem(client, item)</summary>
 <a id="canplayertakeitem"></a>
-### CanPlayerTakeItem
+<p>Checks if a player may take an item out of a container or ground entity.</p>
+<p>Fired before item pickup/move from a world/container inventory.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player attempting to take the item.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance being taken.</p>
 
-#### 📋 Purpose
-Checks if a player may take an item out of a container or ground entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block taking; true/nil to allow.</p>
 
-#### ⏰ When Called
-Fired before item pickup/move from a world/container inventory.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player attempting to take the item.
-- `item` (Item) - Item instance being taken.
-
-#### ↩️ Returns
-* boolean
-False to block taking; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerTakeItem", "LockdownLooting", function(client, item)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerTakeItem", "LockdownLooting", function(client, item)
         if lia.state.isLockdown() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerTradeWithVendor></a>CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)</summary>
 <a id="canplayertradewithvendor"></a>
-### CanPlayerTradeWithVendor
+<p>Approves or denies a vendor transaction before money/items exchange.</p>
+<p>Invoked when a player tries to buy from or sell to a vendor.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player trading with the vendor.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> UniqueID of the item being traded.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isSellingToVendor</span> True when the player sells an item to the vendor.</p>
 
-#### 📋 Purpose
-Approves or denies a vendor transaction before money/items exchange.
+<p><h3>Returns:</h3>
+boolean, string, any False,reason to cancel; true/nil to allow. Optional third param for formatted message data.</p>
 
-#### ⏰ When Called
-Invoked when a player tries to buy from or sell to a vendor.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player trading with the vendor.
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - UniqueID of the item being traded.
-- `isSellingToVendor` (boolean) - True when the player sells an item to the vendor.
-
-#### ↩️ Returns
-* boolean, string, any
-False,reason to cancel; true/nil to allow. Optional third param for formatted message data.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerTradeWithVendor", "RestrictRareItems", function(client, vendor, itemType)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerTradeWithVendor", "RestrictRareItems", function(client, vendor, itemType)
         if lia.item.list[itemType].rarity == "legendary" and not client:isVIP() then
             return false, L("vendorVIPOnly")
         end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerUnequipItem></a>CanPlayerUnequipItem(client, item)</summary>
 <a id="canplayerunequipitem"></a>
-### CanPlayerUnequipItem
+<p>Decides if a player may unequip an item currently worn/active.</p>
+<p>Checked before unequip logic runs.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting to unequip.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item being unequipped.</p>
 
-#### 📋 Purpose
-Decides if a player may unequip an item currently worn/active.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked before unequip logic runs.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting to unequip.
-- `item` (Item) - Item being unequipped.
-
-#### ↩️ Returns
-* boolean
-False to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerUnequipItem", "PreventCombatUnequip", function(client, item)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerUnequipItem", "PreventCombatUnequip", function(client, item)
         if client:isInCombat() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerUnlock></a>CanPlayerUnlock(client, door)</summary>
 <a id="canplayerunlock"></a>
-### CanPlayerUnlock
+<p>Decides if a player can unlock a door or vehicle.</p>
+<p>Evaluated before unlock attempts are processed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the unlock.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door or vehicle entity targeted.</p>
 
-#### 📋 Purpose
-Decides if a player can unlock a door or vehicle.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block unlocking; true/nil to allow.</p>
 
-#### ⏰ When Called
-Evaluated before unlock attempts are processed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the unlock.
-- `door` (Entity) - Door or vehicle entity targeted.
-
-#### ↩️ Returns
-* boolean
-False to block unlocking; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerUnlock", "OnlyOwnersUnlock", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerUnlock", "OnlyOwnersUnlock", function(client, door)
         if not door:checkDoorAccess(client, DOOR_OWNER) then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerUseChar></a>CanPlayerUseChar(client, character)</summary>
 <a id="canplayerusechar"></a>
-### CanPlayerUseChar
+<p>Validates that a player can use/load a given character record.</p>
+<p>Checked before spawning the character into the world.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting to use the character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character record being selected.</p>
 
-#### 📋 Purpose
-Validates that a player can use/load a given character record.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to prevent selection; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked before spawning the character into the world.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting to use the character.
-- `character` (Character) - Character record being selected.
-
-#### ↩️ Returns
-* boolean
-False to prevent selection; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerUseChar", "BanSpecificChar", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerUseChar", "BanSpecificChar", function(client, character)
         if character:getData("locked") then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanPlayerUseDoor></a>CanPlayerUseDoor(client, door)</summary>
 <a id="canplayerusedoor"></a>
-### CanPlayerUseDoor
+<p>Final gate before a player uses a door (open, interact).</p>
+<p>Fired when a player attempts to use a door entity.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player using the door.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity being used.</p>
 
-#### 📋 Purpose
-Final gate before a player uses a door (open, interact).
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to deny use; true/nil to allow.</p>
 
-#### ⏰ When Called
-Fired when a player attempts to use a door entity.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player using the door.
-- `door` (Entity) - Door entity being used.
-
-#### ↩️ Returns
-* boolean
-False to deny use; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanPlayerUseDoor", "LockdownUse", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanPlayerUseDoor", "LockdownUse", function(client, door)
         if lia.state.isLockdown() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CanSaveData></a>CanSaveData(ent, inventory)</summary>
 <a id="cansavedata"></a>
-### CanSaveData
+<p>Decides if an entity's data should be included when saving persistent map state.</p>
+<p>During persistence save routines.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Entity being evaluated for save.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">inventory</span> Inventory attached to the entity (if any).</p>
 
-#### 📋 Purpose
-Decides if an entity's data should be included when saving persistent map state.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to skip saving; true/nil to save.</p>
 
-#### ⏰ When Called
-During persistence save routines.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Entity being evaluated for save.
-- `inventory` (Inventory) - Inventory attached to the entity (if any).
-
-#### ↩️ Returns
-* boolean
-False to skip saving; true/nil to save.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CanSaveData", "SkipTempProps", function(ent)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CanSaveData", "SkipTempProps", function(ent)
         if ent.tempSpawned then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CreateSalaryTimers></a>CreateSalaryTimers()</summary>
 <a id="createsalarytimers"></a>
-### CreateSalaryTimers
-
-#### 📋 Purpose
-Called when salary timers need to be created or recreated.
-
-#### ⏰ When Called
-During server initialization and when salary timers need to be reset.
-
-#### ↩️ Returns
-* nil
-The hook doesn't expect a return value but allows for custom salary timer setup.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CreateSalaryTimers", "ExampleCreateSalaryTimers", function(...)
+<p>Called when salary timers need to be created or recreated.</p>
+<p>During server initialization and when salary timers need to be reset.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CreateSalaryTimers", "ExampleCreateSalaryTimers", function(...)
         -- add custom server-side behavior
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CharCleanUp></a>CharCleanUp(character)</summary>
 <a id="charcleanup"></a>
-### CharCleanUp
+<p>Provides a cleanup hook when a character is fully removed from the server.</p>
+<p>After character deletion/cleanup logic runs.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character object being cleaned up.</p>
 
-#### 📋 Purpose
-Provides a cleanup hook when a character is fully removed from the server.
-
-#### ⏰ When Called
-After character deletion/cleanup logic runs.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character object being cleaned up.
-
-#### ↩️ Returns
-* nil
-Use side effects only.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CharCleanUp", "RemoveCharTimers", function(character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CharCleanUp", "RemoveCharTimers", function(character)
         timer.Remove("char_timer_" .. character:getID())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CharDeleted></a>CharDeleted(client, character)</summary>
 <a id="chardeleted"></a>
-### CharDeleted
+<p>Notifies that a character has been removed from the database and game.</p>
+<p>After a character is deleted by the player or admin.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who owned the character (may be nil if offline).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> The character that was deleted.</p>
 
-#### 📋 Purpose
-Notifies that a character has been removed from the database and game.
-
-#### ⏰ When Called
-After a character is deleted by the player or admin.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who owned the character (may be nil if offline).
-- `character` (Character) - The character that was deleted.
-
-#### ↩️ Returns
-* nil
-Use for cleanup and logging.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CharDeleted", "LogDeletion", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CharDeleted", "LogDeletion", function(client, character)
         lia.log.add(client, "charDeleted", character:getName())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CharListExtraDetails></a>CharListExtraDetails(client, entry, stored)</summary>
 <a id="charlistextradetails"></a>
-### CharListExtraDetails
+<p>Adds extra per-character info to the character selection list entry.</p>
+<p>While building the char list shown to the client.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player viewing the list.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">entry</span> Table of character info to be sent.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">stored</span> Raw character data from storage.</p>
 
-#### 📋 Purpose
-Adds extra per-character info to the character selection list entry.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Optionally return modified entry data.</p>
 
-#### ⏰ When Called
-While building the char list shown to the client.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player viewing the list.
-- `entry` (table) - Table of character info to be sent.
-- `stored` (table) - Raw character data from storage.
-
-#### ↩️ Returns
-* table
-Optionally return modified entry data.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CharListExtraDetails", "AddPlaytime", function(client, entry, stored)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CharListExtraDetails", "AddPlaytime", function(client, entry, stored)
         entry.playtime = stored.playtime or 0
         return entry
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CharPostSave></a>CharPostSave(character)</summary>
 <a id="charpostsave"></a>
-### CharPostSave
+<p>Runs after a character has been saved to persistence.</p>
+<p>Immediately after character data write completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character that was saved.</p>
 
-#### 📋 Purpose
-Runs after a character has been saved to persistence.
-
-#### ⏰ When Called
-Immediately after character data write completes.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character that was saved.
-
-#### ↩️ Returns
-* nil
-Use for follow-up actions or logging.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CharPostSave", "QueueBackup", function(character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CharPostSave", "QueueBackup", function(character)
         lia.backup.queue(character:getID())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CharPreSave></a>CharPreSave(character)</summary>
 <a id="charpresave"></a>
-### CharPreSave
+<p>Pre-save hook for characters to sync state into the database payload.</p>
+<p>Right before character data is persisted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character about to be saved.</p>
 
-#### 📋 Purpose
-Pre-save hook for characters to sync state into the database payload.
-
-#### ⏰ When Called
-Right before character data is persisted.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character about to be saved.
-
-#### ↩️ Returns
-* nil
-Use to modify character data or run side effects.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CharPreSave", "StoreTempAmmo", function(character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CharPreSave", "StoreTempAmmo", function(character)
         local client = character:getPlayer()
         if IsValid(client) then character:setData("ammo", client:GetAmmo()) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=CheckFactionLimitReached></a>CheckFactionLimitReached(faction, character, client)</summary>
 <a id="checkfactionlimitreached"></a>
-### CheckFactionLimitReached
+<p>Allows factions to enforce population limits before creation/join.</p>
+<p>Checked when a player attempts to create or switch to a faction.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction definition table.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character requesting the faction.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player owning the character.</p>
 
-#### 📋 Purpose
-Allows factions to enforce population limits before creation/join.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block joining; true/nil to allow.</p>
 
-#### ⏰ When Called
-Checked when a player attempts to create or switch to a faction.
-
-#### ⚙️ Parameters
-
-- `faction` (table) - Faction definition table.
-- `character` (Character) - Character requesting the faction.
-- `client` (Player) - Player owning the character.
-
-#### ↩️ Returns
-* boolean
-False to block joining; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("CheckFactionLimitReached", "CapCombine", function(faction)
-        if faction.uniqueID == "combine" and faction:onlineCount() >= 10 then return false end
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("CheckFactionLimitReached", "CapCombine", function(faction)
+        if faction.uniqueID == "combine" and faction:onlineCount() &gt;= 10 then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DatabaseConnected></a>DatabaseConnected()</summary>
 <a id="databaseconnected"></a>
-### DatabaseConnected
-
-#### 📋 Purpose
-Signals that the database connection is established and ready.
-
-#### ⏰ When Called
-Once the SQL connection succeeds during initialization.
-
-#### ↩️ Returns
-* nil
-Perform setup tasks here.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DatabaseConnected", "InitPlugins", function()
+<p>Signals that the database connection is established and ready.</p>
+<p>Once the SQL connection succeeds during initialization.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DatabaseConnected", "InitPlugins", function()
         lia.plugin.loadAll()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DiscordRelaySend></a>DiscordRelaySend(embed)</summary>
 <a id="discordrelaysend"></a>
-### DiscordRelaySend
+<p>Allows modules to intercept and modify Discord relay embeds before sending.</p>
+<p>Right before an embed is pushed to the Discord relay webhook.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">embed</span> Table describing the Discord embed payload.</p>
 
-#### 📋 Purpose
-Allows modules to intercept and modify Discord relay embeds before sending.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Optionally return a modified embed.</p>
 
-#### ⏰ When Called
-Right before an embed is pushed to the Discord relay webhook.
-
-#### ⚙️ Parameters
-
-- `embed` (table) - Table describing the Discord embed payload.
-
-#### ↩️ Returns
-* table
-Optionally return a modified embed.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DiscordRelaySend", "AddFooter", function(embed)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DiscordRelaySend", "AddFooter", function(embed)
         embed.footer = {text = "Lilia Relay"}
         return embed
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DiscordRelayUnavailable></a>DiscordRelayUnavailable()</summary>
 <a id="discordrelayunavailable"></a>
-### DiscordRelayUnavailable
-
-#### 📋 Purpose
-Notifies the game that the Discord relay feature became unavailable.
-
-#### ⏰ When Called
-Triggered when the relay HTTP endpoint cannot be reached or is disabled.
-
-#### ↩️ Returns
-* nil
-Use for fallbacks or alerts.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DiscordRelayUnavailable", "AlertStaff", function()
+<p>Notifies the game that the Discord relay feature became unavailable.</p>
+<p>Triggered when the relay HTTP endpoint cannot be reached or is disabled.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DiscordRelayUnavailable", "AlertStaff", function()
         lia.log.add(nil, "discordRelayDown")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DiscordRelayed></a>DiscordRelayed(embed)</summary>
 <a id="discordrelayed"></a>
-### DiscordRelayed
+<p>Fired after a Discord relay message has been successfully sent.</p>
+<p>Immediately after the relay HTTP request completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">embed</span> Embed table that was sent.</p>
 
-#### 📋 Purpose
-Fired after a Discord relay message has been successfully sent.
-
-#### ⏰ When Called
-Immediately after the relay HTTP request completes.
-
-#### ⚙️ Parameters
-
-- `embed` (table) - Embed table that was sent.
-
-#### ↩️ Returns
-* nil
-Use to log or chain notifications.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DiscordRelayed", "TrackRelayCount", function(embed)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DiscordRelayed", "TrackRelayCount", function(embed)
         lia.metrics.bump("discordRelay")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorEnabledToggled></a>DoorEnabledToggled(client, door, newState)</summary>
 <a id="doorenabledtoggled"></a>
-### DoorEnabledToggled
+<p>Signals that a door's enabled/disabled state has been toggled.</p>
+<p>After admin tools enable or disable door ownership/usage.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who toggled the state.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity affected.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">newState</span> True when enabled, false when disabled.</p>
 
-#### 📋 Purpose
-Signals that a door's enabled/disabled state has been toggled.
-
-#### ⏰ When Called
-After admin tools enable or disable door ownership/usage.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who toggled the state.
-- `door` (Entity) - Door entity affected.
-- `newState` (boolean) - True when enabled, false when disabled.
-
-#### ↩️ Returns
-* nil
-Use for syncing or logging.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorEnabledToggled", "AnnounceToggle", function(client, door, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorEnabledToggled", "AnnounceToggle", function(client, door, state)
         lia.log.add(client, "doorEnabledToggle", tostring(state))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorHiddenToggled></a>DoorHiddenToggled(client, entity, newState)</summary>
 <a id="doorhiddentoggled"></a>
-### DoorHiddenToggled
+<p>Signals that a door has been hidden or unhidden from ownership.</p>
+<p>After the hidden flag is toggled for a door entity.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the change.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Door entity affected.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">newState</span> True when hidden, false when shown.</p>
 
-#### 📋 Purpose
-Signals that a door has been hidden or unhidden from ownership.
-
-#### ⏰ When Called
-After the hidden flag is toggled for a door entity.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the change.
-- `entity` (Entity) - Door entity affected.
-- `newState` (boolean) - True when hidden, false when shown.
-
-#### ↩️ Returns
-* nil
-Use for syncing or side effects.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorHiddenToggled", "MirrorToClients", function(_, door, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorHiddenToggled", "MirrorToClients", function(_, door, state)
         net.Start("liaDoorHidden") net.WriteEntity(door) net.WriteBool(state) net.Broadcast()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorLockToggled></a>DoorLockToggled(client, door, state)</summary>
 <a id="doorlocktoggled"></a>
-### DoorLockToggled
+<p>Fired when a door lock state is toggled (locked/unlocked).</p>
+<p>After lock/unlock succeeds via key or command.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who toggled the lock.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">state</span> True if now locked.</p>
 
-#### 📋 Purpose
-Fired when a door lock state is toggled (locked/unlocked).
-
-#### ⏰ When Called
-After lock/unlock succeeds via key or command.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who toggled the lock.
-- `door` (Entity) - Door entity.
-- `state` (boolean) - True if now locked.
-
-#### ↩️ Returns
-* nil
-Use for logging or notifications.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorLockToggled", "SoundDoorLock", function(_, door, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorLockToggled", "SoundDoorLock", function(_, door, state)
         door:EmitSound(state and "doors/door_latch3.wav" or "doors/door_latch1.wav")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorOwnableToggled></a>DoorOwnableToggled(client, door, newState)</summary>
 <a id="doorownabletoggled"></a>
-### DoorOwnableToggled
+<p>Signals that a door has been marked ownable or unownable.</p>
+<p>After toggling door ownership availability.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the toggle.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity affected.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">newState</span> True when ownable.</p>
 
-#### 📋 Purpose
-Signals that a door has been marked ownable or unownable.
-
-#### ⏰ When Called
-After toggling door ownership availability.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the toggle.
-- `door` (Entity) - Door entity affected.
-- `newState` (boolean) - True when ownable.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorOwnableToggled", "SyncOwnableState", function(_, door, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorOwnableToggled", "SyncOwnableState", function(_, door, state)
         net.Start("liaDoorOwnable") net.WriteEntity(door) net.WriteBool(state) net.Broadcast()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorPriceSet></a>DoorPriceSet(client, door, price)</summary>
 <a id="doorpriceset"></a>
-### DoorPriceSet
+<p>Fired when a door purchase price is changed.</p>
+<p>After a player sets a new door price via management tools.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player setting the price.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">price</span> New purchase price.</p>
 
-#### 📋 Purpose
-Fired when a door purchase price is changed.
-
-#### ⏰ When Called
-After a player sets a new door price via management tools.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player setting the price.
-- `door` (Entity) - Door entity.
-- `price` (number) - New purchase price.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorPriceSet", "LogDoorPrice", function(client, door, price)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorPriceSet", "LogDoorPrice", function(client, door, price)
         lia.log.add(client, "doorPriceSet", price)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=DoorTitleSet></a>DoorTitleSet(client, door, name)</summary>
 <a id="doortitleset"></a>
-### DoorTitleSet
+<p>Fired when a door's title/name is changed.</p>
+<p>After a player renames a door via the interface or command.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player setting the title.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">name</span> New door title.</p>
 
-#### 📋 Purpose
-Fired when a door's title/name is changed.
-
-#### ⏰ When Called
-After a player renames a door via the interface or command.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player setting the title.
-- `door` (Entity) - Door entity.
-- `name` (string) - New door title.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("DoorTitleSet", "SaveDoorTitle", function(client, door, name)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("DoorTitleSet", "SaveDoorTitle", function(client, door, name)
         door:setNetVar("doorTitle", name)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=FetchSpawns></a>FetchSpawns()</summary>
 <a id="fetchspawns"></a>
-### FetchSpawns
+<p>Requests the server spawn list; gives modules a chance to override or inject spawns.</p>
+<p>When spawn points are being loaded or refreshed.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Custom spawn data table or nil to use defaults.</p>
 
-#### 📋 Purpose
-Requests the server spawn list; gives modules a chance to override or inject spawns.
-
-#### ⏰ When Called
-When spawn points are being loaded or refreshed.
-
-#### ↩️ Returns
-* table
-Custom spawn data table or nil to use defaults.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("FetchSpawns", "UseCustomSpawns", function()
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("FetchSpawns", "UseCustomSpawns", function()
         return lia.spawns.getCustom()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetAllCaseClaims></a>GetAllCaseClaims()</summary>
 <a id="getallcaseclaims"></a>
-### GetAllCaseClaims
+<p>Returns a list of all active support tickets claimed by staff.</p>
+<p>When the ticket system needs to display open claims.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Array of ticket claim data.</p>
 
-#### 📋 Purpose
-Returns a list of all active support tickets claimed by staff.
-
-#### ⏰ When Called
-When the ticket system needs to display open claims.
-
-#### ↩️ Returns
-* table
-Array of ticket claim data.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetAllCaseClaims", "MirrorTickets", function()
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetAllCaseClaims", "MirrorTickets", function()
         return lia.ticket.getClaims()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetBotModel></a>GetBotModel(client, faction)</summary>
 <a id="getbotmodel"></a>
-### GetBotModel
+<p>Provides the model to use for spawning a bot player given a faction.</p>
+<p>During bot setup when choosing a model.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Bot player entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction data assigned to the bot.</p>
 
-#### 📋 Purpose
-Provides the model to use for spawning a bot player given a faction.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Model path to use for the bot.</p>
 
-#### ⏰ When Called
-During bot setup when choosing a model.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Bot player entity.
-- `faction` (table) - Faction data assigned to the bot.
-
-#### ↩️ Returns
-* string
-Model path to use for the bot.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetBotModel", "RandomCitizenModel", function(client, faction)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetBotModel", "RandomCitizenModel", function(client, faction)
         if faction.uniqueID == "citizen" then return "models/Humans/Group01/male_07.mdl" end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetDamageScale></a>GetDamageScale(hitgroup, dmgInfo, damageScale)</summary>
 <a id="getdamagescale"></a>
-### GetDamageScale
+<p>Lets modules adjust the final damage scale applied to a hitgroup.</p>
+<p>During ScalePlayerDamage after base scaling has been calculated.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">hitgroup</span> Hitgroup constant from the damage trace.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/CTakeDamageInfo">CTakeDamageInfo</a></span> <span class="parameter">dmgInfo</span> Damage info object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">damageScale</span> Current scale value about to be applied.</p>
 
-#### 📋 Purpose
-Lets modules adjust the final damage scale applied to a hitgroup.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> New scale value to apply or nil to keep current.</p>
 
-#### ⏰ When Called
-During ScalePlayerDamage after base scaling has been calculated.
-
-#### ⚙️ Parameters
-
-- `hitgroup` (number) - Hitgroup constant from the damage trace.
-- `dmgInfo` (CTakeDamageInfo) - Damage info object.
-- `damageScale` (number) - Current scale value about to be applied.
-
-#### ↩️ Returns
-* number
-New scale value to apply or nil to keep current.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetDamageScale", "HelmetProtection", function(hitgroup, dmgInfo, scale)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetDamageScale", "HelmetProtection", function(hitgroup, dmgInfo, scale)
         if hitgroup == HITGROUP_HEAD and dmgInfo:IsBulletDamage() then return scale * 0.5 end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetDefaultInventoryType></a>GetDefaultInventoryType(character)</summary>
 <a id="getdefaultinventorytype"></a>
-### GetDefaultInventoryType
+<p>Specifies which inventory type to create for a character by default.</p>
+<p>During character creation and bot setup before inventories are instanced.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character being initialized (may be nil for bots).</p>
 
-#### 📋 Purpose
-Specifies which inventory type to create for a character by default.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Inventory type ID (e.g., "GridInv").</p>
 
-#### ⏰ When Called
-During character creation and bot setup before inventories are instanced.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character being initialized (may be nil for bots).
-
-#### ↩️ Returns
-* string
-Inventory type ID (e.g., "GridInv").
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetDefaultInventoryType", "UseListInventory", function(character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetDefaultInventoryType", "UseListInventory", function(character)
         return "ListInv"
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetEntitySaveData></a>GetEntitySaveData(ent)</summary>
 <a id="getentitysavedata"></a>
-### GetEntitySaveData
+<p>Provides custom data to persist for an entity.</p>
+<p>While serializing entities for persistence saves.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Entity being saved.</p>
 
-#### 📋 Purpose
-Provides custom data to persist for an entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Data table to store or nil for none.</p>
 
-#### ⏰ When Called
-While serializing entities for persistence saves.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Entity being saved.
-
-#### ↩️ Returns
-* table
-Data table to store or nil for none.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetEntitySaveData", "SaveHealth", function(ent)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetEntitySaveData", "SaveHealth", function(ent)
         return {health = ent:Health()}
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetOOCDelay></a>GetOOCDelay(speaker)</summary>
 <a id="getoocdelay"></a>
-### GetOOCDelay
+<p>Allows modules to set or modify the OOC chat cooldown for a speaker.</p>
+<p>Each time an OOC message is about to be sent.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">speaker</span> Player sending the OOC message.</p>
 
-#### 📋 Purpose
-Allows modules to set or modify the OOC chat cooldown for a speaker.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Cooldown in seconds, or nil to use config default.</p>
 
-#### ⏰ When Called
-Each time an OOC message is about to be sent.
-
-#### ⚙️ Parameters
-
-- `speaker` (Player) - Player sending the OOC message.
-
-#### ↩️ Returns
-* number
-Cooldown in seconds, or nil to use config default.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetOOCDelay", "VIPShorterCooldown", function(speaker)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetOOCDelay", "VIPShorterCooldown", function(speaker)
         if speaker:isVIP() then return 5 end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPlayTime></a>GetPlayTime(client)</summary>
 <a id="getplaytime"></a>
-### GetPlayTime
+<p>Override or calculate a player's tracked playtime value.</p>
+<p>When playtime is requested for display or logic.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose playtime is queried.</p>
 
-#### 📋 Purpose
-Override or calculate a player's tracked playtime value.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Seconds of playtime.</p>
 
-#### ⏰ When Called
-When playtime is requested for display or logic.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose playtime is queried.
-
-#### ↩️ Returns
-* number
-Seconds of playtime.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPlayTime", "CustomPlaytime", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPlayTime", "CustomPlaytime", function(client)
         return client:getChar():getData("customPlaytime", 0)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPlayerDeathSound></a>GetPlayerDeathSound(client, isFemale)</summary>
 <a id="getplayerdeathsound"></a>
-### GetPlayerDeathSound
+<p>Supplies the death sound file to play for a player.</p>
+<p>During PlayerDeath when death sounds are enabled.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who died.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isFemale</span> Gender flag.</p>
 
-#### 📋 Purpose
-Supplies the death sound file to play for a player.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Sound path to emit.</p>
 
-#### ⏰ When Called
-During PlayerDeath when death sounds are enabled.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who died.
-- `isFemale` (boolean) - Gender flag.
-
-#### ↩️ Returns
-* string
-Sound path to emit.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPlayerDeathSound", "FactionDeathSounds", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPlayerDeathSound", "FactionDeathSounds", function(client)
         if client:Team() == FACTION_CP then return "npc/metropolice/pain1.wav" end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPlayerPainSound></a>GetPlayerPainSound(paintype, isFemale, client)</summary>
 <a id="getplayerpainsound"></a>
-### GetPlayerPainSound
+<p>Provides the pain sound to play for a hurt entity.</p>
+<p>During damage processing when selecting pain sounds.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">paintype</span> Pain type identifier ("hurt", etc.).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isFemale</span> Gender flag.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">client</span> Entity that is hurt.</p>
 
-#### 📋 Purpose
-Provides the pain sound to play for a hurt entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Sound path to emit, or nil to use default.</p>
 
-#### ⏰ When Called
-During damage processing when selecting pain sounds.
-
-#### ⚙️ Parameters
-
-- `paintype` (string) - Pain type identifier ("hurt", etc.).
-- `isFemale` (boolean) - Gender flag.
-- `client` (Entity) - Entity that is hurt.
-
-#### ↩️ Returns
-* string
-Sound path to emit, or nil to use default.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPlayerPainSound", "RobotPain", function(client, paintype)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPlayerPainSound", "RobotPain", function(client, paintype)
         if client:IsPlayer() and client:IsCombine() then return "npc/combine_soldier/pain1.wav" end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPlayerRespawnLocation></a>GetPlayerRespawnLocation(client, character)</summary>
 <a id="getplayerrespawnlocation"></a>
-### GetPlayerRespawnLocation
+<p>Selects where a player should respawn after death.</p>
+<p>During respawn processing to determine the spawn location.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player respawning.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character data of the player.</p>
 
-#### 📋 Purpose
-Selects where a player should respawn after death.
+<p><h3>Returns:</h3>
+vector, angle Position and angle for the respawn; nil to use default.</p>
 
-#### ⏰ When Called
-During respawn processing to determine the spawn location.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player respawning.
-- `character` (Character) - Character data of the player.
-
-#### ↩️ Returns
-* vector, angle
-Position and angle for the respawn; nil to use default.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPlayerRespawnLocation", "HospitalRespawn", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPlayerRespawnLocation", "HospitalRespawn", function(client)
         return lia.spawns.getHospitalPos(), lia.spawns.getHospitalAng()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPlayerSpawnLocation></a>GetPlayerSpawnLocation(client, character)</summary>
 <a id="getplayerspawnlocation"></a>
-### GetPlayerSpawnLocation
+<p>Chooses the spawn location for a player when initially joining the server.</p>
+<p>During first spawn/character load to position the player.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player spawning.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character data of the player.</p>
 
-#### 📋 Purpose
-Chooses the spawn location for a player when initially joining the server.
+<p><h3>Returns:</h3>
+vector, angle Position and angle; nil to use map spawns.</p>
 
-#### ⏰ When Called
-During first spawn/character load to position the player.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player spawning.
-- `character` (Character) - Character data of the player.
-
-#### ↩️ Returns
-* vector, angle
-Position and angle; nil to use map spawns.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPlayerSpawnLocation", "FactionSpawns", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPlayerSpawnLocation", "FactionSpawns", function(client, character)
         return lia.spawns.getFactionSpawn(character:getFaction())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetPrestigePayBonus></a>GetPrestigePayBonus(client, char, pay, faction, class)</summary>
 <a id="getprestigepaybonus"></a>
-### GetPrestigePayBonus
+<p>Allows adjusting the salary amount using a prestige bonus.</p>
+<p>Each time salary is calculated for a character.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player receiving salary.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">char</span> Character data.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">pay</span> Current salary amount.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction definition.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">class</span> Class definition (if any).</p>
 
-#### 📋 Purpose
-Allows adjusting the salary amount using a prestige bonus.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Modified pay amount or nil to keep.</p>
 
-#### ⏰ When Called
-Each time salary is calculated for a character.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player receiving salary.
-- `char` (Character) - Character data.
-- `pay` (number) - Current salary amount.
-- `faction` (table) - Faction definition.
-- `class` (table) - Class definition (if any).
-
-#### ↩️ Returns
-* number
-Modified pay amount or nil to keep.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetPrestigePayBonus", "PrestigeScaling", function(client, char, pay)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetPrestigePayBonus", "PrestigeScaling", function(client, char, pay)
         return pay + (char:getData("prestigeLevel", 0) * 50)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetSalaryAmount></a>GetSalaryAmount(client, faction, class)</summary>
 <a id="getsalaryamount"></a>
-### GetSalaryAmount
+<p>Provides the base salary amount for a player based on faction/class.</p>
+<p>Whenever salary is being computed for payout.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player receiving salary.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction definition.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">class</span> Class definition (may be nil).</p>
 
-#### 📋 Purpose
-Provides the base salary amount for a player based on faction/class.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Salary amount.</p>
 
-#### ⏰ When Called
-Whenever salary is being computed for payout.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player receiving salary.
-- `faction` (table) - Faction definition.
-- `class` (table) - Class definition (may be nil).
-
-#### ↩️ Returns
-* number
-Salary amount.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetSalaryAmount", "VIPSalary", function(client, faction, class)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetSalaryAmount", "VIPSalary", function(client, faction, class)
         if client:isVIP() then return 500 end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetTicketsByRequester></a>GetTicketsByRequester(steamID)</summary>
 <a id="getticketsbyrequester"></a>
-### GetTicketsByRequester
+<p>Retrieves all ticket entries made by a specific requester SteamID.</p>
+<p>During ticket queries filtered by requester.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">steamID</span> SteamID64 or SteamID of the requester.</p>
 
-#### 📋 Purpose
-Retrieves all ticket entries made by a specific requester SteamID.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> List of ticket rows.</p>
 
-#### ⏰ When Called
-During ticket queries filtered by requester.
-
-#### ⚙️ Parameters
-
-- `steamID` (string) - SteamID64 or SteamID of the requester.
-
-#### ↩️ Returns
-* table
-List of ticket rows.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetTicketsByRequester", "MaskRequester", function(steamID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetTicketsByRequester", "MaskRequester", function(steamID)
         return lia.tickets.byRequester(steamID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetWarnings></a>GetWarnings(charID)</summary>
 <a id="getwarnings"></a>
-### GetWarnings
+<p>Fetches all warnings stored for a character ID.</p>
+<p>When viewing a character's warning history.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">charID</span> Character database identifier.</p>
 
-#### 📋 Purpose
-Fetches all warnings stored for a character ID.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Array of warning rows.</p>
 
-#### ⏰ When Called
-When viewing a character's warning history.
-
-#### ⚙️ Parameters
-
-- `charID` (number|string) - Character database identifier.
-
-#### ↩️ Returns
-* table
-Array of warning rows.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetWarnings", "MirrorWarnings", function(charID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetWarnings", "MirrorWarnings", function(charID)
         return lia.warn.get(charID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=GetWarningsByIssuer></a>GetWarningsByIssuer(steamID)</summary>
 <a id="getwarningsbyissuer"></a>
-### GetWarningsByIssuer
+<p>Retrieves warnings issued by a specific SteamID.</p>
+<p>When filtering warnings by issuing admin.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">steamID</span> SteamID of the issuer.</p>
 
-#### 📋 Purpose
-Retrieves warnings issued by a specific SteamID.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> Array of warning rows.</p>
 
-#### ⏰ When Called
-When filtering warnings by issuing admin.
-
-#### ⚙️ Parameters
-
-- `steamID` (string) - SteamID of the issuer.
-
-#### ↩️ Returns
-* table
-Array of warning rows.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("GetWarningsByIssuer", "ListIssuerWarnings", function(steamID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("GetWarningsByIssuer", "ListIssuerWarnings", function(steamID)
         return lia.warn.getByIssuer(steamID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=HandleItemTransferRequest></a>HandleItemTransferRequest(client, itemID, x, y, invID)</summary>
 <a id="handleitemtransferrequest"></a>
-### HandleItemTransferRequest
+<p>Handles the server-side logic when a client requests to move an item.</p>
+<p>When the inventory UI sends a transfer request.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting the transfer.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">itemID</span> Item instance identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">x</span> Target X slot.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">y</span> Target Y slot.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">invID</span> Destination inventory ID.</p>
 
-#### 📋 Purpose
-Handles the server-side logic when a client requests to move an item.
-
-#### ⏰ When Called
-When the inventory UI sends a transfer request.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting the transfer.
-- `itemID` (number|string) - Item instance identifier.
-- `x` (number) - Target X slot.
-- `y` (number) - Target Y slot.
-- `invID` (number|string) - Destination inventory ID.
-
-#### ↩️ Returns
-* nil
-Perform transfer handling inside the hook.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("HandleItemTransferRequest", "LogTransfers", function(client, itemID, x, y, invID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("HandleItemTransferRequest", "LogTransfers", function(client, itemID, x, y, invID)
         lia.log.add(client, "itemMove", itemID, invID, x, y)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=InventoryDeleted></a>InventoryDeleted(instance)</summary>
 <a id="inventorydeleted"></a>
-### InventoryDeleted
+<p>Notifies that an inventory has been removed or destroyed.</p>
+<p>After an inventory instance is deleted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">instance</span> Inventory object that was removed.</p>
 
-#### 📋 Purpose
-Notifies that an inventory has been removed or destroyed.
-
-#### ⏰ When Called
-After an inventory instance is deleted.
-
-#### ⚙️ Parameters
-
-- `instance` (Inventory) - Inventory object that was removed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("InventoryDeleted", "CleanupInvCache", function(instance)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("InventoryDeleted", "CleanupInvCache", function(instance)
         lia.inventory.cache[instance:getID()] = nil
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ItemCombine></a>ItemCombine(client, item, target)</summary>
 <a id="itemcombine"></a>
-### ItemCombine
+<p>Fired when a player combines an item with another (stacking or crafting).</p>
+<p>After the combine action has been requested.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the combine.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Primary item.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">target</span> Target item being combined into.</p>
 
-#### 📋 Purpose
-Fired when a player combines an item with another (stacking or crafting).
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block the combine; true/nil to allow.</p>
 
-#### ⏰ When Called
-After the combine action has been requested.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the combine.
-- `item` (Item) - Primary item.
-- `target` (Item) - Target item being combined into.
-
-#### ↩️ Returns
-* boolean
-False to block the combine; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ItemCombine", "BlockCertainCombines", function(client, item, target)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ItemCombine", "BlockCertainCombines", function(client, item, target)
         if target.noCombine then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ItemDeleted></a>ItemDeleted(instance)</summary>
 <a id="itemdeleted"></a>
-### ItemDeleted
+<p>Notifies that an item instance has been deleted from storage.</p>
+<p>Immediately after an item is removed from persistence.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">instance</span> Item instance that was deleted.</p>
 
-#### 📋 Purpose
-Notifies that an item instance has been deleted from storage.
-
-#### ⏰ When Called
-Immediately after an item is removed from persistence.
-
-#### ⚙️ Parameters
-
-- `instance` (Item) - Item instance that was deleted.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ItemDeleted", "LogItemDelete", function(instance)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ItemDeleted", "LogItemDelete", function(instance)
         lia.log.add(nil, "itemDeleted", instance.uniqueID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ItemFunctionCalled></a>ItemFunctionCalled(item, method, client, entity, results)</summary>
 <a id="itemfunctioncalled"></a>
-### ItemFunctionCalled
+<p>Called whenever an item method is executed so modules can react or modify results.</p>
+<p>After an item function such as OnUse or custom actions is invoked.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance whose method was called.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">method</span> Name of the method invoked.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who triggered the call.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Entity representation if applicable.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">results</span> Return values from the method.</p>
 
-#### 📋 Purpose
-Called whenever an item method is executed so modules can react or modify results.
-
-#### ⏰ When Called
-After an item function such as OnUse or custom actions is invoked.
-
-#### ⚙️ Parameters
-
-- `item` (Item) - Item instance whose method was called.
-- `method` (string) - Name of the method invoked.
-- `client` (Player) - Player who triggered the call.
-- `entity` (Entity) - Entity representation if applicable.
-- `results` (table) - Return values from the method.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ItemFunctionCalled", "AuditItemUse", function(item, method, client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ItemFunctionCalled", "AuditItemUse", function(item, method, client)
         lia.log.add(client, "itemFunction", item.uniqueID, method)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ItemTransfered></a>ItemTransfered(context)</summary>
 <a id="itemtransfered"></a>
-### ItemTransfered
+<p>Fires after an item has been successfully transferred between inventories.</p>
+<p>Right after a transfer completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">context</span> Transfer context containing client, item, from, and to inventories.</p>
 
-#### 📋 Purpose
-Fires after an item has been successfully transferred between inventories.
-
-#### ⏰ When Called
-Right after a transfer completes.
-
-#### ⚙️ Parameters
-
-- `context` (table) - Transfer context containing client, item, from, and to inventories.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ItemTransfered", "NotifyTransfer", function(context)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ItemTransfered", "NotifyTransfer", function(context)
         lia.log.add(context.client, "itemTransferred", context.item.uniqueID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=KeyLock></a>KeyLock(client, door, time)</summary>
 <a id="keylock"></a>
-### KeyLock
+<p>Allows overriding the key lock timing or behavior when using key items.</p>
+<p>When a player uses a key to lock a door for a set duration.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player locking.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">time</span> Duration of the lock action.</p>
 
-#### 📋 Purpose
-Allows overriding the key lock timing or behavior when using key items.
-
-#### ⏰ When Called
-When a player uses a key to lock a door for a set duration.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player locking.
-- `door` (Entity) - Door entity.
-- `time` (number) - Duration of the lock action.
-
-#### ↩️ Returns
-* nil
-Return false to stop the lock sequence.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("KeyLock", "InstantLock", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("KeyLock", "InstantLock", function(client, door)
         door:Fire("lock")
         return false
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=KeyUnlock></a>KeyUnlock(client, door, time)</summary>
 <a id="keyunlock"></a>
-### KeyUnlock
+<p>Allows overriding key-based unlock timing or behavior.</p>
+<p>When a player uses a key to unlock a door for a duration.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player unlocking.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">time</span> Duration for unlock action.</p>
 
-#### 📋 Purpose
-Allows overriding key-based unlock timing or behavior.
-
-#### ⏰ When Called
-When a player uses a key to unlock a door for a duration.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player unlocking.
-- `door` (Entity) - Door entity.
-- `time` (number) - Duration for unlock action.
-
-#### ↩️ Returns
-* nil
-Return false to stop the unlock sequence.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("KeyUnlock", "InstantUnlock", function(client, door)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("KeyUnlock", "InstantUnlock", function(client, door)
         door:Fire("unlock")
         return false
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=KickedFromChar></a>KickedFromChar(characterID, isCurrentChar)</summary>
 <a id="kickedfromchar"></a>
-### KickedFromChar
+<p>Fired when a character is kicked from the session and forced to select another.</p>
+<p>After the character kick is processed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">characterID</span> ID of the character kicked.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isCurrentChar</span> True if it was the active character at time of kick.</p>
 
-#### 📋 Purpose
-Fired when a character is kicked from the session and forced to select another.
-
-#### ⏰ When Called
-After the character kick is processed.
-
-#### ⚙️ Parameters
-
-- `characterID` (number) - ID of the character kicked.
-- `isCurrentChar` (boolean) - True if it was the active character at time of kick.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("KickedFromChar", "LogCharKick", function(characterID, wasCurrent)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("KickedFromChar", "LogCharKick", function(characterID, wasCurrent)
         lia.log.add(nil, "charKicked", characterID, wasCurrent)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=LiliaTablesLoaded></a>LiliaTablesLoaded()</summary>
 <a id="liliatablesloaded"></a>
-### LiliaTablesLoaded
-
-#### 📋 Purpose
-Indicates that all Lilia database tables have been created/loaded.
-
-#### ⏰ When Called
-After tables are created during startup.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("LiliaTablesLoaded", "SeedDefaults", function()
+<p>Indicates that all Lilia database tables have been created/loaded.</p>
+<p>After tables are created during startup.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("LiliaTablesLoaded", "SeedDefaults", function()
         lia.seed.run()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=LoadData></a>LoadData()</summary>
 <a id="loaddata"></a>
-### LoadData
-
-#### 📋 Purpose
-Allows modules to inject data when the gamemode performs a data load.
-
-#### ⏰ When Called
-During server startup after initial load begins.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("LoadData", "LoadCustomData", function()
+<p>Allows modules to inject data when the gamemode performs a data load.</p>
+<p>During server startup after initial load begins.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("LoadData", "LoadCustomData", function()
         lia.data.loadCustom()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ModifyCharacterModel></a>ModifyCharacterModel(context, character)</summary>
 <a id="modifycharactermodel"></a>
-### ModifyCharacterModel
+<p>Lets modules change the model chosen for a character before it is set.</p>
+<p>During character creation or model updates.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">context</span> Context value (varies by caller).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character being modified.</p>
 
-#### 📋 Purpose
-Lets modules change the model chosen for a character before it is set.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Model path override or nil to keep current.</p>
 
-#### ⏰ When Called
-During character creation or model updates.
-
-#### ⚙️ Parameters
-
-- `arg1` (any) - Context value (varies by caller).
-- `character` (Character) - Character being modified.
-
-#### ↩️ Returns
-* string
-Model path override or nil to keep current.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ModifyCharacterModel", "ForceFactionModel", function(_, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ModifyCharacterModel", "ForceFactionModel", function(_, character)
         if character:getFaction() == FACTION_STAFF then return "models/player/police_fem.mdl" end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharAttribBoosted></a>OnCharAttribBoosted(client, character, attribID, boostID, data)</summary>
 <a id="oncharattribboosted"></a>
-### OnCharAttribBoosted
+<p>Notifies when an attribute boost is applied to a character.</p>
+<p>After lia.attrib has boosted an attribute.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose character was boosted.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character receiving the boost.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string|number</a></span> <span class="parameter">attribID</span> Attribute identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">boostID</span> Boost source identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">data</span> Additional data supplied by the boost.</p>
 
-#### 📋 Purpose
-Notifies when an attribute boost is applied to a character.
-
-#### ⏰ When Called
-After lia.attrib has boosted an attribute.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose character was boosted.
-- `character` (Character) - Character receiving the boost.
-- `attribID` (string|number) - Attribute identifier.
-- `boostID` (string) - Boost source identifier.
-- `arg5` (any) - Additional data supplied by the boost.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharAttribBoosted", "LogBoost", function(client, character, attribID, boostID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharAttribBoosted", "LogBoost", function(client, character, attribID, boostID)
         lia.log.add(client, "attribBoosted", attribID, boostID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharAttribUpdated></a>OnCharAttribUpdated(client, character, key, oldValue)</summary>
 <a id="oncharattribupdated"></a>
-### OnCharAttribUpdated
+<p>Notifies that a character attribute value has been updated.</p>
+<p>After attribute points are changed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose character changed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string|number</a></span> <span class="parameter">key</span> Attribute identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">oldValue</span> Old value.</p>
 
-#### 📋 Purpose
-Notifies that a character attribute value has been updated.
-
-#### ⏰ When Called
-After attribute points are changed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose character changed.
-- `character` (Character) - Character object.
-- `key` (string|number) - Attribute identifier.
-- `arg4` (any) - Old value.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharAttribUpdated", "SyncAttrib", function(client, character, key, oldValue)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharAttribUpdated", "SyncAttrib", function(client, character, key, oldValue)
         lia.log.add(client, "attribUpdated", key, oldValue, character:getAttrib(key))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharCreated></a>OnCharCreated(client, character, originalData)</summary>
 <a id="oncharcreated"></a>
-### OnCharCreated
+<p>Signals that a new character has been created.</p>
+<p>Immediately after character creation succeeds.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who created the character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> New character object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">originalData</span> Raw creation data submitted.</p>
 
-#### 📋 Purpose
-Signals that a new character has been created.
-
-#### ⏰ When Called
-Immediately after character creation succeeds.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who created the character.
-- `character` (Character) - New character object.
-- `originalData` (table) - Raw creation data submitted.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharCreated", "WelcomeMessage", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharCreated", "WelcomeMessage", function(client, character)
         client:notifyLocalized("charCreated", character:getName())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharDelete></a>OnCharDelete(client, id)</summary>
 <a id="onchardelete"></a>
-### OnCharDelete
+<p>Invoked just before a character is deleted from persistence.</p>
+<p>Right before deletion is executed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting deletion.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">id</span> Character ID to delete.</p>
 
-#### 📋 Purpose
-Invoked just before a character is deleted from persistence.
-
-#### ⏰ When Called
-Right before deletion is executed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting deletion.
-- `id` (number) - Character ID to delete.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharDelete", "BackupChar", function(client, id)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharDelete", "BackupChar", function(client, id)
         lia.backup.character(id)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharDisconnect></a>OnCharDisconnect(client, character)</summary>
 <a id="onchardisconnect"></a>
-### OnCharDisconnect
+<p>Called when a player disconnects while owning a character.</p>
+<p>Immediately after the player leaves the server.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who disconnected.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character they had active.</p>
 
-#### 📋 Purpose
-Called when a player disconnects while owning a character.
-
-#### ⏰ When Called
-Immediately after the player leaves the server.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who disconnected.
-- `character` (Character) - Character they had active.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharDisconnect", "SaveOnLeave", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharDisconnect", "SaveOnLeave", function(client, character)
         character:save()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharFlagsGiven></a>OnCharFlagsGiven(ply, character, addedFlags)</summary>
 <a id="oncharflagsgiven"></a>
-### OnCharFlagsGiven
+<p>Notifies that flags have been granted to a character.</p>
+<p>After permanent or session flags are added.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">ply</span> Player whose character received flags.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character instance.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">addedFlags</span> Flags added.</p>
 
-#### 📋 Purpose
-Notifies that flags have been granted to a character.
-
-#### ⏰ When Called
-After permanent or session flags are added.
-
-#### ⚙️ Parameters
-
-- `ply` (Player) - Player whose character received flags.
-- `character` (Character) - Character instance.
-- `addedFlags` (string) - Flags added.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharFlagsGiven", "LogFlagGrant", function(ply, character, addedFlags)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharFlagsGiven", "LogFlagGrant", function(ply, character, addedFlags)
         lia.log.add(ply, "flagsGiven", addedFlags)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharFlagsTaken></a>OnCharFlagsTaken(ply, character, removedFlags)</summary>
 <a id="oncharflagstaken"></a>
-### OnCharFlagsTaken
+<p>Notifies that flags have been removed from a character.</p>
+<p>After flag removal occurs.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">ply</span> Player whose character lost flags.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character affected.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">removedFlags</span> Flags removed.</p>
 
-#### 📋 Purpose
-Notifies that flags have been removed from a character.
-
-#### ⏰ When Called
-After flag removal occurs.
-
-#### ⚙️ Parameters
-
-- `ply` (Player) - Player whose character lost flags.
-- `character` (Character) - Character affected.
-- `removedFlags` (string) - Flags removed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharFlagsTaken", "LogFlagRemoval", function(ply, character, removedFlags)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharFlagsTaken", "LogFlagRemoval", function(ply, character, removedFlags)
         lia.log.add(ply, "flagsTaken", removedFlags)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharKick></a>OnCharKick(character, client)</summary>
 <a id="oncharkick"></a>
-### OnCharKick
+<p>Runs when a character is kicked out of the game or forced to menu.</p>
+<p>After kicking logic completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character that was kicked.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player owning the character (may be nil).</p>
 
-#### 📋 Purpose
-Runs when a character is kicked out of the game or forced to menu.
-
-#### ⏰ When Called
-After kicking logic completes.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character that was kicked.
-- `client` (Player) - Player owning the character (may be nil).
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharKick", "LogCharKick", function(character, client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharKick", "LogCharKick", function(character, client)
         lia.log.add(client, "charKicked", character:getName())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharNetVarChanged></a>OnCharNetVarChanged(character, key, oldVar, value)</summary>
 <a id="oncharnetvarchanged"></a>
-### OnCharNetVarChanged
+<p>Fired when a character networked variable changes.</p>
+<p>Whenever character:setNetVar updates a value.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character whose var changed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Net var key.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">oldVar</span> Previous value.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">value</span> New value.</p>
 
-#### 📋 Purpose
-Fired when a character networked variable changes.
-
-#### ⏰ When Called
-Whenever character:setNetVar updates a value.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character whose var changed.
-- `key` (string) - Net var key.
-- `oldVar` (any) - Previous value.
-- `value` (any) - New value.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharNetVarChanged", "TrackWantedState", function(character, key, old, value)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharNetVarChanged", "TrackWantedState", function(character, key, old, value)
         if key == "wanted" then lia.log.add(nil, "wantedToggle", character:getName(), value) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharPermakilled></a>OnCharPermakilled(character, time)</summary>
 <a id="oncharpermakilled"></a>
-### OnCharPermakilled
+<p>Reports that a character has been permanently killed.</p>
+<p>After perma-kill logic marks the character as dead.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character that was permakilled.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">time</span> Timestamp of the perma-kill.</p>
 
-#### 📋 Purpose
-Reports that a character has been permanently killed.
-
-#### ⏰ When Called
-After perma-kill logic marks the character as dead.
-
-#### ⚙️ Parameters
-
-- `character` (Character) - Character that was permakilled.
-- `time` (number) - Timestamp of the perma-kill.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharPermakilled", "AnnouncePerma", function(character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharPermakilled", "AnnouncePerma", function(character)
         lia.chat.send(nil, "event", L("permakilled", character:getName()))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharRecognized></a>OnCharRecognized(client, target)</summary>
 <a id="oncharrecognized"></a>
-### OnCharRecognized
+<p>Notifies when a recognition check is performed between characters.</p>
+<p>When determining if one character recognizes another.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the recognition.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">target</span> Target data (player or character).</p>
 
-#### 📋 Purpose
-Notifies when a recognition check is performed between characters.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True if recognized; nil/false otherwise.</p>
 
-#### ⏰ When Called
-When determining if one character recognizes another.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the recognition.
-- `arg2` (any) - Target data (player or character).
-
-#### ↩️ Returns
-* boolean
-True if recognized; nil/false otherwise.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharRecognized", "AlwaysRecognizeTeam", function(client, target)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharRecognized", "AlwaysRecognizeTeam", function(client, target)
         if target:getFaction() == client:Team() then return true end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCharTradeVendor></a>OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)</summary>
 <a id="onchartradevendor"></a>
-### OnCharTradeVendor
+<p>Fired after a player completes a vendor trade interaction.</p>
+<p>After buy/sell attempt is processed, including failures.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player trading.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item instance if available.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isSellingToVendor</span> True if player sold to vendor.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Player character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isFailed</span> True if the trade failed.</p>
 
-#### 📋 Purpose
-Fired after a player completes a vendor trade interaction.
-
-#### ⏰ When Called
-After buy/sell attempt is processed, including failures.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player trading.
-- `vendor` (Entity) - Vendor entity.
-- `item` (Item) - Item instance if available.
-- `isSellingToVendor` (boolean) - True if player sold to vendor.
-- `character` (Character) - Player character.
-- `itemType` (string) - Item uniqueID.
-- `isFailed` (boolean) - True if the trade failed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCharTradeVendor", "TrackVendorTrade", function(client, vendor, item, selling)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCharTradeVendor", "TrackVendorTrade", function(client, vendor, item, selling)
         lia.log.add(client, selling and "vendorSell" or "vendorBuy", item and item.uniqueID or "unknown")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnCheaterCaught></a>OnCheaterCaught(client)</summary>
 <a id="oncheatercaught"></a>
-### OnCheaterCaught
+<p>Triggered when a player is flagged as a cheater by detection logic.</p>
+<p>After anti-cheat routines identify suspicious behavior.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player detected.</p>
 
-#### 📋 Purpose
-Triggered when a player is flagged as a cheater by detection logic.
-
-#### ⏰ When Called
-After anti-cheat routines identify suspicious behavior.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player detected.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnCheaterCaught", "AutoKickCheaters", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnCheaterCaught", "AutoKickCheaters", function(client)
         client:Kick("Cheating detected")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnDataSet></a>OnDataSet(key, value, gamemode, map)</summary>
 <a id="ondataset"></a>
-### OnDataSet
+<p>Fires when lia.data.set writes a value so other modules can react.</p>
+<p>Immediately after a data key is set.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Data key.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">value</span> Value written.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">gamemode</span> Gamemode identifier (namespace).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">map</span> Map name associated with the data.</p>
 
-#### 📋 Purpose
-Fires when lia.data.set writes a value so other modules can react.
-
-#### ⏰ When Called
-Immediately after a data key is set.
-
-#### ⚙️ Parameters
-
-- `key` (string) - Data key.
-- `value` (any) - Value written.
-- `gamemode` (string) - Gamemode identifier (namespace).
-- `map` (string) - Map name associated with the data.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnDataSet", "MirrorToCache", function(key, value)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnDataSet", "MirrorToCache", function(key, value)
         lia.cache.set(key, value)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnDatabaseLoaded></a>OnDatabaseLoaded()</summary>
 <a id="ondatabaseloaded"></a>
-### OnDatabaseLoaded
-
-#### 📋 Purpose
-Indicates that the database has finished loading queued data.
-
-#### ⏰ When Called
-After tables/data are loaded on startup.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnDatabaseLoaded", "StartSalaryTimers", function()
+<p>Indicates that the database has finished loading queued data.</p>
+<p>After tables/data are loaded on startup.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnDatabaseLoaded", "StartSalaryTimers", function()
         hook.Run("CreateSalaryTimers")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnDeathSoundPlayed></a>OnDeathSoundPlayed(client, deathSound)</summary>
 <a id="ondeathsoundplayed"></a>
-### OnDeathSoundPlayed
+<p>Notifies that a death sound has been played for a player.</p>
+<p>After emitting the death sound in PlayerDeath.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who died.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">deathSound</span> Sound path played.</p>
 
-#### 📋 Purpose
-Notifies that a death sound has been played for a player.
-
-#### ⏰ When Called
-After emitting the death sound in PlayerDeath.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who died.
-- `deathSound` (string) - Sound path played.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnDeathSoundPlayed", "BroadcastDeathSound", function(client, sound)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnDeathSoundPlayed", "BroadcastDeathSound", function(client, sound)
         lia.log.add(client, "deathSound", sound)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnEntityLoaded></a>OnEntityLoaded(ent, data)</summary>
 <a id="onentityloaded"></a>
-### OnEntityLoaded
+<p>Called when an entity is loaded from persistence with its saved data.</p>
+<p>After entity creation during map load and persistence restore.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Entity loaded.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">data</span> Saved data applied.</p>
 
-#### 📋 Purpose
-Called when an entity is loaded from persistence with its saved data.
-
-#### ⏰ When Called
-After entity creation during map load and persistence restore.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Entity loaded.
-- `data` (table) - Saved data applied.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnEntityLoaded", "RestoreHealth", function(ent, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnEntityLoaded", "RestoreHealth", function(ent, data)
         if data.health then ent:SetHealth(data.health) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnEntityPersistUpdated></a>OnEntityPersistUpdated(ent, data)</summary>
 <a id="onentitypersistupdated"></a>
-### OnEntityPersistUpdated
+<p>Notifies that persistent data for an entity has been updated.</p>
+<p>After persistence storage for an entity is rewritten.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Entity whose data changed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">data</span> New persistence data.</p>
 
-#### 📋 Purpose
-Notifies that persistent data for an entity has been updated.
-
-#### ⏰ When Called
-After persistence storage for an entity is rewritten.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Entity whose data changed.
-- `data` (table) - New persistence data.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnEntityPersistUpdated", "RefreshDataCache", function(ent, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnEntityPersistUpdated", "RefreshDataCache", function(ent, data)
         ent.cachedPersist = data
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnEntityPersisted></a>OnEntityPersisted(ent, entData)</summary>
 <a id="onentitypersisted"></a>
-### OnEntityPersisted
+<p>Called when an entity is first persisted to storage.</p>
+<p>At the moment entity data is captured for saving.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Entity being persisted.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">entData</span> Data collected for saving.</p>
 
-#### 📋 Purpose
-Called when an entity is first persisted to storage.
-
-#### ⏰ When Called
-At the moment entity data is captured for saving.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Entity being persisted.
-- `entData` (table) - Data collected for saving.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnEntityPersisted", "AddOwnerData", function(ent, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnEntityPersisted", "AddOwnerData", function(ent, data)
         if ent:GetNWString("owner") then data.owner = ent:GetNWString("owner") end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnItemSpawned></a>OnItemSpawned(itemEntity)</summary>
 <a id="onitemspawned"></a>
-### OnItemSpawned
+<p>Fired when an item entity spawns into the world.</p>
+<p>After an item entity is created (drop or spawn).</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">itemEntity</span> Item entity instance.</p>
 
-#### 📋 Purpose
-Fired when an item entity spawns into the world.
-
-#### ⏰ When Called
-After an item entity is created (drop or spawn).
-
-#### ⚙️ Parameters
-
-- `itemEntity` (Entity) - Item entity instance.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnItemSpawned", "ApplyItemGlow", function(itemEntity)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnItemSpawned", "ApplyItemGlow", function(itemEntity)
         itemEntity:SetRenderFX(kRenderFxGlowShell)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnLoadTables></a>OnLoadTables()</summary>
 <a id="onloadtables"></a>
-### OnLoadTables
-
-#### 📋 Purpose
-Signals that data tables for the gamemode have been loaded.
-
-#### ⏰ When Called
-After loading tables during startup.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnLoadTables", "InitVendors", function()
+<p>Signals that data tables for the gamemode have been loaded.</p>
+<p>After loading tables during startup.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnLoadTables", "InitVendors", function()
         lia.vendor.loadAll()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnNPCTypeSet></a>OnNPCTypeSet(client, npc, npcID, filteredData)</summary>
 <a id="onnpctypeset"></a>
-### OnNPCTypeSet
+<p>Allows overriding the NPC type assignment for an NPC entity.</p>
+<p>When setting an NPC's type using management tools.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player setting the type.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">npc</span> NPC entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">npcID</span> Target NPC type ID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">filteredData</span> Data prepared for the NPC.</p>
 
-#### 📋 Purpose
-Allows overriding the NPC type assignment for an NPC entity.
-
-#### ⏰ When Called
-When setting an NPC's type using management tools.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player setting the type.
-- `npc` (Entity) - NPC entity.
-- `npcID` (string) - Target NPC type ID.
-- `filteredData` (table) - Data prepared for the NPC.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnNPCTypeSet", "LogNPCType", function(client, npc, npcID)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnNPCTypeSet", "LogNPCType", function(client, npc, npcID)
         lia.log.add(client, "npcTypeSet", npcID)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnOOCMessageSent></a>OnOOCMessageSent(client, message)</summary>
 <a id="onoocmessagesent"></a>
-### OnOOCMessageSent
+<p>Fired when an OOC chat message is sent to the server.</p>
+<p>After an OOC message passes cooldown checks.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Speaker.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">message</span> Message text.</p>
 
-#### 📋 Purpose
-Fired when an OOC chat message is sent to the server.
-
-#### ⏰ When Called
-After an OOC message passes cooldown checks.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Speaker.
-- `message` (string) - Message text.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnOOCMessageSent", "RelayToDiscord", function(client, message)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnOOCMessageSent", "RelayToDiscord", function(client, message)
         lia.discord.send("OOC", client:Name(), message)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPainSoundPlayed></a>OnPainSoundPlayed(entity, painSound)</summary>
 <a id="onpainsoundplayed"></a>
-### OnPainSoundPlayed
+<p>Notifies that a pain sound has been played for an entity.</p>
+<p>After a pain sound is emitted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Entity that made the sound.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">painSound</span> Sound path.</p>
 
-#### 📋 Purpose
-Notifies that a pain sound has been played for an entity.
-
-#### ⏰ When Called
-After a pain sound is emitted.
-
-#### ⚙️ Parameters
-
-- `entity` (Entity) - Entity that made the sound.
-- `painSound` (string) - Sound path.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPainSoundPlayed", "CountPainSounds", function(entity, sound)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPainSoundPlayed", "CountPainSounds", function(entity, sound)
         lia.metrics.bump("painSounds")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPickupMoney></a>OnPickupMoney(activator, moneyEntity)</summary>
 <a id="onpickupmoney"></a>
-### OnPickupMoney
+<p>Fired when a player picks up a money entity from the world.</p>
+<p>After money is collected.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">activator</span> Player who picked up the money.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">moneyEntity</span> Money entity removed.</p>
 
-#### 📋 Purpose
-Fired when a player picks up a money entity from the world.
-
-#### ⏰ When Called
-After money is collected.
-
-#### ⚙️ Parameters
-
-- `activator` (Player) - Player who picked up the money.
-- `moneyEntity` (Entity) - Money entity removed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPickupMoney", "LogMoneyPickup", function(ply, moneyEnt)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPickupMoney", "LogMoneyPickup", function(ply, moneyEnt)
         lia.log.add(ply, "moneyPickup", moneyEnt:getAmount())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerEnterSequence></a>OnPlayerEnterSequence(client, sequenceName, callback, time, noFreeze)</summary>
 <a id="onplayerentersequence"></a>
-### OnPlayerEnterSequence
+<p>Called when a player starts an animated sequence (e.g., sit or custom act).</p>
+<p>When sequence playback is initiated through player sequences.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player entering the sequence.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">sequenceName</span> Sequence identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.6">function</a></span> <span class="parameter">callback</span> Function to call when sequence ends.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">time</span> Duration of the sequence.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">noFreeze</span> Whether player movement is frozen.</p>
 
-#### 📋 Purpose
-Called when a player starts an animated sequence (e.g., sit or custom act).
-
-#### ⏰ When Called
-When sequence playback is initiated through player sequences.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player entering the sequence.
-- `sequenceName` (string) - Sequence identifier.
-- `callback` (function) - Function to call when sequence ends.
-- `time` (number) - Duration of the sequence.
-- `noFreeze` (boolean) - Whether player movement is frozen.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerEnterSequence", "SequenceLog", function(client, sequenceName)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerEnterSequence", "SequenceLog", function(client, sequenceName)
         lia.log.add(client, "sequenceStart", sequenceName)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerInteractItem></a>OnPlayerInteractItem(client, action, item, result, data)</summary>
 <a id="onplayerinteractitem"></a>
-### OnPlayerInteractItem
+<p>Runs after a player interacts with an item and receives a result.</p>
+<p>After item interaction logic completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the action.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">action</span> Action identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item involved.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean|string|table</a></span> <span class="parameter">result</span> Result of the action.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">data</span> Additional action data.</p>
 
-#### 📋 Purpose
-Runs after a player interacts with an item and receives a result.
-
-#### ⏰ When Called
-After item interaction logic completes.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the action.
-- `action` (string) - Action identifier.
-- `item` (Item) - Item involved.
-- `result` (boolean|string|table) - Result of the action.
-- `data` (table) - Additional action data.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerInteractItem", "NotifyUse", function(client, action, item, result)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerInteractItem", "NotifyUse", function(client, action, item, result)
         if result then client:notifyLocalized("itemAction", action, item:getName()) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerJoinClass></a>OnPlayerJoinClass(target, newClass, oldClass)</summary>
 <a id="onplayerjoinclass"></a>
-### OnPlayerJoinClass
+<p>Triggered when a player joins a class or team variant.</p>
+<p>After the class change is applied.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player who changed class.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">newClass</span> New class data/index.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">oldClass</span> Previous class data/index.</p>
 
-#### 📋 Purpose
-Triggered when a player joins a class or team variant.
-
-#### ⏰ When Called
-After the class change is applied.
-
-#### ⚙️ Parameters
-
-- `target` (Player) - Player who changed class.
-- `arg2` (any) - New class data/index.
-- `oldClass` (any) - Previous class data/index.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerJoinClass", "ClassLog", function(client, newClass, oldClass)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerJoinClass", "ClassLog", function(client, newClass, oldClass)
         lia.log.add(client, "classJoined", tostring(newClass))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerLeaveSequence></a>OnPlayerLeaveSequence(client)</summary>
 <a id="onplayerleavesequence"></a>
-### OnPlayerLeaveSequence
+<p>Fired when a player exits an animated sequence.</p>
+<p>When the sequence finishes or is cancelled.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player leaving the sequence.</p>
 
-#### 📋 Purpose
-Fired when a player exits an animated sequence.
-
-#### ⏰ When Called
-When the sequence finishes or is cancelled.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player leaving the sequence.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerLeaveSequence", "SequenceEndLog", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerLeaveSequence", "SequenceEndLog", function(client)
         lia.log.add(client, "sequenceEnd")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerLostStackItem></a>OnPlayerLostStackItem(itemTypeOrItem)</summary>
 <a id="onplayerloststackitem"></a>
-### OnPlayerLostStackItem
+<p>Notifies when a player loses a stackable item (stack count reaches zero).</p>
+<p>After stack removal logic.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string|Item</a></span> <span class="parameter">itemTypeOrItem</span> Item uniqueID or item instance removed.</p>
 
-#### 📋 Purpose
-Notifies when a player loses a stackable item (stack count reaches zero).
-
-#### ⏰ When Called
-After stack removal logic.
-
-#### ⚙️ Parameters
-
-- `itemTypeOrItem` (string|Item) - Item uniqueID or item instance removed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerLostStackItem", "RevokeBuff", function(itemTypeOrItem)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerLostStackItem", "RevokeBuff", function(itemTypeOrItem)
         if itemTypeOrItem == "medkit" then lia.buff.remove("healing") end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerObserve></a>OnPlayerObserve(client, state)</summary>
 <a id="onplayerobserve"></a>
-### OnPlayerObserve
+<p>Notifies when a player toggles observer mode (freecam/third person).</p>
+<p>When observation state changes via admin commands or mechanics.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player entering or exiting observe.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">state</span> True when entering observe mode.</p>
 
-#### 📋 Purpose
-Notifies when a player toggles observer mode (freecam/third person).
-
-#### ⏰ When Called
-When observation state changes via admin commands or mechanics.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player entering or exiting observe.
-- `state` (boolean) - True when entering observe mode.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerObserve", "HideHUD", function(client, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerObserve", "HideHUD", function(client, state)
         client:setNetVar("hideHUD", state)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerRagdolled></a>OnPlayerRagdolled(client, ragdoll)</summary>
 <a id="onplayerragdolled"></a>
-### OnPlayerRagdolled
+<p>Fired when a player is ragdolled (knocked out, physics ragdoll).</p>
+<p>Immediately after the ragdoll is created.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player ragdolled.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ragdoll</span> Ragdoll entity created.</p>
 
-#### 📋 Purpose
-Fired when a player is ragdolled (knocked out, physics ragdoll).
-
-#### ⏰ When Called
-Immediately after the ragdoll is created.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player ragdolled.
-- `ragdoll` (Entity) - Ragdoll entity created.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerRagdolled", "TrackRagdoll", function(client, ragdoll)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerRagdolled", "TrackRagdoll", function(client, ragdoll)
         ragdoll:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnPlayerSwitchClass></a>OnPlayerSwitchClass(client, class, oldClass)</summary>
 <a id="onplayerswitchclass"></a>
-### OnPlayerSwitchClass
+<p>Notifies that a player switched to a different class.</p>
+<p>After the class transition is applied.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player switching class.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table|number</a></span> <span class="parameter">class</span> New class identifier or data.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table|number</a></span> <span class="parameter">oldClass</span> Previous class identifier or data.</p>
 
-#### 📋 Purpose
-Notifies that a player switched to a different class.
-
-#### ⏰ When Called
-After the class transition is applied.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player switching class.
-- `class` (table|number) - New class identifier or data.
-- `oldClass` (table|number) - Previous class identifier or data.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnPlayerSwitchClass", "RefreshLoadout", function(client, class, oldClass)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnPlayerSwitchClass", "RefreshLoadout", function(client, class, oldClass)
         lia.loadout.give(client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnRequestItemTransfer></a>OnRequestItemTransfer(inventoryPanel, itemID, targetInventoryID, x, y)</summary>
 <a id="onrequestitemtransfer"></a>
-### OnRequestItemTransfer
+<p>Allows modules to override item transfer requests before processing.</p>
+<p>When an inventory panel asks to move an item to another inventory.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Panel">Panel</a></span> <span class="parameter">inventoryPanel</span> UI panel requesting transfer.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">itemID</span> Item instance ID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">targetInventoryID</span> Destination inventory.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">x</span> X slot.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">y</span> Y slot.</p>
 
-#### 📋 Purpose
-Allows modules to override item transfer requests before processing.
-
-#### ⏰ When Called
-When an inventory panel asks to move an item to another inventory.
-
-#### ⚙️ Parameters
-
-- `inventoryPanel` (Panel) - UI panel requesting transfer.
-- `itemID` (number|string) - Item instance ID.
-- `targetInventoryID` (number|string) - Destination inventory.
-- `x` (number) - X slot.
-- `y` (number) - Y slot.
-
-#### ↩️ Returns
-* nil
-Return false to block.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnRequestItemTransfer", "BlockDuringTrade", function(_, _, targetInv)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnRequestItemTransfer", "BlockDuringTrade", function(_, _, targetInv)
         if lia.trade.isActive(targetInv) then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnSalaryAdjust></a>OnSalaryAdjust(client)</summary>
 <a id="onsalaryadjust"></a>
-### OnSalaryAdjust
+<p>Allows adjusting salary amount just before payment.</p>
+<p>During salary payout calculation.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player receiving pay.</p>
 
-#### 📋 Purpose
-Allows adjusting salary amount just before payment.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Modified salary value.</p>
 
-#### ⏰ When Called
-During salary payout calculation.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player receiving pay.
-
-#### ↩️ Returns
-* number
-Modified salary value.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnSalaryAdjust", "TaxSalary", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnSalaryAdjust", "TaxSalary", function(client)
         return client:isTaxed() and -50 or 0
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnSalaryGiven></a>OnSalaryGiven(client, char, pay, faction, class)</summary>
 <a id="onsalarygiven"></a>
-### OnSalaryGiven
+<p>Fired when salary is granted to a player.</p>
+<p>After salary is deposited into the character.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player receiving salary.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">char</span> Character object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">pay</span> Amount paid.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction data.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">class</span> Class data (if any).</p>
 
-#### 📋 Purpose
-Fired when salary is granted to a player.
-
-#### ⏰ When Called
-After salary is deposited into the character.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player receiving salary.
-- `char` (Character) - Character object.
-- `pay` (number) - Amount paid.
-- `faction` (table) - Faction data.
-- `class` (table) - Class data (if any).
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnSalaryGiven", "LogSalary", function(client, char, pay)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnSalaryGiven", "LogSalary", function(client, char, pay)
         lia.log.add(client, "salaryGiven", pay)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnSetUsergroup></a>OnSetUsergroup(sid, new, source, ply)</summary>
 <a id="onsetusergroup"></a>
-### OnSetUsergroup
+<p>Called when a player's usergroup is changed.</p>
+<p>After a player's usergroup has been successfully changed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">sid</span> Steam ID of the player whose usergroup changed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">new</span> New usergroup name.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">source</span> Source of the change (e.g., "Lilia").</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">ply</span> Player entity whose usergroup changed.</p>
 
-#### 📋 Purpose
-Called when a player's usergroup is changed.
-
-#### ⏰ When Called
-After a player's usergroup has been successfully changed.
-
-#### ⚙️ Parameters
-
-- `sid` (string) - Steam ID of the player whose usergroup changed.
-- `new` (string) - New usergroup name.
-- `source` (string) - Source of the change (e.g., "Lilia").
-- `ply` (Player) - Player entity whose usergroup changed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnSetUsergroup", "LogUsergroupChange", function(sid, new, source, ply)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnSetUsergroup", "LogUsergroupChange", function(sid, new, source, ply)
         print(string.format("Usergroup changed for %s to %s by %s", sid, new, source))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnSavedItemLoaded></a>OnSavedItemLoaded(loadedItems)</summary>
 <a id="onsaveditemloaded"></a>
-### OnSavedItemLoaded
+<p>Notifies that saved item instances have been loaded from storage.</p>
+<p>After loading saved items on startup.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">loadedItems</span> Table of item instances.</p>
 
-#### 📋 Purpose
-Notifies that saved item instances have been loaded from storage.
-
-#### ⏰ When Called
-After loading saved items on startup.
-
-#### ⚙️ Parameters
-
-- `loadedItems` (table) - Table of item instances.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnSavedItemLoaded", "IndexCustomData", function(loadedItems)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnSavedItemLoaded", "IndexCustomData", function(loadedItems)
         lia.items.buildCache(loadedItems)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnServerLog></a>OnServerLog(client, logType, logString, category)</summary>
 <a id="onserverlog"></a>
-### OnServerLog
+<p>Central logging hook for server log entries.</p>
+<p>Whenever lia.log.add writes to the server log.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player associated with the log (may be nil).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">logType</span> Log type identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">logString</span> Formatted log message.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">category</span> Log category.</p>
 
-#### 📋 Purpose
-Central logging hook for server log entries.
-
-#### ⏰ When Called
-Whenever lia.log.add writes to the server log.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player associated with the log (may be nil).
-- `logType` (string) - Log type identifier.
-- `logString` (string) - Formatted log message.
-- `category` (string) - Log category.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnServerLog", "ForwardToDiscord", function(client, logType, text, category)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnServerLog", "ForwardToDiscord", function(client, logType, text, category)
         lia.discord.send(category, logType, text)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnTicketClaimed></a>OnTicketClaimed(client, requester, ticketMessage)</summary>
 <a id="onticketclaimed"></a>
-### OnTicketClaimed
+<p>Fired when a staff member claims a support ticket.</p>
+<p>After claim assignment succeeds.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Staff claiming the ticket.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">requester</span> SteamID of the requester.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">ticketMessage</span> Ticket text.</p>
 
-#### 📋 Purpose
-Fired when a staff member claims a support ticket.
-
-#### ⏰ When Called
-After claim assignment succeeds.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Staff claiming the ticket.
-- `requester` (string) - SteamID of the requester.
-- `ticketMessage` (string) - Ticket text.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnTicketClaimed", "AnnounceClaim", function(client, requester)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnTicketClaimed", "AnnounceClaim", function(client, requester)
         client:notifyLocalized("ticketClaimed", requester)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnTicketClosed></a>OnTicketClosed(client, requester, ticketMessage)</summary>
 <a id="onticketclosed"></a>
-### OnTicketClosed
+<p>Fired when a support ticket is closed.</p>
+<p>After the ticket is marked closed and responders notified.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Staff closing the ticket.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">requester</span> SteamID of the requester.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">ticketMessage</span> Original ticket text.</p>
 
-#### 📋 Purpose
-Fired when a support ticket is closed.
-
-#### ⏰ When Called
-After the ticket is marked closed and responders notified.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Staff closing the ticket.
-- `requester` (string) - SteamID of the requester.
-- `ticketMessage` (string) - Original ticket text.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnTicketClosed", "LogTicketClose", function(client, requester)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnTicketClosed", "LogTicketClose", function(client, requester)
         lia.log.add(client, "ticketClosed", requester)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnTicketCreated></a>OnTicketCreated(noob, message)</summary>
 <a id="onticketcreated"></a>
-### OnTicketCreated
+<p>Fired when a support ticket is created.</p>
+<p>Right after a player submits a ticket.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">noob</span> Player submitting the ticket.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">message</span> Ticket text.</p>
 
-#### 📋 Purpose
-Fired when a support ticket is created.
-
-#### ⏰ When Called
-Right after a player submits a ticket.
-
-#### ⚙️ Parameters
-
-- `noob` (Player) - Player submitting the ticket.
-- `message` (string) - Ticket text.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnTicketCreated", "NotifyStaff", function(noob, message)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnTicketCreated", "NotifyStaff", function(noob, message)
         lia.staff.notifyAll(noob:Nick() .. ": " .. message)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnUsergroupPermissionsChanged></a>OnUsergroupPermissionsChanged(groupName, permissions)</summary>
 <a id="onusergrouppermissionschanged"></a>
-### OnUsergroupPermissionsChanged
+<p>Notifies that usergroup permissions have changed.</p>
+<p>After a usergroup permission update occurs.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">groupName</span> Usergroup name.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">permissions</span> New permission data.</p>
 
-#### 📋 Purpose
-Notifies that usergroup permissions have changed.
-
-#### ⏰ When Called
-After a usergroup permission update occurs.
-
-#### ⚙️ Parameters
-
-- `groupName` (string) - Usergroup name.
-- `arg2` (table) - New permission data.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnUsergroupPermissionsChanged", "RefreshCachedPerms", function(groupName)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnUsergroupPermissionsChanged", "RefreshCachedPerms", function(groupName)
         lia.permissions.refresh(groupName)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnVendorEdited></a>OnVendorEdited(client, vendor, key)</summary>
 <a id="onvendoredited"></a>
-### OnVendorEdited
+<p>Fired when a vendor entity is edited via the vendor interface.</p>
+<p>After vendor key/value is changed.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player editing.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Property key edited.</p>
 
-#### 📋 Purpose
-Fired when a vendor entity is edited via the vendor interface.
-
-#### ⏰ When Called
-After vendor key/value is changed.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player editing.
-- `vendor` (Entity) - Vendor entity.
-- `key` (string) - Property key edited.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnVendorEdited", "SyncVendorEdits", function(client, vendor, key)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnVendorEdited", "SyncVendorEdits", function(client, vendor, key)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OnVoiceTypeChanged></a>OnVoiceTypeChanged(client)</summary>
 <a id="onvoicetypechanged"></a>
-### OnVoiceTypeChanged
+<p>Signals that a player's voice chat style has changed (whisper/talk/yell).</p>
+<p>After a player updates their voice type.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose voice type changed.</p>
 
-#### 📋 Purpose
-Signals that a player's voice chat style has changed (whisper/talk/yell).
-
-#### ⏰ When Called
-After a player updates their voice type.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose voice type changed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OnVoiceTypeChanged", "UpdateVoiceRadius", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OnVoiceTypeChanged", "UpdateVoiceRadius", function(client)
         lia.voice.updateHearTables()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=OptionReceived></a>OptionReceived(client, key, value)</summary>
 <a id="optionreceived"></a>
-### OptionReceived
+<p>Called when a networked option value is received or changed.</p>
+<p>When lia.option.set broadcasts an option that should network.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> <span class="optional">optional</span> Player who triggered the change (nil when server initiated).</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Option key.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">value</span> New value.</p>
 
-#### 📋 Purpose
-Called when a networked option value is received or changed.
-
-#### ⏰ When Called
-When lia.option.set broadcasts an option that should network.
-
-#### ⚙️ Parameters
-
-- `arg1` (Player|nil) - Player who triggered the change (nil when server initiated).
-- `key` (string) - Option key.
-- `value` (any) - New value.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("OptionReceived", "ApplyOption", function(_, key, value)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("OptionReceived", "ApplyOption", function(_, key, value)
         if key == "TalkRange" then lia.config.set("TalkRange", value) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerAccessVendor></a>PlayerAccessVendor(client, vendor)</summary>
 <a id="playeraccessvendor"></a>
-### PlayerAccessVendor
+<p>Checks if a player is permitted to access vendor management.</p>
+<p>When a player attempts to open vendor edit controls.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player requesting access.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
 
-#### 📋 Purpose
-Checks if a player is permitted to access vendor management.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block, true/nil to allow.</p>
 
-#### ⏰ When Called
-When a player attempts to open vendor edit controls.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player requesting access.
-- `vendor` (Entity) - Vendor entity.
-
-#### ↩️ Returns
-* boolean
-False to block, true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerAccessVendor", "AdminOnlyVendorEdit", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerAccessVendor", "AdminOnlyVendorEdit", function(client)
         if not client:IsAdmin() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerCheatDetected></a>PlayerCheatDetected(client)</summary>
 <a id="playercheatdetected"></a>
-### PlayerCheatDetected
+<p>Triggered when cheat detection flags a player.</p>
+<p>After the cheat system confirms suspicious behavior.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player detected.</p>
 
-#### 📋 Purpose
-Triggered when cheat detection flags a player.
-
-#### ⏰ When Called
-After the cheat system confirms suspicious behavior.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player detected.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerCheatDetected", "AutoBan", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerCheatDetected", "AutoBan", function(client)
         lia.bans.add(client:SteamID(), "Cheat detected", 0)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerGagged></a>PlayerGagged(target, admin)</summary>
 <a id="playergagged"></a>
-### PlayerGagged
+<p>Fired when a player is gagged (voice chat disabled).</p>
+<p>After gag state toggles to true.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player gagged.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">admin</span> Admin who issued the gag.</p>
 
-#### 📋 Purpose
-Fired when a player is gagged (voice chat disabled).
-
-#### ⏰ When Called
-After gag state toggles to true.
-
-#### ⚙️ Parameters
-
-- `target` (Player) - Player gagged.
-- `admin` (Player) - Admin who issued the gag.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerGagged", "LogGag", function(target, admin)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerGagged", "LogGag", function(target, admin)
         lia.log.add(admin, "playerGagged", target:Name())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerLiliaDataLoaded></a>PlayerLiliaDataLoaded(client)</summary>
 <a id="playerliliadataloaded"></a>
-### PlayerLiliaDataLoaded
+<p>Notifies that Lilia player data has finished loading for a client.</p>
+<p>After lia data, items, doors, and panels are synced to the client.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose data is loaded.</p>
 
-#### 📋 Purpose
-Notifies that Lilia player data has finished loading for a client.
-
-#### ⏰ When Called
-After lia data, items, doors, and panels are synced to the client.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose data is loaded.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerLiliaDataLoaded", "SendWelcome", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerLiliaDataLoaded", "SendWelcome", function(client)
         client:notifyLocalized("welcomeBack")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerLoadedChar></a>PlayerLoadedChar(client, character, currentChar)</summary>
 <a id="playerloadedchar"></a>
-### PlayerLoadedChar
+<p>Fired after a player's character has been fully loaded.</p>
+<p>Once character variables are applied and the player is spawned.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose character loaded.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Active character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">currentChar</span> Character ID index.</p>
 
-#### 📋 Purpose
-Fired after a player's character has been fully loaded.
-
-#### ⏰ When Called
-Once character variables are applied and the player is spawned.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose character loaded.
-- `character` (Character) - Active character.
-- `currentChar` (number) - Character ID index.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerLoadedChar", "ApplyLoadout", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerLoadedChar", "ApplyLoadout", function(client, character)
         lia.loadout.give(client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerMessageSend></a>PlayerMessageSend(speaker, chatType, text, anonymous, receivers)</summary>
 <a id="playermessagesend"></a>
-### PlayerMessageSend
+<p>Allows modifying chat text before it is sent to listeners.</p>
+<p>During chat send for all chat types.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">speaker</span> Player speaking.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">chatType</span> Chat class identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">text</span> Raw message text.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">anonymous</span> Whether the message is anonymous.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">receivers</span> List of recipients (optional).</p>
 
-#### 📋 Purpose
-Allows modifying chat text before it is sent to listeners.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> Replacement message text, or nil to keep.</p>
 
-#### ⏰ When Called
-During chat send for all chat types.
-
-#### ⚙️ Parameters
-
-- `speaker` (Player) - Player speaking.
-- `chatType` (string) - Chat class identifier.
-- `text` (string) - Raw message text.
-- `anonymous` (boolean) - Whether the message is anonymous.
-- `receivers` (table) - List of recipients (optional).
-
-#### ↩️ Returns
-* string
-Replacement message text, or nil to keep.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerMessageSend", "CensorCurseWords", function(_, _, text)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerMessageSend", "CensorCurseWords", function(_, _, text)
         return text:gsub("badword", "****")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerModelChanged></a>PlayerModelChanged(client, value)</summary>
 <a id="playermodelchanged"></a>
-### PlayerModelChanged
+<p>Triggered when a player's model changes.</p>
+<p>After a new model is set on the player.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player whose model changed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">value</span> New model path.</p>
 
-#### 📋 Purpose
-Triggered when a player's model changes.
-
-#### ⏰ When Called
-After a new model is set on the player.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player whose model changed.
-- `value` (string) - New model path.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerModelChanged", "ReapplyBodygroups", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerModelChanged", "ReapplyBodygroups", function(client)
         lia.models.applyBodygroups(client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerMuted></a>PlayerMuted(target, admin)</summary>
 <a id="playermuted"></a>
-### PlayerMuted
+<p>Fired when a player is muted (text chat disabled).</p>
+<p>After muting is applied.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player muted.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">admin</span> Admin who muted.</p>
 
-#### 📋 Purpose
-Fired when a player is muted (text chat disabled).
-
-#### ⏰ When Called
-After muting is applied.
-
-#### ⚙️ Parameters
-
-- `target` (Player) - Player muted.
-- `admin` (Player) - Admin who muted.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerMuted", "LogMute", function(target, admin)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerMuted", "LogMute", function(target, admin)
         lia.log.add(admin, "playerMuted", target:Name())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerShouldPermaKill></a>PlayerShouldPermaKill(client, inflictor, attacker)</summary>
 <a id="playershouldpermakill"></a>
-### PlayerShouldPermaKill
+<p>Determines if a death should result in a permanent character kill.</p>
+<p>During PlayerDeath when checking perma-kill conditions.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who died.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">inflictor</span> Entity inflicting damage.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">attacker</span> Attacker entity.</p>
 
-#### 📋 Purpose
-Determines if a death should result in a permanent character kill.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True to perma-kill, false/nil to avoid.</p>
 
-#### ⏰ When Called
-During PlayerDeath when checking perma-kill conditions.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who died.
-- `inflictor` (Entity) - Entity inflicting damage.
-- `attacker` (Entity) - Attacker entity.
-
-#### ↩️ Returns
-* boolean
-True to perma-kill, false/nil to avoid.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerShouldPermaKill", "HardcoreMode", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerShouldPermaKill", "HardcoreMode", function(client)
         return lia.config.get("HardcoreMode", false)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerSpawnPointSelected></a>PlayerSpawnPointSelected(client, pos, ang)</summary>
 <a id="playerspawnpointselected"></a>
-### PlayerSpawnPointSelected
+<p>Allows overriding the spawn point chosen for a player.</p>
+<p>When selecting a specific spawn point entity/position.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player spawning.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Vector">Vector</a></span> <span class="parameter">pos</span> Proposed position.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Angle">Angle</a></span> <span class="parameter">ang</span> Proposed angle.</p>
 
-#### 📋 Purpose
-Allows overriding the spawn point chosen for a player.
+<p><h3>Returns:</h3>
+vector, angle Replacement spawn location or nil to keep.</p>
 
-#### ⏰ When Called
-When selecting a specific spawn point entity/position.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player spawning.
-- `pos` (Vector) - Proposed position.
-- `ang` (Angle) - Proposed angle.
-
-#### ↩️ Returns
-* vector, angle
-Replacement spawn location or nil to keep.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerSpawnPointSelected", "SpawnInZone", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerSpawnPointSelected", "SpawnInZone", function(client)
         return lia.spawns.pickSafe(), Angle(0, 0, 0)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerStaminaGained></a>PlayerStaminaGained(client)</summary>
 <a id="playerstaminagained"></a>
-### PlayerStaminaGained
+<p>Notifies that stamina has been gained by a player.</p>
+<p>After stamina increase is applied.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player gaining stamina.</p>
 
-#### 📋 Purpose
-Notifies that stamina has been gained by a player.
-
-#### ⏰ When Called
-After stamina increase is applied.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player gaining stamina.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerStaminaGained", "RewardRecovery", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerStaminaGained", "RewardRecovery", function(client)
         client:notifyLocalized("staminaRestored")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerStaminaLost></a>PlayerStaminaLost(client)</summary>
 <a id="playerstaminalost"></a>
-### PlayerStaminaLost
+<p>Notifies that stamina has been reduced for a player.</p>
+<p>After stamina drain is applied.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player losing stamina.</p>
 
-#### 📋 Purpose
-Notifies that stamina has been reduced for a player.
-
-#### ⏰ When Called
-After stamina drain is applied.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player losing stamina.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerStaminaLost", "WarnLowStamina", function(client)
-        if client:getLocalVar("stm", 100) < 10 then client:notifyLocalized("lowStamina") end
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerStaminaLost", "WarnLowStamina", function(client)
+        if client:getLocalVar("stm", 100) &lt; 10 then client:notifyLocalized("lowStamina") end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerUngagged></a>PlayerUngagged(target, admin)</summary>
 <a id="playerungagged"></a>
-### PlayerUngagged
+<p>Fired when a gag on a player is removed.</p>
+<p>After gag state switches to false.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player ungagged.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">admin</span> Admin lifting the gag.</p>
 
-#### 📋 Purpose
-Fired when a gag on a player is removed.
-
-#### ⏰ When Called
-After gag state switches to false.
-
-#### ⚙️ Parameters
-
-- `target` (Player) - Player ungagged.
-- `admin` (Player) - Admin lifting the gag.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerUngagged", "LogUngag", function(target, admin)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerUngagged", "LogUngag", function(target, admin)
         lia.log.add(admin, "playerUngagged", target:Name())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerUnmuted></a>PlayerUnmuted(target, admin)</summary>
 <a id="playerunmuted"></a>
-### PlayerUnmuted
+<p>Fired when a mute on a player is removed.</p>
+<p>After muting state switches to false.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player unmuted.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">admin</span> Admin lifting the mute.</p>
 
-#### 📋 Purpose
-Fired when a mute on a player is removed.
-
-#### ⏰ When Called
-After muting state switches to false.
-
-#### ⚙️ Parameters
-
-- `target` (Player) - Player unmuted.
-- `admin` (Player) - Admin lifting the mute.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerUnmuted", "LogUnmute", function(target, admin)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerUnmuted", "LogUnmute", function(target, admin)
         lia.log.add(admin, "playerUnmuted", target:Name())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PlayerUseDoor></a>PlayerUseDoor(client, door)</summary>
 <a id="playerusedoor"></a>
-### PlayerUseDoor
+<p>Final permission check before a player uses a door entity.</p>
+<p>When a use input is received on a door.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player using the door.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
 
-#### 📋 Purpose
-Final permission check before a player uses a door entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block use; true/nil to allow.</p>
 
-#### ⏰ When Called
-When a use input is received on a door.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player using the door.
-- `door` (Entity) - Door entity.
-
-#### ↩️ Returns
-* boolean
-False to block use; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PlayerUseDoor", "RaidLockdown", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PlayerUseDoor", "RaidLockdown", function(client)
         if lia.state.isRaid() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostDoorDataLoad></a>PostDoorDataLoad(ent, doorData)</summary>
 <a id="postdoordataload"></a>
-### PostDoorDataLoad
+<p>Runs after door data has been loaded from persistence.</p>
+<p>After door ownership/vars are applied on map load.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">doorData</span> Data restored for the door.</p>
 
-#### 📋 Purpose
-Runs after door data has been loaded from persistence.
-
-#### ⏰ When Called
-After door ownership/vars are applied on map load.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Door entity.
-- `doorData` (table) - Data restored for the door.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostDoorDataLoad", "ApplyDoorSkin", function(ent, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostDoorDataLoad", "ApplyDoorSkin", function(ent, data)
         if data.skin then ent:SetSkin(data.skin) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostLoadData></a>PostLoadData()</summary>
 <a id="postloaddata"></a>
-### PostLoadData
-
-#### 📋 Purpose
-Called after all gamemode data loading is complete.
-
-#### ⏰ When Called
-At the end of server initialization once stored data is in memory.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostLoadData", "WarmCache", function()
+<p>Called after all gamemode data loading is complete.</p>
+<p>At the end of server initialization once stored data is in memory.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostLoadData", "WarmCache", function()
         lia.cache.preload()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostPlayerInitialSpawn></a>PostPlayerInitialSpawn(client)</summary>
 <a id="postplayerinitialspawn"></a>
-### PostPlayerInitialSpawn
+<p>Runs after the player's initial spawn setup finishes.</p>
+<p>Right after PlayerInitialSpawn processing completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Newly spawned player.</p>
 
-#### 📋 Purpose
-Runs after the player's initial spawn setup finishes.
-
-#### ⏰ When Called
-Right after PlayerInitialSpawn processing completes.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Newly spawned player.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostPlayerInitialSpawn", "SendMOTD", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostPlayerInitialSpawn", "SendMOTD", function(client)
         lia.motd.send(client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostPlayerLoadedChar></a>PostPlayerLoadedChar(client, character, currentChar)</summary>
 <a id="postplayerloadedchar"></a>
-### PostPlayerLoadedChar
+<p>Runs after a player's character and inventories have been loaded.</p>
+<p>Immediately after PlayerLoadedChar finishes syncing.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Loaded character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">currentChar</span> Character index.</p>
 
-#### 📋 Purpose
-Runs after a player's character and inventories have been loaded.
-
-#### ⏰ When Called
-Immediately after PlayerLoadedChar finishes syncing.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player.
-- `character` (Character) - Loaded character.
-- `currentChar` (number) - Character index.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostPlayerLoadedChar", "GiveStarterItems", function(client, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostPlayerLoadedChar", "GiveStarterItems", function(client, character)
         lia.items.giveStarter(character)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostPlayerLoadout></a>PostPlayerLoadout(client)</summary>
 <a id="postplayerloadout"></a>
-### PostPlayerLoadout
+<p>Fired after PlayerLoadout has finished giving items and weapons.</p>
+<p>After the default loadout logic completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who spawned.</p>
 
-#### 📋 Purpose
-Fired after PlayerLoadout has finished giving items and weapons.
-
-#### ⏰ When Called
-After the default loadout logic completes.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who spawned.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostPlayerLoadout", "AddExtraGear", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostPlayerLoadout", "AddExtraGear", function(client)
         client:Give("weapon_crowbar")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostPlayerSay></a>PostPlayerSay(client, message, chatType, anonymous)</summary>
 <a id="postplayersay"></a>
-### PostPlayerSay
+<p>Allows modules to modify chat behavior after PlayerSay builds recipients.</p>
+<p>After chat data is prepared but before sending to clients.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Speaker.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">message</span> Message text.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">chatType</span> Chat class.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">anonymous</span> Whether the message is anonymous.</p>
 
-#### 📋 Purpose
-Allows modules to modify chat behavior after PlayerSay builds recipients.
+<p><h3>Returns:</h3>
+string, boolean Optionally return modified text and anonymity.</p>
 
-#### ⏰ When Called
-After chat data is prepared but before sending to clients.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Speaker.
-- `message` (string) - Message text.
-- `chatType` (string) - Chat class.
-- `anonymous` (boolean) - Whether the message is anonymous.
-
-#### ↩️ Returns
-* string, boolean
-Optionally return modified text and anonymity.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostPlayerSay", "AddOOCPrefix", function(client, message, chatType, anonymous)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostPlayerSay", "AddOOCPrefix", function(client, message, chatType, anonymous)
         if chatType == "ooc" then return "[OOC] " .. message, anonymous end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PostScaleDamage></a>PostScaleDamage(hitgroup, dmgInfo, damageScale)</summary>
 <a id="postscaledamage"></a>
-### PostScaleDamage
+<p>Fired after damage scaling is applied to a hitgroup.</p>
+<p>At the end of ScalePlayerDamage.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">hitgroup</span> Hitgroup hit.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/CTakeDamageInfo">CTakeDamageInfo</a></span> <span class="parameter">dmgInfo</span> Damage info object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">damageScale</span> Scale that was applied.</p>
 
-#### 📋 Purpose
-Fired after damage scaling is applied to a hitgroup.
-
-#### ⏰ When Called
-At the end of ScalePlayerDamage.
-
-#### ⚙️ Parameters
-
-- `hitgroup` (number) - Hitgroup hit.
-- `dmgInfo` (CTakeDamageInfo) - Damage info object.
-- `damageScale` (number) - Scale that was applied.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PostScaleDamage", "TrackDamage", function(hitgroup, dmgInfo, scale)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PostScaleDamage", "TrackDamage", function(hitgroup, dmgInfo, scale)
         lia.metrics.bump("damage", dmgInfo:GetDamage() * scale)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PreCharDelete></a>PreCharDelete(id)</summary>
 <a id="prechardelete"></a>
-### PreCharDelete
+<p>Pre-deletion hook for characters to run cleanup logic.</p>
+<p>Just before a character is removed from the database.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">id</span> Character ID to delete.</p>
 
-#### 📋 Purpose
-Pre-deletion hook for characters to run cleanup logic.
-
-#### ⏰ When Called
-Just before a character is removed from the database.
-
-#### ⚙️ Parameters
-
-- `id` (number) - Character ID to delete.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PreCharDelete", "ArchiveChar", function(id)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PreCharDelete", "ArchiveChar", function(id)
         lia.backup.character(id)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PreDoorDataSave></a>PreDoorDataSave(door, doorData)</summary>
 <a id="predoordatasave"></a>
-### PreDoorDataSave
+<p>Allows adding extra data before door data is saved to persistence.</p>
+<p>During door save routines.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">doorData</span> Data about to be saved.</p>
 
-#### 📋 Purpose
-Allows adding extra data before door data is saved to persistence.
-
-#### ⏰ When Called
-During door save routines.
-
-#### ⚙️ Parameters
-
-- `door` (Entity) - Door entity.
-- `doorData` (table) - Data about to be saved.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PreDoorDataSave", "SaveDoorSkin", function(door, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PreDoorDataSave", "SaveDoorSkin", function(door, data)
         data.skin = door:GetSkin()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PrePlayerInteractItem></a>PrePlayerInteractItem(client, action, item)</summary>
 <a id="preplayerinteractitem"></a>
-### PrePlayerInteractItem
+<p>Lets modules validate an item interaction before it runs.</p>
+<p>Prior to executing an item action.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the action.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">action</span> Action identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item being interacted with.</p>
 
-#### 📋 Purpose
-Lets modules validate an item interaction before it runs.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-Prior to executing an item action.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the action.
-- `action` (string) - Action identifier.
-- `item` (Item) - Item being interacted with.
-
-#### ↩️ Returns
-* boolean
-False to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PrePlayerInteractItem", "BlockWhileBusy", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PrePlayerInteractItem", "BlockWhileBusy", function(client)
         if client:isBusy() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PrePlayerLoadedChar></a>PrePlayerLoadedChar(client, character, currentChar)</summary>
 <a id="preplayerloadedchar"></a>
-### PrePlayerLoadedChar
+<p>Runs before character data is fully loaded into a player.</p>
+<p>Prior to PlayerLoadedChar logic.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player about to load a character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">currentChar</span> Character index.</p>
 
-#### 📋 Purpose
-Runs before character data is fully loaded into a player.
-
-#### ⏰ When Called
-Prior to PlayerLoadedChar logic.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player about to load a character.
-- `character` (Character) - Character object.
-- `currentChar` (number) - Character index.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PrePlayerLoadedChar", "ResetRagdoll", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PrePlayerLoadedChar", "ResetRagdoll", function(client)
         client:removeRagdoll()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PreSalaryGive></a>PreSalaryGive(client, char, pay, faction, class)</summary>
 <a id="presalarygive"></a>
-### PreSalaryGive
+<p>Allows modification of salary payout before it is given.</p>
+<p>During salary calculation loop, before pay is issued.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player due for salary.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">char</span> Character.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">pay</span> Current calculated pay.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">faction</span> Faction data.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">class</span> Class data.</p>
 
-#### 📋 Purpose
-Allows modification of salary payout before it is given.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> Adjusted pay or nil to keep.</p>
 
-#### ⏰ When Called
-During salary calculation loop, before pay is issued.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player due for salary.
-- `char` (Character) - Character.
-- `pay` (number) - Current calculated pay.
-- `faction` (table) - Faction data.
-- `class` (table) - Class data.
-
-#### ↩️ Returns
-* number
-Adjusted pay or nil to keep.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PreSalaryGive", "ApplyTax", function(client, char, pay)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PreSalaryGive", "ApplyTax", function(client, char, pay)
         return pay * 0.9
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=PreScaleDamage></a>PreScaleDamage(hitgroup, dmgInfo, damageScale)</summary>
 <a id="prescaledamage"></a>
-### PreScaleDamage
+<p>Called before damage scaling is calculated.</p>
+<p>At the start of ScalePlayerDamage.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">hitgroup</span> Hitgroup hit.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/CTakeDamageInfo">CTakeDamageInfo</a></span> <span class="parameter">dmgInfo</span> Damage info object.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">damageScale</span> Starting scale value.</p>
 
-#### 📋 Purpose
-Called before damage scaling is calculated.
-
-#### ⏰ When Called
-At the start of ScalePlayerDamage.
-
-#### ⚙️ Parameters
-
-- `hitgroup` (number) - Hitgroup hit.
-- `dmgInfo` (CTakeDamageInfo) - Damage info object.
-- `damageScale` (number) - Starting scale value.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("PreScaleDamage", "ArmorPiercing", function(hitgroup, dmgInfo, scale)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("PreScaleDamage", "ArmorPiercing", function(hitgroup, dmgInfo, scale)
         if dmgInfo:IsExplosionDamage() then dmgInfo:ScaleDamage(scale * 1.2) end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=RemoveWarning></a>RemoveWarning(charID, index)</summary>
 <a id="removewarning"></a>
-### RemoveWarning
+<p>Removes a warning entry for a character and informs listeners.</p>
+<p>When an admin deletes a warning record.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">charID</span> Character database ID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">index</span> Position of the warning in the list to remove.</p>
 
-#### 📋 Purpose
-Removes a warning entry for a character and informs listeners.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">deferred|table</a></span> Deferred resolving to removed warning row or nil.</p>
 
-#### ⏰ When Called
-When an admin deletes a warning record.
-
-#### ⚙️ Parameters
-
-- `charID` (number|string) - Character database ID.
-- `index` (number) - Position of the warning in the list to remove.
-
-#### ↩️ Returns
-* deferred|table
-Deferred resolving to removed warning row or nil.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("RemoveWarning", "MirrorWarningRemoval", function(charID, index)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("RemoveWarning", "MirrorWarningRemoval", function(charID, index)
         print("Warning removed", charID, index)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SaveData></a>SaveData()</summary>
 <a id="savedata"></a>
-### SaveData
-
-#### 📋 Purpose
-Performs a full save of gamemode persistence (entities, data, etc.).
-
-#### ⏰ When Called
-When persistence save is triggered manually or automatically.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SaveData", "ExtraSave", function()
+<p>Performs a full save of gamemode persistence (entities, data, etc.).</p>
+<p>When persistence save is triggered manually or automatically.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SaveData", "ExtraSave", function()
         lia.custom.saveAll()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SendPopup></a>SendPopup(noob, message)</summary>
 <a id="sendpopup"></a>
-### SendPopup
+<p>Displays a popup notification to a player with custom text.</p>
+<p>Whenever the server wants to send a popup dialog.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">noob</span> Player receiving the popup.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">message</span> Text to show.</p>
 
-#### 📋 Purpose
-Displays a popup notification to a player with custom text.
-
-#### ⏰ When Called
-Whenever the server wants to send a popup dialog.
-
-#### ⚙️ Parameters
-
-- `noob` (Player) - Player receiving the popup.
-- `message` (string) - Text to show.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SendPopup", "PopupExample", function(client, message)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SendPopup", "PopupExample", function(client, message)
         client:notifyLocalized(message)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SetupBotPlayer></a>SetupBotPlayer(client)</summary>
 <a id="setupbotplayer"></a>
-### SetupBotPlayer
+<p>Builds and spawns a bot player with default character data.</p>
+<p>When the server requests creation of a bot player.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Bot player entity.</p>
 
-#### 📋 Purpose
-Builds and spawns a bot player with default character data.
-
-#### ⏰ When Called
-When the server requests creation of a bot player.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Bot player entity.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SetupBotPlayer", "BotWelcome", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SetupBotPlayer", "BotWelcome", function(client)
         print("Bot setup complete", client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SetupDatabase></a>SetupDatabase()</summary>
 <a id="setupdatabase"></a>
-### SetupDatabase
-
-#### 📋 Purpose
-Sets up database tables, indexes, and initial schema.
-
-#### ⏰ When Called
-During gamemode initialization after database connection is established.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SetupDatabase", "InitCustomTables", function()
+<p>Sets up database tables, indexes, and initial schema.</p>
+<p>During gamemode initialization after database connection is established.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SetupDatabase", "InitCustomTables", function()
         lia.db.query("CREATE TABLE IF NOT EXISTS custom(id INT)")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SetupPlayerModel></a>SetupPlayerModel(modelEntity, character)</summary>
 <a id="setupplayermodel"></a>
-### SetupPlayerModel
+<p>Configure a player model entity after it has been created.</p>
+<p>When spawning a playable model entity for preview or vendors.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">modelEntity</span> The spawned model entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Character</a></span> <span class="parameter">character</span> Character data used for appearance.</p>
 
-#### 📋 Purpose
-Configure a player model entity after it has been created.
-
-#### ⏰ When Called
-When spawning a playable model entity for preview or vendors.
-
-#### ⚙️ Parameters
-
-- `modelEntity` (Entity) - The spawned model entity.
-- `character` (Character) - Character data used for appearance.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SetupPlayerModel", "ApplyCharSkin", function(modelEntity, character)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SetupPlayerModel", "ApplyCharSkin", function(modelEntity, character)
         modelEntity:SetSkin(character:getSkin() or 0)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldDataBeSaved></a>ShouldDataBeSaved()</summary>
 <a id="shoulddatabesaved"></a>
-### ShouldDataBeSaved
+<p>Determines if persistence data should be saved at this time.</p>
+<p>Before performing a save cycle.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to skip saving; true/nil to proceed.</p>
 
-#### 📋 Purpose
-Determines if persistence data should be saved at this time.
-
-#### ⏰ When Called
-Before performing a save cycle.
-
-#### ↩️ Returns
-* boolean
-False to skip saving; true/nil to proceed.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldDataBeSaved", "OnlyDuringGrace", function()
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldDataBeSaved", "OnlyDuringGrace", function()
         return not lia.state.isCombatPhase()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldOverrideSalaryTimers></a>ShouldOverrideSalaryTimers()</summary>
 <a id="shouldoverridesalarytimers"></a>
-### ShouldOverrideSalaryTimers
+<p>Determines if the default salary timer creation should be overridden.</p>
+<p>Before creating salary timers to allow custom salary systems.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> True to prevent default salary timer creation; false/nil to allow.</p>
 
-#### 📋 Purpose
-Determines if the default salary timer creation should be overridden.
-
-#### ⏰ When Called
-Before creating salary timers to allow custom salary systems.
-
-#### ↩️ Returns
-* boolean
-True to prevent default salary timer creation; false/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldOverrideSalaryTimers", "CustomSalarySystem", function()
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldOverrideSalaryTimers", "CustomSalarySystem", function()
         return true -- Prevent default timers, handle salary elsewhere
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldDeleteSavedItems></a>ShouldDeleteSavedItems()</summary>
 <a id="shoulddeletesaveditems"></a>
-### ShouldDeleteSavedItems
+<p>Decides whether saved item data should be deleted on map cleanup.</p>
+<p>Before removing saved items.</p>
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to keep saved items; true/nil to delete.</p>
 
-#### 📋 Purpose
-Decides whether saved item data should be deleted on map cleanup.
-
-#### ⏰ When Called
-Before removing saved items.
-
-#### ↩️ Returns
-* boolean
-False to keep saved items; true/nil to delete.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldDeleteSavedItems", "KeepForTesting", function()
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldDeleteSavedItems", "KeepForTesting", function()
         return false
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldPlayDeathSound></a>ShouldPlayDeathSound(client, deathSound)</summary>
 <a id="shouldplaydeathsound"></a>
-### ShouldPlayDeathSound
+<p>Decide if a death sound should play for a player.</p>
+<p>Right before emitting the death sound.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who died.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">deathSound</span> Sound that would be played.</p>
 
-#### 📋 Purpose
-Decide if a death sound should play for a player.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to suppress; true/nil to allow.</p>
 
-#### ⏰ When Called
-Right before emitting the death sound.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who died.
-- `deathSound` (string) - Sound that would be played.
-
-#### ↩️ Returns
-* boolean
-False to suppress; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldPlayDeathSound", "MuteStaff", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldPlayDeathSound", "MuteStaff", function(client)
         if client:Team() == FACTION_STAFF then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldPlayPainSound></a>ShouldPlayPainSound(entity, painSound)</summary>
 <a id="shouldplaypainsound"></a>
-### ShouldPlayPainSound
+<p>Decide if a pain sound should play for an entity.</p>
+<p>When choosing whether to emit pain audio.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Entity that would play the sound.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">painSound</span> Sound path.</p>
 
-#### 📋 Purpose
-Decide if a pain sound should play for an entity.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to suppress; true/nil to allow.</p>
 
-#### ⏰ When Called
-When choosing whether to emit pain audio.
-
-#### ⚙️ Parameters
-
-- `entity` (Entity) - Entity that would play the sound.
-- `painSound` (string) - Sound path.
-
-#### ↩️ Returns
-* boolean
-False to suppress; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldPlayPainSound", "MuteRobots", function(entity)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldPlayPainSound", "MuteRobots", function(entity)
         if entity:IsPlayer() and entity:IsCombine() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ShouldSpawnClientRagdoll></a>ShouldSpawnClientRagdoll(client)</summary>
 <a id="shouldspawnclientragdoll"></a>
-### ShouldSpawnClientRagdoll
+<p>Controls whether a client ragdoll should be spawned on death.</p>
+<p>During PlayerDeath ragdoll handling.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player who died.</p>
 
-#### 📋 Purpose
-Controls whether a client ragdoll should be spawned on death.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to prevent ragdoll; true/nil to allow.</p>
 
-#### ⏰ When Called
-During PlayerDeath ragdoll handling.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player who died.
-
-#### ↩️ Returns
-* boolean
-False to prevent ragdoll; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ShouldSpawnClientRagdoll", "NoRagdollInVehicles", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ShouldSpawnClientRagdoll", "NoRagdollInVehicles", function(client)
         return not client:InVehicle()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StorageCanTransferItem></a>StorageCanTransferItem(client, storage, item)</summary>
 <a id="storagecantransferitem"></a>
-### StorageCanTransferItem
+<p>Validates whether an item can be transferred to/from storage inventories.</p>
+<p>When an item move involving storage is requested.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player performing the move.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity|table</a></span> <span class="parameter">storage</span> Storage entity or inventory table.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Item</a></span> <span class="parameter">item</span> Item being moved.</p>
 
-#### 📋 Purpose
-Validates whether an item can be transferred to/from storage inventories.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-When an item move involving storage is requested.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player performing the move.
-- `storage` (Entity|table) - Storage entity or inventory table.
-- `item` (Item) - Item being moved.
-
-#### ↩️ Returns
-* boolean
-False to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StorageCanTransferItem", "LimitWeapons", function(client, storage, item)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StorageCanTransferItem", "LimitWeapons", function(client, storage, item)
         if item.isWeapon then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StorageEntityRemoved></a>StorageEntityRemoved(storageEntity, inventory)</summary>
 <a id="storageentityremoved"></a>
-### StorageEntityRemoved
+<p>Fired when a storage entity is removed from the world.</p>
+<p>On removal/deletion of the storage entity.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">storageEntity</span> Storage entity removed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">inventory</span> Inventory associated.</p>
 
-#### 📋 Purpose
-Fired when a storage entity is removed from the world.
-
-#### ⏰ When Called
-On removal/deletion of the storage entity.
-
-#### ⚙️ Parameters
-
-- `storageEntity` (Entity) - Storage entity removed.
-- `inventory` (Inventory) - Inventory associated.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StorageEntityRemoved", "SaveStorage", function(storageEntity, inventory)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StorageEntityRemoved", "SaveStorage", function(storageEntity, inventory)
         lia.storage.saveInventory(inventory)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StorageInventorySet></a>StorageInventorySet(entity, inventory, isCar)</summary>
 <a id="storageinventoryset"></a>
-### StorageInventorySet
+<p>Fired when a storage inventory is assigned to an entity.</p>
+<p>After inventory is set on a storage entity.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">entity</span> Entity receiving the inventory.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">inventory</span> Inventory assigned.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isCar</span> True if the storage is a vehicle trunk.</p>
 
-#### 📋 Purpose
-Fired when a storage inventory is assigned to an entity.
-
-#### ⏰ When Called
-After inventory is set on a storage entity.
-
-#### ⚙️ Parameters
-
-- `entity` (Entity) - Entity receiving the inventory.
-- `inventory` (Inventory) - Inventory assigned.
-- `isCar` (boolean) - True if the storage is a vehicle trunk.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StorageInventorySet", "TrackStorage", function(ent, inv)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StorageInventorySet", "TrackStorage", function(ent, inv)
         lia.log.add(nil, "storageSet", inv:getID())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StorageItemRemoved></a>StorageItemRemoved()</summary>
 <a id="storageitemremoved"></a>
-### StorageItemRemoved
-
-#### 📋 Purpose
-Notifies that an item was removed from a storage inventory.
-
-#### ⏰ When Called
-After removal occurs.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StorageItemRemoved", "RecountStorage", function()
+<p>Notifies that an item was removed from a storage inventory.</p>
+<p>After removal occurs.</p>
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StorageItemRemoved", "RecountStorage", function()
         lia.storage.updateCapacity()
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StorageRestored></a>StorageRestored(ent, inventory)</summary>
 <a id="storagerestored"></a>
-### StorageRestored
+<p>Fired when a storage inventory is restored from disk.</p>
+<p>During storage load routines.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">ent</span> Storage entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">Inventory</a></span> <span class="parameter">inventory</span> Inventory object restored.</p>
 
-#### 📋 Purpose
-Fired when a storage inventory is restored from disk.
-
-#### ⏰ When Called
-During storage load routines.
-
-#### ⚙️ Parameters
-
-- `ent` (Entity) - Storage entity.
-- `inventory` (Inventory) - Inventory object restored.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StorageRestored", "SyncRestoredStorage", function(ent, inventory)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StorageRestored", "SyncRestoredStorage", function(ent, inventory)
         inventory:sync(ent)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=StoreSpawns></a>StoreSpawns(spawns)</summary>
 <a id="storespawns"></a>
-### StoreSpawns
+<p>Persists the current spawn positions to storage.</p>
+<p>When spawns are being saved.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">spawns</span> Spawn data to store.</p>
 
-#### 📋 Purpose
-Persists the current spawn positions to storage.
-
-#### ⏰ When Called
-When spawns are being saved.
-
-#### ⚙️ Parameters
-
-- `spawns` (table) - Spawn data to store.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("StoreSpawns", "CustomSpawnStore", function(spawns)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("StoreSpawns", "CustomSpawnStore", function(spawns)
         file.Write("lilia/spawns.json", util.TableToJSON(spawns))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=SyncCharList></a>SyncCharList(client)</summary>
 <a id="synccharlist"></a>
-### SyncCharList
+<p>Syncs the character list data to a specific client.</p>
+<p>When a player requests an updated character list.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player receiving the list.</p>
 
-#### 📋 Purpose
-Syncs the character list data to a specific client.
-
-#### ⏰ When Called
-When a player requests an updated character list.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player receiving the list.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("SyncCharList", "AddExtraFields", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("SyncCharList", "AddExtraFields", function(client)
         lia.char.sync(client)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=TicketSystemClaim></a>TicketSystemClaim(client, requester, ticketMessage)</summary>
 <a id="ticketsystemclaim"></a>
-### TicketSystemClaim
+<p>Allows custom validation when a player attempts to claim a support ticket.</p>
+<p>When a claim request is made for a ticket.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player claiming the ticket.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player|string</a></span> <span class="parameter">requester</span> Ticket requester or their SteamID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">ticketMessage</span> Ticket description.</p>
 
-#### 📋 Purpose
-Allows custom validation when a player attempts to claim a support ticket.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-When a claim request is made for a ticket.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player claiming the ticket.
-- `requester` (Player|string) - Ticket requester or their SteamID.
-- `ticketMessage` (string) - Ticket description.
-
-#### ↩️ Returns
-* boolean
-False to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("TicketSystemClaim", "AllowStaffOnlyClaims", function(client)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("TicketSystemClaim", "AllowStaffOnlyClaims", function(client)
         if not client:isStaffOnDuty() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=TicketSystemClose></a>TicketSystemClose(client, requester, ticketMessage)</summary>
 <a id="ticketsystemclose"></a>
-### TicketSystemClose
+<p>Allows custom validation when a player attempts to close a support ticket.</p>
+<p>When a close request is made for a ticket.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player closing the ticket.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player|string</a></span> <span class="parameter">requester</span> Ticket requester or SteamID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">ticketMessage</span> Ticket description.</p>
 
-#### 📋 Purpose
-Allows custom validation when a player attempts to close a support ticket.
+<p><h3>Returns:</h3>
+<span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> False to block; true/nil to allow.</p>
 
-#### ⏰ When Called
-When a close request is made for a ticket.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player closing the ticket.
-- `requester` (Player|string) - Ticket requester or SteamID.
-- `ticketMessage` (string) - Ticket description.
-
-#### ↩️ Returns
-* boolean
-False to block; true/nil to allow.
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("TicketSystemClose", "OnlyOwnerOrStaff", function(client, requester)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("TicketSystemClose", "OnlyOwnerOrStaff", function(client, requester)
         if client ~= requester and not client:isStaffOnDuty() then return false end
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=ToggleLock></a>ToggleLock(client, door, state)</summary>
 <a id="togglelock"></a>
-### ToggleLock
+<p>Signals that a door lock state was toggled.</p>
+<p>After a lock/unlock action completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player toggling.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">door</span> Door entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">state</span> True if locked after toggle.</p>
 
-#### 📋 Purpose
-Signals that a door lock state was toggled.
-
-#### ⏰ When Called
-After a lock/unlock action completes.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player toggling.
-- `door` (Entity) - Door entity.
-- `state` (boolean) - True if locked after toggle.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("ToggleLock", "LogToggleLock", function(client, door, state)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("ToggleLock", "LogToggleLock", function(client, door, state)
         lia.log.add(client, "toggleLock", tostring(state))
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=UpdateEntityPersistence></a>UpdateEntityPersistence(vendor)</summary>
 <a id="updateentitypersistence"></a>
-### UpdateEntityPersistence
+<p>Writes updated persistence data for an entity (commonly vendors).</p>
+<p>After data changes that must be persisted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Entity whose persistence should be updated.</p>
 
-#### 📋 Purpose
-Writes updated persistence data for an entity (commonly vendors).
-
-#### ⏰ When Called
-After data changes that must be persisted.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Entity whose persistence should be updated.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("UpdateEntityPersistence", "SaveVendorChanges", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("UpdateEntityPersistence", "SaveVendorChanges", function(vendor)
         lia.entity.save(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorClassUpdated></a>VendorClassUpdated(vendor, id, allowed)</summary>
 <a id="vendorclassupdated"></a>
-### VendorClassUpdated
+<p>Fired when a vendor's class allow list changes.</p>
+<p>After toggling a class for vendor access.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">id</span> Class identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">allowed</span> Whether the class is allowed.</p>
 
-#### 📋 Purpose
-Fired when a vendor's class allow list changes.
-
-#### ⏰ When Called
-After toggling a class for vendor access.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `id` (number|string) - Class identifier.
-- `allowed` (boolean) - Whether the class is allowed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorClassUpdated", "SyncVendorClassUpdate", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorClassUpdated", "SyncVendorClassUpdate", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorEdited></a>VendorEdited(liaVendorEnt, key)</summary>
 <a id="vendoredited"></a>
-### VendorEdited
+<p>General notification that a vendor property was edited.</p>
+<p>Whenever vendor data is modified through the editor.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">liaVendorEnt</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">key</span> Property key changed.</p>
 
-#### 📋 Purpose
-General notification that a vendor property was edited.
-
-#### ⏰ When Called
-Whenever vendor data is modified through the editor.
-
-#### ⚙️ Parameters
-
-- `liaVendorEnt` (Entity) - Vendor entity.
-- `key` (string) - Property key changed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorEdited", "ResyncOnEdit", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorEdited", "ResyncOnEdit", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorFactionBuyScaleUpdated></a>VendorFactionBuyScaleUpdated(vendor, factionID, scale)</summary>
 <a id="vendorfactionbuyscaleupdated"></a>
-### VendorFactionBuyScaleUpdated
+<p>Notifies that a vendor's faction-specific buy multiplier was updated.</p>
+<p>After setting faction buy scale.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">factionID</span> Faction identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">scale</span> New buy scale.</p>
 
-#### 📋 Purpose
-Notifies that a vendor's faction-specific buy multiplier was updated.
-
-#### ⏰ When Called
-After setting faction buy scale.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `factionID` (number|string) - Faction identifier.
-- `scale` (number) - New buy scale.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorFactionBuyScaleUpdated", "SyncFactionBuyScale", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorFactionBuyScaleUpdated", "SyncFactionBuyScale", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorFactionSellScaleUpdated></a>VendorFactionSellScaleUpdated(vendor, factionID, scale)</summary>
 <a id="vendorfactionsellscaleupdated"></a>
-### VendorFactionSellScaleUpdated
+<p>Notifies that a vendor's faction-specific sell multiplier was updated.</p>
+<p>After setting faction sell scale.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">factionID</span> Faction identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">scale</span> New sell scale.</p>
 
-#### 📋 Purpose
-Notifies that a vendor's faction-specific sell multiplier was updated.
-
-#### ⏰ When Called
-After setting faction sell scale.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `factionID` (number|string) - Faction identifier.
-- `scale` (number) - New sell scale.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorFactionSellScaleUpdated", "SyncFactionSellScale", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorFactionSellScaleUpdated", "SyncFactionSellScale", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorFactionUpdated></a>VendorFactionUpdated(vendor, id, allowed)</summary>
 <a id="vendorfactionupdated"></a>
-### VendorFactionUpdated
+<p>Fired when a vendor's faction allow/deny list is changed.</p>
+<p>After toggling faction access.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number|string</a></span> <span class="parameter">id</span> Faction identifier.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">allowed</span> Whether the faction is allowed.</p>
 
-#### 📋 Purpose
-Fired when a vendor's faction allow/deny list is changed.
-
-#### ⏰ When Called
-After toggling faction access.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `id` (number|string) - Faction identifier.
-- `allowed` (boolean) - Whether the faction is allowed.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorFactionUpdated", "SyncFactionAccess", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorFactionUpdated", "SyncFactionAccess", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorItemMaxStockUpdated></a>VendorItemMaxStockUpdated(vendor, itemType, value)</summary>
 <a id="vendoritemmaxstockupdated"></a>
-### VendorItemMaxStockUpdated
+<p>Fired when the maximum stock for a vendor item is updated.</p>
+<p>After editing item stock limits.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">value</span> New max stock.</p>
 
-#### 📋 Purpose
-Fired when the maximum stock for a vendor item is updated.
-
-#### ⏰ When Called
-After editing item stock limits.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - Item uniqueID.
-- `value` (number) - New max stock.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorItemMaxStockUpdated", "SyncMaxStockChange", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorItemMaxStockUpdated", "SyncMaxStockChange", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorItemModeUpdated></a>VendorItemModeUpdated(vendor, itemType, value)</summary>
 <a id="vendoritemmodeupdated"></a>
-### VendorItemModeUpdated
+<p>Fired when a vendor item's trade mode changes (buy/sell/both).</p>
+<p>After updating item mode.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">value</span> Mode constant.</p>
 
-#### 📋 Purpose
-Fired when a vendor item's trade mode changes (buy/sell/both).
-
-#### ⏰ When Called
-After updating item mode.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - Item uniqueID.
-- `value` (number) - Mode constant.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorItemModeUpdated", "SyncItemModeChange", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorItemModeUpdated", "SyncItemModeChange", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorItemPriceUpdated></a>VendorItemPriceUpdated(vendor, itemType, value)</summary>
 <a id="vendoritempriceupdated"></a>
-### VendorItemPriceUpdated
+<p>Fired when a vendor item's price is changed.</p>
+<p>After setting a new price for an item.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">value</span> New price.</p>
 
-#### 📋 Purpose
-Fired when a vendor item's price is changed.
-
-#### ⏰ When Called
-After setting a new price for an item.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - Item uniqueID.
-- `value` (number) - New price.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorItemPriceUpdated", "SyncPriceChange", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorItemPriceUpdated", "SyncPriceChange", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorItemStockUpdated></a>VendorItemStockUpdated(vendor, itemType, value)</summary>
 <a id="vendoritemstockupdated"></a>
-### VendorItemStockUpdated
+<p>Fired when a vendor item's current stock value changes.</p>
+<p>After stock is set manually.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">value</span> New stock.</p>
 
-#### 📋 Purpose
-Fired when a vendor item's current stock value changes.
-
-#### ⏰ When Called
-After stock is set manually.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - Item uniqueID.
-- `value` (number) - New stock.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorItemStockUpdated", "SyncStockChange", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorItemStockUpdated", "SyncStockChange", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorMessagesUpdated></a>VendorMessagesUpdated(vendor)</summary>
 <a id="vendormessagesupdated"></a>
-### VendorMessagesUpdated
+<p>Fired when vendor dialogue/messages are updated.</p>
+<p>After editing vendor message strings.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
 
-#### 📋 Purpose
-Fired when vendor dialogue/messages are updated.
-
-#### ⏰ When Called
-After editing vendor message strings.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorMessagesUpdated", "SyncVendorMsgs", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorMessagesUpdated", "SyncVendorMsgs", function(vendor)
         lia.vendor.sync(vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorSynchronized></a>VendorSynchronized(vendor)</summary>
 <a id="vendorsynchronized"></a>
-### VendorSynchronized
+<p>Notifies that vendor data has been synchronized to clients.</p>
+<p>After vendor network sync completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
 
-#### 📋 Purpose
-Notifies that vendor data has been synchronized to clients.
-
-#### ⏰ When Called
-After vendor network sync completes.
-
-#### ⚙️ Parameters
-
-- `vendor` (Entity) - Vendor entity.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorSynchronized", "AfterVendorSync", function(vendor)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorSynchronized", "AfterVendorSync", function(vendor)
         print("Vendor synced", vendor)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=VendorTradeEvent></a>VendorTradeEvent(client, vendor, itemType, isSellingToVendor)</summary>
 <a id="vendortradeevent"></a>
-### VendorTradeEvent
+<p>Generic hook for vendor trade events (buying or selling).</p>
+<p>After a vendor transaction completes.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Player trading.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Entity">Entity</a></span> <span class="parameter">vendor</span> Vendor entity.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">itemType</span> Item uniqueID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.2">boolean</a></span> <span class="parameter">isSellingToVendor</span> True if player sold to vendor.</p>
 
-#### 📋 Purpose
-Generic hook for vendor trade events (buying or selling).
-
-#### ⏰ When Called
-After a vendor transaction completes.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Player trading.
-- `vendor` (Entity) - Vendor entity.
-- `itemType` (string) - Item uniqueID.
-- `isSellingToVendor` (boolean) - True if player sold to vendor.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("VendorTradeEvent", "TrackTrade", function(client, vendor, itemType, selling)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("VendorTradeEvent", "TrackTrade", function(client, vendor, itemType, selling)
         lia.log.add(client, selling and "vendorSell" or "vendorBuy", itemType)
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=WarningIssued></a>WarningIssued(client, target, reason, severity, count, warnerSteamID, targetSteamID)</summary>
 <a id="warningissued"></a>
-### WarningIssued
+<p>Fired when a warning is issued to a player.</p>
+<p>Immediately after creating a warning record.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Admin issuing the warning.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">target</span> Player receiving the warning.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">reason</span> Warning reason.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">severity</span> Severity level.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.3">number</a></span> <span class="parameter">count</span> Total warnings after issuance.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">warnerSteamID</span> Issuer SteamID.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span> <span class="parameter">targetSteamID</span> Target SteamID.</p>
 
-#### 📋 Purpose
-Fired when a warning is issued to a player.
-
-#### ⏰ When Called
-Immediately after creating a warning record.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Admin issuing the warning.
-- `target` (Player) - Player receiving the warning.
-- `reason` (string) - Warning reason.
-- `severity` (string) - Severity level.
-- `count` (number) - Total warnings after issuance.
-- `warnerSteamID` (string) - Issuer SteamID.
-- `targetSteamID` (string) - Target SteamID.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("WarningIssued", "RelayToDiscord", function(client, target, reason, severity)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("WarningIssued", "RelayToDiscord", function(client, target, reason, severity)
         lia.discord.send("warnings", client:Name(), reason .. " (" .. severity .. ")")
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
+<details class="realm-server">
+<summary><a id=WarningRemoved></a>WarningRemoved(client, targetClient, warningData, context1, context2, context3)</summary>
 <a id="warningremoved"></a>
-### WarningRemoved
+<p>Fired when a warning is removed from a player.</p>
+<p>After the warning record is deleted.</p>
+<p><h3>Parameters:</h3>
+<span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">client</span> Admin removing the warning.</p>
+<p><span class="types"><a class="type" href="https://wiki.facepunch.com/gmod/Player">Player</a></span> <span class="parameter">targetClient</span> Player whose warning was removed.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.5">table</a></span> <span class="parameter">warningData</span> Warning data table.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">context1</span> Additional context.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">context2</span> Additional context.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">any</a></span> <span class="parameter">context3</span> Additional context.</p>
 
-#### 📋 Purpose
-Fired when a warning is removed from a player.
-
-#### ⏰ When Called
-After the warning record is deleted.
-
-#### ⚙️ Parameters
-
-- `client` (Player) - Admin removing the warning.
-- `targetClient` (Player) - Player whose warning was removed.
-- `arg3` (table) - Warning data table.
-- `arg4` (any) - Additional context.
-- `arg5` (any) - Additional context.
-- `arg6` (any) - Additional context.
-
-#### ↩️ Returns
-* nil
-
-#### 🌐 Realm
-Server
-
-#### 💡 Example Usage
-
-```lua
-    hook.Add("WarningRemoved", "NotifyRemoval", function(client, targetClient, data)
+<h3>Example Usage:</h3>
+<pre><code class="language-lua">    hook.Add("WarningRemoved", "NotifyRemoval", function(client, targetClient, data)
         targetClient:notifyLocalized("warningRemovedNotify", client:Name())
     end)
-
-```
+</code></pre>
+</details>
 
 ---
 
