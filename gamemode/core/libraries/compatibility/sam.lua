@@ -1,4 +1,4 @@
-﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
 local samCommands = {
     kick = function(id, _, reason) RunConsoleCommand("sam", "kick", id, reason or "") end,
     ban = function(id, dur, reason) RunConsoleCommand("sam", "ban", id, tostring(dur or 0), reason or "") end,
@@ -146,13 +146,13 @@ lia.command.add("cleardecals", {
 
 lia.config.add("AdminOnlyNotification", "adminOnlyNotifications", true, nil, {
     desc = "adminOnlyNotificationsDesc",
-    category = "categorySAM",
+    category = "Lilia",
     type = "Boolean"
 })
 
 lia.config.add("SAMEnforceStaff", "samEnforceStaff", true, nil, {
     desc = "samEnforceStaffDesc",
-    category = "categorySAM",
+    category = "Lilia",
     type = "Boolean"
 })
 

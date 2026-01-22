@@ -1,4 +1,4 @@
-﻿lia.color = lia.color or {}
+lia.color = lia.color or {}
 lia.color.stored = lia.color.stored or {}
 lia.color.themes = lia.color.themes or {}
 if SERVER then
@@ -591,7 +591,7 @@ lia.config.add("Theme", "theme", "Teal", function(_, newValue)
     end
 end, {
     desc = "themeDesc",
-    category = "categoryGameplay",
+    category = "Lilia",
     type = "Table",
     options = function()
         local themes = {}

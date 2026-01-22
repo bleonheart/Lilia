@@ -1,4 +1,4 @@
-﻿lia.option = lia.option or {}
+lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 function lia.option.add(key, name, desc, default, callback, data)
     assert(isstring(key), L("optionKeyString", type(key)))
@@ -497,19 +497,19 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 end)
 
 lia.option.add("descriptionWidth", "descriptionWidth", "descriptionWidthDesc", 0.5, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     min = 0.1,
     max = 1,
     decimals = 2
 })
 
 lia.option.add("invertWeaponScroll", "invertWeaponScroll", "invertWeaponScrollDesc", false, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     isQuick = true,
 })
 
 lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -519,7 +519,7 @@ lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
 })
 
 lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -529,7 +529,7 @@ lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
 })
 
 lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -539,7 +539,7 @@ lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
 })
 
 lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -549,7 +549,7 @@ lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
 })
 
 lia.option.add("espUnconfiguredDoors", "espUnconfiguredDoors", "espUnconfiguredDoorsDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -564,7 +564,7 @@ lia.option.add("espItemsColor", "espItemsColor", "espItemsColorDesc", {
     b = 0,
     a = 255
 }, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -578,7 +578,7 @@ lia.option.add("espEntitiesColor", "espEntitiesColor", "espEntitiesColorDesc", {
     b = 0,
     a = 255
 }, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -592,7 +592,7 @@ lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnc
     b = 255,
     a = 255
 }, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -601,7 +601,7 @@ lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnc
 })
 
 lia.option.add("espConfiguredDoors", "espConfiguredDoors", "espConfiguredDoorsDesc", false, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -616,7 +616,7 @@ lia.option.add("espConfiguredDoorsColor", "espConfiguredDoorsColor", "espConfigu
     b = 0,
     a = 255
 }, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -630,7 +630,7 @@ lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
     b = 255,
     a = 255
 }, nil, {
-    category = "categoryLiliaESP",
+    category = "Lilia",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -639,54 +639,54 @@ lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
 })
 
 lia.option.add("BarsAlwaysVisible", "barsAlwaysVisible", "barsAlwaysVisibleDesc", false, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     isQuick = true,
 })
 
 lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("ThirdPersonToggled", newValue) end, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     isQuick = true,
 })
 
 lia.option.add("thirdPersonClassicMode", "thirdPersonClassicMode", "thirdPersonClassicModeDesc", false, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     isQuick = true,
 })
 
 lia.option.add("thirdPersonHeight", "thirdPersonHeight", "thirdPersonHeightDesc", 10, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHeight", 90),
 })
 
 lia.option.add("thirdPersonHorizontal", "thirdPersonHorizontal", "thirdPersonHorizontalDesc", 10, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHorizontal", 90),
 })
 
 lia.option.add("thirdPersonDistance", "thirdPersonDistance", "thirdPersonDistanceDesc", 50, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonDistance", 100),
 })
 
 lia.option.add("ChatShowTime", "chatShowTime", "chatShowTimeDesc", false, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     type = "Boolean"
 })
 
 lia.option.add("voiceRange", "voiceRange", "voiceRangeDesc", false, nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     isQuick = true,
     type = "Boolean"
 })
 
 lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelectorPositionDesc", "Left", nil, {
-    category = "categoryLiliaGeneral",
+    category = "Lilia",
     type = "Table",
     options = {"Left", "Right", "Center"}
 })

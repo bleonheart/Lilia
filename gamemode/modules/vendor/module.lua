@@ -1,4 +1,4 @@
-﻿MODULE.name = "vendorModuleName"
+MODULE.name = "vendorModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "npcVendorDescription"
@@ -34,7 +34,7 @@ lia.config.add("vendorSaleScale", "vendorSaleScale", 0.5, function(value)
     return true
 end, {
     desc = L("vendorSaleScaleDesc"),
-    category = "categoryCharacter",
+    category = "Lilia",
     type = "Number",
     min = 0.1,
     max = 2.0,

@@ -1,4 +1,4 @@
-﻿local playerMeta = FindMetaTable("Player")
+local playerMeta = FindMetaTable("Player")
 function playerMeta:getParts()
     return self:getNetVar("parts", {})
 end
@@ -208,7 +208,7 @@ lia.command.add("pacdisable", {
 
 lia.config.add("BlockPackURLoad", "blockPackUrlLoad", true, nil, {
     desc = "blockPackUrlLoadDesc",
-    category = "categoryPAC3",
+    category = "Lilia",
     noNetworking = false,
     schemaOnly = false,
     type = "Boolean"

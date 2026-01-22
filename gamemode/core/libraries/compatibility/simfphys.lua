@@ -1,4 +1,4 @@
-﻿if SERVER then
+if SERVER then
     hook.Add("EntityTakeDamage", "liaSimfphys", function(seat, dmgInfo)
         local damageInCars = lia.config.get("DamageInCars", true)
         if not damageInCars then return end
@@ -64,19 +64,19 @@ end)
 
 lia.config.add("DamageInCars", "takeDamageInCars", true, nil, {
     desc = "takeDamageInCarsDesc",
-    category = "simfphysVehicles",
+    category = "Lilia",
     type = "Boolean"
 })
 
 lia.config.add("CarEntryDelayEnabled", "carEntryDelayEnabled", true, nil, {
     desc = "carEntryDelayEnabledDesc",
-    category = "simfphysVehicles",
+    category = "Lilia",
     type = "Boolean"
 })
 
 lia.config.add("TimeToEnterVehicle", "timeToEnterVehicle", 4, nil, {
     desc = "timeToEnterVehicleDesc",
-    category = "simfphysVehicles",
+    category = "Lilia",
     type = "Int",
     min = 1,
     max = 30

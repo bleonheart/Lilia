@@ -220,8 +220,8 @@ def main():
         # Default targets when no arguments provided
         targets = [
             r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode",
-            r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\modules",
-            r"D:\GMOD\Server\garrysmod\gamemodes\metrorp\gitmodules"
+            r"D:\GMOD\Server\garrysmod\gamemodes\metrorp",
+            r"D:\GMOD\Server\garrysmod\gamemodes\skyrimrp"
         ]
 
     total_count = 0

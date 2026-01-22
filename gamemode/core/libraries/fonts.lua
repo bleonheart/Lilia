@@ -1,4 +1,4 @@
-﻿lia.font = lia.font or {}
+lia.font = lia.font or {}
 lia.font.stored = lia.font.stored or {}
 function lia.font.loadFonts()
     if not CLIENT then return end
@@ -262,7 +262,7 @@ lia.config.add("Font", "font", "Montserrat Medium", function()
     hook.Run("RefreshFonts")
 end, {
     desc = "fontDesc",
-    category = "categoryInterface",
+    category = "Lilia",
     type = "Table",
     options = lia.font.getAvailableFonts()
 })

@@ -1,4 +1,4 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
@@ -198,11 +198,11 @@ PANEL = {}
 function PANEL:Init()
     self:Dock(TOP)
     self:DockMargin(0, 0, 0, 4)
-    self:SetTall(36)
+    self:SetTall(28)
     self:SetPaintBackground(false)
     self.buttons = self:Add("DPanel")
     self.buttons:Dock(RIGHT)
-    self.buttons:SetWide(128)
+    self.buttons:SetWide(96)
     self.buttons:SetPaintBackground(false)
     self.add = self:addButton("⯈", 1)
     self.add:Dock(RIGHT)
@@ -235,14 +235,14 @@ function PANEL:delta(delta)
         local oldPoints = self.points
         self.points = self.parent:onPointChange(self.key, delta)
         self:updateQuantity()
-        if oldPoints ~= self.points then client:EmitSound(unpack(MODULE.CharAttrib)) end
+        if oldPoints ~= self.points and IsValid(client) then client:EmitSound("buttons/button15.wav", 30, 250) end
     end
 end
 
 function PANEL:addButton(symbol, delta)
     local button = self.buttons:Add("liaButton")
-    button:SetFont("LiliaFont.32")
-    button:SetWide(32)
+    button:SetFont("LiliaFont.24")
+    button:SetWide(24)
     button:SetText(symbol)
     button:SetContentAlignment(5)
     button.OnMousePressed = function()
