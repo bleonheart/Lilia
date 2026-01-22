@@ -139,7 +139,7 @@ function PANEL:createWelcomeScreen()
         local days = math.floor(playtime / 86400)
         local hours = math.floor((playtime % 86400) / 3600)
         local minutes = math.floor((playtime % 3600) / 60)
-        local playtimeStr = ""
+        local playtimeStr
         if days > 0 then
             playtimeStr = days .. "d " .. hours .. "h " .. minutes .. "m"
         elseif hours > 0 then
@@ -158,7 +158,7 @@ function PANEL:createWelcomeScreen()
 
     local function positionLabels()
         local w, h = self.welcomeScreen:GetSize()
-        local logoW, logoH = 0, 0
+        local logoW, logoH
         if welcomeLogo then
             logoW = ScrW() * 0.12
             logoH = ScrW() * 0.08

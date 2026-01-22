@@ -1,4 +1,3 @@
-local MODULE = MODULE
 local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
