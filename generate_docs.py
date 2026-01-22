@@ -572,7 +572,8 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
     elif is_library and function_name.startswith('lia.'):
         display_name = function_name
 
-    realm_text = (parsed_comment.get('realm') or '').strip().lower()
+    realm_text_raw = (parsed_comment.get('realm') or '').strip()
+    realm_text = realm_text_raw.lower()
     if realm_text == 'client':
         realm_class = 'realm-client'
     elif realm_text == 'server':

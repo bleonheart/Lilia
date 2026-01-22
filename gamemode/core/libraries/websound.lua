@@ -1,4 +1,4 @@
-﻿lia.websound = lia.websound or {}
+lia.websound = lia.websound or {}
 lia.websound.stored = lia.websound.stored or {}
 local baseDir = "lilia/websounds/"
 local cache = {}
@@ -161,9 +161,40 @@ function lia.websound.download(name, url, cb)
     end)
 end
 
+function lia.websound.resolve(nameOrUrlOrPath)
+    if not isstring(nameOrUrlOrPath) then return nil end
+
+    local input = normalizeName(nameOrUrlOrPath)
+
+    if input:find("^https?://") then
+        local name = urlMap[input]
+        if name then return name end
+        return nil
+    end
+
+    if input:find("^lilia/websounds/") then
+        local webPath = input:gsub("^lilia/websounds/", "")
+        if lia.websound.stored[webPath] then return webPath end
+        return nil
+    end
+
+    if input:find("^websounds/") then
+        local webPath = input:gsub("^websounds/", "")
+        if lia.websound.stored[webPath] then return webPath end
+        return nil
+    end
+
+    if lia.websound.stored[input] then return input end
+
+    return nil
+end
+
 function lia.websound.register(name, url, cb)
     name = normalizeName(name)
     lia.websound.stored[name] = url
+    if isstring(url) and url:find("^https?://") then
+        urlMap[url] = name
+    end
     return lia.websound.download(name, url, cb)
 end
 
@@ -184,40 +215,12 @@ local origPlayFile = sound.PlayFile
 function sound.PlayFile(path, mode, cb)
     if isstring(path) then
         path = normalizeName(path)
-        if path:find("^https?://") then
-            local name = urlMap[path]
-            if not name then
-                name = deriveUrlSaveName(path)
-                urlMap[path] = name
-            end
+        local resolvedName = lia.websound.resolve(path)
 
-            local cachedPath = lia.websound.get(name)
-            if cachedPath then
-                origPlayFile(cachedPath, mode or "", cb)
-                return
-            end
-
-            lia.websound.register(name, path, function(localPath)
-                if localPath then
-                    origPlayFile(localPath, mode or "", cb)
-                elseif cb then
-                    cb(nil, nil, "failed")
-                end
-            end)
-            return
-        else
-            local webPath
-            if path:find("^lilia/websounds/") then
-                webPath = path:gsub("^lilia/websounds/", "")
-            elseif path:find("^websounds/") then
-                webPath = path:gsub("^websounds/", "")
-            else
-                webPath = path
-            end
-
-            local localPath = lia.websound.get(webPath)
+        if resolvedName then
+            local localPath = lia.websound.get(resolvedName)
             if localPath then
-                if webPath:match("%.wav$") then
+                if resolvedName:match("%.wav$") then
                     local reqMode = mode or ""
                     local wants3d = reqMode:find("3d", 1, true) ~= nil
                     local attempts = {}
@@ -261,15 +264,15 @@ function sound.PlayFile(path, mode, cb)
                     return origPlayFile(localPath, mode or "", cb)
                 end
             else
-                local url = lia.websound.stored and lia.websound.stored[webPath]
+                local url = lia.websound.stored[resolvedName]
                 if url then
-                    lia.websound.register(webPath, url, function(downloadedPath)
+                    lia.websound.register(resolvedName, url, function(downloadedPath)
                         if not downloadedPath then
                             if cb then cb(nil, nil, "failed") end
                             return
                         end
 
-                        if webPath:match("%.wav$") then
+                        if resolvedName:match("%.wav$") then
                             origPlayFile(downloadedPath, mode or "", cb)
                         else
                             origPlayFile(downloadedPath, mode or "", cb)
@@ -279,46 +282,92 @@ function sound.PlayFile(path, mode, cb)
                 end
             end
         end
+
+        if path:find("^https?://") then
+            local name = urlMap[path]
+            if not name then
+                name = deriveUrlSaveName(path)
+                urlMap[path] = name
+            end
+
+            local cachedPath = lia.websound.get(name)
+            if cachedPath then
+                origPlayFile(cachedPath, mode or "", cb)
+                return
+            end
+
+            lia.websound.register(name, path, function(localPath)
+                if localPath then
+                    origPlayFile(localPath, mode or "", cb)
+                elseif cb then
+                    cb(nil, nil, "failed")
+                end
+            end)
+            return
+        end
     end
     return origPlayFile(path, mode, cb)
 end
 
 local origPlayURL = sound.PlayURL
 function sound.PlayURL(url, mode, cb)
-    if isstring(url) and url:find("^https?://") then
-        local reqMode = mode or ""
-        if reqMode:find("3d", 1, true) ~= nil then
-            origPlayURL(url, reqMode, cb)
+    if isstring(url) then
+        local resolvedName = lia.websound.resolve(url)
+
+        if resolvedName then
+            local localPath = lia.websound.get(resolvedName)
+            if localPath then
+                return origPlayFile(localPath, mode or "", cb)
+            else
+                local storedUrl = lia.websound.stored[resolvedName]
+                if storedUrl then
+                    lia.websound.register(resolvedName, storedUrl, function(downloadedPath)
+                        if downloadedPath then
+                            origPlayFile(downloadedPath, mode or "", cb)
+                        elseif cb then
+                            cb(nil, nil, "failed")
+                        end
+                    end)
+                    return
+                end
+            end
+        end
+
+        if url:find("^https?://") then
+            local reqMode = mode or ""
+            if reqMode:find("3d", 1, true) ~= nil then
+                origPlayURL(url, reqMode, cb)
+                local name = urlMap[url]
+                if not name then
+                    name = deriveUrlSaveName(url)
+                    urlMap[url] = name
+                end
+
+                lia.websound.register(name, url)
+                return
+            end
+
             local name = urlMap[url]
             if not name then
                 name = deriveUrlSaveName(url)
                 urlMap[url] = name
             end
 
-            lia.websound.register(name, url)
-            return
-        end
-
-        local name = urlMap[url]
-        if not name then
-            name = deriveUrlSaveName(url)
-            urlMap[url] = name
-        end
-
-        local cachedPath = lia.websound.get(name)
-        if cachedPath then
-            origPlayFile(cachedPath, mode or "", cb)
-            return
-        end
-
-        lia.websound.register(name, url, function(localPath)
-            if localPath then
-                origPlayFile(localPath, mode or "", cb)
-            elseif cb then
-                cb(nil, nil, "failed")
+            local cachedPath = lia.websound.get(name)
+            if cachedPath then
+                origPlayFile(cachedPath, mode or "", cb)
+                return
             end
-        end)
-        return
+
+            lia.websound.register(name, url, function(localPath)
+                if localPath then
+                    origPlayFile(localPath, mode or "", cb)
+                elseif cb then
+                    cb(nil, nil, "failed")
+                end
+            end)
+            return
+        end
     end
     return origPlayURL(url, mode, cb)
 end
@@ -327,6 +376,32 @@ local origSurfacePlaySound = surface.PlaySound
 function surface.PlaySound(soundPath, _, cb)
     if isstring(soundPath) then
         soundPath = normalizeName(soundPath)
+        local resolvedName = lia.websound.resolve(soundPath)
+
+        if resolvedName then
+            local localPath = lia.websound.get(resolvedName)
+            if localPath then
+                local surfacePath = localPath:gsub("^data/", "")
+                origSurfacePlaySound(surfacePath)
+                if cb then cb(true) end
+                return
+            else
+                local url = lia.websound.stored[resolvedName]
+                if url then
+                    lia.websound.register(resolvedName, url, function(downloadedPath)
+                        if downloadedPath then
+                            local surfacePath = downloadedPath:gsub("^data/", "")
+                            origSurfacePlaySound(surfacePath)
+                            if cb then cb(true) end
+                        elseif cb then
+                            cb(false, "failed")
+                        end
+                    end)
+                    return
+                end
+            end
+        end
+
         if soundPath:find("^https?://") then
             local name = urlMap[soundPath]
             if not name then
@@ -352,37 +427,6 @@ function surface.PlaySound(soundPath, _, cb)
                 end
             end)
             return
-        else
-            local webPath
-            if soundPath:find("^lilia/websounds/") then
-                webPath = soundPath:gsub("^lilia/websounds/", "")
-            elseif soundPath:find("^websounds/") then
-                webPath = soundPath:gsub("^websounds/", "")
-            else
-                webPath = soundPath
-            end
-
-            local localPath = lia.websound.get(webPath)
-            if localPath then
-                local surfacePath = localPath:gsub("^data/", "")
-                origSurfacePlaySound(surfacePath)
-                if cb then cb(true) end
-                return
-            else
-                local url = lia.websound.stored and lia.websound.stored[webPath]
-                if url then
-                    lia.websound.register(webPath, url, function(downloadedPath)
-                        if downloadedPath then
-                            local surfacePath = downloadedPath:gsub("^data/", "")
-                            origSurfacePlaySound(surfacePath)
-                            if cb then cb(true) end
-                        elseif cb then
-                            cb(false, "failed")
-                        end
-                    end)
-                    return
-                end
-            end
         end
     end
 

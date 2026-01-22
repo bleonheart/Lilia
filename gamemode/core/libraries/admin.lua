@@ -1,4 +1,22 @@
-﻿lia.admin = lia.admin or {}
+--[[
+    Folder: Libraries
+    File: administrator.md
+]]
+--[[
+    Administrator Library
+
+    Comprehensive user group and privilege management system for the Lilia framework.
+]]
+--[[
+    Overview:
+        The administrator library provides comprehensive functionality for managing user groups, privileges, and administrative permissions in the Lilia framework. It handles the creation, modification, and deletion of user groups with inheritance-based privilege systems. The library operates on both server and client sides, with the server managing privilege storage and validation while the client provides user interface elements for administrative management. It includes integration with CAMI (Comprehensive Administration Management Interface) for compatibility with other administrative systems. The library ensures proper privilege inheritance, automatic privilege registration for tools and properties, and comprehensive logging of administrative actions. It supports both console-based and GUI-based administrative command execution with proper permission checking and validation.
+
+    Setting Superadmin:
+        To set yourself as superadmin in the console, use: plysetgroup "STEAMID" superadmin
+        The system has three default user groups with inheritance levels: user (level 1), admin (level 2), and superadmin (level 3).
+        Superadmin automatically has all privileges and cannot be restricted by any permission checks.
+]]
+lia.admin = lia.admin or {}
 lia.admin.groups = lia.admin.groups or {}
 lia.admin.privileges = lia.admin.privileges or {}
 lia.admin.privilegeCategories = lia.admin.privilegeCategories or {}
@@ -270,6 +288,47 @@ local function camiBootstrapFromExisting()
     rebuildPrivileges()
 end
 
+--[[
+    Purpose:
+        Applies kick or ban punishments to a player based on the provided parameters.
+
+    When Called:
+        Called when an automated system or admin action needs to punish a player with a kick or ban.
+
+    Parameters:
+        client (Player)
+            The player to punish.
+        infraction (string)
+            Description of the infraction that caused the punishment.
+        kick (boolean)
+            Whether to kick the player.
+        ban (boolean)
+            Whether to ban the player.
+        time (number)
+            Ban duration in minutes (only used if ban is true).
+        kickKey (string)
+            Localization key for kick message (defaults to "kickedForInfraction").
+        banKey (string)
+            Localization key for ban message (defaults to "bannedForInfraction").
+
+    Returns:
+        nil
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        -- Kick a player for spamming
+        lia.admin.applyPunishment(player, "Spamming in chat", true, false, nil, nil, nil)
+
+        -- Ban a player for griefing for 24 hours
+        lia.admin.applyPunishment(player, "Griefing", false, true, 1440, nil, nil)
+
+        -- Both kick and ban with custom messages
+        lia.admin.applyPunishment(player, "Hacking", true, true, 10080, "kickedForHacking", "bannedForHacking")
+        ```
+]]
 function lia.admin.applyPunishment(client, infraction, kick, ban, time, kickKey, banKey)
     local bantime = time or 0
     kickKey = kickKey or "kickedForInfraction"
@@ -1015,7 +1074,7 @@ else
         spectate = function(id) RunConsoleCommand("say", "/plyspectate " .. string.format("'%s'", tostring(id))) end
     }
 
-        function lia.admin.execCommand(cmd, victim, dur, reason)
+    function lia.admin.execCommand(cmd, victim, dur, reason)
         local hookResult, callback = hook.Run("RunAdminSystemCommand", cmd, victim, dur, reason)
         if hookResult == true then
             callback()

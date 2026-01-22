@@ -50,7 +50,8 @@
 .md-typeset details.realm-client,
 .md-typeset details.realm-shared,
 .md-typeset details.realm-server {
-    border: 1px solid rgba(0, 150, 136, 0.55);
+    border-color: rgb(70, 169, 255);
+    border: 1px solid;
     border-radius: 0.35rem;
     overflow: hidden;
 }
@@ -58,33 +59,55 @@
 .md-typeset details.realm-client > summary,
 .md-typeset details.realm-shared > summary,
 .md-typeset details.realm-server > summary {
-    background: linear-gradient(to right, rgba(0, 150, 136, 0.12), rgba(179, 136, 255, 0.12));
-}
-
-.md-typeset details.realm-server > summary::before,
-.md-typeset details.realm-shared > summary::before,
-.md-typeset details.realm-client > summary::before {
-    content: "";
-    display: inline-block;
-    width: 0.85em;
-    height: 0.85em;
-    margin-right: 0.55em;
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    vertical-align: -0.08em;
+    background-color: rgba(70, 169, 255, 0.1);
 }
 
 .md-typeset details.realm-server > summary::before {
+    content: "";
+    -webkit-mask-image: none;
+    mask-image: none;
     background-image: url("../assets/server.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    background-color: rgba(255, 255, 255, 0);
+    display: inline-block;
+    width: calc(0.75em + 0.375rem);
+    height: calc(0.75em + 0.375rem);
+    margin-right: 0.55em;
+    vertical-align: middle;
 }
 
 .md-typeset details.realm-shared > summary::before {
+    content: "";
+    -webkit-mask-image: none;
+    mask-image: none;
     background-image: url("../assets/shared.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    background-color: rgba(255, 255, 255, 0);
+    display: inline-block;
+    width: calc(0.75em + 0.375rem);
+    height: calc(0.75em + 0.375rem);
+    margin-right: 0.55em;
+    vertical-align: middle;
 }
 
 .md-typeset details.realm-client > summary::before {
+    content: "";
+    -webkit-mask-image: none;
+    mask-image: none;
     background-image: url("../assets/client.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    background-color: rgba(255, 255, 255, 0);
+    display: inline-block;
+    width: calc(0.75em + 0.375rem);
+    height: calc(0.75em + 0.375rem);
+    margin-right: 0.55em;
+    vertical-align: middle;
 }
 
 .realm-client > h3,

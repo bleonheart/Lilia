@@ -1,4 +1,4 @@
-﻿lia.webimage = lia.webimage or {}
+lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
 local baseDir = "lilia/webimages/"
 local cache = {}
@@ -140,11 +140,43 @@ function lia.webimage.download(n, u, cb, flags)
     end)
 end
 
+function lia.webimage.resolve(nameOrUrlOrPath)
+    if not isstring(nameOrUrlOrPath) then return nil end
+
+    local input = nameOrUrlOrPath
+
+    if input:find("^https?://") then
+        local name = urlMap[input]
+        if name then return name end
+        return nil
+    end
+
+    if input:find("^lilia/webimages/") then
+        local webPath = input:gsub("^lilia/webimages/", "")
+        if lia.webimage.stored[webPath] then return webPath end
+        return nil
+    end
+
+    if input:find("^webimages/") then
+        local webPath = input:gsub("^webimages/", "")
+        if lia.webimage.stored[webPath] then return webPath end
+        return nil
+    end
+
+    if lia.webimage.stored[input] then return input end
+
+    return nil
+end
+
 function lia.webimage.register(n, u, cb, flags)
     lia.webimage.stored[n] = {
         url = u,
         flags = flags
     }
+
+    if isstring(u) and u:find("^https?://") then
+        urlMap[u] = n
+    end
 
     lia.webimage.download(n, u, cb, flags)
 end
@@ -164,6 +196,18 @@ local origMaterial = Material
 function Material(p, ...)
     local flags = select(1, ...)
     if isstring(p) then
+        local resolvedName = lia.webimage.resolve(p)
+
+        if resolvedName then
+            local mat = lia.webimage.get(resolvedName, flags)
+            if mat then return mat end
+            local stored = lia.webimage.stored[resolvedName]
+            if stored and stored.url then
+                lia.webimage.register(resolvedName, stored.url, nil, flags)
+                return origMaterial("data/" .. baseDir .. resolvedName, flags)
+            end
+        end
+
         if p:find("^https?://") then
             local n = urlMap[p]
             if not n then
@@ -195,6 +239,29 @@ local dimage = vgui.GetControlTable("DImage")
 local origSetImage = dimage.SetImage
 function dimage:SetImage(src, backup)
     if isstring(src) then
+        local resolvedName = lia.webimage.resolve(src)
+
+        if resolvedName then
+            local m = lia.webimage.get(resolvedName)
+            if m and not m:IsError() then
+                origSetImage(self, "data/" .. baseDir .. resolvedName, backup)
+                return
+            else
+                local stored = lia.webimage.stored[resolvedName]
+                if stored and stored.url then
+                    local savePath = baseDir .. resolvedName
+                    lia.webimage.register(resolvedName, stored.url, function(mat)
+                        if mat and not mat:IsError() then
+                            origSetImage(self, "data/" .. savePath, backup)
+                        elseif backup then
+                            origSetImage(self, backup)
+                        end
+                    end, stored.flags)
+                    return
+                end
+            end
+        end
+
         if src:find("^https?://") then
             local n = urlMap[src]
             if not n then
