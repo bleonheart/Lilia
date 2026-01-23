@@ -607,7 +607,7 @@ function lia.loader.includeEntities(path)
         default = default or {}
         for _, v in ipairs(folders) do
             local path2 = path .. "/" .. folder .. "/" .. v .. "/"
-            if file.IsDir(path2, "LUA") and v ~= "effects" and not file.Exists(path2 .. "init.lua", "LUA") and not file.Exists(path2 .. "shared.lua", "LUA") and not file.Exists(path2 .. "cl_init.lua", "LUA") then
+            if not file.Exists(path2 .. "init.lua", "LUA") and not file.Exists(path2 .. "shared.lua", "LUA") and not file.Exists(path2 .. "cl_init.lua", "LUA") then
                 lia.error("Warning: No init.lua, shared.lua, or cl_init.lua found in entity folder: " .. path2)
                 continue
             end
