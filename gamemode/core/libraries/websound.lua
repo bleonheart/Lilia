@@ -1,4 +1,4 @@
-lia.websound = lia.websound or {}
+﻿lia.websound = lia.websound or {}
 lia.websound.stored = lia.websound.stored or {}
 local baseDir = "lilia/websounds/"
 local cache = {}
@@ -163,9 +163,7 @@ end
 
 function lia.websound.resolve(nameOrUrlOrPath)
     if not isstring(nameOrUrlOrPath) then return nil end
-
     local input = normalizeName(nameOrUrlOrPath)
-
     if input:find("^https?://") then
         local name = urlMap[input]
         if name then return name end
@@ -185,16 +183,13 @@ function lia.websound.resolve(nameOrUrlOrPath)
     end
 
     if lia.websound.stored[input] then return input end
-
     return nil
 end
 
 function lia.websound.register(name, url, cb)
     name = normalizeName(name)
     lia.websound.stored[name] = url
-    if isstring(url) and url:find("^https?://") then
-        urlMap[url] = name
-    end
+    if isstring(url) and url:find("^https?://") then urlMap[url] = name end
     return lia.websound.download(name, url, cb)
 end
 
@@ -216,7 +211,6 @@ function sound.PlayFile(path, mode, cb)
     if isstring(path) then
         path = normalizeName(path)
         local resolvedName = lia.websound.resolve(path)
-
         if resolvedName then
             local localPath = lia.websound.get(resolvedName)
             if localPath then
@@ -313,7 +307,6 @@ local origPlayURL = sound.PlayURL
 function sound.PlayURL(url, mode, cb)
     if isstring(url) then
         local resolvedName = lia.websound.resolve(url)
-
         if resolvedName then
             local localPath = lia.websound.get(resolvedName)
             if localPath then
@@ -377,7 +370,6 @@ function surface.PlaySound(soundPath, _, cb)
     if isstring(soundPath) then
         soundPath = normalizeName(soundPath)
         local resolvedName = lia.websound.resolve(soundPath)
-
         if resolvedName then
             local localPath = lia.websound.get(resolvedName)
             if localPath then

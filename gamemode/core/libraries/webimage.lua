@@ -1,4 +1,4 @@
-lia.webimage = lia.webimage or {}
+﻿lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
 local baseDir = "lilia/webimages/"
 local cache = {}
@@ -142,9 +142,7 @@ end
 
 function lia.webimage.resolve(nameOrUrlOrPath)
     if not isstring(nameOrUrlOrPath) then return nil end
-
     local input = nameOrUrlOrPath
-
     if input:find("^https?://") then
         local name = urlMap[input]
         if name then return name end
@@ -164,7 +162,6 @@ function lia.webimage.resolve(nameOrUrlOrPath)
     end
 
     if lia.webimage.stored[input] then return input end
-
     return nil
 end
 
@@ -174,10 +171,7 @@ function lia.webimage.register(n, u, cb, flags)
         flags = flags
     }
 
-    if isstring(u) and u:find("^https?://") then
-        urlMap[u] = n
-    end
-
+    if isstring(u) and u:find("^https?://") then urlMap[u] = n end
     lia.webimage.download(n, u, cb, flags)
 end
 
@@ -197,7 +191,6 @@ function Material(p, ...)
     local flags = select(1, ...)
     if isstring(p) then
         local resolvedName = lia.webimage.resolve(p)
-
         if resolvedName then
             local mat = lia.webimage.get(resolvedName, flags)
             if mat then return mat end
@@ -240,7 +233,6 @@ local origSetImage = dimage.SetImage
 function dimage:SetImage(src, backup)
     if isstring(src) then
         local resolvedName = lia.webimage.resolve(src)
-
         if resolvedName then
             local m = lia.webimage.get(resolvedName)
             if m and not m:IsError() then

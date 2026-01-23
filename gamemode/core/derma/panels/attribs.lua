@@ -1,4 +1,4 @@
-local mathApproach = math.Approach
+﻿local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
     self:SetTall(20)

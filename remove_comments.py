@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import subprocess
+import argparse
 
 def remove_comments(content):
     """Remove Lua single-line, inline, and long-block comments."""
@@ -214,10 +215,16 @@ def process_file(filepath):
         return False
 
 def main():
-    if len(sys.argv) > 1:
-        targets = [sys.argv[1]]
+    parser = argparse.ArgumentParser(description='Remove comments from Lua files')
+    parser.add_argument('target', nargs='?', help='Target file or directory to process')
+    parser.add_argument('--no-glualint', action='store_true', help='Skip running glualint pretty-print')
+    args = parser.parse_args()
+    
+    no_glualint = args.no_glualint
+    
+    if args.target:
+        targets = [args.target]
     else:
-        # Default targets when no arguments provided
         targets = [
             r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode",
             r"D:\GMOD\Server\garrysmod\gamemodes\metrorp",
@@ -228,11 +235,9 @@ def main():
     for target in targets:
         print(f"Processing: {target}")
         if os.path.isfile(target) and target.endswith('.lua'):
-            # Single file
             if process_file(target):
                 total_count += 1
         else:
-            # Directory - first remove comments from all files
             count = 0
             for root, dirs, files in os.walk(target):
                 dirs[:] = [d for d in dirs if d.lower() != "docs"]
@@ -243,7 +248,6 @@ def main():
             print(f"Processed {count} files in {target}")
             total_count += count
 
-            # Then run glualint pretty-print if available
             if not no_glualint:
                 run_glualint_pretty_print(target)
 

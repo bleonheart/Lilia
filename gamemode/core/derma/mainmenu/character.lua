@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
@@ -118,7 +118,6 @@ function PANEL:createWelcomeScreen()
     local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
     local welcomeLabel = self.welcomeScreen:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.48")
-
     welcomeLabel:SetTextColor(Color(255, 255, 255))
     welcomeLabel:SizeToContents()
     welcomeLabel:SetContentAlignment(5)
@@ -179,6 +178,7 @@ function PANEL:createWelcomeScreen()
         else
             welcomeLabel:SetText("Welcome back, " .. currentSteamName .. "!")
         end
+
         welcomeLabel:SizeToContents()
         positionLabels()
     end
