@@ -62,6 +62,12 @@
             <input type="number" id="armor-amount" placeholder="0" min="0">
             <small>Amount of armor restored (leave empty for no armor restoration)</small>
         </div>
+
+        <div class="input-group">
+            <label for="stamina-amount">Stamina Amount:</label>
+            <input type="number" id="stamina-amount" placeholder="0" min="0">
+            <small>Amount of stamina restored (leave empty for no stamina restoration)</small>
+        </div>
     </div>
 
     <button onclick="generateAidItem()" class="generate-btn">Generate Aid Item Code</button>
@@ -295,9 +301,11 @@ function generateAidItem() {
     const height = document.getElementById('item-height').value || '1';
     const healthAmount = document.getElementById('health-amount').value.trim();
     const armorAmount = document.getElementById('armor-amount').value.trim();
+    const staminaAmount = document.getElementById('stamina-amount').value.trim();
 
     const healthValue = healthAmount || '0';
     const armorValue = armorAmount || '0';
+    const staminaValue = staminaAmount || '0';
 
     const properties = [
         `    name = ${JSON.stringify(name)}`,
@@ -307,7 +315,8 @@ function generateAidItem() {
         `    width = ${width}`,
         `    height = ${height}`,
         `    health = ${healthValue}`,
-        `    armor = ${armorValue}`
+        `    armor = ${armorValue}`,
+        `    stamina = ${staminaValue}`
     ];
 
     const lines = [
