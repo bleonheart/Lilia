@@ -66,6 +66,5 @@ end
 
 function MODULE:SetupMove(client, cMoveData)
     if not lia.config.get("StaminaSlowdown", true) then return end
-    client:getLocalVar("brth", false)
     if client:getLocalVar("brth", false) then cMoveData:SetMaxClientSpeed(client:GetWalkSpeed()) end
 end
