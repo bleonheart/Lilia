@@ -1,4 +1,17 @@
-﻿lia.webimage = lia.webimage or {}
+﻿--[[
+    Folder: Libraries
+    File: webimage.md
+]]
+--[[
+    Web Image Library
+
+    Web-based image downloading, caching, and management system for the Lilia framework.
+]]
+--[[
+    Overview:
+        The web image library provides comprehensive functionality for downloading, caching, and managing web-based images in the Lilia framework. It handles automatic downloading of images from URLs, local caching to improve performance, and seamless integration with Garry's Mod's material system. The library operates on both server and client sides, with intelligent caching mechanisms that prevent redundant downloads and ensure images are available offline after initial download. It includes URL validation, file format detection, and automatic directory management for organized storage. The library also provides hooks for download events and statistics tracking. Images are stored in the data/lilia/webimages/ directory and can be accessed through various path formats for maximum compatibility with existing code.
+]]
+lia.webimage = lia.webimage or {}
 lia.webimage.stored = lia.webimage.stored or {}
 local baseDir = "lilia/webimages/"
 local cache = {}
@@ -56,6 +69,47 @@ local function validateURL(url)
     return true
 end
 
+--[[
+    Purpose:
+        Ensure a remote image is downloaded, validated, and made available as a `Material`.
+
+    When Called:
+        During UI setup when an image asset must be cached before drawing panels.
+
+    Parameters:
+        n (string)
+            Logical storage name for the downloaded image.
+        u (string|nil)
+            Optional override URL; uses registered `stored` entry otherwise.
+        cb (function|nil)
+            Callback receiving `(material, fromCache, errStr)`.
+        flags (string|nil)
+            Optional material flags for creation (e.g., `"noclamp smooth"`).
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Preload multiple HUD icons, then draw them when ready.
+            local function preloadIcons(list)
+                if #list == 0 then return end
+                local entry = table.remove(list, 1)
+                lia.webimage.download(entry.name, entry.url, function(mat)
+                    if mat then
+                        hook.Run("WebImageReady", entry.name, mat)
+                    end
+                    preloadIcons(list)
+                end, entry.flags)
+            end
+
+            hook.Add("InitPostEntity", "PreloadHUDImages", function()
+                preloadIcons({
+                    {name = "hud/armor_icon.png", url = "https://assets.example.com/images/armor_icon.png", flags = "noclamp smooth"},
+                    {name = "hud/health_icon.png", url = "https://assets.example.com/images/health_icon.png", flags = "noclamp smooth"}
+                })
+            end)
+        ```
+]]
 function lia.webimage.download(n, u, cb, flags)
     if not isstring(n) then return end
     local url = u or lia.webimage.stored[n] and lia.webimage.stored[n].url
@@ -140,41 +194,88 @@ function lia.webimage.download(n, u, cb, flags)
     end)
 end
 
-function lia.webimage.resolve(nameOrUrlOrPath)
-    if not isstring(nameOrUrlOrPath) then return nil end
-    local input = nameOrUrlOrPath
-    if input:find("^https?://") then
-        local name = urlMap[input]
-        if name then return name end
-        return nil
-    end
+--[[
+    Purpose:
+        Cache metadata for a URL and optionally download it immediately.
 
-    if input:find("^lilia/webimages/") then
-        local webPath = input:gsub("^lilia/webimages/", "")
-        if lia.webimage.stored[webPath] then return webPath end
-        return nil
-    end
+    When Called:
+        At startup when the gamemode wants to pre-register UI imagery.
 
-    if input:find("^webimages/") then
-        local webPath = input:gsub("^webimages/", "")
-        if lia.webimage.stored[webPath] then return webPath end
-        return nil
-    end
+    Parameters:
+        n (string)
+            Internal key used to store and retrieve the image.
+        u (string)
+            The HTTP/HTTPS source URL.
+        cb (function|nil)
+            Optional callback forwarded to `download`.
+        flags (string|nil)
+            Material creation flags stored for future lookups.
+    Realm:
+        Client
 
-    if lia.webimage.stored[input] then return input end
-    return nil
-end
+    Example Usage:
+        ```lua
+            hook.Add("GamemodeLoaded", "RegisterIconLibrary", function()
+                lia.webimage.register("icons/police.png", "https://assets.example.com/ui/icons/police.png", function(mat)
+                    if mat then lia.log.add(nil, "webimageCached", "icons/police.png") end
+                end, "noclamp smooth")
 
+                lia.webimage.register("icons/medic.png", "https://assets.example.com/ui/icons/medic.png", function(mat)
+                    if not mat then return end
+                    hook.Add("HUDPaint", "DrawMedicBadge", function()
+                        surface.SetMaterial(mat)
+                        surface.DrawTexturedRect(24, ScrH() - 96, 64, 64)
+                    end)
+                end)
+            end)
+        ```
+]]
 function lia.webimage.register(n, u, cb, flags)
     lia.webimage.stored[n] = {
         url = u,
         flags = flags
     }
 
-    if isstring(u) and u:find("^https?://") then urlMap[u] = n end
     lia.webimage.download(n, u, cb, flags)
 end
 
+--[[
+    Purpose:
+        Retrieve a previously cached `Material` for immediate drawing.
+
+    When Called:
+        Within paint hooks or derma code that needs a cached texture without triggering a download.
+
+    Parameters:
+        n (string)
+            The registered name or derived key.
+        flags (string|nil)
+            Optional material flags used to rebuild the material when missing.
+
+    Returns:
+        Material|nil
+            The cached material or `nil` if it isn't downloaded yet.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Render cached image if available, otherwise queue download and retry.
+            local function drawIcon(name, x, y)
+                local mat = lia.webimage.get(name, "noclamp smooth")
+                if mat then
+                    surface.SetMaterial(mat)
+                    surface.DrawTexturedRect(x, y, 64, 64)
+                else
+                    lia.webimage.download(name)
+                    timer.Simple(0.2, function() drawIcon(name, x, y) end)
+                end
+            end
+
+            hook.Add("HUDPaint", "DrawPoliceIcon", function() drawIcon("icons/police.png", 32, 32) end)
+        ```
+]]
 function lia.webimage.get(n, flags)
     local key = urlMap[n] or n
     if cache[key] then return cache[key] end
@@ -190,17 +291,6 @@ local origMaterial = Material
 function Material(p, ...)
     local flags = select(1, ...)
     if isstring(p) then
-        local resolvedName = lia.webimage.resolve(p)
-        if resolvedName then
-            local mat = lia.webimage.get(resolvedName, flags)
-            if mat then return mat end
-            local stored = lia.webimage.stored[resolvedName]
-            if stored and stored.url then
-                lia.webimage.register(resolvedName, stored.url, nil, flags)
-                return origMaterial("data/" .. baseDir .. resolvedName, flags)
-            end
-        end
-
         if p:find("^https?://") then
             local n = urlMap[p]
             if not n then
@@ -232,28 +322,6 @@ local dimage = vgui.GetControlTable("DImage")
 local origSetImage = dimage.SetImage
 function dimage:SetImage(src, backup)
     if isstring(src) then
-        local resolvedName = lia.webimage.resolve(src)
-        if resolvedName then
-            local m = lia.webimage.get(resolvedName)
-            if m and not m:IsError() then
-                origSetImage(self, "data/" .. baseDir .. resolvedName, backup)
-                return
-            else
-                local stored = lia.webimage.stored[resolvedName]
-                if stored and stored.url then
-                    local savePath = baseDir .. resolvedName
-                    lia.webimage.register(resolvedName, stored.url, function(mat)
-                        if mat and not mat:IsError() then
-                            origSetImage(self, "data/" .. savePath, backup)
-                        elseif backup then
-                            origSetImage(self, backup)
-                        end
-                    end, stored.flags)
-                    return
-                end
-            end
-        end
-
         if src:find("^https?://") then
             local n = urlMap[src]
             if not n then
@@ -296,6 +364,32 @@ function dimage:SetImage(src, backup)
     origSetImage(self, src, backup)
 end
 
+--[[
+    Purpose:
+        Expose download statistics to aid diagnostics or admin tooling.
+
+    When Called:
+        When reporting the number of cached images or implementing cache health checks.
+
+    Parameters:
+        None
+
+    Returns:
+        table
+            `{ downloaded = number, stored = number, lastReset = timestamp }`.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            hook.Add("PlayerSay", "PrintWebImageStats", function(ply, text)
+                if text ~= "!imagecache" then return end
+                local stats = lia.webimage.getStats()
+                ply:notifyLocalized("webImageStats", stats.downloaded, stats.stored, os.date("%c", stats.lastReset))
+            end)
+        ```
+]]
 function lia.webimage.getStats()
     local totalStored = 0
     for _ in pairs(lia.webimage.stored) do
@@ -308,6 +402,30 @@ function lia.webimage.getStats()
     }
 end
 
+--[[
+    Purpose:
+        Evict all downloaded web images, resetting the material cache.
+
+    When Called:
+        During configuration reloads or when manual cache management is required.
+
+    Parameters:
+        skipReRegister (boolean)
+            When true, previously registered URLs are not re-downloaded.
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Drop and re-download web images after admins push new branding.
+            hook.Add("OnConfigReload", "RebuildWebImageCache", function()
+                lia.webimage.clearCache(false)
+                for name, data in pairs(lia.webimage.stored) do
+                    lia.webimage.download(name, data.url, nil, data.flags)
+                end
+            end)
+        ```
+]]
 function lia.webimage.clearCache(skipReRegister)
     cache = {}
     urlMap = {}

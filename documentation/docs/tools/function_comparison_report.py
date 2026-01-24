@@ -1024,6 +1024,10 @@ class FunctionComparisonReportGenerator:
                 for match in re.finditer(r'^###+\s+([A-Za-z_][\w\.:]*)\s*$', content, re.MULTILINE):
                     func_name = match.group(1).strip()
                     documented_functions.add(func_name)
+                # Extract function names from HTML summary tags like <summary><a id=...></a>lia.admin.addPermission(...)</summary>
+                for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
+                    func_name = match.group(1).strip()
+                    documented_functions.add(func_name)
             except Exception:
                 continue
 
@@ -1045,6 +1049,18 @@ class FunctionComparisonReportGenerator:
                 for match in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
                     method_name = match.group(1).strip()
                     documented_functions.add(method_name)
+                # Extract method names from HTML summary tags like <summary><a id=...></a>addBoost(...)</summary>
+                # Derive meta table name from file name
+                stem = md_file.stem
+                overrides = {
+                    'tool': 'toolGunMeta',
+                }
+                meta_table = overrides.get(stem, f"{stem}Meta")
+                for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\([^)]*\)</summary>', content):
+                    method_name = match.group(1).strip()
+                    # Qualify with meta table name
+                    qualified_name = f"{meta_table}:{method_name}"
+                    documented_functions.add(qualified_name)
             except Exception:
                 continue
 
@@ -1921,6 +1937,12 @@ class FunctionComparisonReportGenerator:
                                     documented_functions.add(f'lia.{func_name}')
                                 else:
                                     documented_functions.add(func_name)
+                            for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
+                                func_name = match.group(1).strip()
+                                if '.' not in func_name and md_file.stem == 'lia.core':
+                                    documented_functions.add(f'lia.{func_name}')
+                                else:
+                                    documented_functions.add(func_name)
                         except Exception:
                             continue
 
@@ -1934,6 +1956,16 @@ class FunctionComparisonReportGenerator:
                         for match in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
                             method_name = match.group(1).strip()
                             documented_functions.add(method_name)
+                        # Extract method names from HTML summary tags
+                        stem = md_file.stem
+                        overrides = {
+                            'tool': 'toolGunMeta',
+                        }
+                        meta_table = overrides.get(stem, f"{stem}Meta")
+                        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\([^)]*\)</summary>', content):
+                            method_name = match.group(1).strip()
+                            qualified_name = f"{meta_table}:{method_name}"
+                            documented_functions.add(qualified_name)
                     except Exception:
                         continue
         except Exception:
@@ -2193,6 +2225,9 @@ class FunctionComparisonReportGenerator:
                             for match in re.finditer(r'^###+\s+([A-Za-z_][\w\.:]*)\s*$', content, re.MULTILINE):
                                 func_name = match.group(1).strip()
                                 documented_functions.add(func_name)
+                            for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
+                                func_name = match.group(1).strip()
+                                documented_functions.add(func_name)
                         except Exception:
                             continue
 
@@ -2206,6 +2241,16 @@ class FunctionComparisonReportGenerator:
                         for match in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
                             method_name = match.group(1).strip()
                             documented_functions.add(method_name)
+                        # Extract method names from HTML summary tags
+                        stem = md_file.stem
+                        overrides = {
+                            'tool': 'toolGunMeta',
+                        }
+                        meta_table = overrides.get(stem, f"{stem}Meta")
+                        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\([^)]*\)</summary>', content):
+                            method_name = match.group(1).strip()
+                            qualified_name = f"{meta_table}:{method_name}"
+                            documented_functions.add(qualified_name)
                     except Exception:
                         continue
 

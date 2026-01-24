@@ -719,7 +719,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
 
         output_path = Path(output_dir) / output_filename
 
-    if output_path.exists() and output_path.stat().st_size > 0 and not force:
+    if output_path.exists() and output_path.stat().st_size > 0 and not force and not append:
         print(f"  {output_path.name} already exists, skipping")
         return
 
@@ -843,17 +843,18 @@ def parse_definition_property_blocks(file_path: Path, entity_prefixes: Tuple[str
     return entries
 
 
-def generate_markdown_for_definition_entries(title: str, subtitle: str, overview_section: Optional[str], entries: List[Dict[str, object]]) -> str:
+def generate_markdown_for_definition_entries(title: str, subtitle: str, overview_section: Optional[str], entries: List[Dict[str, object]], append: bool = False) -> str:
     md_parts: List[str] = []
-    md_parts.append(f'# {title}\n\n')
-    if subtitle:
-        md_parts.append(subtitle + '\n\n')
-    md_parts.append('---\n\n')
-
-    if overview_section:
-        md_parts.append('Overview\n\n')
-        md_parts.append(parse_overview_section(overview_section) + '\n\n')
+    if not append:
+        md_parts.append(f'# {title}\n\n')
+        if subtitle:
+            md_parts.append(subtitle + '\n\n')
         md_parts.append('---\n\n')
+
+        if overview_section:
+            md_parts.append('Overview\n\n')
+            md_parts.append(parse_overview_section(overview_section) + '\n\n')
+            md_parts.append('---\n\n')
 
     for entry in entries:
         name = entry['name']
@@ -920,6 +921,7 @@ def generate_documentation_for_panels(file_path: Path, output_path: Path) -> Non
     if not text:
         return
 
+    custom_folder, custom_filename, append = parse_folder_directives(text)
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
 
     lines = text.splitlines()
@@ -958,9 +960,10 @@ def generate_documentation_for_panels(file_path: Path, output_path: Path) -> Non
             if len(parts) > 1 and parts[1].strip():
                 subtitle = parts[1].strip()
 
-    md = generate_markdown_for_definition_entries(title, subtitle, overview_section, entries)
+    md = generate_markdown_for_definition_entries(title, subtitle, overview_section, entries, append)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'w', encoding='utf-8') as f:
+    file_mode = 'a' if append else 'w'
+    with open(output_path, file_mode, encoding='utf-8') as f:
         f.write(md)
     print(f"  Generated {output_path.name}")
 
@@ -1046,7 +1049,7 @@ def generate_documentation_for_definitions_file(file_path: Path, output_dir: Pat
                     subtitle = parts[1].strip()
 
     final_overview = overview_section
-    md = generate_markdown_for_definition_entries(title, subtitle, final_overview, entries)
+    md = generate_markdown_for_definition_entries(title, subtitle, final_overview, entries, append)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     file_mode = 'a' if append else 'w'
     with open(output_path, file_mode, encoding='utf-8') as f:

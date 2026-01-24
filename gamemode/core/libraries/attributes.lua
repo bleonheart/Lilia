@@ -1,44 +1,36 @@
-﻿lia.attribs = lia.attribs or {}
+﻿--[[
+    Folder: Libraries
+    File: attribs.md
+]]
+--[[
+    Attributes Library
+
+    Character attribute management system for the Lilia framework.
+]]
+--[[
+    Overview:
+        The attributes library provides functionality for managing character attributes in the Lilia framework. It handles loading attribute definitions from files, registering attributes in the system, and setting up attributes for characters during spawn. The library operates on both server and client sides, with the server managing attribute setup during character spawning and the client handling attribute-related UI elements. It includes automatic attribute loading from directories, localization support for attribute names and descriptions, and hooks for custom attribute behavior.
+]]
+lia.attribs = lia.attribs or {}
 lia.attribs.list = lia.attribs.list or {}
 --[[
     Purpose:
-        Applies kick or ban punishments to a player based on the provided parameters.
+        Discover and include attribute definitions from a directory.
 
     When Called:
-        Called when an automated system or admin action needs to punish a player with a kick or ban.
+        During schema/gamemode startup to load all attribute files.
 
     Parameters:
-        client (Player)
-            The player to punish.
-        infraction (string)
-            Description of the infraction that caused the punishment.
-        kick (boolean)
-            Whether to kick the player.
-        ban (boolean)
-            Whether to ban the player.
-        time (number)
-            Ban duration in minutes (only used if ban is true).
-        kickKey (string)
-            Localization key for kick message (defaults to "kickedForInfraction").
-        banKey (string)
-            Localization key for ban message (defaults to "bannedForInfraction").
-
-    Returns:
-        nil
-
+        directory (string)
+            Path containing attribute Lua files.
     Realm:
-        Client
+        Shared
 
     Example Usage:
         ```lua
-        -- Kick a player for spamming
-        lia.admin.applyPunishment(player, "Spamming in chat", true, false, nil, nil, nil)
-
-        -- Ban a player for griefing for 24 hours
-        lia.admin.applyPunishment(player, "Griefing", false, true, 1440, nil, nil)
-
-        -- Both kick and ban with custom messages
-        lia.admin.applyPunishment(player, "Hacking", true, true, 10080, "kickedForHacking", "bannedForHacking")
+            -- Load default and custom attributes.
+            lia.attribs.loadFromDir(lia.plugin.getDir() .. "/attribs")
+            lia.attribs.loadFromDir("schema/attribs")
         ```
 ]]
 function lia.attribs.loadFromDir(directory)
@@ -53,43 +45,33 @@ end
 
 --[[
     Purpose:
-        Applies kick or ban punishments to a player based on the provided parameters.
+        Register or update an attribute definition in the global list.
 
     When Called:
-        Called when an automated system or admin action needs to punish a player with a kick or ban.
+        After loading an attribute file or when hot-reloading attributes.
 
     Parameters:
-        client (Player)
-            The player to punish.
-        infraction (string)
-            Description of the infraction that caused the punishment.
-        kick (boolean)
-            Whether to kick the player.
-        ban (boolean)
-            Whether to ban the player.
-        time (number)
-            Ban duration in minutes (only used if ban is true).
-        kickKey (string)
-            Localization key for kick message (defaults to "kickedForInfraction").
-        banKey (string)
-            Localization key for ban message (defaults to "bannedForInfraction").
+        uniqueID (string)
+            Attribute key.
+        data (table)
+            Fields like name, desc, OnSetup, setup, etc.
 
     Returns:
-        nil
+        table
+            The stored attribute table.
 
     Realm:
-        Server
+        Shared
 
     Example Usage:
         ```lua
-        -- Kick a player for spamming
-        lia.admin.applyPunishment(player, "Spamming in chat", true, false, nil, nil, nil)
-
-        -- Ban a player for griefing for 24 hours
-        lia.admin.applyPunishment(player, "Griefing", false, true, 1440, nil, nil)
-
-        -- Both kick and ban with custom messages
-        lia.admin.applyPunishment(player, "Hacking", true, true, 10080, "kickedForHacking", "bannedForHacking")
+            lia.attribs.register("strength", {
+                name = "Strength",
+                desc = "Improves melee damage and carry weight.",
+                OnSetup = function(client, value)
+                    client:SetJumpPower(160 + value * 0.5)
+                end
+            })
         ```
 ]]
 function lia.attribs.register(uniqueID, data)
@@ -110,43 +92,22 @@ end
 if SERVER then
     --[[
     Purpose:
-        Applies kick or ban punishments to a player based on the provided parameters.
+        Run attribute setup logic for a character on the server.
 
     When Called:
-        Called when an automated system or admin action needs to punish a player with a kick or ban.
+        On player spawn/character load to reapply attribute effects.
 
     Parameters:
         client (Player)
-            The player to punish.
-        infraction (string)
-            Description of the infraction that caused the punishment.
-        kick (boolean)
-            Whether to kick the player.
-        ban (boolean)
-            Whether to ban the player.
-        time (number)
-            Ban duration in minutes (only used if ban is true).
-        kickKey (string)
-            Localization key for kick message (defaults to "kickedForInfraction").
-        banKey (string)
-            Localization key for ban message (defaults to "bannedForInfraction").
-
-    Returns:
-        nil
-
+            Player whose character attributes are being applied.
     Realm:
-        Shared
+        Server
 
     Example Usage:
         ```lua
-        -- Kick a player for spamming
-        lia.admin.applyPunishment(player, "Spamming in chat", true, false, nil, nil, nil)
-
-        -- Ban a player for griefing for 24 hours
-        lia.admin.applyPunishment(player, "Griefing", false, true, 1440, nil, nil)
-
-        -- Both kick and ban with custom messages
-        lia.admin.applyPunishment(player, "Hacking", true, true, 10080, "kickedForHacking", "bannedForHacking")
+            hook.Add("PlayerLoadedChar", "ApplyAttributeBonuses", function(ply)
+                lia.attribs.setup(ply)
+            end)
         ```
 ]]
     function lia.attribs.setup(client)

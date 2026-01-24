@@ -79,7 +79,7 @@ function GM:CharPreSave(character)
     end
 end
 
-local function UpdateVoiceHearing()
+local function CacheVoiceHearing()
     if not lia.config.get("IsVoiceEnabled", true) then return end
     local speakerGaggedCache = {}
     for _, speaker in player.Iterator() do
@@ -103,7 +103,7 @@ local function UpdateVoiceHearing()
             local baseRange = voiceType == VOICE_WHISPERING and lia.config.get("WhisperRange", 70) or voiceType == VOICE_TALKING and lia.config.get("TalkRange", 280) or voiceType == VOICE_YELLING and lia.config.get("YellRange", 840) or lia.config.get("TalkRange", 280)
             local distance = listener:GetPos():Distance(speaker:GetPos())
             listener.liaVoiceHear[speaker] = distance <= baseRange
-            local hookResult = hook.Run("UpdateVoiceHearing", listener, speaker, listener.liaVoiceHear[speaker])
+            local hookResult = hook.Run("OverrideVoiceHearingStatus", listener, speaker, listener.liaVoiceHear[speaker])
             if hookResult ~= nil then listener.liaVoiceHear[speaker] = hookResult end
         end
     end
@@ -154,7 +154,7 @@ function GM:PlayerLoadedChar(client, character)
     character:setLoginTime(os.time())
     hook.Run("PlayerLoadout", client)
     if not timer.Exists("liaSalaryGlobal") then hook.Run("CreateSalaryTimers") end
-    if not timer.Exists("liaVoiceUpdate") then timer.Create("liaVoiceUpdate", 0.5, 0, function() UpdateVoiceHearing() end) end
+    if not timer.Exists("liaVoiceUpdate") then timer.Create("liaVoiceUpdate", 0.5, 0, function() CacheVoiceHearing() end) end
     local ammoTable = character:getData("ammo")
     if character:getFaction() == FACTION_STAFF then
         local storedDiscord = client:getLiliaData("staffDiscord")
@@ -1112,7 +1112,7 @@ end
 
 function GM:OnVoiceTypeChanged(client)
     if not IsValid(client) or not client:getChar() then return end
-    UpdateVoiceHearing()
+    CacheVoiceHearing()
 end
 
 function GM:CreateSalaryTimers()

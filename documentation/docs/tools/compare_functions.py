@@ -358,6 +358,33 @@ class DocumentationParser:
                     parameters=params
                 )
 
+        # Also extract function names from HTML summary tags like <summary><a id=...></a>lia.admin.addPermission(...)</summary>
+        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
+            func_name = match.group(1).strip()
+            # Find the line number for this match
+            line_num = content[:match.start()].count('\n') + 1
+            # Extract parameters from the match
+            param_match = re.search(r'\(([^)]*)\)', match.group(0))
+            params = []
+            if param_match:
+                params_str = param_match.group(1)
+                params = [p.strip() for p in params_str.split(',') if p.strip()]
+            
+            # If function name already includes dots (fully qualified), use it as-is
+            if '.' in func_name:
+                qualified_name = func_name
+            else:
+                # Otherwise qualify with library name
+                qualified_name = f"{library_name}.{func_name}"
+            
+            # Only add if not already found (markdown headers take precedence)
+            if qualified_name not in functions:
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
+
         return functions
 
     def _extract_parameters_from_docs(self, lines: List[str], start_line: int) -> List[str]:
@@ -442,6 +469,26 @@ class DocumentationParser:
                         line_number=line_num,
                         parameters=params
                     )
+
+        # Also extract method names from HTML summary tags like <summary><a id=...></a>addBoost(...)</summary>
+        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\(([^)]*)\)</summary>', content):
+            method_name = match.group(1).strip()
+            # Find the line number for this match
+            line_num = content[:match.start()].count('\n') + 1
+            # Extract parameters from the match
+            params_str = match.group(2)
+            params = [p.strip() for p in params_str.split(',') if p.strip()] if params_str.strip() else []
+            
+            # Qualify with meta table name
+            qualified_name = f"{meta_table}:{method_name}"
+            
+            # Only add if not already found (markdown headers and inline code take precedence)
+            if qualified_name not in functions:
+                functions[qualified_name] = FunctionInfo(
+                    name=qualified_name,
+                    line_number=line_num,
+                    parameters=params
+                )
 
         return functions
 

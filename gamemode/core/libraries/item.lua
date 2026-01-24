@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: item.md
 ]]
@@ -333,10 +333,6 @@ end
             The base item ID to inherit from.
         isBaseItem (boolean, optional)
             Whether this is a base item definition.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -435,10 +431,6 @@ end
             The name of the rarity tier (e.g., "Common", "Rare", "Legendary").
         color (Color)
             The color associated with this rarity tier.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -556,6 +548,39 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     return targetTable[itemType]
 end
 
+--[[
+    Purpose:
+        Queues an item for deferred registration and returns a placeholder that can access the item once registered.
+
+    When Called:
+        Called during item system initialization to register items that will be created later, such as auto-generated weapons or ammunition items.
+
+    Parameters:
+        id (string)
+            The unique identifier for the item to register.
+        base (string, optional)
+            The base item ID to inherit from.
+        properties (table, optional)
+            A table of properties to apply to the item when it is registered.
+
+    Returns:
+        table
+            A placeholder object that can access the actual item properties once registration is complete.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            -- Queue a weapon item for registration
+            local weaponPlaceholder = lia.item.registerItem("weapon_pistol", "base_weapons", {
+                name = "Custom Pistol",
+                width = 2,
+                height = 1
+            })
+            -- The actual item will be registered when InitializedModules hook runs
+        ```
+]]
 function lia.item.registerItem(id, base, properties)
     assert(isstring(id), L("itemUniqueIDString"))
     assert(istable(properties) or properties == nil, "properties must be a table or nil")
@@ -595,10 +620,6 @@ end
             The unique ID of the item to override.
         overrides (table)
             A table of properties to override on the item.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -631,10 +652,6 @@ end
     Parameters:
         directory (string)
             The directory path containing the item files to load.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -730,10 +747,6 @@ end
             The width of the inventory in grid units.
         h (number)
             The height of the inventory in grid units.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -775,10 +788,6 @@ end
             The type of inventory to create.
         callback (function, optional)
             Function called when the inventory is created and ready.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -926,10 +935,6 @@ lia.item.holdTypeSizeMapping = {
             The weapon class name to override.
         data (table)
             The override data containing weapon properties.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -958,10 +963,6 @@ end
     Parameters:
         className (string)
             The weapon class name to blacklist.
-
-    Returns:
-        nil
-
     Realm:
         Shared
 
@@ -1120,10 +1121,6 @@ if SERVER then
     Parameters:
         id (number)
             The unique ID of the item to delete.
-
-    Returns:
-        nil
-
     Realm:
         Server
 
@@ -1151,10 +1148,6 @@ if SERVER then
     Parameters:
         itemIndex (number|table)
             Single item ID or array of item IDs to load.
-
-    Returns:
-        nil
-
     Realm:
         Server
 
@@ -1274,10 +1267,6 @@ if SERVER then
             The height of the inventory.
         callback (function, optional)
             Function called when inventory is restored.
-
-    Returns:
-        nil
-
     Realm:
         Server
 

@@ -1,4 +1,4 @@
-﻿local mathApproach = math.Approach
+local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
     self:SetTall(20)
@@ -139,7 +139,7 @@ function PANEL:Init()
 end
 
 function PANEL:updatePointsLeft()
-    self.leftLabel:SetText(L("points left"):upper() .. ": " .. self.left)
+    self.leftLabel:SetText(L("pointsLeft"):upper() .. ": " .. self.left)
 end
 
 function PANEL:onDisplay()
@@ -199,6 +199,7 @@ function PANEL:Init()
     self:DockMargin(0, 0, 0, 4)
     self:SetTall(28)
     self:SetPaintBackground(false)
+    self.points = 0
     self.buttons = self:Add("DPanel")
     self.buttons:Dock(RIGHT)
     self.buttons:SetWide(96)
@@ -244,13 +245,27 @@ function PANEL:addButton(symbol, delta)
     button:SetWide(24)
     button:SetText(symbol)
     button:SetContentAlignment(5)
-    button.OnMousePressed = function()
-        self.autoDelta = delta
-        self.nextAuto = CurTime() + 0.4
-        self:delta(delta)
+    button:SetMouseInputEnabled(true)
+    
+    local parent = self
+    local oldOnMousePressed = button.OnMousePressed
+    button.OnMousePressed = function(btn, mousecode)
+        if oldOnMousePressed then oldOnMousePressed(btn, mousecode) end
+        if mousecode == MOUSE_LEFT then
+            parent.autoDelta = delta
+            parent.nextAuto = CurTime() + 0.4
+            parent:delta(delta)
+        end
     end
 
-    button.OnMouseReleased = function() self.autoDelta = nil end
+    local oldOnMouseReleased = button.OnMouseReleased
+    button.OnMouseReleased = function(btn, mousecode)
+        if oldOnMouseReleased then oldOnMouseReleased(btn, mousecode) end
+        if mousecode == MOUSE_LEFT then
+            parent.autoDelta = nil
+        end
+    end
+    
     button:SetPaintBackground(false)
     return button
 end

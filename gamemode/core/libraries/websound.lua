@@ -1,4 +1,17 @@
-﻿lia.websound = lia.websound or {}
+--[[
+    Folder: Libraries
+    File: websound.md
+]]
+--[[
+    WebSound Library
+
+    Web-based audio content downloading, caching, and playback system for the Lilia framework.
+]]
+--[[
+    Overview:
+        The websound library provides comprehensive functionality for managing web-based audio content in the Lilia framework. It handles downloading, caching, validation, and playback of sound files from HTTP/HTTPS URLs, with automatic local storage and retrieval. The library operates on both server and client sides, providing seamless integration with Garry's Mod's sound system through enhanced versions of sound.PlayFile, sound.PlayURL, and surface.PlaySound functions. It includes robust URL validation, file format verification, caching mechanisms, and statistics tracking. The library ensures optimal performance by avoiding redundant downloads and providing fallback mechanisms for failed downloads while maintaining compatibility with existing sound APIs.
+]]
+lia.websound = lia.websound or {}
 lia.websound.stored = lia.websound.stored or {}
 local baseDir = "lilia/websounds/"
 local cache = {}
@@ -9,6 +22,31 @@ local stats = {
     downloadedSounds = {}
 }
 
+--[[
+    Purpose:
+        Normalize a sound file path or name by converting backslashes to forward slashes, trimming whitespace, and removing common prefixes.
+
+    When Called:
+        Internally by websound functions when processing sound identifiers.
+
+    Parameters:
+        name (string|any)
+            The sound name or path to normalize. Non-string values are returned unchanged.
+
+    Returns:
+        string|any
+            The normalized string with consistent formatting, or the original value if not a string.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            local normalized = normalizeName(" sound/music_track.mp3 ")
+            -- Returns: "music_track.mp3"
+        ```
+]]
 local function normalizeName(name)
     if not isstring(name) then return name end
     name = name:gsub("\\", "/")
@@ -18,6 +56,31 @@ local function normalizeName(name)
     return name
 end
 
+--[[
+    Purpose:
+        Generate a unique local filename for caching a web sound URL, preferring the original filename when available.
+
+    When Called:
+        Internally when registering or downloading web sounds to create consistent cache file paths.
+
+    Parameters:
+        url (string)
+            The HTTP/HTTPS URL of the sound file.
+
+    Returns:
+        string
+            A normalized path within the websounds directory for local storage.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            local saveName = deriveUrlSaveName("https://example.com/audio/track.mp3")
+            -- Returns: "urlsounds/audio/track.mp3"
+        ```
+]]
 local function deriveUrlSaveName(url)
     local filename = url:match("([^/]+)$") or util.CRC(url) .. ".mp3"
     if file.Exists(baseDir .. filename, "DATA") then return filename end
@@ -26,6 +89,27 @@ local function deriveUrlSaveName(url)
     return "urlsounds/" .. path
 end
 
+--[[
+    Purpose:
+        Ensure all directories in a given path exist, creating them recursively if necessary.
+
+    When Called:
+        Internally before writing sound files to ensure the directory structure exists.
+
+    Parameters:
+        p (string)
+            The file path whose parent directories should be created.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            ensureDir("lilia/websounds/audio/effects/impact.wav")
+            -- Creates directories: lilia/, lilia/websounds/, lilia/websounds/audio/, lilia/websounds/audio/effects/
+        ```
+]]
 local function ensureDir(p)
     local parts = string.Explode("/", p)
     local cur = ""
@@ -35,10 +119,64 @@ local function ensureDir(p)
     end
 end
 
+--[[
+    Purpose:
+        Convert a relative websound path to a full filesystem path for use with Garry's Mod file functions.
+
+    When Called:
+        Internally when constructing paths for file operations and sound playback.
+
+    Parameters:
+        p (string)
+            The relative path within the websounds directory.
+
+    Returns:
+        string
+            The full filesystem path prefixed with "data/".
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            local fullPath = buildPath("urlsounds/track.mp3")
+            -- Returns: "data/urlsounds/track.mp3"
+        ```
+]]
 local function buildPath(p)
     return "data/" .. p
 end
 
+--[[
+    Purpose:
+        Validate downloaded sound file data by checking file size, format headers, and supported extensions.
+
+    When Called:
+        Internally after downloading sound files to ensure they contain valid audio data.
+
+    Parameters:
+        filePath (string)
+            The intended filename/path to check the extension.
+        fileData (string)
+            The raw file content as a binary string.
+
+    Returns:
+        boolean, string
+            true if valid, or false and an error message if invalid.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            local isValid, errorMsg = validateSoundFile("track.mp3", downloadedData)
+            if not isValid then
+                print("Invalid sound file: " .. errorMsg)
+            end
+        ```
+]]
 local function validateSoundFile(filePath, fileData)
     if not fileData or #fileData == 0 then return false, "empty file" end
     local fileSize = #fileData
@@ -57,6 +195,33 @@ local function validateSoundFile(filePath, fileData)
     return true
 end
 
+--[[
+    Purpose:
+        Validate a URL for security and format compliance before attempting to download from it.
+
+    When Called:
+        Internally before initiating HTTP requests to ensure URLs are safe and properly formatted.
+
+    Parameters:
+        url (string)
+            The URL to validate.
+
+    Returns:
+        boolean, string
+            true if valid, or false and an error message if invalid.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Internal usage only
+            local isValid, errorMsg = validateURL("https://example.com/audio.mp3")
+            if not isValid then
+                print("Invalid URL: " .. errorMsg)
+            end
+        ```
+]]
 local function validateURL(url)
     if not url or not isstring(url) then return false, L("urlNotValidString") end
     if not url:find("^https?://") then return false, L("urlMustStartWithHttp") end
@@ -81,6 +246,50 @@ local function validateURL(url)
     return true
 end
 
+--[[
+    Purpose:
+        Download or reuse a cached web sound by name, running a callback with the local file path.
+
+    When Called:
+        Whenever a module needs to ensure a URL-based sound exists before playback, especially during initialization.
+
+    Parameters:
+        name (string)
+            The logical name for this sound; normalized before saving.
+        url (string|nil)
+            Optional override URL; falls back to previously registered URLs.
+        cb (function|nil)
+            Completion callback that receives (path, fromCache, error).
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Preload multiple tracks in sequence, falling back to cached copies.
+            local playlist = {
+                {"music/combat_theme.mp3", "https://assets.example.com/music/combat_theme.mp3"},
+                {"music/stealth_loop.ogg", "https://assets.example.com/music/stealth_loop.ogg"}
+            }
+
+            local function preloadNext(i)
+                local entry = playlist[i]
+                if not entry then return end
+                lia.websound.download(entry[1], entry[2], function(path, fromCache, err)
+                    if not path then
+                        lia.util.logError("Failed to preload " .. entry[1] .. ": " .. tostring(err))
+                        return
+                    end
+                    if not fromCache then
+                        lia.log.add(nil, "websoundCached", entry[1])
+                    end
+                    preloadNext(i + 1)
+                end)
+            end
+
+            hook.Add("InitPostEntity", "PreloadMusicPlaylist", function() preloadNext(1) end)
+        ```
+]]
 function lia.websound.download(name, url, cb)
     if not isstring(name) then return end
     name = normalizeName(name)
@@ -161,38 +370,86 @@ function lia.websound.download(name, url, cb)
     end)
 end
 
-function lia.websound.resolve(nameOrUrlOrPath)
-    if not isstring(nameOrUrlOrPath) then return nil end
-    local input = normalizeName(nameOrUrlOrPath)
-    if input:find("^https?://") then
-        local name = urlMap[input]
-        if name then return name end
-        return nil
-    end
+--[[
+    Purpose:
+        Register a named URL so future calls can rely on a cached entry and optionally download it immediately.
 
-    if input:find("^lilia/websounds/") then
-        local webPath = input:gsub("^lilia/websounds/", "")
-        if lia.websound.stored[webPath] then return webPath end
-        return nil
-    end
+    When Called:
+        During gamemode setup when you want to associate a friendly key with a remote sound asset.
 
-    if input:find("^websounds/") then
-        local webPath = input:gsub("^websounds/", "")
-        if lia.websound.stored[webPath] then return webPath end
-        return nil
-    end
+    Parameters:
+        name (string)
+            Logical identifier used for caching and later lookup.
+        url (string)
+            HTTP/HTTPS link pointing to the desired sound file.
+        cb (function|nil)
+            Optional callback same as `download`.
 
-    if lia.websound.stored[input] then return input end
-    return nil
-end
+    Returns:
+        string?
+            Returns the cached path if already downloaded.
 
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            hook.Add("PostGamemodeLoaded", "RegisterUIAudio", function()
+                lia.websound.register("ui/alert.wav", "https://assets.example.com/sounds/ui/alert.wav", function(path)
+                    if path then surface.PlaySound(path) end
+                end)
+
+                lia.websound.register("ui/ambient.mp3", "https://assets.example.com/sounds/ui/ambient.mp3", function(path)
+                    if not path then return end
+                    timer.Create("UIAmbientLoop", 120, 0, function()
+                        sound.PlayFile(path, "", function() end)
+                    end)
+                end)
+            end)
+        ```
+]]
 function lia.websound.register(name, url, cb)
     name = normalizeName(name)
     lia.websound.stored[name] = url
-    if isstring(url) and url:find("^https?://") then urlMap[url] = name end
     return lia.websound.download(name, url, cb)
 end
 
+--[[
+    Purpose:
+        Lookup the cached filesystem path for a registered web sound when you need to play it immediately.
+
+    When Called:
+        Within any playback logic that wants to skip downloading and use an already fetched file.
+
+    Parameters:
+        name (string)
+            The normalized identifier previously registered or downloaded.
+
+    Returns:
+        string|nil
+            Local `data/` path to the sound file, or `nil` if not downloaded yet.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Play from cache or queue a download with a one-time completion hook.
+            local function playAmbient()
+                local cachedPath = lia.websound.get("ui/ambient.mp3")
+                if cachedPath then
+                    sound.PlayFile(cachedPath, "mono", function() end)
+                    return
+                end
+
+                lia.websound.download("ui/ambient.mp3", nil, function(path)
+                    if path then sound.PlayFile(path, "mono", function() end) end
+                end)
+            end
+
+            hook.Add("InitPostEntity", "PlayAmbientCached", playAmbient)
+        ```
+]]
 function lia.websound.get(name)
     name = normalizeName(name)
     local key = urlMap[name] or name
@@ -207,14 +464,74 @@ function lia.websound.get(name)
 end
 
 local origPlayFile = sound.PlayFile
+--[[
+    Purpose:
+        Enhanced version of sound.PlayFile that supports web URLs and websound caching, falling back to the original function for local sounds.
+
+    When Called:
+        When playing sound files, automatically handling both local files and web URLs with caching.
+
+    Parameters:
+        path (string)
+            The sound file path or URL to play. Supports web URLs and websound paths.
+        mode (string|nil)
+            Optional playback mode (e.g., "3d", "mono"). Passed to the underlying sound system.
+        cb (function|nil)
+            Optional callback function called when playback starts, receiving (channel, errorCode, errorString).
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Play a cached web sound
+            sound.PlayFile("https://example.com/sound.mp3", "mono", function(channel)
+                if IsValid(channel) then
+                    print("Sound started playing")
+                end
+            end)
+
+            -- Play a websound path
+            sound.PlayFile("websounds/ui/click.wav")
+        ```
+]]
 function sound.PlayFile(path, mode, cb)
     if isstring(path) then
         path = normalizeName(path)
-        local resolvedName = lia.websound.resolve(path)
-        if resolvedName then
-            local localPath = lia.websound.get(resolvedName)
+        if path:find("^https?://") then
+            local name = urlMap[path]
+            if not name then
+                name = deriveUrlSaveName(path)
+                urlMap[path] = name
+            end
+
+            local cachedPath = lia.websound.get(name)
+            if cachedPath then
+                origPlayFile(cachedPath, mode or "", cb)
+                return
+            end
+
+            lia.websound.register(name, path, function(localPath)
+                if localPath then
+                    origPlayFile(localPath, mode or "", cb)
+                elseif cb then
+                    cb(nil, nil, "failed")
+                end
+            end)
+            return
+        else
+            local webPath
+            if path:find("^lilia/websounds/") then
+                webPath = path:gsub("^lilia/websounds/", "")
+            elseif path:find("^websounds/") then
+                webPath = path:gsub("^websounds/", "")
+            else
+                webPath = path
+            end
+
+            local localPath = lia.websound.get(webPath)
             if localPath then
-                if resolvedName:match("%.wav$") then
+                if webPath:match("%.wav$") then
                     local reqMode = mode or ""
                     local wants3d = reqMode:find("3d", 1, true) ~= nil
                     local attempts = {}
@@ -258,15 +575,15 @@ function sound.PlayFile(path, mode, cb)
                     return origPlayFile(localPath, mode or "", cb)
                 end
             else
-                local url = lia.websound.stored[resolvedName]
+                local url = lia.websound.stored and lia.websound.stored[webPath]
                 if url then
-                    lia.websound.register(resolvedName, url, function(downloadedPath)
+                    lia.websound.register(webPath, url, function(downloadedPath)
                         if not downloadedPath then
                             if cb then cb(nil, nil, "failed") end
                             return
                         end
 
-                        if resolvedName:match("%.wav$") then
+                        if webPath:match("%.wav$") then
                             origPlayFile(downloadedPath, mode or "", cb)
                         else
                             origPlayFile(downloadedPath, mode or "", cb)
@@ -276,124 +593,116 @@ function sound.PlayFile(path, mode, cb)
                 end
             end
         end
-
-        if path:find("^https?://") then
-            local name = urlMap[path]
-            if not name then
-                name = deriveUrlSaveName(path)
-                urlMap[path] = name
-            end
-
-            local cachedPath = lia.websound.get(name)
-            if cachedPath then
-                origPlayFile(cachedPath, mode or "", cb)
-                return
-            end
-
-            lia.websound.register(name, path, function(localPath)
-                if localPath then
-                    origPlayFile(localPath, mode or "", cb)
-                elseif cb then
-                    cb(nil, nil, "failed")
-                end
-            end)
-            return
-        end
     end
     return origPlayFile(path, mode, cb)
 end
 
 local origPlayURL = sound.PlayURL
+--[[
+    Purpose:
+        Enhanced version of sound.PlayURL that integrates with websound caching for improved performance and reliability.
+
+    When Called:
+        When streaming sound from URLs, with automatic caching for better performance on repeated plays.
+
+    Parameters:
+        url (string)
+            The HTTP/HTTPS URL of the sound to stream. If not a URL, falls back to original behavior.
+        mode (string|nil)
+            Optional playback mode. For 3D URLs, uses original PlayURL; others are cached first.
+        cb (function|nil)
+            Optional callback function called when playback starts.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Stream with caching for repeated use
+            sound.PlayURL("https://example.com/stream.mp3", "mono", function(channel)
+                if IsValid(channel) then
+                    print("Stream started")
+                end
+            end)
+
+            -- 3D positional audio (bypasses caching)
+            sound.PlayURL("https://example.com/3d_sound.wav", "3d")
+        ```
+]]
 function sound.PlayURL(url, mode, cb)
-    if isstring(url) then
-        local resolvedName = lia.websound.resolve(url)
-        if resolvedName then
-            local localPath = lia.websound.get(resolvedName)
-            if localPath then
-                return origPlayFile(localPath, mode or "", cb)
-            else
-                local storedUrl = lia.websound.stored[resolvedName]
-                if storedUrl then
-                    lia.websound.register(resolvedName, storedUrl, function(downloadedPath)
-                        if downloadedPath then
-                            origPlayFile(downloadedPath, mode or "", cb)
-                        elseif cb then
-                            cb(nil, nil, "failed")
-                        end
-                    end)
-                    return
-                end
-            end
-        end
-
-        if url:find("^https?://") then
-            local reqMode = mode or ""
-            if reqMode:find("3d", 1, true) ~= nil then
-                origPlayURL(url, reqMode, cb)
-                local name = urlMap[url]
-                if not name then
-                    name = deriveUrlSaveName(url)
-                    urlMap[url] = name
-                end
-
-                lia.websound.register(name, url)
-                return
-            end
-
+    if isstring(url) and url:find("^https?://") then
+        local reqMode = mode or ""
+        if reqMode:find("3d", 1, true) ~= nil then
+            origPlayURL(url, reqMode, cb)
             local name = urlMap[url]
             if not name then
                 name = deriveUrlSaveName(url)
                 urlMap[url] = name
             end
 
-            local cachedPath = lia.websound.get(name)
-            if cachedPath then
-                origPlayFile(cachedPath, mode or "", cb)
-                return
-            end
-
-            lia.websound.register(name, url, function(localPath)
-                if localPath then
-                    origPlayFile(localPath, mode or "", cb)
-                elseif cb then
-                    cb(nil, nil, "failed")
-                end
-            end)
+            lia.websound.register(name, url)
             return
         end
+
+        local name = urlMap[url]
+        if not name then
+            name = deriveUrlSaveName(url)
+            urlMap[url] = name
+        end
+
+        local cachedPath = lia.websound.get(name)
+        if cachedPath then
+            origPlayFile(cachedPath, mode or "", cb)
+            return
+        end
+
+        lia.websound.register(name, url, function(localPath)
+            if localPath then
+                origPlayFile(localPath, mode or "", cb)
+            elseif cb then
+                cb(nil, nil, "failed")
+            end
+        end)
+        return
     end
     return origPlayURL(url, mode, cb)
 end
 
 local origSurfacePlaySound = surface.PlaySound
+--[[
+    Purpose:
+        Enhanced version of surface.PlaySound that supports web URLs and websound paths with optional callback support.
+
+    When Called:
+        When playing UI sounds or simple audio effects, automatically handling web URLs and cached sounds.
+
+    Parameters:
+        soundPath (string)
+            The sound file path or URL to play. Supports web URLs and websound paths.
+        _ (any)
+            Unused parameter (for compatibility with potential future extensions).
+        cb (function|nil)
+            Optional callback function receiving (success) boolean indicating if playback was successful.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Play UI sound with web URL
+            surface.PlaySound("https://example.com/ui_click.wav", nil, function(success)
+                if success then
+                    print("UI sound played")
+                end
+            end)
+
+            -- Play cached websound
+            surface.PlaySound("websounds/button.wav")
+        ```
+]]
 function surface.PlaySound(soundPath, _, cb)
     if isstring(soundPath) then
         soundPath = normalizeName(soundPath)
-        local resolvedName = lia.websound.resolve(soundPath)
-        if resolvedName then
-            local localPath = lia.websound.get(resolvedName)
-            if localPath then
-                local surfacePath = localPath:gsub("^data/", "")
-                origSurfacePlaySound(surfacePath)
-                if cb then cb(true) end
-                return
-            else
-                local url = lia.websound.stored[resolvedName]
-                if url then
-                    lia.websound.register(resolvedName, url, function(downloadedPath)
-                        if downloadedPath then
-                            local surfacePath = downloadedPath:gsub("^data/", "")
-                            origSurfacePlaySound(surfacePath)
-                            if cb then cb(true) end
-                        elseif cb then
-                            cb(false, "failed")
-                        end
-                    end)
-                    return
-                end
-            end
-        end
-
         if soundPath:find("^https?://") then
             local name = urlMap[soundPath]
             if not name then
@@ -419,6 +728,37 @@ function surface.PlaySound(soundPath, _, cb)
                 end
             end)
             return
+        else
+            local webPath
+            if soundPath:find("^lilia/websounds/") then
+                webPath = soundPath:gsub("^lilia/websounds/", "")
+            elseif soundPath:find("^websounds/") then
+                webPath = soundPath:gsub("^websounds/", "")
+            else
+                webPath = soundPath
+            end
+
+            local localPath = lia.websound.get(webPath)
+            if localPath then
+                local surfacePath = localPath:gsub("^data/", "")
+                origSurfacePlaySound(surfacePath)
+                if cb then cb(true) end
+                return
+            else
+                local url = lia.websound.stored and lia.websound.stored[webPath]
+                if url then
+                    lia.websound.register(webPath, url, function(downloadedPath)
+                        if downloadedPath then
+                            local surfacePath = downloadedPath:gsub("^data/", "")
+                            origSurfacePlaySound(surfacePath)
+                            if cb then cb(true) end
+                        elseif cb then
+                            cb(false, "failed")
+                        end
+                    end)
+                    return
+                end
+            end
         end
     end
 
@@ -426,6 +766,32 @@ function surface.PlaySound(soundPath, _, cb)
     if cb then cb(true) end
 end
 
+--[[
+    Purpose:
+        Provide download statistics for diagnostic interfaces or admin reporting.
+
+    When Called:
+        When showing status panels or logging background downloads.
+
+    Parameters:
+        None
+
+    Returns:
+        table
+            `{ downloaded = number, stored = number, lastReset = timestamp }`.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            hook.Add("PlayerSay", "ReportWebSoundStats", function(ply, text)
+                if text ~= "!soundstats" then return end
+                local stats = lia.websound.getStats()
+                ply:notifyLocalized("webSoundStats", stats.downloaded, stats.stored, os.date("%c", stats.lastReset))
+            end)
+        ```
+]]
 function lia.websound.getStats()
     local totalStored = 0
     for _ in pairs(lia.websound.stored) do
@@ -438,6 +804,31 @@ function lia.websound.getStats()
     }
 end
 
+--[[
+    Purpose:
+        Delete all cached web sounds and optionally trigger re-registration.
+
+    When Called:
+        During round resets or when you want to force a fresh download of every entry.
+
+    Parameters:
+        skipReRegister (boolean)
+            If true, registered entries are not re-downloaded automatically.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Force-refresh all cached sounds when admins reload content packs.
+            hook.Add("OnConfigReload", "ResetWebSounds", function()
+                lia.websound.clearCache(false)
+                for name, url in pairs(lia.websound.stored) do
+                    lia.websound.download(name, url)
+                end
+            end)
+        ```
+]]
 function lia.websound.clearCache(skipReRegister)
     cache = {}
     urlMap = {}
@@ -465,6 +856,35 @@ function lia.websound.clearCache(skipReRegister)
     end
 end
 
+--[[
+    Purpose:
+        Play the configured button click sound with optional overrides and fallbacks.
+
+    When Called:
+        Whenever a UI element wants to use a consistent button audio cue.
+
+    Parameters:
+        customSound (string|nil)
+            Optional override path or URL.
+        callback (function|nil)
+            Receives `(success, errStr)` once playback is attempted.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            -- Use a per-skin override and fall back to the global default.
+            local button = vgui.Create("DButton")
+            button.DoClick = function()
+                lia.websound.playButtonSound("https://assets.example.com/sounds/ui/blue_click.wav", function(success, err)
+                    if not success then
+                        lia.websound.playButtonSound(nil) -- fallback to default
+                    end
+                end)
+            end
+        ```
+]]
 function lia.websound.playButtonSound(customSound, callback)
     if customSound and customSound ~= "button_click.wav" then
         if customSound:find("^lilia/websounds/") or customSound:find("^websounds/") then
