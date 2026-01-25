@@ -220,7 +220,9 @@ During class definition
 #### 💡 Example Usage
 
 ```lua
-    CLASS.logo = "materials/ui/class/police_logo.png"
+    CLASS.logo = "materials/ui/class/police_logo.png"  -- Material path
+    CLASS.logo = "https://example.com/logo.png"  -- URL
+    CLASS.logo = ""  -- No logo (default)
 
 ```
 
@@ -374,6 +376,26 @@ During class definition
 
 ```lua
     CLASS.scoreboardHidden = true  -- Class will not appear in scoreboard categories
+
+```
+
+---
+
+<a id="scoreboardpriority"></a>
+### scoreboardPriority
+
+#### 📋 Purpose
+Sets the priority order for this class in the scoreboard display within its faction (lower numbers appear first)
+
+#### ⏰ When Called
+During class definition (used by scoreboard sorting)
+
+#### 💡 Example Usage
+
+```lua
+    CLASS.scoreboardPriority = 1  -- Appears first within faction
+    CLASS.scoreboardPriority = 10  -- Appears later
+    CLASS.scoreboardPriority = 999  -- Default priority if not set
 
 ```
 

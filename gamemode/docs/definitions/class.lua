@@ -194,7 +194,9 @@ CLASS.model = ""
 
     Example Usage:
         ```lua
-        CLASS.logo = "materials/ui/class/police_logo.png"
+        CLASS.logo = "materials/ui/class/police_logo.png"  -- Material path
+        CLASS.logo = "https://example.com/logo.png"  -- URL
+        CLASS.logo = ""  -- No logo (default)
         ```
 ]]
 CLASS.logo = ""
@@ -309,6 +311,21 @@ CLASS.canInviteToClass = false
         ```
 ]]
 CLASS.scoreboardHidden = false
+--[[
+    Purpose:
+        Sets the priority order for this class in the scoreboard display within its faction (lower numbers appear first)
+
+    When Called:
+        During class definition (used by scoreboard sorting)
+
+    Example Usage:
+        ```lua
+        CLASS.scoreboardPriority = 1  -- Appears first within faction
+        CLASS.scoreboardPriority = 10  -- Appears later
+        CLASS.scoreboardPriority = 999  -- Default priority if not set
+        ```
+]]
+CLASS.scoreboardPriority = 999
 --[[
     Purpose:
         Sets the salary amount for this class
@@ -720,8 +737,12 @@ end
         -- Visual Properties
         CLASS.model = "models/player/police.mdl"
         CLASS.Color = Color(0, 100, 255)  -- Blue color for police
+        CLASS.color = Color(0, 100, 255)  -- UI accent color
+        CLASS.logo = "materials/ui/class/police_logo.png"  -- Class logo for scoreboard
         CLASS.scale = 1.0  -- Normal model scale
         CLASS.bloodcolor = BLOOD_COLOR_RED
+        CLASS.scoreboardPriority = 1  -- Appears first within faction in scoreboard
+        CLASS.scoreboardHidden = false  -- Show in scoreboard
 
         -- Gameplay Properties
         CLASS.health = 120  -- Higher health than default

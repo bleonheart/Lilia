@@ -138,7 +138,6 @@ end
 
 function PANEL:addAttributes()
     if IsValid(self.attribsPanel) then return end
-    if not vgui.GetControlTable("liaCharacterAttribs") and lia.loader and isfunction(lia.loader.include) then lia.loader.include("lilia/gamemode/core/derma/panels/attribs.lua", "client") end
     if not self._attemptedAttribLoad and lia.attribs and isfunction(lia.attribs.loadFromDir) then
         self._attemptedAttribLoad = true
         local base = (SCHEMA and SCHEMA.folder) and SCHEMA.folder or engine.ActiveGamemode():gsub("\\", "/")
@@ -230,7 +229,6 @@ function PANEL:addAttributes()
         end
     end
 
-    if not vgui.GetControlTable("liaCharacterAttribs") then return end
     self.attribsPanel = self:Add("liaCharacterAttribs")
     self.attribsPanel:Dock(TOP)
     self.attribsPanel:DockMargin(0, 6, 0, 16)

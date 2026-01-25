@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Simple script to remove comments from Lua files.
+Preserves long comment blocks that start at the beginning of a line ("--[[ ... ]]").
 Removes:
 - Pure single-line comments that start with "--" (with any leading whitespace)
 - Inline comments introduced by "--" that appear after code, while respecting strings
@@ -10,10 +11,9 @@ import os
 import re
 import sys
 import subprocess
-import argparse
 
 def remove_comments(content):
-    """Remove Lua single-line, inline, and long-block comments."""
+    """Remove Lua single-line and inline comments, preserve top-of-line long blocks."""
     # Preserve BOM (if present) and remove it from parsing
     bom_prefix = '\ufeff' if content.startswith('\ufeff') else ''
     if bom_prefix:
@@ -96,25 +96,33 @@ def remove_comments(content):
     while i < len(lines):
         line = lines[i]
 
-    # 1) Drop long comment blocks that start at the beginning of a line
+        # 1) Preserve long comment blocks that start at the beginning of a line
         m = long_block_start_re.match(line)
         if m is not None:
             eqs = m.group(1)
             closing = "]" + eqs + "]"
+            cleaned_lines.append(line.rstrip())
+            # If closing is on the same line, done with this line
             if closing in line:
                 i += 1
                 continue
             i += 1
+            # consume until closing ]=*=]
+            # Use regex to find the actual closing token (not just any occurrence)
             closing_re = re.compile(re.escape(closing))
             found_closing = False
             while i < len(lines):
+                cleaned_lines.append(lines[i].rstrip())
                 # Check if this line contains the closing token
                 if closing_re.search(lines[i]):
                     i += 1
                     found_closing = True
                     break
                 i += 1
+            # Safety check: if we didn't find closing and consumed too many lines, stop
             if not found_closing and i >= len(lines):
+                # We've consumed the entire rest of the file - this shouldn't happen
+                # but if it does, at least we've preserved everything
                 break
             continue
 
@@ -199,13 +207,13 @@ def run_glualint_pretty_print(target_dir):
 def process_file(filepath):
     """Process a single file."""
     try:
-        with open(filepath, 'r', encoding='utf-8', errors='surrogateescape') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
         
         cleaned = remove_comments(content)
         
         if content != cleaned:
-            with open(filepath, 'w', encoding='utf-8', errors='surrogateescape') as f:
+            with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(cleaned)
             print(f"Cleaned: {filepath}")
             return True
@@ -215,32 +223,27 @@ def process_file(filepath):
         return False
 
 def main():
-    parser = argparse.ArgumentParser(description='Remove comments from Lua files')
-    parser.add_argument('target', nargs='?', help='Target file or directory to process')
-    parser.add_argument('--no-glualint', action='store_true', help='Skip running glualint pretty-print')
-    args = parser.parse_args()
-    
-    no_glualint = args.no_glualint
-    
-    if args.target:
-        targets = [args.target]
+    if len(sys.argv) > 1:
+        targets = [sys.argv[1]]
     else:
+        # Default targets when no arguments provided
         targets = [
-            r"D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode",
-            r"D:\GMOD\Server\garrysmod\gamemodes\metrorp",
-            r"D:\GMOD\Server\garrysmod\gamemodes\skyrimrp"
+            r"E:\Server\garrysmod\gamemodes\Lilia\gamemode",
+            r"E:\Server\garrysmod\gamemodes\metrorp\modules",
+            r"E:\Server\garrysmod\gamemodes\metrorp\gitmodules"
         ]
 
     total_count = 0
     for target in targets:
         print(f"Processing: {target}")
         if os.path.isfile(target) and target.endswith('.lua'):
+            # Single file
             if process_file(target):
                 total_count += 1
         else:
+            # Directory - first remove comments from all files
             count = 0
             for root, dirs, files in os.walk(target):
-                dirs[:] = [d for d in dirs if d.lower() != "docs"]
                 for file in files:
                     if file.endswith('.lua'):
                         if process_file(os.path.join(root, file)):
@@ -248,8 +251,8 @@ def main():
             print(f"Processed {count} files in {target}")
             total_count += count
 
-            if not no_glualint:
-                run_glualint_pretty_print(target)
+            # Then run glualint pretty-print if available
+            run_glualint_pretty_print(target)
 
     if len(targets) > 1:
         print(f"Total processed files across all targets: {total_count}")
