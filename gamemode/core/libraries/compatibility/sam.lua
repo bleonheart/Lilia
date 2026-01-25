@@ -1,4 +1,4 @@
-﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
 local samCommands = {
     kick = function(id, _, reason) RunConsoleCommand("sam", "kick", id, reason or "") end,
     ban = function(id, dur, reason) RunConsoleCommand("sam", "ban", id, tostring(dur or 0), reason or "") end,
@@ -156,7 +156,10 @@ lia.config.add("SAMEnforceStaff", "samEnforceStaff", true, nil, {
     type = "Boolean"
 })
 
-sam.config.set("Restrictions.Tool", false)
-sam.config.set("Restrictions.Spawning", false)
-sam.config.set("Restrictions.Limits", false)
+hook.Add("InitializedModules", "liaSAMBypassRestrictions", function()
+    sam.config.set("Restrictions.Tool", false)
+    sam.config.set("Restrictions.Spawning", false)
+    sam.config.set("Restrictions.Limits", false)
+end)
+
 hook.Add("GetPlayTime", "liaSAM", function(client) return client:sam_get_play_time() end)

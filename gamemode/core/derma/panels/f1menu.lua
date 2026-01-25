@@ -1,4 +1,4 @@
-﻿local PANEL = {}
+local PANEL = {}
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
     lia.gui.info = self
@@ -280,8 +280,7 @@ function PANEL:Init()
         end
 
         surface.SetMaterial(iconMat)
-        local headerTextColor = lia.color.theme.header_text or Color(255, 255, 255)
-        surface.SetDrawColor(headerTextColor.r, headerTextColor.g, headerTextColor.b)
+        surface.SetDrawColor(255, 255, 255)
         local baseSize = h - 10
         local iconSize = baseSize * 0.9
         local iconY = (h - iconSize) * 0.5
