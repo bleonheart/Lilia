@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: administrator.md
 ]]
@@ -1785,11 +1785,10 @@ else
                     local message = L("baseUsergroupCannotBeEditedDesc") or "Base usergroups (user, admin, superadmin) cannot be edited. Please create a new usergroup instead using the 'Create Group' button."
                     LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited", message)
                 end
+
                 row.OnChange = showBaseRankNotification
                 row.DoClick = showBaseRankNotification
-                if IsValid(row.checkbox) then
-                    row.checkbox.DoClick = showBaseRankNotification
-                end
+                if IsValid(row.checkbox) then row.checkbox.DoClick = showBaseRankNotification end
             end
 
             lia.gui.usergroups.checks[g][name] = row

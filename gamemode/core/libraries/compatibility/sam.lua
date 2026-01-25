@@ -1,4 +1,4 @@
-hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
+﻿hook.Remove("PostGamemodeLoaded", "SAM.DarkRP")
 local samCommands = {
     kick = function(id, _, reason) RunConsoleCommand("sam", "kick", id, reason or "") end,
     ban = function(id, dur, reason) RunConsoleCommand("sam", "ban", id, tostring(dur or 0), reason or "") end,
