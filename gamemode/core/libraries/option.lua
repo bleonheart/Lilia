@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: option.md
 ]]
@@ -790,31 +790,31 @@ lia.option.add("BarsAlwaysVisible", "barsAlwaysVisible", "barsAlwaysVisibleDesc"
 })
 
 lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("ThirdPersonToggled", newValue) end, {
-    category = "Core",
+    category = "categoryThirdPerson",
     isQuick = true,
 })
 
 lia.option.add("thirdPersonClassicMode", "thirdPersonClassicMode", "thirdPersonClassicModeDesc", false, nil, {
-    category = "Core",
+    category = "categoryThirdPerson",
     isQuick = true,
 })
 
 lia.option.add("thirdPersonHeight", "thirdPersonHeight", "thirdPersonHeightDesc", 10, nil, {
-    category = "Core",
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHeight", 90),
 })
 
 lia.option.add("thirdPersonHorizontal", "thirdPersonHorizontal", "thirdPersonHorizontalDesc", 10, nil, {
-    category = "Core",
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHorizontal", 90),
 })
 
 lia.option.add("thirdPersonDistance", "thirdPersonDistance", "thirdPersonDistanceDesc", 50, nil, {
-    category = "Core",
+    category = "categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonDistance", 100),

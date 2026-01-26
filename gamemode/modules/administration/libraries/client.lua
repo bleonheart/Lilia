@@ -1,7 +1,6 @@
-﻿local MODULE = MODULE
+local MODULE = MODULE
 AdminStickIsOpen = false
 AdminStickMenu = nil
-local pksCount, ticketsCount, warningsCount = 0, 0, 0
 local playerInfoLabel = L("player") .. " " .. L("information")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
@@ -622,11 +621,6 @@ function MODULE:PopulateAdminTabs(pages)
     end
 
     if client:hasPrivilege("manageCharacters") then
-        net.Start("liaRequestPksCount")
-        net.SendToServer()
-    end
-
-    if client:hasPrivilege("manageCharacters") and pksCount and pksCount > 0 then
         table.insert(pages, {
             name = "pkManager",
             icon = "icon16/lightning.png",
@@ -638,7 +632,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if (client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty()) and ticketsCount and ticketsCount > 0 then
+    if client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty() then
         table.insert(pages, {
             name = "tickets",
             icon = "icon16/report.png",
@@ -650,7 +644,7 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("viewPlayerWarnings") and warningsCount and warningsCount > 0 then
+    if client:hasPrivilege("viewPlayerWarnings") then
         table.insert(pages, {
             name = "warnings",
             icon = "icon16/error.png",
@@ -662,11 +656,6 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 end
-
-net.Receive("liaPksCount", function()
-    local count = net.ReadInt(32)
-    pksCount = count
-end)
 
 spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
@@ -3979,10 +3968,6 @@ net.Receive("liaActiveTickets", function()
     populate("")
 end)
 
-net.Receive("liaTicketsCount", function()
-    local count = net.ReadInt(32)
-    ticketsCount = count
-end)
 
 net.Receive("liaViewClaims", function()
     local tbl = net.ReadTable()
@@ -4130,10 +4115,6 @@ net.Receive("liaAllWarnings", function()
     populate("")
 end)
 
-net.Receive("liaWarningsCount", function()
-    local count = net.ReadInt(32)
-    warningsCount = count
-end)
 
 function MODULE:OnAdminStickMenuClosed()
     local client = LocalPlayer()
