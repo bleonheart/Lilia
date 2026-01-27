@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: keybind.md
 ]]
@@ -225,23 +225,43 @@ lia.keybind.add("adminMode", {
         if client:isStaffOnDuty() then
             local oldCharID = client.oldCharID or 0
             if oldCharID > 0 then
-                local originalPos = client.OriginalPosition
-                if originalPos then
-                    client:SetPos(originalPos)
-                    client.OriginalPosition = nil
-                end
-
+                local returnPos = client.ReturnPosition
                 net.Start("liaAdminModeSwapCharacter")
                 net.WriteInt(oldCharID, 32)
                 net.Send(client)
                 client.oldCharID = nil
+                
+                if returnPos then
+                    local hookName = "liaAdminModeReturnPos_" .. client:SteamID64()
+                    hook.Add("PostPlayerLoadedChar", hookName, function(ply, character)
+                        if ply == client and IsValid(client) and client.ReturnPosition then
+                            timer.Simple(0.2, function()
+                                if IsValid(client) and client.ReturnPosition then
+                                    client:SetPos(client.ReturnPosition)
+                                    client.ReturnPosition = nil
+                                end
+                            end)
+                            hook.Remove("PostPlayerLoadedChar", hookName)
+                        end
+                    end)
+                    
+                    timer.Simple(5, function()
+                        if IsValid(client) then
+                            hook.Remove("PostPlayerLoadedChar", hookName)
+                        end
+                    end)
+                end
+                
                 lia.log.add(client, "adminMode", oldCharID, L("adminModeLogBack"))
             else
                 client:notifyErrorLocalized("noPrevChar")
             end
         else
             local currentChar = client:getChar()
-            if currentChar and currentChar:getFaction() ~= "staff" then client.OriginalPosition = client:GetPos() end
+            if currentChar and currentChar:getFaction() ~= "staff" then
+                client.ReturnPosition = client:GetPos()
+            end
+            
             lia.db.query(string.format("SELECT * FROM lia_characters WHERE steamID = \"%s\"", lia.db.escape(steamID)), function(data)
                 for _, row in ipairs(data) do
                     local id = tonumber(row.id)
