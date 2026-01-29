@@ -3699,33 +3699,7 @@ function MODULE:HUDPaint()
             end
         end
 
-        if kind == L("players") and not customRender then
-            local barW, barH = 100, 22
-            local barX = screenPos.x - barW / 2
-            local barY = screenPos.y + textHeight + 5
-            surface.SetDrawColor(0, 0, 0, 255)
-            surface.DrawRect(barX, barY, barW, barH)
-            surface.SetDrawColor(183, 8, 0, 255)
-            surface.DrawRect(barX + 2, barY + 2, (barW - 4) * math.Clamp(ent:Health() / ent:GetMaxHealth(), 0, 1), barH - 4)
-            draw.SimpleTextOutlined(ent:Health(), "LiliaFont.14", screenPos.x, barY + barH / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
-            if ent:Armor() > 0 then
-                barY = barY + barH + 5
-                surface.SetDrawColor(0, 0, 0, 255)
-                surface.DrawRect(barX, barY, barW, barH)
-                surface.SetDrawColor(0, 0, 255, 255)
-                surface.DrawRect(barX + 2, barY + 2, (barW - 4) * math.Clamp(ent:Armor() / 100, 0, 1), barH - 4)
-                draw.SimpleTextOutlined(ent:Armor(), "LiliaFont.14", screenPos.x, barY + barH / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
-            end
-
-            local entWep = ent:GetActiveWeapon()
-            if IsValid(entWep) then
-                local ammo = entWep:Clip1()
-                local reserve = ent:GetAmmoCount(entWep:GetPrimaryAmmoType())
-                local name = language.GetPhrase(entWep:GetPrintName())
-                if ammo >= 0 and reserve >= 0 then name = name .. " [" .. ammo .. "/" .. reserve .. "]" end
-                draw.SimpleTextOutlined(name, "LiliaFont.14", screenPos.x, barY + barH + 5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP, 1, color_black)
-            end
-        end
+        if kind == L("players") and not customRender then end
     end
 end
 
