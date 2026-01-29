@@ -3678,7 +3678,6 @@ function MODULE:HUDPaint()
         if not kind then continue end
         local screenPos = pos:ToScreen()
         if not screenPos.visible then continue end
-        local textHeight
         if customRender then
             customRender(ent, screenPos, kind, label, subLabel, baseColor)
         else
@@ -3686,20 +3685,15 @@ function MODULE:HUDPaint()
             local _, th = surface.GetTextSize(label)
             local bh = th + 16
             self:DrawESPStyledText(label, screenPos.x, screenPos.y, baseColor, "LiliaFont.24")
-            textHeight = bh / 2
             if subLabel and subLabel ~= label then
                 local font = (kind == "npcs") and "LiliaFont.16" or "LiliaFont.24"
                 surface.SetFont(font)
-                local _, sth = surface.GetTextSize(subLabel)
-                local sbh = sth + 16
+                surface.GetTextSize(subLabel)
                 local spacing = 8
                 local subY = screenPos.y + bh / 2 + spacing
                 self:DrawESPStyledText(subLabel, screenPos.x, subY, baseColor, font)
-                textHeight = bh / 2 + spacing + sbh / 2
             end
         end
-
-        if kind == L("players") and not customRender then end
     end
 end
 
