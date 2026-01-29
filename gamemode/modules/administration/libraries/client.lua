@@ -4361,9 +4361,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         minTextWidth = minTextWidth + 24
         local hudX, hudY, hudAlignX, hudAlignY, hudHeight, hudWidth, hudAutoSize
         local useSidePosition = AdminStickIsOpen
-        local menuValid = IsValid(AdminStickMenu)
         local cacheValid = AdminStickMenuPositionCache and (AdminStickMenuPositionCache.updateTime or 0) >= (AdminStickMenuOpenTime or 0) - 0.05
-        local hasCache = AdminStickMenuPositionCache and true or false
         if useSidePosition and cacheValid then
             local menuX = AdminStickMenuPositionCache.x
             local menuY = AdminStickMenuPositionCache.y
