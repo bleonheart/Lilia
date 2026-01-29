@@ -1,4 +1,4 @@
-local MODE_INDEX = 1
+﻿local MODE_INDEX = 1
 local CACHED_POSITIONS = {}
 local CACHE_TYPE = nil
 local LAST_REQUEST = 0

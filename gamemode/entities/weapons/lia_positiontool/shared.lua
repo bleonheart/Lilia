@@ -1,4 +1,4 @@
-SWEP.Author = "liliaplayer"
+﻿SWEP.Author = "liliaplayer"
 SWEP.Contact = "@liliaplayer"
 SWEP.PrintName = L("positionTool")
 SWEP.Instructions = L("positionToolPurpose")
@@ -19,13 +19,13 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = ""
 SWEP.DrawAmmo = false
 SWEP.DrawCrosshair = false
-
 function SWEP:DrawWorldModel()
     local owner = self:GetOwner()
     if not IsValid(owner) then
         self:DrawModel()
         return
     end
+
     if owner:GetMoveType() == MOVETYPE_NOCLIP then return end
     self:DrawModel()
 end

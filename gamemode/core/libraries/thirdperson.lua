@@ -1,4 +1,4 @@
-local view, traceData, traceData2, aimOrigin, crouchFactor, ft, curAng
+﻿local view, traceData, traceData2, aimOrigin, crouchFactor, ft, curAng
 local clmp = math.Clamp
 crouchFactor = 0
 local diff, fm, sm
@@ -47,7 +47,6 @@ hook.Add("CalcView", "liaThirdPersonCalcView", function(client)
             traceResult = util.TraceLine(traceData)
             local hitDistance = traceData.start:Distance(traceResult.HitPos)
             local desiredDistance = clmp(lia.option.get("thirdPersonDistance"), 0, maxValues.distance)
-
             if traceResult.Hit then
                 local minDistanceFromWall = 10
                 local direction = (traceData.endpos - traceData.start):GetNormalized()
@@ -81,7 +80,6 @@ hook.Add("CalcView", "liaThirdPersonCalcView", function(client)
                 client:SetEyeAngles((aimTrace.HitPos - client:GetShootPos()):Angle())
             end
         end
-
         return view
     end
 end)
@@ -95,7 +93,6 @@ hook.Add("CreateMove", "liaThirdPersonCreateMove", function(cmd)
         local camAng = owner.camAng or Angle(0, 0, 0)
         diff = (eyeAngles - camAng)[2] or 0
         diff = diff / 90
-
         cmd:SetForwardMove(fm + sm * diff)
         cmd:SetSideMove(sm + fm * diff)
         return false

@@ -1,4 +1,4 @@
-function MODULE:LoadCharInformation()
+﻿function MODULE:LoadCharInformation()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local character = client:getChar()
@@ -24,7 +24,6 @@ function MODULE:DrawCharInfo(client, character, info)
 end
 
 local factionRosterPanel = nil
-
 function MODULE:CreateMenuButtons(tabs)
     if not lia.class or not lia.class.list then return end
     local joinable = lia.class.retrieveJoinable(LocalPlayer())
@@ -62,7 +61,6 @@ end
 
 local factionMembersData = {}
 local factionManagementPanel = nil
-
 local function CreateFactionManagementUI(panel)
     panel:Clear()
     factionMembersData = {}
@@ -78,9 +76,8 @@ local function CreateFactionManagementUI(panel)
             })
         end
     end
-    table.sort(factions, function(a, b)
-        return (a.name or ""):lower() < (b.name or ""):lower()
-    end)
+
+    table.sort(factions, function(a, b) return (a.name or ""):lower() < (b.name or ""):lower() end)
     if #factions == 0 then
         local noFactionsLabel = panel:Add("DLabel")
         noFactionsLabel:Dock(FILL)
@@ -90,6 +87,7 @@ local function CreateFactionManagementUI(panel)
         noFactionsLabel:SetContentAlignment(5)
         return
     end
+
     local sheet = panel:Add("liaTabs")
     sheet:Dock(FILL)
     local function requestMembersForFaction(factionUniqueID)
@@ -100,9 +98,11 @@ local function CreateFactionManagementUI(panel)
             pagePanel.loadingLabel:Remove()
             pagePanel.loadingLabel = nil
         end
+
         for _, child in ipairs(pagePanel:GetChildren()) do
             child:Remove()
         end
+
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
         loadingLabel:SetText(L("loading"))
@@ -114,6 +114,7 @@ local function CreateFactionManagementUI(panel)
         net.WriteString(factionUniqueID)
         net.SendToServer()
     end
+
     for _, factionData in ipairs(factions) do
         local pagePanel = vgui.Create("DPanel")
         pagePanel:Dock(FILL)
@@ -131,8 +132,10 @@ local function CreateFactionManagementUI(panel)
             panel = pagePanel,
             members = {}
         }
+
         sheet:AddTab(factionData.name, pagePanel, nil, function() requestMembersForFaction(factionData.uniqueID) end)
     end
+
     local oldSetActiveTab = sheet.SetActiveTab
     sheet.SetActiveTab = function(self, tabIndex)
         oldSetActiveTab(self, tabIndex)
@@ -142,6 +145,7 @@ local function CreateFactionManagementUI(panel)
             requestMembersForFaction(factionUniqueID)
         end
     end
+
     if sheet.tabs and #sheet.tabs > 0 then sheet:SetActiveTab(1) end
     panel.factionSheet = sheet
     factionManagementPanel = panel
@@ -153,9 +157,11 @@ local function UpdateFactionRosterUI(panel, data)
         panel.loadingLabel:Remove()
         panel.loadingLabel = nil
     end
+
     for _, child in ipairs(panel:GetChildren()) do
         child:Remove()
     end
+
     local members = data.members or {}
     if #members == 0 then
         local noMembersLabel = panel:Add("DLabel")
@@ -166,6 +172,7 @@ local function UpdateFactionRosterUI(panel, data)
         noMembersLabel:SetContentAlignment(5)
         return
     end
+
     local list = panel:Add("liaTable")
     list:Dock(FILL)
     list:DockMargin(0, 0, 0, 0)
@@ -179,6 +186,7 @@ local function UpdateFactionRosterUI(panel, data)
             line.name = member.name
         end
     end
+
     hook.Run("PopulateFactionRosterOptions", list, members)
     list:ForceCommit()
     list:InvalidateLayout(true)
@@ -195,9 +203,11 @@ local function UpdateFactionMembersUI(panel, data)
         pagePanel.loadingLabel:Remove()
         pagePanel.loadingLabel = nil
     end
+
     for _, child in ipairs(pagePanel:GetChildren()) do
         child:Remove()
     end
+
     factionData.members = data.members or {}
     local list = pagePanel:Add("liaTable")
     list:Dock(FILL)
@@ -218,6 +228,7 @@ local function UpdateFactionMembersUI(panel, data)
                 lastOnlineText = L("onlineNow")
             end
         end
+
         if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= L("unknown") then
             local timeParts = lia.time.toNumber(lastOnlineText)
             if timeParts and timeParts.year then
@@ -229,6 +240,7 @@ local function UpdateFactionMembersUI(panel, data)
                     min = timeParts.min or 0,
                     sec = timeParts.sec or 0
                 }
+
                 local lastDiff = os.time() - timestamp
                 if lastDiff > 0 then
                     local timeSince = lia.time.timeSince(timestamp)
@@ -239,18 +251,21 @@ local function UpdateFactionMembersUI(panel, data)
                 end
             end
         end
+
         local line = list:AddLine(member.name or L("unknown"), member.charID or L("unknown"), member.steamID or L("unknown"), lastOnlineText)
         if line then
             line.charID = member.charID
             line.steamID = member.steamID
         end
     end
+
     list:AddMenuOption(L("kickToBaseFaction"), function(rowData)
         if not rowData or not rowData.charID then return end
         net.Start("liaKickCharacterToBase")
         net.WriteUInt(rowData.charID, 32)
         net.SendToServer()
     end, "icon16/user_delete.png")
+
     list:ForceCommit()
     list:InvalidateLayout(true)
 end
@@ -285,10 +300,12 @@ lia.net.readBigTable("liaFactionMembers", function(data)
             end
         end
     end
+
     if IsValid(rosterPanel) and rosterPanel.factionRosterPanel then
         UpdateFactionRosterUI(rosterPanel, data)
         return
     end
+
     local panel = factionManagementPanel
     if not IsValid(panel) and IsValid(lia.gui.menu) and lia.gui.menu.tabList and lia.gui.menu.tabList["admin"] then
         local adminTab = lia.gui.menu.tabList["admin"]
@@ -302,7 +319,6 @@ lia.net.readBigTable("liaFactionMembers", function(data)
             end
         end
     end
-    if IsValid(panel) and panel.factionSheet then
-        UpdateFactionMembersUI(panel, data)
-    end
+
+    if IsValid(panel) and panel.factionSheet then UpdateFactionMembersUI(panel, data) end
 end)

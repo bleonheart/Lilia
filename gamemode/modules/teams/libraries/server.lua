@@ -1,4 +1,4 @@
-function MODULE:OnPlayerJoinClass(client, class, oldClass)
+﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -225,15 +225,15 @@ net.Receive("liaRequestFactionMembers", function(_, client)
             local owner = lia.char.getOwnerByID(row.id)
             if not IsValid(owner) and row.steamID then
                 local ply = player.GetBySteamID(tostring(row.steamID))
-                if IsValid(ply) and ply:getChar() and ply:getChar():getID() == row.id then
-                    owner = ply
-                end
+                if IsValid(ply) and ply:getChar() and ply:getChar():getID() == row.id then owner = ply end
             end
+
             if IsValid(owner) and owner:getChar() and owner:getChar():getID() == row.id then
                 lastOnlineText = L("onlineNow")
             else
                 lastOnlineText = row.lastJoinTime or L("unknown")
             end
+
             table.insert(members, {
                 name = row.name or L("unknown"),
                 lastOnline = lastOnlineText,
@@ -241,6 +241,7 @@ net.Receive("liaRequestFactionMembers", function(_, client)
                 steamID = row.steamID
             })
         end
+
         lia.net.writeBigTable(client, "liaFactionMembers", {
             faction = factionUniqueID,
             members = members
@@ -258,6 +259,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             break
         end
     end
+
     if not defaultFaction then
         for _, fac in pairs(lia.faction.teams) do
             if fac.uniqueID ~= "staff" then
@@ -266,14 +268,17 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             end
         end
     end
+
     if not defaultFaction then
         local _, fac = next(lia.faction.teams)
         defaultFaction = fac
     end
+
     if not defaultFaction then
         client:notifyErrorLocalized("invalidFaction")
         return
     end
+
     local isOnline = false
     for _, target in player.Iterator() do
         local targetChar = target:getChar()
@@ -285,6 +290,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 client:notifyErrorLocalized("alreadyInBaseFaction")
                 return
             end
+
             if hook.Run("CanCharBeTransfered", targetChar, defaultFaction, oldFaction) == false then return end
             target:notifyWarningLocalized("kickedFromFaction")
             targetChar.vars.faction = defaultFaction.uniqueID
@@ -297,21 +303,25 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
+
     if not isOnline then
         lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
             if not data or not data[1] then
                 client:notifyErrorLocalized("characterNotFound")
                 return
             end
+
             local currentFaction = data[1].faction
             local currentFactionData = lia.faction.get(currentFaction)
             if currentFactionData and currentFactionData.isDefault then
                 client:notifyErrorLocalized("alreadyInBaseFaction")
                 return
             end
+
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
+
             client:notifySuccessLocalized("transferSuccess", L("character"), L(defaultFaction.name))
             lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)

@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: item.md
 ]]

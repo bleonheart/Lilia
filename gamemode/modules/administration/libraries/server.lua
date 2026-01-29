@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local ActiveTickets = {}
 local function fixupProp(client, ent, mins, maxs)
     local pos = ent:GetPos()
@@ -73,12 +73,8 @@ function MODULE:PlayerSpawn(client)
 end
 
 function MODULE:PostPlayerLoadout(client)
-    if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then
-        client:Give("lia_adminstick")
-    end
-    if client:hasPrivilege("usePositionTool") or client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then
-        client:Give("lia_positiontool")
-    end
+    if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_adminstick") end
+    if client:hasPrivilege("usePositionTool") or client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_positiontool") end
 end
 
 local spawnCooldowns = {}
@@ -447,6 +443,7 @@ net.Receive("liaFeaturePositionsRequest", function(_, client)
                 net.WriteVector(positions[j].pos)
                 net.WriteString(positions[j].label or "")
             end
+
             net.Send(client)
         end)
     else
@@ -476,6 +473,7 @@ net.Receive("liaSetFeaturePosition", function(_, client)
                         net.WriteVector(positions[j].pos)
                         net.WriteString(positions[j].label or "")
                     end
+
                     net.Send(client)
                 end)
             end

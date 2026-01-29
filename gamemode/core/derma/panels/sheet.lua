@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self:Dock(FILL)
     self:DockMargin(10, 10, 10, 10)
@@ -259,6 +259,7 @@ function PANEL:AddPreviewRow(data)
             ]]
             html:SetHTML(htmlContent)
         end
+
         html:SetMouseInputEnabled(false)
         local function updateHTMLSize()
             local availableWidth = p:GetWide() - self.padding * 3
@@ -328,7 +329,6 @@ function PANEL:AddPreviewRow(data)
             local textH = d and t:GetTall() + 5 + d:GetTall() or t:GetTall()
             local h = math.max(htmlSize, textH) + pad * 2
             p:SetTall(h)
-            
             local parent = p:GetParent()
             if IsValid(parent) then
                 local x, y = p:GetPos()
@@ -336,22 +336,19 @@ function PANEL:AddPreviewRow(data)
                 local screenW, screenH = ScrW(), ScrH()
                 local panelW, panelH = p:GetWide(), p:GetTall()
                 local newX, newY = x, y
-                
                 if screenX < 0 then
                     newX = x - screenX + 10
                 elseif screenX + panelW > screenW then
                     newX = x - (screenX + panelW - screenW) - 10
                 end
-                
+
                 if screenY < 0 then
                     newY = y - screenY + 10
                 elseif screenY + panelH > screenH then
                     newY = y - (screenY + panelH - screenH) - 10
                 end
-                
-                if newX ~= x or newY ~= y then
-                    p:SetPos(math.max(0, newX), math.max(0, newY))
-                end
+
+                if newX ~= x or newY ~= y then p:SetPos(math.max(0, newX), math.max(0, newY)) end
             end
         end
 

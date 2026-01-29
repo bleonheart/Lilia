@@ -1,4 +1,4 @@
-local cacheKeys, cache, len = {}, {}, 0
+﻿local cacheKeys, cache, len = {}, {}, 0
 local function PaintPanel(_, w, h)
     local radius = 6
     local shadowIntensity = 8

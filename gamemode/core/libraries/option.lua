@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: option.md
 ]]
@@ -284,6 +284,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)
@@ -360,6 +361,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)
@@ -436,6 +438,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)
@@ -485,6 +488,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)
@@ -530,6 +534,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)
@@ -582,6 +587,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 surface.DrawRect(w - 3, 0, 3, h)
                 surface.DrawRect(0, h - 3, w, 3)
             end
+
             local panel = container:Add("DPanel")
             panel:Dock(FILL)
             panel:DockMargin(300, 5, 300, 5)

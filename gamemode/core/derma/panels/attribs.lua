@@ -1,4 +1,4 @@
-local mathApproach = math.Approach
+﻿local mathApproach = math.Approach
 local PANEL = {}
 function PANEL:Init()
     self:SetTall(20)
@@ -145,7 +145,6 @@ end
 function PANEL:onDisplay()
     local client = LocalPlayer()
     self.total = hook.Run("GetStartAttribPoints", client, self:getContext()) or lia.config.get("MaxAttributePoints", 30)
-
     if not self.attribs then self.attribs = {} end
     for k, v in SortedPairsByMemberValue(lia.attribs.list, "name") do
         if v.noStartBonus then continue end
@@ -175,36 +174,25 @@ end
 
 function PANEL:onPointChange(key, delta)
     if not key then return 0 end
-    
     local client = LocalPlayer()
-    if not self.total or self.total == 0 then
-        self.total = hook.Run("GetStartAttribPoints", client, self:getContext()) or lia.config.get("MaxAttributePoints", 30)
-    end
-    
+    if not self.total or self.total == 0 then self.total = hook.Run("GetStartAttribPoints", client, self:getContext()) or lia.config.get("MaxAttributePoints", 30) end
     local attribs = self:getContext("attribs", {})
     local sum = 0
     for _, quantity in pairs(attribs) do
         sum = sum + quantity
     end
-    
+
     self.left = math.max(self.total - sum, 0)
-    
     local startingMax = lia.attribs.list[key].startingMax or nil
     local quantity = attribs[key] or 0
     local newQuantity = quantity + delta
     local newPointsLeft = self.left - delta
-    
-    if newPointsLeft < 0 or newPointsLeft > self.total or newQuantity < 0 or (startingMax and startingMax < newQuantity) then 
-        return quantity 
-    end
-    
+    if newPointsLeft < 0 or newPointsLeft > self.total or newQuantity < 0 or (startingMax and startingMax < newQuantity) then return quantity end
     self.left = newPointsLeft
     self:updatePointsLeft()
     attribs[key] = newQuantity
     self:setContext("attribs", attribs)
-    if IsValid(self.parentBio) and isfunction(self.parentBio.updateAttributesLabel) then
-        self.parentBio:updateAttributesLabel()
-    end
+    if IsValid(self.parentBio) and isfunction(self.parentBio.updateAttributesLabel) then self.parentBio:updateAttributesLabel() end
     return newQuantity
 end
 
@@ -272,8 +260,9 @@ function PANEL:addButton(symbol, delta)
         else
             surface.SetDrawColor(50, 50, 50, 150)
         end
+
         surface.DrawRect(0, 0, w, h)
-        draw.SimpleText(symbol, "LiliaFont.24", w/2, h/2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(symbol, "LiliaFont.24", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     button.DoClick = function(btn)
@@ -290,10 +279,7 @@ function PANEL:addButton(symbol, delta)
         end
     end
 
-    button.OnMouseReleased = function(btn, mousecode)
-        if mousecode == MOUSE_LEFT then parent.autoDelta = nil end
-    end
-
+    button.OnMouseReleased = function(btn, mousecode) if mousecode == MOUSE_LEFT then parent.autoDelta = nil end end
     return button
 end
 

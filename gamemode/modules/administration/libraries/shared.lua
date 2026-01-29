@@ -1,4 +1,4 @@
-function MODULE:CanPlayerModifyConfig(client)
+﻿function MODULE:CanPlayerModifyConfig(client)
     return client:hasPrivilege("accessEditConfigurationMenu")
 end
 
@@ -236,6 +236,7 @@ MODULE:SetPositionCallback("Class Spawn Adder", {
                 ang = angle_zero,
                 map = lia.data.getEquivalencyMap(game.GetMap())
             })
+
             lia.data.set("spawns", data)
             lia.log.add(client, "classSpawnAdd", classData.name)
             client:notifySuccessLocalized("spawnAdded", L(classData.name))

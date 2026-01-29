@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.Items = {}
     self:SetSize(200, 0)
@@ -15,9 +15,7 @@ function PANEL:Init()
     self.maxHeight = nil
     self._scrollPanel = nil
     self._usingScroll = false
-    if RegisterDermaMenuForClose then
-        RegisterDermaMenuForClose(self)
-    end
+    if RegisterDermaMenuForClose then RegisterDermaMenuForClose(self) end
     self.Think = function()
         if CurTime() - self._openTime < 0.1 then return end
         if (input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT)) and not self:IsChildHovered() then
@@ -427,7 +425,6 @@ end
 
 function PANEL:Open(x, y, skipanimation, ownerpanel)
     if RegisterDermaMenuForClose then RegisterDermaMenuForClose(self) end
-    
     if x and y then
         self:SetPos(x, y)
     else
@@ -435,11 +432,10 @@ function PANEL:Open(x, y, skipanimation, ownerpanel)
         y = y or gui.MouseY()
         self:SetPos(x, y)
     end
-    
+
     self:InvalidateLayout(true)
     local w, h = self:GetWide(), self:GetTall()
     self:SetSize(w, h)
-    
     local screenW, screenH = ScrW(), ScrH()
     local posX, posY = self:GetPos()
     if posY + h > screenH then
@@ -450,12 +446,10 @@ function PANEL:Open(x, y, skipanimation, ownerpanel)
             posY = screenH - h
         end
     end
-    if posX + w > screenW then
-        posX = screenW - w
-    end
+
+    if posX + w > screenW then posX = screenW - w end
     if posY < 1 then posY = 1 end
     if posX < 1 then posX = 1 end
-    
     local p = self:GetParent()
     if IsValid(p) and p:IsModal() then
         posX, posY = p:ScreenToLocal(posX, posY)
@@ -468,12 +462,11 @@ function PANEL:Open(x, y, skipanimation, ownerpanel)
         self:SetPos(posX, posY)
         self:MakePopup()
     end
-    
+
     self:SetVisible(true)
     self:SetMouseInputEnabled(true)
     self:SetKeyboardInputEnabled(false)
     self._openTime = CurTime()
-    
     if not skipanimation then
         self:SetAlpha(0)
         self:AlphaTo(255, 0.1, 0)
@@ -489,9 +482,7 @@ function PANEL:Open()
     self:SetMouseInputEnabled(true)
     self:SetKeyboardInputEnabled(false)
     self._openTime = CurTime()
-    if not self:GetParent() or not self:GetParent():IsModal() then
-        self:MakePopup()
-    end
+    if not self:GetParent() or not self:GetParent():IsModal() then self:MakePopup() end
 end
 
 function PANEL:CloseMenu()
@@ -506,9 +497,7 @@ function PANEL:GetOpenSubMenu()
 end
 
 function PANEL:GetDeleteSelf()
-    if self.deleteSelf == nil then
-        return true
-    end
+    if self.deleteSelf == nil then return true end
     return self.deleteSelf == true
 end
 
@@ -704,7 +693,6 @@ function PANEL:SetPadding(left, top, right, bottom)
 end
 
 vgui.Register("liaDermaMenu", PANEL, "DPanel")
-
 if not _liaDermaMenuOverride then
     _liaDermaMenuOverride = true
     local oldDermaMenu = DermaMenu
@@ -716,6 +704,7 @@ if not _liaDermaMenuOverride then
                 CloseDermaMenus()
             end
         end
+
         local menu = vgui.Create("liaDermaMenu", parent)
         if not IsValid(menu) then
             ErrorNoHalt("[Lilia] Failed to create liaDermaMenu! Falling back to DMenu.\n")
