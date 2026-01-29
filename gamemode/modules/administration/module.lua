@@ -1,4 +1,4 @@
-﻿MODULE.name = "administrationModuleName"
+MODULE.name = "administrationModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "administrationToolsDescription"
@@ -332,6 +332,12 @@ MODULE.Privileges = {
         ID = "alwaysSpawnAdminStick",
         MinAccess = "superadmin",
         Category = "adminStick",
+    },
+    {
+        Name = "usePositionTool",
+        ID = "usePositionTool",
+        MinAccess = "superadmin",
+        Category = "categoryStaffTools",
     },
     {
         Name = "commandBan",

@@ -159,6 +159,7 @@ function lia.net.readBigTable(netStr, callback)
         local idx = net.ReadUInt(16)
         local clen = net.ReadUInt(16)
         local chunk = net.ReadData(clen)
+        if not lia.net.buffers[netStr] then lia.net.buffers[netStr] = {} end
         local buffers = lia.net.buffers[netStr]
         local state = buffers[sid]
         if not state then

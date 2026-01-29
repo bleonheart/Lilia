@@ -145,7 +145,9 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
                     })
 
                     local pnl = row.panel
-                    pnl.Paint = function(_, w, h)
+                    local basePaint = pnl.Paint
+                    pnl.Paint = function(panel, w, h)
+                        if basePaint then basePaint(panel, w, h) end
                         local char = client:getChar()
                         local hasFlag = char and char:hasFlags(flagName)
                         local icon = hasFlag and "checkbox.png" or "unchecked.png"
