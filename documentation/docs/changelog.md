@@ -1,5 +1,105 @@
 # Changelog
 
+## Version 7.313 (January 29, 2026)
+
+### Changes
+
+- Starting Attributes
+- Successfully updated workshop Lilia to 7.311
+- Font Name Limit since some retards cant limit their font names
+- More Broad Backdoor Checker
+- Docs
+- Successfully updated workshop Lilia to 7.37
+- Iconic Pre-Load
+- General Derma Changes
+- Removed Useless Print
+- Better Third Person Math
+- Added Backdoor Checker
+- Added Dev Flag lia.module.stopModulesFromLoading
+- Cleared Net Queue Cache While Reloading
+- Fix Admin Mode Keybind
+- Net Profiler
+- Position Tool
+- Faction Roster
+- Successfully updated workshop Lilia to 7.295
+- Better Looking Privileges Tab
+- Fixed Weird Coloring of the Logo
+
+## Version 7.311 (January 29, 2026)
+
+### Changes
+
+- Font Name Limit since some retards cant limit their font names
+- More Broad Backdoor Checker
+- Docs
+- Successfully updated workshop Lilia to 7.37
+- Iconic Pre-Load
+- General Derma Changes
+- Removed Useless Print
+- Better Third Person Math
+- Added Backdoor Checker
+- Added Dev Flag lia.module.stopModulesFromLoading
+- Cleared Net Queue Cache While Reloading
+- Fix Admin Mode Keybind
+- Net Profiler
+- Position Tool
+- Faction Roster
+- Successfully updated workshop Lilia to 7.295
+- Better Looking Privileges Tab
+- Fixed Weird Coloring of the Logo
+- Delayed SAM Compatibility just to be sure
+- Successfully updated workshop Lilia to 7.291
+
+## Version 7.37 (January 29, 2026)
+
+### Changes
+
+- Iconic Pre-Load
+- General Derma Changes
+- Removed Useless Print
+- Better Third Person Math
+- Added Backdoor Checker
+- Added Dev Flag lia.module.stopModulesFromLoading
+- Cleared Net Queue Cache While Reloading
+- Fix Admin Mode Keybind
+- Net Profiler
+- Position Tool
+- Faction Roster
+- Successfully updated workshop Lilia to 7.295
+- Better Looking Privileges Tab
+- Fixed Weird Coloring of the Logo
+- Delayed SAM Compatibility just to be sure
+- Successfully updated workshop Lilia to 7.291
+- More Class and Faction Fields
+- Successfully updated workshop Lilia to 7.289
+- Fixed Missing Entries From Generator
+- Successfully updated workshop Lilia to 7.287
+
+## Version 7.295 (January 25, 2026)
+
+### Changes
+
+- Better Looking Privileges Tab
+- Fixed Weird Coloring of the Logo
+- Delayed SAM Compatibility just to be sure
+- Successfully updated workshop Lilia to 7.291
+- More Class and Faction Fields
+- Successfully updated workshop Lilia to 7.289
+- Fixed Missing Entries From Generator
+- Successfully updated workshop Lilia to 7.287
+- Pretty Print
+- Removed Redudant Returns Nil From Docs
+- Added lia.item.registerItem
+- Added FACTION.payTimer
+- ChatBox Command Finder now  supports high case
+- Better Looking Character Creation
+- Improved GetPriceOverride
+- Huge Documentation Changes
+- Successfully updated workshop Lilia to 7.278
+- Fixed Slowdown not happening
+- Argument Mistmatch
+- Successfully updated workshop Lilia to 7.275
+
 ## Version 7.291 (January 24, 2026)
 
 ### Changes
