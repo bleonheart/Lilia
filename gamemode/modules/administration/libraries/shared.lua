@@ -278,10 +278,10 @@ MODULE:SetPositionCallback("Class Spawn Adder", {
                 local classData = lia.class.get(tonumber(classID))
                 local label = classData and (classData.name and L(classData.name) or tostring(classID)) or tostring(classID)
                 for i = 1, #(classSpawns or {}) do
-                    local data = classSpawns[i]
-                    local pos = data.pos or data.position
+                    local spawnData = classSpawns[i]
+                    local pos = spawnData.pos or spawnData.position
                     if isvector(pos) then
-                        local map = data.map and (isstring(data.map) and data.map:lower() or tostring(data.map):lower()) or nil
+                        local map = spawnData.map and (isstring(spawnData.map) and spawnData.map:lower() or tostring(spawnData.map):lower()) or nil
                         if not map or map == curMap then
                             list[#list + 1] = {
                                 pos = pos,

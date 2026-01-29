@@ -2116,13 +2116,12 @@ function MODULE:OpenAdminStickUI(tgt)
     local menu = lia.derma.dermaMenu()
     if not IsValid(menu) then return end
     AdminStickMenu = menu
-    print("[AdminStickHUD] Menu OPENED, tgt IsPlayer=" .. tostring(tgt:IsPlayer()) .. " tgt class=" .. tostring(tgt:GetClass()))
     local baseThink = menu.Think
-    menu.Think = function(self)
-        if baseThink then baseThink(self) end
-        if IsValid(self) then
-            local mx, my = self:GetPos()
-            local mw, mh = self:GetWide(), self:GetTall()
+    menu.Think = function(panel)
+        if baseThink then baseThink(panel) end
+        if IsValid(panel) then
+            local mx, my = panel:GetPos()
+            local mw, mh = panel:GetWide(), panel:GetTall()
             if mw > 0 and mh > 0 then
                 AdminStickMenuPositionCache = {
                     x = mx,
@@ -2131,11 +2130,6 @@ function MODULE:OpenAdminStickUI(tgt)
                     h = mh,
                     updateTime = CurTime()
                 }
-
-                if CurTime() - AdminStickDebugLastPrint > 1 then
-                    AdminStickDebugLastPrint = CurTime()
-                    print("[AdminStickHUD] Menu Think: cache updated x=" .. mx .. " y=" .. my .. " w=" .. mw .. " h=" .. mh)
-                end
             end
         end
     end
@@ -4359,7 +4353,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         end
 
         minTextWidth = minTextWidth + 24
-        local hudX, hudY, hudAlignX, hudAlignY, hudHeight, hudWidth, hudAutoSize
+        local hudX, hudY, hudAlignX, hudAlignY, hudWidth, hudAutoSize
         local useSidePosition = AdminStickIsOpen
         local cacheValid = AdminStickMenuPositionCache and (AdminStickMenuPositionCache.updateTime or 0) >= (AdminStickMenuOpenTime or 0) - 0.05
         if useSidePosition and cacheValid then
@@ -4372,7 +4366,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudY = menuY + (menuH / 2)
             hudAlignX = TEXT_ALIGN_CENTER
             hudAlignY = TEXT_ALIGN_CENTER
-            hudHeight = nil
             hudAutoSize = false
         elseif useSidePosition then
             hudWidth = math.max(target:IsPlayer() and (ScrW() * 0.2) or (ScrW() * 0.28), minTextWidth)
@@ -4380,7 +4373,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudY = ScrH() * 0.5
             hudAlignX = TEXT_ALIGN_CENTER
             hudAlignY = TEXT_ALIGN_CENTER
-            hudHeight = nil
             hudAutoSize = false
         else
             AdminStickMenuPositionCache = nil
@@ -4388,7 +4380,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudY = IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 170) or (ScrH() - 30)
             hudAlignX = TEXT_ALIGN_CENTER
             hudAlignY = TEXT_ALIGN_BOTTOM
-            hudHeight = nil
             hudWidth = nil
             hudAutoSize = true
         end

@@ -3694,7 +3694,6 @@ end
 ]]
 function lia.derma.requestDropdown(title, options, callback, defaultValue)
     if IsValid(lia.gui.menuRequestDropdown) then lia.gui.menuRequestDropdown:Remove() end
-    local numOptions = istable(options) and #options or 0
     local frameHeight = 200
     local frame = vgui.Create("liaFrame")
     frame:SetSize(340, frameHeight)

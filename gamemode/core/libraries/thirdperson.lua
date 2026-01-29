@@ -42,11 +42,9 @@ hook.Add("CalcView", "liaThirdPersonCalcView", function(client)
         local traceResult
         if isNoclip then
             view.origin = traceData.endpos
-            traceResult = nil
         else
             traceResult = util.TraceLine(traceData)
             local hitDistance = traceData.start:Distance(traceResult.HitPos)
-            local desiredDistance = clmp(lia.option.get("thirdPersonDistance"), 0, maxValues.distance)
             if traceResult.Hit then
                 local minDistanceFromWall = 10
                 local direction = (traceData.endpos - traceData.start):GetNormalized()

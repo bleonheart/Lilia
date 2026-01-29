@@ -463,9 +463,9 @@ net.Receive("liaSetFeaturePosition", function(_, client)
         callback.onRun(pos, client, typeId)
         timer.Simple(1, function()
             if not IsValid(client) then return end
-            local callback = MODULE.positionCallbacks and MODULE.positionCallbacks[typeId]
-            if callback and callback.onSelect then
-                callback.onSelect(client, function(positions, count)
+            local innerCallback = MODULE.positionCallbacks and MODULE.positionCallbacks[typeId]
+            if innerCallback and innerCallback.onSelect then
+                innerCallback.onSelect(client, function(positions, count)
                     net.Start("liaFeaturePositions")
                     net.WriteString(typeId)
                     net.WriteUInt(count or #positions, 16)
