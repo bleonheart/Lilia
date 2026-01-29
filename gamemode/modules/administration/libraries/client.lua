@@ -4,7 +4,6 @@ AdminStickMenu = nil
 AdminStickWarnings = {}
 AdminStickMenuPositionCache = nil
 AdminStickMenuOpenTime = 0
-AdminStickDebugLastPrint = 0
 MODULE.adminStickCategories = MODULE.adminStickCategories or {}
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {}
 local playerInfoLabel = L("player") .. " " .. L("information")
@@ -4363,7 +4362,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         local hudX, hudY, hudAlignX, hudAlignY, hudHeight, hudWidth, hudAutoSize
         local useSidePosition = AdminStickIsOpen
         local menuValid = IsValid(AdminStickMenu)
-        local branch = ""
         local cacheValid = AdminStickMenuPositionCache and (AdminStickMenuPositionCache.updateTime or 0) >= (AdminStickMenuOpenTime or 0) - 0.05
         local hasCache = AdminStickMenuPositionCache and true or false
         if useSidePosition and cacheValid then
@@ -4378,7 +4376,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudAlignY = TEXT_ALIGN_CENTER
             hudHeight = nil
             hudAutoSize = false
-            branch = string.format("CACHE hudX=%.0f hudY=%.0f", hudX, hudY)
         elseif useSidePosition then
             hudWidth = math.max(target:IsPlayer() and (ScrW() * 0.2) or (ScrW() * 0.28), minTextWidth)
             hudX = ScrW() * 0.25 - (hudWidth / 2)
@@ -4387,7 +4384,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudAlignY = TEXT_ALIGN_CENTER
             hudHeight = nil
             hudAutoSize = false
-            branch = "FALLBACK (side no cache)"
         else
             AdminStickMenuPositionCache = nil
             hudX = ScrW() * 0.5
@@ -4397,12 +4393,6 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudHeight = nil
             hudWidth = nil
             hudAutoSize = true
-            branch = "BOTTOM (menu not open)"
-        end
-
-        if CurTime() - AdminStickDebugLastPrint > 1 then
-            AdminStickDebugLastPrint = CurTime()
-            print(string.format("[AdminStickHUD] targetIsPlayer=%s IsOpen=%s menuValid=%s hasCache=%s cacheValid=%s -> %s", tostring(target:IsPlayer()), tostring(AdminStickIsOpen), tostring(menuValid), tostring(hasCache), tostring(cacheValid), branch))
         end
 
         local bgColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
