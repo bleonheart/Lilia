@@ -88,27 +88,6 @@ During class definition
 
 ---
 
-<a id="requirements"></a>
-### requirements
-
-#### 📋 Purpose
-Provides human-readable requirements or notes displayed in character screens
-
-#### ⏰ When Called
-During class definition
-
-#### 💡 Example Usage
-
-```lua
-    CLASS.requirements = {
-        "req_police_clearance",
-        "req_training_complete"
-    }
-
-```
-
----
-
 <a id="faction"></a>
 ### faction
 

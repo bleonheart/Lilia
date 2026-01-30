@@ -653,27 +653,12 @@ function PANEL:addClassDetails(parent, cl)
     }
 
     add(L("bloodColor") .. ": " .. (bloodMap[cl.bloodcolor] or L("bloodRed")))
-    if cl.requirements then
-        local req
-        if istable(cl.requirements) then
-            local reqs = {}
-            for _, v in ipairs(cl.requirements) do
-                reqs[#reqs + 1] = L(v)
-            end
-
-            req = table.concat(reqs, ", ")
-        else
-            req = L(tostring(cl.requirements))
-        end
-
-        add(L("requirements") .. ": " .. req)
-    end
 end
 
 function PANEL:addJoinButton(parent, cl, canBe)
     local isCurrent = LocalPlayer():getChar() and LocalPlayer():getChar():getClass() == cl.index
     local btn = parent:Add("liaMediumButton")
-    btn:SetText(isCurrent and L("alreadyInClass") or canBe and L("joinClass") or L("classRequirementsNotMet"))
+    btn:SetText(isCurrent and L("alreadyInClass") or L("joinClass"))
     btn:SetTall(45)
     btn:Dock(BOTTOM)
     btn:DockMargin(10, 10, 10, 10)

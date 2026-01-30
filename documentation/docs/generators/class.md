@@ -50,11 +50,7 @@
             <small>0 = unlimited, decimals = percentage of faction (e.g., 0.5 = 50%)</small>
         </div>
 
-        <div class="input-group">
-            <label for="class-requirements">Requirements:</label>
-            <textarea id="class-requirements" placeholder='{"attribute": "strength", "value": 5}' rows="2"></textarea>
-            <small>JSON format: e.g., {"attribute": "strength", "value": 5}</small>
-        </div>
+
     </div>
 
     <div class="generator-section">
@@ -419,7 +415,6 @@ function generateClass() {
     const isWhitelisted = document.getElementById('is-whitelisted').checked;
     const isDefault = document.getElementById('is-default').checked;
     const limit = document.getElementById('class-limit').value || '0';
-    const requirements = document.getElementById('class-requirements').value.trim();
 
     const health = document.getElementById('class-health').value.trim();
     const armor = document.getElementById('class-armor').value.trim();
@@ -450,19 +445,11 @@ function generateClass() {
         `CLASS.faction = ${faction}`
     ];
 
-    if (isWhitelisted || isDefault || limit !== '0' || requirements) {
+    if (isWhitelisted || isDefault || limit !== '0') {
         lines.push('', '-- Access Control');
         if (isWhitelisted) lines.push('CLASS.isWhitelisted = true');
         if (isDefault) lines.push('CLASS.isDefault = true');
         if (limit !== '0') lines.push(`CLASS.limit = ${limit}`);
-        if (requirements) {
-            try {
-                JSON.parse(requirements);
-                lines.push(`CLASS.requirements = ${requirements}`);
-            } catch (e) {
-                lines.push(`-- CLASS.requirements = ${requirements} -- Invalid JSON format`);
-            }
-        }
     }
 
     if (model || colorInput || skin || logo || scale) {

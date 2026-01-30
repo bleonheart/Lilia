@@ -9,8 +9,4 @@ arrange:
   - definitions
   - compatibility.md
   - changelog.md
-  - Definitions
-  - Hooks
-  - Libraries
-  - Meta
   - stylesheets

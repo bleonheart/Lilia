@@ -99,22 +99,6 @@ CLASS.name = ""
 CLASS.desc = ""
 --[[
     Purpose:
-        Provides human-readable requirements or notes displayed in character screens
-
-    When Called:
-        During class definition
-
-    Example Usage:
-        ```lua
-        CLASS.requirements = {
-            "req_police_clearance",
-            "req_training_complete"
-        }
-        ```
-]]
-CLASS.requirements = nil
---[[
-    Purpose:
         Sets the faction ID this class belongs to
 
     When Called:
