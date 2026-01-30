@@ -60,6 +60,7 @@ local function loadExtras(path)
         config = "shared",
         commands = "shared",
         networking = "server",
+        items = "shared",
     }
 
     local ModuleFolders = {"config", "dependencies", "libs", "hooks", "libraries", "commands", "netcalls", "meta", "derma"}
