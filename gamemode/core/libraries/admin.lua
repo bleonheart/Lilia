@@ -3,7 +3,7 @@
     File: administrator.md
 ]]
 --[[
-    Administrator Library
+    Administrator
 
     Comprehensive user group and privilege management system for the Lilia framework.
 ]]

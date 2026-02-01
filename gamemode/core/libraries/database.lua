@@ -3,7 +3,7 @@
     File: db.md
 ]]
 --[[
-    Database Library
+    Database
 
     Comprehensive database management system with SQLite support for the Lilia framework.
 ]]

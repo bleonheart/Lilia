@@ -3,7 +3,7 @@
     File: config.md
 ]]
 --[[
-    Configuration Library
+    Configuration
 
     Comprehensive user-configurable settings management system for the Lilia framework.
 ]]

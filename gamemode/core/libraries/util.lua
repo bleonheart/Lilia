@@ -3,7 +3,7 @@
     File: util.md
 ]]
 --[[
-    Utility Library
+    Utility
 
     Common operations and helper functions for the Lilia framework.
 ]]

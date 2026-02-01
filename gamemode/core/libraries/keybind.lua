@@ -3,7 +3,7 @@
     File: keybind.md
 ]]
 --[[
-    Keybind Library
+    Keybind
 
     Keyboard binding registration, storage, and execution system for the Lilia framework.
 ]]

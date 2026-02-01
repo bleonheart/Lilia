@@ -3,7 +3,7 @@
     File: module.md
 ]]
 --[[
-    Modularity Library
+    Modularity
 
     Module loading, initialization, and lifecycle management system for the Lilia framework.
 ]]

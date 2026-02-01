@@ -3,7 +3,7 @@
     File: command.md
 ]]
 --[[
-    Commands Library
+    Commands
 
     Comprehensive command registration, parsing, and execution system for the Lilia framework.
 ]]
@@ -248,9 +248,9 @@ function lia.command.hasAccess(client, command, data)
     local char = IsValid(client) and client.getChar and client:getChar()
     if char then
         local faction = lia.faction.indices[char:getFaction()]
-        if faction and faction.commands and faction.commands[command] then return true, privilegeName end
+        if faction and faction.commands and table.HasValue(faction.commands, command) then return true, privilegeName end
         local classData = lia.class.list[char:getClass()]
-        if classData and classData.commands and classData.commands[command] then return true, privilegeName end
+        if classData and classData.commands and table.HasValue(classData.commands, command) then return true, privilegeName end
     end
     return hasAccess, privilegeName
 end

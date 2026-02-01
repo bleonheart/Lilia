@@ -3,7 +3,7 @@
     File: data.md
 ]]
 --[[
-    Data Library
+    Data
 
     Data persistence, serialization, and management system for the Lilia framework.
 ]]

@@ -3,7 +3,7 @@
     File: option.md
 ]]
 --[[
-    Option Library
+    Option
 
     User-configurable settings management system for the Lilia framework.
 ]]

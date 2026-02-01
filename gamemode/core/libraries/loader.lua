@@ -3,7 +3,7 @@
     File: loader.md
 ]]
 --[[
-    Loader Library
+    Loader
     Core initialization and module loading system for the Lilia framework.
 ]]
 --[[
@@ -281,7 +281,7 @@ local ConditionalFiles = {
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/arccw.lua",
-        global = "ArcCW",
+        global = "ArcCWInstalled",
         name = "ArcCW",
         realm = "server"
     },

@@ -3,7 +3,7 @@
     File:  player.md
 ]]
 --[[
-    Player Meta
+    Player
 
     Player management system for the Lilia framework.
 ]]

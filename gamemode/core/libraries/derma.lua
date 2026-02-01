@@ -3,7 +3,7 @@
     File: derma.md
 ]]
 --[[
-    Derma Library
+    Derma
 
     Advanced UI rendering and interaction system for the Lilia framework.
 ]]
