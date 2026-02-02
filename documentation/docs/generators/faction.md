@@ -1,504 +1,210 @@
-<p align="center">
- <h2 style="text-align: center;">Faction Generator</h2>
-</p>
+<div class="generator-grid">
+  <!-- Input Column -->
+  <div class="generator-card form-card">
+    <div class="generator-section">
+      <div class="input-group">
+        <label for="faction-index">Faction Index:</label>
+        <input type="text" id="faction-index" placeholder="e.g., FACTION_POLICE">
+        <small>The unique identifier for this faction (e.g., FACTION_POLICE)</small>
+      </div>
 
-<div id="faction-generator">
-  <div class="generator-section">
-  <h3>Basic Information</h3>
-  <div class="input-group">
-  <label for="faction-index">Faction Index:</label>
-  <input type="text" id="faction-index" placeholder="e.g., FACTION_POLICE">
-  <small>The unique identifier for this faction (e.g., FACTION_POLICE)</small>
+      <div class="input-group">
+        <label for="faction-name">Faction Name:</label>
+        <input type="text" id="faction-name" placeholder="e.g., Police Department">
+      </div>
+
+      <div class="input-group">
+        <label for="faction-desc">Description:</label>
+        <textarea id="faction-desc" placeholder="e.g., Law enforcement officers responsible for maintaining order"></textarea>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="faction-color">Color (R,G,B):</label>
+          <input type="text" id="faction-color" placeholder="e.g., 0, 100, 255" pattern="\d{1,3},\s*\d{1,3},\s*\d{1,3}">
+          <small>Comma-separated RGB values (0-255)</small>
+        </div>
+
+        <div class="input-group">
+          <label for="faction-logo">Logo:</label>
+          <input type="text" id="faction-logo" placeholder="materials/ui/faction/police_logo.png">
+          <small>Logo material path or URL for scoreboard (leave empty for no logo)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="form-grid-3">
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="is-default" checked> Is Default Faction
+          </label>
+          <small>Can new characters join this faction by default?</small>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="one-char-only"> One Character Only
+          </label>
+          <small>Players can only have one character in this faction?</small>
+        </div>
+
+        <div class="input-group">
+          <label for="faction-limit">Player Limit:</label>
+          <input type="number" id="faction-limit" placeholder="0" min="0">
+          <small>0 = unlimited, decimals = percentage of server (e.g., 0.1 = 10%)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="input-group">
+        <label>Models:</label>
+        <div id="models-list" class="dynamic-list"></div>
+        <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
+        <small>Add player model paths</small>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="health">Health:</label>
+          <input type="number" id="health" placeholder="100" min="1">
+        </div>
+
+        <div class="input-group">
+          <label for="armor">Armor:</label>
+          <input type="number" id="armor" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="form-grid-3">
+        <div class="input-group">
+          <label for="run-speed">Run Speed:</label>
+          <input type="number" id="run-speed" placeholder="280" min="1">
+          <label><input type="checkbox" id="run-speed-multiplier"> Use as multiplier</label>
+        </div>
+
+        <div class="input-group">
+          <label for="walk-speed">Walk Speed:</label>
+          <input type="number" id="walk-speed" placeholder="150" min="1">
+          <label><input type="checkbox" id="walk-speed-multiplier"> Use as multiplier</label>
+        </div>
+
+        <div class="input-group">
+          <label for="jump-power">Jump Power:</label>
+          <input type="number" id="jump-power" placeholder="200" min="1">
+          <label><input type="checkbox" id="jump-power-multiplier"> Use as multiplier</label>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="pay">Pay/Salary:</label>
+          <input type="number" id="pay" placeholder="0" min="0">
+          <small>Currency amount per paycheck</small>
+        </div>
+
+        <div class="input-group">
+          <label for="pay-timer">Pay Timer (seconds):</label>
+          <input type="number" id="pay-timer" placeholder="300" min="1">
+          <small>Interval in seconds between paychecks (defaults to global salary interval if not set)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="input-group">
+        <label>Weapons:</label>
+        <div id="weapons-list" class="dynamic-list"></div>
+        <button onclick="addWeaponRow()" class="add-btn">+ Add Weapon</button>
+        <small>Add weapon classes</small>
+      </div>
+
+      <div class="input-group">
+        <label>Starting Items:</label>
+        <div id="items-list" class="dynamic-list"></div>
+        <button onclick="addItemRow()" class="add-btn">+ Add Item</button>
+        <small>Add item unique IDs</small>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="recognizes-globally"> Recognizes Globally
+        </label>
+        <small>Members are always globally recognized</small>
+      </div>
+
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="globally-recognized"> Globally Recognized
+        </label>
+        <small>Faction is globally recognizable to others</small>
+      </div>
+
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="member-auto-recognition"> Member Auto-Recognition
+        </label>
+        <small>Members automatically recognize each other</small>
+      </div>
+
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="scoreboard-hidden"> Hidden from Scoreboard
+        </label>
+        <small>Faction won't appear in scoreboard categories</small>
+      </div>
+
+      <div class="input-group">
+        <label for="scoreboard-priority">Scoreboard Priority:</label>
+        <input type="number" id="scoreboard-priority" placeholder="999" min="1">
+        <small>Lower numbers appear first in scoreboard (default: 999)</small>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="input-group">
+        <label>Custom Spawns:</label>
+        <div id="spawns-list" class="dynamic-list"></div>
+        <button onclick="addSpawnRow()" class="add-btn">+ Add Spawn Point</button>
+        <small>Map Name, Position Vector, Angle</small>
+      </div>
+
+      <div class="input-group">
+        <label>Main Menu Position:</label>
+        <div id="main-menu-list" class="dynamic-list"></div>
+        <button onclick="addMainMenuRow()" class="add-btn">+ Add Main Menu Position</button>
+        <small>Map Name (leave empty for all), Position Vector, Angle</small>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="input-group">
+        <label>Commands:</label>
+        <div id="commands-list" class="dynamic-list"></div>
+        <button onclick="addCommandRow()" class="add-btn">+ Add Command</button>
+        <small>Command Name, Enabled</small>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button onclick="generateFaction()" class="generate-btn">Generate Faction Code</button>
+      <button onclick="fillExampleFaction()" class="generate-btn example-btn">Generate Example</button>
+    </div>
   </div>
 
-  <div class="input-group">
-  <label for="faction-name">Faction Name:</label>
-  <input type="text" id="faction-name" placeholder="e.g., Police Department">
-  </div>
-
-  <div class="input-group">
-  <label for="faction-desc">Description:</label>
-  <textarea id="faction-desc" placeholder="e.g., Law enforcement officers responsible for maintaining order"></textarea>
-  </div>
-
-  <div class="input-group">
-  <label for="faction-color">Color (R,G,B):</label>
-  <input type="text" id="faction-color" placeholder="e.g., 0, 100, 255" pattern="\d{1,3},\s*\d{1,3},\s*\d{1,3}">
-  <small>Comma-separated RGB values (0-255)</small>
-  </div>
-
-  <div class="input-group">
-  <label for="faction-logo">Logo:</label>
-  <input type="text" id="faction-logo" placeholder="materials/ui/faction/police_logo.png">
-  <small>Logo material path or URL for scoreboard (leave empty for no logo)</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Access Control</h3>
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="is-default" checked> Is Default Faction
-  </label>
-  <small>Can new characters join this faction by default?</small>
-  </div>
-
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="one-char-only"> One Character Only
-  </label>
-  <small>Players can only have one character in this faction?</small>
-  </div>
-
-  <div class="input-group">
-  <label for="faction-limit">Player Limit:</label>
-  <input type="number" id="faction-limit" placeholder="0" min="0">
-  <small>0 = unlimited, decimals = percentage of server (e.g., 0.1 = 10%)</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Models</h3>
-  <div class="input-group">
-  <label>Models:</label>
-  <div id="models-list" class="dynamic-list"></div>
-  <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-  <small>Add player model paths</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Gameplay Properties</h3>
-  <div class="input-group">
-  <label for="health">Health:</label>
-  <input type="number" id="health" placeholder="100" min="1">
-  </div>
-
-  <div class="input-group">
-  <label for="armor">Armor:</label>
-  <input type="number" id="armor" placeholder="0" min="0">
-  </div>
-
-  <div class="input-group">
-  <label for="run-speed">Run Speed:</label>
-  <input type="number" id="run-speed" placeholder="280" min="1">
-  <label><input type="checkbox" id="run-speed-multiplier"> Use as multiplier</label>
-  </div>
-
-  <div class="input-group">
-  <label for="walk-speed">Walk Speed:</label>
-  <input type="number" id="walk-speed" placeholder="150" min="1">
-  <label><input type="checkbox" id="walk-speed-multiplier"> Use as multiplier</label>
-  </div>
-
-  <div class="input-group">
-  <label for="jump-power">Jump Power:</label>
-  <input type="number" id="jump-power" placeholder="200" min="1">
-  <label><input type="checkbox" id="jump-power-multiplier"> Use as multiplier</label>
-  </div>
-
-  <div class="input-group">
-  <label for="pay">Pay/Salary:</label>
-  <input type="number" id="pay" placeholder="0" min="0">
-  <small>Currency amount per paycheck</small>
-  </div>
-
-  <div class="input-group">
-  <label for="pay-timer">Pay Timer (seconds):</label>
-  <input type="number" id="pay-timer" placeholder="300" min="1">
-  <small>Interval in seconds between paychecks (defaults to global salary interval if not set)</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Weapons & Items</h3>
-  <div class="input-group">
-  <label>Weapons:</label>
-  <div id="weapons-list" class="dynamic-list"></div>
-  <button onclick="addWeaponRow()" class="add-btn">+ Add Weapon</button>
-  <small>Add weapon classes</small>
-  </div>
-
-  <div class="input-group">
-  <label>Starting Items:</label>
-  <div id="items-list" class="dynamic-list"></div>
-  <button onclick="addItemRow()" class="add-btn">+ Add Item</button>
-  <small>Add item unique IDs</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Special Features</h3>
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="recognizes-globally"> Recognizes Globally
-  </label>
-  <small>Members are always globally recognized</small>
-  </div>
-
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="globally-recognized"> Globally Recognized
-  </label>
-  <small>Faction is globally recognizable to others</small>
-  </div>
-
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="member-auto-recognition"> Member Auto-Recognition
-  </label>
-  <small>Members automatically recognize each other</small>
-  </div>
-
-  <div class="input-group">
-  <label>
-  <input type="checkbox" id="scoreboard-hidden"> Hidden from Scoreboard
-  </label>
-  <small>Faction won't appear in scoreboard categories</small>
-  </div>
-
-  <div class="input-group">
-  <label for="scoreboard-priority">Scoreboard Priority:</label>
-  <input type="number" id="scoreboard-priority" placeholder="999" min="1">
-  <small>Lower numbers appear first in scoreboard (default: 999)</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Spawns & Position</h3>
-  <div class="input-group">
-  <label>Custom Spawns:</label>
-  <div id="spawns-list" class="dynamic-list"></div>
-  <button onclick="addSpawnRow()" class="add-btn">+ Add Spawn Point</button>
-  <small>Map Name, Position Vector, Angle</small>
-  </div>
-
-  <div class="input-group">
-  <label>Main Menu Position:</label>
-  <div id="main-menu-list" class="dynamic-list"></div>
-  <button onclick="addMainMenuRow()" class="add-btn">+ Add Main Menu Position</button>
-  <small>Map Name (leave empty for all), Position Vector, Angle</small>
-  </div>
-  </div>
-
-  <div class="generator-section">
-  <h3>Commands</h3>
-  <div class="input-group">
-  <label>Commands:</label>
-  <div id="commands-list" class="dynamic-list"></div>
-  <button onclick="addCommandRow()" class="add-btn">+ Add Command</button>
-  <small>Command Name, Enabled</small>
-  </div>
-  </div>
-
-
-  <div class="button-group">
-  <button onclick="generateFaction()" class="generate-btn">Generate Faction Code</button>
-  <button onclick="fillExampleFaction()" class="generate-btn example-btn">Generate Example</button>
+  <!-- Output Column -->
+  <div class="generator-card output-card">
+    <div class="card-header">
+      <h3>Generated Code</h3>
+    </div>
+    <textarea id="output-code" class="generator-code-output" readonly></textarea>
   </div>
 </div>
-
-## Generated Code
-
-```lua
--- Generated faction code will appear here after clicking "Generate Faction Code"
-```
-
-<style>
-/* Material Design inspired styling for Lilia theme */
-#faction-generator {
-  max-width: 1100px;
-  margin: 0 auto;
-  font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.75;
-}
-
-.generator-section {
-  background: var(--md-default-fg-color--lightest);
-  border: 1px solid var(--md-default-fg-color--lighter);
-  border-radius: 14px;
-  padding: 28px;
-  margin-bottom: 28px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease;
-}
-
-[data-md-color-scheme="slate"] .generator-section {
-  background: var(--md-default-fg-color--dark);
-  border-color: var(--md-default-fg-color--light);
-}
-
-.generator-section:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.generator-section h3 {
-  margin: -8px -8px 24px -8px;
-  padding: 18px 24px;
-  background: linear-gradient(135deg,#009688 0%,#b39ddb 100%);
-  color: white;
-  border-radius: 8px 8px 0 0;
-  font-weight: 500;
-  font-size: 1.6em;
-  letter-spacing: 0.02em;
-}
-
-[data-md-color-scheme="slate"] .generator-section h3 {
-  background: linear-gradient(135deg,#26a69a 0%,#d1c4e9 100%);
-}
-
-.input-group {
-  margin-bottom: 22px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: var(--md-default-fg-color);
-  font-size: 1.15em;
-}
-
-.input-group input[type="text"],
-.input-group input[type="number"],
-.input-group textarea {
-  width: 100%;
-  padding: 14px 18px;
-  border: 2px solid var(--md-default-fg-color--lighter);
-  border-radius: 10px;
-  font-family: 'Roboto Mono', 'Courier New', monospace;
-  font-size: 19px;
-  background: var(--md-default-fg-color--lightest);
-  color: var(--md-default-fg-color);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  box-sizing: border-box;
-}
-
-[data-md-color-scheme="slate"] .input-group input[type="text"],
-[data-md-color-scheme="slate"] .input-group input[type="number"],
-[data-md-color-scheme="slate"] .input-group textarea {
-  background: var(--md-default-fg-color--dark);
-  border-color: var(--md-default-fg-color--light);
-  color: var(--md-default-fg-color--light);
-}
-
-.input-group input[type="text"]:focus,
-.input-group input[type="number"]:focus,
-.input-group textarea:focus {
-  outline: none;
-  border-color:#009688;
-  box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
-}
-
-[data-md-color-scheme="slate"] .input-group input[type="text"]:focus,
-[data-md-color-scheme="slate"] .input-group input[type="number"]:focus,
-[data-md-color-scheme="slate"] .input-group textarea:focus {
-  border-color:#26a69a;
-  box-shadow: 0 0 0 3px rgba(38, 166, 154, 0.2);
-}
-
-.input-group textarea {
-  resize: vertical;
-  min-height: 80px;
-  line-height: 1.4;
-}
-
-.input-group small {
-  display: block;
-  color: var(--md-default-fg-color--light);
-  font-style: normal;
-  margin-top: 6px;
-  font-size: 1.05em;
-}
-
-[data-md-color-scheme="slate"] .input-group small {
-  color: var(--md-default-fg-color--lighter);
-}
-
-.input-group label input[type="checkbox"] {
-  width: auto;
-  margin-right: 10px;
-  accent-color:#009688;
-}
-
-[data-md-color-scheme="slate"] .input-group label input[type="checkbox"] {
-  accent-color:#26a69a;
-}
-
-/* Button group for multiple actions */
-.button-group {
-  display: flex;
-  gap: 16px;
-  margin: 28px 0;
-}
-
-.generate-btn {
-  background: linear-gradient(135deg,#009688 0%,#b39ddb 100%);
-  color: white;
-  border: none;
-  padding: 18px 34px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: 600;
-  display: block;
-  width: 100%;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 12px rgba(0, 150, 136, 0.3);
-}
-
-.example-btn {
-  background: linear-gradient(135deg,#673ab7 0%,#00bcd4 100%);
-  box-shadow: 0 4px 12px rgba(103, 58, 183, 0.3);
-}
-
-[data-md-color-scheme="slate"] .generate-btn {
-  background: linear-gradient(135deg,#26a69a 0%,#d1c4e9 100%);
-  box-shadow: 0 4px 12px rgba(38, 166, 154, 0.3);
-}
-
-[data-md-color-scheme="slate"] .example-btn {
-  background: linear-gradient(135deg,#7e57c2 0%,#26c6da 100%);
-  box-shadow: 0 4px 12px rgba(126, 87, 194, 0.3);
-}
-
-.generate-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 150, 136, 0.4);
-}
-
-.example-btn:hover {
-  box-shadow: 0 6px 20px rgba(103, 58, 183, 0.4);
-}
-
-[data-md-color-scheme="slate"] .generate-btn:hover {
-  box-shadow: 0 6px 20px rgba(38, 166, 154, 0.4);
-}
-
-.generate-btn:active {
-  transform: translateY(0);
-}
-
-/* Code output styling */
-.hljs {
-  background: var(--md-code-bg-color) !important;
-  color: var(--md-code-fg-color) !important;
-}
-
-pre {
-  background: var(--md-code-bg-color) !important;
-  border: 1px solid var(--md-default-fg-color--lighter) !important;
-  border-radius: 8px !important;
-  padding: 20px !important;
-  overflow-x: auto !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-}
-
-code {
-  font-family: 'Roboto Mono', 'Courier New', monospace !important;
-  font-size: 16px !important;
-  line-height: 1.5 !important;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
- #faction-generator {
-  margin: 0 16px;
-  }
-
-  .generator-section {
-  padding: 18px;
-  margin-bottom: 18px;
-  }
-
-  .generator-section h3 {
-  font-size: 1.4em;
-  padding: 14px 18px;
-  }
-
-  .generate-btn {
-  padding: 16px 26px;
-  font-size: 19px;
-  }
-}
-
-/* Material Design elevation */
-.md-typeset .admonition {
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-/* Dynamic List Styles */
-.dynamic-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.dynamic-row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.dynamic-row input[type="text"] {
-  flex: 1;
-  margin-bottom: 0 !important; /* Override input-group styling */
-}
-
-.dynamic-row .small-input {
-  flex: 0.5;
-}
-
-.remove-btn {
-  background:#e57373;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  width: 36px;
-  height: 36px;
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.remove-btn:hover {
-  background:#f44336;
-}
-
-.add-btn {
-  background:#4db6ac;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  width: auto;
-  display: inline-block;
-  margin-bottom: 5px;
-}
-
-.add-btn:hover {
-  background:#009688;
-}
-
-.checkbox-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-}
-</style>
 
 <script>
 // Helper to create a generic text input row
@@ -648,7 +354,7 @@ function generateFaction() {
 
   const lines = [
   '-- Copy and paste this code into your faction file',
-  `-- Example: gamemode/factions/${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.lua`,
+  `-- Example: [schema folder]/factions/${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.lua`,
   '',
   `FACTION.name = ${JSON.stringify(name)}`,
   `FACTION.desc = ${JSON.stringify(desc)}`,
@@ -769,14 +475,9 @@ function generateFaction() {
 
   const code = `${lines.join('\n')}\n`;
 
-  const codeBlock = document.querySelector('code');
-  if (codeBlock) {
-  codeBlock.textContent = code;
-  }
-
-  const preElement = document.querySelector('pre');
-  if (preElement) {
-  preElement.innerHTML = `<code>${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
+  const outputBox = document.getElementById('output-code');
+  if (outputBox) {
+    outputBox.value = code;
   }
 }
 

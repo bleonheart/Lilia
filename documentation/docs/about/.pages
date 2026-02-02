@@ -1,6 +1,6 @@
 title: About
 arrange:
  - index.md
- - Getting Started.md
+ - installation.md
  - compatibility.md
  - features.md

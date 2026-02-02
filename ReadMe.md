@@ -30,7 +30,7 @@
 ## Quick Start
 
 <p align="center">
- Follow our step-by-step <a href="https://liliaframework.github.io/installation/">installation tutorial</a> to set up Lilia on your server.
+ Follow our step-by-step <a href="https://liliaframework.github.io/about/installation/">installation tutorial</a> to set up Lilia on your server.
 </p>
 
 ## Documentation
@@ -53,5 +53,5 @@ We welcome contributions to both code and documentation! Here's how to get start
 
 <p align="center">
  <strong>Ready to build your dream roleplay server?</strong><br/>
- <a href="https://liliaframework.github.io/installation/">Get started with Lilia today!</a>
+ <a href="https://liliaframework.github.io/about/installation/">Get started with Lilia today!</a>
 </p>

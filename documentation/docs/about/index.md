@@ -11,9 +11,9 @@ General information about the Lilia framework, its features, and compatibility.
     <h3>Features</h3>
     <p>Essential features for server owners including permissions, sit rooms, and configuration.</p>
   </a>
-  <a href="./tools/" class="card">
-    <h3>Tools</h3>
-    <p>Overview of tools available in the Lilia framework.</p>
+  <a href="./installation/" class="card">
+    <h3>Installation</h3>
+    <p></p>
   </a>
 </div>
 

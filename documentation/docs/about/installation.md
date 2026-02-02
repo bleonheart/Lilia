@@ -60,10 +60,4 @@ Populate your server with items using our generators.
 
 Expand your server's functionality by placing custom modules in the `gamemode/modules` directory.
 
-- [Lilia Modules Documentation](../development/libraries/index.md)
-
-## Owner Essentials
-
-For more advanced configuration and ownership tips, please refer to the Owner Essentials guide.
-
-- [Owner Essentials](./features.md)
+- [Lilia Modules Documentation](../modules/index.md)
