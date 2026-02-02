@@ -9,17 +9,15 @@ RunConsoleCommand("arccw_malfunction", 2)
 RunConsoleCommand("arccw_npc_atts", 0)
 hook.Remove("PlayerCanPickupWeapon", "ArcCW_PlayerCanPickupWeapon")
 hook.Add("ArcCW_OnAttLoad", "ArcCW_OnAttLoad", function(attTable)
-    local att = attTable.ShortName
-    if att then
-        local uniqueID = "arccw_att_" .. att
-        if lia.item.list[uniqueID] then return end
-        local item = lia.item.register(uniqueID, "base_arccw_att", false, nil, true)
-        item.name = attTable.PrintName or "ArcCW Attachment"
-        item.desc = attTable.Description or "An attachment for ArcCW weapons."
-        item.model = attTable.DroppedModel or attTable.Model or "models/Items/BoxSRounds.mdl"
-        item.category = "attachments"
-        item.width = 1
-        item.height = 1
-        item.att = att
-    end
+    local att = attTable.PrintName
+    print("ArcCW is " .. (ArcCWInstalled and "loaded" or "not loaded"))
+    local uniqueID = "arccw_att_" .. att
+    local item = lia.item.register(uniqueID, "base_arccw_att", false, nil, true)
+    item.name = attTable.PrintName or "ArcCW Attachment"
+    item.desc = attTable.Description or "An attachment for ArcCW weapons."
+    item.model = attTable.DroppedModel or attTable.Model or "models/Items/BoxSRounds.mdl"
+    item.category = "attachments"
+    item.width = 1
+    item.height = 1
+    item.att = att
 end)

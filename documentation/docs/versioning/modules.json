@@ -9,7 +9,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/advert.zip",
     "source": "../modules/index.md#advertisements",
     "folder": "advert",
-    "features": [],
     "workshop": []
   },
   {
@@ -22,7 +21,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/afk.zip",
     "source": "../modules/index.md#afk-protection",
     "folder": "afk",
-    "features": [],
     "workshop": []
   },
   {
@@ -35,7 +33,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/alcoholism.zip",
     "source": "../modules/index.md#alcoholism",
     "folder": "alcoholism",
-    "features": [],
     "workshop": []
   },
   {
@@ -48,7 +45,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/autorestarter.zip",
     "source": "../modules/index.md#auto-restarter",
     "folder": "autorestarter",
-    "features": [],
     "workshop": []
   },
   {
@@ -61,7 +57,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/bodygrouper.zip",
     "source": "../modules/index.md#bodygroup-closet",
     "folder": "bodygrouper",
-    "features": [],
     "workshop": []
   },
   {
@@ -74,7 +69,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/broadcasts.zip",
     "source": "../modules/index.md#broadcasts",
     "folder": "broadcasts",
-    "features": [],
     "workshop": []
   },
   {
@@ -87,7 +81,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/captions.zip",
     "source": "../modules/index.md#captions",
     "folder": "captions",
-    "features": [],
     "workshop": []
   },
   {
@@ -100,7 +93,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/cards.zip",
     "source": "../modules/index.md#cards",
     "folder": "cards",
-    "features": [],
     "workshop": []
   },
   {
@@ -113,7 +105,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/chatmessages.zip",
     "source": "../modules/index.md#chat-messages",
     "folder": "chatmessages",
-    "features": [],
     "workshop": []
   },
   {
@@ -126,7 +117,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/cinematictext.zip",
     "source": "../modules/index.md#cinematic-text",
     "folder": "cinematictext",
-    "features": [],
     "workshop": []
   },
   {
@@ -139,7 +129,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/climb.zip",
     "source": "../modules/index.md#climbing",
     "folder": "climb",
-    "features": [],
     "workshop": []
   },
   {
@@ -152,7 +141,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/communitycommands.zip",
     "source": "../modules/index.md#community-commands",
     "folder": "communitycommands",
-    "features": [],
     "workshop": []
   },
   {
@@ -165,7 +153,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/cursor.zip",
     "source": "../modules/index.md#cursor",
     "folder": "cursor",
-    "features": [],
     "workshop": []
   },
   {
@@ -178,7 +165,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/cutscenes.zip",
     "source": "../modules/index.md#cutscenes",
     "folder": "cutscenes",
-    "features": [],
     "workshop": []
   },
   {
@@ -191,7 +177,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/damagenumbers.zip",
     "source": "../modules/index.md#damage-numbers",
     "folder": "damagenumbers",
-    "features": [],
     "workshop": []
   },
   {
@@ -204,7 +189,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/developmenthud.zip",
     "source": "../modules/index.md#development-hud",
     "folder": "developmenthud",
-    "features": [],
     "workshop": []
   },
   {
@@ -217,7 +201,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/developmentserver.zip",
     "source": "../modules/index.md#development-server",
     "folder": "developmentserver",
-    "features": [],
     "workshop": []
   },
   {
@@ -230,7 +213,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/donator.zip",
     "source": "../modules/index.md#donator",
     "folder": "donator",
-    "features": [],
     "workshop": []
   },
   {
@@ -243,7 +225,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/doorkick.zip",
     "source": "../modules/index.md#door-kick",
     "folder": "doorkick",
-    "features": [],
     "workshop": []
   },
   {
@@ -256,7 +237,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/extendeddescriptions.zip",
     "source": "../modules/index.md#extended-descriptions",
     "folder": "extendeddescriptions",
-    "features": [],
     "workshop": []
   },
   {
@@ -269,7 +249,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/firstpersoneffects.zip",
     "source": "../modules/index.md#first-person-effects",
     "folder": "firstpersoneffects",
-    "features": [],
     "workshop": []
   },
   {
@@ -282,7 +261,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/flashlight.zip",
     "source": "../modules/index.md#flashlight",
     "folder": "flashlight",
-    "features": [],
     "workshop": []
   },
   {
@@ -295,7 +273,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/freelook.zip",
     "source": "../modules/index.md#free-look",
     "folder": "freelook",
-    "features": [],
     "workshop": []
   },
   {
@@ -308,7 +285,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/gamemasterpoints.zip",
     "source": "../modules/index.md#gamemaster-points",
     "folder": "gamemasterpoints",
-    "features": [],
     "workshop": []
   },
   {
@@ -321,7 +297,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/hospitals.zip",
     "source": "../modules/index.md#hospitals",
     "folder": "hospitals",
-    "features": [],
     "workshop": []
   },
   {
@@ -334,7 +309,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/hud_extras.zip",
     "source": "../modules/index.md#hud-extras",
     "folder": "hud_extras",
-    "features": [],
     "workshop": []
   },
   {
@@ -347,7 +321,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/instakill.zip",
     "source": "../modules/index.md#instakill",
     "folder": "instakill",
-    "features": [],
     "workshop": []
   },
   {
@@ -360,7 +333,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/joinleavemessages.zip",
     "source": "../modules/index.md#join-leave-messages",
     "folder": "joinleavemessages",
-    "features": [],
     "workshop": []
   },
   {
@@ -373,7 +345,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/loadmessages.zip",
     "source": "../modules/index.md#load-messages",
     "folder": "loadmessages",
-    "features": [],
     "workshop": []
   },
   {
@@ -386,7 +357,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/loyalism.zip",
     "source": "../modules/index.md#loyalism",
     "folder": "loyalism",
-    "features": [],
     "workshop": []
   },
   {
@@ -399,7 +369,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/mapcleaner.zip",
     "source": "../modules/index.md#map-cleaner",
     "folder": "mapcleaner",
-    "features": [],
     "workshop": []
   },
   {
@@ -412,7 +381,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/modelpay.zip",
     "source": "../modules/index.md#model-pay",
     "folder": "modelpay",
-    "features": [],
     "workshop": []
   },
   {
@@ -425,7 +393,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/modeltweaker.zip",
     "source": "../modules/index.md#model-tweaker",
     "folder": "modeltweaker",
-    "features": [],
     "workshop": []
   },
   {
@@ -438,7 +405,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/npcdrop.zip",
     "source": "../modules/index.md#npc-drop",
     "folder": "npcdrop",
-    "features": [],
     "workshop": []
   },
   {
@@ -451,7 +417,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/npcmoney.zip",
     "source": "../modules/index.md#npc-money",
     "folder": "npcmoney",
-    "features": [],
     "workshop": []
   },
   {
@@ -464,7 +429,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/npcspawner.zip",
     "source": "../modules/index.md#npc-spawner",
     "folder": "npcspawner",
-    "features": [],
     "workshop": []
   },
   {
@@ -477,7 +441,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/permaremove.zip",
     "source": "../modules/index.md#perma-remove",
     "folder": "permaremove",
-    "features": [],
     "workshop": []
   },
   {
@@ -490,7 +453,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/radio.zip",
     "source": "../modules/index.md#radio",
     "folder": "radio",
-    "features": [],
     "workshop": [
       "3527548881"
     ]
@@ -505,7 +467,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/raisedweapons.zip",
     "source": "../modules/index.md#raised-weapons",
     "folder": "raisedweapons",
-    "features": [],
     "workshop": []
   },
   {
@@ -518,7 +479,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/realisticview.zip",
     "source": "../modules/index.md#realistic-view",
     "folder": "realisticview",
-    "features": [],
     "workshop": []
   },
   {
@@ -531,7 +491,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/rumour.zip",
     "source": "../modules/index.md#anonymous-rumors",
     "folder": "rumour",
-    "features": [],
     "workshop": []
   },
   {
@@ -544,7 +503,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/shootlock.zip",
     "source": "../modules/index.md#shoot-lock",
     "folder": "shootlock",
-    "features": [],
     "workshop": []
   },
   {
@@ -557,7 +515,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/simple_lockpicking.zip",
     "source": "../modules/index.md#simple-lockpicking",
     "folder": "simple_lockpicking",
-    "features": [],
     "workshop": []
   },
   {
@@ -570,7 +527,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/slots.zip",
     "source": "../modules/index.md#slot-machine",
     "folder": "slots",
-    "features": [],
     "workshop": [
       "3527541056"
     ]
@@ -585,7 +541,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/slowweapons.zip",
     "source": "../modules/index.md#slow-weapons",
     "folder": "slowweapons",
-    "features": [],
     "workshop": []
   },
   {
@@ -598,7 +553,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/steamgrouprewards.zip",
     "source": "../modules/index.md#steam-group-rewards",
     "folder": "steamgrouprewards",
-    "features": [],
     "workshop": []
   },
   {
@@ -611,7 +565,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/utilities.zip",
     "source": "../modules/index.md#code-utilities",
     "folder": "utilities",
-    "features": [],
     "workshop": []
   },
   {
@@ -624,7 +577,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/vmanip.zip",
     "source": "../modules/index.md#view-manipulation",
     "folder": "vmanip",
-    "features": [],
     "workshop": []
   },
   {
@@ -637,7 +589,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/wartable.zip",
     "source": "../modules/index.md#war-table",
     "folder": "wartable",
-    "features": [],
     "workshop": [
       "3527544696"
     ]
@@ -652,7 +603,6 @@
     "download": "https://github.com/LiliaFramework/Modules/raw/refs/heads/gh-pages/wordfilter.zip",
     "source": "../modules/index.md#word-filter",
     "folder": "wordfilter",
-    "features": [],
     "workshop": []
   }
 ]

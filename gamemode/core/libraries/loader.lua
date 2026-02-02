@@ -842,8 +842,8 @@ function lia.loader.includeEntities(path)
         default = default or {}
         for _, v in ipairs(folders) do
             local path2 = path .. "/" .. folder .. "/" .. v .. "/"
-            if not file.Exists(path2 .. "init.lua", "LUA") and not file.Exists(path2 .. "shared.lua", "LUA") and not file.Exists(path2 .. "cl_init.lua", "LUA") then
-                lia.error("Warning: No init.lua, shared.lua, or cl_init.lua found in entity folder: " .. path2)
+            if v ~= "gmod_tool" and not file.Exists(path2 .. "init.lua", "LUA") and not file.Exists(path2 .. "shared.lua", "LUA") and not file.Exists(path2 .. "cl_init.lua", "LUA") then
+                lia.error("Warning: No init.lua, shared.lua, or cl_init.lua found in entity folder: " .. path2 .. ". This may make the entity not load properly.")
                 continue
             end
 

@@ -407,7 +407,8 @@
 .generator-card .generator-section {
     margin-bottom: 32px;
     padding-bottom: 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle divider */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* Subtle divider */
     background: transparent;
     border-left: none;
     border-right: none;
@@ -430,7 +431,8 @@
     -webkit-text-fill-color: transparent;
     font-weight: 800 !important;
     letter-spacing: -0.01em;
-    display: block; /* Full width for layout purposes if needed, but the border is on the section */
+    display: block;
+    /* Full width for layout purposes if needed, but the border is on the section */
     padding: 0 !important;
     border-bottom: none !important;
 }
