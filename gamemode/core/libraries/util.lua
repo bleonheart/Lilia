@@ -710,6 +710,43 @@ function lia.util.generateRandomName(firstNames, lastNames)
     return firstNameList[firstIndex] .. " " .. lastNameList[lastIndex]
 end
 
+lia.util.positionCallbacks = lia.util.positionCallbacks or {}
+lia.util.featurePositionTypes = lia.util.featurePositionTypes or {}
+function lia.util.setPositionCallback(name, data)
+    if not isstring(name) or not istable(data) then return end
+    if not isfunction(data.onRun) or not isfunction(data.onSelect) then return end
+    local id = string.lower(name):gsub("%s+", "_")
+    local serverOnly = data.serverOnly == true
+    local color = data.color or Color(255, 255, 255)
+    lia.util.positionCallbacks[id] = {
+        id = id,
+        name = name,
+        color = color,
+        onRun = data.onRun,
+        onSelect = data.onSelect,
+        HUDPaint = data.HUDPaint,
+        serverOnly = serverOnly
+    }
+
+    local found = false
+    for i = 1, #lia.util.featurePositionTypes do
+        if lia.util.featurePositionTypes[i].id == id then
+            lia.util.featurePositionTypes[i].name = name
+            lia.util.featurePositionTypes[i].color = color
+            found = true
+            break
+        end
+    end
+
+    if not found then
+        table.insert(lia.util.featurePositionTypes, {
+            id = id,
+            name = name,
+            color = color
+        })
+    end
+end
+
 if SERVER then
     --[[
     Purpose:
@@ -1723,9 +1760,7 @@ else
 ]]
     function lia.util.setFeaturePosition(pos, typeId)
         if not isvector(pos) or not isstring(typeId) then return end
-        local MODULE = lia.module.get("administration")
-        if not MODULE or not MODULE.positionCallbacks then return end
-        local callback = MODULE.positionCallbacks[typeId]
+        local callback = lia.util.positionCallbacks[typeId]
         if not callback or not callback.onRun then return end
         local client = LocalPlayer()
         if not IsValid(client) then return end

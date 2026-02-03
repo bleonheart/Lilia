@@ -10,8 +10,8 @@ local function canUseTool()
 end
 
 local function getTypes()
-    if not lia.featurePositionTypes or #lia.featurePositionTypes == 0 then return {} end
-    return lia.featurePositionTypes
+    if not lia.util.featurePositionTypes or #lia.util.featurePositionTypes == 0 then return {} end
+    return lia.util.featurePositionTypes
 end
 
 local function getCurrentType()
@@ -24,9 +24,7 @@ end
 local function requestPositions(typeId)
     if CurTime() - LAST_REQUEST < REQUEST_THROTTLE then return end
     LAST_REQUEST = CurTime()
-    local MODULE = lia.module.get("administration")
-    if not MODULE or not MODULE.positionCallbacks then return end
-    local callback = MODULE.positionCallbacks[typeId]
+    local callback = lia.util.positionCallbacks[typeId]
     if callback and callback.onSelect then
         if callback.serverOnly then
             net.Start("liaFeaturePositionsRequest")
