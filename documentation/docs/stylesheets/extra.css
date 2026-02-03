@@ -125,7 +125,7 @@
 
 .md-typeset details>.details-content,
 .md-typeset div>.details-content {
-    padding: 0.5rem 1rem 0.5rem 1rem;
+    padding: 0.75rem 1rem 0.5rem 1rem;
 }
 
 .md-typeset details.realm-server,
@@ -183,9 +183,9 @@
     background-color: #ff9800 !important;
 }
 
-.realm-client>h3,
-.realm-shared>h3,
-.realm-server>h3 {
+.realm-client h3,
+.realm-shared h3,
+.realm-server h3 {
     font-size: 1em;
     border: 1px solid;
     border-image-source: linear-gradient(to left, rgba(179, 136, 255, 0.9), rgba(0, 150, 136, 0.9));
@@ -218,7 +218,11 @@
     letter-spacing: 0.025em;
 }
 
-.md-typeset details .details-content strong:first-of-type {
+.md-typeset details .details-content h3:first-of-type,
+.md-typeset details .details-content strong:first-of-type,
+.md-typeset div.realm-client .details-content h3:first-of-type,
+.md-typeset div.realm-shared .details-content h3:first-of-type,
+.md-typeset div.realm-server .details-content h3:first-of-type {
     margin-top: 0;
 }
 
@@ -228,8 +232,26 @@
     margin-bottom: 0.5em;
 }
 
+.md-typeset details.no-icon>summary::before,
+.md-typeset div.no-icon>.realm-header::before {
+    display: none !important;
+}
+
+.md-typeset details.no-icon>summary,
+.md-typeset div.no-icon>.realm-header {
+    padding-left: 1.25rem !important;
+}
+
 .md-typeset details .details-content *:last-child {
     margin-bottom: 0 !important;
+}
+
+.md-typeset details details>.details-content {
+    padding-top: 0.4rem;
+}
+
+.md-typeset details details>.details-content>ul:first-child {
+    margin-top: 0;
 }
 
 .card-grid {
@@ -428,6 +450,7 @@
     margin-bottom: 16px !important;
     background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800 !important;
     letter-spacing: -0.01em;

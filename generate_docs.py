@@ -600,7 +600,7 @@ def _split_returns_text(returns_text: str) -> Tuple[Optional[str], str]:
         return lines[0], ' '.join(lines[1:]).strip()
     return None, ' '.join(lines).strip()
 
-def generate_markdown_for_function(function_name, parsed_comment, is_library=False):
+def generate_markdown_for_function(function_name, parsed_comment, is_library=False, no_realm=False, no_icon=False):
     display_name = function_name
     if is_library and not function_name.startswith('lia.'):
         display_name = f'lia.{function_name}'
@@ -620,35 +620,37 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
 
     signature_params = ', '.join([p.get('name', '').strip() for p in parsed_comment.get('parameters', []) if p.get('name')])
     signature = f'({signature_params})' if signature_params else '()'
-    anchor = generate_anchor_from_name(display_name)
+    slug = generate_anchor_from_name(display_name)
+    classes = []
+    if realm_class:
+        classes.append(realm_class)
+    if no_icon:
+        classes.append('no-icon')
     
-
-    md = f'<details class="{realm_class}">\n'
-    md += f'<summary><a id={display_name}></a>{display_name}{signature}</summary>\n'
+    realm_attr = f' class="{" ".join(classes)}"' if classes else ''
+    md = f'<details{realm_attr} id="function-{slug}">\n'
+    md += f'<summary><a id="{display_name}"></a>{display_name}{signature}</summary>\n'
     md += f'<div class="details-content">\n'
-    md += f'<a id="{anchor}"></a>\n'
-
     if parsed_comment['purpose']:
-        md += f'<strong>Purpose</strong>\n<p>{parsed_comment["purpose"]}</p>\n\n'
+        md += f'<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="{slug}"></a>Purpose</h3>\n'
+        md += f'<div style="margin-left: 20px; margin-bottom: 20px;">\n  <p>{parsed_comment["purpose"]}</p>\n</div>\n\n'
 
     if parsed_comment['when_called']:
-        md += f'<strong>When Called</strong>\n<p>{parsed_comment["when_called"]}</p>\n\n'
+        md += f'<h3 style="margin-bottom: 5px; font-weight: 700;">When Called</h3>\n'
+        md += f'<div style="margin-left: 20px; margin-bottom: 20px;">\n  <p>{parsed_comment["when_called"]}</p>\n</div>\n\n'
     elif parsed_comment.get('when_used'):
-        md += f'<strong>When Called</strong>\n<p>{parsed_comment["when_used"]}</p>\n\n'
+        md += f'<h3 style="margin-bottom: 5px; font-weight: 700;">When Called</h3>\n'
+        md += f'<div style="margin-left: 20px; margin-bottom: 20px;">\n  <p>{parsed_comment["when_used"]}</p>\n</div>\n\n'
 
 
     if parsed_comment['parameters']:
-        first_param = True
+        md += '<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>\n'
+        md += '<div style="margin-left: 20px; margin-bottom: 20px;">\n'
         for param in parsed_comment['parameters']:
             display_type, link_type, is_optional = _split_optional_type(param["type"])
             type_link = get_type_link(link_type)
             desc = (param.get("description") or "").strip()
-            if first_param:
-                md += ' <strong>Parameters</strong>\n'
-                md += '<p>'
-                first_param = False
-            else:
-                md += '<p>'
+            md += '<p>'
             md += f'<span class="types"><a class="type" href="{type_link}">{display_type}</a></span> '
             md += f'<span class="parameter">{param["name"]}</span>'
             if is_optional:
@@ -656,32 +658,37 @@ def generate_markdown_for_function(function_name, parsed_comment, is_library=Fal
             if desc:
                 md += f' {desc}'
             md += '</p>\n'
-        md += '\n'
+        md += '</div>\n\n'
 
     if parsed_comment['returns']:
+        md += '<h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>\n'
+        md += '<div style="margin-left: 20px; margin-bottom: 20px;">\n'
         ret_type, ret_desc = _split_returns_text(parsed_comment["returns"])
         if ret_type:
             display_type, link_type = _split_type_display_link(ret_type)
             type_link = get_type_link(link_type)
             ret_desc = (ret_desc or '').strip()
-            md += '<strong>Returns</strong>\n'
             md += f'<p><span class="types"><a class="type" href="{type_link}">{display_type}</a></span>'
             if ret_desc:
                 md += f' {ret_desc}'
-            md += '</p>\n\n'
+            md += '</p>\n'
         else:
-            md += f'<strong>Returns</strong>\n<p>{ret_desc}</p>\n\n'
+            md += f'<p>{ret_desc}</p>\n'
+        md += '</div>\n\n'
 
     if parsed_comment.get('explanation'):
-        md += f'<strong>Explanation</strong>\n<p>{parsed_comment["explanation"]}</p>\n\n'
+        md += f'<h3 style="margin-bottom: 5px; font-weight: 700;">Explanation</h3>\n'
+        md += f'<div style="margin-left: 20px; margin-bottom: 20px;">\n  <p>{parsed_comment["explanation"]}</p>\n</div>\n\n'
 
     if parsed_comment['examples']:
-        md += '<strong>Example Usage</strong>\n'
+        md += '<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>\n'
+        md += '<div style="margin-left: 20px; margin-bottom: 20px;">\n'
         for example in parsed_comment['examples']:
             md += '<pre><code class="language-lua">'
             formatted_code = format_lua_code(example['code'])
             md += '\n'.join(formatted_code).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             md += '</code></pre>\n'
+        md += '</div>\n\n'
 
     md += '</div>\n'
     md += '</details>\n\n'
@@ -713,7 +720,7 @@ def find_comment_blocks_in_file(file_path):
     return all_comment_blocks, file_header, overview_section
 
 
-def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None, force=False):
+def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None, force=False, no_realm=False, no_icon=False):
     print(f"Processing {file_path}")
 
     try:
@@ -799,7 +806,7 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
                 display_name = func['name']
             
             function_names.append(display_name)
-            section = generate_markdown_for_function(func['name'], parsed, is_library)
+            section = generate_markdown_for_function(func['name'], parsed, is_library, no_realm=no_realm, no_icon=no_icon)
             sections.append(section)
 
     if not sections and not file_header and not overview_section:
@@ -833,10 +840,11 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
             f.write('---\n\n')
 
             if overview_section:
-                f.write('<strong>Overview</strong>\n\n')
+                f.write('<h3 style="margin-bottom: 5px;">Overview</h3>\n')
+                f.write('<div style="margin-left: 20px; margin-bottom: 20px;">\n')
                 overview_content = parse_overview_section(overview_section)
                 f.write(overview_content)
-                f.write('\n\n')
+                f.write('\n</div>\n\n')
                 f.write('---\n\n')
 
         for section in sections:
@@ -919,8 +927,10 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
             f.write(subtitle + '\n\n')
             f.write('---\n\n')
             if overview_section:
-                f.write('<strong>Overview</strong>\n\n')
-                f.write(parse_overview_section(overview_section) + '\n\n')
+                f.write('<h3 style="margin-bottom: 5px;">Overview</h3>\n')
+                f.write('<div style="margin-left: 20px; margin-bottom: 20px;">\n')
+                f.write(parse_overview_section(overview_section) + '\n')
+                f.write('</div>\n\n')
                 f.write('---\n\n')
         for section in sections:
             f.write(section)
@@ -1038,7 +1048,7 @@ def main():
         output_dir = docs_dir / 'development' / 'meta'
         if meta_dir.exists():
             for file_path in meta_dir.rglob('*.lua'):
-                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force)
+                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force, no_realm=False, no_icon=False)
         generate_index_file(output_dir, 'meta')
 
     elif args.command == 'library':
@@ -1050,7 +1060,7 @@ def main():
         for lib_dir in lib_dirs:
             if lib_dir.exists():
                 for file_path in lib_dir.rglob('*.lua'):
-                    generate_documentation_for_file(file_path, output_dir, is_library=True, base_docs_dir=docs_dir, force=args.force)
+                    generate_documentation_for_file(file_path, output_dir, is_library=True, base_docs_dir=docs_dir, force=args.force, no_realm=False, no_icon=False)
         generate_index_file(output_dir, 'library')
 
     elif args.command == 'hooks':
@@ -1058,7 +1068,7 @@ def main():
         output_dir = docs_dir / 'development' / 'hooks'
         if hooks_dir.exists():
             for file_path in hooks_dir.rglob('*.lua'):
-                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force)
+                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force, no_realm=False, no_icon=False)
         generate_index_file(output_dir, 'hooks')
 
     elif args.command == 'compatibility':
@@ -1066,7 +1076,7 @@ def main():
         output_dir = docs_dir / 'development' / 'compatibility'
         if comp_dir.exists():
             for file_path in comp_dir.rglob('*.lua'):
-                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force)
+                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force, no_realm=False, no_icon=True)
         generate_index_file(output_dir, 'compatibility')
 
     elif args.command == 'generators':
