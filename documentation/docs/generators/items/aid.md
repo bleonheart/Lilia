@@ -1,3 +1,18 @@
+# Aid Item Generator
+
+Create consumable items that restore health, armor, or stamina.
+
+---
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Overview</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use this tool to generate the Lua structure for your custom aid item. Once generated, the code should be placed in a new file within your schema's items directory.</p>
+  <p><strong>Recommended Placement:</strong></p>
+  <code style="display: block; padding: 12px; background: rgba(0, 0, 0, 0.05); border-left: 4px solid #46a9ff; margin-top: 10px; font-family: 'JetBrains Mono', monospace;">garrysmod/gamemodes/[schema folder]/schema/items/[item_id].lua</code>
+</div>
+
+---
+
 <div class="generator-grid">
   <!-- Input Column -->
   <div class="generator-card form-card">

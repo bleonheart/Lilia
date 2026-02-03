@@ -191,7 +191,7 @@ The item library provides comprehensive functionality for managing items in the 
 <pre><code class="language-lua">  -- Load a regular item
   lia.item.load("lilia/gamemode/items/food_apple.lua")
   -- Load a base item
-  lia.item.load("lilia/gamemode/items/base/sh_food.lua", nil, true)
+  lia.item.load("lilia/gamemode/items/base/food.lua", nil, true)
 </code></pre>
 </div>
 
@@ -888,4 +888,3 @@ The item library provides comprehensive functionality for managing items in the 
 </details>
 
 ---
-

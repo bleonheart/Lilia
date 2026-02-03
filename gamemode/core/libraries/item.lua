@@ -341,7 +341,7 @@ end
             -- Load a regular item
             lia.item.load("lilia/gamemode/items/food_apple.lua")
             -- Load a base item
-            lia.item.load("lilia/gamemode/items/base/sh_food.lua", nil, true)
+            lia.item.load("lilia/gamemode/items/base/food.lua", nil, true)
         ```
 ]]
 function lia.item.load(path, baseID, isBaseItem)

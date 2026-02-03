@@ -1,3 +1,18 @@
+# Faction Generator
+
+Define the core groups and teams that players can join on your server.
+
+---
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Overview</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use this tool to generate the Lua structure for your custom faction. Once generated, the code should be placed in a new file within your schema's factions directory.</p>
+  <p><strong>Recommended Placement:</strong></p>
+  <code style="display: block; padding: 12px; background: rgba(0, 0, 0, 0.05); border-left: 4px solid #46a9ff; margin-top: 10px; font-family: 'JetBrains Mono', monospace;">garrysmod/gamemodes/[schema folder]/schema/factions/[faction_name].lua</code>
+</div>
+
+---
+
 <div class="generator-grid">
   <!-- Input Column -->
   <div class="generator-card form-card">

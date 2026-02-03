@@ -1,5 +1,17 @@
 # Addon Compatibility
 
+Information about addon integrations and compatibility features in Lilia.
+
+---
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Overview</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Lilia is designed to be highly compatible with the most popular Garry's Mod addons. The framework includes built-in compatibility layers that ensure external systems (like admin mods, vehicle systems, and UI addons) work seamlessly with Lilia's core mechanics.</p>
+  <p>These integrations typically handle rank synchronization, money conversion, permission checking, and UI conflict resolution automatically, allowing server owners to use their favorite workshop content without manual configuration.</p>
+</div>
+
+---
+
 <details class="realm-shared no-icon">
 <summary><a id="DarkRP"></a>DarkRP</summary>
 <div class="details-content">

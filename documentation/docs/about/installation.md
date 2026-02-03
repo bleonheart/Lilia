@@ -1,63 +1,51 @@
 # Installation
 
-Welcome to Lilia! This guide will get your server up and running quickly.
+Step-by-step guide to setting up and configuring the Lilia framework for your Garry's Mod server.
 
-## Install Lilia Via Workshop
+---
 
-Lilia is the core framework. You need to subscribe to it on the Steam Workshop.
+<h3 style="margin-bottom: 5px; font-weight: 700;">Overview</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Lilia is a modern roleplay framework designed for performance, modularity, and ease of use. Installing the framework involves setting up the core workshop content, choosing a schema, and configuring initial administrative access.</p>
+  <p>This guide covers the standard setup process to get your server joinable and ready for customization.</p>
+</div>
 
-- **Workshop ID:** `3527535922`
-- [Subscribe to Lilia](https://steamcommunity.com/sharedfiles/filedetails/?id=3527535922)
+---
 
-## Install Schema
+<h3 style="margin-bottom: 5px; font-weight: 700;">1. Install Lilia Core (Workshop)</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Lilia's asset package must be subscribed to on the Steam Workshop for clients to download required materials and textures.</p>
+  <ul>
+    <li><strong>Workshop ID:</strong> <code>3527535922</code></li>
+    <li><a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3527535922">Subscribe to Lilia on Workshop</a></li>
+  </ul>
+</div>
 
-You also need a schema (gamemode) to run Lilia. We recommend starting with the Skeleton schema.
+<h3 style="margin-bottom: 5px; font-weight: 700;">2. Install a Schema</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Lilia requires a schema (a gamemode built on the framework) to operate. We recommend the <strong>Skeleton Schema</strong> for new projects.</p>
+  <ol>
+    <li><a href="https://github.com/LiliaFramework/Skeleton/releases/download/release/skeleton.zip">Download Skeleton Schema</a></li>
+    <li>Extract the ZIP and place the <code>skeleton</code> folder into <code>garrysmod/gamemodes/</code>.</li>
+    <li>Update your server startup command: <code>+gamemode skeleton</code></li>
+  </ol>
+</div>
 
-- [Download Skeleton Schema](https://github.com/LiliaFramework/Skeleton/releases/download/release/skeleton.zip)
+<h3 style="margin-bottom: 5px; font-weight: 700;">3. Administrative Setup</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Configure yourself as the owner to access in-game menus and configuration tools.</p>
+  <p>Run the following in your <strong>server console</strong>:</p>
+  <code style="display: block; padding: 12px; background: rgba(0, 0, 0, 0.05); border-left: 4px solid #46a9ff; margin-bottom: 15px; font-family: 'JetBrains Mono', monospace;">plysetgroup "YOUR_STEAMID" "superadmin"</code>
+  <p>Lilia is also fully compatible with external admin mods like <strong>SAM</strong>, <strong>ULX</strong>, and <strong>ServerGuard</strong>.</p>
+</div>
 
-1. Extract the ZIP.
-2. Place the `skeleton` folder into `garrysmod/gamemodes/`.
-3. Set your gamemode to `skeleton` (e.g., `+gamemode skeleton` in your startup command).
-
-## Set Up Admin Access
-
-You can set up admin access using Lilia's built-in system, or use a compatible admin mod like SAM, ULX, or ServerGuard. Lilia is compatible with all of them.
-
-**Lilia Command:**
-Run this in your server console:
-
-```text
-plysetgroup "STEAMID" "superadmin"
-```
-
-## Adjust Permissions
-
-You can configure detailed permissions for your admin groups.
-
-- Open the **Admin Menu** (usually F1 or context menu depending on config).
-- Navigate to **Permissions**.
-- Adjust access rights as needed.
-
-## Create Your First Faction
-
-Factions are the teams players belong to. Use our generator to create one easily.
-
-- [Faction Generator](../generators/faction.md)
-
-## Create Your First Class
-
-Classes are sub-roles within a faction.
-
-- [Class Generator](../generators/class.md)
-
-## Add Items
-
-Populate your server with items using our generators.
-
-- [Item Generators](../generators/index.md)
-
-## Install Custom Modules
-
-Expand your server's functionality by placing custom modules in the `gamemode/modules` directory.
-
-- [Lilia Modules Documentation](../modules/index.md)
+<h3 style="margin-bottom: 5px; font-weight: 700;">4. Next Steps</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Once the basic setup is complete, you can begin populating your world:</p>
+  <ul>
+    <li><a href="../generators/faction.md">Create Factions</a> to define player teams.</li>
+    <li><a href="../generators/class.md">Create Classes</a> for sub-roles within factions.</li>
+    <li><a href="../generators/index.md">Generate Items</a> using our automated tools.</li>
+    <li><a href="../modules/index.md">Explore Modules</a> to add specific features.</li>
+  </ul>
+</div>
