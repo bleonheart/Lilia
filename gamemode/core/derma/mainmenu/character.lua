@@ -119,9 +119,8 @@ function PANEL:createWelcomeScreen()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         -- Top accent bar
         lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
-        -- Subtle inner glow
         local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
-        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
+        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Draw()
     end
 
     -- Entrance animation
@@ -571,6 +570,7 @@ function PANEL:createStartButton()
         btn:SetSize(w, h)
         btn:SetPos(x, y)
         btn:SetText(string.upper(data.text))
+        btn:SetShowLine(true)
         btn.DoClick = data.doClick
         if data.tooltip and data.tooltip ~= "" then
             btn.liaToolTip = true
@@ -606,6 +606,7 @@ function PANEL:addTab(name, callback, justClick, height)
     local textW, textH = surface.GetTextSize(L(name):upper())
     btn:SetWide(textW + 40)
     btn:SetText(L(name):upper())
+    btn:SetShowLine(true)
     btn:SetTall(height or textH + 20)
     if justClick then
         if isfunction(callback) then btn.DoClick = function() callback(self) end end
@@ -878,6 +879,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
+    self.selectBtn:SetShowLine(true)
     self.selectBtn:SetText(selectText)
     self.selectBtn.DoClick = function()
         if character:isBanned() then
@@ -892,6 +894,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn = self:Add("liaSmallButton")
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
+    self.deleteBtn:SetShowLine(true)
     self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
     self.deleteBtn.DoClick = function()
         local charID = character:getID()
@@ -909,6 +912,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         self.setMainBtn = self:Add("liaSmallButton")
         self.setMainBtn:SetSize(bw, bh)
         self.setMainBtn:SetPos(cx, fy + fh + pad + bh + pad + bh + pad)
+        self.setMainBtn:SetShowLine(true)
         self.setMainBtn:SetText(L("setAsMainCharacter"))
         self.setMainBtn.DoClick = function()
             if IsValid(localClient) then localClient:setMainCharacter(character:getID()) end
@@ -1011,6 +1015,7 @@ function PANEL:createArrows()
         btn:SetSize(size, size)
         btn:SetPos(ScrW() * 0.5 + xOffset, ScrH() * 0.5 - size * 0.5)
         btn:SetFont("LiliaFont.72")
+        btn:SetShowLine(true)
         btn:SetText(sign)
         btn.DoClick = function()
             local chars = self.availableCharacters or {}
