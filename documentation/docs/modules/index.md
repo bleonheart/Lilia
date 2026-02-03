@@ -24,66 +24,6 @@ Comprehensive collection of official and community-built modules for the Lilia f
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Changelog</h3>
 <div style="margin-left: 20px;">
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-6">
-    <summary>Version 1.6</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>General performance optimizations</li>
-        <li>Minor visual tweaks to the machine interface</li>
-        <li>Stability improvements for long_running sessions</li>
-      </ul>
-    </div>
-  </details>
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-5">
-    <summary>Version 1.5</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>Added logging for all major payouts</li>
-        <li>Fixed a rare crash when the machine was destroyed</li>
-        <li>Updated documentation and setup guides</li>
-      </ul>
-    </div>
-  </details>
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-4">
-    <summary>Version 1.4</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>Added localization support for multiple languages</li>
-        <li>Improved security checks for payout handling</li>
-        <li>Refactored internal module logic for performance</li>
-      </ul>
-    </div>
-  </details>
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-3">
-    <summary>Version 1.3</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>Implemented a global jackpot system</li>
-        <li>Added an admin configuration menu for odds</li>
-        <li>Fixed animation desync issues on high latency</li>
-      </ul>
-    </div>
-  </details>
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-2">
-    <summary>Version 1.2</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>Added support for custom workshop models</li>
-        <li>Optimized network usage for machine states</li>
-        <li>Updated workshop content dependencies</li>
-      </ul>
-    </div>
-  </details>
-  <details class="realm-shared no-icon" id="changelog-advertisements-1-1">
-    <summary>Version 1.1</summary>
-    <div class="details-content" style="margin-left: 20px;">
-      <ul>
-        <li>Added new sound effects for winning spins</li>
-        <li>Improved payout logic for better accuracy</li>
-        <li>Fixed minor UI alignment issues</li>
-      </ul>
-    </div>
-  </details>
   <details class="realm-shared no-icon" id="changelog-advertisements-1-0">
     <summary>Version 1.0</summary>
     <div class="details-content" style="margin-left: 20px;">
