@@ -19,9 +19,17 @@ end
 
 local function drawAltBg(panel, w, h)
     local colors = getTheme()
+    local accentColor = colors.accent or Color(116, 185, 255)
+    local bgColor = Color(25, 28, 35, 250)
     if panel:GetName() and (panel:GetName():find("ContentContainer") or panel:GetName():find("Tree")) then lia.util.drawBlur(panel, 5) end
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(colors.shadow):Shadow(6, 14):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(colors.panel):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Main card background
+    lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Top accent bar
+    lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+    -- Subtle inner glow
+    local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
+    lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
 end
 
 local SKIN = {}
@@ -58,18 +66,31 @@ function SKIN:PaintFrame(panel)
 
     local colors = getTheme()
     local w, h = panel:GetWide(), panel:GetTall()
-    local radius = 6
-    local headerH = math.min(24, h)
+    local accentColor = colors.accent or Color(116, 185, 255)
+    local bgColor = Color(25, 28, 35, 250)
     lia.util.drawBlur(panel, 8)
-    lia.derma.rect(0, 0, w, h):Rad(radius):Color(colors.shadow):Shadow(8, 16):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(0, 0, w, headerH):Radii(radius, radius, 0, 0):Color(colors.header):Draw()
-    lia.derma.rect(0, headerH, w, math.max(h - headerH, 0)):Radii(0, 0, radius, radius):Color(colors.background):Draw()
+    -- Main card background
+    lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Top accent bar
+    lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+    -- Subtle inner glow
+    local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
+    lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
 end
 
 function SKIN:DrawGenericBackground(x, y, w, h)
     local colors = getTheme()
-    lia.derma.rect(x, y, w, h):Rad(6):Color(colors.shadow):Shadow(5, 12):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(x, y, w, h):Rad(6):Color(colors.panel):Shape(lia.derma.SHAPE_IOS):Draw()
+    local accentColor = colors.accent or Color(116, 185, 255)
+    local bgColor = Color(25, 28, 35, 250)
+    -- Main card background
+    lia.derma.rect(x, y, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(x, y, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Top accent bar
+    lia.derma.rect(x, y, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+    -- Subtle inner glow
+    local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
+    lia.derma.rect(x + 1, y + 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
 end
 
 function SKIN:PaintPanel(panel)

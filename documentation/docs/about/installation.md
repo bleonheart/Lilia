@@ -43,9 +43,9 @@ Step-by-step guide to setting up and configuring the Lilia framework for your Ga
 <div style="margin-left: 20px; margin-bottom: 20px;">
   <p>Once the basic setup is complete, you can begin populating your world:</p>
   <ul>
-    <li><a href="../generators/faction.md">Create Factions</a> to define player teams.</li>
-    <li><a href="../generators/class.md">Create Classes</a> for sub-roles within factions.</li>
-    <li><a href="../generators/index.md">Generate Items</a> using our automated tools.</li>
-    <li><a href="../modules/index.md">Explore Modules</a> to add specific features.</li>
+    <li><a href="../../generators/faction/">Create Factions</a> to define player teams.</li>
+    <li><a href="../../generators/class/">Create Classes</a> for sub-roles within factions.</li>
+    <li><a href="../../generators/">Generate Items</a> using our automated tools.</li>
+    <li><a href="../../modules/">Explore Modules</a> to add specific features.</li>
   </ul>
 </div>

@@ -20,7 +20,7 @@ function PANEL:Init()
     hook.Add("DrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam", function() return IsValid(lia.gui.character) end)
     hook.Add("RenderScreenspaceEffects", "liaCharMenuDarken", function()
         if not IsValid(lia.gui.character) then return end
-        local inFull = lia.gui.character.inCharacterCreation or lia.gui.character.inWelcomeScreen
+        local inFull = lia.gui.character.inCharacterCreation
         if not inFull then return end
         DrawColorModify({
             ["$pp_colour_addr"] = 0,
@@ -98,90 +98,141 @@ function PANEL:createWelcomeScreen()
     self.welcomeScreen:SetSize(ScrW(), ScrH())
     self.welcomeScreen:SetZPos(100)
     self.welcomeScreen.Paint = function(_, w, h)
-        surface.SetDrawColor(0, 0, 0, 150)
-        surface.DrawRect(0, 0, w, h)
+        -- No background overlay
     end
 
+    -- Modern Card Container
+    local container = self.welcomeScreen:Add("DPanel")
+    local containerW = ScrW() * 0.3
+    local containerH = ScrH() * 0.3 -- Initial guess, will resize later
+    container:SetSize(containerW, containerH)
+    -- Start position for animation
+    local finalX, finalY = (ScrW() - containerW) / 2, (ScrH() - containerH) / 2
+    container:SetPos(finalX, finalY + 30) -- Start slightly lower for slide effect
+    container:SetAlpha(0)
+    -- Get theme colors
+    local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+    container.Paint = function(s, w, h)
+        -- Main card background
+        local bgColor = Color(25, 28, 35, 250)
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Top accent bar
+        lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+        -- Subtle inner glow
+        local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
+        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
+    end
+
+    -- Entrance animation
+    container:AlphaTo(255, 0.4, 0)
+    container:AlphaTo(255, 0.4, 0)
+    -- MoveTo will be called after resizing
+    local padding = 30
+    local contentY = padding + 15
+    -- Logo (if enabled)
     local logoPath = lia.config.get("ServerLogo") or ""
     local mainMenuLogoEnabled = lia.config.get("MainMenuLogoEnabled", true)
-    local welcomeLogo = nil
     if mainMenuLogoEnabled and logoPath ~= "" then
-        welcomeLogo = self.welcomeScreen:Add("DImage")
-        welcomeLogo:SetImage(logoPath)
-        welcomeLogo:SetZPos(101)
+        local logo = container:Add("DImage")
+        logo:SetImage(logoPath)
+        local logoSize = math.min(containerW * 0.25, 120)
+        logo:SetSize(logoSize, logoSize)
+        logo:SetPos((containerW - logoSize) / 2, contentY)
+        logo:SetKeepAspect(true)
+        contentY = contentY + logoSize + 25
     end
 
     local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
-    local welcomeLabel = self.welcomeScreen:Add("DLabel")
-    welcomeLabel:SetFont("LiliaFont.48")
+    -- Welcome Label
+    local welcomeLabel = container:Add("DLabel")
+    welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
-    welcomeLabel:SizeToContents()
     welcomeLabel:SetContentAlignment(5)
-    local pressEnterLabel = self.welcomeScreen:Add("DLabel")
-    pressEnterLabel:SetFont("LiliaFont.24")
-    pressEnterLabel:SetTextColor(Color(255, 255, 255))
-    pressEnterLabel:SetText("Press [SPACE] to play")
-    pressEnterLabel:SizeToContents()
-    pressEnterLabel:SetContentAlignment(5)
-    pressEnterLabel.Think = function()
-        local alpha = math.abs(math.sin(CurTime() * 2)) * 155 + 100
-        pressEnterLabel:SetAlpha(alpha)
-    end
-
-    local playtimeLabel = nil
+    welcomeLabel:SetWide(containerW - padding * 2)
+    welcomeLabel:SetPos(padding, contentY)
+    welcomeLabel:SetTall(50)
+    welcomeLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+    contentY = contentY + 65
+    -- Playtime Display (if not first join)
     if not isFirstJoin then
         local playtime = client:getPlayTime() or 0
         local days = math.floor(playtime / 86400)
         local hours = math.floor((playtime % 86400) / 3600)
         local minutes = math.floor((playtime % 3600) / 60)
-        local playtimeStr
+        local playtimeStr = "You have played for "
         if days > 0 then
-            playtimeStr = days .. "d " .. hours .. "h " .. minutes .. "m"
+            playtimeStr = playtimeStr .. days .. "d " .. hours .. "h " .. minutes .. "m"
         elseif hours > 0 then
-            playtimeStr = hours .. "h " .. minutes .. "m"
+            playtimeStr = playtimeStr .. hours .. "h " .. minutes .. "m"
         else
-            playtimeStr = minutes .. "m"
+            playtimeStr = playtimeStr .. minutes .. "m"
         end
 
-        playtimeLabel = self.welcomeScreen:Add("DLabel")
-        playtimeLabel:SetFont("LiliaFont.20")
-        playtimeLabel:SetText("Playtime: " .. playtimeStr)
-        playtimeLabel:SetTextColor(Color(64, 224, 208))
-        playtimeLabel:SizeToContents()
+        local playtimeContainer = container:Add("DPanel")
+        playtimeContainer:SetSize(containerW - padding * 2, 50)
+        playtimeContainer:SetPos(padding, contentY)
+        playtimeContainer.Paint = function(_, w, h)
+            local pillBg = Color(35, 40, 50, 200)
+            lia.derma.rect(0, 0, w, h):Rad(8):Color(pillBg):Shape(lia.derma.SHAPE_IOS):Draw()
+            -- Left accent
+            lia.derma.rect(0, 0, 4, h):Radii(8, 0, 0, 8):Color(accentColor):Draw()
+        end
+
+        local playtimeLabel = playtimeContainer:Add("DLabel")
+        playtimeLabel:SetFont("LiliaFont.22")
+        playtimeLabel:SetText(playtimeStr)
+        playtimeLabel:SetTextColor(Color(255, 255, 255))
+        playtimeLabel:SetSize(containerW - padding * 2, 50)
         playtimeLabel:SetContentAlignment(5)
+        contentY = contentY + 70
+    else
+        contentY = contentY + 20
     end
 
-    local function positionLabels()
-        local w, h = self.welcomeScreen:GetSize()
-        local logoW, logoH
-        if welcomeLogo then
-            logoW = ScrW() * 0.12
-            logoH = ScrW() * 0.08
-            welcomeLogo:SetSize(logoW, logoH)
-            welcomeLogo:SetPos(w / 2 - logoW / 2, h * 0.30)
-        end
-
-        local baseY = welcomeLogo and (h * 0.30 + logoH + ScrH() * 0.05) or (h * 0.45)
-        welcomeLabel:SetPos(w / 2 - welcomeLabel:GetWide() / 2, baseY)
-        pressEnterLabel:SetPos(w / 2 - pressEnterLabel:GetWide() / 2, baseY + ScrH() * 0.07)
-        if playtimeLabel then playtimeLabel:SetPos(w / 2 - playtimeLabel:GetWide() / 2, baseY + ScrH() * 0.12) end
+    -- Divider
+    local divider = container:Add("DPanel")
+    divider:SetSize(containerW - padding * 2, 1)
+    divider:SetPos(padding, contentY)
+    divider.Paint = function(_, w, h)
+        surface.SetDrawColor(255, 255, 255, 15)
+        surface.DrawRect(0, 0, w, h)
     end
 
+    contentY = contentY + 25
+    -- Press Space Label
+    local pressEnterLabel = container:Add("DLabel")
+    pressEnterLabel:SetFont("LiliaFont.22")
+    pressEnterLabel:SetTextColor(Color(200, 200, 200))
+    pressEnterLabel:SetText("Press [SPACE] to continue")
+    pressEnterLabel:SetContentAlignment(5)
+    pressEnterLabel:SetWide(containerW - padding * 2)
+    pressEnterLabel:SetTall(40)
+    pressEnterLabel:SetPos(padding, contentY)
+    pressEnterLabel.Think = function()
+        local pulse = math.abs(math.sin(CurTime() * 1.5))
+        local col = Color(200 + pulse * 55, 200 + pulse * 55, 200 + pulse * 55)
+        pressEnterLabel:SetTextColor(col)
+    end
+
+    -- Recalculate height and animate
+    local finalHeight = contentY + 40 + padding
+    container:SetTall(finalHeight)
+    local newFinalY = (ScrH() - finalHeight) / 2
+    container:SetPos(finalX, newFinalY + 50)
+    container:MoveTo(finalX, newFinalY, 0.4, 0, 0.3)
     local function updateWelcomeText()
+        if not IsValid(welcomeLabel) then return end
         local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
         if isFirstJoin then
             welcomeLabel:SetText("Welcome, " .. currentSteamName .. "!")
         else
             welcomeLabel:SetText("Welcome back, " .. currentSteamName .. "!")
         end
-
-        welcomeLabel:SizeToContents()
-        positionLabels()
     end
 
     updateWelcomeText()
-    positionLabels()
-    self.welcomeScreen.PerformLayout = function() positionLabels() end
+    -- Handle dynamic name updates
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
@@ -731,6 +782,19 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.infoFrame:SetTitle("")
     self.infoFrame:SetDraggable(false)
     self.infoFrame:ShowCloseButton(false)
+    self.infoFrame.Paint = function(s, w, h)
+        local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+        local bgColor = Color(25, 28, 35, 250)
+        -- Main card background
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Top accent bar
+        lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+        -- Subtle inner glow
+        local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
+        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
+    end
+
     local scroll = vgui.Create("liaScrollPanel", self.infoFrame)
     scroll:Dock(FILL)
     scroll:InvalidateLayout(true)
