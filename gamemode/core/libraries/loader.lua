@@ -283,7 +283,7 @@ local ConditionalFiles = {
         path = "lilia/gamemode/core/libraries/compatibility/arccw.lua",
         global = "ArcCWInstalled",
         name = "ArcCW",
-        realm = "server"
+        realm = "shared"
     },
     {
         path = "lilia/gamemode/core/libraries/compatibility/wiremod.lua",

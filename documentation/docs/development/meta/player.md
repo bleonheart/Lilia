@@ -10315,3 +10315,518 @@ The player meta table provides comprehensive functionality for managing player d
 
 ---
 
+<details class="realm-shared">
+<summary><a id=getParts></a>getParts()</summary>
+<div class="details-content">
+<a id="getparts"></a>
+<strong>Purpose</strong>
+<p>Returns the player's active PAC parts.</p>
+
+<strong>When Called</strong>
+<p>Use to check which PAC parts are currently equipped on the player.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> Table of active PAC part IDs.</p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  local parts = ply:getParts()
+  if parts["helmet"] then
+      print("Player has helmet equipped")
+  end
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=syncParts></a>syncParts()</summary>
+<div class="details-content">
+<a id="syncparts"></a>
+<strong>Purpose</strong>
+<p>Synchronizes the player's PAC parts with the client.</p>
+
+<strong>When Called</strong>
+<p>Use to ensure the client has the correct PAC parts data.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  ply:syncParts()
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=addPart></a>addPart(partID)</summary>
+<div class="details-content">
+<a id="addpart"></a>
+<strong>Purpose</strong>
+<p>Adds a PAC part to the player.</p>
+
+<strong>When Called</strong>
+<p>Use when equipping PAC parts on a player.</p>
+
+ <strong>Parameters</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to add.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  ply:addPart("helmet_model")
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=removePart></a>removePart(partID)</summary>
+<div class="details-content">
+<a id="removepart"></a>
+<strong>Purpose</strong>
+<p>Removes a PAC part from the player.</p>
+
+<strong>When Called</strong>
+<p>Use when unequipping PAC parts from a player.</p>
+
+ <strong>Parameters</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to remove.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  ply:removePart("helmet_model")
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=resetParts></a>resetParts()</summary>
+<div class="details-content">
+<a id="resetparts"></a>
+<strong>Purpose</strong>
+<p>Removes all PAC parts from the player.</p>
+
+<strong>When Called</strong>
+<p>Use to clear all equipped PAC parts from a player.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=IsAvailable></a>IsAvailable()</summary>
+<div class="details-content">
+<a id="isavailable"></a>
+<strong>Purpose</strong>
+<p>Removes all PAC parts from the player.</p>
+
+<strong>When Called</strong>
+<p>Use to clear all equipped PAC parts from a player.</p>
+
+<strong>Returns</strong>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+
+<strong>Example Usage</strong>
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+</details>
+
+---
+
+<details class="realm-shared">
+<summary><a id=getParts></a>getParts()</summary>
+<div class="details-content">
+<a id="getparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Returns the player's active PAC parts.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use to check which PAC parts are currently equipped on the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> Table of active PAC part IDs.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  local parts = ply:getParts()
+  if parts["helmet"] then
+      print("Player has helmet equipped")
+  end
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=syncParts></a>syncParts()</summary>
+<div class="details-content">
+<a id="syncparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Synchronizes the player's PAC parts with the client.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use to ensure the client has the correct PAC parts data.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  ply:syncParts()
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=addPart></a>addPart(partID)</summary>
+<div class="details-content">
+<a id="addpart"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Adds a PAC part to the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use when equipping PAC parts on a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to add.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  ply:addPart("helmet_model")
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=removePart></a>removePart(partID)</summary>
+<div class="details-content">
+<a id="removepart"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Removes a PAC part from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use when unequipping PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to remove.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  ply:removePart("helmet_model")
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=resetParts></a>resetParts()</summary>
+<div class="details-content">
+<a id="resetparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Removes all PAC parts from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use to clear all equipped PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-server">
+<summary><a id=IsAvailable></a>IsAvailable()</summary>
+<div class="details-content">
+<a id="isavailable"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Removes all PAC parts from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Use to clear all equipped PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px;">
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+</div>
+</details>
+
+---
+
+<details class="realm-shared" id="function-getparts">
+<summary><a id="getParts"></a>getParts()</summary>
+<div class="details-content">
+<a id="getparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Returns the player's active PAC parts.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use to check which PAC parts are currently equipped on the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> Table of active PAC part IDs.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  local parts = ply:getParts()
+  if parts["helmet"] then
+      print("Player has helmet equipped")
+  end
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-syncparts">
+<summary><a id="syncParts"></a>syncParts()</summary>
+<div class="details-content">
+<a id="syncparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Synchronizes the player's PAC parts with the client.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use to ensure the client has the correct PAC parts data.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  ply:syncParts()
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-addpart">
+<summary><a id="addPart"></a>addPart(partID)</summary>
+<div class="details-content">
+<a id="addpart"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Adds a PAC part to the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use when equipping PAC parts on a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to add.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  ply:addPart("helmet_model")
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-removepart">
+<summary><a id="removePart"></a>removePart(partID)</summary>
+<div class="details-content">
+<a id="removepart"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Removes a PAC part from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use when unequipping PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">partID</span> The unique ID of the PAC part to remove.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  ply:removePart("helmet_model")
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-resetparts">
+<summary><a id="resetParts"></a>resetParts()</summary>
+<div class="details-content">
+<a id="resetparts"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Removes all PAC parts from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use to clear all equipped PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-isavailable">
+<summary><a id="IsAvailable"></a>IsAvailable()</summary>
+<div class="details-content">
+<a id="isavailable"></a>
+<h3 style="margin-bottom: 5px;">Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Removes all PAC parts from the player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">When Called</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Use to clear all equipped PAC parts from a player.</p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.2">None.</a></span></p>
+</div>
+
+<h3 style="margin-bottom: 5px;">Example Usage</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<pre><code class="language-lua">  ply:resetParts()
+</code></pre>
+</div>
+
+</div>
+</details>
+
+---
+
