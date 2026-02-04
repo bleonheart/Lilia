@@ -158,6 +158,9 @@ function lia.option.set(key, value)
     hook.Run("OptionChanged", key, old, value)
     lia.option.save()
     if opt.shouldNetwork and SERVER then hook.Run("OptionReceived", nil, key, value) end
+    if CLIENT and old ~= value then
+        LocalPlayer():notifySuccess("Option '" .. (opt.name or key) .. "' updated successfully")
+    end
 end
 
 --[[

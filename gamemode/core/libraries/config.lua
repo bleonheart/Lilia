@@ -220,6 +220,9 @@ function lia.config.set(key, value)
             if config.callback then config.callback(oldValue, value) end
             lia.config.save()
         end
+        if CLIENT and oldValue ~= value then
+            LocalPlayer():notifySuccess("Config '" .. (config.name or key) .. "' updated successfully")
+        end
     end
 end
 

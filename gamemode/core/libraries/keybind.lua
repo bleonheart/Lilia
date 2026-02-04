@@ -574,7 +574,7 @@ if CLIENT then
                 table.sort(choices, function(a, b)
                     if a.txt == "NONE" then return true end
                     if b.txt == "NONE" then return false end
-                    return a.txt < b.txt
+                    return tostring(a.txt or ""):lower() < tostring(b.txt or ""):lower()
                 end)
 
                 local hasNone = false
