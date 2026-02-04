@@ -71,12 +71,7 @@ end
 function PANEL:Paint(w, h)
     local theme = lia.color.theme
     local bgColor = Color(20, 23, 28, 200)
-    if not self.editable then
-        bgColor = ColorAlpha(bgColor, 0.4)
-    elseif self.hovered then
-        bgColor = ColorAlpha(lia.config.get("Color") or Color(100, 150, 200), 20)
-    end
-
+    if not self.editable then bgColor = ColorAlpha(bgColor, 0.4) end
     -- Draw main background
     lia.derma.rect(0, 0, w, h):Rad(4):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
     -- Draw left accent line if checked

@@ -1,26 +1,14 @@
-﻿local DEFAULT_BUTTON_SHADOW = Color(18, 32, 32, 35)
-local GRADIENT_MAT = Material("vgui/gradient-d")
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
-    self._activeShadowTimer = 0
-    self._activeShadowMinTime = 0.03
-    self._activeShadowLerp = 0
     self.hover_status = 0
     self.bool_hover = true
     self.font = "LiliaFont.18"
-    self.radius = 16
+    self.radius = 12
     self.icon = ""
     self.icon_size = 16
     self.text = L("button")
-    self.col = (lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)
+    self.col = Color(25, 28, 35, 250)
     self.col_hov = (lia.color.theme and lia.color.theme.button_hovered) or Color(70, 140, 140)
-    self.bool_gradient = true
-    self.click_alpha = 0
-    self.click_x = 0
-    self.click_y = 0
-    self.ripple_speed = 4
-    self.enable_ripple = false
-    self.ripple_color = Color(255, 255, 255, 30)
     self.BaseClass.SetText(self, "")
 end
 
@@ -109,43 +97,15 @@ function PANEL:DoClick()
     self.BaseClass.DoClick(self)
 end
 
-local math_clamp = math.Clamp
 function PANEL:Paint(w, h)
-    if self:IsHovered() then
-        self.hover_status = math_clamp(self.hover_status + 4 * FrameTime(), 0, 1)
-    else
-        self.hover_status = math_clamp(self.hover_status - 8 * FrameTime(), 0, 1)
-    end
-
-    local isActive = (self:IsDown() or self.Depressed) and self.hover_status > 0.8
-    if isActive then self._activeShadowTimer = SysTime() + self._activeShadowMinTime end
-    local showActiveShadow = isActive or (self._activeShadowTimer > SysTime())
-    local activeTarget = showActiveShadow and 10 or 0
-    local activeSpeed = (activeTarget > 0) and 7 or 3
-    self._activeShadowLerp = Lerp(FrameTime() * activeSpeed, self._activeShadowLerp, activeTarget)
-    if self._activeShadowLerp > 0 then
-        local col = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, math.Clamp(self.col_hov.a * 1.5, 0, 255))
-        draw.RoundedBox(self.radius, 0, 0, w, h, col)
-    end
-
-    draw.RoundedBox(self.radius, 0, 0, w, h, self.col)
-    if self.bool_gradient then
-        local shadowCol = (lia.color.theme and lia.color.theme.button_shadow) or DEFAULT_BUTTON_SHADOW
-        surface.SetDrawColor(shadowCol)
-        surface.SetMaterial(GRADIENT_MAT)
-        surface.DrawTexturedRect(0, 0, w, h)
-    end
-
-    if self.bool_hover and self.hover_status > 0 then
-        local hoverCol = Color(self.col_hov.r, self.col_hov.g, self.col_hov.b, self.hover_status * 255)
-        draw.RoundedBox(self.radius, 0, 0, w, h, hoverCol)
-    end
-
-    if self.click_alpha > 0 then
-        self.click_alpha = math_clamp(self.click_alpha - FrameTime() * self.ripple_speed, 0, 1)
-        local ripple_size = (1 - self.click_alpha) * math.max(w, h) * 2
-        local ripple_color = Color(self.ripple_color.r, self.ripple_color.g, self.ripple_color.b, self.ripple_color.a * self.click_alpha)
-        draw.RoundedBox(ripple_size * 0.5, self.click_x - ripple_size * 0.5, self.click_y - ripple_size * 0.5, ripple_size, ripple_size, ripple_color)
+    local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+    -- Main card background with shadow
+    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(self.col):Shape(lia.derma.SHAPE_IOS):Draw()
+    -- Hover effect
+    if self.bool_hover and (self:IsHovered() or self:IsDown()) then
+        local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, 30)
+        lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
     local iconSize = self.icon_size or 16

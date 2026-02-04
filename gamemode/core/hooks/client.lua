@@ -413,10 +413,10 @@ function GM:HUDPaint()
                     local drawOptions = {
                         textColor = info.color or Color(180, 180, 180),
                         font = info.font or "LiliaFont.16",
-                        backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
-                        borderRadius = 6,
+                        backgroundColor = Color(25, 28, 35, 250),
+                        borderRadius = 12,
                         borderThickness = 0,
-                        padding = 12,
+                        padding = 20,
                         blur = {
                             enabled = true,
                             amount = 1,
@@ -425,9 +425,9 @@ function GM:HUDPaint()
                         },
                         shadow = {
                             enabled = true,
-                            offsetX = 8,
-                            offsetY = 12,
-                            color = lia.color.theme.window_shadow or Color(0, 0, 0, 50)
+                            offsetX = 15,
+                            offsetY = 20,
+                            color = Color(0, 0, 0, 180)
                         },
                         accentBorder = {
                             enabled = true,
@@ -439,7 +439,7 @@ function GM:HUDPaint()
                     if info.backgroundColor then
                         drawOptions.backgroundColor = info.backgroundColor
                     else
-                        drawOptions.backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
+                        drawOptions.backgroundColor = Color(25, 28, 35, 250)
                     end
 
                     if info.borderColor then drawOptions.borderColor = info.borderColor end

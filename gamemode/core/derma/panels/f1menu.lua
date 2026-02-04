@@ -1274,10 +1274,14 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     local hasPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
     if hasPrivilege then
         tabs["themes"] = function(themesPanel)
-            local sheet = themesPanel:Add("liaTabs")
+            local frame = themesPanel:Add("liaFrame")
+            frame:Dock(FILL)
+            frame:DockMargin(10, 10, 10, 10)
+            frame:SetTitle(L("themes"))
+            frame:LiteMode()
+            frame:DisableCloseBtn()
+            local sheet = frame:Add("liaTabs")
             sheet:Dock(FILL)
-            sheet:DockMargin(10, 10, 10, 10)
-            sheet.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.background):Draw() end
             local function getLocalizedThemeName(themeID)
                 local properCaseName = themeID:gsub("(%a)([%w]*)", function(first, rest) return first:upper() .. rest:lower() end)
                 local localizationKey = "theme" .. properCaseName:gsub(" ", ""):gsub("-", "")
@@ -1352,9 +1356,11 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                             local swatchY = (h - swatchSize) * 0.5
                             for idx, col in ipairs(entry.colors) do
                                 local x = startX + (idx - 1) * (swatchSize + gap)
+                                draw.RoundedBox(6, x - 2, swatchY - 2, swatchSize + 4, swatchSize + 4, Color(200, 200, 200, 255))
                                 draw.RoundedBox(6, x, swatchY, swatchSize, swatchSize, col)
-                                surface.SetDrawColor(255, 255, 255, 60)
+                                surface.SetDrawColor(255, 255, 255, 255)
                                 surface.DrawOutlinedRect(x, swatchY, swatchSize, swatchSize)
+                                surface.DrawOutlinedRect(x + 1, swatchY + 1, swatchSize - 2, swatchSize - 2)
                             end
                         end
                     end

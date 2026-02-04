@@ -2319,10 +2319,10 @@ function lia.derma.drawBoxWithText(text, x, y, options)
     options = options or {}
     local font = options.font or "LiliaFont.16"
     local textColor = options.textColor or Color(255, 255, 255)
-    local backgroundColor = options.backgroundColor or Color(0, 0, 0, 150)
+    local backgroundColor = options.backgroundColor or Color(25, 28, 35, 250)
     local borderColor = options.borderColor or lia.color.theme.theme
-    local borderRadius = options.borderRadius or 8
-    local borderThickness = options.borderThickness or 2
+    local borderRadius = options.borderRadius or 12
+    local borderThickness = options.borderThickness or 0
     local padding = options.padding or 20
     local blur = options.blur or {
         enabled = true,
@@ -2404,15 +2404,18 @@ function lia.derma.drawBoxWithText(text, x, y, options)
     end
 
     local shadow = options.shadow or {
-        enabled = false
+        enabled = true,
+        color = Color(0, 0, 0, 180),
+        offsetX = 15,
+        offsetY = 20
     }
 
     boxWidth = math.max(boxWidth, 1)
     boxHeight = math.max(boxHeight, 1)
-    if shadow.enabled then lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Rad(borderRadius):Color(shadow.color or Color(0, 0, 0, 50)):Shadow(shadow.offsetX or 8, shadow.offsetY or 12):Shape(lia.derma.SHAPE_IOS):Draw() end
+    if shadow.enabled then lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Rad(borderRadius):Color(shadow.color or Color(0, 0, 0, 180)):Shadow(shadow.offsetX or 15, shadow.offsetY or 20):Shape(lia.derma.SHAPE_IOS):Draw() end
     if blur.enabled then lia.util.drawBlurAt(boxX, boxY, boxWidth, boxHeight, blur.amount, blur.passes, blur.alpha) end
-    lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(backgroundColor):Rad(borderRadius):Draw()
-    if borderThickness > 0 then lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(borderColor):Rad(borderRadius):Outline(borderThickness):Draw() end
+    lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(backgroundColor):Rad(borderRadius):Shape(lia.derma.SHAPE_IOS):Draw()
+    if borderThickness > 0 then lia.derma.rect(boxX, boxY, boxWidth, boxHeight):Color(borderColor):Rad(borderRadius):Shape(lia.derma.SHAPE_IOS):Outline(borderThickness):Draw() end
     local accentBorder = options.accentBorder or {
         enabled = false
     }

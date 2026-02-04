@@ -76,15 +76,12 @@ end
 function PANEL:Paint(w, h)
     if not self.text then return end
     local theme = lia.color.theme
-    local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200)
+    -- accent variable removed as it was unused
     local colorText = self.isActive and color_white or theme.text or Color(200, 200, 200)
     local colorIcon = self.isActive and color_white or Color(180, 180, 180)
     if self.isActive then
         local highlight = Color(255, 255, 255, 10)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(highlight):Shape(lia.derma.SHAPE_IOS):Draw()
-    elseif self:IsHovered() then
-        local hoverBg = Color(255, 255, 255, 5)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(hoverBg):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
     local iconW = self.icon and 16 or 0

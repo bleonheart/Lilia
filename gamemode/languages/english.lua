@@ -1864,7 +1864,7 @@ LANGUAGE = {
     categorySpawnStorage = "Spawn: Storage",
     categorySpawnBlacklisting = "Spawn: Blacklisting",
     categoryPAC3 = "PAC3",
-    categoryConfiguration = "Configuration",
+    categoryConfiguration = "Core",
     categoryUsergroups = "Permissions",
     doorSellRatio = "Door Sell Ratio",
     doorSellRatioDesc = "Percentage you can sell a door for",
@@ -3473,4 +3473,6 @@ LANGUAGE = {
     itemLocked = "This item is locked.",
     cannotWhileTied = "You cannot do this while tied.",
     itemAdded = "%s has been added to your inventory.",
+    bankingConfiguration = "Banking Config",
+    searchBanking = "Search Banking Options...",
 }

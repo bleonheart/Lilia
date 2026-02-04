@@ -205,11 +205,10 @@ function PANEL:Rebuild()
 
             btnTab.Paint = function(s, w, h)
                 local isActive = self.active_id == id
-                local isHovered = s:IsHovered()
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
                 local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-                if isActive or isHovered then
-                    local alpha = isActive and 30 or 15
+                if isActive then
+                    local alpha = 30
                     local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, alpha)
                     lia.derma.rect(0, 0, w, h):Rad(8):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
                 end

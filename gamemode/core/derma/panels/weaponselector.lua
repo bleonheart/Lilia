@@ -134,6 +134,8 @@ local function HUDPaint()
         lia.derma.rect(x, y, w, h):Rad(12):Color(Color(0, 0, 0, 180 * fraction)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         -- Step 2: Draw main card background
         lia.derma.rect(x, y, w, h):Rad(12):Color(Color(bgColor.r, bgColor.g, bgColor.b, entryAlpha)):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Step 3: Draw top accent line
+        lia.derma.rect(x, y, w, 4 * scale):Radii(12, 12, 0, 0):Color(Color(accent.r, accent.g, accent.b, entryAlpha)):Shape(lia.derma.SHAPE_IOS):Draw()
         local isActive = i == index
         surface.SetFont("LiliaFont.28")
         surface.SetTextColor(255, 255, 255, entryAlpha)

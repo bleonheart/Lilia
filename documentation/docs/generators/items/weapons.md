@@ -7,6 +7,7 @@ Create equippable weapons that players can carry in their inventory and use in c
 <h3 style="margin-bottom: 5px; font-weight: 700;">Overview</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
   <p>Use this tool to generate the Lua structure for your custom weapon item. Once generated, the code should be placed in a new file within your schema's items directory.</p>
+  <p><strong>Note on Automatic Generation:</strong> Lilia automatically generates weapon items for any registered weapon entity that does not have a manual item definition. Using this generator to create a custom item will override that default behavior for the specified weapon class.</p>
   <p><strong>Recommended Placement:</strong></p>
   <code style="display: block; padding: 12px; background: rgba(0, 0, 0, 0.05); border-left: 4px solid #46a9ff; margin-top: 10px; font-family: 'JetBrains Mono', monospace;">garrysmod/gamemodes/[schema folder]/schema/items/[item_id].lua</code>
 </div>

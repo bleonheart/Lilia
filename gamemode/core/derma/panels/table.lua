@@ -111,8 +111,6 @@ function PANEL:CreateHeader()
         label:SetSize(column.width, self.headerHeight)
         label:SetPos(xPos, 0)
         label.Paint = function(s, w, h)
-            local isHovered = s:IsHovered() and column.sortable
-            if isHovered then lia.derma.rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(lia.color.theme.hover):Shape(lia.derma.SHAPE_IOS):Draw() end
             local textColor = lia.color.theme.text
             local align = column.align or 0 -- TEXT_ALIGN_LEFT
             local x = w / 2
@@ -523,12 +521,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         local colors = lia.color.theme
         local accent = colors.accent or colors.theme or Color(116, 185, 255)
         local bgColor = Color(255, 255, 255, 4) -- Subtle row background
-        if self.selectedRow == rowIndex then
-            bgColor = ColorAlpha(accent, 80)
-        elseif s:IsHovered() then
-            bgColor = Color(255, 255, 255, 12)
-        end
-
+        if self.selectedRow == rowIndex then bgColor = ColorAlpha(accent, 80) end
         lia.derma.rect(0, 0, w, h):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         if self.selectedRow == rowIndex then
             lia.derma.rect(0, 0, 2, h):Color(accent):Draw() -- Vertical accent line for selection

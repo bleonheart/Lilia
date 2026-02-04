@@ -43,11 +43,31 @@ if SERVER then
     ]]
     function lia.data.encodetable(value)
         if isvector(value) then
-            return {value.x, value.y, value.z}
+            return {
+                x = value.x,
+                y = value.y,
+                z = value.z
+            }
         elseif isangle(value) then
-            return {value.p, value.y, value.r}
-        elseif istable(value) and value.r ~= nil and value.g ~= nil and value.b ~= nil then
-            return {value.r, value.g, value.b, value.a or 255}
+            return {
+                p = value.p,
+                y = value.y,
+                r = value.r
+            }
+        elseif IsColor(value) then
+            return {
+                r = value.r,
+                g = value.g,
+                b = value.b,
+                a = value.a
+            }
+        elseif istable(value) and value.r and value.g and value.b then
+            return {
+                r = value.r,
+                g = value.g,
+                b = value.b,
+                a = value.a or 255
+            }
         elseif istable(value) then
             local t = {}
             for k, v in pairs(value) do
@@ -59,20 +79,16 @@ if SERVER then
     end
 
     local function _decodeVector(data)
-        if isvector(data) then return data end
+        if isvector(data) or isangle(data) then return data end
         if isstring(data) and data:lower():match("^models/") then return data end
         if istable(data) then
-            if data.x then
+            if data.x and data.y and data.z then
                 local x, y, z = tonumber(data.x), tonumber(data.y), tonumber(data.z)
                 if x and y and z then return Vector(x, y, z) end
             end
 
-            if data.p and data.y and data.r then
-                local x, y, z = tonumber(data.p), tonumber(data.y), tonumber(data.r)
-                if x and y and z then return Vector(x, y, z) end
-            end
-
-            if data[1] and data[2] and data[3] then
+            -- Fallback for legacy arrays, checks if only numerical keys exist to avoid false positives
+            if data[1] and data[2] and data[3] and not data.r and not data.g then
                 local x, y, z = tonumber(data[1]), tonumber(data[2]), tonumber(data[3])
                 if x and y and z then return Vector(x, y, z) end
             end
@@ -121,14 +137,15 @@ if SERVER then
     end
 
     local function _decodeAngle(data)
-        if isangle(data) then return data end
+        if isangle(data) or isvector(data) then return data end
         if isstring(data) and data:lower():match("^models/") then return data end
         if istable(data) then
-            if data.p or data.y or data.r then
+            if data.p and data.y and data.r then
                 local p, y, r = tonumber(data.p or 0), tonumber(data.y or 0), tonumber(data.r or 0)
                 if p and y and r then return Angle(p, y, r) end
             end
 
+            -- Fallback for legacy arrays
             if data[1] and data[2] and data[3] then
                 local p, y, r = tonumber(data[1]), tonumber(data[2]), tonumber(data[3])
                 if p and y and r then return Angle(p, y, r) end
@@ -180,6 +197,12 @@ if SERVER then
         return data
     end
 
+    local function _decodeColor(data)
+        if IsColor(data) then return data end
+        if istable(data) and data.r and data.g and data.b then return Color(tonumber(data.r) or 255, tonumber(data.g) or 255, tonumber(data.b) or 255, tonumber(data.a) or 255) end
+        return data
+    end
+
     local function deepDecode(value)
         if istable(value) then
             local t = {}
@@ -190,8 +213,13 @@ if SERVER then
             value = t
         end
 
-        value = _decodeAngle(value)
-        value = _decodeVector(value)
+        -- Try specific decoders
+        local col = _decodeColor(value)
+        if IsColor(col) then return col end
+        local vec = _decodeVector(value)
+        if isvector(vec) then return vec end
+        local ang = _decodeAngle(value)
+        if isangle(ang) then return ang end
         return value
     end
 
@@ -246,7 +274,14 @@ if SERVER then
         ```
     ]]
     function lia.data.serialize(value)
-        local encoded = lia.data.encodetable(value) or {}
+        local encoded = lia.data.encodetable(value)
+        -- If encodetable returned nil, it means it's not a special type, so use original value.
+        -- BUT, if value was nil, encoded is nil.
+        -- If value was false, encodetable(false) -> false.
+        -- Let's stick to standard logic:
+        -- encodetable handles recursive encoding.
+        -- We just need to ensure 'false' doesn't get OR'd into a table.
+        if encoded == nil and value ~= nil then encoded = value end
         if not istable(encoded) then
             encoded = {
                 value = encoded

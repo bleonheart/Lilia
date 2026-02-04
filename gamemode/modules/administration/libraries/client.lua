@@ -4352,8 +4352,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             hudAutoSize = true
         end
 
-        local bgColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
-        if bgColor.a == 0 or not bgColor.a then bgColor = Color(40, 40, 40, 240) end
+        local bgColor = Color(25, 28, 35, 250)
         local hudInfo = {
             text = infoLines,
             font = "LiliaFont.20",
@@ -4366,9 +4365,9 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             textAlignY = hudAlignY,
             autoSize = hudAutoSize,
             backgroundColor = bgColor,
-            borderRadius = 6,
+            borderRadius = 12,
             borderThickness = 0,
-            padding = 12,
+            padding = 20,
             blur = {
                 enabled = true,
                 amount = 1,
@@ -4377,9 +4376,9 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             },
             shadow = {
                 enabled = true,
-                offsetX = 8,
-                offsetY = 12,
-                color = lia.color.theme.window_shadow or Color(0, 0, 0, 50)
+                offsetX = 15,
+                offsetY = 20,
+                color = Color(0, 0, 0, 180)
             },
             accentBorder = {
                 enabled = true,
@@ -4403,7 +4402,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         },
         textAlignX = TEXT_ALIGN_RIGHT,
         textAlignY = TEXT_ALIGN_TOP,
-        backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
+        backgroundColor = Color(25, 28, 35, 250),
         borderRadius = 6,
         borderThickness = 0,
         padding = 12,
@@ -4441,7 +4440,7 @@ local function DisplayPositionToolHUD(client, hudInfos, weapon)
         },
         textAlignX = TEXT_ALIGN_RIGHT,
         textAlignY = TEXT_ALIGN_TOP,
-        backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
+        backgroundColor = Color(25, 28, 35, 250),
         borderRadius = 6,
         borderThickness = 0,
         padding = 12,
@@ -4477,7 +4476,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
         },
         textAlignX = TEXT_ALIGN_RIGHT,
         textAlignY = TEXT_ALIGN_TOP,
-        backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
+        backgroundColor = Color(25, 28, 35, 250),
         borderRadius = 6,
         borderThickness = 0,
         padding = 12,
@@ -4514,10 +4513,10 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
             },
             textAlignX = TEXT_ALIGN_CENTER,
             textAlignY = TEXT_ALIGN_TOP,
-            backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
-            borderRadius = 6,
+            backgroundColor = Color(25, 28, 35, 250),
+            borderRadius = 12,
             borderThickness = 0,
-            padding = 12,
+            padding = 20,
             blur = {
                 enabled = true,
                 amount = 1,
@@ -4526,9 +4525,9 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
             },
             shadow = {
                 enabled = true,
-                offsetX = 8,
-                offsetY = 12,
-                color = lia.color.theme.window_shadow or Color(0, 0, 0, 50)
+                offsetX = 15,
+                offsetY = 20,
+                color = Color(0, 0, 0, 180)
             },
             accentBorder = {
                 enabled = true,
@@ -4548,9 +4547,9 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
             textAlignX = TEXT_ALIGN_CENTER,
             textAlignY = TEXT_ALIGN_TOP,
             backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
-            borderRadius = 6,
+            borderRadius = 12,
             borderThickness = 0,
-            padding = 12,
+            padding = 20,
             blur = {
                 enabled = true,
                 amount = 1,
@@ -4559,9 +4558,9 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
             },
             shadow = {
                 enabled = true,
-                offsetX = 8,
-                offsetY = 12,
-                color = lia.color.theme.window_shadow or Color(0, 0, 0, 50)
+                offsetX = 15,
+                offsetY = 20,
+                color = Color(0, 0, 0, 180)
             },
             accentBorder = {
                 enabled = true,

@@ -199,12 +199,12 @@ function PANEL:Paint(w, h)
     derma.SkinHook("Paint", "Panel", self, w, h)
     if self.start then
         local w2 = TimeFraction(self.start, self.endTime, CurTime()) * w
-        surfaceSetDrawColor(lia.config.get("Color"))
-        surfaceDrawRect(w2, 0, w - w2, h)
+        surface.SetDrawColor(lia.config.get("Color"))
+        surface.DrawRect(w2, 0, w - w2, h)
     end
 
-    surfaceSetDrawColor(lia.config.get("Color"))
-    surfaceDrawOutlinedRect(0, 0, w, h)
+    surface.SetDrawColor(lia.config.get("Color"))
+    surface.DrawOutlinedRect(0, 0, w, h)
 end
 
 vgui.Register("liaNoticePanel", PANEL, "DPanel")
