@@ -1030,7 +1030,7 @@ net.Receive("liaOpenNpcDialog", function()
         npcName = npcData.PrintName
     end
 
-    lia.dialog.vgui = vgui.Create("DialogMenu")
+    lia.dialog.vgui = vgui.Create("liaDialogMenu")
     lia.dialog.vgui:SetDialogTitle(npcName)
     if npcData then
         local enhancedConversation = table.Copy(npcData.Conversation or {})
