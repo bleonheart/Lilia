@@ -1,8 +1,17 @@
 ﻿local surface = surface
 local Color = Color
 local ColorAlpha = ColorAlpha
+
+local function getThemeBackground()
+    return Color(25, 28, 35, 250)
+end
+
+local function getThemeBackgroundSolid()
+    return Color(25, 28, 35, 250)
+end
+
 local function drawAltBg(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
@@ -22,10 +31,11 @@ SKIN.Colours.Label.Dark = lia.color.theme and lia.color.theme.text or Color(200,
 SKIN.Colours.Button.Normal = lia.color.theme and lia.color.theme.text or Color(200, 200, 200)
 SKIN.Colours.Button.Hover = Color(255, 255, 255)
 SKIN.Colours.Button.Down = Color(180, 180, 180)
-SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
+SKIN.Colours.Button.Disabled = Color(120, 120, 120)
 SKIN.Colours.Tree = table.Copy(derma.SkinList.Default.Colours.Tree)
 SKIN.Colours.Tree.Text = Color(255, 255, 255)
 SKIN.Colours.Tree.SelectedText = Color(255, 255, 255)
+
 function SKIN:PaintFrame(panel)
     if not panel.LaidOut then
         for _, btn in ipairs({panel.btnMinimize, panel.btnMaximize, panel.btnClose}) do
@@ -39,12 +49,12 @@ function SKIN:PaintFrame(panel)
     end
 
     local w, h = panel:GetWide(), panel:GetTall()
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 function SKIN:DrawGenericBackground(x, y, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(x, y, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
@@ -52,14 +62,14 @@ function SKIN:PaintPanel(panel)
     if not panel.m_bBackground then return end
     if panel.GetPaintBackground and not panel:GetPaintBackground() then return end
     local w, h = panel:GetWide(), panel:GetTall()
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(6):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 local function paintButtonBase(panel, w, h)
     if not panel.m_bBackground then return end
     if panel.GetPaintBackground and not panel:GetPaintBackground() then return end
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local base = ColorAlpha(bgColor, 200)
     if panel:GetDisabled() then
@@ -116,7 +126,7 @@ end
 
 function SKIN:PaintTextEntry(panel, w, h)
     if panel.m_bBackground then
-        local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+        local bgColor = getThemeBackgroundSolid()
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         local base = ColorAlpha(bgColor, panel:GetDisabled() and 90 or 200)
         if panel.Depressed then
@@ -145,7 +155,7 @@ function SKIN:PaintTextEntry(panel, w, h)
 end
 
 function SKIN:PaintListView(_, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 200)):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
@@ -181,7 +191,7 @@ function SKIN:PaintButtonDown(_, w, h)
 end
 
 function SKIN:PaintVScrollBar(_, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 200)):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
@@ -202,7 +212,7 @@ function SKIN:PaintMenuOption(panel, w, h)
 end
 
 function SKIN:PaintTreeNodeButton(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     lia.derma.rect(0, 0, w, h):Rad(4):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
     if panel.m_bSelected then
@@ -320,12 +330,12 @@ function SKIN:PaintMenuRightArrow(_, w, h)
 end
 
 function SKIN:PaintHScrollBar(_, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 200)):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 function SKIN:PaintCheckBox(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local base = ColorAlpha(bgColor, panel:GetDisabled() and 60 or 180)
     if panel.Depressed then
@@ -344,7 +354,7 @@ function SKIN:PaintCheckBox(panel, w, h)
 end
 
 function SKIN:PaintRadioButton(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local r = math.min(w, h)
     local base = ColorAlpha(bgColor, panel:GetDisabled() and 60 or 180)
@@ -359,7 +369,7 @@ function SKIN:PaintRadioButton(panel, w, h)
 end
 
 function SKIN:PaintExpandButton(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackgroundSolid()
     lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(bgColor, 160)):Shape(lia.derma.SHAPE_IOS):Draw()
     surface.SetDrawColor(Color(220, 220, 220))
     surface.DrawRect(4, h * 0.5 - 1, w - 8, 2)
@@ -403,7 +413,7 @@ function SKIN:PaintNumSlider(panel, w, h)
 end
 
 function SKIN:PaintProgress(panel, w, h)
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 180)):Shape(lia.derma.SHAPE_IOS):Draw()
     local frac = math.Clamp(panel:GetFraction() or 0, 0, 1)
@@ -435,12 +445,13 @@ function SKIN:PaintMenuSpacer(panel, w, h)
 end
 
 function SKIN:PaintTooltip(panel, w, h)
-    drawAltBg(panel, w, h)
+    local bgColor = getThemeBackground()
+    lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
 function SKIN:PaintPropertySheet(panel, w, h)
     if panel.GetPaintBackground and not panel:GetPaintBackground() then return end
-    local bgColor = lia.color.theme and lia.color.theme.background or Color(25, 28, 35, 250)
+    local bgColor = getThemeBackground()
     lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
@@ -448,16 +459,16 @@ derma.DefineSkin(L("liliaSkin"), L("liliaSkinDesc"), SKIN)
 local skinTestFrame
 local function addRow(list, title, height, builder)
     local row = list:Add("DPanel")
-    row:SetTall(height or 96)
+    row:SetTall(height or 60)
     row:Dock(TOP)
-    row:DockMargin(0, 0, 0, 8)
-    row:DockPadding(10, 8, 10, 8)
+    row:DockMargin(0, 0, 0, 4)
+    row:DockPadding(8, 4, 8, 4)
     row:SetPaintBackground(false)
     local label = row:Add("DLabel")
-    label:SetFont("LiliaFont.18")
+    label:SetFont("LiliaFont.16")
     label:SetText(title)
     label:Dock(TOP)
-    label:DockMargin(0, 0, 0, 6)
+    label:DockMargin(0, 0, 0, 4)
     label:SizeToContents()
     local holder = row:Add("DPanel")
     holder:Dock(FILL)
@@ -468,17 +479,20 @@ end
 local function buildSkinPreview()
     if IsValid(skinTestFrame) then skinTestFrame:Remove() end
     skinTestFrame = vgui.Create("DFrame")
-    skinTestFrame:SetSize(960, 720)
+    skinTestFrame.Paint = function() end
+    skinTestFrame:SetSize(1200, 800)
     skinTestFrame:Center()
     skinTestFrame:SetTitle("Lilia Skin Preview")
+
     skinTestFrame:MakePopup()
+    skinTestFrame:SetSizable(true)
     local scroll = skinTestFrame:Add("DScrollPanel")
     scroll:Dock(FILL)
-    scroll:DockPadding(10, 10, 10, 10)
+    scroll:DockPadding(5, 5, 5, 5)
     local list = scroll:Add("DListLayout")
     list:Dock(TOP)
     list:SetSize(scroll:GetWide(), 0)
-    addRow(list, "Checkboxes & Radio Buttons", 90, function(parent)
+    addRow(list, "Checkboxes & Radio Buttons", 70, function(parent)
         local cb = parent:Add("DCheckBoxLabel")
         cb:Dock(LEFT)
         cb:SetText("Checkbox")
@@ -489,17 +503,19 @@ local function buildSkinPreview()
         radioWrap:DockMargin(16, 0, 0, 0)
         radioWrap:SetWide(140)
         radioWrap:SetPaintBackground(false)
-        local rb = radioWrap:Add("DRadioButton")
-        rb:Dock(LEFT)
-        rb:SetValue(true)
-        local rbLabel = radioWrap:Add("DLabel")
-        rbLabel:Dock(LEFT)
-        rbLabel:DockMargin(6, 0, 0, 0)
-        rbLabel:SetText("Radio")
-        rbLabel:SizeToContents()
+        local radio1 = radioWrap:Add("DCheckBox")
+        radio1:Dock(TOP)
+        radio1:SetText("Radio 1")
+        radio1:SetValue(true)
+        radio1:SizeToContents()
+        local radio2 = radioWrap:Add("DCheckBox")
+        radio2:Dock(TOP)
+        radio2:SetText("Radio 2")
+        radio2:SetValue(false)
+        radio2:SizeToContents()
     end)
 
-    addRow(list, "Collapsible (Expand Button)", 140, function(parent)
+    addRow(list, "Collapsible (Expand Button)", 100, function(parent)
         local cat = parent:Add("DCollapsibleCategory")
         cat:Dock(FILL)
         cat:SetLabel("Click to expand")
@@ -515,7 +531,7 @@ local function buildSkinPreview()
         cat:SetContents(inner)
     end)
 
-    addRow(list, "Combo Box & Down Arrow", 90, function(parent)
+    addRow(list, "Combo Box & Down Arrow", 70, function(parent)
         local combo = parent:Add("DComboBox")
         combo:Dock(LEFT)
         combo:SetWide(220)
@@ -525,7 +541,7 @@ local function buildSkinPreview()
         combo:AddChoice("Option C")
     end)
 
-    addRow(list, "Horizontal Scrollbar & Grip", 120, function(parent)
+    addRow(list, "Horizontal Scrollbar & Grip", 80, function(parent)
         local scrollBar = parent:Add("liaHorizontalScroll")
         scrollBar:Dock(FILL)
         for i = 1, 12 do
@@ -536,7 +552,7 @@ local function buildSkinPreview()
         end
     end)
 
-    addRow(list, "Num Slider & Knob", 110, function(parent)
+    addRow(list, "Num Slider & Knob", 80, function(parent)
         local slider = parent:Add("DNumSlider")
         slider:Dock(TOP)
         slider:SetText("Volume")
@@ -546,7 +562,7 @@ local function buildSkinPreview()
         slider:SetValue(60)
     end)
 
-    addRow(list, "Progress Bar", 90, function(parent)
+    addRow(list, "Progress Bar", 70, function(parent)
         local bar = parent:Add("DProgress")
         bar:Dock(TOP)
         bar:SetTall(24)
@@ -556,7 +572,7 @@ local function buildSkinPreview()
         end
     end)
 
-    addRow(list, "List View Selection", 160, function(parent)
+    addRow(list, "List View Selection", 120, function(parent)
         local listView = parent:Add("DListView")
         listView:Dock(FILL)
         listView:AddColumn("Name")
@@ -567,7 +583,7 @@ local function buildSkinPreview()
         listView:SelectItem(listView:GetLine(2))
     end)
 
-    addRow(list, "List Box", 140, function(parent)
+    addRow(list, "List Box", 100, function(parent)
         local listBox = parent:Add("DListBox")
         listBox:Dock(FILL)
         listBox:AddItem("First choice")
@@ -575,7 +591,7 @@ local function buildSkinPreview()
         listBox:AddItem("Third choice")
     end)
 
-    addRow(list, "Menu, Right Arrow, Spacer, Tooltip", 110, function(parent)
+    addRow(list, "Menu, Right Arrow, Spacer, Tooltip", 70, function(parent)
         local btn = parent:Add("DButton")
         btn:Dock(LEFT)
         btn:SetWide(200)
@@ -590,6 +606,186 @@ local function buildSkinPreview()
             submenu:AddOption("Child B")
             menu:Open()
         end
+    end)
+
+    addRow(list, "Text Entry", 60, function(parent)
+        local textEntry = parent:Add("DTextEntry")
+        textEntry:Dock(FILL)
+        textEntry:SetPlaceholderText("Enter text here...")
+        textEntry:SetText("Sample text")
+    end)
+
+    addRow(list, "Tree View", 120, function(parent)
+        local tree = parent:Add("DTree")
+        tree:Dock(FILL)
+        local node1 = tree:AddNode("Root Node", "icon16/folder.png")
+        node1:AddNode("Child Node 1", "icon16/page.png")
+        node1:AddNode("Child Node 2", "icon16/page.png")
+        local node4 = tree:AddNode("Another Root", "icon16/folder.png")
+        node4:AddNode("Another Child", "icon16/page.png")
+    end)
+
+    addRow(list, "Property Sheet with Tabs", 120, function(parent)
+        local sheet = parent:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        local panel1 = vgui.Create("DPanel")
+        panel1:SetPaintBackground(false)
+        local label1 = panel1:Add("DLabel")
+        label1:SetText("First tab content")
+        label1:SetPos(20, 20)
+        local panel2 = vgui.Create("DPanel")
+        panel2:SetPaintBackground(false)
+        local label2 = panel2:Add("DLabel")
+        label2:SetText("Second tab content")
+        label2:SetPos(20, 20)
+        sheet:AddSheet("Tab 1", panel1, "icon16/page.png")
+        sheet:AddSheet("Tab 2", panel2, "icon16/page_white.png")
+    end)
+
+    addRow(list, "Category List", 100, function(parent)
+        local catList = parent:Add("DCategoryList")
+        catList:Dock(FILL)
+        local cat1 = catList:Add("Category 1")
+        cat1:Add("Item 1.1")
+        cat1:Add("Item 1.2")
+        local cat2 = catList:Add("Category 2")
+        cat2:Add("Item 2.1")
+        cat2:Add("Item 2.2")
+    end)
+
+    addRow(list, "Vertical Scrollbar", 100, function(parent)
+        local scrollPanel = parent:Add("DScrollPanel")
+        scrollPanel:Dock(FILL)
+        for i = 1, 8 do
+            local btn = scrollPanel:Add("DButton")
+            btn:SetTall(30)
+            btn:Dock(TOP)
+            btn:DockMargin(0, 0, 0, 2)
+            btn:SetText("Scroll Item " .. i)
+        end
+    end)
+
+    addRow(list, "Buttons (Various States)", 70, function(parent)
+        local normalBtn = parent:Add("DButton")
+        normalBtn:Dock(LEFT)
+        normalBtn:SetWide(100)
+        normalBtn:SetText("Normal")
+        local disabledBtn = parent:Add("DButton")
+        disabledBtn:Dock(LEFT)
+        disabledBtn:DockMargin(8, 0, 0, 0)
+        disabledBtn:SetWide(100)
+        disabledBtn:SetText("Disabled")
+        disabledBtn:SetDisabled(true)
+        local iconBtn = parent:Add("DButton")
+        iconBtn:Dock(LEFT)
+        iconBtn:DockMargin(8, 0, 0, 0)
+        iconBtn:SetWide(100)
+        iconBtn:SetText("Icon Button")
+    end)
+
+    addRow(list, "Spawn Icons", 80, function(parent)
+        local spawnIcon1 = parent:Add("SpawnIcon")
+        spawnIcon1:Dock(LEFT)
+        spawnIcon1:SetSize(64, 64)
+        spawnIcon1:SetModel("models/props_c17/oildrum001.mdl")
+        local spawnIcon2 = parent:Add("SpawnIcon")
+        spawnIcon2:Dock(LEFT)
+        spawnIcon2:DockMargin(8, 0, 0, 0)
+        spawnIcon2:SetSize(64, 64)
+        spawnIcon2:SetModel("models/props_junk/wood_crate001a.mdl")
+    end)
+
+    addRow(list, "Frame with Window Controls", 140, function(parent)
+        local frame = parent:Add("DFrame")
+        frame:SetSize(300, 100)
+        frame:Dock(LEFT)
+        frame:SetTitle("Test Frame")
+        frame.btnMinim:SetEnabled(true)
+        frame.btnMaxim:SetEnabled(true)
+    end)
+
+    addRow(list, "Basic Panel", 80, function(parent)
+        local panel = parent:Add("DPanel")
+        panel:Dock(FILL)
+        panel:SetBackgroundColor(Color(50, 50, 50, 100))
+        local label = panel:Add("DLabel")
+        label:SetText("Basic Panel")
+        label:Center()
+    end)
+
+    addRow(list, "Number Spinner (Up/Down)", 80, function(parent)
+        local numWang = parent:Add("DNumberWang")
+        numWang:Dock(LEFT)
+        numWang:SetWide(100)
+        numWang:SetValue(42)
+        numWang:SetMin(0)
+        numWang:SetMax(100)
+    end)
+
+    addRow(list, "Menu Bar", 60, function(parent)
+        local menuBar = parent:Add("DMenuBar")
+        menuBar:Dock(FILL)
+        local menu = menuBar:AddMenu("File")
+        menu:AddOption("New")
+        menu:AddOption("Open")
+        menu:AddOption("Save")
+        local editMenu = menuBar:AddMenu("Edit")
+        editMenu:AddOption("Cut")
+        editMenu:AddOption("Copy")
+        editMenu:AddOption("Paste")
+    end)
+
+    addRow(list, "Tabs", 80, function(parent)
+        local sheet = parent:Add("DPropertySheet")
+        sheet:Dock(FILL)
+        local panel1 = vgui.Create("DPanel")
+        panel1:SetPaintBackground(false)
+        local label1 = panel1:Add("DLabel")
+        label1:SetText("Tab Content 1")
+        label1:SetPos(10, 10)
+        sheet:AddSheet("Tab 1", panel1)
+    end)
+
+    addRow(list, "Content Panel & Icon", 100, function(parent)
+        local contentPanel = parent:Add("DPanel")
+        contentPanel:Dock(LEFT)
+        contentPanel:SetWide(150)
+        contentPanel:SetBackgroundColor(Color(40, 40, 40, 80))
+        local label = contentPanel:Add("DLabel")
+        label:SetText("Content Panel")
+        label:Center()
+
+        local contentIcon = parent:Add("DPanel")
+        contentIcon:Dock(LEFT)
+        contentIcon:DockMargin(8, 0, 0, 0)
+        contentIcon:SetWide(64)
+        contentIcon:SetTall(64)
+        contentIcon:SetBackgroundColor(Color(60, 60, 60, 100))
+        local iconLabel = contentIcon:Add("DLabel")
+        iconLabel:SetText("Icon")
+        iconLabel:Center()
+    end)
+
+    addRow(list, "Selection Highlight", 60, function(parent)
+        local panel = parent:Add("DPanel")
+        panel:Dock(FILL)
+        panel.Paint = function(_, w, h)
+            draw.RoundedBox(4, 0, 0, w, h, Color(116, 185, 255, 160))
+        end
+        local label = panel:Add("DLabel")
+        label:SetText("Selected Item")
+        label:Center()
+        label:SetTextColor(Color(255, 255, 255))
+    end)
+
+    addRow(list, "Shadow Panel", 80, function(parent)
+        local shadow = parent:Add("DPanel")
+        shadow:Dock(FILL)
+        shadow:SetBackgroundColor(Color(20, 20, 20, 120))
+        local label = shadow:Add("DLabel")
+        label:SetText("Shadow Effect")
+        label:Center()
+        label:SetTextColor(Color(200, 200, 200))
     end)
 end
 
