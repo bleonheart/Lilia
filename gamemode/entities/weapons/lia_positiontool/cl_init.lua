@@ -76,20 +76,22 @@ function SWEP:PrimaryAttack()
     timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_positiontool" then requestPositions(typeInfo.id) end end)
 end
 
+function SWEP:SecondaryAttack()
+    if not IsFirstTimePredicted() then return end
+    if self.NextSecondary and self.NextSecondary > SysTime() then return end
+    self.NextSecondary = SysTime() + 0.5
+    if not canUseTool() then return end
+    local client = LocalPlayer()
+    local pos = client:GetPos()
+    local typeInfo = getCurrentType()
+    if not typeInfo then return end
+    lia.util.setFeaturePosition(pos, typeInfo.id)
+    timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_positiontool" then requestPositions(typeInfo.id) end end)
+end
+
 function SWEP:Reload()
     if self.NextReload and self.NextReload > SysTime() then return end
     self.NextReload = SysTime() + 0.5
-    local client = LocalPlayer()
-    if client:KeyDown(IN_SPEED) then
-        if not canUseTool() then return end
-        local pos = client:GetPos()
-        local typeInfo = getCurrentType()
-        if not typeInfo then return end
-        lia.util.setFeaturePosition(pos, typeInfo.id)
-        timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_positiontool" then requestPositions(typeInfo.id) end end)
-        return
-    end
-
     local types = getTypes()
     if #types == 0 then return end
     MODE_INDEX = MODE_INDEX + 1

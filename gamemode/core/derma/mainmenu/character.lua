@@ -117,10 +117,6 @@ function PANEL:createWelcomeScreen()
         local bgColor = Color(25, 28, 35, 250)
         lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        -- Top accent bar
-        lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
-        local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
-        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Draw()
     end
 
     -- Entrance animation
@@ -784,16 +780,10 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.infoFrame:SetDraggable(false)
     self.infoFrame:ShowCloseButton(false)
     self.infoFrame.Paint = function(s, w, h)
-        local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         local bgColor = Color(25, 28, 35, 250)
         -- Main card background
         lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        -- Top accent bar
-        lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accentColor):Draw()
-        -- Subtle inner glow
-        local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
-        lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
     end
 
     local scroll = vgui.Create("liaScrollPanel", self.infoFrame)

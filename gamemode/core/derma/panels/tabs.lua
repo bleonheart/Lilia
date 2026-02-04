@@ -203,9 +203,17 @@ function PANEL:Rebuild()
                 end
             end
 
-            btnTab.Paint = function(_, w, h)
+            btnTab.Paint = function(s, w, h)
                 local isActive = self.active_id == id
+                local isHovered = s:IsHovered()
                 local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
+                local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+                if isActive or isHovered then
+                    local alpha = isActive and 30 or 15
+                    local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, alpha)
+                    lia.derma.rect(0, 0, w, h):Rad(8):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                end
+
                 if self.tab_style == "modern" then
                     if isActive then lia.derma.rect(0, h - self.indicator_height, w, self.indicator_height):Color(lia.color.theme.theme):Draw() end
                     draw.SimpleText(tab.name, "LiliaFont.18", w * 0.5, h * 0.5, colorText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)

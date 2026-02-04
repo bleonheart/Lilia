@@ -522,18 +522,10 @@ if CLIENT then
                 container:Dock(TOP)
                 container:DockMargin(0, 60, 0, 10)
                 container.Paint = function(s, w, h)
-                    local radius = 8
-                    local accent = lia.color.theme.accent or lia.color.theme.header or lia.color.theme.theme or Color(100, 150, 200)
-                    local background = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
-                    local x, y = s:LocalToScreen(0, 0)
-                    lia.derma.rect(0, 0, w, h):Rad(radius):Color(lia.color.theme.window_shadow or Color(0, 0, 0, 50)):Shadow(8, 12):Shape(lia.derma.SHAPE_IOS):Draw()
-                    lia.util.drawBlurAt(x, y, w, h)
-                    lia.derma.rect(0, 0, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
-                    surface.SetDrawColor(accent.r, accent.g, accent.b, accent.a or 255)
-                    surface.DrawRect(0, 0, w, 3)
-                    surface.DrawRect(0, 0, 3, h)
-                    surface.DrawRect(w - 3, 0, 3, h)
-                    surface.DrawRect(0, h - 3, w, 3)
+                    -- Dark background color
+                    local bgColor = Color(25, 28, 35, 250)
+                    -- Draw main card background
+                    lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
                 end
 
                 local panel = container:Add("DPanel")
@@ -552,6 +544,16 @@ if CLIENT then
                 description:DockMargin(0, 10, 0, 0)
                 description:SetText("")
                 description.Paint = function(_, w, h) draw.SimpleText(data.description or "", "LiliaFont.24", w / 2, h / 2, lia.color.theme.gray, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+                local div = panel:Add("DPanel")
+                div:Dock(TOP)
+                div:SetTall(1)
+                div:DockMargin(40, 10, 40, 10)
+                div.Paint = function(_, w, h)
+                    local theme = lia.color.theme.theme or color_white
+                    surface.SetDrawColor(theme.r, theme.g, theme.b, 20)
+                    surface.DrawRect(0, 0, w, h)
+                end
+
                 local currentKey = lia.keybind.get(action, KEY_NONE)
                 if allowEdit then
                     local combo = panel:Add("liaComboBox")
@@ -650,18 +652,9 @@ if CLIENT then
         local function buildKeybinds(parent)
             parent:Clear()
             local allowEdit = lia.config.get("AllowKeybindEditing", true)
-            local searchBar = vgui.Create("liaEntry", parent)
-            searchBar:Dock(TOP)
-            searchBar:DockMargin(10, 10, 10, 10)
-            searchBar:SetTall(40)
-            searchBar:SetFont("LiliaFont.18")
-            searchBar:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
-            searchBar:SetTextColor(Color(200, 200, 200))
-            local scrollPanel = parent:Add("liaScrollPanel")
-            scrollPanel:Dock(FILL)
-            scrollPanel:InvalidateLayout(true)
-            if not IsValid(scrollPanel.VBar) then scrollPanel:PerformLayout() end
-            local function populateKeybinds(searchFilter)
+            local tabs = parent:Add("liaTabs")
+            tabs:Dock(FILL)
+            local function populateCategoryTab(catName, scrollPanel, searchFilter, showReset)
                 local canvas = scrollPanel:GetCanvas()
                 canvas:Clear()
                 canvas:DockPadding(10, 10, 10, 10)
@@ -672,7 +665,7 @@ if CLIENT then
 
                 local actions = {}
                 for action, data in pairs(lia.keybind.stored) do
-                    if istable(data) then table.insert(actions, action) end
+                    if istable(data) and (data.category or "Misc") == catName then table.insert(actions, action) end
                 end
 
                 table.sort(actions, function(a, b)
@@ -689,10 +682,7 @@ if CLIENT then
                         local data = lia.keybind.stored[action]
                         local actionName = L(action) or tostring(action)
                         local actionDesc = data.description or ""
-                        local actionNameLower = actionName:lower()
-                        local actionDescLower = actionDesc:lower()
-                        local actionKeyLower = tostring(action):lower()
-                        if actionNameLower:find(filterLower, 1, true) or actionDescLower:find(filterLower, 1, true) or actionKeyLower:find(filterLower, 1, true) then filteredActions[#filteredActions + 1] = action end
+                        if actionName:lower():find(filterLower, 1, true) or actionDesc:lower():find(filterLower, 1, true) or tostring(action):lower():find(filterLower, 1, true) then filteredActions[#filteredActions + 1] = action end
                     end
                 else
                     filteredActions = actions
@@ -704,22 +694,12 @@ if CLIENT then
                     keybindPanel:Dock(TOP)
                     keybindPanel:DockMargin(10, 10, 10, 0)
                     keybindPanel.Paint = function(s, w, h)
-                        local radius = 8
-                        local accent = lia.color.theme.accent or lia.color.theme.header or lia.color.theme.theme or Color(100, 150, 200)
-                        local background = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
-                        local x, y = s:LocalToScreen(0, 0)
-                        lia.derma.rect(0, 0, w, h):Rad(radius):Color(lia.color.theme.window_shadow or Color(0, 0, 0, 50)):Shadow(8, 12):Shape(lia.derma.SHAPE_IOS):Draw()
-                        lia.util.drawBlurAt(x, y, w, h)
-                        lia.derma.rect(0, 0, w, h):Rad(radius):Color(background):Shape(lia.derma.SHAPE_IOS):Draw()
-                        surface.SetDrawColor(accent.r, accent.g, accent.b, accent.a or 255)
-                        surface.DrawRect(0, 0, w, 3)
-                        surface.DrawRect(0, 0, 3, h)
-                        surface.DrawRect(w - 3, 0, 3, h)
-                        surface.DrawRect(0, h - 3, w, 3)
+                        local bgColor = Color(25, 28, 35, 250)
+                        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
                     end
                 end
 
-                if allowEdit then
+                if allowEdit and showReset then
                     local resetAllBtn = vgui.Create("liaMediumButton", canvas)
                     resetAllBtn:Dock(TOP)
                     resetAllBtn:DockMargin(10, 20, 10, 0)
@@ -742,8 +722,46 @@ if CLIENT then
                 scrollPanel:InvalidateLayout(true)
             end
 
-            searchBar.OnTextChanged = function(_, value) populateKeybinds(value or "") end
-            populateKeybinds("")
+            local categories = {}
+            for action, data in pairs(lia.keybind.stored) do
+                if istable(data) then
+                    local cat = data.category or "Misc"
+                    categories[cat] = true
+                end
+            end
+
+            local catNames = {}
+            for cat in pairs(categories) do
+                table.insert(catNames, cat)
+            end
+
+            table.sort(catNames)
+            for i, catName in ipairs(catNames) do
+                local categoryContainer = vgui.Create("DPanel")
+                categoryContainer.Paint = function() end
+                local searchBar = vgui.Create("liaEntry", categoryContainer)
+                searchBar:Dock(TOP)
+                searchBar:DockMargin(10, 10, 10, 10)
+                searchBar:SetTall(40)
+                searchBar:SetFont("LiliaFont.18")
+                searchBar:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
+                searchBar:SetTextColor(Color(200, 200, 200))
+                local div = vgui.Create("DPanel", categoryContainer)
+                div:Dock(TOP)
+                div:SetTall(1)
+                div:DockMargin(10, 0, 10, 10)
+                div.Paint = function(_, w, h)
+                    local theme = lia.color.theme.theme or color_white
+                    surface.SetDrawColor(theme.r, theme.g, theme.b, 20)
+                    surface.DrawRect(0, 0, w, h)
+                end
+
+                local scrollPanel = vgui.Create("liaScrollPanel", categoryContainer)
+                scrollPanel:Dock(FILL)
+                searchBar.OnTextChanged = function(_, value) populateCategoryTab(catName, scrollPanel, value or "", i == #catNames) end
+                populateCategoryTab(catName, scrollPanel, "", i == #catNames)
+                tabs:AddTab(L(catName), categoryContainer)
+            end
         end
 
         pages[#pages + 1] = {

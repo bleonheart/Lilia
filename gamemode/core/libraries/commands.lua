@@ -1331,6 +1331,158 @@ else
         end
     end)
 
+    concommand.Add("lia_panel_browser", function()
+        -- Collect all registered VGUI panels
+        local allPanels = {}
+        local liaPanels = {}
+        local gmodPanels = {}
+        -- Get all registered panel types
+        for panelName, _ in pairs(vgui.GetTypes()) do
+            table.insert(allPanels, panelName)
+            -- Categorize panels
+            if string.StartWith(panelName, "lia") or string.StartWith(panelName, "Lia") then
+                table.insert(liaPanels, panelName)
+            else
+                table.insert(gmodPanels, panelName)
+            end
+        end
+
+        -- Sort panels alphabetically
+        table.sort(allPanels)
+        table.sort(liaPanels)
+        table.sort(gmodPanels)
+        -- Create the main browser frame
+        local frame = vgui.Create("liaFrame")
+        frame:SetTitle("VGUI Panel Browser")
+        frame:SetSize(900, 700)
+        frame:Center()
+        frame:MakePopup()
+        frame:SetSizable(true)
+        frame:SetMinWidth(600)
+        frame:SetMinHeight(400)
+        -- Create top info panel
+        local infoPanel = vgui.Create("DPanel", frame)
+        infoPanel:Dock(TOP)
+        infoPanel:SetTall(60)
+        infoPanel:DockMargin(0, 0, 0, 5)
+        infoPanel.Paint = function(_, w, h)
+            lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.panel[1]):Draw()
+            draw.SimpleText("Total Panels: " .. #allPanels, "LiliaFont.18", 10, 10, lia.color.theme.text)
+            draw.SimpleText("Lilia Panels: " .. #liaPanels, "LiliaFont.16", 10, 35, lia.color.theme.accent)
+            draw.SimpleText("GMod Panels: " .. #gmodPanels, "LiliaFont.16", 200, 35, lia.color.theme.text)
+        end
+
+        -- Create search box
+        local searchBox = vgui.Create("liaEntry", frame)
+        searchBox:Dock(TOP)
+        searchBox:DockMargin(0, 0, 0, 5)
+        searchBox:SetPlaceholderText("Search panels...")
+        searchBox:SetTall(35)
+        -- Create category tabs
+        local categorySheet = vgui.Create("DPropertySheet", frame)
+        categorySheet:Dock(FILL)
+        categorySheet:DockMargin(0, 0, 0, 0)
+        -- Function to create panel list
+        local function createPanelList(parent, panelList)
+            local scroll = vgui.Create("liaScrollPanel", parent)
+            scroll:Dock(FILL)
+            local panelItems = {}
+            local function populateList(filter)
+                -- Clear existing items
+                for _, item in ipairs(panelItems) do
+                    if IsValid(item) then item:Remove() end
+                end
+
+                panelItems = {}
+                -- Add filtered panels
+                for _, panelName in ipairs(panelList) do
+                    if not filter or filter == "" or string.find(string.lower(panelName), string.lower(filter)) then
+                        local panelItem = vgui.Create("DPanel", scroll)
+                        panelItem:Dock(TOP)
+                        panelItem:SetTall(50)
+                        panelItem:DockMargin(2, 2, 2, 2)
+                        panelItem.Paint = function(_, w, h)
+                            local col = lia.color.theme.panel[2]
+                            if panelItem:IsHovered() then col = ColorAlpha(lia.color.theme.accent, 30) end
+                            lia.derma.rect(0, 0, w, h):Rad(4):Color(col):Draw()
+                            -- Draw panel name
+                            draw.SimpleText(panelName, "LiliaFont.17", 10, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+                        end
+
+                        -- Create spawn button
+                        local spawnBtn = vgui.Create("liaButton", panelItem)
+                        spawnBtn:SetText("Test")
+                        spawnBtn:SetWide(80)
+                        spawnBtn:Dock(RIGHT)
+                        spawnBtn:DockMargin(5, 5, 5, 5)
+                        spawnBtn.DoClick = function()
+                            local success, err = pcall(function()
+                                local testPanel = vgui.Create(panelName)
+                                if IsValid(testPanel) then
+                                    -- Try to make it visible and usable
+                                    if testPanel.SetSize then testPanel:SetSize(400, 300) end
+                                    if testPanel.Center then
+                                        testPanel:Center()
+                                    else
+                                        testPanel:SetPos(ScrW() * 0.5 - 200, ScrH() * 0.5 - 150)
+                                    end
+
+                                    if testPanel.MakePopup then testPanel:MakePopup() end
+                                    if testPanel.SetVisible then testPanel:SetVisible(true) end
+                                    LocalPlayer():ChatPrint("Created test instance of: " .. panelName)
+                                else
+                                    LocalPlayer():ChatPrint("Failed to create: " .. panelName)
+                                end
+                            end)
+
+                            if not success then LocalPlayer():ChatPrint("Error creating " .. panelName .. ": " .. tostring(err)) end
+                        end
+
+                        -- Create copy button
+                        local copyBtn = vgui.Create("liaButton", panelItem)
+                        copyBtn:SetText("Copy")
+                        copyBtn:SetWide(80)
+                        copyBtn:Dock(RIGHT)
+                        copyBtn:DockMargin(5, 5, 5, 5)
+                        copyBtn.DoClick = function()
+                            SetClipboardText(panelName)
+                            LocalPlayer():ChatPrint("Copied to clipboard: " .. panelName)
+                        end
+
+                        table.insert(panelItems, panelItem)
+                    end
+                end
+            end
+
+            -- Initial population
+            populateList()
+            -- Return the populate function for search filtering
+            return populateList
+        end
+
+        -- Create tabs for different categories
+        local allTab = vgui.Create("DPanel")
+        allTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        local allPopulate = createPanelList(allTab, allPanels)
+        categorySheet:AddSheet("All Panels (" .. #allPanels .. ")", allTab, "icon16/application_view_list.png")
+        local liaTab = vgui.Create("DPanel")
+        liaTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        local liaPopulate = createPanelList(liaTab, liaPanels)
+        categorySheet:AddSheet("Lilia Panels (" .. #liaPanels .. ")", liaTab, "icon16/star.png")
+        local gmodTab = vgui.Create("DPanel")
+        gmodTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        local gmodPopulate = createPanelList(gmodTab, gmodPanels)
+        categorySheet:AddSheet("GMod Panels (" .. #gmodPanels .. ")", gmodTab, "icon16/wrench.png")
+        -- Search functionality
+        searchBox.OnValueChange = function(_, value)
+            allPopulate(value)
+            liaPopulate(value)
+            gmodPopulate(value)
+        end
+
+        LocalPlayer():ChatPrint("Panel Browser opened! Found " .. #allPanels .. " registered panels.")
+    end)
+
     concommand.Add("lia_saved_sounds", function()
         local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")

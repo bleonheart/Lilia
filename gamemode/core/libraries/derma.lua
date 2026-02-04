@@ -228,11 +228,15 @@ function lia.derma.optionsMenu(rawOptions, config)
     frame:AlphaTo(255, fadeSpeed)
     function frame:Paint(w, h)
         local theme = lia.color.theme
-        local bgColor = theme and theme.background_alpha or Color(34, 34, 34, 210)
-        local headerColor = theme and theme.header or Color(34, 34, 34, 210)
-        draw.RoundedBox(6, 0, 0, w, h, bgColor)
-        draw.RoundedBox(6, 0, 0, w, 24, headerColor)
-        if titleText and titleText ~= "" then draw.SimpleText(titleText, "LiliaFont.16", 6, 4, theme and theme.header_text or Color(255, 255, 255)) end
+        local bgColor = Color(25, 28, 35, 250)
+        -- Draw main card background
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        if titleText and titleText ~= "" then
+            draw.SimpleText(titleText, "LiliaFont.18", w * 0.5, 12, theme.header_text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            local accent = theme.theme or color_white
+            surface.SetDrawColor(accent.r, accent.g, accent.b, 20)
+            surface.DrawRect(10, 24, w - 20, 1)
+        end
     end
 
     if emitHooks then hook.Run("InteractionMenuOpened", frame) end
@@ -261,12 +265,7 @@ function lia.derma.optionsMenu(rawOptions, config)
     local scroll = frame:Add("liaScrollPanel")
     scroll:SetPos(0, 24)
     scroll:SetSize(frameW, frameH - 24)
-    scroll.Paint = function(_, w, h)
-        local theme = lia.color.theme
-        local panelColor = theme and theme.panel and theme.panel[1] or Color(50, 50, 50)
-        draw.RoundedBox(8, 0, 0, w, h, panelColor)
-    end
-
+    scroll.Paint = function() end
     local layout = vgui.Create("DListLayout", scroll)
     layout:Dock(FILL)
     local buttonFont = config.buttonFont or "LiliaFont.17"
@@ -282,18 +281,17 @@ function lia.derma.optionsMenu(rawOptions, config)
             categoryPanel:SetPaintBackground(false)
             function categoryPanel:Paint(w, h)
                 local theme = lia.color.theme
-                local bgColor = theme and theme.category_header or Color(35, 45, 55, 180)
                 local accentColor = entry.color or (theme and theme.category_accent or Color(100, 150, 200, 255))
+                local bgColor = Color(accentColor.r, accentColor.g, accentColor.b, 20)
                 local textColor = theme and theme.text or color_white
-                lia.derma.rect(0, 0, w, h):Rad(10):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-                surface.SetDrawColor(accentColor)
-                surface.DrawRect(0, 0, 4, h)
-                surface.SetDrawColor(Color(255, 255, 255, 20))
-                surface.DrawOutlinedRect(0, 0, w, h, 1)
+                lia.derma.rect(0, 0, w, h):Rad(6):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                local accent = theme.theme or color_white
+                surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
+                surface.DrawRect(0, 0, 3, h)
                 local displayText = entry.name or ""
                 local localized = L(displayText)
                 if localized and localized ~= "" then displayText = localized end
-                draw.SimpleText(displayText, "LiliaFont.17", w / 2, h / 2, textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+                draw.SimpleText(displayText, "LiliaFont.18", 12, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             layout:Add(categoryPanel)
@@ -533,14 +531,10 @@ function lia.derma.interactionTooltip(rawOptions, config)
     tooltip:SetAlpha(0)
     tooltip:AlphaTo(255, 0.1)
     function tooltip:Paint(w, h)
-        local radius = 8
-        local accent = lia.color.theme.accent or lia.color.theme.header or lia.color.theme.theme or Color(100, 150, 200)
-        local background = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240)
-        lia.derma.rect(0, 0, w, h):Rad(radius):Color(lia.color.theme.window_shadow or Color(0, 0, 0, 50)):Shadow(8, 12):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.util.drawBlurAt(tooltipX, tooltipY, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(radius):Color(background):Draw()
-        surface.SetDrawColor(accent.r, accent.g, accent.b, accent.a or 255)
-        surface.DrawRect(0, 0, w, 3)
+        local theme = lia.color.theme
+        local bgColor = Color(25, 28, 35, 250)
+        -- Draw main card background
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         local titleText = config.title
         if not titleText then
             if mode == "interaction" then
@@ -552,10 +546,10 @@ function lia.derma.interactionTooltip(rawOptions, config)
             end
         end
 
-        surface.SetFont("LiliaFont.18")
-        surface.SetTextColor(255, 255, 255, 255)
-        surface.SetTextPos(padding, padding - 2)
-        surface.DrawText(titleText)
+        draw.SimpleText(titleText, "LiliaFont.20", w * 0.5, (titleHeight + padding) * 0.5, theme.header_text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        local accent = theme.theme or color_white
+        surface.SetDrawColor(accent.r, accent.g, accent.b, 20)
+        surface.DrawRect(padding, titleHeight + padding - 2, w - padding * 2, 1)
     end
 
     if emitHooks then hook.Run("InteractionMenuOpened", tooltip) end
@@ -604,22 +598,19 @@ function lia.derma.interactionTooltip(rawOptions, config)
             function categoryPanel:Paint(w, h)
                 local theme = lia.color.theme
                 local categoryColor = entry.color or (theme and theme.category_accent or Color(100, 150, 200, 255))
-                local textColor = theme and theme.category_text or theme and theme.text or color_white
-                local lineColor = theme and theme.category_line or Color(255, 255, 255, 20)
-                surface.SetDrawColor(categoryColor.r, categoryColor.g, categoryColor.b, 100)
-                surface.DrawRect(0, h - 1, w, 1)
+                local bgColor = Color(categoryColor.r, categoryColor.g, categoryColor.b, 15)
+                local textColor = theme and theme.text or color_white
+                lia.derma.rect(0, 0, w, h):Rad(4):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+                local accent = theme.theme or color_white
+                surface.SetDrawColor(accent.r, accent.g, accent.b, 60)
+                surface.DrawRect(0, 0, 3, h)
                 local displayText = entry.name or ""
                 if L then
                     local localized = L(displayText)
                     if localized and localized ~= "" then displayText = localized end
                 end
 
-                surface.SetFont("LiliaFont.16")
-                surface.SetTextColor(textColor.r, textColor.g, textColor.b, textColor.a or 255)
-                surface.SetTextPos(0, 0)
-                surface.DrawText(displayText)
-                surface.SetDrawColor(lineColor.r, lineColor.g, lineColor.b, lineColor.a or 255)
-                surface.DrawRect(0, h - 2, w, 1)
+                draw.SimpleText(displayText, "LiliaFont.17", 8, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             layout:Add(categoryPanel)
@@ -639,18 +630,17 @@ function lia.derma.interactionTooltip(rawOptions, config)
             end
 
             function btn:Paint(w, h)
+                local theme = lia.color.theme
+                local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200)
                 local isHovered = self:IsHovered()
                 if isHovered then
-                    surface.SetDrawColor(255, 255, 255, 20)
-                    surface.DrawRect(0, 0, w, h)
+                    local hoverColor = Color(accent.r, accent.g, accent.b, 20)
+                    lia.derma.rect(0, 0, w, h):Rad(4):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
                 end
 
-                surface.SetFont("LiliaFont.16")
-                local textColor = entry.opt and entry.opt.textColor or color_white
-                if isHovered then textColor = Color(200, 220, 255, 255) end
-                surface.SetTextColor(textColor.r, textColor.g, textColor.b, textColor.a or 255)
-                surface.SetTextPos(0, 2)
-                surface.DrawText(displayText)
+                local textColor = entry.opt and entry.opt.textColor or theme.text or color_white
+                if isHovered then textColor = Color(255, 255, 255) end
+                draw.SimpleText(displayText, "LiliaFont.17", 4, h / 2, textColor, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
             end
 
             local iconMat = entry.opt and entry.opt.icon

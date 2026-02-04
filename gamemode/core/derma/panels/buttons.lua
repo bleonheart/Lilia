@@ -1,6 +1,5 @@
-﻿local animDuration = 0.3
+﻿local DEFAULT_BUTTON_SHADOW = Color(18, 32, 32, 35)
 local GRADIENT_MAT = Material("vgui/gradient-d")
-local DEFAULT_BUTTON_SHADOW = Color(18, 32, 32, 35)
 local PANEL = {}
 function PANEL:Init()
     self._activeShadowTimer = 0
@@ -151,7 +150,7 @@ function PANEL:Paint(w, h)
 
     local iconSize = self.icon_size or 16
     if self.text ~= "" then
-        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon and self.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(self.text, self.font, w * 0.5 + (self.icon and self.icon ~= "" and iconSize * 0.5 + 2 or 0), h * 0.5, self:GetTextColor(), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         if self.icon and self.icon ~= "" then
             surface.SetFont(self.font)
             local posX = (w - surface.GetTextSize(self.text) - iconSize) * 0.5 - 2
@@ -170,35 +169,6 @@ function PANEL:Paint(w, h)
 end
 
 vgui.Register("liaButton", PANEL, "Button")
-local function PaintButton(self, w, h)
-    local colorTable = lia.config.get("Color")
-    local r = (colorTable and colorTable.r) or 255
-    local g = (colorTable and colorTable.g) or 255
-    local b = (colorTable and colorTable.b) or 255
-    local cornerRadius = 8
-    if self.Base then
-        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 150))
-        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 100))
-    end
-
-    draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    if self:IsHovered() or self:IsSelected() then
-        self.startTime = self.startTime or CurTime()
-        local elapsed = CurTime() - self.startTime
-        local anim = math.min(w, elapsed / animDuration * w) / 2
-        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(0, 0, 0, 30))
-        draw.RoundedBox(cornerRadius, 0, 0, w, h, Color(r, g, b, 40))
-        if anim > 0 then
-            local lineWidth = math.min(w - cornerRadius * 2, anim * 2)
-            local lineX = (w - lineWidth) / 2
-            draw.RoundedBox(1, lineX, h - 3, lineWidth, 2, Color(r, g, b))
-        end
-    else
-        self.startTime = nil
-    end
-    return true
-end
-
 local function RegisterButton(name, defaultFont, useBase)
     local BUTTON_PANEL = {}
     BUTTON_PANEL.DefaultFont = defaultFont or "LiliaFont.17"
@@ -206,6 +176,7 @@ local function RegisterButton(name, defaultFont, useBase)
     function BUTTON_PANEL:Init()
         self:SetFont(self.DefaultFont)
         self.Selected = false
+        self.ShowLine = false
     end
 
     function BUTTON_PANEL:SetFont(font)
@@ -225,8 +196,29 @@ local function RegisterButton(name, defaultFont, useBase)
         return self.Selected
     end
 
+    function BUTTON_PANEL:SetShowLine(show)
+        self.ShowLine = show
+    end
+
+    function BUTTON_PANEL:GetShowLine()
+        return self.ShowLine
+    end
+
     function BUTTON_PANEL:Paint(w, h)
-        return PaintButton(self, w, h)
+        local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+        local bgColor = Color(25, 28, 35, 250)
+        -- Main card background with shadow
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        -- Hover effect
+        if self:IsHovered() or self:IsSelected() then
+            local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, 30)
+            lia.derma.rect(0, 0, w, h):Rad(12):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
+
+        -- Draw text
+        draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        return true
     end
 
     function BUTTON_PANEL:DoClick()

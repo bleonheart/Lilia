@@ -1576,8 +1576,11 @@ else
         local accentColor = scaleColorAlpha(theme.theme or theme.text or defaultTheme.accent, fadeAlpha)
         local textColor = scaleColorAlpha(theme.text or defaultTheme.text, fadeAlpha)
         lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
-        lia.derma.rect(bx, by, bw, bh - 6):Radii(8, 8, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 8, 8):Color(accentColor):Draw()
+        lia.derma.rect(bx, by, bw, bh - 6):Radii(12, 12, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        local themeColor = theme.theme or color_white
+        surface.SetDrawColor(themeColor.r, themeColor.g, themeColor.b, math.floor(40 * fadeAlpha))
+        surface.DrawRect(bx, by + bh - 6 - 1, bw, 1)
+        lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 12, 12):Color(accentColor):Draw()
         draw.SimpleText(text, "LiliaFont.24", math.Round(x), math.Round(y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         return bh
     end
