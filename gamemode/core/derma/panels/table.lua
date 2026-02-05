@@ -125,7 +125,6 @@ function PANEL:CreateHeader()
             end
 
             draw.SimpleText(column.name, self.font, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
-            
             -- Draw vertical divider after each column except the last one
             if i < #self.columns then
                 local accent = lia.color.theme.accent or lia.color.theme.theme or Color(116, 185, 255)
@@ -256,11 +255,12 @@ function PANEL:SetRightClickAction(func)
     self.OnRightClick = func
 end
 
-function PANEL:AddMenuOption(text, callback, icon)
+function PANEL:AddMenuOption(text, callback, icon, shouldShow)
     table.insert(self.customMenuOptions, {
         text = text,
         callback = callback,
-        icon = icon
+        icon = icon,
+        shouldShow = shouldShow
     })
 end
 
@@ -524,6 +524,9 @@ function PANEL:CreateRow(rowIndex, rowData)
     row:DockMargin(0, 0, 0, 1)
     row:SetTall(self.rowHeight)
     row:SetText("")
+    row:SetMouseInputEnabled(true)
+    row:SetKeyboardInputEnabled(false)
+    row:SetZPos(100) -- Ensure row is on top
     row.Paint = function(s, w, h)
         local colors = lia.color.theme
         local accent = colors.accent or colors.theme or Color(116, 185, 255)
@@ -555,11 +558,20 @@ function PANEL:CreateRow(rowIndex, rowData)
         self:OnRowRightClick(rowIndex, rowData)
         if self.OnRightClick then self:OnRightClick(rowData) end
         local menu = lia.derma.dermaMenu()
+        local addedAny = false
         for _, option in ipairs(self.customMenuOptions) do
-            menu:AddOption(option.text, function() option.callback(rowData, rowIndex) end, option.icon)
+            local canShow = true
+            if option.shouldShow then
+                canShow = option.shouldShow(rowData, rowIndex) ~= false
+            end
+
+            if canShow then
+                menu:AddOption(option.text, function() option.callback(rowData, rowIndex) end, option.icon)
+                addedAny = true
+            end
         end
 
-        if #self.customMenuOptions == 0 then menu:AddOption(L("adminStickNoOptions"), function() end) end
+        if not addedAny then menu:AddOption(L("adminStickNoOptions"), function() end) end
         menu:Open()
     end
 
@@ -568,6 +580,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         local cellPanel = vgui.Create("DPanel", row)
         cellPanel:SetSize(column.width, self.rowHeight)
         cellPanel:SetPos(xPos, 0)
+        cellPanel:SetMouseInputEnabled(false) -- Allow mouse events to pass through to the row button
         cellPanel.Paint = function(s, w, h)
             local textColor = lia.color.theme.text
             local text = tostring(rowData[i] or "")
@@ -585,6 +598,7 @@ function PANEL:CreateRow(rowIndex, rowData)
 
             draw.SimpleText(text, self.rowFont, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
         end
+
         xPos = xPos + column.width
     end
 end
