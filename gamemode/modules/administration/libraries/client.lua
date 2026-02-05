@@ -2639,7 +2639,6 @@ function MODULE:OpenAdminStickUI(tgt)
     hook.Run("PopulateAdminStick", menu, tgt, stores)
     function menu:OnRemove()
         if AdminStickMenu == self then
-            print("[AdminStickHUD] Menu OnRemove (current)")
             cl.AdminStickTarget = nil
             AdminStickIsOpen = false
             AdminStickMenu = nil
@@ -2650,7 +2649,6 @@ function MODULE:OpenAdminStickUI(tgt)
 
     function menu:OnClose()
         if AdminStickMenu == self then
-            print("[AdminStickHUD] Menu OnClose (current)")
             cl.AdminStickTarget = nil
             AdminStickIsOpen = false
             AdminStickMenu = nil
@@ -3565,7 +3563,7 @@ function MODULE:PostDrawTranslucentRenderables()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local wep = client:GetActiveWeapon()
-    if not IsValid(wep) or wep:GetClass() ~= "lia_positiontool" then return end
+    if not IsValid(wep) or wep:GetClass() ~= "lia_mapconfigurer" then return end
     if not wep.CanUseTool or not wep:CanUseTool() then return end
     local typeInfo = wep.GetPositionToolMode and wep:GetPositionToolMode()
     local cacheType = wep.GetCacheType and wep:GetCacheType()
@@ -3599,7 +3597,7 @@ function MODULE:HUDPaint()
     local client = LocalPlayer()
     if not IsValid(client) then return end
     local wep = client:GetActiveWeapon()
-    if IsValid(wep) and wep:GetClass() == "lia_positiontool" and wep.CanUseTool and wep:CanUseTool() then
+    if IsValid(wep) and wep:GetClass() == "lia_mapconfigurer" and wep.CanUseTool and wep:CanUseTool() then
         local typeInfo = wep.GetPositionToolMode and wep:GetPositionToolMode()
         local cacheType = wep.GetCacheType and wep:GetCacheType()
         local cachedPositions = wep.GetCachedPositions and wep:GetCachedPositions() or {}
@@ -4588,7 +4586,7 @@ function MODULE:DisplayPlayerHUDInformation(client, hudInfos)
     if not IsValid(weapon) then return end
     if weapon:GetClass() == "lia_adminstick" then
         DisplayAdminStickHUD(client, hudInfos, weapon)
-    elseif weapon:GetClass() == "lia_positiontool" then
+    elseif weapon:GetClass() == "lia_mapconfigurer" then
         DisplayPositionToolHUD(client, hudInfos, weapon)
     elseif weapon:GetClass() == "lia_distance" then
         DisplayDistanceToolHUD(client, hudInfos, weapon)

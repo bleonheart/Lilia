@@ -100,7 +100,7 @@ function PANEL:CreateHeader()
     self.header:Clear()
     self.header.Paint = function(_, w, h)
         local accent = lia.color.theme.accent or lia.color.theme.theme or Color(116, 185, 255)
-        lia.derma.rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Radii(16, 16, 0, 0):Color(Color(255, 255, 255, 4)):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, h - 2, w, 2):Color(ColorAlpha(accent, 150)):Draw()
     end
 
@@ -125,6 +125,13 @@ function PANEL:CreateHeader()
             end
 
             draw.SimpleText(column.name, self.font, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
+            
+            -- Draw vertical divider after each column except the last one
+            if i < #self.columns then
+                local accent = lia.color.theme.accent or lia.color.theme.theme or Color(116, 185, 255)
+                local dividerColor = ColorAlpha(accent, 60) -- Theme-colored divider with subtle opacity
+                lia.derma.rect(w - 2, 8, 2, h - 16):Color(dividerColor):Draw()
+            end
         end
 
         if column.sortable then
@@ -558,25 +565,26 @@ function PANEL:CreateRow(rowIndex, rowData)
 
     local xPos = 0
     for i, column in ipairs(self.columns) do
-        local label = vgui.Create("DLabel", row)
-        label:SetText(tostring(rowData[i]))
-        label:SetFont(self.rowFont)
-        label:SetTextColor(lia.color.theme.text)
-        label:SetContentAlignment(column.align)
-        label:SetSize(column.width, self.rowHeight)
-        label:SetPos(xPos, 0)
-        local align = column.align or 0 -- TEXT_ALIGN_LEFT
-        if align == 0 then -- TEXT_ALIGN_LEFT
-            label:SetTextInset(self.padding, 0)
-        elseif align == 2 then
-            -- TEXT_ALIGN_RIGHT
-            label:SetTextInset(0, 0, self.padding, 0)
-        elseif align == 1 then
-            -- TEXT_ALIGN_CENTER
-            label:SetTextInset(0, 0)
-        end
+        local cellPanel = vgui.Create("DPanel", row)
+        cellPanel:SetSize(column.width, self.rowHeight)
+        cellPanel:SetPos(xPos, 0)
+        cellPanel.Paint = function(s, w, h)
+            local textColor = lia.color.theme.text
+            local text = tostring(rowData[i] or "")
+            local align = column.align or 0 -- TEXT_ALIGN_LEFT
+            local x = w / 2
+            local xAlign = 1 -- TEXT_ALIGN_CENTER
+            if align == 0 then -- TEXT_ALIGN_LEFT
+                x = self.padding
+                xAlign = 0
+            elseif align == 2 then
+                -- TEXT_ALIGN_RIGHT
+                x = w - self.padding
+                xAlign = 2
+            end
 
-        label:SetContentAlignment(align + 4)
+            draw.SimpleText(text, self.rowFont, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
+        end
         xPos = xPos + column.width
     end
 end

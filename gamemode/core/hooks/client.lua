@@ -869,7 +869,6 @@ function GM:CharLoaded(character)
                     if index > #missingImages then return end
                     local entry = missingImages[index]
                     lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg)
-                        if not mat and not fromCache then lia.log.add(nil, "webimageDownloadFailed", entry.name, errorMsg or "unknown error") end
                         timer.Simple(0.1, function() downloadNext(index + 1) end)
                     end, entry.flags)
                 end
@@ -901,7 +900,6 @@ function GM:CharLoaded(character)
                     if index > #missingSounds then return end
                     local entry = missingSounds[index]
                     lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg)
-                        if not path and not fromCache then lia.log.add(nil, "websoundDownloadFailed", entry.name, errorMsg or "unknown error") end
                         timer.Simple(0.1, function() downloadNext(index + 1) end)
                     end)
                 end

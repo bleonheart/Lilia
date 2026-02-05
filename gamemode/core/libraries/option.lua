@@ -158,9 +158,7 @@ function lia.option.set(key, value)
     hook.Run("OptionChanged", key, old, value)
     lia.option.save()
     if opt.shouldNetwork and SERVER then hook.Run("OptionReceived", nil, key, value) end
-    if CLIENT and old ~= value then
-        LocalPlayer():notifySuccess("Option '" .. (opt.name or key) .. "' updated successfully")
-    end
+    if CLIENT and old ~= value and key ~= "thirdPersonEnabled" then LocalPlayer():notifySuccess("Option '" .. (opt.name or key) .. "' updated successfully") end
 end
 
 --[[
@@ -303,15 +301,15 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         l:SetContentAlignment(4)
         l:SetTooltip(option.desc or "")
         -- Determine type
-        local type = option.type or "Generic"
-        if type == "Boolean" then
+        local optionType = option.type or "Generic"
+        if optionType == "Boolean" then
             local checkbox = p:Add("liaCheckbox")
             checkbox:Dock(RIGHT)
             checkbox:DockMargin(0, 10, 15, 10)
             checkbox:SetWidth(25)
             checkbox:SetChecked(lia.option.get(key, option.value))
             checkbox.OnChange = function(s, val) lia.option.set(key, val) end
-        elseif type == "Int" or type == "Float" or type == "Number" or type == "Generic" then
+        elseif optionType == "Int" or optionType == "Float" or optionType == "Number" or optionType == "Generic" then
             local entry = p:Add("liaEntry")
             entry:Dock(RIGHT)
             entry:SetWidth(200)
@@ -321,16 +319,16 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             entry.textEntry.OnEnter = function(s)
                 local value = entry:GetValue()
                 local numValue = tonumber(value)
-                if (type == "Int" or type == "Float" or type == "Number") and numValue ~= nil then
-                    if type == "Int" then numValue = math.Round(numValue) end
+                if (optionType == "Int" or optionType == "Float" or optionType == "Number") and numValue ~= nil then
+                    if optionType == "Int" then numValue = math.Round(numValue) end
                     lia.option.set(key, numValue)
-                elseif type == "Generic" then
+                elseif optionType == "Generic" then
                     lia.option.set(key, value)
                 else
                     entry:SetValue(tostring(lia.option.get(key, option.value)))
                 end
             end
-        elseif type == "Color" then
+        elseif optionType == "Color" then
             local button = p:Add("liaButton")
             button:Dock(RIGHT)
             button:SetWidth(200)
@@ -353,7 +351,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 if not IsColor(c) and istable(c) then c = Color(c.r, c.g, c.b, c.a) end
                 lia.derma.requestColorPicker(function(color) lia.option.set(key, color) end, c)
             end
-        elseif type == "Table" then
+        elseif optionType == "Table" then
             local combo = p:Add("liaComboBox")
             combo:Dock(RIGHT)
             combo:SetWidth(200)

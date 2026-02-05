@@ -74,7 +74,7 @@ end
 
 function MODULE:PostPlayerLoadout(client)
     if client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_adminstick") end
-    if client:hasPrivilege("usePositionTool") or client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_positiontool") end
+    if client:hasPrivilege("usePositionTool") or client:hasPrivilege("alwaysSpawnAdminStick") or client:isStaffOnDuty() then client:Give("lia_mapconfigurer") end
 end
 
 local spawnCooldowns = {}

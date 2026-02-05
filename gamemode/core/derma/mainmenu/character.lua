@@ -1027,7 +1027,8 @@ end
 function PANEL:UpdateLogoPosition()
     if not IsValid(self.logo) then return end
     local pad = ScrH() * 0.03
-    local logoW, logoH = ScrW() * 0.20 * 0.95, ScrW() * 0.13 * 0.95
+    local baseSize = math.max(ScrW() * 0.15, 300) -- Reduced base size with minimum 300px
+    local logoW, logoH = baseSize * 0.95, baseSize * 0.6 * 0.95 -- Smaller aspect ratio
     local left, right, top = math.huge, -math.huge, math.huge
     for _, v in pairs(self.buttons) do
         if IsValid(v) then
@@ -1040,8 +1041,22 @@ function PANEL:UpdateLogoPosition()
 
     top = top == math.huge and ScrH() * 0.5 or top
     local center = (left + right) * 0.5
-    self.logo:SetPos(center - logoW * 0.5, top - logoH - pad)
+    
+    -- Ensure logo doesn't exceed screen boundaries
+    local maxLogoW = math.min(logoW, ScrW() * 0.8)
+    local maxLogoH = math.min(logoH, ScrH() * 0.3)
+    
+    -- Recalculate with constrained dimensions
+    logoW = maxLogoW
+    logoH = maxLogoH
+    
+    -- Position logo with proper centering and padding
+    local logoX = math.max(pad, math.min(center - logoW * 0.5, ScrW() - logoW - pad))
+    local logoY = math.max(pad, top - logoH - pad)
+    
+    self.logo:SetPos(logoX, logoY)
     self.logo:SetSize(logoW, logoH)
+    self.logo:SetKeepAspect(true)
 end
 
 function PANEL:showContent(disableBg)

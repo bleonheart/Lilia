@@ -73,7 +73,7 @@ function SWEP:PrimaryAttack()
     local typeInfo = getCurrentType()
     if not typeInfo then return end
     lia.util.setFeaturePosition(pos, typeInfo.id)
-    timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_positiontool" then requestPositions(typeInfo.id) end end)
+    timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_mapconfigurer" then requestPositions(typeInfo.id) end end)
 end
 
 function SWEP:SecondaryAttack()
@@ -86,7 +86,7 @@ function SWEP:SecondaryAttack()
     local typeInfo = getCurrentType()
     if not typeInfo then return end
     lia.util.setFeaturePosition(pos, typeInfo.id)
-    timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_positiontool" then requestPositions(typeInfo.id) end end)
+    timer.Simple(0.5, function() if IsValid(client) and IsValid(client:GetActiveWeapon()) and client:GetActiveWeapon():GetClass() == "lia_mapconfigurer" then requestPositions(typeInfo.id) end end)
 end
 
 function SWEP:Reload()
@@ -106,7 +106,7 @@ function SWEP:Deploy()
         requestPositions(typeInfo.id)
         timer.Simple(0.15, function()
             local cl = LocalPlayer()
-            if IsValid(cl) and IsValid(cl:GetActiveWeapon()) and cl:GetActiveWeapon():GetClass() == "lia_positiontool" then
+            if IsValid(cl) and IsValid(cl:GetActiveWeapon()) and cl:GetActiveWeapon():GetClass() == "lia_mapconfigurer" then
                 local t = getCurrentType()
                 if t then requestPositions(t.id) end
             end
