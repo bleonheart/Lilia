@@ -87,12 +87,24 @@ if SERVER then
                 if x and y and z then return Vector(x, y, z) end
             end
 
-            -- Fallback for legacy arrays, checks if only numerical keys exist to avoid false positives
             if data[1] and data[2] and data[3] and not data.r and not data.g then
                 local x, y, z = tonumber(data[1]), tonumber(data[2]), tonumber(data[3])
                 if x and y and z then return Vector(x, y, z) end
             end
         elseif isstring(data) then
+            local tbl = util.JSONToTable(data)
+            if istable(tbl) then
+                if tbl.x and tbl.y and tbl.z then
+                    local x, y, z = tonumber(tbl.x), tonumber(tbl.y), tonumber(tbl.z)
+                    if x and y and z then return Vector(x, y, z) end
+                end
+
+                if tbl[1] and tbl[2] and tbl[3] then
+                    local x, y, z = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
+                    if x and y and z then return Vector(x, y, z) end
+                end
+            end
+
             local x, y, z = data:match("%[([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%]")
             if not x then x, y, z = data:match("%[([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%]") end
             if not x then x, y, z = data:match("Vector%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
@@ -108,11 +120,6 @@ if SERVER then
             end
 
             if x then return Vector(tonumber(x), tonumber(y), tonumber(z)) end
-            local tbl = util.JSONToTable(data)
-            if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
-                local tx, ty, tz = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
-                if tx and ty and tz then return Vector(tx, ty, tz) end
-            end
         else
             local s = tostring(data)
             if s and s ~= "" then
@@ -145,12 +152,24 @@ if SERVER then
                 if p and y and r then return Angle(p, y, r) end
             end
 
-            -- Fallback for legacy arrays
             if data[1] and data[2] and data[3] then
                 local p, y, r = tonumber(data[1]), tonumber(data[2]), tonumber(data[3])
                 if p and y and r then return Angle(p, y, r) end
             end
         elseif isstring(data) then
+            local tbl = util.JSONToTable(data)
+            if istable(tbl) then
+                if tbl.p and tbl.y and tbl.r then
+                    local p, y, r = tonumber(tbl.p or 0), tonumber(tbl.y or 0), tonumber(tbl.r or 0)
+                    if p and y and r then return Angle(p, y, r) end
+                end
+
+                if tbl[1] and tbl[2] and tbl[3] then
+                    local p, y, r = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
+                    if p and y and r then return Angle(p, y, r) end
+                end
+            end
+
             local p, y, r = data:match("%{([-%d%.]+)%s+([-%d%.]+)%s+([-%d%.]+)%}")
             if not p then p, y, r = data:match("%{([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%}") end
             if not p then p, y, r = data:match("Angle%(([-%d%.]+),%s*([-%d%.]+),%s*([-%d%.]+)%)") end
@@ -205,6 +224,16 @@ if SERVER then
 
     local function deepDecode(value)
         if istable(value) then
+            if value.x and value.y and value.z and not value.r and not value.g and not value.b then
+                local x, y, z = tonumber(value.x), tonumber(value.y), tonumber(value.z)
+                if x and y and z then return Vector(x, y, z) end
+            elseif value.p and value.y and value.r and not value.x then
+                local p, y, r = tonumber(value.p or 0), tonumber(value.y or 0), tonumber(value.r or 0)
+                if p and y and r then return Angle(p, y, r) end
+            elseif value.r and value.g and value.b then
+                return Color(tonumber(value.r) or 255, tonumber(value.g) or 255, tonumber(value.b) or 255, tonumber(value.a) or 255)
+            end
+
             local t = {}
             for k, v in pairs(value) do
                 t[k] = deepDecode(v)
@@ -213,7 +242,6 @@ if SERVER then
             value = t
         end
 
-        -- Try specific decoders
         local col = _decodeColor(value)
         if IsColor(col) then return col end
         local vec = _decodeVector(value)
@@ -275,12 +303,6 @@ if SERVER then
     ]]
     function lia.data.serialize(value)
         local encoded = lia.data.encodetable(value)
-        -- If encodetable returned nil, it means it's not a special type, so use original value.
-        -- BUT, if value was nil, encoded is nil.
-        -- If value was false, encodetable(false) -> false.
-        -- Let's stick to standard logic:
-        -- encodetable handles recursive encoding.
-        -- We just need to ensure 'false' doesn't get OR'd into a table.
         if encoded == nil and value ~= nil then encoded = value end
         if not istable(encoded) then
             encoded = {
