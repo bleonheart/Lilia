@@ -158,7 +158,6 @@ function lia.option.set(key, value)
     hook.Run("OptionChanged", key, old, value)
     lia.option.save()
     if opt.shouldNetwork and SERVER then hook.Run("OptionReceived", nil, key, value) end
-    if CLIENT and old ~= value and key ~= "thirdPersonEnabled" then LocalPlayer():notifySuccess("Option '" .. (opt.name or key) .. "' updated successfully") end
 end
 
 --[[
@@ -300,7 +299,6 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         l:SetTextColor(lia.color.theme.text or color_white)
         l:SetContentAlignment(4)
         l:SetTooltip(option.desc or "")
-        -- Determine type
         local optionType = option.type or "Generic"
         if optionType == "Boolean" then
             local checkbox = p:Add("liaCheckbox")
