@@ -250,9 +250,7 @@ end
 function PANEL:Paint(w, h)
     if self.backgroundBlur then Derma_DrawBackgroundBlur(self, self.backgroundBlurTime) end
     local bgColor = Color(25, 28, 35, 250)
-    -- Draw main card background
     lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-    -- Draw header content if not in lite mode
     if not self.bool_lite then
         if self.iconMat then
             surface.SetMaterial(self.iconMat)

@@ -99,15 +99,11 @@ end
 
 function PANEL:Paint(w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    -- Main button background without shadow
     lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(self.col):Shape(lia.derma.SHAPE_IOS):Draw()
-    -- Draw subtle border to show limits
     lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(Color(255, 255, 255, 20)):Shape(lia.derma.SHAPE_ROUNDED):Draw()
-    -- Hover effect
     if self.bool_hover and (self:IsHovered() or self:IsDown()) then
         local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, 30)
         lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        -- Enhanced border on hover
         lia.derma.rect(0, 0, w, h):Rad(self.radius):Color(Color(255, 255, 255, 40)):Shape(lia.derma.SHAPE_ROUNDED):Draw()
     end
 
@@ -170,16 +166,13 @@ local function RegisterButton(name, defaultFont, useBase)
     function BUTTON_PANEL:Paint(w, h)
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         local bgColor = Color(25, 28, 35, 250)
-        -- Main card background with shadow
         lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        -- Hover effect
         if self:IsHovered() or self:IsSelected() then
             local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, 30)
             lia.derma.rect(0, 0, w, h):Rad(12):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
         end
 
-        -- Draw text
         draw.SimpleText(self:GetText(), self:GetFont(), w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         return true
     end

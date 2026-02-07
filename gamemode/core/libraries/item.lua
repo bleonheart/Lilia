@@ -1476,7 +1476,6 @@ if SERVER then
         local itemDef = lia.item.list[className]
         if itemDef then itemDef[key] = value end
         ply:notify("Successfully updated " .. key .. " for " .. className)
-        -- Sync to all clients
         net.Start("liaWeaponOverrideSync")
         net.WriteString(className)
         net.WriteString(key)
@@ -1498,11 +1497,11 @@ if CLIENT then
 
     local function CreateEntry(scroll, className, weaponTable, overrideData)
         local container = scroll:Add("DPanel")
-        container:SetTall(50) -- Initial collapsed height
+        container:SetTall(50)
         container:Dock(TOP)
         container:DockMargin(5, 0, 0, 3)
         local expanded = false
-        local expandedHeight = 320 -- Adjusted for content
+        local expandedHeight = 320
         container.Paint = function(s, w, h)
             local bgColor = Color(25, 28, 35, 250)
             lia.derma.rect(0, 0, w, h):Rad(6):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -1546,7 +1545,6 @@ if CLIENT then
             scroll:InvalidateLayout(true)
         end
 
-        -- Helper for fields
         local function AddField(label, key, default, isNum)
             local p = content:Add("DPanel")
             p:Dock(TOP)
@@ -1571,14 +1569,12 @@ if CLIENT then
                 net.WriteString(key)
                 net.WriteType(newValue)
                 net.SendToServer()
-                -- Optimistic update
                 overrideData[key] = newValue
             end
         end
 
         local defWidth = 2
         local defHeight = 1
-        -- Try to find size from item.lua mapping if possible, but here we just use defaults or existing
         AddField("Name", "name", weaponTable.PrintName or className, false)
         AddField("Description", "desc", "A weapon", false)
         AddField("Model", "model", weaponTable.WorldModel or "models/props_c17/suitcase_passenger_physics.mdl", false)

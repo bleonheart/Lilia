@@ -181,7 +181,6 @@ function PANEL:CreateSection(parent, title)
     frame:SetTall(200)
     frame.Paint = function(_, w, h)
         local bgColor = Color(25, 28, 35, 250)
-        -- Draw main card background
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         draw.SimpleText(L(title), "LiliaFont.18", w / 2, 10, lia.color.theme.text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
     end
@@ -268,13 +267,9 @@ function PANEL:Init()
     local schemaName = SCHEMA and SCHEMA.name or nil
     topBar.Paint = function(pnl, w, h)
         local accentColor = lia.color.theme.accent or lia.color.theme.theme or lia.config.get("Color")
-        -- Dark background color
         local bgColor = Color(25, 28, 35, 250)
-        -- Draw main background
         lia.derma.rect(0, 0, w, h):Rad(0):Color(bgColor):Draw()
-        -- Draw bottom accent bar
         lia.derma.rect(0, h - 4, w, 4):Color(accentColor):Draw()
-        -- Draw subtle inner glow
         local glowColor = Color(accentColor.r, accentColor.g, accentColor.b, 8)
         lia.derma.rect(1, 1, w - 2, h - 2):Color(glowColor):Outline(1):Draw()
         if schemaIconMat and schemaName then

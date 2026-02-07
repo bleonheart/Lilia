@@ -1,7 +1,6 @@
 ﻿local surface = surface
 local Color = Color
 local ColorAlpha = ColorAlpha
-
 local function getThemeBackground()
     return Color(25, 28, 35, 250)
 end
@@ -35,7 +34,6 @@ SKIN.Colours.Button.Disabled = Color(120, 120, 120)
 SKIN.Colours.Tree = table.Copy(derma.SkinList.Default.Colours.Tree)
 SKIN.Colours.Tree.Text = Color(255, 255, 255)
 SKIN.Colours.Tree.SelectedText = Color(255, 255, 255)
-
 function SKIN:PaintFrame(panel)
     if not panel.LaidOut then
         for _, btn in ipairs({panel.btnMinimize, panel.btnMaximize, panel.btnClose}) do
@@ -483,7 +481,6 @@ local function buildSkinPreview()
     skinTestFrame:SetSize(1200, 800)
     skinTestFrame:Center()
     skinTestFrame:SetTitle("Lilia Skin Preview")
-
     skinTestFrame:MakePopup()
     skinTestFrame:SetSizable(true)
     local scroll = skinTestFrame:Add("DScrollPanel")
@@ -754,7 +751,6 @@ local function buildSkinPreview()
         local label = contentPanel:Add("DLabel")
         label:SetText("Content Panel")
         label:Center()
-
         local contentIcon = parent:Add("DPanel")
         contentIcon:Dock(LEFT)
         contentIcon:DockMargin(8, 0, 0, 0)
@@ -769,9 +765,7 @@ local function buildSkinPreview()
     addRow(list, "Selection Highlight", 60, function(parent)
         local panel = parent:Add("DPanel")
         panel:Dock(FILL)
-        panel.Paint = function(_, w, h)
-            draw.RoundedBox(4, 0, 0, w, h, Color(116, 185, 255, 160))
-        end
+        panel.Paint = function(_, w, h) draw.RoundedBox(4, 0, 0, w, h, Color(116, 185, 255, 160)) end
         local label = panel:Add("DLabel")
         label:SetText("Selected Item")
         label:Center()

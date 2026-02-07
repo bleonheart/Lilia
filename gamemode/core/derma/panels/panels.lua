@@ -167,13 +167,9 @@ end
 function QuickPanel:Paint(w, h)
     local theme = lia.color.theme or {}
     local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200, 255)
-    -- Dark background color
     local bgColor = Color(25, 28, 35, 250)
-    -- Draw main card background
     lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-    -- Step 3: Draw top accent bar
     lia.derma.rect(0, 0, w, 4):Radii(12, 12, 0, 0):Color(accent):Draw()
-    -- Step 4: Draw subtle inner glow
     local glowColor = Color(accent.r, accent.g, accent.b, 8)
     lia.derma.rect(1, 1, w - 2, h - 2):Rad(11):Color(glowColor):Outline(1):Draw()
 end

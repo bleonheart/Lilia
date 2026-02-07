@@ -1804,13 +1804,9 @@ else
             categoryLabel.Paint = function(panel, w, h)
                 local theme = lia.color.theme
                 local accent = theme and theme.accent or theme.header or theme.theme or Color(100, 150, 200, 255)
-                -- Dark background color with slight gradient effect
                 local bgColor = Color(30, 33, 40, 255)
-                -- Draw main card background
                 lia.derma.rect(0, 0, w, h):Rad(6):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-                -- Draw top accent bar (thicker)
                 lia.derma.rect(0, 0, w, 3):Radii(6, 6, 0, 0):Color(accent):Draw()
-                -- Draw subtle inner glow
                 local glowColor = Color(accent.r, accent.g, accent.b, 12)
                 lia.derma.rect(1, 1, w - 2, h - 2):Rad(5):Color(glowColor):Outline(1):Draw()
                 local textColor = theme and theme.category_text or theme.text or color_white

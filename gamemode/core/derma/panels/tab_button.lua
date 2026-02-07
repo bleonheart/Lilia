@@ -76,7 +76,6 @@ end
 function PANEL:Paint(w, h)
     if not self.text then return end
     local theme = lia.color.theme
-    -- accent variable removed as it was unused
     local colorText = self.isActive and color_white or theme.text or Color(200, 200, 200)
     local colorIcon = self.isActive and color_white or Color(180, 180, 180)
     if self.isActive then

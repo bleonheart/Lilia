@@ -97,35 +97,25 @@ function PANEL:createWelcomeScreen()
     self.welcomeScreen:SetPos(0, 0)
     self.welcomeScreen:SetSize(ScrW(), ScrH())
     self.welcomeScreen:SetZPos(100)
-    self.welcomeScreen.Paint = function(_, w, h)
-        -- No background overlay
-    end
-
-    -- Modern Card Container
+    self.welcomeScreen.Paint = function(_, w, h) end
     local container = self.welcomeScreen:Add("DPanel")
     local containerW = ScrW() * 0.3
-    local containerH = ScrH() * 0.3 -- Initial guess, will resize later
+    local containerH = ScrH() * 0.3
     container:SetSize(containerW, containerH)
-    -- Start position for animation
     local finalX, finalY = (ScrW() - containerW) / 2, (ScrH() - containerH) / 2
-    container:SetPos(finalX, finalY + 30) -- Start slightly lower for slide effect
+    container:SetPos(finalX, finalY + 30)
     container:SetAlpha(0)
-    -- Get theme colors
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     container.Paint = function(s, w, h)
-        -- Main card background
         local bgColor = Color(25, 28, 35, 250)
         lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
     end
 
-    -- Entrance animation
     container:AlphaTo(255, 0.4, 0)
     container:AlphaTo(255, 0.4, 0)
-    -- MoveTo will be called after resizing
     local padding = 30
     local contentY = padding + 15
-    -- Logo (if enabled)
     local logoPath = lia.config.get("ServerLogo") or ""
     local mainMenuLogoEnabled = lia.config.get("MainMenuLogoEnabled", true)
     if mainMenuLogoEnabled and logoPath ~= "" then
@@ -139,7 +129,6 @@ function PANEL:createWelcomeScreen()
     end
 
     local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
-    -- Welcome Label
     local welcomeLabel = container:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
@@ -149,7 +138,6 @@ function PANEL:createWelcomeScreen()
     welcomeLabel:SetTall(50)
     welcomeLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
     contentY = contentY + 65
-    -- Playtime Display (if not first join)
     if not isFirstJoin then
         local playtime = client:getPlayTime() or 0
         local days = math.floor(playtime / 86400)
@@ -170,7 +158,6 @@ function PANEL:createWelcomeScreen()
         playtimeContainer.Paint = function(_, w, h)
             local pillBg = Color(35, 40, 50, 200)
             lia.derma.rect(0, 0, w, h):Rad(8):Color(pillBg):Shape(lia.derma.SHAPE_IOS):Draw()
-            -- Left accent
             lia.derma.rect(0, 0, 4, h):Radii(8, 0, 0, 8):Color(accentColor):Draw()
         end
 
@@ -185,7 +172,6 @@ function PANEL:createWelcomeScreen()
         contentY = contentY + 20
     end
 
-    -- Divider
     local divider = container:Add("DPanel")
     divider:SetSize(containerW - padding * 2, 1)
     divider:SetPos(padding, contentY)
@@ -195,7 +181,6 @@ function PANEL:createWelcomeScreen()
     end
 
     contentY = contentY + 25
-    -- Press Space Label
     local pressEnterLabel = container:Add("DLabel")
     pressEnterLabel:SetFont("LiliaFont.22")
     pressEnterLabel:SetTextColor(Color(200, 200, 200))
@@ -210,7 +195,6 @@ function PANEL:createWelcomeScreen()
         pressEnterLabel:SetTextColor(col)
     end
 
-    -- Recalculate height and animate
     local finalHeight = contentY + 40 + padding
     container:SetTall(finalHeight)
     local newFinalY = (ScrH() - finalHeight) / 2
@@ -227,7 +211,6 @@ function PANEL:createWelcomeScreen()
     end
 
     updateWelcomeText()
-    -- Handle dynamic name updates
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
@@ -781,7 +764,6 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.infoFrame:ShowCloseButton(false)
     self.infoFrame.Paint = function(s, w, h)
         local bgColor = Color(25, 28, 35, 250)
-        -- Main card background
         lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         lia.derma.rect(0, 0, w, 5):Radii(12, 12, 0, 0):Color(lia.config.get("Color") or Color(255, 255, 255)):Draw()
@@ -1027,8 +1009,8 @@ end
 function PANEL:UpdateLogoPosition()
     if not IsValid(self.logo) then return end
     local pad = ScrH() * 0.03
-    local baseSize = math.max(ScrW() * 0.15, 300) -- Reduced base size with minimum 300px
-    local logoW, logoH = baseSize * 0.95, baseSize * 0.6 * 0.95 -- Smaller aspect ratio
+    local baseSize = math.max(ScrW() * 0.15, 300)
+    local logoW, logoH = baseSize * 0.95, baseSize * 0.6 * 0.95
     local left, right, top = math.huge, -math.huge, math.huge
     for _, v in pairs(self.buttons) do
         if IsValid(v) then
@@ -1041,19 +1023,12 @@ function PANEL:UpdateLogoPosition()
 
     top = top == math.huge and ScrH() * 0.5 or top
     local center = (left + right) * 0.5
-    
-    -- Ensure logo doesn't exceed screen boundaries
     local maxLogoW = math.min(logoW, ScrW() * 0.8)
     local maxLogoH = math.min(logoH, ScrH() * 0.3)
-    
-    -- Recalculate with constrained dimensions
     logoW = maxLogoW
     logoH = maxLogoH
-    
-    -- Position logo with proper centering and padding
     local logoX = math.max(pad, math.min(center - logoW * 0.5, ScrW() - logoW - pad))
     local logoY = math.max(pad, top - logoH - pad)
-    
     self.logo:SetPos(logoX, logoY)
     self.logo:SetSize(logoW, logoH)
     self.logo:SetKeepAspect(true)

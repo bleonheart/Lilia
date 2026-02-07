@@ -229,7 +229,6 @@ function lia.derma.optionsMenu(rawOptions, config)
     function frame:Paint(w, h)
         local theme = lia.color.theme
         local bgColor = Color(25, 28, 35, 250)
-        -- Draw main card background
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         if titleText and titleText ~= "" then
             draw.SimpleText(titleText, "LiliaFont.18", w * 0.5, 12, theme.header_text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -533,7 +532,6 @@ function lia.derma.interactionTooltip(rawOptions, config)
     function tooltip:Paint(w, h)
         local theme = lia.color.theme
         local bgColor = Color(25, 28, 35, 250)
-        -- Draw main card background
         lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         local titleText = config.title
         if not titleText then

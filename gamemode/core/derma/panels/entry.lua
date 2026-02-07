@@ -25,15 +25,12 @@ function PANEL:Init()
         local theme = lia.color.theme
         local accent = theme.accent or theme.header or theme.theme or Color(100, 150, 200)
         local bgColor = Color(30, 33, 40, 255)
-        -- Draw main background
         lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         s._focusFrac = Lerp(FrameTime() * 10, s._focusFrac or 0, (s:IsEditing() or s:HasFocus()) and 1 or 0)
-        -- Draw accent border on focus
         if s._focusFrac > 0 then
             local ac = Color(accent.r, accent.g, accent.b, math.floor(s._focusFrac * 255))
             lia.derma.rect(0, 0, w, h):Rad(8):Color(ac):Outline(1):Draw()
         else
-            -- Subtle default border
             lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(255, 255, 255, 10)):Outline(1):Draw()
         end
 

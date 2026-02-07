@@ -868,9 +868,7 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingImages then return end
                     local entry = missingImages[index]
-                    lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg)
-                        timer.Simple(0.1, function() downloadNext(index + 1) end)
-                    end, entry.flags)
+                    lia.webimage.download(entry.name, entry.url, function(mat, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end, entry.flags)
                 end
 
                 downloadNext(1)
@@ -899,9 +897,7 @@ function GM:CharLoaded(character)
                 local function downloadNext(index)
                     if index > #missingSounds then return end
                     local entry = missingSounds[index]
-                    lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg)
-                        timer.Simple(0.1, function() downloadNext(index + 1) end)
-                    end)
+                    lia.websound.download(entry.name, entry.url, function(path, fromCache, errorMsg) timer.Simple(0.1, function() downloadNext(index + 1) end) end)
                 end
 
                 downloadNext(1)

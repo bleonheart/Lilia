@@ -112,23 +112,21 @@ function PANEL:CreateHeader()
         label:SetPos(xPos, 0)
         label.Paint = function(s, w, h)
             local textColor = lia.color.theme.text
-            local align = column.align or 0 -- TEXT_ALIGN_LEFT
+            local align = column.align or 0
             local x = w / 2
-            local xAlign = 1 -- TEXT_ALIGN_CENTER
-            if align == 0 then -- TEXT_ALIGN_LEFT
+            local xAlign = 1
+            if align == 0 then
                 x = self.padding
                 xAlign = 0
             elseif align == 2 then
-                -- TEXT_ALIGN_RIGHT
                 x = w - self.padding
                 xAlign = 2
             end
 
-            draw.SimpleText(column.name, self.font, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
-            -- Draw vertical divider after each column except the last one
+            draw.SimpleText(column.name, self.font, x, h / 2, textColor, xAlign, 1)
             if i < #self.columns then
                 local accent = lia.color.theme.accent or lia.color.theme.theme or Color(116, 185, 255)
-                local dividerColor = ColorAlpha(accent, 60) -- Theme-colored divider with subtle opacity
+                local dividerColor = ColorAlpha(accent, 60)
                 lia.derma.rect(w - 2, 8, 2, h - 16):Color(dividerColor):Draw()
             end
         end
@@ -146,7 +144,6 @@ function PANEL:CreateHeader()
 end
 
 function PANEL:CalculateColumnWidths()
-    -- Reset to base widths before recalculating
     for _, column in ipairs(self.columns) do
         column.width = column.baseWidth or column.width
     end
@@ -180,7 +177,6 @@ function PANEL:CalculateColumnWidths()
         end
 
         local availableWidth = self:GetWide()
-        -- Account for scrollbar if it might be visible
         if IsValid(self.scrollPanel) and IsValid(self.scrollPanel.VBar) and self.scrollPanel.VBar:IsVisible() then availableWidth = availableWidth - self.scrollPanel.VBar:GetWide() end
         local remainingWidth = availableWidth - totalUsedWidth
         if remainingWidth > 0 then
@@ -526,16 +522,14 @@ function PANEL:CreateRow(rowIndex, rowData)
     row:SetText("")
     row:SetMouseInputEnabled(true)
     row:SetKeyboardInputEnabled(false)
-    row:SetZPos(100) -- Ensure row is on top
+    row:SetZPos(100)
     row.Paint = function(s, w, h)
         local colors = lia.color.theme
         local accent = colors.accent or colors.theme or Color(116, 185, 255)
-        local bgColor = Color(255, 255, 255, 4) -- Subtle row background
+        local bgColor = Color(255, 255, 255, 4)
         if self.selectedRow == rowIndex then bgColor = ColorAlpha(accent, 80) end
         lia.derma.rect(0, 0, w, h):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-        if self.selectedRow == rowIndex then
-            lia.derma.rect(0, 0, 2, h):Color(accent):Draw() -- Vertical accent line for selection
-        end
+        if self.selectedRow == rowIndex then lia.derma.rect(0, 0, 2, h):Color(accent):Draw() end
     end
 
     row.DoClick = function()
@@ -561,10 +555,7 @@ function PANEL:CreateRow(rowIndex, rowData)
         local addedAny = false
         for _, option in ipairs(self.customMenuOptions) do
             local canShow = true
-            if option.shouldShow then
-                canShow = option.shouldShow(rowData, rowIndex) ~= false
-            end
-
+            if option.shouldShow then canShow = option.shouldShow(rowData, rowIndex) ~= false end
             if canShow then
                 menu:AddOption(option.text, function() option.callback(rowData, rowIndex) end, option.icon)
                 addedAny = true
@@ -580,23 +571,22 @@ function PANEL:CreateRow(rowIndex, rowData)
         local cellPanel = vgui.Create("DPanel", row)
         cellPanel:SetSize(column.width, self.rowHeight)
         cellPanel:SetPos(xPos, 0)
-        cellPanel:SetMouseInputEnabled(false) -- Allow mouse events to pass through to the row button
+        cellPanel:SetMouseInputEnabled(false)
         cellPanel.Paint = function(s, w, h)
             local textColor = lia.color.theme.text
             local text = tostring(rowData[i] or "")
-            local align = column.align or 0 -- TEXT_ALIGN_LEFT
+            local align = column.align or 0
             local x = w / 2
-            local xAlign = 1 -- TEXT_ALIGN_CENTER
-            if align == 0 then -- TEXT_ALIGN_LEFT
+            local xAlign = 1
+            if align == 0 then
                 x = self.padding
                 xAlign = 0
             elseif align == 2 then
-                -- TEXT_ALIGN_RIGHT
                 x = w - self.padding
                 xAlign = 2
             end
 
-            draw.SimpleText(text, self.rowFont, x, h / 2, textColor, xAlign, 1) -- 1 = TEXT_ALIGN_CENTER
+            draw.SimpleText(text, self.rowFont, x, h / 2, textColor, xAlign, 1)
         end
 
         xPos = xPos + column.width
