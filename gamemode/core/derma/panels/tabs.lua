@@ -6,6 +6,7 @@ function PANEL:Init()
     self.animation_speed = 8
     self.tab_style = "modern"
     self.indicator_height = 2
+    self._tabButtons = {}
     self.panel_tabs = vgui.Create("Panel", self)
     self.panel_tabs.Paint = nil
     self.content = vgui.Create("Panel", self)
@@ -144,6 +145,8 @@ function PANEL:Rebuild()
         end
     end
 
+    self._tabButtons = {}
+
     if not IsValid(self.content) then
         self.content = vgui.Create("Panel", self)
         self.content.Paint = nil
@@ -166,60 +169,29 @@ function PANEL:Rebuild()
         self._baseMargin = baseMargin
         self:CreateNavigationButtons()
         for id, tab in ipairs(self.tabs) do
-            local btnTab = vgui.Create("Button", self.panel_tabs)
+            local btnTab = vgui.Create("liaTabButton", self.panel_tabs)
             local btnWidth = tabWidths[id] or 80
             btnTab:Dock(LEFT)
             btnTab:DockMargin(0, 0, id < #self.tabs and baseMargin or 0, 0)
             btnTab:SetTall(34)
             btnTab:SetWide(btnWidth)
-            btnTab:SetText("")
-            btnTab.DoClick = function()
-                for _, tabData in ipairs(self.tabs) do
-                    if IsValid(tabData.pan) then tabData.pan:SetVisible(false) end
-                end
-
-                if IsValid(tab.pan) then tab.pan:SetVisible(true) end
-                self.active_id = id
-                lia.websound.playButtonSound()
-                self:UpdateActiveTabVisual()
-                if tab.callback then tab.callback() end
-            end
+            btnTab:SetText(tab.name)
+            btnTab:SetActive(self.active_id == id)
+            btnTab:SetDoClick(function()
+                if self.active_id == id then return end
+                self:SetActiveTab(id)
+            end)
 
             btnTab.DoRightClick = function()
                 local dm = lia.derma.dermaMenu()
                 for k, v in pairs(self.tabs) do
                     dm:AddOption(v.name, function()
-                        for _, tabData in ipairs(self.tabs) do
-                            if IsValid(tabData.pan) then tabData.pan:SetVisible(false) end
-                        end
-
-                        if IsValid(v.pan) then
-                            v.pan:SetVisible(true)
-                            self.active_id = k
-                            self:UpdateActiveTabVisual()
-                            if v.callback then v.callback() end
-                        end
+                        self:SetActiveTab(k)
                     end, v.icon)
                 end
             end
 
-            btnTab.Paint = function(s, w, h)
-                local isActive = self.active_id == id
-                local colorText = isActive and lia.color.theme.theme or lia.color.theme.text
-                local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-                if isActive then
-                    local alpha = 30
-                    local hoverColor = Color(accentColor.r, accentColor.g, accentColor.b, alpha)
-                    lia.derma.rect(0, 0, w, h):Rad(8):Color(hoverColor):Shape(lia.derma.SHAPE_IOS):Draw()
-                end
-
-                if self.tab_style == "modern" then
-                    if isActive then lia.derma.rect(0, h - self.indicator_height, w, self.indicator_height):Color(lia.color.theme.theme):Draw() end
-                    draw.SimpleText(tab.name, "LiliaFont.18", w * 0.5, h * 0.5, colorText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                else
-                    draw.SimpleText(tab.name, "LiliaFont.18", w * 0.5, h * 0.5 - 1, colorText, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-                end
-            end
+            self._tabButtons[id] = btnTab
         end
     end
 
@@ -329,8 +301,13 @@ function PANEL:SetActiveTab(tab)
 
         if IsValid(self.tabs[tab].pan) then self.tabs[tab].pan:SetVisible(true) end
         self.active_id = tab
-        local button = self.panel_tabs:GetChild(tab)
+        local button = self._tabButtons and self._tabButtons[tab] or nil
         if IsValid(button) then self.m_pActiveTab = button end
+        if self._tabButtons then
+            for id, btn in ipairs(self._tabButtons) do
+                if IsValid(btn) and btn.SetActive then btn:SetActive(id == tab) end
+            end
+        end
         self:UpdateActiveTabVisual()
         if self.tabs[tab] and self.tabs[tab].callback then self.tabs[tab].callback() end
     else

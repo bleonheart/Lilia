@@ -1444,15 +1444,15 @@ else
         end
 
         local allTab = vgui.Create("DPanel")
-        allTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        allTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local allPopulate = createPanelList(allTab, allPanels)
         categorySheet:AddSheet("All Panels (" .. #allPanels .. ")", allTab, "icon16/application_view_list.png")
         local liaTab = vgui.Create("DPanel")
-        liaTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        liaTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local liaPopulate = createPanelList(liaTab, liaPanels)
         categorySheet:AddSheet("Lilia Panels (" .. #liaPanels .. ")", liaTab, "icon16/star.png")
         local gmodTab = vgui.Create("DPanel")
-        gmodTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.background):Draw() end
+        gmodTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local gmodPopulate = createPanelList(gmodTab, gmodPanels)
         categorySheet:AddSheet("GMod Panels (" .. #gmodPanels .. ")", gmodTab, "icon16/wrench.png")
         searchBox.OnValueChange = function(_, value)

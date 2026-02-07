@@ -4425,7 +4425,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
 end
 
 local function DisplayPositionToolHUD(client, hudInfos, weapon)
-    local instructions = {"Left Click: Set position at aim", "Reload: Cycle mode", "Shift + R: Use current position"}
+    local instructions = {"Left Click: Set position at aim", "Right Click: Use current position", "Reload: Cycle mode", "Shift + E: Open removal menu"}
     local typeInfo = weapon.GetPositionToolMode and weapon:GetPositionToolMode()
     if typeInfo and typeInfo.name then table.insert(instructions, 1, "Mode: " .. typeInfo.name) end
     table.insert(hudInfos, {
@@ -4544,7 +4544,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
             },
             textAlignX = TEXT_ALIGN_CENTER,
             textAlignY = TEXT_ALIGN_TOP,
-            backgroundColor = lia.color.theme.background_alpha or lia.color.theme.background or Color(40, 40, 40, 240),
+            backgroundColor = Color(25, 28, 35, 240),
             borderRadius = 12,
             borderThickness = 0,
             padding = 20,

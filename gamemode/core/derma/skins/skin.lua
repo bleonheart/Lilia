@@ -69,17 +69,19 @@ local function paintButtonBase(panel, w, h)
     if panel.GetPaintBackground and not panel:GetPaintBackground() then return end
     local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    local base = ColorAlpha(bgColor, 200)
-    if panel:GetDisabled() then
-        base = ColorAlpha(bgColor, 80)
-    elseif panel.Depressed then
-        base = ColorAlpha(accentColor, 220)
-    elseif panel.Hovered then
-        base = ColorAlpha(accentColor, 180)
-    end
+    local base = ColorAlpha(bgColor, panel:GetDisabled() and 80 or 200)
 
     lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
-    if not panel:GetDisabled() and panel.Hovered and not panel.Depressed then lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(Color(255, 255, 255), 24)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    if not panel:GetDisabled() then
+        if panel.Depressed then
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 60)):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(accentColor):Outline(1):Draw()
+        elseif panel.Hovered then
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 35)):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 180)):Outline(1):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(Color(255, 255, 255), 24)):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
+    end
 end
 
 function SKIN:PaintWindowMinimizeButton(panel, w, h)
@@ -127,13 +129,15 @@ function SKIN:PaintTextEntry(panel, w, h)
         local bgColor = getThemeBackgroundSolid()
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         local base = ColorAlpha(bgColor, panel:GetDisabled() and 90 or 200)
-        if panel.Depressed then
-            base = ColorAlpha(accentColor, 220)
-        elseif panel.Hovered then
-            base = ColorAlpha(accentColor, 160)
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
+        if not panel:GetDisabled() then
+            if panel.Depressed or panel:HasFocus() then
+                lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 55)):Shape(lia.derma.SHAPE_IOS):Draw()
+            elseif panel.Hovered then
+                lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 28)):Shape(lia.derma.SHAPE_IOS):Draw()
+            end
         end
 
-        lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
         local outline = panel:HasFocus() and accentColor or ColorAlpha(Color(255, 255, 255), 30)
         lia.derma.rect(0, 0, w, h):Rad(6):Color(outline):Outline(1):Draw()
     end
@@ -159,19 +163,27 @@ end
 
 function SKIN:PaintListViewLine(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    local col = panel:IsLineSelected() and ColorAlpha(accentColor, 160) or Color(0, 0, 0, 0)
-    lia.derma.rect(0, 0, w, h):Rad(4):Color(col):Shape(lia.derma.SHAPE_IOS):Draw()
+    if panel:IsLineSelected() then
+        local bgColor = getThemeBackgroundSolid()
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(bgColor, 185)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 160)):Outline(1):Draw()
+    end
 end
 
 function SKIN:PaintScrollBarGrip(_, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 210)):Shape(lia.derma.SHAPE_IOS):Draw()
+    local bgColor = getThemeBackgroundSolid()
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 170)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 160)):Outline(1):Draw()
 end
 
 function SKIN:PaintButtonUp(_, w, h)
     if w <= 0 then return end
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 210)):Shape(lia.derma.SHAPE_IOS):Draw()
+    local bgColor = getThemeBackgroundSolid()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(bgColor, 170)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 140)):Outline(1):Draw()
     surface.SetTextColor(Color(255, 255, 255))
     surface.SetFont("Marlett")
     surface.SetTextPos(1, 1)
@@ -181,7 +193,9 @@ end
 function SKIN:PaintButtonDown(_, w, h)
     if w <= 0 then return end
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 210)):Shape(lia.derma.SHAPE_IOS):Draw()
+    local bgColor = getThemeBackgroundSolid()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(bgColor, 170)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 140)):Outline(1):Draw()
     surface.SetTextColor(Color(255, 255, 255))
     surface.SetFont("Marlett")
     surface.SetTextPos(1, 0)
@@ -214,7 +228,8 @@ function SKIN:PaintTreeNodeButton(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     lia.derma.rect(0, 0, w, h):Rad(4):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
     if panel.m_bSelected then
-        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 140)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 50)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 180)):Outline(1):Draw()
     elseif panel.Hovered then
         lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(Color(255, 255, 255), 36)):Shape(lia.derma.SHAPE_IOS):Draw()
     end
@@ -336,13 +351,17 @@ function SKIN:PaintCheckBox(panel, w, h)
     local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local base = ColorAlpha(bgColor, panel:GetDisabled() and 60 or 180)
-    if panel.Depressed then
-        base = ColorAlpha(accentColor, 220)
-    elseif panel.Hovered then
-        base = ColorAlpha(accentColor, 160)
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
+    if not panel:GetDisabled() then
+        if panel.Depressed then
+            lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 65)):Shape(lia.derma.SHAPE_IOS):Draw()
+        elseif panel.Hovered then
+            lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 40)):Shape(lia.derma.SHAPE_IOS):Draw()
+        end
+
+        if panel.Hovered or panel.Depressed then lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 160)):Outline(1):Draw() end
     end
 
-    lia.derma.rect(0, 0, w, h):Rad(4):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
     if panel:GetChecked() then
         lia.derma.rect(3, 3, w - 6, h - 6):Rad(3):Color(accentColor):Shape(lia.derma.SHAPE_IOS):Draw()
         surface.SetDrawColor(Color(255, 255, 255))
@@ -356,13 +375,15 @@ function SKIN:PaintRadioButton(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local r = math.min(w, h)
     local base = ColorAlpha(bgColor, panel:GetDisabled() and 60 or 180)
-    if panel.Depressed then
-        base = ColorAlpha(accentColor, 220)
-    elseif panel.Hovered then
-        base = ColorAlpha(accentColor, 160)
+    lia.derma.circle(w / 2, h / 2, r):Color(base):Draw()
+    if not panel:GetDisabled() then
+        if panel.Depressed then
+            lia.derma.circle(w / 2, h / 2, r):Color(ColorAlpha(accentColor, 65)):Draw()
+        elseif panel.Hovered then
+            lia.derma.circle(w / 2, h / 2, r):Color(ColorAlpha(accentColor, 40)):Draw()
+        end
     end
 
-    lia.derma.circle(w / 2, h / 2, r):Color(base):Draw()
     if panel:GetChecked() then lia.derma.circle(w / 2, h / 2, r * 0.5):Color(accentColor):Draw() end
 end
 
@@ -394,8 +415,12 @@ end
 
 function SKIN:PaintSliderKnob(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    local base = ColorAlpha(accentColor, panel.Depressed and 240 or panel.Hovered and 200 or 160)
+    local bgColor = getThemeBackgroundSolid()
+    local base = ColorAlpha(bgColor, 200)
     lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
+    local overlay = panel.Depressed and 70 or panel.Hovered and 45 or 0
+    if overlay > 0 then lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, overlay)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, panel.Depressed and 220 or panel.Hovered and 190 or 140)):Outline(1):Draw()
 end
 
 function SKIN:PaintNumSlider(panel, w, h)
@@ -415,13 +440,25 @@ function SKIN:PaintProgress(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 180)):Shape(lia.derma.SHAPE_IOS):Draw()
     local frac = math.Clamp(panel:GetFraction() or 0, 0, 1)
-    if frac > 0 then lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(ColorAlpha(accentColor, 220)):Shape(lia.derma.SHAPE_IOS):Draw() end
+    if frac > 0 then
+        lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(ColorAlpha(bgColor, 220)):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w * frac, h):Rad(6):Color(ColorAlpha(accentColor, 60)):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
+    if not (panel and panel.GetDisabled and panel:GetDisabled()) then lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 140)):Outline(1):Draw() end
 end
 
 function SKIN:PaintHScrollBarGrip(panel, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    local base = ColorAlpha(accentColor, panel.Depressed and 240 or panel.Hovered and 210 or 180)
-    lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
+    local bgColor = getThemeBackgroundSolid()
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(bgColor, 170)):Shape(lia.derma.SHAPE_IOS):Draw()
+    if panel.Depressed then
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 70)):Shape(lia.derma.SHAPE_IOS):Draw()
+    elseif panel.Hovered then
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 45)):Shape(lia.derma.SHAPE_IOS):Draw()
+    end
+
+    lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, panel.Depressed and 220 or panel.Hovered and 190 or 140)):Outline(1):Draw()
 end
 
 function SKIN:PaintComboBox(panel, w, h)
@@ -435,7 +472,10 @@ end
 
 function SKIN:PaintSelection(_, w, h)
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
-    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 160)):Shape(lia.derma.SHAPE_IOS):Draw()
+    local bgColor = getThemeBackgroundSolid()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(bgColor, 190)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 55)):Shape(lia.derma.SHAPE_IOS):Draw()
+    lia.derma.rect(0, 0, w, h):Rad(4):Color(ColorAlpha(accentColor, 190)):Outline(1):Draw()
 end
 
 function SKIN:PaintMenuSpacer(panel, w, h)

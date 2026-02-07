@@ -1503,7 +1503,9 @@ if CLIENT then
         local expanded = false
         local expandedHeight = 320
         container.Paint = function(s, w, h)
-            local bgColor = Color(25, 28, 35, 250)
+            local theme = lia.color.theme
+            local base = (theme and theme.panel and theme.panel[1]) or (theme and theme.button) or Color(45, 50, 60)
+            local bgColor = ColorAlpha(base, 235)
             lia.derma.rect(0, 0, w, h):Rad(6):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
         end
 
@@ -1511,8 +1513,10 @@ if CLIENT then
         header:Dock(TOP)
         header:SetTall(50)
         header.Paint = function(s, w, h)
-            local accent = lia.color.theme.accent or lia.color.theme.theme or Color(116, 185, 255)
-            lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(0, 0, 0, 150)):Shape(lia.derma.SHAPE_IOS):Draw()
+            local theme = lia.color.theme
+            local accent = theme.accent or theme.theme or Color(116, 185, 255)
+            local headerBase = (theme and theme.button_hovered) or (theme and theme.button) or Color(60, 70, 85)
+            lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(headerBase, 170)):Shape(lia.derma.SHAPE_IOS):Draw()
             lia.derma.rect(0, h - 2, w, 2):Color(ColorAlpha(accent, 150)):Draw()
             if s:IsHovered() then lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(255, 255, 255, 10)):Draw() end
         end

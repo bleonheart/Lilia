@@ -481,6 +481,33 @@ net.Receive("liaSetFeaturePosition", function(_, client)
     end
 end)
 
+net.Receive("liaRemoveFeaturePosition", function(_, client)
+    if not client:hasPrivilege("alwaysSpawnAdminStick") and not client:isStaffOnDuty() then return end
+    local typeId = net.ReadString()
+    local pos = net.ReadVector()
+    local callback = lia.util.positionCallbacks and lia.util.positionCallbacks[typeId]
+    if callback and callback.serverOnly and callback.onRemove then
+        callback.onRemove(pos, client, typeId)
+        timer.Simple(1, function()
+            if not IsValid(client) then return end
+            local innerCallback = lia.util.positionCallbacks and lia.util.positionCallbacks[typeId]
+            if innerCallback and innerCallback.onSelect then
+                innerCallback.onSelect(client, function(positions, count)
+                    net.Start("liaFeaturePositions")
+                    net.WriteString(typeId)
+                    net.WriteUInt(count or #positions, 16)
+                    for j = 1, #positions do
+                        net.WriteVector(positions[j].pos)
+                        net.WriteString(positions[j].label or "")
+                    end
+
+                    net.Send(client)
+                end)
+            end
+        end)
+    end
+end)
+
 net.Receive("liaRequestAllPks", function(_, client)
     if not client:hasPrivilege("manageCharacters") then return end
     lia.db.query("SELECT * FROM lia_permakills", function(data)
