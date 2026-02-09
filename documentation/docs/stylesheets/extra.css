@@ -749,6 +749,81 @@
     filter: brightness(1.1);
 }
 
+/* Dropdown/Select styling */
+.input-group select {
+    width: 100%;
+    padding: 18px 22px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.4;
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+.input-group select:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.input-group select:focus {
+    outline: none;
+    border-color: var(--md-primary-fg-color);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.input-group select option {
+    padding: 12px;
+    background: white;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Firefox specific fixes */
+@-moz-document url-prefix() {
+    .input-group select::-moz-focus-inner {
+        border: 0;
+    }
+    
+    .input-group select:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #333;
+    }
+}
+
+/* Dark mode support for dropdowns */
+[data-md-color-scheme="slate"] .input-group select {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-md-color-scheme="slate"] .input-group select:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+[data-md-color-scheme="slate"] .input-group select:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+[data-md-color-scheme="slate"] .input-group select option {
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
 .add-btn:active {
     transform: translateY(0);
 }
