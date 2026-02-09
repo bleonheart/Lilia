@@ -35,7 +35,7 @@ The loader library is the core initialization system for the Lilia framework, re
 <pre><code class="language-lua">  -- Force client-only include for a UI helper.
   lia.loader.include("lilia/gamemode/core/ui/cl_helper.lua", "client")
   -- Auto-detect realm from prefix (sv_/cl_/).
-  lia.loader.include("schema/plugins/sv_custom.lua")
+  lia.loader.include("modules/sv_custom.lua")
 </code></pre>
 </div>
 
@@ -101,7 +101,7 @@ The loader library is the core initialization system for the Lilia framework, re
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
 <pre><code class="language-lua">  -- Load all plugin folders, respecting sv_/cl_/ prefixes.
-  lia.loader.includeGroupedDir("schema/plugins", false, true)
+  lia.loader.includeGroupedDir("modules", false, true)
 </code></pre>
 </div>
 

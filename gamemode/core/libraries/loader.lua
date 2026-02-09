@@ -314,7 +314,7 @@ local ConditionalFiles = {
             lia.loader.include("lilia/gamemode/core/ui/cl_helper.lua", "client")
 
             -- Auto-detect realm from prefix (sv_/cl_/sh_).
-            lia.loader.include("schema/plugins/sv_custom.lua")
+            lia.loader.include("modules/sv_custom.lua")
         ```
 ]]
 function lia.loader.include(path, realm)
@@ -415,7 +415,7 @@ end
     Example Usage:
         ```lua
             -- Load all plugin folders, respecting sv_/cl_/sh_ prefixes.
-            lia.loader.includeGroupedDir("schema/plugins", false, true)
+            lia.loader.includeGroupedDir("modules", false, true)
         ```
 ]]
 function lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)
