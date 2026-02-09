@@ -28,11 +28,9 @@ function PANEL:addLabel(text)
     header:Dock(TOP)
     header:DockMargin(0, 0, 0, 4)
     header:SetTall(32)
-
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     header:SetLineColor(accentColor)
     header:SetLineWidth(2)
-
     local lbl = header:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
     lbl:SetText(L(text):upper())

@@ -1,17 +1,14 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self:Dock(FILL)
-
     local function makeLabel(key)
         local header = self:Add("liaHeaderPanel")
         header:Dock(TOP)
         header:DockMargin(0, 0, 0, 6)
         header:SetTall(32)
-
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         header:SetLineColor(accentColor)
         header:SetLineWidth(2)
-
         local lbl = header:Add("DLabel")
         lbl:SetFont("LiliaFont.18")
         lbl:SetText(L(key):upper())
@@ -128,11 +125,9 @@ function PANEL:addAttributes()
         header:Dock(TOP)
         header:DockMargin(0, 0, 0, 6)
         header:SetTall(32)
-
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         header:SetLineColor(accentColor)
         header:SetLineWidth(2)
-
         local lbl = header:Add("DLabel")
         lbl:SetFont("LiliaFont.18")
         lbl:SetText(L(key):upper())

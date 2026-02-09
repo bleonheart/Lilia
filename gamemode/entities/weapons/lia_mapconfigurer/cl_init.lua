@@ -119,14 +119,12 @@ end
 function SWEP:Think()
     local client = LocalPlayer()
     local typeInfo = getCurrentType()
-    
-    -- Check for removal menu key combination (SHIFT + E)
     if client:KeyDown(IN_SPEED) and client:KeyDown(IN_USE) and not REMOVAL_MENU_OPEN then
         if self._removalMenuCooldown and self._removalMenuCooldown > CurTime() then return end
         self._removalMenuCooldown = CurTime() + 1.0
         self:OpenRemovalMenu()
     end
-    
+
     if typeInfo then
         if CACHE_TYPE ~= typeInfo.id then
             requestPositions(typeInfo.id)
@@ -162,70 +160,46 @@ function SWEP:OpenRemovalMenu()
     if not canUseTool() then return end
     local typeInfo = getCurrentType()
     if not typeInfo then return end
-    
     REMOVAL_MENU_OPEN = true
-    
-    -- Create the removal menu frame
     local frame = vgui.Create("DFrame")
     frame:SetSize(600, 400)
     frame:SetTitle("Remove " .. (typeInfo.name or "Points"))
     frame:Center()
     frame:MakePopup()
-    
-    -- Close handler
     function frame:OnClose()
         REMOVAL_MENU_OPEN = false
     end
-    
-    -- Create scroll panel
+
     local scroll = vgui.Create("DScrollPanel", frame)
     scroll:Dock(FILL)
     scroll:DockMargin(5, 5, 5, 5)
-    
-    -- Get player position for distance calculations
     local clientPos = LocalPlayer():GetPos()
-    
-    -- Add points to the menu
     if #CACHED_POSITIONS > 0 then
         for i, point in ipairs(CACHED_POSITIONS) do
             local distance = math.Round(clientPos:Distance(point.pos))
-            
-            -- Create panel for each point
             local pointPanel = vgui.Create("DPanel", scroll)
             pointPanel:SetTall(60)
             pointPanel:Dock(TOP)
             pointPanel:DockMargin(0, 0, 0, 5)
-            
-            -- Point info label
             local infoLabel = vgui.Create("DLabel", pointPanel)
             infoLabel:SetText(string.format("%s - Distance: %d units", point.label or "Point " .. i, distance))
             infoLabel:SetFont("LiliaFont.20")
             infoLabel:Dock(LEFT)
             infoLabel:DockMargin(10, 0, 0, 0)
             infoLabel:SizeToContents()
-            
-            -- Remove button
             local removeButton = vgui.Create("DButton", pointPanel)
             removeButton:SetText("Remove")
             removeButton:SetSize(80, 30)
             removeButton:Dock(RIGHT)
             removeButton:DockMargin(0, 15, 10, 15)
-            
             removeButton.DoClick = function()
                 lia.util.removeFeaturePosition(point.pos, typeInfo.id)
                 LocalPlayer():notify("Removed point: " .. (point.label or "Point " .. i))
                 frame:Close()
-                
-                -- Refresh positions after removal
-                timer.Simple(0.5, function()
-                    if IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "lia_mapconfigurer" then
-                        requestPositions(typeInfo.id)
-                    end
-                end)
+                timer.Simple(0.5, function() if IsValid(LocalPlayer()) and IsValid(LocalPlayer():GetActiveWeapon()) and LocalPlayer():GetActiveWeapon():GetClass() == "lia_mapconfigurer" then requestPositions(typeInfo.id) end end)
             end
         end
     else
-        -- No points message
         local noPointsLabel = vgui.Create("DLabel", scroll)
         noPointsLabel:SetText("No points found for this type.")
         noPointsLabel:SetFont("LiliaFont.24")

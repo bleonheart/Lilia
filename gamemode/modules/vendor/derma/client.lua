@@ -29,18 +29,14 @@ function PANEL:Init()
     self.vendorPanel.items = self.vendorPanel:Add("liaScrollPanel")
     self.vendorPanel.items:Dock(FILL)
     self.vendorPanel.items:DockPadding(8, 8, 8, 8)
-    self.vendorPanel.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(25, 28, 35, 240)):Draw()
-    end
+    self.vendorPanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(25, 28, 35, 240)):Draw() end
     self.mePanel = self:Add("liaSemiTransparentDPanel")
     self.mePanel:SetSize(self.panelW, panelH)
     self.mePanel:SetPos(sw * 0.5 + 16, self.y0)
     self.mePanel.items = self.mePanel:Add("liaScrollPanel")
     self.mePanel.items:Dock(FILL)
     self.mePanel.items:DockPadding(8, 8, 8, 8)
-    self.mePanel.Paint = function(_, w, h)
-        lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(25, 28, 35, 240)):Draw()
-    end
+    self.mePanel.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(25, 28, 35, 240)):Draw() end
     self:listenForChanges()
     self:liaListenForInventoryChanges(ply:getChar():getInv())
     self.items = {

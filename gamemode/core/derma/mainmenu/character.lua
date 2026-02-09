@@ -63,6 +63,7 @@ function PANEL:Init()
     self.music = self:Add("liaCharBGMusic")
     self:createTitle()
     self:loadBackground()
+    self:createChangelogDisplay()
     if clientChar and lia.characters and #lia.characters > 0 then
         for i, charID in ipairs(lia.characters) do
             local charObj = isnumber(charID) and lia.char.getCharacter(charID) or charID
@@ -248,6 +249,162 @@ end
 
 function PANEL:createTitle()
     if self.tabs then self.tabs:DockMargin(64, 32, 64, 0) end
+end
+
+function PANEL:createChangelogDisplay()
+    if not SCHEMA or not SCHEMA.changelog then return end
+    self.changelogPanel = self:Add("DPanel")
+    self.changelogPanel:SetPos(32, 32)
+    self.changelogPanel:SetSize(ScrW() * 0.25, ScrH() * 0.4)
+    self.changelogPanel:SetAlpha(0)
+    self.changelogPanel:AlphaTo(255, 0.4, 0)
+    local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
+    self.changelogPanel.Paint = function(s, w, h)
+        local bgColor = Color(25, 28, 35, 250)
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(Color(0, 0, 0, 180)):Shadow(15, 20):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, 5):Radii(12, 12, 0, 0):Color(accentColor):Draw()
+    end
+
+    local padding = 20
+    local contentY = padding + 10
+    local titleLabel = self.changelogPanel:Add("DLabel")
+    titleLabel:SetFont("LiliaFont.30")
+    titleLabel:SetTextColor(Color(255, 255, 255))
+    titleLabel:SetText("Changelog")
+    titleLabel:SetContentAlignment(5)
+    titleLabel:SetWide(self.changelogPanel:GetWide() - padding * 2)
+    titleLabel:SetPos(padding, contentY)
+    titleLabel:SetTall(40)
+    titleLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+    contentY = contentY + 50
+    local scroll = self.changelogPanel:Add("liaScrollPanel")
+    scroll:SetPos(padding, contentY)
+    scroll:SetSize(self.changelogPanel:GetWide() - padding * 2, self.changelogPanel:GetTall() - contentY - padding)
+    scroll:InvalidateLayout(true)
+    local changelogContent = SCHEMA.changelog or SCHEMA.Changelog
+    if istable(changelogContent) then
+        local isKeyedFormat = false
+        for k, v in pairs(changelogContent) do
+            if isstring(k) and istable(v) then
+                isKeyedFormat = true
+                break
+            end
+        end
+
+        if isKeyedFormat then
+            local sortedVersions = {}
+            for version in pairs(changelogContent) do
+                table.insert(sortedVersions, version)
+            end
+
+            table.sort(sortedVersions, function(a, b)
+                local aMajor, aMinor = a:match("^(%d+)%.(%d+)")
+                local bMajor, bMinor = b:match("^(%d+)%.(%d+)")
+                aMajor, aMinor = tonumber(aMajor) or 0, tonumber(aMinor) or 0
+                bMajor, bMinor = tonumber(bMajor) or 0, tonumber(bMinor) or 0
+                if aMajor ~= bMajor then
+                    return aMajor > bMajor
+                else
+                    return aMinor > bMinor
+                end
+            end)
+
+            for _, version in ipairs(sortedVersions) do
+                local changes = changelogContent[version]
+                if istable(changes) then
+                    local versionLabel = scroll:Add("DLabel")
+                    versionLabel:SetFont("LiliaFont.22")
+                    versionLabel:SetTextColor(accentColor)
+                    versionLabel:SetText("Version " .. version)
+                    versionLabel:SetContentAlignment(5)
+                    versionLabel:SetWide(scroll:GetWide() - padding * 2)
+                    versionLabel:SetTall(30)
+                    versionLabel:Dock(TOP)
+                    versionLabel:DockMargin(0, 0, 0, 5)
+                    versionLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+                    for _, change in ipairs(changes) do
+                        local changeLabel = scroll:Add("DLabel")
+                        changeLabel:SetFont("LiliaFont.18")
+                        changeLabel:SetTextColor(Color(220, 220, 220))
+                        changeLabel:SetText("• " .. (tostring(change) or ""))
+                        changeLabel:SetWrap(true)
+                        changeLabel:SetAutoStretchVertical(true)
+                        changeLabel:SetWide(scroll:GetWide() - padding * 2)
+                        changeLabel:Dock(TOP)
+                        changeLabel:DockMargin(10, 0, 0, 8)
+                    end
+
+                    local spacer = scroll:Add("DPanel")
+                    spacer:SetTall(15)
+                    spacer:Dock(TOP)
+                    spacer.Paint = function() end
+                end
+            end
+        else
+            for i, entry in ipairs(changelogContent) do
+                local versionLabel = scroll:Add("DLabel")
+                versionLabel:SetFont("LiliaFont.22")
+                versionLabel:SetTextColor(accentColor)
+                versionLabel:SetText(entry.version or ("Version " .. i))
+                versionLabel:SetContentAlignment(5)
+                versionLabel:SetWide(scroll:GetWide() - padding * 2)
+                versionLabel:SetTall(30)
+                versionLabel:Dock(TOP)
+                versionLabel:DockMargin(0, 0, 0, 5)
+                versionLabel:SetExpensiveShadow(1, Color(0, 0, 0, 150))
+                if entry.date then
+                    local dateLabel = scroll:Add("DLabel")
+                    dateLabel:SetFont("LiliaFont.16")
+                    dateLabel:SetTextColor(Color(180, 180, 180))
+                    dateLabel:SetText(entry.date)
+                    dateLabel:SetContentAlignment(5)
+                    dateLabel:SetWide(scroll:GetWide() - padding * 2)
+                    dateLabel:SetTall(20)
+                    dateLabel:Dock(TOP)
+                    dateLabel:DockMargin(0, 0, 0, 10)
+                end
+
+                if entry.changes and istable(entry.changes) then
+                    for _, change in ipairs(entry.changes) do
+                        local changeLabel = scroll:Add("DLabel")
+                        changeLabel:SetFont("LiliaFont.18")
+                        changeLabel:SetTextColor(Color(220, 220, 220))
+                        changeLabel:SetText("• " .. (tostring(change) or ""))
+                        changeLabel:SetWrap(true)
+                        changeLabel:SetAutoStretchVertical(true)
+                        changeLabel:SetWide(scroll:GetWide() - padding * 2)
+                        changeLabel:Dock(TOP)
+                        changeLabel:DockMargin(10, 0, 0, 8)
+                    end
+                elseif isstring(entry.changes) then
+                    local changeLabel = scroll:Add("DLabel")
+                    changeLabel:SetFont("LiliaFont.18")
+                    changeLabel:SetTextColor(Color(220, 220, 220))
+                    changeLabel:SetText(entry.changes)
+                    changeLabel:SetWrap(true)
+                    changeLabel:SetAutoStretchVertical(true)
+                    changeLabel:SetWide(scroll:GetWide() - padding * 2)
+                    changeLabel:Dock(TOP)
+                    changeLabel:DockMargin(0, 0, 0, 8)
+                end
+
+                local spacer = scroll:Add("DPanel")
+                spacer:SetTall(15)
+                spacer:Dock(TOP)
+                spacer.Paint = function() end
+            end
+        end
+    elseif isstring(changelogContent) then
+        local contentLabel = scroll:Add("DLabel")
+        contentLabel:SetFont("LiliaFont.18")
+        contentLabel:SetTextColor(Color(220, 220, 220))
+        contentLabel:SetText(changelogContent)
+        contentLabel:SetWrap(true)
+        contentLabel:SetAutoStretchVertical(true)
+        contentLabel:SetWide(scroll:GetWide() - padding * 2)
+        contentLabel:Dock(TOP)
+    end
 end
 
 function PANEL:hideExternalEntities()
@@ -606,6 +763,7 @@ function PANEL:backToMainMenu()
     self:clickSound()
     if IsValid(lia.gui.charConfirm) then lia.gui.charConfirm:Remove() end
     if IsValid(self.infoFrame) then self.infoFrame:Remove() end
+    if IsValid(self.changelogPanel) then self.changelogPanel:Remove() end
     if IsValid(self.leftArrow) then
         self.leftArrow:Remove()
         self.leftArrow = nil
@@ -631,12 +789,13 @@ function PANEL:backToMainMenu()
     self.tabs:Clear()
     self:createStartButton()
     self:loadBackground()
+    self:createChangelogDisplay()
 end
 
 function PANEL:createCharacterSelection()
     self.isLoadMode = true
     self.inMainMenu = false
-    for _, name in ipairs{"background", "logo"} do
+    for _, name in ipairs{"background", "logo", "changelogPanel"} do
         if IsValid(self[name]) then
             self[name]:Remove()
             self[name] = nil
@@ -665,7 +824,7 @@ function PANEL:createCharacterSelection()
 end
 
 function PANEL:createCharacterCreation()
-    for _, name in ipairs{"background", "logo"} do
+    for _, name in ipairs{"background", "logo", "changelogPanel"} do
         if IsValid(self[name]) then
             self[name]:Remove()
             self[name] = nil

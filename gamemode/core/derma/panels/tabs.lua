@@ -146,7 +146,6 @@ function PANEL:Rebuild()
     end
 
     self._tabButtons = {}
-
     if not IsValid(self.content) then
         self.content = vgui.Create("Panel", self)
         self.content.Paint = nil
@@ -185,9 +184,7 @@ function PANEL:Rebuild()
             btnTab.DoRightClick = function()
                 local dm = lia.derma.dermaMenu()
                 for k, v in pairs(self.tabs) do
-                    dm:AddOption(v.name, function()
-                        self:SetActiveTab(k)
-                    end, v.icon)
+                    dm:AddOption(v.name, function() self:SetActiveTab(k) end, v.icon)
                 end
             end
 
@@ -308,6 +305,7 @@ function PANEL:SetActiveTab(tab)
                 if IsValid(btn) and btn.SetActive then btn:SetActive(id == tab) end
             end
         end
+
         self:UpdateActiveTabVisual()
         if self.tabs[tab] and self.tabs[tab].callback then self.tabs[tab].callback() end
     else

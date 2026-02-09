@@ -1762,9 +1762,9 @@ else
         ```
 ]]
     function lia.util.setFeaturePosition(pos, typeId)
-        end
+    end
 
-        --[[
+    --[[
         Purpose:
             Draws text at the player's look position with distance-based easing.
 
@@ -1789,54 +1789,54 @@ else
                 lia.util.drawLookText("Press E to interact")
             ```
         ]]
-        function lia.util.drawLookText(text, posY, alphaOverride, maxDist)
-            if not (text and text ~= "") then return end
-            posY = posY or 0
-            maxDist = maxDist or 380
-            local trace = util.TraceLine({
-                start = EyePos(),
-                endpos = EyePos() + EyeAngles():Forward() * maxDist,
-                filter = LocalPlayer()
-            })
+    function lia.util.drawLookText(text, posY, alphaOverride, maxDist)
+        if not (text and text ~= "") then return end
+        posY = posY or 0
+        maxDist = maxDist or 380
+        local trace = util.TraceLine({
+            start = EyePos(),
+            endpos = EyePos() + EyeAngles():Forward() * maxDist,
+            filter = LocalPlayer()
+        })
 
-            if not trace.Hit then return end
-            local distSqr = EyePos():DistToSqr(trace.HitPos)
-            if distSqr > maxDist * maxDist then return end
-            local dist = math.sqrt(distSqr)
-            local minDist = 20
-            local normalized = math.Clamp((maxDist - dist) / math.max(1, maxDist - minDist), 0, 1)
-            local appearThreshold = 0.8
-            local disappearThreshold = 0.01
-            local target
-            if normalized <= disappearThreshold then
-                target = 0
-            elseif normalized >= appearThreshold then
-                target = 1
-            else
-                target = (normalized - disappearThreshold) / (appearThreshold - disappearThreshold)
-            end
-
-            local dt = FrameTime() or 0.016
-            local appearSpeed = 18
-            local disappearSpeed = 12
-            local cur = lia.util.approachExp(0, target, (target > 0) and appearSpeed or disappearSpeed, dt)
-            if cur <= 0 then return end
-            local fade = lia.util.easeInOutCubic(cur)
-            if alphaOverride then
-                if alphaOverride > 1 then
-                    fade = fade * math.Clamp(alphaOverride / 255, 0, 1)
-                else
-                    fade = fade * math.Clamp(alphaOverride, 0, 1)
-                end
-            end
-
-            if fade <= 0 then return end
-            local screenPos = toScreen(trace.HitPos)
-            if screenPos.visible == false then return end
-            EntText(text, screenPos.x, screenPos.y + posY, fade)
+        if not trace.Hit then return end
+        local distSqr = EyePos():DistToSqr(trace.HitPos)
+        if distSqr > maxDist * maxDist then return end
+        local dist = math.sqrt(distSqr)
+        local minDist = 20
+        local normalized = math.Clamp((maxDist - dist) / math.max(1, maxDist - minDist), 0, 1)
+        local appearThreshold = 0.8
+        local disappearThreshold = 0.01
+        local target
+        if normalized <= disappearThreshold then
+            target = 0
+        elseif normalized >= appearThreshold then
+            target = 1
+        else
+            target = (normalized - disappearThreshold) / (appearThreshold - disappearThreshold)
         end
 
-        --[[
+        local dt = FrameTime() or 0.016
+        local appearSpeed = 18
+        local disappearSpeed = 12
+        local cur = lia.util.approachExp(0, target, (target > 0) and appearSpeed or disappearSpeed, dt)
+        if cur <= 0 then return end
+        local fade = lia.util.easeInOutCubic(cur)
+        if alphaOverride then
+            if alphaOverride > 1 then
+                fade = fade * math.Clamp(alphaOverride / 255, 0, 1)
+            else
+                fade = fade * math.Clamp(alphaOverride, 0, 1)
+            end
+        end
+
+        if fade <= 0 then return end
+        local screenPos = toScreen(trace.HitPos)
+        if screenPos.visible == false then return end
+        EntText(text, screenPos.x, screenPos.y + posY, fade)
+    end
+
+    --[[
         Purpose:
             Sets a feature position using the position tool callback system.
 
@@ -1857,32 +1857,32 @@ else
                 lia.util.setFeaturePosition(Vector(0, 0, 0), "faction_spawn_adder")
             ```
         ]]
-        function lia.util.setFeaturePosition(pos, typeId)
-            if not isvector(pos) or not isstring(typeId) then return end
-            local callback = lia.util.positionCallbacks[typeId]
-            if not callback or not callback.onRun then return end
-            local client = LocalPlayer()
-            if not IsValid(client) then return end
-            if callback.serverOnly then
-                callback.onRun(pos, client, typeId)
-            else
-                callback.onRun(pos, client, typeId)
-            end
-        end
-
-        function lia.util.removeFeaturePosition(pos, typeId)
-            if not isvector(pos) or not isstring(typeId) then return end
-            local callback = lia.util.positionCallbacks[typeId]
-            if not callback or not callback.onRemove then return end
-            local client = LocalPlayer()
-            if not IsValid(client) then return end
-            if callback.serverOnly then
-                net.Start("liaRemoveFeaturePosition")
-                net.WriteString(typeId)
-                net.WriteVector(pos)
-                net.SendToServer()
-            else
-                callback.onRemove(pos, client, typeId)
-            end
+    function lia.util.setFeaturePosition(pos, typeId)
+        if not isvector(pos) or not isstring(typeId) then return end
+        local callback = lia.util.positionCallbacks[typeId]
+        if not callback or not callback.onRun then return end
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        if callback.serverOnly then
+            callback.onRun(pos, client, typeId)
+        else
+            callback.onRun(pos, client, typeId)
         end
     end
+
+    function lia.util.removeFeaturePosition(pos, typeId)
+        if not isvector(pos) or not isstring(typeId) then return end
+        local callback = lia.util.positionCallbacks[typeId]
+        if not callback or not callback.onRemove then return end
+        local client = LocalPlayer()
+        if not IsValid(client) then return end
+        if callback.serverOnly then
+            net.Start("liaRemoveFeaturePosition")
+            net.WriteString(typeId)
+            net.WriteVector(pos)
+            net.SendToServer()
+        else
+            callback.onRemove(pos, client, typeId)
+        end
+    end
+end

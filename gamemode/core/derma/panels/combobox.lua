@@ -20,7 +20,6 @@ function PANEL:Init()
             self.hoverAnim = math.Clamp(self.hoverAnim - FrameTime() * 8, 0, 1)
         end
 
-        -- Use same background as liaFrame
         local bgColor = Color(25, 28, 35, 250)
         local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
         local base = ColorAlpha(bgColor, 200)
@@ -31,7 +30,6 @@ function PANEL:Init()
         end
 
         lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
-        -- Add border like TextEntry
         local outline = accentColor or ColorAlpha(Color(255, 255, 255), 30)
         lia.derma.rect(0, 0, w, h):Rad(6):Color(outline):Outline(1):Draw()
         draw.SimpleText(self.selected or self.placeholder or "", self.font, 12, h * 0.5, self:GetTextColor(), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

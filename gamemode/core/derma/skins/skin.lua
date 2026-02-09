@@ -70,7 +70,6 @@ local function paintButtonBase(panel, w, h)
     local bgColor = getThemeBackgroundSolid()
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local base = ColorAlpha(bgColor, panel:GetDisabled() and 80 or 200)
-
     lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
     if not panel:GetDisabled() then
         if panel.Depressed then
