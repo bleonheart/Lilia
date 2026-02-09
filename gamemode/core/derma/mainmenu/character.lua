@@ -252,7 +252,7 @@ function PANEL:createTitle()
 end
 
 function PANEL:createChangelogDisplay()
-    if not SCHEMA or not SCHEMA.changelog then return end
+    if not SCHEMA or not SCHEMA.Changelog then return end
     self.changelogPanel = self:Add("DPanel")
     self.changelogPanel:SetPos(32, 32)
     self.changelogPanel:SetSize(ScrW() * 0.25, ScrH() * 0.4)
@@ -282,7 +282,7 @@ function PANEL:createChangelogDisplay()
     scroll:SetPos(padding, contentY)
     scroll:SetSize(self.changelogPanel:GetWide() - padding * 2, self.changelogPanel:GetTall() - contentY - padding)
     scroll:InvalidateLayout(true)
-    local changelogContent = SCHEMA.changelog or SCHEMA.Changelog
+    local changelogContent = SCHEMA.Changelog or SCHEMA.Changelog
     if istable(changelogContent) then
         local isKeyedFormat = false
         for k, v in pairs(changelogContent) do
