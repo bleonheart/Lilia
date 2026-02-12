@@ -4174,6 +4174,36 @@ end
 
 --[[
     Purpose:
+        Decide if an item should be saved to the database when dropped on the map.
+
+    When Called:
+        When an item entity is created and would normally be saved to the lia_saveditems table.
+
+    Parameters:
+        itemTable (Item)
+            Item instance being saved.
+        entity (Entity)
+            Item entity being saved.
+
+    Returns:
+        boolean
+            False to prevent saving; true/nil to allow saving.
+
+    Realm:
+        Server
+
+    Example Usage:
+        ```lua
+            hook.Add("ShouldSaveItem", "NoSaveExplosives", function(itemTable, entity)
+                if itemTable.category == "Explosives" then return false end
+            end)
+        ```
+]]
+function ShouldSaveItem(itemTable, entity)
+end
+
+--[[
+    Purpose:
         Decide if a death sound should play for a player.
 
     When Called:

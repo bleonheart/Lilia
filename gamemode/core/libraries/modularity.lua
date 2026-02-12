@@ -15,12 +15,12 @@ lia.module = lia.module or {}
 lia.module.list = lia.module.list or {}
 local function loadPermissions(Privileges)
     if not Privileges or not istable(Privileges) then return end
-    for _, privilegeData in ipairs(Privileges) do
-        local privilegeName = L(privilegeData.Name or privilegeData.ID)
+    for privID, privilegeData in pairs(Privileges) do
+        local privilegeName = L(privilegeData.Name or privID)
         local privilegeCategory = privilegeData.Category or MODULE.name
         lia.admin.registerPrivilege({
             Name = privilegeName,
-            ID = privilegeData.ID,
+            ID = privID,
             MinAccess = privilegeData.MinAccess or "admin",
             Category = privilegeCategory
         })

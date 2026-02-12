@@ -3529,36 +3529,6 @@ net.Receive("liaOnlineStaffData", function()
     hook.Run("OnlineStaffDataReceived", staffData)
 end)
 
-function MODULE:DrawESPStyledText(text, x, y, espColor, font, fadeAlpha)
-    fadeAlpha = fadeAlpha or 1
-    surface.SetFont(font)
-    local tw, th = surface.GetTextSize(text)
-    local bx, by = math.Round(x - tw * 0.5 - 8), math.Round(y - 8)
-    local bw, bh = tw + 16, th + 16
-    local defaultTheme = {
-        background_alpha = Color(34, 34, 34, 210),
-        header = Color(34, 34, 34, 210),
-        accent = Color(255, 255, 255, 180),
-        text = Color(255, 255, 255)
-    }
-
-    local theme = lia.color.theme or defaultTheme
-    local function scaleColorAlpha(col, scale)
-        col = col or defaultTheme.background_alpha
-        local a = col.a or 255
-        return Color(col.r, col.g, col.b, math.Clamp(a * scale, 0, 255))
-    end
-
-    local headerColor = scaleColorAlpha(theme.background_panelpopup or theme.header or defaultTheme.header, fadeAlpha)
-    local accentColor = scaleColorAlpha(espColor or theme.theme or theme.text or defaultTheme.accent, fadeAlpha)
-    local textColor = scaleColorAlpha(theme.text or defaultTheme.text, fadeAlpha)
-    lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
-    lia.derma.rect(bx, by, bw, bh - 6):Radii(8, 8, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
-    lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 8, 8):Color(accentColor):Draw()
-    draw.SimpleText(text, font, math.Round(x), math.Round(y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-    return bh
-end
-
 function MODULE:PostDrawTranslucentRenderables()
     local client = LocalPlayer()
     if not IsValid(client) then return end
@@ -3602,18 +3572,23 @@ function MODULE:HUDPaint()
         local cacheType = wep.GetCacheType and wep:GetCacheType()
         local cachedPositions = wep.GetCachedPositions and wep:GetCachedPositions() or {}
         if typeInfo and cacheType == typeInfo.id and #cachedPositions > 0 then
-            local adminMod = lia.module.get("administration")
-            if adminMod and adminMod.DrawESPStyledText then
-                local col = typeInfo.color or Color(255, 255, 255)
-                for i = 1, #cachedPositions do
-                    local entry = cachedPositions[i]
-                    local pos = entry.pos
-                    if isvector(pos) then
-                        local screenPos = (pos + Vector(0, 0, 16)):ToScreen()
-                        if screenPos.visible then
-                            local label = entry.label ~= "" and entry.label or "Position"
-                            adminMod:DrawESPStyledText(label, screenPos.x, screenPos.y, col, "LiliaFont.24", 1)
+            local col = typeInfo.color or Color(255, 255, 255)
+            for i = 1, #cachedPositions do
+                local entry = cachedPositions[i]
+                local pos = entry.pos
+                if isvector(pos) then
+                    local screenPos = (pos + Vector(0, 0, 16)):ToScreen()
+                    if screenPos.visible then
+                        local label = entry.label ~= "" and entry.label or "Position"
+                        if typeInfo.id == "faction_spawn_adder" then
+                            label = "Spawn For Faction '" .. label .. "'"
+                        elseif typeInfo.id == "class_spawn_adder" then
+                            label = "Spawn For Class '" .. label .. "'"
+                        elseif typeInfo.id == "sit_room" then
+                            label = "Sit Room " .. label
                         end
+
+                        lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, "LiliaFont.24", 1)
                     end
                 end
             end
@@ -3682,14 +3657,14 @@ function MODULE:HUDPaint()
             surface.SetFont("LiliaFont.24")
             local _, th = surface.GetTextSize(label)
             local bh = th + 16
-            self:DrawESPStyledText(label, screenPos.x, screenPos.y, baseColor, "LiliaFont.24")
+            lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, baseColor, "LiliaFont.24")
             if subLabel and subLabel ~= label then
                 local font = (kind == "npcs") and "LiliaFont.16" or "LiliaFont.24"
                 surface.SetFont(font)
                 surface.GetTextSize(subLabel)
                 local spacing = 8
                 local subY = screenPos.y + bh / 2 + spacing
-                self:DrawESPStyledText(subLabel, screenPos.x, subY, baseColor, font)
+                lia.util.drawESPStyledText(subLabel, screenPos.x, subY, baseColor, font)
             end
         end
     end

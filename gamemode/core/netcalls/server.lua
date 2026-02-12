@@ -558,6 +558,8 @@ end)
 
 net.Receive("liaArgumentsRequestCancel", function(_, client)
     local id = net.ReadUInt(32)
+    local req = client.liaArgReqs and client.liaArgReqs[id]
+    if req and isfunction(req.callback) then req.callback(false) end
     if client.liaArgReqs and client.liaArgReqs[id] then client.liaArgReqs[id] = nil end
 end)
 

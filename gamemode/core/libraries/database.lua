@@ -343,16 +343,6 @@ CREATE TABLE IF NOT EXISTS lia_admin (
     inheritance text,
     types text
 );
-CREATE TABLE IF NOT EXISTS lia_vendor_presets (
-    name text PRIMARY KEY,
-    data text
-);
-CREATE TABLE IF NOT EXISTS lia_data (
-    gamemode text,
-    map text,
-    data text,
-    PRIMARY KEY (gamemode, map)
-);
 ]], done)
     hook.Run("OnLoadTables")
 end

@@ -442,6 +442,57 @@ if SERVER then
         return cond
     end
 
+    local function sanitizeKeyToFilename(key)
+        key = tostring(key or "")
+        key = key:gsub("[\\/]", "_")
+        key = key:gsub("[^%w%-%._]", "_")
+        key = key:gsub("_+", "_")
+        key = key:gsub("^_+", "")
+        key = key:gsub("_+$", "")
+        if key == "" then key = "unnamed" end
+        return key
+    end
+
+    local function ensureDataDirs(gamemode, map)
+        file.CreateDir("lilia")
+    end
+
+    local function getDataScope(gamemode, map, global, ignoreMap)
+        local gm = gamemode or (SCHEMA and SCHEMA.folder) or engine.ActiveGamemode()
+        local m = ignoreMap and "global" or (map or game.GetMap())
+        if global then
+            gm = "global"
+            m = "global"
+        else
+            if m ~= "global" then m = lia.data.getEquivalencyMap(m) end
+        end
+
+        gm = tostring(gm or "global")
+        m = tostring(m or "global")
+        return gm, m
+    end
+
+    local function getScopeMapFilePath(gamemode, map)
+        ensureDataDirs(gamemode, map)
+        local gmSafe = sanitizeKeyToFilename(gamemode)
+        local mapSafe = sanitizeKeyToFilename(map)
+        return "lilia/" .. gmSafe .. "_" .. mapSafe .. "_map.json"
+    end
+
+    local function readScopeMap(gamemode, map)
+        local path = getScopeMapFilePath(gamemode, map)
+        if not file.Exists(path, "DATA") then return {}, path end
+        local raw = file.Read(path, "DATA")
+        local decoded = raw and util.JSONToTable(raw) or nil
+        if not istable(decoded) then return {}, path end
+        return decoded, path
+    end
+
+    local function writeScopeMap(path, data)
+        if not istable(data) then data = {} end
+        file.Write(path, util.TableToJSON(data, true) or "{}")
+    end
+
     --[[
     Purpose:
         Persist a key/value pair scoped to gamemode/map (or global).
@@ -468,31 +519,13 @@ if SERVER then
         ```
     ]]
     function lia.data.set(key, value, global, ignoreMap)
-        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local map = ignoreMap and NULL or game.GetMap()
-        if global then
-            gamemode = NULL
-            map = NULL
-        else
-            if gamemode == nil then gamemode = NULL end
-            if map == nil then map = NULL end
-            if map ~= NULL then map = lia.data.getEquivalencyMap(map) end
-        end
-
         lia.data.stored[key] = value
-        lia.db.waitForTablesToLoad():next(function()
-            local row = {
-                gamemode = gamemode,
-                map = map,
-                data = lia.data.serialize(lia.data.stored)
-            }
-            return lia.db.upsert(row, "data")
-        end):next(function() hook.Run("OnDataSet", key, value, gamemode, map) end)
-
-        local path = "lilia/"
-        if gamemode and gamemode ~= NULL then path = path .. gamemode .. "/" end
-        if map and map ~= NULL then path = path .. map .. "/" end
-        return path
+        local gamemode, map = getDataScope(nil, nil, global, ignoreMap)
+        local mapData, mapPath = readScopeMap(gamemode, map)
+        mapData[tostring(key)] = lia.data.encodetable(value)
+        writeScopeMap(mapPath, mapData)
+        hook.Run("OnDataSet", key, value, gamemode, map)
+        return gamemode .. "/" .. map .. "/"
     end
 
     --[[
@@ -519,29 +552,11 @@ if SERVER then
         ```
     ]]
     function lia.data.delete(key, global, ignoreMap)
-        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local map = ignoreMap and nil or game.GetMap()
-        if global then
-            gamemode = nil
-            map = nil
-        else
-            if map then map = lia.data.getEquivalencyMap(map) end
-        end
-
         lia.data.stored[key] = nil
-        local condition = buildCondition(gamemode, map)
-        lia.db.waitForTablesToLoad():next(function()
-            if table.IsEmpty(lia.data.stored) then
-                return lia.db.delete("data", condition)
-            else
-                local row = {
-                    gamemode = gamemode,
-                    map = map,
-                    data = lia.data.serialize(lia.data.stored)
-                }
-                return lia.db.upsert(row, "data")
-            end
-        end)
+        local gamemode, map = getDataScope(nil, nil, global, ignoreMap)
+        local mapData, mapPath = readScopeMap(gamemode, map)
+        mapData[tostring(key)] = nil
+        writeScopeMap(mapPath, mapData)
         return true
     end
 
@@ -564,23 +579,39 @@ if SERVER then
         ```
     ]]
     function lia.data.loadTables()
-        local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
-        local map = game.GetMap()
-        local equivalencyMap = lia.data.getEquivalencyMap(map)
-        local function loadData(gm, m)
-            local cond = buildCondition(gm, m)
-            return lia.db.select("data", "data", cond):next(function(res)
-                local row = res.results and res.results[1]
-                if row then
-                    local data = lia.data.deserialize(row.data) or {}
-                    for k, v in pairs(data) do
-                        lia.data.stored[k] = v
+        local gamemode = (SCHEMA and SCHEMA.folder) or engine.ActiveGamemode()
+        local map = lia.data.getEquivalencyMap(game.GetMap())
+        local function loadScope(gm, m)
+            local mapPath = getScopeMapFilePath(gm, m)
+            if file.Exists(mapPath, "DATA") then
+                local raw = file.Read(mapPath, "DATA")
+                local decoded = raw and util.JSONToTable(raw) or nil
+                if istable(decoded) then
+                    for keyName, storedValue in pairs(decoded) do
+                        if isstring(storedValue) then
+                            lia.data.stored[tostring(keyName)] = lia.data.deserialize(storedValue)
+                        else
+                            lia.data.stored[tostring(keyName)] = lia.data.decode(storedValue)
+                        end
                     end
                 end
-            end)
+            end
+
+            ensureDataDirs(gm, m)
+            local filesFound = file.Find(gm .. "/" .. m .. "/*.json", "DATA")
+            for _, fileName in ipairs(filesFound or {}) do
+                local keyName = fileName:sub(1, -6)
+                if lia.data.stored[keyName] == nil then
+                    local raw = file.Read(gm .. "/" .. m .. "/" .. fileName, "DATA")
+                    local value = lia.data.deserialize(raw)
+                    lia.data.stored[keyName] = value
+                end
+            end
         end
 
-        lia.db.waitForTablesToLoad():next(function() return loadData(nil, nil) end):next(function() return loadData(gamemode, nil) end):next(function() return loadData(gamemode, equivalencyMap) end)
+        loadScope("global", "global")
+        loadScope(tostring(gamemode), "global")
+        loadScope(tostring(gamemode), tostring(map))
     end
 
     local defaultCols = {

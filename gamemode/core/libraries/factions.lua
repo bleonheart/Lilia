@@ -187,6 +187,39 @@ end
 
 --[[
     Purpose:
+        Retrieves all registered factions as a table.
+
+    When Called:
+        Called whenever all faction information needs to be accessed by other systems or scripts.
+
+    Parameters:
+        None
+
+    Returns:
+        table
+            A table containing all faction data tables.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        local allFactions = lia.faction.getAll()
+        for _, faction in ipairs(allFactions) do
+            print("Faction: " .. faction.name)
+        end
+        ```
+]]
+function lia.faction.getAll()
+    local allFactions = {}
+    for _, faction in pairs(lia.faction.teams) do
+        table.insert(allFactions, faction)
+    end
+    return allFactions
+end
+
+--[[
+    Purpose:
         Retrieves faction data by either its unique ID or index number.
 
     When Called:

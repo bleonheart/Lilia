@@ -1591,7 +1591,7 @@ if CLIENT then
     hook.Add("PopulateConfigurationButtons", "liaWeaponItemsConfig", function(pages)
         if hook.Run("CanPlayerModifyConfig", LocalPlayer()) == false then return end
         pages[#pages + 1] = {
-            name = "Weapon Config",
+            name = "Weapon Items Config",
             drawFunc = function(parent)
                 parent:Clear()
                 local searchBar = parent:Add("liaEntry")

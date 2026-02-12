@@ -131,8 +131,8 @@ function getPrivilegeCategory(privilegeName)
     else
         for _, module in pairs(lia.module.list) do
             if module.Privileges and istable(module.Privileges) then
-                for _, priv in ipairs(module.Privileges) do
-                    if priv.ID == privilegeName then
+                for privID, priv in pairs(module.Privileges) do
+                    if privID == privilegeName then
                         category = L(priv.Category or module.name or "unassigned")
                         break
                     end

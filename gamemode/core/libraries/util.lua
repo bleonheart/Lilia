@@ -47,6 +47,46 @@ end
 
 --[[
     Purpose:
+        Prompts the user for entity information and forwards the result.
+
+    When Called:
+        Use when a client must supply additional data for an entity action.
+
+    Parameters:
+        client (Player)
+            Player who will be prompted for the information.
+        entity (Entity)
+            Entity that the information pertains to; removed if the request fails.
+        argTypes (table)
+            Argument descriptors passed to `requestArguments`.
+        callback (function|nil)
+            Invoked with the collected information on success.
+
+    Realm:
+        Server
+
+    Example Usage:
+        ```lua
+            lia.util.requestEntityInformation(client, ent, argTypes, function(info) print(info) end)
+        ```
+]]
+function lia.util.requestEntityInformation(client, entity, argTypes, callback)
+    if not IsValid(entity) then
+        ErrorNoHalt("[lia.util.requestEntityInformation] Invalid entity provided\n")
+        return
+    end
+
+    client:requestArguments("Entity Information", argTypes, function(success, information)
+        if not success then
+            if IsValid(entity) then entity:Remove() end
+        else
+            if isfunction(callback) then callback(information) end
+        end
+    end)
+end
+
+--[[
+    Purpose:
         Locates a connected player by SteamID or SteamID64 and requires an active character.
 
     When Called:
@@ -723,6 +763,7 @@ function lia.util.setPositionCallback(name, data)
         name = name,
         color = color,
         onRun = data.onRun,
+        onRemove = data.onRemove,
         onSelect = data.onSelect,
         HUDPaint = data.HUDPaint,
         serverOnly = serverOnly
@@ -1228,44 +1269,6 @@ else
     end
 
     lia.util.requestArguments = lia.derma.requestArguments
-    --[[
-    Purpose:
-        Prompts the user for entity information and forwards the result.
-
-    When Called:
-        Use when a client must supply additional data for an entity action.
-
-    Parameters:
-        entity (Entity)
-            Entity that the information pertains to; removed if the request fails.
-        argTypes (table)
-            Argument descriptors passed to `requestArguments`.
-        callback (function|nil)
-            Invoked with the collected information on success.
-
-    Realm:
-        Client
-
-    Example Usage:
-        ```lua
-            lia.util.requestEntityInformation(ent, argTypes, function(info) print(info) end)
-        ```
-]]
-    function lia.util.requestEntityInformation(entity, argTypes, callback)
-        if not IsValid(entity) then
-            ErrorNoHalt("[lia.util.requestEntityInformation] Invalid entity provided\n")
-            return
-        end
-
-        lia.derma.requestArguments("Entity Information", argTypes, function(success, information)
-            if not success then
-                if IsValid(entity) then entity:Remove() end
-            else
-                if isfunction(callback) then callback(information) end
-            end
-        end)
-    end
-
     --[[
     Purpose:
         Builds and displays a table UI on the client.
@@ -1870,6 +1873,27 @@ else
         end
     end
 
+    --[[
+        Purpose:
+            Removes a feature position using the position tool callback system.
+
+        When Called:
+            Called by the position tool when a player removes a position (right-click).
+
+        Parameters:
+            pos (Vector)
+                The world position to remove.
+            typeId (string)
+                The type ID of the position callback (e.g., "faction_spawn_adder", "sit_room").
+
+        Realm:
+            Client
+
+        Example Usage:
+            ```lua
+                lia.util.removeFeaturePosition(Vector(0, 0, 0), "faction_spawn_adder")
+            ```
+        ]]
     function lia.util.removeFeaturePosition(pos, typeId)
         if not isvector(pos) or not isstring(typeId) then return end
         local callback = lia.util.positionCallbacks[typeId]
@@ -1884,5 +1908,55 @@ else
         else
             callback.onRemove(pos, client, typeId)
         end
+    end
+
+    --[[
+    Purpose:
+        Draws styled ESP text with background, blur, and theme support.
+
+    When Called:
+        Use when you need to draw text with ESP styling, including background panels and blur effects.
+
+    Parameters:
+        text (string)
+            The text to display.
+        x (number)
+            X position on screen.
+        y (number)
+            Y position on screen.
+        espColor (Color)
+            Color for the accent/bottom bar.
+        font (string)
+            Font to use for the text.
+        fadeAlpha (number, optional)
+            Alpha multiplier for fading (default: 1).
+
+    Returns:
+        number
+            Height of the drawn element.
+
+    Realm:
+        Client
+
+    Example Usage:
+        ```lua
+            local height = lia.util.drawESPStyledText("Player Name", 200, 100, Color(255, 0, 0), "liaMediumFont", 0.8)
+        ```
+]]
+    function lia.util.drawESPStyledText(text, x, y, espColor, font, fadeAlpha)
+        fadeAlpha = fadeAlpha or 1
+        surface.SetFont(font)
+        local tw, th = surface.GetTextSize(text)
+        local bx, by = math.Round(x - tw * 0.5 - 8), math.Round(y - 8)
+        local bw, bh = tw + 16, th + 16
+        local theme = lia.color.theme or defaultTheme
+        local headerColor = scaleColorAlpha(theme.background_panelpopup or theme.header or defaultTheme.header, fadeAlpha)
+        local accentColor = scaleColorAlpha(espColor or theme.theme or theme.text or defaultTheme.accent, fadeAlpha)
+        local textColor = scaleColorAlpha(theme.text or defaultTheme.text, fadeAlpha)
+        lia.util.drawBlurAt(bx, by, bw, bh - 6, 6, 0.2, math.floor(fadeAlpha * 255))
+        lia.derma.rect(bx, by, bw, bh - 6):Radii(8, 8, 0, 0):Color(headerColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(bx, by + bh - 6, bw, 6):Radii(0, 0, 8, 8):Color(accentColor):Draw()
+        draw.SimpleText(text, font, math.Round(x), math.Round(y - 2), textColor, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        return bh
     end
 end

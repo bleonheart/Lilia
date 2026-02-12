@@ -868,6 +868,7 @@ function lia.derma.requestColorPicker(func, colorStandard)
     btnClose:SetColorHover(color_close)
     btnClose.DoClick = function()
         btnClose.BaseClass.DoClick(btnClose)
+        if func then func(false) end
         lia.gui.menuColorPicker:Remove()
     end
 
@@ -3083,6 +3084,7 @@ function lia.derma.requestArguments(title, argTypes, onSubmit, defaults)
 
     for _, info in ipairs(ordered) do
         local name, fieldType, dataTbl, defaultVal = info.name, info.fieldType, info.dataTbl, info.defaultVal
+        if not name or name == "" then continue end
         local panel = vgui.Create("DPanel", scroll)
         panel:Dock(TOP)
         panel:DockMargin(0, 0, 0, 15)
@@ -3902,10 +3904,10 @@ end
             lia.derma.requestOptions("Permissions", {{"Rank", {"User", "Admin"}}, "CanKick"}, function(result) PrintTable(result) end)
         ```
 ]]
-function lia.derma.requestOptions(title, options, callback, defaults)
-    defaults = defaults or {}
+function lia.derma.requestOptions(title, subTitle, options, limit, callback, onCancel)
+    limit = limit or 1
     if IsValid(lia.gui.menuRequestOptions) then lia.gui.menuRequestOptions:Remove() end
-    local count = table.Count(options)
+    local count = #options
     local frameW, frameH = 600, math.min(350 + count * 100, ScrH() * 0.5)
     local frame = vgui.Create("liaFrame")
     frame:SetSize(frameW, frameH)
@@ -3913,6 +3915,15 @@ function lia.derma.requestOptions(title, options, callback, defaults)
     frame:MakePopup()
     frame:SetTitle("")
     frame:SetCenterTitle(title or L("selectOptions"))
+    if subTitle then
+        local subTitleLabel = vgui.Create("DLabel", frame)
+        subTitleLabel:SetText(subTitle)
+        subTitleLabel:SetFont("LiliaFont.18")
+        subTitleLabel:SizeToContents()
+        subTitleLabel:SetPos(10, 35)
+        subTitleLabel:SetColor(Color(200, 200, 200))
+    end
+
     frame:ShowAnimation()
     frame:SetZPos(1000)
     local scrollPanel = vgui.Create("liaScrollPanel", frame)
@@ -4018,7 +4029,7 @@ function lia.derma.requestOptions(title, options, callback, defaults)
     cancelBtn:SetWide(270)
     cancelBtn:SetTxt(L("cancel"))
     cancelBtn.DoClick = function()
-        if callback then callback(false) end
+        if onCancel then onCancel() end
         frame:Remove()
     end
 
