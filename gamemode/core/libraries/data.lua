@@ -185,9 +185,9 @@ if SERVER then
             end
 
             if not p then
-                local tbl = util.JSONToTable(data)
-                if istable(tbl) and tbl[1] and tbl[2] and tbl[3] then
-                    local p_num, y_num, r_num = tonumber(tbl[1]), tonumber(tbl[2]), tonumber(tbl[3])
+                local jsonTbl = util.JSONToTable(data)
+                if istable(jsonTbl) and jsonTbl[1] and jsonTbl[2] and jsonTbl[3] then
+                    local p_num, y_num, r_num = tonumber(jsonTbl[1]), tonumber(jsonTbl[2]), tonumber(jsonTbl[3])
                     if p_num and y_num and r_num then p, y, r = p_num, y_num, r_num end
                 end
             end

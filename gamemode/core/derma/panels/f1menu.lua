@@ -1266,8 +1266,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         end
     end
 
-    local hasPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
-    if hasPrivilege then
+    local hasThemesPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
+    if hasThemesPrivilege then
         tabs["themes"] = function(themesPanel)
             local frame = themesPanel:Add("liaFrame")
             frame:Dock(FILL)
@@ -1389,8 +1389,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         end
     end
 
-    local hasPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
-    if hasPrivilege then
+    local hasThemesPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
+    if hasThemesPrivilege then
         tabs["themes"] = function(themesPanel)
             local frame = themesPanel:Add("liaFrame")
             frame:Dock(FILL)

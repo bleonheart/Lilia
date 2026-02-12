@@ -145,10 +145,8 @@ function PANEL:Paint(w, h)
     local typeColor = self._cachedTypeColor
     local icon = self._cachedIcon
     local alpha = self.alpha / 255
-    local theme = lia.color.theme
     local bgColor = Color(25, 28, 35, math.floor(220 * alpha))
     lia.derma.rect(0, 0, w, h):Rad(12):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
-    local accent = theme.theme or color_white
     lia.derma.rect(0, 0, 6, h):Radii(12, 0, 12, 0):Color(Color(typeColor.r, typeColor.g, typeColor.b, math.floor(255 * alpha))):Draw()
     lia.derma.rect(6, 0, w - 6, h):Radii(0, 12, 0, 12):Color(Color(typeColor.r, typeColor.g, typeColor.b, math.floor(30 * alpha))):Draw()
     if icon then

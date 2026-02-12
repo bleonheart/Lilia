@@ -2609,7 +2609,7 @@ end
             end)
         ```
 ]]
-function PostLoadFonts(mainFont, mainFont)
+function PostLoadFonts(mainFont, secondaryFont)
 end
 
 --[[

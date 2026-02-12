@@ -3905,7 +3905,7 @@ end
         ```
 ]]
 function lia.derma.requestOptions(title, subTitle, options, limit, callback, onCancel)
-    limit = limit or 1
+    if limit then limit = limit or 1 end
     if IsValid(lia.gui.menuRequestOptions) then lia.gui.menuRequestOptions:Remove() end
     local count = #options
     local frameW, frameH = 600, math.min(350 + count * 100, ScrH() * 0.5)
