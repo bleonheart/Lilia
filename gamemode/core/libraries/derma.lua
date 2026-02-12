@@ -3904,8 +3904,7 @@ end
             lia.derma.requestOptions("Permissions", {{"Rank", {"User", "Admin"}}, "CanKick"}, function(result) PrintTable(result) end)
         ```
 ]]
-function lia.derma.requestOptions(title, subTitle, options, limit, callback, onCancel)
-    if limit then limit = limit or 1 end
+function lia.derma.requestOptions(title, subTitle, options, callback, onCancel)
     if IsValid(lia.gui.menuRequestOptions) then lia.gui.menuRequestOptions:Remove() end
     local count = #options
     local frameW, frameH = 600, math.min(350 + count * 100, ScrH() * 0.5)
