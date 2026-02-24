@@ -283,8 +283,8 @@ class DocumentationParser:
         """Extract all documented functions from documentation files"""
         documented_functions = {}
 
-        # Look for library documentation files
-        libraries_path = self.docs_path / "docs" / "libraries"
+        # Look for library documentation files in development/libraries
+        libraries_path = self.docs_path / "docs" / "development" / "libraries"
         if libraries_path.exists():
             for md_file in libraries_path.glob("*.md"):
                 # Skip index.md and other non-library files
@@ -294,13 +294,32 @@ class DocumentationParser:
                 if functions:
                     documented_functions[md_file.name] = functions
 
-        # Look for meta documentation files
-        meta_path = self.docs_path / "docs" / "meta"
+        # Also check the old docs/libraries path for backwards compatibility
+        old_libraries_path = self.docs_path / "docs" / "libraries"
+        if old_libraries_path.exists():
+            for md_file in old_libraries_path.glob("*.md"):
+                # Skip index.md and other non-library files
+                if md_file.name == "index.md":
+                    continue
+                functions = self._parse_library_file(md_file)
+                if functions:
+                    documented_functions[f"old/{md_file.name}"] = functions
+
+        # Look for meta documentation files in development/meta
+        meta_path = self.docs_path / "docs" / "development" / "meta"
         if meta_path.exists():
             for md_file in meta_path.glob("*.md"):
                 functions = self._parse_meta_file(md_file)
                 if functions:
                     documented_functions[f"meta/{md_file.name}"] = functions
+
+        # Also check the old docs/meta path for backwards compatibility
+        old_meta_path = self.docs_path / "docs" / "meta"
+        if old_meta_path.exists():
+            for md_file in old_meta_path.glob("*.md"):
+                functions = self._parse_meta_file(md_file)
+                if functions:
+                    documented_functions[f"old/meta/{md_file.name}"] = functions
 
         return documented_functions
 
@@ -327,28 +346,31 @@ class DocumentationParser:
         except Exception:
             pass
 
+        # Define global lia functions that should always be qualified as lia.functionName
+        global_lia_functions = {
+            'bootstrap', 'error', 'warning', 'information', 'relaydiscordMessage'
+        }
+
         # Look for function headers in the format "### functionName" or "### lia.util.functionName"
         for line_num, line in enumerate(lines, 1):
             stripped = line.strip()
 
-            # Look for function headers like "### lia.include"
+            # Look for function headers like "### lia.include" or "### information"
             func_match = re.search(r'^###+\s+([A-Za-z_][\w\.]*)\s*$', stripped)
             if func_match:
                 header_name = func_match.group(1)
-                # If header already includes dots (fully qualified), keep it; otherwise qualify with library name
+                
+                # If header already includes dots (fully qualified), keep it
                 if '.' in header_name:
                     qualified_name = header_name
                 else:
-                    # Special handling for global lia.* functions documented in library files
-                    # Check if this looks like a global function that should be qualified as lia.functionName
-                    # instead of libraryName.functionName
-                    global_lia_functions = {
-                        'bootstrap', 'error', 'warning', 'information', 'relaydiscordMessage'
-                    }
-                    if header_name in global_lia_functions and library_name.startswith('lia.'):
+                    # Special handling for global lia functions
+                    if header_name in global_lia_functions:
                         qualified_name = f"lia.{header_name}"
                     else:
+                        # Default: qualify with library name
                         qualified_name = f"{library_name}.{header_name}"
+                
                 # Extract parameters from the following lines
                 params = self._extract_parameters_from_docs(lines, line_num)
 
@@ -374,8 +396,12 @@ class DocumentationParser:
             if '.' in func_name:
                 qualified_name = func_name
             else:
-                # Otherwise qualify with library name
-                qualified_name = f"{library_name}.{func_name}"
+                # Special handling for global lia functions
+                if func_name in global_lia_functions:
+                    qualified_name = f"lia.{func_name}"
+                else:
+                    # Otherwise qualify with library name
+                    qualified_name = f"{library_name}.{func_name}"
             
             # Only add if not already found (markdown headers take precedence)
             if qualified_name not in functions:

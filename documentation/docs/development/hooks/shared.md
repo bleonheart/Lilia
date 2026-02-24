@@ -3596,37 +3596,6 @@ Shared hooks in the Lilia framework handle functionality available on both clien
 
 ---
 
-<details class="realm-shared" id="function-registerfeaturepositiontypes">
-<summary><a id="RegisterFeaturePositionTypes"></a>RegisterFeaturePositionTypes(arg1)</summary>
-<div class="details-content">
-<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="registerfeaturepositiontypes"></a>Purpose</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Allows modules to react to or modify the list of registered feature position types.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">When Called</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Every time MODULE:SetPositionCallback is called to register a new position feature.</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">table</a></span> <span class="parameter">arg1</span> The list of current feature position types (lia.featurePositionTypes).</p>
-</div>
-
-<h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
-<div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  hook.Add("RegisterFeaturePositionTypes", "MonitorPositions", function(types)
-      PrintTable(types)
-  end)
-</code></pre>
-</div>
-
-</div>
-</details>
-
----
-
 <details class="realm-shared" id="function-setpositioncallback">
 <summary><a id="SetPositionCallback"></a>SetPositionCallback(name, data, onRun, onSelect, color, HUDPaint, serverOnly)</summary>
 <div class="details-content">
