@@ -41,18 +41,7 @@ lia.db.modules = {
                 end
             end
 
-            local slowThreshold = lia.db._getSlowQueryThresholdSeconds()
-            local startTime = (slowThreshold > 0) and SysTime() or 0
             local data = sql.Query(query)
-            if startTime > 0 then
-                local elapsed = SysTime() - startTime
-                if elapsed >= slowThreshold then
-                    local preview = tostring(query)
-                    preview = preview:gsub("\n", " ")
-                    if #preview > 160 then preview = preview:sub(1, 160) .. "..." end
-                end
-            end
-
             local err = sql.LastError()
             if data == false then
                 if string.find(err, "duplicate column name:") or string.find(err, "UNIQUE constraint failed: lia_config") then

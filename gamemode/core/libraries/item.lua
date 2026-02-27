@@ -1429,27 +1429,6 @@ hook.Add("InitializedModules", "liaItems", function()
 end)
 
 if SERVER then
-    local function getWeaponItemDefaults(className)
-        local wep = weapons.Get(className)
-        if not wep then return nil end
-        local holdType = wep.HoldType or "normal"
-        local isGrenade = holdType == "grenade"
-        local size = lia.item.holdTypeSizeMapping[holdType] or {
-            width = 2,
-            height = 1
-        }
-        return {
-            name = hook.Run("GetWeaponName", wep) or className,
-            desc = L("weaponsDesc"),
-            category = isGrenade and L("itemCatGrenades") or L("weapons"),
-            model = wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
-            class = className,
-            width = size.width,
-            height = size.height,
-            price = 500
-        }
-    end
-
     function lia.item.loadWeaponOverrides()
         local stored = lia.data.get("weaponOverrides") or {}
         lia.item.WeaponOverrides = stored
