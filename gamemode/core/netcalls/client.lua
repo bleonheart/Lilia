@@ -16,7 +16,8 @@ net.Receive("liaSetWaypointWithLogo", function()
 end)
 
 net.Receive("liaWeaponOverrideSync", function()
-    if net.ReadTable then
+    local isBulkSync = net.ReadBool()
+    if isBulkSync then
         local overrides = net.ReadTable()
         if istable(overrides) then
             lia.item.WeaponOverrides = overrides

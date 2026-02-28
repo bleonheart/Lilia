@@ -205,6 +205,37 @@ end
 
 --[[
     Purpose:
+        Applies weapon override data to an existing item definition.
+
+    When Called:
+        Called during item registration to ensure weapon overrides are applied
+        after the base item properties are set but before final localization.
+
+    Parameters:
+        uniqueID (string)
+            The unique ID of the item to apply overrides to.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            -- This function is typically called internally during item registration
+            lia.item.applyWeaponOverride("weapon_pistol")
+        ```
+]]
+function lia.item.applyWeaponOverride(uniqueID)
+    local data = lia.item.WeaponOverrides and lia.item.WeaponOverrides[uniqueID]
+    if not istable(data) then return end
+    local itemDef = lia.item.list and lia.item.list[uniqueID]
+    if not itemDef then return end
+    for k, v in pairs(data) do
+        itemDef[k] = v
+    end
+end
+
+--[[
+    Purpose:
         Retrieves an instanced item by its ID and determines its current location.
 
     When Called:
@@ -543,6 +574,9 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     ITEM:onRegistered()
     local itemType = ITEM.uniqueID
     targetTable[itemType] = ITEM
+    if not isBaseItem then lia.item.applyWeaponOverride(itemType) end
+    if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
+    if isstring(ITEM.desc) then ITEM.desc = L(ITEM.desc) end
     hook.Run("OnItemRegistered", ITEM)
     ITEM = nil
     return targetTable[itemType]

@@ -70,6 +70,7 @@ net.Receive("liaWeaponOverrideUpdate", function(len, ply)
     if itemDef then itemDef[key] = value end
     ply:notify("Successfully updated " .. key .. " for " .. className)
     net.Start("liaWeaponOverrideSync")
+    net.WriteBool(false)
     net.WriteString(className)
     net.WriteString(key)
     net.WriteType(value)

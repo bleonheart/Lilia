@@ -387,6 +387,7 @@ function PANEL:SwitchTabContent(name, callback)
             if IsValid(child) then child:SetVisible(false) end
         end
     end
+
     local newPanel = wrapper:Add("EditablePanel")
     newPanel:Dock(NODOCK)
     newPanel:SetSize(w, h)
@@ -408,11 +409,7 @@ function PANEL:SwitchTabContent(name, callback)
         oldPanel:AlphaTo(0, time, 0)
     end
 
-    newPanel:MoveTo(0, 0, time, 0, ease, function()
-        if IsValid(newPanel) then
-            newPanel:Dock(FILL)
-        end
-    end)
+    newPanel:MoveTo(0, 0, time, 0, ease, function() if IsValid(newPanel) then newPanel:Dock(FILL) end end)
     newPanel:AlphaTo(255, time, 0)
 end
 
@@ -420,10 +417,7 @@ function PANEL:addTab(name, callback)
     local contentPanel = vgui.Create("EditablePanel")
     contentPanel:Dock(FILL)
     contentPanel.Paint = function() end
-    local wrappedCallback = function()
-        self:SwitchTabContent(name, callback)
-    end
-
+    local wrappedCallback = function() self:SwitchTabContent(name, callback) end
     self.tabs:AddTab(L(name), contentPanel, nil, wrappedCallback)
     local tabData = {
         name = name,
