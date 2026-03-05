@@ -1867,6 +1867,7 @@ LANGUAGE = {
     categoryPAC3 = "PAC3",
     categoryConfiguration = "Core",
     categoryUsergroups = "Permissions",
+    Drugs = "Drugs",
     doorSellRatio = "Door Sell Ratio",
     doorSellRatioDesc = "Percentage you can sell a door for",
     doorLockTime = "Door Lock Time",
@@ -3474,6 +3475,6 @@ LANGUAGE = {
     itemLocked = "This item is locked.",
     cannotWhileTied = "You cannot do this while tied.",
     itemAdded = "%s has been added to your inventory.",
-    bankingConfiguration = "Banking Config",
+    bankingConfiguration = "Banking",
     searchBanking = "Search Banking Options...",
 }

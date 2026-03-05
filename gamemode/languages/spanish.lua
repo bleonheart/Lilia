@@ -1783,6 +1783,7 @@ LANGUAGE = {
     categorySpawnSWEPs = "Generar: SWEPs",
     categorySpawnStorage = "Generar: Almacenamiento",
     categoryConfiguration = "Configuracin",
+    Drugs = "Drogas",
     doorSellRatio = "Porcentaje de venta de puerta",
     doorSellRatioDesc = "Porcentaje por el que puedes vender una puerta",
     defaultMenuTab = "Pestaa de men predeterminada",

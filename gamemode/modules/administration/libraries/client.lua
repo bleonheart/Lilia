@@ -3611,7 +3611,7 @@ function MODULE:HUDPaint()
             subLabel = hookResult.subLabel
             baseColor = hookResult.baseColor
             customRender = hookResult.customRender
-        elseif ent:IsPlayer() then
+        elseif ent:IsPlayer() and lia.option.get("espPlayers", false) then
             kind = L("players")
             subLabel = ent:Name():gsub("#", "\226\128\139#")
             label = subLabel
@@ -3685,7 +3685,7 @@ net.Receive("liaDisplayCharList", function()
         end
     end
 
-    local columns = {
+    local columns = {   
         {
             name = "name",
             field = L("name")

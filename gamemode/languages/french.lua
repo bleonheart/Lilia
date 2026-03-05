@@ -1812,6 +1812,7 @@ LANGUAGE = {
     categoryPAC3 = "PAC3",
     categoryConfiguration = "Configuration",
     categoryUsergroups = "Groupes d'utilisateurs",
+    Drugs = "Drogues",
     doorSellRatio = "Ratio de revente de porte",
     doorSellRatioDesc = "Pourcentage de revente d'une porte",
     doorLockTime = "Temps de verrouillage de porte",

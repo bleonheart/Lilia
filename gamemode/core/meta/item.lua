@@ -835,6 +835,9 @@ if SERVER then
             end
 
             local entity = ents.Create("lia_item")
+            if not IsValid(entity) then
+                return nil
+            end
             entity:Spawn()
             entity:SetPos(position)
             entity:SetAngles(angles or angle_zero)
