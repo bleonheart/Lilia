@@ -375,6 +375,7 @@ LANGUAGE = {
     rotate = "Rodar",
     view = "Ver",
     returnText = "Voltar",
+    returnToMainMenu = "Voltar ao Menu Principal",
     bagIntoBagError = "Um saco no pode ser colocado dentro de outro saco.",
     nestedItemTransferError = "Um item no saco no pode ser transferido.",
     oocDelay = "Tens de esperar mais %s segundo(s) para usar OOC novamente.",

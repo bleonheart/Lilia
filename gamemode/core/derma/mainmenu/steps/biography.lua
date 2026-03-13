@@ -212,7 +212,7 @@ function PANEL:styleAttribsPanel()
             local hover = s:IsHovered() and 1 or 0
             s._hoverFrac = Lerp(FrameTime() * 10, s._hoverFrac or 0, hover)
             lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.window_shadow):Shape(lia.derma.SHAPE_IOS):Shadow(4, 12):Draw()
-            lia.derma.rect(0, 0, w, h):Rad(16):Color(lia.color.theme.focus_panel):Shape(lia.derma.SHAPE_IOS):Draw()
+            lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(25, 28, 35, 230)):Shape(lia.derma.SHAPE_IOS):Draw()
             if s._hoverFrac > 0 then
                 local hov = lia.color.theme.button_hovered or Color(255, 255, 255)
                 lia.derma.rect(0, 0, w, h):Rad(16):Color(Color(hov.r, hov.g, hov.b, math.floor(s._hoverFrac * 60))):Shape(lia.derma.SHAPE_IOS):Draw()

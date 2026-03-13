@@ -430,6 +430,7 @@ LANGUAGE = {
     rotate = "Rotate",
     view = "View",
     returnText = "Return",
+    returnToMainMenu = "Return to Main Menu",
     privilegeListRefreshed = "Privilege list refreshed.",
     copied = "Copied to clipboard.",
     allPrivilegeInfo = "All privilege information copied.",

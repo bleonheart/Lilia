@@ -375,6 +375,7 @@ LANGUAGE = {
     rotate = "Rotar",
     view = "Ver",
     returnText = "Volver",
+    returnToMainMenu = "Volver al Men\xC3\xBA Principal",
     bagIntoBagError = "Una bolsa no puede ser colocada dentro de otra bolsa.",
     nestedItemTransferError = "Un objeto en la bolsa no puede ser transferido.",
     oocDelay = "Debes esperar %s segundo(s) ms antes de usar OOC de nuevo.",

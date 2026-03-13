@@ -89,6 +89,90 @@ function lia.attribs.register(uniqueID, data)
     return attribute
 end
 
+lia.attribs.register("str", {
+    name = "Strength",
+    desc = "Physical power. Improves melee and carry capability.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("end", {
+    name = "Endurance",
+    desc = "Stamina and resilience.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("stm", {
+    name = "Stamina",
+    desc = "How long you can sprint before tiring.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("agi", {
+    name = "Agility",
+    desc = "Movement control and dexterity.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("int", {
+    name = "Intelligence",
+    desc = "Problem-solving and learning speed.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("per", {
+    name = "Perception",
+    desc = "Awareness and detection.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("cha", {
+    name = "Charisma",
+    desc = "Social influence and presence.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("lck", {
+    name = "Luck",
+    desc = "Good fortune in uncertain outcomes.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("med", {
+    name = "Medical",
+    desc = "Treating wounds and using medical supplies.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("eng", {
+    name = "Engineering",
+    desc = "Crafting and technical work.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("gun", {
+    name = "Firearms",
+    desc = "Weapon handling and accuracy.",
+    min = 0,
+    max = 100
+})
+
+lia.attribs.register("mle", {
+    name = "Melee",
+    desc = "Close-quarters combat skill.",
+    min = 0,
+    max = 100
+})
+
 if SERVER then
     --[[
     Purpose:

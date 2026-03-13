@@ -416,6 +416,7 @@ LANGUAGE = {
     rotate = "Tourner",
     view = "Voir",
     returnText = "Retour",
+    returnToMainMenu = "Retour au menu principal",
     bagIntoBagError = "Un sac ne peut pas tre plac dans un autre sac.",
     nestedItemTransferError = "Un objet dans le sac ne peut pas tre transfr.",
     oocDelay = "Vous devez attendre encore %s seconde(s) avant d'utiliser OOC  nouveau.",

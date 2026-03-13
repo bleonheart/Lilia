@@ -375,6 +375,7 @@ LANGUAGE = {
     rotate = "Drehen",
     view = "Ansehen",
     returnText = "Zurck",
+    returnToMainMenu = "Zur\xC3\xBCck zum Hauptmen\xC3\xBC",
     bagIntoBagError = "Eine Tasche kann nicht in eine andere Tasche gelegt werden.",
     nestedItemTransferError = "Ein Gegenstand in der Tasche kann nicht bertragen werden.",
     oocDelay = "Du musst noch %s Sekunde(n) warten, bevor du OOC erneut benutzen kannst.",
