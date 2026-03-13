@@ -1,4 +1,4 @@
-local PANEL = {}
+﻿local PANEL = {}
 function PANEL:Init()
     self.title = self:Add("liaHeaderPanel")
     self.title:Dock(TOP)
@@ -17,7 +17,6 @@ function PANEL:Init()
     lbl:SetTextColor(textColor)
     lbl:SetContentAlignment(5)
     self.title.label = lbl
-
     self.frame = self:Add("DPanel")
     self.frame:Dock(TOP)
     self.frame:DockMargin(0, 8, 0, 16)
@@ -36,9 +35,7 @@ function PANEL:Init()
     self.create:SetText((L("create") .. " " .. L("character")):upper())
     self.create.DoClick = function()
         local createPanel = lia.gui and lia.gui.charCreate
-        if IsValid(createPanel) and isfunction(createPanel.onFinish) then
-            createPanel:onFinish()
-        end
+        if IsValid(createPanel) and isfunction(createPanel.onFinish) then createPanel:onFinish() end
     end
 
     self.list = self.frame:Add("liaScrollPanel")
@@ -59,17 +56,30 @@ function PANEL:buildDefaultSummary(context)
     local summary = {}
     local name = context.name or context.charName
     local desc = context.desc or context.description
-    summary[#summary + 1] = {title = L("name"), value = tostring(name or "")}
-    summary[#summary + 1] = {title = L("description"), value = tostring(desc or "")}
+    summary[#summary + 1] = {
+        title = L("name"),
+        value = tostring(name or "")
+    }
+
+    summary[#summary + 1] = {
+        title = L("description"),
+        value = tostring(desc or "")
+    }
 
     local faction = context.faction and lia.faction.indices[context.faction] or nil
-    summary[#summary + 1] = {title = L("faction"), value = faction and tostring(faction.name or "") or ""}
+    summary[#summary + 1] = {
+        title = L("faction"),
+        value = faction and tostring(faction.name or "") or ""
+    }
 
     local attribLines = {}
     local attribs = istable(context.attribs) and context.attribs or {}
     local attribKeys = {}
     if lia.attribs and istable(lia.attribs.list) then
-        for k, _ in pairs(lia.attribs.list) do attribKeys[#attribKeys + 1] = k end
+        for k, _ in pairs(lia.attribs.list) do
+            attribKeys[#attribKeys + 1] = k
+        end
+
         table.sort(attribKeys, function(a, b)
             local aa = lia.attribs.list[a]
             local bb = lia.attribs.list[b]
@@ -77,6 +87,7 @@ function PANEL:buildDefaultSummary(context)
             local bn = bb and bb.name or tostring(b)
             return tostring(an) < tostring(bn)
         end)
+
         for _, k in ipairs(attribKeys) do
             local attr = lia.attribs.list[k]
             local attrName = attr and attr.name or tostring(k)
@@ -86,13 +97,19 @@ function PANEL:buildDefaultSummary(context)
     end
 
     if #attribLines > 0 then
-        summary[#summary + 1] = {title = L("attributes"), value = table.concat(attribLines, "\n")}
+        summary[#summary + 1] = {
+            title = L("attributes"),
+            value = table.concat(attribLines, "\n")
+        }
     end
 
     local idLines = {}
     local identifications = istable(context.identifications) and context.identifications or {}
     local idKeys = {}
-    for k, _ in pairs(identifications) do idKeys[#idKeys + 1] = k end
+    for k, _ in pairs(identifications) do
+        idKeys[#idKeys + 1] = k
+    end
+
     table.sort(idKeys, function(a, b) return tostring(a) < tostring(b) end)
     for _, k in ipairs(idKeys) do
         local v = identifications[k]
@@ -100,9 +117,11 @@ function PANEL:buildDefaultSummary(context)
     end
 
     if #idLines > 0 then
-        summary[#summary + 1] = {title = L("identifications"), value = table.concat(idLines, "\n")}
+        summary[#summary + 1] = {
+            title = L("identifications"),
+            value = table.concat(idLines, "\n")
+        }
     end
-
     return summary
 end
 
@@ -122,7 +141,6 @@ function PANEL:addEntry(entry)
     header:SetLineColor(accentColor)
     header:SetLineWidth(2)
     header:DockPadding(10, 10, 10, 12)
-
     local title = header:Add("DLabel")
     title:SetFont("LiliaFont.16")
     title:SetText(tostring(entry.title or ""):upper())
@@ -130,7 +148,6 @@ function PANEL:addEntry(entry)
     title:DockMargin(0, 0, 0, 6)
     title:SetTextColor(lia.color.theme and lia.color.theme.text or Color(220, 220, 220))
     title:SetContentAlignment(4)
-
     local value = header:Add("DLabel")
     value:SetFont("LiliaFont.17")
     value:SetTextColor(Color(230, 230, 230))
@@ -139,11 +156,9 @@ function PANEL:addEntry(entry)
     value:SetText(tostring(entry.value or ""))
     value:Dock(TOP)
     value:DockMargin(0, 0, 0, 0)
-
     header.PerformLayout = function(s, w, h)
         local l, t, r, b = s:GetDockPadding()
         local innerW = math.max((w or s:GetWide()) - l - r, 0)
-
         if IsValid(title) then
             title:SetWide(innerW)
             title:SizeToContentsY()
@@ -171,7 +186,6 @@ end
 
 function PANEL:onDisplay()
     if IsValid(self.list) then self.list:Clear() end
-
     local createPanel = lia.gui and lia.gui.charCreate
     if IsValid(createPanel) and IsValid(createPanel.next) then
         self._oldNextVisible = createPanel.next:IsVisible()
@@ -182,16 +196,13 @@ function PANEL:onDisplay()
 
     if IsValid(createPanel) and istable(createPanel.steps) then
         for _, step in ipairs(createPanel.steps) do
-            if IsValid(step) and isfunction(step.updateContext) then
-                step:updateContext()
-            end
+            if IsValid(step) and isfunction(step.updateContext) then step:updateContext() end
         end
     end
 
     local context = self:getContext() or {}
     local summary = self:getSummary(context)
     if not istable(summary) then return end
-
     for _, entry in ipairs(summary) do
         if istable(entry) then self:addEntry(entry) end
     end

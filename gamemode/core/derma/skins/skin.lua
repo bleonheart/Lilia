@@ -244,9 +244,7 @@ function SKIN:PaintMenuOption(panel, w, h)
             lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(Color(255, 255, 255), 18)):Outline(1):Draw()
         end
 
-        if isSelected or hovered then
-            lia.derma.rect(2, 4, 3, h - 8):Rad(2):Color(ColorAlpha(accentColor, isSelected and 220 or 160)):Draw()
-        end
+        if isSelected or hovered then lia.derma.rect(2, 4, 3, h - 8):Rad(2):Color(ColorAlpha(accentColor, isSelected and 220 or 160)):Draw() end
     end
 
     local skin = derma.GetDefaultSkin()

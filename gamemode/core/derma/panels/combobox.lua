@@ -151,7 +151,6 @@ function PANEL:OpenMenu()
     local itemHeight = 32
     local numChoices = #self.choices
     local calculatedHeight = numChoices * (itemHeight + 2) + (menuPadding * 2) + 2
-
     local paintOptionLikeParent = function(parent, s, w, h, isSelected)
         if not IsValid(parent) then return end
         local bgColor = Color(25, 28, 35, 250)

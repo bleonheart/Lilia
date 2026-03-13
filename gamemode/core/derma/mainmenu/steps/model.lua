@@ -15,7 +15,6 @@ end
 
 function PANEL:Init()
     self.title = self:addLabel(L("selectModel"))
-
     self.rotation = self:Add("DNumSlider")
     self.rotation:Dock(TOP)
     self.rotation:DockMargin(0, 4, 0, 4)
@@ -35,6 +34,7 @@ function PANEL:Init()
         slider.Label:SetWide(math.max(labelW - leftPad, 0))
         slider.Label:SetContentAlignment(5)
     end
+
     self.rotation.Paint = function(slider, w, h)
         local bgColor = Color(25, 28, 35, 250)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -45,6 +45,7 @@ function PANEL:Init()
             lia.derma.rect(0, 0, w, h):Rad(8):Color(Color(255, 255, 255, 30)):Outline(1):Draw()
         end
     end
+
     self.rotation.OnValueChanged = function(slider, value)
         self:setContext("previewYaw", tonumber(value) or 0)
         self:updateModelPanel()
@@ -56,7 +57,6 @@ function PANEL:Init()
     self.models:SetSpaceX(8)
     self.models:SetSpaceY(8)
     self.models:SetPaintBackground(false)
-
     local oldModelsPerformLayout = self.models.PerformLayout
     self.models.PerformLayout = function(layout, w, h)
         if oldModelsPerformLayout then oldModelsPerformLayout(layout, w, h) end
@@ -74,10 +74,7 @@ function PANEL:Init()
         layout._appliedCenterOffsetX = offsetX
     end
 
-    self.models.OnSizeChanged = function()
-        if IsValid(self) then self:RequestIconResize() end
-    end
-
+    self.models.OnSizeChanged = function() if IsValid(self) then self:RequestIconResize() end end
     self._iconColumns = 5
     self._iconSpace = 8
 end
@@ -92,10 +89,7 @@ function PANEL:RequestIconResize()
 end
 
 function PANEL:PerformLayout(w, h)
-    if self.BaseClass and self.BaseClass.PerformLayout then
-        self.BaseClass.PerformLayout(self, w, h)
-    end
-
+    if self.BaseClass and self.BaseClass.PerformLayout then self.BaseClass.PerformLayout(self, w, h) end
     if not IsValid(self.models) then return end
     if not self._needsIconResize then return end
     local columns = self._iconColumns or 5
@@ -117,7 +111,6 @@ function PANEL:PerformLayout(w, h)
     end
 
     self.models:InvalidateLayout(true)
-
     self._needsIconResize = nil
 end
 
@@ -148,11 +141,7 @@ function PANEL:onDisplay()
     if not factionIndex then return end
     local faction = lia.faction.indices[factionIndex]
     if not faction then return end
-
-    if IsValid(self.rotation) then
-        self.rotation:SetValue(tonumber(self:getContext("previewYaw")) or 0)
-    end
-
+    if IsValid(self.rotation) then self.rotation:SetValue(tonumber(self:getContext("previewYaw")) or 0) end
     local modelsToDisplay = self:filterCharacterModels(faction)
     local modelCount = 0
     local firstIdx
@@ -218,11 +207,7 @@ function PANEL:onDisplay()
         if not self:RequestIconResize() then
             timer.Simple(0.05, function()
                 if not IsValid(self) then return end
-                if not self:RequestIconResize() then
-                    timer.Simple(0.15, function()
-                        if IsValid(self) then self:RequestIconResize() end
-                    end)
-                end
+                if not self:RequestIconResize() then timer.Simple(0.15, function() if IsValid(self) then self:RequestIconResize() end end) end
             end)
         end
     end)

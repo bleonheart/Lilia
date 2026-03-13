@@ -3685,7 +3685,7 @@ net.Receive("liaDisplayCharList", function()
         end
     end
 
-    local columns = {   
+    local columns = {
         {
             name = "name",
             field = L("name")

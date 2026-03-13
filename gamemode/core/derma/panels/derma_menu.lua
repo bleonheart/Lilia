@@ -335,7 +335,6 @@ function PANEL:AddOption(text, func, icon, optData)
         end
 
         lia.derma.rect(0, 0, w, h):Rad(6):Color(base):Shape(lia.derma.SHAPE_IOS):Draw()
-
         if selected then
             lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 55)):Shape(lia.derma.SHAPE_IOS):Draw()
             lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(accentColor, 220)):Outline(1):Draw()
@@ -346,10 +345,7 @@ function PANEL:AddOption(text, func, icon, optData)
             lia.derma.rect(0, 0, w, h):Rad(6):Color(ColorAlpha(Color(255, 255, 255), 18)):Outline(1):Draw()
         end
 
-        if selected or hovered then
-            lia.derma.rect(2, 4, 3, h - 8):Rad(2):Color(ColorAlpha(accentColor, selected and 220 or 160)):Draw()
-        end
-
+        if selected or hovered then lia.derma.rect(2, 4, 3, h - 8):Rad(2):Color(ColorAlpha(accentColor, selected and 220 or 160)):Draw() end
         if hovered then
             if pnl._submenu and not pnl._submenu_open and not pnl._hoverTimer then
                 pnl._hoverTimer = timer.Simple(0.1, function()

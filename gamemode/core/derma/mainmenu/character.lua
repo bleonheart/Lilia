@@ -18,7 +18,6 @@ function PANEL:Init()
     end
 
     hook.Add("DrawPhysgunBeam", "liaMainMenuPreDrawPhysgunBeam", function() return IsValid(lia.gui.character) end)
-
     self:Dock(FILL)
     self:MakePopup()
     self:SetAlpha(0)
@@ -73,11 +72,9 @@ function PANEL:setInWorldPreviewEnabled(enabled)
     enabled = enabled == true
     if enabled == self.inWorldPreview then return end
     self.inWorldPreview = enabled
-
     if enabled then
         self:hideExternalEntities()
         hook.Add("PrePlayerDraw", "liaMainMenuPrePlayerDraw", function() return true end)
-
         local calcViewHook = "liaMainMenuCalcView"
         hook.Add("CalcView", calcViewHook, function(_, _, _, fov)
             if not IsValid(self) or not self.inWorldPreview then return end
@@ -94,9 +91,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             end
 
             local target = center
-            if self.inWorldPreview and not self.isLoadMode then
-                target = target - modelAngles:Right() * 40
-            end
+            if self.inWorldPreview and not self.isLoadMode then target = target - modelAngles:Right() * 40 end
             return {
                 origin = self.currentCamPos,
                 angles = (target - self.currentCamPos):Angle(),
@@ -111,6 +106,7 @@ function PANEL:setInWorldPreviewEnabled(enabled)
             hook.Remove("CalcView", "liaMainMenuCalcView")
             hook.Remove("PrePlayerDraw", "liaMainMenuPrePlayerDraw")
         end
+
         if IsValid(self.modelEntity) then self.modelEntity:Remove() end
     end
 end
@@ -120,15 +116,12 @@ function PANEL:updateCreationModelEntity(context)
     local factionIndex = context.faction
     local faction = factionIndex and lia.faction.indices[factionIndex] or nil
     if not faction or not faction.models then return end
-
     local info = faction.models[context.model or 1]
     local mdl, skin, groups = info, 0, {}
     if istable(info) then mdl, skin, groups = info[1], info[2], info[3] end
-
     if IsValid(self.modelEntity) then self.modelEntity:Remove() end
     self.modelEntity = ClientsideModel(mdl or "models/error.mdl", RENDERGROUP_OPAQUE)
     if not IsValid(self.modelEntity) then return end
-
     self.modelEntity:SetSkin(context.skin or skin or 0)
     local finalGroups = istable(context.groups) and context.groups or istable(groups) and groups
     if finalGroups then
@@ -138,7 +131,6 @@ function PANEL:updateCreationModelEntity(context)
     end
 
     hook.Run("SetupPlayerModel", self.modelEntity)
-
     local pos, ang
     if faction.mainMenuPosition then
         local menuPos = faction.mainMenuPosition
@@ -161,6 +153,7 @@ function PANEL:updateCreationModelEntity(context)
         local hookResult = {hook.Run("GetMainMenuPosition")}
         pos, ang = hookResult[1], hookResult[2]
     end
+
     if not pos or not ang then
         local spawns = ents.FindByClass("info_player_start")
         pos = #spawns > 0 and spawns[1]:GetPos() or Vector()
@@ -168,15 +161,12 @@ function PANEL:updateCreationModelEntity(context)
     end
 
     self.mainMenuModelAngles = ang
-
     local yawOffset = tonumber(context.previewYaw) or 0
     if yawOffset ~= 0 then ang = Angle(ang.p, ang.y + yawOffset, ang.r) end
-
     pos = self:getClosestGroundPosition(pos)
     self.modelEntity:SetPos(pos)
     self.modelEntity:SetAngles(ang)
     self.currentCamPos = nil
-
     local seqID = self.modelEntity:LookupSequence("idle_all_01")
     if seqID > 0 then
         self.modelEntity:ResetSequence(seqID)
@@ -184,7 +174,6 @@ function PANEL:updateCreationModelEntity(context)
     end
 
     hook.Run("ModifyCharacterModel", self.modelEntity, context)
-
     hook.Add("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables", function()
         if IsValid(self) and self.inWorldPreview and IsValid(self.modelEntity) then
             self.modelEntity:FrameAdvance()
@@ -196,7 +185,6 @@ function PANEL:updateCreationModelEntity(context)
             end
 
             self.modelEntity:DrawModel()
-
             render.SuppressEngineLighting(false)
         end
     end)
@@ -912,7 +900,6 @@ function PANEL:backToMainMenu()
     end
 
     if self.inWorldPreview then self:setInWorldPreviewEnabled(false) end
-
     if IsValid(self.selectBtn) then self.selectBtn:Remove() end
     if IsValid(self.deleteBtn) then self.deleteBtn:Remove() end
     if IsValid(self.setMainBtn) then self.setMainBtn:Remove() end
@@ -1272,7 +1259,6 @@ function PANEL:updateModelEntity(character)
     end
 
     pos = self:getClosestGroundPosition(pos)
-
     self.modelEntity:SetPos(pos)
     self.modelEntity:SetAngles(ang)
     self.currentCamPos = nil

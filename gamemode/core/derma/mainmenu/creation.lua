@@ -199,7 +199,6 @@ function PANEL:onStepChanged(oldStep, newStep)
         local panelName = newStep:GetName()
         local shouldShowModel = panelName == "liaCharacterModel"
         if IsValid(self.model) then self.model:SetVisible(shouldShowModel and not (IsValid(lia.gui.character) and lia.gui.character.inWorldPreview)) end
-
         if IsValid(lia.gui.character) then
             lia.gui.character.inCharacterCreationModelStep = shouldShowModel or false
             if shouldShowModel then
@@ -210,7 +209,6 @@ function PANEL:onStepChanged(oldStep, newStep)
                 end
 
                 lia.gui.character.noBlur = true
-
                 if IsValid(self.model) then
                     self.model:SetVisible(false)
                     self.model:SetWide(0)
@@ -227,9 +225,7 @@ function PANEL:onStepChanged(oldStep, newStep)
                 lia.gui.character:updateCreationModelEntity(self.context)
             else
                 if lia.gui.character.inWorldPreview then lia.gui.character:setInWorldPreviewEnabled(false) end
-
                 lia.gui.character.noBlur = false
-
                 if IsValid(self.content) then
                     local margin = ScrW() > 1280 and ScrW() * 0.15 or ScrW() > 720 and ScrW() * 0.075 or 0
                     self.content:Dock(FILL)
@@ -336,10 +332,7 @@ function PANEL:Init()
 end
 
 function PANEL:OnRemove()
-    if IsValid(lia.gui.character) and lia.gui.character.inWorldPreview then
-        lia.gui.character:setInWorldPreviewEnabled(false)
-    end
-
+    if IsValid(lia.gui.character) and lia.gui.character.inWorldPreview then lia.gui.character:setInWorldPreviewEnabled(false) end
     if IsValid(lia.gui.character) then
         lia.gui.character.inCharacterCreationModelStep = false
         lia.gui.character.noBlur = false

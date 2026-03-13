@@ -270,7 +270,6 @@ function PANEL:addButton(symbol, delta)
     end
 
     button.DoClick = nil
-
     button.OnMousePressed = function(btn, mousecode)
         if mousecode ~= MOUSE_LEFT then return end
         btn:MouseCapture(true)
