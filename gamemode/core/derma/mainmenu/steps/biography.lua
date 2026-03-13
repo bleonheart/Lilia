@@ -299,7 +299,7 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
     local context = self:getContext()
     local defaultName, nameOverride = hook.Run("GetDefaultCharName", client, factionIndex, context)
     local defaultDesc, descOverride = hook.Run("GetDefaultCharDesc", client, factionIndex, context)
-    if isstring(defaultName) and nameOverride and IsValid(self.nameEntry) then
+    if isstring(defaultName) and IsValid(self.nameEntry) and nameOverride ~= false then
         local currentName = string.Trim(self.nameEntry:GetValue() or "")
         if currentName == "" or nameOverride then
             timer.Simple(0.01, function()
@@ -311,7 +311,7 @@ function PANEL:updateNameAndDescForFaction(factionIndex)
         end
     end
 
-    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false and isstring(defaultDesc) and descOverride and IsValid(self.descEntry) then
+    if hook.Run("ShouldShowCharVarInCreation", "desc") ~= false and isstring(defaultDesc) and IsValid(self.descEntry) and descOverride ~= false then
         local currentDesc = string.Trim(self.descEntry:GetValue() or "")
         if currentDesc == "" or descOverride then
             timer.Simple(0.01, function()
