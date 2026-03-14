@@ -1439,21 +1439,6 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     end
 end)
 
--- TEMPORARY: Inject many test tabs to verify overflow/scroll behavior
-hook.Add("CreateMenuButtons", "liaTestManyTabs", function(tabs)
-    for i = 1, 20 do
-        local tabName = "Test" .. i
-        tabs[tabName] = function(parent)
-            local lbl = parent:Add("DLabel")
-            lbl:Dock(FILL)
-            lbl:SetText("This is test tab #" .. i)
-            lbl:SetFont("LiliaFont.24")
-            lbl:SetContentAlignment(5)
-            lbl:SetTextColor(color_white)
-        end
-    end
-end)
-
 hook.Add("CanDisplayCharInfo", "liaF1MenuCanDisplayCharInfo", function(name)
     local client = LocalPlayer()
     if not client then return true end
