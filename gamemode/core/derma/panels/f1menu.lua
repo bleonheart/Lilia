@@ -699,9 +699,11 @@ function PANEL:createModelPanel(parent, cl)
     panel:DockMargin(0, 0, 0, 10)
     panel:SetTall(420)
     panel:SetFOV(35)
-    panel.Paint = function(_, modelW, modelH)
+    local basePaint = panel.Paint
+    panel.Paint = function(s, modelW, modelH)
         local bgColor = Color(35, 38, 45, 180)
         lia.derma.rect(0, 0, modelW, modelH):Rad(10):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
+        if basePaint then basePaint(s, modelW, modelH) end
     end
 
     local function getModel(mdl)
@@ -724,6 +726,7 @@ function PANEL:createModelPanel(parent, cl)
     end
 
     local model = getModel(cl.model or cl.models) or LocalPlayer():GetModel()
+    if util and util.IsValidModel and not util.IsValidModel(model) then model = LocalPlayer():GetModel() end
     panel:SetModel(model)
     panel:fitFOV()
     panel.rotationAngle = 45
