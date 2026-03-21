@@ -159,7 +159,14 @@ function PANEL:updateCreationModelEntity(context)
     if not pos then
         local client = LocalPlayer()
         local hookResult = hook.Run("GetMainMenuPosition", IsValid(client) and client.getChar and client:getChar() or nil)
-        if hookResult then pos, ang = hookResult end
+        if hookResult then
+            if istable(hookResult) then
+                pos, ang = hookResult.pos, hookResult.ang
+            elseif isvector(hookResult) then
+                pos = hookResult
+                ang = Angle(0, 0, 0)
+            end
+        end
     end
 
     if not pos or not ang then
@@ -1293,7 +1300,6 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local cx = fx + (fw - bw) * 0.5
     local selectText = L("select") .. " " .. L("character")
     if character:isBanned() then selectText = L("permaKilledCharacter") end
-
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
     self.selectBtn:SetPos(cx, fy + fh + pad)
@@ -1382,7 +1388,6 @@ function PANEL:updateModelEntity(character)
     local hookResult = {hook.Run("GetMainMenuPosition", character)}
     if isvector(hookResult[1]) then pos = hookResult[1] end
     if isangle(hookResult[2]) then ang = hookResult[2] end
-
     if not pos then
         local spawns = ents.FindByClass("info_player_start")
         if #spawns > 0 then
@@ -1684,7 +1689,6 @@ end
 
 function PANEL:showConfirmation(message, onConfirm, onCancel)
     if IsValid(lia.gui.charConfirm) then lia.gui.charConfirm:Remove() end
-
     local frame = vgui.Create("liaFrame", self)
     lia.gui.charConfirm = frame
     local pad, btnH = 10, 25
@@ -1694,7 +1698,6 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     frame:SetCenterTitle(L("areYouSure"):upper())
     frame:ShowCloseButton(false)
     frame:SetDraggable(false)
-
     local accentColor = lia.color.theme and lia.color.theme.theme or Color(116, 185, 255)
     local oldPaint = frame.Paint
     frame.Paint = function(s, w, h)
@@ -1708,7 +1711,6 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
     messageLabel:SetTextColor(color_white)
     messageLabel:SetWrap(true)
     messageLabel:SetContentAlignment(5)
-
     local confirmButton = frame:Add("liaButton")
     confirmButton:SetFont("LiliaFont.17")
     confirmButton:SetText(L("yes"):upper())
@@ -1762,13 +1764,11 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
             frame.resizer:SetVisible(frame.sizable or false)
         end
 
-        local pad, btnH = pad, btnH
-        local headerH = 24
-        local availH = h - headerH - pad * 2 - btnH
+        local availH = h - 24 - pad * 2 - btnH
         messageLabel:SetSize(w - pad * 2, availH)
         messageLabel:InvalidateLayout(true)
         messageLabel:SizeToContentsY()
-        messageLabel:SetPos((w - messageLabel:GetWide()) * 0.5, headerH + pad + (availH - messageLabel:GetTall()) * 0.5)
+        messageLabel:SetPos((w - messageLabel:GetWide()) * 0.5, 24 + pad + (availH - messageLabel:GetTall()) * 0.5)
         local btnW = (w - pad * 3) * 0.5
         confirmButton:SetSize(btnW, btnH)
         confirmButton:SetPos(pad, h - pad - btnH)
@@ -1778,7 +1778,6 @@ function PANEL:showConfirmation(message, onConfirm, onCancel)
 
     messageLabel:SetText(message:upper())
     frame:InvalidateLayout()
-
     return frame
 end
 
