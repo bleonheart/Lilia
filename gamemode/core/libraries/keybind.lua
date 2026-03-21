@@ -188,7 +188,7 @@ function lia.keybind.add(k, d, desc, cb)
     description = isstring(description) and L(description) or description
     if not c then return end
     if not istable(callbacks) or not callbacks.onPress then
-        lia.error(L("keybindAddInvalidCallbackFormat") .. " '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
+        lia.error("Keybind Add Invalid Callback Format '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
         return
     end
 
@@ -209,7 +209,7 @@ lia.keybind.add("openInventory", {
     desc = "openInventoryDesc",
     onPress = function()
         local f1Menu = vgui.Create("liaMenu")
-        f1Menu:setActiveTab(L("inv"))
+        f1Menu:setActiveTab("Inventory")
     end
 })
 
@@ -221,7 +221,7 @@ lia.keybind.add("adminMode", {
     onPress = function(client)
         if not IsValid(client) then return end
         local steamID = client:SteamID()
-        client:ChatPrint(L("adminModeToggle"))
+        client:ChatPrint("Admin Mode Toggled")
         if client:isStaffOnDuty() then
             local oldCharID = client.oldCharID or 0
             if oldCharID > 0 then
@@ -248,9 +248,9 @@ lia.keybind.add("adminMode", {
                     timer.Simple(5, function() if IsValid(client) then hook.Remove("PostPlayerLoadedChar", hookName) end end)
                 end
 
-                lia.log.add(client, "adminMode", oldCharID, L("adminModeLogBack"))
+                lia.log.add(client, "adminMode", oldCharID, "Switched back to their IC character")
             else
-                client:notifyErrorLocalized("noPrevChar")
+                client:notifyError("No previous character to swap to.")
             end
         else
             local currentChar = client:getChar()
@@ -263,7 +263,7 @@ lia.keybind.add("adminMode", {
                         net.Start("liaAdminModeSwapCharacter")
                         net.WriteInt(id, 32)
                         net.Send(client)
-                        lia.log.add(client, "adminMode", id, L("adminModeLogStaff"))
+                        lia.log.add(client, "adminMode", id, "Switched to their staff character")
                         return
                     end
                 end
@@ -283,12 +283,12 @@ lia.keybind.add("adminMode", {
                             net.Start("liaAdminModeSwapCharacter")
                             net.WriteInt(charID, 32)
                             net.Send(client)
-                            lia.log.add(client, "adminMode", charID, L("adminModeLogStaff"))
-                            client:notifySuccessLocalized("staffCharCreated")
+                            lia.log.add(client, "adminMode", charID, "Switched to their staff character")
+                            client:notifySuccess("A staff character has been automatically created for you.")
                         end
                     end)
                 else
-                    client:notifyErrorLocalized("noStaffChar")
+                    client:notifyError("No staff character found. Create one in the staff faction.")
                 end
             end)
         end
@@ -319,12 +319,12 @@ lia.keybind.add("convertEntity", {
         local targetEntity = trace.Entity
         if not IsValid(targetEntity) or targetEntity == client then return end
         if trace.HitPos:Distance(client:GetPos()) > 200 then
-            client:notifyErrorLocalized("entityTooFar")
+            client:notifyError("Entity is too far away.")
             return
         end
 
         if targetEntity:IsPlayer() or targetEntity:isItem() or targetEntity:GetClass() == "lia_money" then
-            client:notifyErrorLocalized("cannotConvertEntity")
+            client:notifyError("Cannot convert this entity.")
             return
         end
 
@@ -340,7 +340,7 @@ lia.keybind.add("convertEntity", {
         end
 
         if not hasItemDefinition then
-            client:notifyErrorLocalized("entityNotConvertible")
+            client:notifyError("This entity type cannot be converted to an item.")
             return
         end
 
@@ -348,12 +348,12 @@ lia.keybind.add("convertEntity", {
         local character = client:getChar()
         local inventory = character:getInv()
         if not inventory:canAdd(itemUniqueID) then
-            client:notifyErrorLocalized("noSpaceForItem")
+            client:notifyError("No space available for the item.")
             return
         end
 
         inventory:add(itemUniqueID):next(function(item)
-            client:notifyLocalized("entityConverted", item:getName())
+            client:notify("Successfully converted entity to item: %s", item:getName() or "default")
             SafeRemoveEntity(targetEntity)
         end)
     end,
@@ -645,7 +645,7 @@ if CLIENT then
                     lia.keybind.save()
                     if refreshFunc then refreshFunc() end
                     local client = LocalPlayer()
-                    if IsValid(client) then client:notifySuccess(L("keybindChanged", action, input.GetKeyName(newKey) or "NONE")) end
+                    if IsValid(client) then client:notifySuccess(string.format("Keybind '%s' changed to %s", action, input.GetKeyName(newKey) or "NONE")) end
                 end
             else
                 local lKey = p:Add("DLabel")
@@ -669,7 +669,7 @@ if CLIENT then
                 searchEntry:Dock(TOP)
                 searchEntry:SetTall(35)
                 searchEntry:DockMargin(10, 10, 10, 10)
-                searchEntry:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
+                searchEntry:SetPlaceholderText("Search keybinds..." or "Search keybinds...")
                 searchEntry:SetFont("LiliaFont.18")
                 local scroll = parent:Add("liaScrollPanel")
                 scroll:Dock(FILL)
@@ -730,7 +730,7 @@ if CLIENT then
                         resetBtn:Dock(TOP)
                         resetBtn:DockMargin(10, 20, 10, 10)
                         resetBtn:SetTall(40)
-                        resetBtn:SetText(L("resetAllKeybinds"))
+                        resetBtn:SetText("Reset All Keybinds")
                         resetBtn.DoClick = function()
                             for action, data in pairs(lia.keybind.stored) do
                                 if istable(data) and data.default then data.value = data.default end

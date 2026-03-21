@@ -139,7 +139,7 @@ function PANEL:Init()
 end
 
 function PANEL:updatePointsLeft()
-    self.leftLabel:SetText(L("pointsLeft"):upper() .. ": " .. self.left)
+    self.leftLabel:SetText(("Points Left"):upper() .. ": " .. self.left)
 end
 
 function PANEL:onDisplay()

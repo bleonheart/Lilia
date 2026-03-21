@@ -16,7 +16,7 @@ lia.vendor.stored = lia.vendor.stored or {}
 lia.vendor.editor = lia.vendor.editor or {}
 lia.vendor.presets = lia.vendor.presets or {}
 lia.vendor.defaults = {
-    name = L("vendorDefaultName"),
+    name = "Jane Doe",
     preset = "none",
     animation = "idle_all_01",
     items = {},
@@ -37,7 +37,7 @@ if SERVER then
     addEditor("name", function() return net.ReadString() end, function(vendor, client, name)
         if not name or name == "" then name = lia.vendor.defaults.name or "Jane Doe" end
         vendor:setName(name)
-        client:notifyLocalized("vendorNameChanged")
+        client:notify("Successfully changed vendor name.", "default" or "default")
     end)
 
     addEditor("mode", function() return net.ReadString(), net.ReadInt(8) end, function(vendor, _, itemType, mode) vendor:setTradeMode(itemType, mode) end)
@@ -51,17 +51,17 @@ if SERVER then
     addEditor("factionSellScale", function() return net.ReadUInt(8), net.ReadFloat() end, function(vendor, _, factionID, scale) vendor:setFactionSellScale(factionID, scale) end)
     addEditor("model", function() return net.ReadString() end, function(vendor, client, model)
         vendor:setModel(model)
-        client:notifyLocalized("vendorModelChanged")
+        client:notify("Successfully changed vendor model.", "default" or "default")
     end)
 
     addEditor("skin", function() return net.ReadUInt(8) end, function(vendor, client, skin)
         vendor:setSkin(skin)
-        client:notifyLocalized("vendorSkinChanged")
+        client:notify("Successfully changed vendor skin.", "default" or "default")
     end)
 
     addEditor("bodygroup", function() return net.ReadUInt(8), net.ReadUInt(8) end, function(vendor, client, index, value)
         vendor:setBodyGroup(index, value)
-        client:notifyLocalized("vendorBodygroupChanged")
+        client:notify("Successfully changed vendor bodygroup.", "default" or "default")
     end)
 
     addEditor("useMoney", function() return net.ReadBool() end, function(vendor, _, useMoney)
@@ -80,7 +80,7 @@ if SERVER then
         return anim
     end, function(vendor, client, animation)
         vendor:setAnimation(animation)
-        client:notifyLocalized("vendorAnimationChanged")
+        client:notify("Successfully changed vendor animation.", "default" or "default")
     end)
 else
     local function addEditor(name, writer)
@@ -191,8 +191,8 @@ end
         ```
 ]]
 function lia.vendor.addPreset(name, items)
-    assert(isstring(name), L("vendorPresetNameString"))
-    assert(istable(items), L("vendorPresetItemsTable"))
+    assert(isstring(name), "Preset name must be a string")
+    assert(istable(items), "Preset items must be a table")
     local validItems = {}
     for itemType, itemData in pairs(items) do
         if lia.item.list[itemType] then validItems[itemType] = itemData end

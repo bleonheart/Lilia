@@ -82,7 +82,7 @@ function PANEL:CreateTextEntryWithBackgroundAndLabel(parent, name, labelText, ma
                 local now = CurTime()
                 txt.lastErrorTime = txt.lastErrorTime or 0
                 if now - txt.lastErrorTime > 1 then
-                    LocalPlayer():notifyErrorLocalized("descMinLen", minLength)
+                    LocalPlayer():notifyError(string.format("Description must be at least %s characters long.", minLength))
                     txt.lastErrorTime = now
                 end
                 return
@@ -125,7 +125,7 @@ function PANEL:CreateFillableBarWithBackgroundAndLabel(parent, name, labelText, 
         local val = isfunction(valueFunc) and valueFunc() or tonumber(valueFunc) or 0
         local frac = mx > mn and math.Clamp((val - mn) / (mx - mn), 0, 1) or 0
         barSelf:SetFraction(frac)
-        local text = L("barProgress", math.Round(val), math.Round(mx))
+        local text = string.format("%s / %s", math.Round(val), math.Round(mx))
         barSelf:SetText(text)
     end
 
@@ -256,7 +256,7 @@ function PANEL:Init()
     self:SetPopupStayAtBack(true)
     self.noAnchor = CurTime() + 0.4
     self.anchorMode = true
-    self.invKey = lia.keybind.get(L("openInventory"), KEY_I)
+    self.invKey = lia.keybind.get("Open Inventory", KEY_I)
     hook.Add("OnThemeChanged", self, self.OnThemeChanged)
     local topBar = self:Add("DPanel")
     topBar:Dock(TOP)
@@ -572,9 +572,9 @@ function PANEL:loadClasses()
         btn:Dock(TOP)
         btn:DockMargin(4, 4, 4, 4)
         btn:SetTall(34)
-        btn:SetText(cl.name and L(cl.name) or L("unnamed"))
+        btn:SetText(cl.name and L(cl.name) or "Unnamed")
         btn:SetActive(false)
-        if cl.desc and cl.desc ~= L("noDesc") then btn:SetTooltip(L(cl.desc)) end
+        if cl.desc and cl.desc ~= "No Description" then btn:SetTooltip(L(cl.desc)) end
         btn:SetDoClick(function()
             for _, b in ipairs(self.tabList) do
                 if IsValid(b) then b:SetActive(b == btn) end
@@ -623,7 +623,7 @@ function PANEL:populateClassDetails(cl, canBe)
     local title = header:Add("DLabel")
     title:Dock(FILL)
     title:SetFont("LiliaFont.25")
-    title:SetText(cl.name and L(cl.name) or L("unnamed"))
+    title:SetText(cl.name and L(cl.name) or "Unnamed")
     title:SetTextColor(lia.color.returnMainAdjustedColors and lia.color.returnMainAdjustedColors().text or color_white)
     title:SetContentAlignment(4)
     local body = container:Add("DPanel")
@@ -834,13 +834,13 @@ function PANEL:addClassDetails(parent, cl)
         end
     end
 
-    add(L("name") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
-    add(L("description") .. ": " .. (cl.desc and L(cl.desc) or L("noDesc")))
+    add("Name: " .. (cl.name and L(cl.name) or "Unnamed"))
+    add("Description: " .. (cl.desc and L(cl.desc) or "No Description"))
     local facName = team.GetName(cl.faction)
-    add(L("faction") .. ": " .. (facName and L(facName) or L("none")))
-    add(L("isDefault") .. ": " .. (cl.isDefault and L("yes") or L("no")))
-    add(L("baseHealth") .. ": " .. tostring(cl.health or maxH))
-    add(L("baseArmor") .. ": " .. tostring(cl.armor or maxA))
+    add("Faction: " .. (facName and L(facName) or "None"))
+    add("Is Default: " .. (cl.isDefault and "Yes" or "No"))
+    add("Base Health: " .. tostring(cl.health or maxH))
+    add("Base Armor: " .. tostring(cl.armor or maxA))
     local function getWeaponClassList(weps)
         if isstring(weps) then return {weps} end
         if not istable(weps) then return {} end
@@ -875,35 +875,35 @@ function PANEL:addClassDetails(parent, cl)
         weaponNames[#weaponNames + 1] = printName and tostring(printName) ~= "" and tostring(printName) or tostring(className)
     end
 
-    add(L("weapons") .. ": " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or L("none")))
-    add(L("modelScale") .. ": " .. tostring(cl.scale or 1))
+    add("Weapons: " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or "None"))
+    add("Model Scale: " .. tostring(cl.scale or 1))
     local rs = cl.runSpeedMultiplier and math.Round(run * cl.runSpeed) or cl.runSpeed or run
-    add(L("runSpeed") .. ": " .. tostring(rs))
+    add("Run Speed: " .. tostring(rs))
     local ws = cl.walkSpeedMultiplier and math.Round(walk * cl.walkSpeed) or cl.walkSpeed or walk
-    add(L("walkSpeed") .. ": " .. tostring(ws))
+    add("Walk Speed: " .. tostring(ws))
     local jp = cl.jumpPowerMultiplier and math.Round(maxJ * cl.jumpPower) or cl.jumpPower or maxJ
-    add(L("jumpPower") .. ": " .. tostring(jp))
+    add("Jump Power: " .. tostring(jp))
     local bloodMap = {
-        [-1] = L("bloodNo"),
-        [0] = L("bloodRed"),
-        [1] = L("bloodYellow"),
-        [2] = L("bloodGreenRed"),
-        [3] = L("bloodSparks"),
-        [4] = L("bloodAntlion"),
-        [5] = L("bloodZombie"),
-        [6] = L("bloodAntlionBright")
+        [-1] = "No blood",
+        [0] = "Red blood",
+        [1] = "Yellow blood",
+        [2] = "Green-red blood",
+        [3] = "Sparks",
+        [4] = "Antlion yellow blood",
+        [5] = "Zombie green-red blood",
+        [6] = "Antlion worker bright green blood"
     }
 
-    add(L("bloodColor") .. ": " .. (bloodMap[cl.bloodcolor] or L("bloodRed")))
+    add("Blood Color: " .. (bloodMap[cl.bloodcolor] or "Red blood"))
 end
 
 function PANEL:addJoinButton(parent, cl, canBe)
     local isCurrent = LocalPlayer():getChar() and LocalPlayer():getChar():getClass() == cl.index
     local btn = parent:Add("liaMediumButton")
     if isCurrent and istable(cl.model) then
-        btn:SetText(L("changeModel"))
+        btn:SetText("Change Model")
     else
-        btn:SetText(isCurrent and L("alreadyInClass") or L("joinClass"))
+        btn:SetText(isCurrent and "You are already in this class" or "Join Class")
     end
 
     btn:SetTall(45)
@@ -953,27 +953,27 @@ end
 
 vgui.Register("liaClasses", PANEL, "EditablePanel")
 hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
-    hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
-    hook.Run("AddTextField", L("generalInfo"), "name", L("name"), function()
+    hook.Run("AddSection", "General Info", Color(0, 0, 0), 1, 1)
+    hook.Run("AddTextField", "General Info", "name", "Name", function()
         local client = LocalPlayer()
         local char = client:getChar()
-        return char and char:getName() or L("unknown")
+        return char and char:getName() or "Unknown"
     end)
 
-    hook.Run("AddTextField", L("generalInfo"), "desc", L("description"), function()
+    hook.Run("AddTextField", "General Info", "desc", "Description", function()
         local client = LocalPlayer()
         local char = client:getChar()
         return char and char:getDesc() or ""
     end)
 
-    hook.Run("AddTextField", L("generalInfo"), "money", L("money"), function()
+    hook.Run("AddTextField", "General Info", "money", "Money", function()
         local client = LocalPlayer()
         return client and lia.currency.get(client:getChar():getMoney()) or lia.currency.get(0)
     end)
 
-    hook.Run("AddTextField", L("generalInfo"), "playTime", L("playTime"), function()
+    hook.Run("AddTextField", "General Info", "playTime", "Play Time", function()
         local client = LocalPlayer()
-        return client and lia.time.formatDHM(client:getPlayTime()) or L("loading")
+        return client and lia.time.formatDHM(client:getPlayTime()) or "Loading..."
     end)
 end)
 
@@ -1188,7 +1188,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local frame = settingsPanel:Add("liaFrame")
         frame:Dock(FILL)
         frame:DockMargin(10, 10, 10, 10)
-        frame:SetTitle(L("settings"))
+        frame:SetTitle("Settings")
         frame:LiteMode()
         frame:DisableCloseBtn()
         local pages = {}
@@ -1297,7 +1297,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             local frame = adminPanel:Add("liaFrame")
             frame:Dock(FILL)
             frame:DockMargin(10, 10, 10, 10)
-            frame:SetTitle(L("admin"))
+            frame:SetTitle("Admin")
             frame:LiteMode()
             frame:DisableCloseBtn()
             local pages = {}
@@ -1339,7 +1339,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         searchEntry:DockMargin(0, 20, 0, 15)
                         searchEntry:SetTall(30)
                         searchEntry:SetFont("LiliaFont.17")
-                        searchEntry:SetPlaceholderText(L("searchStaff") or "Search staff...")
+                        searchEntry:SetPlaceholderText("Search staff..." or "Search staff...")
                         searchEntry:SetTextColor(Color(200, 200, 200))
                         searchEntry.OnTextChanged = function(_, value)
                             local filteredData = filterStaffData(value or "")
@@ -1349,20 +1349,20 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         local staffTable = panel:Add("liaTable")
                         staffTable:Dock(FILL)
                         panel.staffTable = staffTable
-                        staffTable:AddColumn(L("name"), nil, TEXT_ALIGN_LEFT, true)
-                        staffTable:AddColumn(L("usergroup"), nil, TEXT_ALIGN_LEFT, true)
-                        staffTable:AddColumn(L("staffOnDuty", ""), 100, TEXT_ALIGN_CENTER, true)
+                        staffTable:AddColumn("Name", nil, TEXT_ALIGN_LEFT, true)
+                        staffTable:AddColumn("Usergroup", nil, TEXT_ALIGN_LEFT, true)
+                        staffTable:AddColumn(string.format("Staff on Duty: %s", ""), 100, TEXT_ALIGN_CENTER, true)
                         function updateStaffTable(dataToShow)
                             staffTable:Clear()
                             local staffFound = false
                             if dataToShow then
                                 for _, staffInfo in ipairs(dataToShow) do
                                     staffFound = true
-                                    staffTable:AddLine(staffInfo.name .. " (" .. staffInfo.characterName .. ")", staffInfo.usergroup, staffInfo.isStaffOnDuty and L("yes") or L("no"))
+                                    staffTable:AddLine(staffInfo.name .. " (" .. staffInfo.characterName .. ")", staffInfo.usergroup, staffInfo.isStaffOnDuty and "Yes" or "No")
                                 end
                             end
 
-                            if not staffFound then staffTable:AddLine(L("noStaffCurrentlyOnline"), "", "") end
+                            if not staffFound then staffTable:AddLine("No staff currently online", "", "") end
                             staffTable:ForceCommit()
                         end
 
@@ -1521,7 +1521,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             local frame = themesPanel:Add("liaFrame")
             frame:Dock(FILL)
             frame:DockMargin(10, 10, 10, 10)
-            frame:SetTitle(L("themes"))
+            frame:SetTitle("Themes")
             frame:LiteMode()
             frame:DisableCloseBtn()
             local sheet = frame:Add("liaTabs")
@@ -1559,7 +1559,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                     applyButton:SetWide(200)
                     applyButton:SetTall(35)
                     applyButton:CenterHorizontal()
-                    applyButton:SetText(L("apply"))
+                    applyButton:SetText("Apply")
                     local scroll = page:Add("liaScrollPanel")
                     scroll:Dock(FILL)
                     local entries = {}
@@ -1614,7 +1614,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         local isActive = currentTheme == themeID
                         if IsValid(applyButton) then
                             applyButton:SetEnabled(not isActive)
-                            applyButton:SetText(isActive and L("currentlySelected") or L("apply"))
+                            applyButton:SetText(isActive and "Currently Selected" or "Apply")
                         end
                     end
 
@@ -1625,7 +1625,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         lia.websound.playButtonSound()
                         net.Start("liaCfgSet")
                         net.WriteString("Theme")
-                        net.WriteString(L("theme"))
+                        net.WriteString("Theme")
                         net.WriteType(themeID)
                         net.SendToServer()
                     end

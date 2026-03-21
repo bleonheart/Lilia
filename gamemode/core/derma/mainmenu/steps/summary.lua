@@ -9,7 +9,7 @@ function PANEL:Init()
     self.title:SetLineWidth(2)
     local lbl = self.title:Add("DLabel")
     lbl:SetFont("LiliaFont.18")
-    lbl:SetText(tostring(L("summary")):upper())
+    lbl:SetText(tostring("Summary"):upper())
     lbl:SizeToContents()
     lbl:Dock(FILL)
     lbl:DockMargin(8, 0, 8, 0)
@@ -32,7 +32,7 @@ function PANEL:Init()
     self.create:Dock(BOTTOM)
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
-    self.create:SetText((L("create") .. " " .. L("character")):upper())
+    self.create:SetText(("Create Character"):upper())
     self.create.DoClick = function()
         local createPanel = lia.gui and lia.gui.charCreate
         if IsValid(createPanel) and isfunction(createPanel.onFinish) then createPanel:onFinish() end
@@ -57,18 +57,18 @@ function PANEL:buildDefaultSummary(context)
     local name = context.name or context.charName
     local desc = context.desc or context.description
     summary[#summary + 1] = {
-        title = L("name"),
+        title = "Name",
         value = tostring(name or "")
     }
 
     summary[#summary + 1] = {
-        title = L("description"),
+        title = "Description",
         value = tostring(desc or "")
     }
 
     local faction = context.faction and lia.faction.indices[context.faction] or nil
     summary[#summary + 1] = {
-        title = L("faction"),
+        title = "Faction",
         value = faction and tostring(faction.name or "") or ""
     }
 
@@ -98,7 +98,7 @@ function PANEL:buildDefaultSummary(context)
 
     if #attribLines > 0 then
         summary[#summary + 1] = {
-            title = L("attributes"),
+            title = "Attributes",
             value = table.concat(attribLines, "\n")
         }
     end
@@ -118,7 +118,7 @@ function PANEL:buildDefaultSummary(context)
 
     if #idLines > 0 then
         summary[#summary + 1] = {
-            title = L("identifications"),
+            title = "Identifications",
             value = table.concat(idLines, "\n")
         }
     end

@@ -300,7 +300,7 @@ lia.command.add("fixpac", {
         end)
 
         timer.Simple(1, function() if IsValid(client) then client:ConCommand("pac_restart") end end)
-        timer.Simple(1.5, function() if IsValid(client) then client:notifySuccessLocalized("fixpac_success") end end)
+        timer.Simple(1.5, function() if IsValid(client) then client:notifySuccess("PAC3 has been restarted and caches cleared.") end end)
     end
 })
 
@@ -309,7 +309,7 @@ lia.command.add("pacenable", {
     desc = "pacEnableCommandDesc",
     onRun = function(client)
         client:ConCommand("pac_enable 1")
-        client:notifySuccessLocalized("pacenable_success")
+        client:notifySuccess("PAC3 has been enabled.")
     end
 })
 
@@ -318,7 +318,7 @@ lia.command.add("pacdisable", {
     desc = "pacDisableCommandDesc",
     onRun = function(client)
         client:ConCommand("pac_enable 0")
-        client:notifyInfoLocalized("pacdisable_message")
+        client:notifyInfo("PAC3 has been disabled.")
     end
 })
 

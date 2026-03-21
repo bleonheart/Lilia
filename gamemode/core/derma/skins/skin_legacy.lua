@@ -308,4 +308,4 @@ function SKIN:PaintMenuBar(panel, w, h)
     drawAltBg(panel, w, h)
 end
 
-derma.DefineSkin(L("liliaLegacySkin"), L("liliaLegacySkinDesc"), SKIN)
+derma.DefineSkin("Lilia Legacy Skin", "The legacy skin for the Lilia framework.", SKIN)

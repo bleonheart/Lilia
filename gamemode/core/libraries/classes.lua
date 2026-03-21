@@ -44,8 +44,8 @@ lia.class.list = lia.class.list or {}
         ```
 ]]
 function lia.class.register(uniqueID, data)
-    assert(isstring(uniqueID), L("classUniqueIDString"))
-    assert(istable(data), L("classDataTable"))
+    assert(isstring(uniqueID), "uniqueID must be a string")
+    assert(istable(data), "Class Data Table")
     local index = #lia.class.list + 1
     local existing
     for i, v in ipairs(lia.class.list) do
@@ -65,11 +65,11 @@ function lia.class.register(uniqueID, data)
     end
 
     class.uniqueID = uniqueID
-    class.name = class.name or L("unknown")
-    class.desc = class.desc or L("noDesc")
+    class.name = class.name or "Unknown"
+    class.desc = class.desc or "No Description"
     class.limit = class.limit or 0
     if not class.faction or not team.Valid(class.faction) then
-        lia.error(L("classNoValidFaction", uniqueID))
+        lia.error(string.format("Class '%s' does not have a valid faction!", uniqueID))
         return
     end
 
@@ -119,12 +119,12 @@ function lia.class.loadFromDir(directory)
             uniqueID = niceName
         }
 
-        CLASS.name = L("unknown")
-        CLASS.desc = L("noDesc")
+        CLASS.name = "Unknown"
+        CLASS.desc = "No Description"
         CLASS.limit = 0
         lia.loader.include(directory .. "/" .. v, "shared")
         if not CLASS.faction or not team.Valid(CLASS.faction) then
-            lia.error(L("classNoValidFaction", niceName))
+            lia.error(string.format("Class '%s' does not have a valid faction!", niceName))
             CLASS = nil
             continue
         end
@@ -168,14 +168,14 @@ end
         ```
 ]]
 function lia.class.canBe(client, class)
-    if not lia.class.list then return false, L("classNoInfo") end
+    if not lia.class.list then return false, "Class information not found." end
     local info = lia.class.list[class]
-    if not info then return false, L("classNoInfo") end
-    if client:Team() ~= info.faction then return false, L("classWrongTeam") end
+    if not info then return false, "Class information not found." end
+    if client:Team() ~= info.faction then return false, "You are not in the correct team to join this class." end
     local character = client:getChar()
-    if character and character:getClass() == class then return false, L("alreadyInClass") end
+    if character and character:getClass() == class then return false, "You are already in this class" end
     local currentCount = #lia.class.getPlayers(info.index)
-    if info.limit > 0 and currentCount >= info.limit then return false, L("classFull") end
+    if info.limit > 0 and currentCount >= info.limit then return false, "This class is currently full." end
     local hookResult = hook.Run("CanPlayerJoinClass", client, class, info)
     if hookResult == false then return false end
     if info.OnCanBe then

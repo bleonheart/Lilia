@@ -184,14 +184,14 @@ end
 function lia.util.findPlayer(client, identifier)
     local isValidClient = IsValid(client)
     if not isstring(identifier) or identifier == "" then
-        if isValidClient then client:notifyErrorLocalized("mustProvideString") end
+        if isValidClient then client:notifyError("Must Provide a String") end
         return nil
     end
 
     if string.match(identifier, "^STEAM_%d+:%d+:%d+$") then
         local ply = lia.util.getBySteamID(identifier)
         if IsValid(ply) then return ply end
-        if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+        if isValidClient then client:notifyError("Player does not exist.") end
         return nil
     end
 
@@ -202,7 +202,7 @@ function lia.util.findPlayer(client, identifier)
             if IsValid(ply) then return ply end
         end
 
-        if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+        if isValidClient then client:notifyError("Player does not exist.") end
         return nil
     end
 
@@ -210,7 +210,7 @@ function lia.util.findPlayer(client, identifier)
     if isValidClient and identifier == "@" then
         local trace = client:getTracedEntity()
         if IsValid(trace) and trace:IsPlayer() then return trace end
-        client:notifyErrorLocalized("lookToUseAt")
+        client:notifyError("You need to be looking at someone to use '@'")
         return nil
     end
 
@@ -219,7 +219,7 @@ function lia.util.findPlayer(client, identifier)
         if lia.util.stringMatches(ply:Name(), safe) then return ply end
     end
 
-    if isValidClient then client:notifyErrorLocalized("plyNoExist") end
+    if isValidClient then client:notifyError("Player does not exist.") end
     return nil
 end
 
@@ -638,7 +638,7 @@ function lia.util.findFaction(client, name)
         if lia.util.stringMatches(v.name, name) or lia.util.stringMatches(v.uniqueID, name) then return v end
     end
 
-    client:notifyErrorLocalized("invalidFaction")
+    client:notifyError("The specified faction is not valid.")
     return nil
 end
 
@@ -828,7 +828,7 @@ if SERVER then
         end
 
         local tableUIData = {
-            title = title and L(title) or L("tableListTitle"),
+            title = title and L(title) or "Table List",
             columns = localizedColumns,
             data = data,
             options = options or {},
@@ -1303,7 +1303,7 @@ else
     function lia.util.createTableUI(title, columns, data, options, charID)
         local frameWidth, frameHeight = ScrW() * 0.8, ScrH() * 0.8
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle(title and L(title) or L("tableListTitle"))
+        frame:SetTitle(title and L(title) or "Table List")
         frame:SetSize(frameWidth, frameHeight)
         frame:Center()
         frame:MakePopup()
@@ -1316,14 +1316,14 @@ else
         local listView = frame:Add("liaTable")
         listView:Dock(FILL)
         for _, colInfo in ipairs(columns or {}) do
-            local localizedName = colInfo.name and L(colInfo.name) or L("na")
+            local localizedName = colInfo.name and L(colInfo.name) or "N/A"
             listView:AddColumn(localizedName, colInfo.width, colInfo.align, colInfo.sortable)
         end
 
         for _, row in ipairs(data) do
             local lineData = {}
             for _, colInfo in ipairs(columns) do
-                table.insert(lineData, row[colInfo.field] or L("na"))
+                table.insert(lineData, row[colInfo.field] or "N/A")
             end
 
             local line = listView:AddLine(unpack(lineData))
@@ -1331,10 +1331,10 @@ else
         end
 
         listView:ForceCommit()
-        listView:AddMenuOption(L("copyRow"), function(rowData)
+        listView:AddMenuOption("Copy Row", function(rowData)
             local rowString = ""
             for key, value in pairs(rowData) do
-                value = tostring(value or L("na"))
+                value = tostring(value or "N/A")
                 key = tostring(key)
                 rowString = rowString .. key:gsub("^%l", string.upper) .. " " .. value .. " | "
             end
@@ -1348,7 +1348,7 @@ else
                 if not option.net then return end
                 if option.ExtraFields then
                     local inputPanel = vgui.Create("liaFrame")
-                    inputPanel:SetTitle(L("optionsTitle", option.name))
+                    inputPanel:SetTitle(string.format("%s Options", option.name))
                     inputPanel:SetSize(300, 300 + #table.GetKeys(option.ExtraFields) * 35)
                     inputPanel:Center()
                     inputPanel:MakePopup()
@@ -1367,7 +1367,7 @@ else
                             local entry = vgui.Create("DTextEntry", form)
                             entry:Dock(TOP)
                             entry:DockMargin(5, 5, 5, 0)
-                            entry:SetPlaceholderText(L("typeFieldPrompt", fName))
+                            entry:SetPlaceholderText(string.format("Type %s", fName))
                             form:AddItem(entry)
                             inputs[fName] = {
                                 panel = entry,
@@ -1378,7 +1378,7 @@ else
                             combo:Dock(TOP)
                             combo:DockMargin(5, 5, 5, 0)
                             combo:PostInit()
-                            combo:SetValue(L("selectPrompt", fName))
+                            combo:SetValue(string.format("Select %s", fName))
                             form:AddItem(combo)
                             inputs[fName] = {
                                 panel = combo,
@@ -1389,7 +1389,7 @@ else
                             combo:Dock(TOP)
                             combo:DockMargin(5, 5, 5, 0)
                             combo:PostInit()
-                            combo:SetValue(L("selectPrompt", fName))
+                            combo:SetValue(string.format("Select %s", fName))
                             for _, choice in ipairs(fType) do
                                 combo:AddChoice(choice)
                             end
@@ -1404,7 +1404,7 @@ else
                     end
 
                     local submitButton = vgui.Create("DButton", form)
-                    submitButton:SetText(L("submit"))
+                    submitButton:SetText("Submit")
                     submitButton:Dock(TOP)
                     submitButton:DockMargin(5, 10, 5, 0)
                     form:AddItem(submitButton)

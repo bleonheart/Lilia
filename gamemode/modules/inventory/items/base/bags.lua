@@ -65,7 +65,7 @@ ITEM.functions.Open = {
         if not inventory then
             if SERVER then
                 lia.log.add(client, "itemInteractionFailed", "open", item:getName())
-                client:notifyErrorLocalized("bagNoInventory")
+                client:notifyError("This bag has no inventory.")
             end
             return false
         end

@@ -345,7 +345,7 @@ end
     Example Usage:
         ```lua
             hook.Add("CanPlayerInteractItem", "StopHotbarDrop", function(client, action, item)
-                if action == "drop" and item.noDrop then return false, L("cannotDrop") end
+                if action == "drop" and item.noDrop then return false, "You cannot drop this item." end
             end)
         ```
 ]]
@@ -534,7 +534,7 @@ end
         ```lua
             hook.Add("CanPlayerTradeWithVendor", "RestrictRareItems", function(client, vendor, itemType)
                 if lia.item.list[itemType].rarity == "legendary" and not client:isVIP() then
-                    return false, L("vendorVIPOnly")
+                    return false, "This item is available for VIPs only."
                 end
             end)
         ```
@@ -2229,7 +2229,7 @@ end
     Example Usage:
         ```lua
             hook.Add("OnCharPermakilled", "AnnouncePerma", function(character)
-                lia.chat.send(nil, "event", L("permakilled", character:getName()))
+                lia.chat.send(nil, "event", string.format("%s has been permanently killed.", character:getName()))
             end)
         ```
 ]]
@@ -2679,7 +2679,7 @@ end
     Example Usage:
         ```lua
             hook.Add("OnPlayerInteractItem", "NotifyUse", function(client, action, item, result)
-                if result then client:notifyLocalized("itemAction", action, item:getName()) end
+                if result then client:notify(string.format("Item %s: %s", action, item:getName())) end
             end)
         ```
 ]]
@@ -3258,7 +3258,7 @@ end
     Example Usage:
         ```lua
             hook.Add("PlayerLiliaDataLoaded", "SendWelcome", function(client)
-                client:notifyLocalized("welcomeBack")
+                client:notify("Welcome back!")
             end)
         ```
 ]]

@@ -29,14 +29,14 @@
         local enabled = lia.config.get("CarEntryDelayEnabled", true)
         if not enabled then return end
         if entity.IsBeingEntered then
-            client:notifyWarningLocalized("carOccupiedNotice")
+            client:notifyWarning("Someone is entering this car!")
             return true
         end
 
         local delay = lia.config.get("TimeToEnterVehicle", 5)
         if entity:isSimfphysCar() and delay > 0 then
             entity.IsBeingEntered = true
-            client:setAction(L("enteringVehicle"), delay, function()
+            client:setAction("Entering Vehicle...", delay, function()
                 if IsValid(entity) and IsValid(client) then
                     local distance = client:GetPos():Distance(entity:GetPos())
                     if distance <= 150 then
@@ -44,7 +44,7 @@
                         entity:SetPassenger(client)
                     else
                         entity.IsBeingEntered = false
-                        client:notifyWarningLocalized("tooFarAway")
+                        client:notifyWarning("You are too far away!")
                     end
                 elseif IsValid(entity) then
                     entity.IsBeingEntered = false

@@ -15,7 +15,7 @@ end
 
 local function promptName(ply, cb)
     if lia.config.get("FakeNamesEnabled", false) then
-        ply:requestString(L("recogFakeNamePrompt"), "", function(nm)
+        ply:requestString("Enter fake name", "", function(nm)
             nm = (nm or ""):Trim()
             local finalName = nm == "" and ply:getChar():getName() or nm
             cb(finalName)
@@ -42,7 +42,7 @@ local function CharRecognize(ply, lvl, nm)
     end
 
     if count == 0 then return end
-    ply:notifySuccessLocalized("recognitionGiven", count)
+    ply:notifySuccess(string.format("Gave Recognition to %s people.", count))
     for _, v in ipairs(tgt) do
         lia.log.add(ply, "charRecognize", v:getChar():getID(), nm)
     end
@@ -57,7 +57,7 @@ local function doRange(ply, lvl)
 end
 
 lia.playerinteract.addAction("recognizeInWhisperRange", {
-    category = L("categoryRecognition"),
+    category = "Recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 1) end,
     onRun = function(ply) doRange(ply, 1) end,
     serverOnly = true
@@ -89,7 +89,7 @@ lia.playerinteract.addInteraction("giveRecognitionToPerson", {
     onRun = function(ply, tgt)
         promptName(ply, function(nm)
             if tgt:getChar():recognize(ply:getChar(), nm) then
-                ply:notifySuccessLocalized("recognitionGiven", 1)
+                ply:notifySuccess(string.format("Gave Recognition to %s people.", 1))
                 lia.log.add(ply, "charRecognize", tgt:getChar():getID(), nm)
                 net.Start("liaRgnDone")
                 net.Send(ply)

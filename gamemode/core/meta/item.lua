@@ -152,7 +152,7 @@ end
         ```
 ]]
 function ITEM:tostring()
-    return L("item") .. "[" .. self.uniqueID .. "][" .. self.id .. "]"
+    return "Item[" .. self.uniqueID .. "][" .. self.id .. "]"
 end
 
 --[[
@@ -549,9 +549,9 @@ end
 ]]
 function ITEM:printData()
     self:print(true)
-    lia.information(L("itemData") .. ":")
+    lia.information("ITEM DATA:")
     for k, v in pairs(self.data) do
-        lia.information(L("itemDataEntry", k, v))
+        lia.information(string.format("[%s] = %s", k, v))
     end
 end
 
@@ -1169,7 +1169,7 @@ if SERVER then
         ```
 ]]
     function ITEM:interact(action, client, entity, data)
-        assert(client:IsPlayer() and IsValid(client), L("itemActionNoPlayer"))
+        assert(client:IsPlayer() and IsValid(client), "Item action cannot be performed without a player")
         local canInteract, reason = hook.Run("CanPlayerInteractItem", client, action, self, data)
         if canInteract == false then
             if reason then client:notifyErrorLocalized(reason) end
@@ -1261,7 +1261,7 @@ end
         ```
 ]]
 function ITEM:getCategory()
-    return self.category and L(self.category) or L("misc")
+    return self.category and L(self.category) or "Miscellaneous"
 end
 
 lia.meta.item = ITEM

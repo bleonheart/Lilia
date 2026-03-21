@@ -46,14 +46,14 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         ```
 ]]
 function lia.faction.register(uniqueID, data)
-    assert(isstring(uniqueID), L("factionUniqueIDString"))
-    assert(istable(data), L("factionDataTable"))
+    assert(isstring(uniqueID), "Faction Unique ID String")
+    assert(istable(data), "data must be a table")
     local existing = lia.faction.teams[uniqueID]
     local constantName = "FACTION_" .. string.upper(uniqueID)
     local providedIndex = tonumber(data.index)
     local constantIndex = tonumber(_G[constantName])
     local index = providedIndex or constantIndex or existing and existing.index or table.Count(lia.faction.teams) + 1
-    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, L("factionIndexInUse"))
+    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, "Faction Index In Use")
     local faction = existing or {
         index = index,
         isDefault = true
@@ -77,7 +77,7 @@ function lia.faction.register(uniqueID, data)
     if overrideDesc then faction.desc = overrideDesc end
     local overrideModels = hook.Run("OverrideFactionModels", uniqueID, faction.models)
     if overrideModels then faction.models = overrideModels end
-    team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
+    team.SetUp(faction.index, faction.name or L and "Unknown" or "unknown", faction.color or Color(125, 125, 125))
     lia.faction.cacheModels(faction.models)
     lia.faction.indices[faction.index] = faction
     lia.faction.teams[uniqueID] = faction
@@ -153,12 +153,12 @@ function lia.faction.loadFromDir(directory)
         lia.loader.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
             FACTION.name = "unknown"
-            lia.error(L("factionMissingName", niceName))
+            lia.error(string.format("Faction '%s' is missing a name. You need to add a FACTION.name", niceName))
         end
 
         if not FACTION.desc then
             FACTION.desc = "noDesc"
-            lia.error(L("factionMissingDesc", niceName))
+            lia.error(string.format("Faction '%s' is missing a description. You need to add a FACTION.desc", niceName))
         end
 
         FACTION.name = L(FACTION.name)
@@ -170,7 +170,7 @@ function lia.faction.loadFromDir(directory)
         local overrideModels = hook.Run("OverrideFactionModels", niceName, FACTION.models)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then FACTION.color = Color(150, 150, 150) end
-        team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
+        team.SetUp(FACTION.index, FACTION.name or "Unknown", FACTION.color or Color(125, 125, 125))
         FACTION.models = FACTION.models or DefaultModels
         FACTION.uniqueID = FACTION.uniqueID or niceName
         if FACTION.skinAllowed == nil then FACTION.skinAllowed = false end
@@ -251,6 +251,35 @@ function lia.faction.get(identifier)
     return lia.faction.indices[identifier] or lia.faction.teams[identifier]
 end
 
+--[[
+    Purpose:
+        Determines whether a faction allows skin and bodygroup customization for a given client.
+
+    When Called:
+        Called when checking if a player can customize their character model with skins and bodygroups,
+        typically during character creation or model selection.
+
+    Parameters:
+        client (Player)
+            The player whose customization permissions are being checked.
+        faction (number/string/table)
+            The faction identifier - can be a faction ID, unique ID, or faction table.
+        context (any)
+            Additional context data that might be used by hooks to determine permissions.
+
+    Returns:
+        boolean, boolean
+            First value: Whether skin customization is allowed.
+            Second value: Whether bodygroup customization is allowed.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        local skinAllowed, bodygroupsAllowed = lia.faction.getModelCustomizationAllowed(client, faction, "character_creation")
+        ```
+]]
 function lia.faction.getModelCustomizationAllowed(client, faction, context)
     if isnumber(faction) or isstring(faction) then faction = lia.faction.get(faction) end
     if not faction then return false, false end

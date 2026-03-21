@@ -259,7 +259,7 @@ function PANEL:updateAttributesLabel()
         end
 
         local left = math.max((total or 0) - sum, 0)
-        self.attrLabelText:SetText(L("attributes"):upper() .. " - " .. left .. " " .. L("pointsLeft"):lower())
+        self.attrLabelText:SetText(("Attributes"):upper() .. " - " .. left .. (" Points Left"):lower())
         self.attrLabelText:SizeToContents()
     end
 
@@ -270,7 +270,7 @@ function PANEL:validate()
     for _, info in ipairs({{self.nameEntry, "name"}, {self.descEntry, "desc"}}) do
         if IsValid(info[1]) then
             local val = string.Trim(info[1]:GetValue() or "")
-            if val == "" then return false, L("requiredFieldError", info[2]) end
+            if val == "" then return false, string.format("The field '%s' is required and cannot be empty.", info[2]) end
         end
     end
 
@@ -278,11 +278,11 @@ function PANEL:validate()
         local desc = string.Trim(self.descEntry:GetValue() or "")
         local descWithoutSpaces = string.gsub(desc, "%s", "")
         local minLength = lia.config.get("MinDescLen", 16)
-        if #descWithoutSpaces < minLength then return false, L("descMinLen", minLength) end
+        if #descWithoutSpaces < minLength then return false, string.format("Description must be at least %s characters long.", minLength) end
     end
 
     local factionID = self.factionCombo:GetSelectedData()
-    if not factionID then return false, L("requiredFieldError", "faction") end
+    if not factionID then return false, string.format("The field '%s' is required and cannot be empty.", "faction") end
     return true
 end
 

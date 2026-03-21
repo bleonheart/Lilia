@@ -190,7 +190,7 @@ function PANEL:setActive(state)
                 for cmdName, cmdInfo in SortedPairs(self.commands) do
                     if not tobool(string.find(cmdName:lower(), "^" .. input:sub(2):lower())) then continue end
                     local btn = self.commandList:Add("liaButton")
-                    btn:SetText("/" .. cmdName .. " - " .. (cmdInfo.desc ~= "" and L(cmdInfo.desc) or L("noDesc")))
+                    btn:SetText("/" .. cmdName .. " - " .. (cmdInfo.desc ~= "" and L(cmdInfo.desc) or "No Description"))
                     btn:Dock(TOP)
                     btn:DockMargin(0, 0, 0, 2)
                     btn:SetTall(20)
@@ -226,7 +226,7 @@ function PANEL:setActive(state)
                             local cmd = prefix:gsub("^/", ""):lower()
                             if cmd ~= "" and not self.commands[cmd] and tobool(string.find(cmd, "^" .. input:sub(2):lower())) then
                                 local btn = self.commandList:Add("liaButton")
-                                btn:SetText(prefix .. " - " .. (chatInfo.desc ~= "" and L(chatInfo.desc) or L("noDesc")))
+                                btn:SetText(prefix .. " - " .. (chatInfo.desc ~= "" and L(chatInfo.desc) or "No Description"))
                                 btn:Dock(TOP)
                                 btn:DockMargin(0, 0, 0, 2)
                                 btn:SetTall(20)

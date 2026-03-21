@@ -50,9 +50,9 @@ lia.option.stored = lia.option.stored or {}
         ```
 ]]
 function lia.option.add(key, name, desc, default, callback, data)
-    assert(isstring(key), L("optionKeyString", type(key)))
-    assert(isstring(name), L("optionNameString", type(name)))
-    assert(istable(data), L("optionDataTable", type(data)))
+    assert(isstring(key), string.format("Option key must be a string, got %s", type(key)))
+    assert(isstring(name), string.format("Option name must be a string, got %s", type(name)))
+    assert(istable(data), string.format("Expected option data to be a table, got %s", type(data)))
     local t = type(default)
     local optionType = t == "boolean" and "Boolean" or t == "number" and (math.floor(default) == default and "Int" or "Float") or t == "table" and default.r and default.g and default.b and "Color" or "Generic"
     if optionType == "Int" or optionType == "Float" then
@@ -399,7 +399,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             searchEntry:Dock(TOP)
             searchEntry:SetTall(35)
             searchEntry:DockMargin(10, 10, 10, 10)
-            searchEntry:SetPlaceholderText(L("searchOptions") or "Search Options...")
+            searchEntry:SetPlaceholderText("Search Options..." or "Search Options...")
             searchEntry:SetFont("LiliaFont.18")
             local scroll = parent:Add("liaScrollPanel")
             scroll:Dock(FILL)
@@ -417,7 +417,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 for _, k in ipairs(keys) do
                     local opt = lia.option.stored[k]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
-                        local cat = opt.data and opt.data.category or L("misc")
+                        local cat = opt.data and opt.data.category or "Miscellaneous"
                         categories[cat] = categories[cat] or {}
                         table.insert(categories[cat], {
                             key = k,

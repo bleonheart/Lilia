@@ -350,7 +350,7 @@ end
 lia.char.registerVar("name", {
     field = "name",
     fieldType = "string",
-    default = L("defaultCharName"),
+    default = "John Doe",
     index = 1,
     onValidate = function(value, data, client)
         local name, override = hook.Run("GetDefaultCharName", client, data.faction, data)
@@ -382,7 +382,7 @@ lia.char.registerVar("name", {
 lia.char.registerVar("desc", {
     field = "desc",
     fieldType = "text",
-    default = L("descMinLen", lia.config.get("MinDescLen", 16)),
+    default = string.format("Description must be at least %s characters long.", lia.config.get("MinDescLen", 16)),
     index = 2,
     onValidate = function(value, data, client)
         local desc, override = hook.Run("GetDefaultCharDesc", client, data.faction, data)
@@ -553,7 +553,7 @@ lia.char.registerVar("faction", {
     onSet = function(character, value)
         local oldVar = character:getFaction()
         local faction = lia.faction.indices[value]
-        assert(faction, L("invalidFactionIndex", tostring(value)))
+        assert(faction, string.format("%s is an invalid faction index", tostring(value)))
         local client = character:getPlayer()
         client:SetTeam(value)
         character.vars.faction = faction.uniqueID
@@ -689,7 +689,7 @@ lia.char.registerVar("attribs", {
                 local count = 0
                 for k, v in pairs(value) do
                     local max = hook.Run("GetAttributeStartingMax", client, k)
-                    if max and v > max then return false, L("attribTooHigh", lia.attribs.list[k].name) end
+                    if max and v > max then return false, string.format("%s too high", lia.attribs.list[k].name) end
                     count = count + v
                 end
 
@@ -956,7 +956,7 @@ if SERVER then
             createTime = timeStamp,
             lastJoinTime = timeStamp,
             steamID = data.steamID,
-            faction = data.faction or L("unknown"),
+            faction = data.faction or "Unknown",
             money = data.money,
             recognition = data.recognition or "",
             fakenames = ""
@@ -1031,7 +1031,7 @@ if SERVER then
             for _, v in ipairs(results) do
                 local charId = tonumber(v.id)
                 if not charId then
-                    lia.error(L("invalidCharacterID", data.name or "nil"))
+                    lia.error(string.format("[Lilia] Cannot load character '%s' with invalid ID!", data.name or "nil"))
                     continue
                 end
 
@@ -1086,17 +1086,17 @@ if SERVER then
                 lia.inventory.loadAllFromCharID(charId):next(function(inventories)
                     if #inventories == 0 then
                         local promise = hook.Run("CreateDefaultInventory", character)
-                        assert(promise ~= nil, L("noDefaultInventory"))
+                        assert(promise ~= nil, "No default inventory available")
                         return promise:next(function(inventory)
-                            assert(inventory ~= nil, L("noDefaultInventory"))
+                            assert(inventory ~= nil, "No default inventory available")
                             return {inventory}
                         end)
                     end
                     return inventories
                 end, function(err)
-                    lia.information(L("failedLoadInventories", tostring(charId)))
+                    lia.information(string.format("Failed to load inventories for %s", tostring(charId)))
                     lia.information(err)
-                    if IsValid(client) then client:notifyErrorLocalized("fixInventoryError") end
+                    if IsValid(client) then client:notifyError("A server error occurred while loading your inventories. Check server log for details.") end
                 end):next(function(inventories)
                     character.vars.inv = inventories
                     lia.char.loaded[charId] = character
@@ -1164,7 +1164,7 @@ if SERVER then
         ```
 ]]
     function lia.char.delete(id, client)
-        assert(isnumber(id), L("idMustBeNumber"))
+        assert(isnumber(id), "id must be a number")
         local playersToSync = {}
         for _, ply in player.Iterator() do
             if IsValid(ply) and ply.liaCharList and table.HasValue(ply.liaCharList, id) then table.insert(playersToSync, ply) end
@@ -1301,7 +1301,7 @@ if SERVER then
 
                 local promise = lia.db.updateTable(updateData, nil, "characters", "id = " .. charIDsafe)
                 if deferred.isPromise(promise) then
-                    promise:catch(function(err) lia.information(L("charSetDataSQLError", "UPDATE lia_characters SET " .. fieldName, err)) end)
+                    promise:catch(function(err) lia.information(string.format("lia.char.setCharData SQL Error, q=%s, Error = %s", "UPDATE lia_characters SET " .. fieldName, err)) end)
                 elseif promise == false then
                     return false
                 end
@@ -1535,7 +1535,7 @@ if SERVER then
                             if callback then callback(character) end
                         end
                     end, function(err)
-                        lia.information(L("failedToLoadInventoriesForCharacter") .. " " .. charID .. ": " .. tostring(err))
+                        lia.information("Failed to load inventories for character  " .. charID .. ": " .. tostring(err))
                         if callback then callback(nil) end
                     end)
                 end)
@@ -1588,7 +1588,7 @@ if SERVER then
                     if callback then callback(character) end
                 end
             end, function(err)
-                lia.information(L("failedToLoadInventoriesForCharacter") .. " " .. charID .. ": " .. tostring(err))
+                lia.information("Failed to load inventories for character  " .. charID .. ": " .. tostring(err))
                 if callback then callback(nil) end
             end)
         end)

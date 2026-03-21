@@ -109,8 +109,8 @@ end
         ```
 ]]
 function lia.config.add(key, name, value, callback, data)
-    assert(isstring(key), L("configKeyString", type(key)))
-    assert(istable(data), L("configDataTable", type(data)))
+    assert(isstring(key), string.format("Expected config key to be string, got %s", type(key)))
+    assert(istable(data), string.format("Expected config data to be a table, got %s", type(data)))
     local t = type(value)
     local configType = t == "boolean" and "Boolean" or t == "number" and "Number" or t == "table" and (value.r and value.g and value.b and "Color" or "Table") or "Generic"
     local validTypes = {
@@ -143,7 +143,7 @@ function lia.config.add(key, name, value, callback, data)
         value = savedValue,
         default = value,
         desc = data.desc,
-        category = data.category or L("character"),
+        category = data.category or "Character",
         noNetworking = data.noNetworking or false,
         callback = callback
     }
@@ -627,7 +627,7 @@ if SERVER then
             local oldValue = config.value
             lia.config.set(key, value)
             hook.Run("ConfigChanged", key, value, oldValue, client)
-            client:notifySuccessLocalized("cfgSet", client:Name(), name or config.name or key, tostring(value))
+            client:notifySuccess(string.format("%s has set \\", client:Name(), name or config.name or key, tostring(value)))
         end
     end)
 end
@@ -1759,7 +1759,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 searchEntry:Dock(TOP)
                 searchEntry:SetTall(35)
                 searchEntry:DockMargin(10, 10, 10, 10)
-                searchEntry:SetPlaceholderText(L("searchConfigs") or "Search configurations...")
+                searchEntry:SetPlaceholderText("Search configs..." or "Search configurations...")
                 searchEntry:SetFont("LiliaFont.18")
                 local scroll = parent:Add("liaScrollPanel")
                 scroll:Dock(FILL)

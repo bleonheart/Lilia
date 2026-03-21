@@ -83,8 +83,8 @@ function lia.attribs.register(uniqueID, data)
     end
 
     attribute.uniqueID = uniqueID
-    attribute.name = attribute.name and L(attribute.name) or L("unknown")
-    attribute.desc = attribute.desc and L(attribute.desc) or L("noDesc")
+    attribute.name = attribute.name and L(attribute.name) or "Unknown"
+    attribute.desc = attribute.desc and L(attribute.desc) or "No Description"
     lia.attribs.list[uniqueID] = attribute
     return attribute
 end

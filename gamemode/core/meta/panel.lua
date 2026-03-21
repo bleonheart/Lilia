@@ -34,7 +34,7 @@ local originalSetPos = panelMeta.SetPos
         ```
 ]]
 function panelMeta:liaListenForInventoryChanges(inventory)
-    assert(inventory, L("noInventorySet"))
+    assert(inventory, "No inventory has been set!")
     local id = inventory:getID()
     self:liaDeleteInventoryHooks(id)
     _LIA_INV_PANEL_ID = (_LIA_INV_PANEL_ID or 0) + 1

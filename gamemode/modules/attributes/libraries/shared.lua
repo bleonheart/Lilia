@@ -52,15 +52,15 @@ function MODULE:CanPlayerThrowPunch(client)
     local required = lia.config.get("PunchPlaytime", 7200)
     if required > 0 then
         if not IsValid(client) or client:GetUserGroup() ~= "user" then return end
-        if not client:playTimeGreaterThan(required) then return false, L("needMorePlaytimeBeforePunch") end
+        if not client:playTimeGreaterThan(required) then return false, "You need more playtime before you can punch." end
     end
 
     local staminaUse = lia.config.get("PunchStamina", 10)
     if staminaUse > 0 then
         local char = client:getChar()
-        if not char then return false, L("invalidCharacter") end
+        if not char then return false, "Invalid character." end
         local currentStamina = CLIENT and predictedStamina or client:getLocalVar("stamina", hook.Run("GetCharMaxStamina", char) or lia.config.get("DefaultStamina", 100))
-        if currentStamina < staminaUse then return false, L("notEnoughStaminaToPunch") end
+        if currentStamina < staminaUse then return false, "You don't have enough stamina to punch." end
     end
 end
 

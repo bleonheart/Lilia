@@ -285,7 +285,7 @@ if SERVER then
         end
 
         lia.doors.presets[mapName] = presetData
-        lia.information(L("addedDoorPresetForMap") .. ": " .. mapName)
+        lia.information("Door preset added for map: : " .. mapName)
     end
 
     --[[
@@ -334,7 +334,7 @@ if SERVER then
     function lia.doors.verifyDatabaseSchema()
         lia.db.query("PRAGMA table_info(lia_doors)"):next(function(res)
             if not res or not res.results then
-                lia.error(L("failedToGetTableInfo"))
+                lia.error("Failed to get table info")
                 return
             end
 
@@ -364,9 +364,9 @@ if SERVER then
 
             for colName, expectedType in pairs(expectedColumns) do
                 if not columns[colName] then
-                    lia.error(L("missingExpectedColumn") .. " " .. colName)
+                    lia.error("Missing expected column: " .. colName)
                 elseif columns[colName]:lower() ~= expectedType:lower() then
-                    lia.warning(L("column") .. " " .. colName .. " " .. L("hasType") .. " " .. columns[colName] .. ", " .. L("expected") .. " " .. expectedType)
+                    lia.warning("Column " .. colName .. "  has type  " .. columns[colName] .. ", Expected " .. expectedType)
                 end
             end
 
@@ -375,10 +375,10 @@ if SERVER then
                     local columnType = info and info.type or "text"
                     local defaultValue = info and info.default
                     local defaultSQL = defaultValue ~= nil and " DEFAULT " .. lia.db.convertDataType(defaultValue) or ""
-                    lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. colName .. " " .. columnType .. defaultSQL):catch(function(err) lia.error(L("failedToVerifyDatabaseSchema") .. " " .. tostring(err)) end)
+                    lia.db.query("ALTER TABLE lia_doors ADD COLUMN " .. colName .. " " .. columnType .. defaultSQL):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
                 end
             end
-        end):catch(function(err) lia.error(L("failedToVerifyDatabaseSchema") .. " " .. tostring(err)) end)
+        end):catch(function(err) lia.error("Failed to verify database schema: " .. tostring(err)) end)
     end
 
     --[[
@@ -416,14 +416,14 @@ if SERVER then
                 local newFactions = row.factions
                 local newClasses = row.classes
                 if row.factions and row.factions ~= "NULL" and row.factions ~= "" and tostring(row.factions):match("^[%d%.%-%s]+$") and not tostring(row.factions):match("[{}%[%]]") then
-                    lia.warning(L("corruptedFactionsData", id, tostring(row.factions)))
+                    lia.warning(string.format("Found corrupted factions data for door %s: %s", id, tostring(row.factions)))
                     newFactions = ""
                     needsUpdate = true
                     corruptedCount = corruptedCount + 1
                 end
 
                 if row.classes and row.classes ~= "NULL" and row.classes ~= "" and tostring(row.classes):match("^[%d%.%-%s]+$") and not tostring(row.classes):match("[{}%[%]]") then
-                    lia.warning(L("corruptedClassesData", id, tostring(row.classes)))
+                    lia.warning(string.format("Found corrupted classes data for door %s: %s", id, tostring(row.classes)))
                     newClasses = ""
                     needsUpdate = true
                     corruptedCount = corruptedCount + 1
@@ -431,12 +431,12 @@ if SERVER then
 
                 if needsUpdate then
                     local updateQuery = "UPDATE lia_doors SET factions = " .. lia.db.convertDataType(newFactions) .. ", classes = " .. lia.db.convertDataType(newClasses) .. " WHERE " .. condition .. " AND id = " .. id
-                    lia.db.query(updateQuery):next(function() lia.information(L("fixedCorruptedDoorData", id)) end):catch(function(err) lia.error(L("failedToFixCorruptedDoorData", id, tostring(err))) end)
+                    lia.db.query(updateQuery):next(function() lia.information(string.format("Fixed corrupted data for door %s", id)) end):catch(function(err) lia.error(string.format("Failed to fix corrupted data for door %s: %s", id, tostring(err))) end)
                 end
             end
 
-            if corruptedCount > 0 then lia.information(L("foundAndFixedCorruptedDoors", corruptedCount)) end
-        end):catch(function(err) lia.error(L("failedToCheckCorruptedDoorData", tostring(err))) end)
+            if corruptedCount > 0 then lia.information(string.format("Found and fixed %s corrupted door records", corruptedCount)) end
+        end):catch(function(err) lia.error(string.format("Failed to check corrupted door data: %s", tostring(err))) end)
     end
 end
 

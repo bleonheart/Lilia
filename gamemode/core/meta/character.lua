@@ -107,15 +107,15 @@ end
 function characterMeta:getDisplayedName(client)
     local isRecognitionEnabled = lia.config.get("RecognitionEnabled", true)
     if not isRecognitionEnabled then return self:getName() end
-    if not IsValid(self:getPlayer()) or not IsValid(client) then return L("unknown") end
+    if not IsValid(self:getPlayer()) or not IsValid(client) then return "Unknown" end
     local ourCharacter = client:getChar()
-    if not self or not ourCharacter then return L("unknown") end
+    if not self or not ourCharacter then return "Unknown" end
     if self:getPlayer() == client then return self:getName() end
     local characterID = self:getID()
     if ourCharacter:doesRecognize(characterID) then return self:getName() end
     local myReg = ourCharacter:getFakeName()
     if ourCharacter:doesFakeRecognize(characterID) and myReg[characterID] then return myReg[characterID] end
-    return L("unknown")
+    return "Unknown"
 end
 
 --[[
@@ -336,7 +336,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                         charID = self:getID(),
                         key = nk,
                         value = encoded
-                    }, "chardata", function(success, err) if not success then lia.error(L("failedInsertCharData", err)) end end)
+                    }, "chardata", function(success, err) if not success then lia.error(string.format("Failed to insert character data: %s", err)) end end)
                 end
             end
         else
@@ -348,7 +348,7 @@ function characterMeta:setData(k, v, noReplication, receiver)
                     charID = self:getID(),
                     key = k,
                     value = encoded
-                }, "chardata", function(success, err) if not success then lia.error(L("failedInsertCharData", err)) end end)
+                }, "chardata", function(success, err) if not success then lia.error(string.format("Failed to insert character data: %s", err)) end end)
             end
         end
     end

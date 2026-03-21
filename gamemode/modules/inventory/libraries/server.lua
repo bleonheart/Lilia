@@ -2,7 +2,7 @@
     local bagItemID = inventory:getData("item")
     if not bagItemID then return end
     local bagItem = lia.item.instances[bagItemID]
-    if not bagItem then return false, L("invalidBagItem") end
+    if not bagItem then return false, "Invalid bag item" end
     local parentInv = lia.inventory.instances[bagItem.invID]
     if parentInv == inventory then return end
     local contextWithBagInv = {}
@@ -11,13 +11,13 @@
     end
 
     contextWithBagInv.bagInv = inventory
-    return parentInv and parentInv:canAccess(action, contextWithBagInv) or false, L("noAccess")
+    return parentInv and parentInv:canAccess(action, contextWithBagInv) or false, "No Access"
 end
 
 local function CanNotTransferBagIntoBag(_, action, context)
     if action ~= "transfer" then return end
     local item, toInventory = context.item, context.to
-    if toInventory and toInventory:getData("item") and item.isBag then return false, L("bagIntoBagError") end
+    if toInventory and toInventory:getData("item") and item.isBag then return false, "A bag cannot be placed into another bag." end
 end
 
 local function CanNotTransferBagIfNestedItemCanNotBe(_, action, context)
@@ -28,7 +28,7 @@ local function CanNotTransferBagIfNestedItemCanNotBe(_, action, context)
     if not bagInventory then return end
     for _, nestedItem in pairs(bagInventory:getItems()) do
         local canTransfer, reason = hook.Run("CanItemBeTransfered", nestedItem, bagInventory, bagInventory, context.client)
-        if canTransfer == false then return false, reason or L("nestedItemTransferError") end
+        if canTransfer == false then return false, reason or "An item in the bag cannot be transferred." end
     end
 end
 
@@ -135,7 +135,7 @@ function MODULE:HandleItemTransferRequest(client, itemID, x, y, invID)
         end
 
         if IsValid(client) then lia.log.add(client, "itemTransferFailed", item:getName(), oldInventory:getID(), newInventory and newInventory:getID() or 0) end
-        if IsValid(client) then client:notifyInfoLocalized("itemOnGround") end
+        if IsValid(client) then client:notifyInfo("Your item has been placed on the ground.") end
         item:spawn(dropPos)
     end
 

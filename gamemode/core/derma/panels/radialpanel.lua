@@ -24,8 +24,8 @@ function PANEL:Init(options)
     self.selectedOption = nil
     self.hoverOption = nil
     self.hoverAnim = 0
-    self.centerText = L("menu")
-    self.centerDesc = L("selectOption")
+    self.centerText = "Menu"
+    self.centerDesc = "Select Option"
     self.font = "LiliaFont.20"
     self.descFont = "LiliaFont.16"
     self.titleFont = "LiliaFont.28"
@@ -220,8 +220,8 @@ function PANEL:SelectOption(index)
 end
 
 function PANEL:SetCenterText(title, desc)
-    self.centerText = title or L("menu")
-    self.centerDesc = desc or L("selectOption")
+    self.centerText = title or "Menu"
+    self.centerDesc = desc or "Select Option"
 end
 
 function PANEL:IsMouseOver()
@@ -252,11 +252,11 @@ end
 
 function PANEL:UpdateCenterText()
     if self.currentMenu then
-        self.centerText = self.currentMenu.title or L("menu")
-        self.centerDesc = self.currentMenu.desc or L("selectOption")
+        self.centerText = self.currentMenu.title or "Menu"
+        self.centerDesc = self.currentMenu.desc or "Select Option"
     else
-        self.centerText = L("menu")
-        self.centerDesc = L("selectOption")
+        self.centerText = "Menu"
+        self.centerDesc = "Select Option"
     end
 end
 

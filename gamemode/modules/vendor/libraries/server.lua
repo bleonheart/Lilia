@@ -1,9 +1,9 @@
 ﻿function MODULE:OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
     local vendorName = lia.vendor.getVendorProperty(vendor, "name")
     if not isSellingToVendor then
-        lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or L("unknown"), isFailed)
+        lia.log.add(client, "vendorBuy", item and (item:getName() or item.name) or "", vendorName or "Unknown", isFailed)
     else
-        lia.log.add(client, "vendorSell", item and (item:getName() or item.name) or "", vendorName or L("unknown"))
+        lia.log.add(client, "vendorSell", item and (item:getName() or item.name) or "", vendorName or "Unknown")
     end
 end
 
@@ -20,33 +20,33 @@ end
 
 function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
     local item = lia.item.list[itemType]
-    if not item then return false, L("vendorInvalidItem") end
+    if not item then return false, "Invalid item." end
     local SteamIDWhitelist = item.SteamIDWhitelist
     local FactionWhitelist = item.FactionWhitelist
     local UserGroupWhitelist = item.UsergroupWhitelist
     local VIPOnly = item.VIPWhitelist
-    if not vendor.items[itemType] then return false, L("vendorDoesNotHaveItem") end
+    if not vendor.items[itemType] then return false, "The vendor does not have this item." end
     local state = vendor:getTradeMode(itemType)
-    if isSellingToVendor and state == VENDOR_SELLONLY then return false, L("sellOnly") end
-    if not isSellingToVendor and state == VENDOR_BUYONLY then return false, L("buyOnly") end
+    if isSellingToVendor and state == VENDOR_SELLONLY then return false, "Sell Only" end
+    if not isSellingToVendor and state == VENDOR_BUYONLY then return false, "Buy Only" end
     if isSellingToVendor then
-        if not client:getChar():getInv():hasItem(itemType) then return false, L("vendorPlayerDoesNotHaveItem") end
+        if not client:getChar():getInv():hasItem(itemType) then return false, "You do not have this item." end
     else
         local stock = vendor:getStock(itemType)
-        if stock and stock <= 0 then return false, L("vendorNoStock") end
+        if stock and stock <= 0 then return false, "This vendor does not have that item in stock." end
     end
 
     local price = vendor:getPrice(itemType, isSellingToVendor, client)
     if not isSellingToVendor then
         local money = client:getChar():getMoney()
-        if money < price then return false, L("canNotAfford") end
+        if money < price then return false, "You cannot afford that item." end
         if item.Cooldown and item.Cooldown > 0 then
             local character = client:getChar()
             local cooldowns = character:getData("vendorCooldowns", {})
             local lastPurchase = cooldowns[itemType] or 0
             if os.time() - lastPurchase < item.Cooldown then
                 local remainingTime = math.ceil(item.Cooldown - (os.time() - lastPurchase))
-                return false, L("vendorItemOnCooldown", remainingTime)
+                return false, string.format("This item is on cooldown. Please wait %s seconds before purchasing again.", remainingTime)
             end
         end
     end
@@ -60,15 +60,15 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
         if UserGroupWhitelist and table.HasValue(UserGroupWhitelist, client:GetUserGroup()) then isWhitelisted = true end
         if hasWhitelist and not isWhitelisted then
             if SteamIDWhitelist then
-                errorMessage = L("vendorSteamIDWhitelist")
+                errorMessage = "You are not whitelisted via SteamID."
             elseif FactionWhitelist then
-                errorMessage = L("illegalAccess")
+                errorMessage = "You are not whitelisted for this faction."
             elseif UserGroupWhitelist then
-                errorMessage = L("vendorUserGroupWhitelist")
+                errorMessage = "You are not whitelisted for this user group."
             elseif VIPOnly then
-                errorMessage = L("vendorVIPOnly")
+                errorMessage = "This item is available for VIPs only."
             else
-                errorMessage = L("vendorNotWhitelisted")
+                errorMessage = "You are not whitelisted to trade this item."
             end
             return false, errorMessage
         end
@@ -118,14 +118,14 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
 
             local canTransfer, transferReason = VendorInventoryMeasure:canAccess("transfer", context)
             if not canTransfer then
-                client:notifyErrorLocalized(transferReason or L("vendorError"))
+                client:notifyErrorLocalized(transferReason or "An error occurred during the transaction.")
                 client.vendorTransaction = nil
                 return
             end
 
             local canTransferItem, itemTransferReason = hook.Run("CanItemBeTransfered", item, inventory, VendorInventoryMeasure, client)
             if canTransferItem == false then
-                client:notifyErrorLocalized(itemTransferReason or L("vendorError"))
+                client:notifyErrorLocalized(itemTransferReason or "An error occurred during the transaction.")
                 client.vendorTransaction = nil
                 return
             end
@@ -133,12 +133,12 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
             character:giveMoney(price)
             item:remove():next(function() client.vendorTransaction = nil end):catch(function() client.vendorTransaction = nil end)
             vendor:addStock(itemType)
-            client:notifyMoneyLocalized("vendorYouSoldItem", item:getName(), lia.currency.get(price))
+            client:notifyMoney(string.format("You sold %s for %s.", item:getName(), lia.currency.get(price)))
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
         end
     else
         if not character:getInv():doesFitInventory(itemType) then
-            client:notifyErrorLocalized("vendorNoInventorySpace")
+            client:notifyError("You don't have enough space for this item!")
             hook.Run("OnCharTradeVendor", client, vendor, nil, isSellingToVendor, character, itemType, true)
             client.vendorTransaction = nil
             return
@@ -147,7 +147,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
         character:takeMoney(price)
         vendor:takeStock(itemType)
         character:getInv():add(itemType):next(function(item)
-            client:notifyMoneyLocalized("vendorYouBoughtItem", item:getName(), lia.currency.get(price))
+            client:notifyMoney(string.format("You bought %s for %s.", item:getName(), lia.currency.get(price)))
             local itemData = lia.item.list[itemType]
             if itemData and itemData.Cooldown and itemData.Cooldown > 0 then
                 local cooldowns = character:getData("vendorCooldowns", {})
@@ -419,31 +419,31 @@ net.Receive("liaVendorLoadPreset", function(_, client)
     if not presetName or presetName:Trim() == "" then return end
     presetName = presetName:Trim():lower()
     vendor:loadPreset(presetName)
-    client:notifyInfoLocalized("vendorPresetLoaded", presetName)
+    client:notifyInfo(string.format("Vendor preset '%s' has been loaded successfully", presetName))
     lia.log.add(client, "vendorPresetLoad", presetName)
 end)
 
 net.Receive("liaVendorDeletePreset", function(_, client)
     if not client:hasPrivilege("canCreateVendorPresets") then
-        client:notifyErrorLocalized("noPermission")
+        client:notifyError("No Permission")
         return
     end
 
     local presetName = net.ReadString()
     if not presetName or presetName:Trim() == "" then
-        client:notifyErrorLocalized("vendorPresetNameRequired")
+        client:notifyError("Preset name is required")
         return
     end
 
     presetName = presetName:Trim():lower()
     if not lia.vendor.presets[presetName] then
-        client:notifyErrorLocalized("vendorPresetNotFound", presetName)
+        client:notifyError(string.format("Vendor preset '%s' not found.", presetName))
         return
     end
 
     lia.vendor.presets[presetName] = nil
     lia.data.set("vendor_presets", lia.vendor.presets)
-    client:notifySuccessLocalized("vendorPresetDeleted", presetName)
+    client:notifySuccess(string.format("Vendor preset '%s' has been deleted.", presetName))
     lia.log.add(client, "vendorPresetDelete", presetName)
     net.Start("liaVendorSyncPresets")
     net.WriteTable(lia.vendor.presets)
@@ -452,14 +452,14 @@ end)
 
 net.Receive("liaVendorSavePreset", function(_, client)
     if not client:hasPrivilege("canCreateVendorPresets") then
-        client:notifyErrorLocalized("noPermission")
+        client:notifyError("No Permission")
         return
     end
 
     local presetName = net.ReadString()
     local itemsData = net.ReadTable()
     if not presetName or presetName:Trim() == "" then
-        client:notifyErrorLocalized("vendorPresetNameRequired")
+        client:notifyError("Preset name is required")
         return
     end
 
@@ -471,7 +471,7 @@ net.Receive("liaVendorSavePreset", function(_, client)
 
     lia.vendor.presets[presetName] = validItems
     lia.data.set("vendor_presets", lia.vendor.presets)
-    client:notifyInfoLocalized("vendorPresetSaved", presetName)
+    client:notifyInfo(string.format("Vendor preset '%s' has been saved successfully", presetName))
     lia.log.add(client, "vendorPresetSave", presetName)
     net.Start("liaVendorSyncPresets")
     net.WriteTable(lia.vendor.presets)

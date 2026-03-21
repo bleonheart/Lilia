@@ -104,7 +104,7 @@ function lia.chat.register(chatType, data)
 
     data.onCanSay = data.onCanSay or function(speaker)
         if not data.deadCanChat and not speaker:Alive() then
-            speaker:notifyErrorLocalized("noPerm")
+            speaker:notifyError("You are not allowed to do this.")
             return false
         end
         return true
@@ -112,7 +112,7 @@ function lia.chat.register(chatType, data)
 
     data.color = data.color or (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150)
     data.format = data.format or "chatFormat"
-    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), L(data.format, anonymous and L("someone") or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or L("console"), text)) end
+    data.onChatAdd = data.onChatAdd or function(speaker, text, anonymous) chat.AddText(lia.chat.timestamp(false), (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), L(data.format, anonymous and "Someone" or hook.Run("GetDisplayedName", speaker, chatType) or IsValid(speaker) and speaker:Name() or "CONSOLE", text)) end
     if CLIENT and data.prefix then
         local rawPrefixes = istable(data.prefix) and data.prefix or {data.prefix}
         local aliases, lookup = {}, {}

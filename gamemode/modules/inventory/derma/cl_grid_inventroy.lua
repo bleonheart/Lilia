@@ -3,7 +3,7 @@ function PANEL:Init()
     self:MakePopup()
     self:Center()
     self:SetDraggable(true)
-    self:SetTitle(L("inv"))
+    self:SetTitle("Inventory")
 end
 
 function PANEL:setInventory(inventory)
@@ -84,7 +84,7 @@ function PANEL:updateRestoreButton()
     local data = char and char:getData("overflowItems")
     if data and data.items and #data.items > 0 then
         local size = data.size or {}
-        self.restoreBtn:SetText(L("moveItemsBack", size[1] or 0, size[2] or 0))
+        self.restoreBtn:SetText(string.format("Move %s/%s items back", size[1] or 0, size[2] or 0))
         self.restoreBtn:SetVisible(true)
         self:SetTall(self.baseHeight + self.restoreBtn:GetTall() + 4)
     else

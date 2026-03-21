@@ -1,5 +1,5 @@
 ﻿ENT.Type = "anim"
-ENT.PrintName = L("storage")
+ENT.PrintName = "Storage"
 ENT.Author = "Samael"
 ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"
@@ -19,7 +19,7 @@ function ENT:getStorageInfo()
     local storageInfo = lia.inventory.getStorage(model:lower())
     if not storageInfo then
         storageInfo = {
-            name = L("storageContainer"),
+            name = "Storage Container",
             desc = "storageContainerDesc",
             invType = "GridInv",
             invData = {

@@ -135,12 +135,12 @@ hook.Add("CreateInformationButtons", "liaInformationFlagsUnified", function(page
             parent:Clear()
             local sheet = vgui.Create("liaSheet", parent)
             sheet:Dock(FILL)
-            sheet:SetPlaceholderText(L("searchFlags"))
+            sheet:SetPlaceholderText("Search Flags")
             for flagName, flagData in SortedPairs(lia.flag.list) do
                 if not isnumber(flagName) then
                     local descText = flagData.desc or ""
                     local row = sheet:AddTextRow({
-                        title = L("flag") .. " '" .. flagName .. "'",
+                        title = "Flag '" .. flagName .. "'",
                         desc = descText
                     })
 

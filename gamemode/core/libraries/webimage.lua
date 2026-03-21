@@ -46,26 +46,26 @@ local function buildMaterial(p, flags)
 end
 
 local function validateURL(url)
-    if not url or not isstring(url) then return false, L("urlNotValidString") end
-    if not url:find("^https?://") then return false, L("urlMustStartWithHttp") end
+    if not url or not isstring(url) then return false, "URL Not Valid String" end
+    if not url:find("^https?://") then return false, "URL Must Start With Http" end
     local domain = url:match("^https?://([^/]+)")
-    if not domain then return false, L("urlNoValidDomain") end
-    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, L("localhostUrlsNotAllowed") end
+    if not domain then return false, "URL No Valid Domain" end
+    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "Localhost URLs Not Allowed" end
     local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
     if domain:match(ipPattern) then
         local parts = string.Explode(".", domain)
-        if #parts ~= 4 then return false, L("invalidIPAddressFormat") end
+        if #parts ~= 4 then return false, "Invalid IP Address Format" end
         for _, part in ipairs(parts) do
             local num = tonumber(part)
-            if not num or num < 0 or num > 255 then return false, L("invalidIPAddressOctet") end
+            if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
         end
     else
-        if not domain:find("%.") then return false, L("domainMustContainDot") end
-        if domain:find("%.%.") then return false, L("domainContainsConsecutiveDots") end
+        if not domain:find("%.") then return false, "domain name must contain at least one dot" end
+        if domain:find("%.%.") then return false, "Domain contains consecutive dots." end
     end
 
-    if url:find("[<>\"\\|]") then return false, L("urlContainsInvalidChars") end
-    if #url > 2048 then return false, L("urlTooLong") end
+    if url:find("[<>\"\\|]") then return false, "URL contains invalid characters." end
+    if #url > 2048 then return false, "URL is too long (max 2048 characters)." end
     return true
 end
 
@@ -158,7 +158,7 @@ function lia.webimage.download(n, u, cb, flags)
         end
 
         if not extension then
-            if cb then cb(nil, false, L("invalidFileFormatNotPngJpeg")) end
+            if cb then cb(nil, false, "Invalid file format - not PNG or JPEG") end
             return
         end
 

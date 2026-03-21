@@ -138,7 +138,7 @@ function ITEM.postHooks:drop()
     local client = self.player
     if not client or not IsValid(client) then return end
     if client:HasWeapon(self.class) then
-        client:notifyErrorLocalized("invalidWeapon")
+        client:notifyError("You cannot drop this weapon while it's equipped.")
         client:StripWeapon(self.class)
     end
 end
@@ -147,7 +147,7 @@ ITEM:hook("drop", function(item)
     local client = item.player
     if not client or not IsValid(client) then return false end
     if IsValid(client:GetRagdollEntity()) then
-        client:notifyErrorLocalized("noRagdollAction")
+        client:notifyError("You cannot do that while ragdolled.")
         return false
     end
 
@@ -170,7 +170,7 @@ ITEM.functions.Unequip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError("You cannot do that while ragdolled.")
             return false
         end
 
@@ -179,7 +179,7 @@ ITEM.functions.Unequip = {
             item:setData("ammo", weapon:Clip1())
             client:StripWeapon(item.class)
         else
-            lia.error(L("weaponDoesNotExist", item.class))
+            lia.error(string.format("Weapon '%s' does not exist", item.class))
         end
 
         client:EmitSound(item.unequipSound or "items/ammo_pickup.wav", 80)
@@ -198,7 +198,7 @@ ITEM.functions.Equip = {
         local client = item.player
         if not client or not IsValid(client) then return false end
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError("You cannot do that while ragdolled.")
             return false
         end
 
@@ -206,7 +206,7 @@ ITEM.functions.Equip = {
         if item.weaponCategory then
             for _, v in pairs(items) do
                 if v.id ~= item.id and v.isWeapon and v.weaponCategory == item.weaponCategory and v:getData("equip") then
-                    client:notifyErrorLocalized("weaponSlotFilled")
+                    client:notifyError("You already have a weapon equipped in that slot.")
                     return false
                 end
             end
@@ -223,7 +223,7 @@ ITEM.functions.Equip = {
             weapon:SetClip1(item:getData("ammo", 0))
             if item.onEquipWeapon then item:onEquipWeapon(client, weapon) end
         else
-            lia.error(L("weaponDoesNotExist", item.class))
+            lia.error(string.format("Weapon '%s' does not exist", item.class))
         end
         return false
     end,
@@ -244,7 +244,7 @@ function ITEM:onLoadout()
             client:RemoveAmmo(weapon:Clip1(), weapon:GetPrimaryAmmoType())
             weapon:SetClip1(self:getData("ammo", 0))
         else
-            lia.error(L("weaponDoesNotExist", self.class))
+            lia.error(string.format("Weapon '%s' does not exist", self.class))
         end
     end
 end

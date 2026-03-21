@@ -32,8 +32,8 @@ local function getWeaponItemDefaults(className)
     }
     return {
         name = hook.Run("GetWeaponName", wep) or className,
-        desc = L("weaponsDesc"),
-        category = isGrenade and L("itemCatGrenades") or L("weapons"),
+        desc = "A Weapon.",
+        category = isGrenade and "Grenades" or "Weapons",
         model = wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
         class = className,
         width = size.width,
@@ -142,7 +142,7 @@ net.Receive("liaKickCharacter", function(_, client)
             local oldFaction = targetChar:getFaction()
             local oldFactionData = lia.faction.indices[oldFaction]
             if oldFactionData and oldFactionData.isDefault then return end
-            target:notifyWarningLocalized("kickedFromFaction")
+            target:notifyWarning("You were kicked from your faction!")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
             hook.Run("OnTransferred", target)
@@ -160,21 +160,21 @@ net.Receive("liaKickCharacter", function(_, client)
             if oldFactionData and oldFactionData.isDefault then return end
             lia.db.updateTable({
                 faction = defaultFaction.uniqueID
-            }, nil, "characters", "id = " .. characterID):next(function() lia.char.setCharDatabase(characterID, "factionKickWarn", true) end):catch(function(err) lia.error(L("failedToUpdateCharacterFaction") .. " " .. tostring(err)) end)
-        end):catch(function(err) lia.error(L("failedToQueryCharacterFaction") .. " " .. tostring(err)) end)
+            }, nil, "characters", "id = " .. characterID):next(function() lia.char.setCharDatabase(characterID, "factionKickWarn", true) end):catch(function(err) lia.error("Failed To Update Character Faction " .. tostring(err)) end)
+        end):catch(function(err) lia.error("Failed to query character faction: " .. tostring(err)) end)
     end
 end)
 
 net.Receive("liaCheckSeed", function(_, client)
     local sentSteamID = net.ReadString()
     if not sentSteamID or sentSteamID == "" then
-        lia.adminstrator.notifyAdmin(L("steamIDMissing", client:Name(), client:SteamID()))
+        lia.adminstrator.notifyAdmin(string.format("The SteamID of player %s (%s) wasn't received properly. This can signify tampering with net messages.", client:Name(), client:SteamID()))
         lia.log.add(client, "steamIDMissing", client:Name(), client:SteamID())
         return
     end
 
     if client:SteamID() ~= sentSteamID then
-        lia.adminstrator.notifyAdmin(L("steamIDMismatch", client:Name(), client:SteamID(), sentSteamID))
+        lia.adminstrator.notifyAdmin(string.format("The SteamID of player %s (%s) is different than the saved one (%s).", client:Name(), client:SteamID(), sentSteamID))
         lia.log.add(client, "steamIDMismatch", client:Name(), client:SteamID(), sentSteamID)
     end
 end)
@@ -184,15 +184,15 @@ net.Receive("liaCheckHack", function(_, client)
     hook.Run("PlayerCheatDetected", client)
     if IsValid(client) then
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
-        client:notifyErrorLocalized("caughtCheating")
+        client:notifyError("Cheating detected. Staff have been notified.")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:hasPrivilege("receiveCheaterNotifications") then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
+            if p:isStaffOnDuty() or p:hasPrivilege("receiveCheaterNotifications") then p:notifyWarning(string.format("%s (%s) was flagged for cheating.", client:Name(), client:SteamID())) end
         end
 
         if client:getChar() then
             local timestamp = os.date("%Y-%m-%d %H:%M:%S")
             local severity = "High"
-            hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
+            hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, "Cheating or exploiting", "System", "SYSTEM", severity)
             local charID = client:getChar():getID()
             local message = client:Name() .. " (Character " .. charID .. " | Steam64ID: " .. client:SteamID64() .. ") was flagged for cheating. Severity: " .. severity .. "."
             StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("receiveCheaterNotifications") end)
@@ -212,7 +212,7 @@ net.Receive("liaVerifyCheatsResponse", function(_, client)
 end)
 
 local function getEntityDisplayName(ent)
-    if not IsValid(ent) then return L("unknownEntity") end
+    if not IsValid(ent) then return "Unknown Entity" end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
         local item = ent:getItemTable()
         if item and item.getName then
@@ -246,13 +246,13 @@ end
 
 net.Receive("liaTeleportToEntity", function(_, client)
     if not client:hasPrivilege("teleportToEntity") then
-        client:notifyErrorLocalized("noPrivilege")
+        client:notifyError("No privilege")
         return
     end
 
     local entity = net.ReadEntity()
     if not IsValid(entity) then
-        client:notifyErrorLocalized("invalidEntity")
+        client:notifyError("Invalid entity selected.")
         return
     end
 
@@ -270,7 +270,7 @@ net.Receive("liaTeleportToEntity", function(_, client)
         client:SetPos(entityPos + Vector(0, 0, 50))
     end
 
-    client:notifySuccessLocalized("teleportedToEntity")
+    client:notifySuccess("Teleported to entity")
     lia.log.add(client, "entityTeleport", client:Name(), getEntityDisplayName(entity), tostring(entity:GetPos()))
 end)
 
@@ -312,7 +312,7 @@ net.Receive("liaCharChoose", function(_, client)
                     end
 
                     local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-                    if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+                    if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
                     hook.Run("PrePlayerLoadedChar", client, character, currentChar)
                     character:setup()
                     hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -342,7 +342,7 @@ net.Receive("liaCharChoose", function(_, client)
             end
 
             local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-            if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+            if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
             hook.Run("PrePlayerLoadedChar", client, character, currentChar)
             character:setup()
             hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -371,7 +371,7 @@ net.Receive("liaCharChoose", function(_, client)
     end
 
     local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-    if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+    if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
     hook.Run("PrePlayerLoadedChar", client, character, currentChar)
     character:setup()
     hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -432,7 +432,7 @@ net.Receive("liaCharCreate", function(_, client)
                 local currentChar = client:getChar()
                 if currentChar then currentChar:save() end
                 local unloadedCount = lia.char.unloadUnusedCharacters(client, id)
-                if unloadedCount > 0 then lia.information(L("unloadedUnusedCharacters") .. " " .. unloadedCount .. " " .. L("forPlayer") .. " " .. client:Name()) end
+                if unloadedCount > 0 then lia.information("Unloaded " .. unloadedCount .. " unused characters for " .. client:Name()) end
                 hook.Run("PrePlayerLoadedChar", client, character, currentChar)
                 character:setup()
                 hook.Run("PlayerLoadedChar", client, character, currentChar)
@@ -480,7 +480,7 @@ net.Receive("liaMessageData", function(_, client)
         end
     else
         if utf8.len(text) > charlimit then
-            client:notifyErrorLocalized("messageTooLong", charlimit)
+            client:notifyError(string.format("Your message has been shortened due to being longer than %s characters!", charlimit))
         else
             if (client.liaNextChat or 0) < CurTime() and text:find("%S") then
                 hook.Run("PlayerSay", client, text)
@@ -519,21 +519,21 @@ net.Receive("liaStaffDiscordResponse", function(_, client)
     if not character or character:getFaction() ~= FACTION_STAFF then return end
     client:setLiliaData("staffDiscord", discord)
     local steamID = client:SteamID()
-    local description = L("staffCharacterDiscordSteamID", discord, steamID)
+    local description = string.format("Staff Character - Discord: %s, SteamID: %s", discord, steamID)
     character:setDesc(description)
-    client:notifySuccessLocalized("staffDescUpdated")
+    client:notifySuccess("Staff character description updated!")
 end)
 
 net.Receive("liaReturnFromEntity", function(_, client)
     if not client.previousPosition then
-        client:notifyErrorLocalized("noPreviousPosition")
+        client:notifyError("No previous position")
         return
     end
 
     local returnPos = client.previousPosition
     client:SetPos(returnPos)
     client.previousPosition = nil
-    client:notifySuccessLocalized("returnedFromEntity")
+    client:notifySuccess("Returned from entity")
     lia.log.add(client, "entityReturn", client:Name(), tostring(returnPos))
 end)
 
@@ -576,7 +576,7 @@ net.Receive("liaArgumentsRequest", function(_, client)
                 end
             else
                 if val == nil then
-                    client:notifyErrorLocalized("requiredFieldsMissing")
+                    client:notifyError("Please fill in all required fields.")
                     client.liaArgReqs[id] = nil
                     return
                 end
@@ -599,7 +599,7 @@ net.Receive("liaArgumentsRequest", function(_, client)
                 end
             else
                 if val == nil then
-                    client:notifyErrorLocalized("requiredFieldsMissing")
+                    client:notifyError("Please fill in all required fields.")
                     client.liaArgReqs[id] = nil
                     return
                 end
@@ -629,12 +629,12 @@ net.Receive("liaKeybindServer", function(_, ply)
     if isRelease then
         if data.release and data.serverOnly then
             local success, err = pcall(data.release, player)
-            if not success then lia.error(L("keybindReleaseCallbackError") .. tostring(err)) end
+            if not success then lia.error("Keybind release callback error: " .. tostring(err)) end
         end
     else
         if data.callback and data.serverOnly then
             local success, err = pcall(data.callback, player)
-            if not success then lia.error(L("keybindCallbackError") .. tostring(err)) end
+            if not success then lia.error("Keybind callback error: " .. tostring(err)) end
         end
     end
 end)
@@ -1001,13 +1001,13 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
     local value = net.ReadType()
     local charIDsafe = tonumber(charID)
     if not charIDsafe then
-        client:notifyErrorLocalized("invalidCharID")
+        client:notifyError("Invalid character ID.")
         return
     end
 
     lia.db.query("SELECT name, money, model FROM lia_characters WHERE id = " .. charIDsafe, function(data)
         if not data or #data == 0 then
-            client:notifyErrorLocalized("characterNotFound")
+            client:notifyError("Character not found.")
             return
         end
 
@@ -1017,45 +1017,45 @@ net.Receive("liaAdminSetCharProperty", function(_, client)
             if lia.char.setCharDatabase(charID, "money", moneyValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("setMoney", target:Name(), lia.currency.get(moneyValue))
+                    client:notifySuccess(string.format("You set %s's money to %s.", target:Name(), lia.currency.get(moneyValue)))
                 else
-                    client:notifySuccessLocalized("offlineCharMoneySet", charID, lia.currency.get(moneyValue))
+                    client:notifySuccess(string.format("Character %s's money set to %s.", charID, lia.currency.get(moneyValue)))
                 end
 
                 lia.log.add(client, "adminSetCharMoney", charID, moneyValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError("Failed to update character property.")
             end
         elseif property == "name" then
             local nameValue = tostring(value)
             if lia.char.setCharDatabase(charID, "name", nameValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("changeName", client:Name(), charData.name, nameValue)
+                    client:notifySuccess(string.format("%s changed %s's name to %s.", client:Name(), charData.name, nameValue))
                 else
-                    client:notifySuccessLocalized("offlineCharNameSet", charID, nameValue)
+                    client:notifySuccess(string.format("Character %s's name set to %s.", charID, nameValue))
                 end
 
                 lia.log.add(client, "adminSetCharName", charID, nameValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError("Failed to update character property.")
             end
         elseif property == "model" then
             local modelValue = tostring(value)
             if lia.char.setCharDatabase(charID, "model", modelValue) then
                 local target = lia.char.getCharacter(charID)
                 if IsValid(target) then
-                    client:notifySuccessLocalized("changeModelAdmin", client:Name(), target:Name(), modelValue)
+                    client:notifySuccess(string.format("%s changed %s's model to %s.", client:Name(), target:Name(), modelValue))
                 else
-                    client:notifySuccessLocalized("offlineCharModelSet", charID, modelValue)
+                    client:notifySuccess(string.format("Character %s's model set to %s.", charID, modelValue))
                 end
 
                 lia.log.add(client, "adminSetCharModel", charID, modelValue)
             else
-                client:notifyErrorLocalized("failedToUpdateChar")
+                client:notifyError("Failed to update character property.")
             end
         else
-            client:notifyErrorLocalized("invalidArg")
+            client:notifyError("Invalid argument.")
             return
         end
     end)
@@ -1066,9 +1066,9 @@ net.Receive("liaNetMessage", function(_, client)
     local args = net.ReadTable()
     if lia.net.registry[name] then
         local success, err = pcall(lia.net.registry[name], client, unpack(args))
-        if not success then lia.error(L("netMessageCallbackError", name, tostring(err))) end
+        if not success then lia.error(string.format("Error in net message callback '%s': %s", name, tostring(err))) end
     else
-        lia.error(L("unregisteredNetMessage", name))
+        lia.error(string.format("Received unregistered net message: %s", name))
     end
 end)
 
@@ -1331,7 +1331,7 @@ net.Receive("liaGroupsAdd", function(_, p)
 
     lia.admin.save()
     broadcastGroups()
-    p:notifySuccessLocalized("groupCreated", n)
+    p:notifySuccess(string.format("Group '%s' created.", n))
 end)
 
 net.Receive("liaGroupsRemove", function(_, p)
@@ -1342,7 +1342,7 @@ net.Receive("liaGroupsRemove", function(_, p)
     if lia.admin.groups then lia.admin.groups[n] = nil end
     lia.admin.save()
     broadcastGroups()
-    p:notifySuccessLocalized("groupRemoved", n)
+    p:notifySuccess(string.format("Group '%s' removed.", n))
 end)
 
 net.Receive("liaGroupsRename", function(_, p)
@@ -1356,7 +1356,7 @@ net.Receive("liaGroupsRename", function(_, p)
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[old] then return end
     lia.admin.renameGroup(old, new)
     broadcastGroups()
-    p:notifySuccessLocalized("groupRenamed", old, new)
+    p:notifySuccess(string.format("Group '%s' renamed to '%s'.", old, new))
 end)
 
 net.Receive("liaGroupsSetPerm", function(_, p)
@@ -1380,5 +1380,5 @@ net.Receive("liaGroupsSetPerm", function(_, p)
     net.WriteString(privilege)
     net.WriteBool(value)
     net.Broadcast()
-    p:notifySuccessLocalized("groupPermissionsUpdated")
+    p:notifySuccess("Group permissions updated.")
 end)

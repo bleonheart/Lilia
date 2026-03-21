@@ -146,7 +146,7 @@ ITEM.functions.target = {
                 if item.stamina > 0 then client:restoreStamina(item.stamina) end
                 return true
             else
-                client:notifyErrorLocalized("invalidTargetNeedLiving")
+                client:notifyError("You must be looking at a valid, living player to use this.")
                 return false
             end
         end

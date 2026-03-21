@@ -116,12 +116,12 @@ ITEM.functions.Use = {
     onRun = function(item)
         local client = item.player
         if IsValid(client:GetRagdollEntity()) then
-            client:notifyErrorLocalized("noRagdollAction")
+            client:notifyError("You cannot do that while ragdolled.")
             return false
         end
 
         if client:HasWeapon(item.class) then
-            client:notifyErrorLocalized("alreadyHaveGrenade")
+            client:notifyError("You already have this type of grenade.")
             return false
         end
 

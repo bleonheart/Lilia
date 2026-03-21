@@ -41,27 +41,27 @@ local nextUpdate = 0
 local healthPercent = {
     {
         threshold = 0.2,
-        text = L("criticalCondition"),
+        text = "Critical Condition",
         color = Color(192, 57, 43)
     },
     {
         threshold = 0.4,
-        text = L("seriousInjury"),
+        text = "Serious Injury",
         color = Color(231, 76, 60)
     },
     {
         threshold = 0.6,
-        text = L("moderateInjury"),
+        text = "Moderate Injury",
         color = Color(255, 152, 0)
     },
     {
         threshold = 0.8,
-        text = L("minorInjury"),
+        text = "Minor Injury",
         color = Color(255, 193, 7)
     },
     {
         threshold = 1.0,
-        text = L("healthyStatus"),
+        text = "Healthy",
         color = Color(46, 204, 113)
     }
 }
@@ -269,7 +269,7 @@ function GM:DrawEntityInfo(e, a, pos)
         charInfo[#charInfo + 1] = {e.liaNameLines[i], color_white}
     end
 
-    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or L("noChar")
+    local desc = hook.Run("GetDisplayedDescription", e, true) or ch and ch.getDesc(ch) or "No character found!"
     if desc ~= e.liaDescCache then
         e.liaDescCache = desc
         if #desc > 250 then desc = desc:sub(1, 250) .. "..." end
@@ -363,7 +363,7 @@ local function updateVoiceIndicator()
     end
 
     local voiceType = client:getLocalVar("VoiceType", VOICE_TALKING)
-    local voiceText = L("youAre") .. " " .. L(voiceType)
+    local voiceText = "You are " .. L(voiceType)
     local tooltipLines = {}
     if lia.option.get("voiceRange", false) then
         local radius = VoiceRanges[voiceType] or VoiceRanges[VOICE_TALKING]
@@ -385,7 +385,7 @@ local function updateVoiceIndicator()
     local modifiedText = hook.Run("ModifyVoiceIndicatorText", client, voiceText, voiceType)
     if modifiedText then voiceText = modifiedText end
     table.insert(tooltipLines, "<font=LiliaFont.16b>" .. voiceText .. "</font>")
-    table.insert(tooltipLines, "<font=LiliaFont.16>" .. L("voiceRange") .. ": " .. (VoiceRanges[voiceType] or VoiceRanges[VOICE_TALKING]) .. " units</font>")
+    table.insert(tooltipLines, "<font=LiliaFont.16>Voice Range: " .. (VoiceRanges[voiceType] or VoiceRanges[VOICE_TALKING]) .. " units</font>")
     voiceIndicatorPanel:SetTooltip(table.concat(tooltipLines, "\n"))
     voiceIndicatorPanel.Paint = function(pnl, w, h)
         lia.util.drawBlur(pnl, 4, 2)
@@ -618,7 +618,7 @@ end
 function GM:HUDPaintBackground()
     lia.menu.drawAll()
     RenderEntities()
-    if BRANCH ~= "x86-64" then draw.SimpleText(L("switchTo64Bit"), "LiliaFont.17", ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    if BRANCH ~= "x86-64" then draw.SimpleText("We recommend the use of the x86-64 Garry's Mod Branch on your installation, consider swapping as soon as possible.", "LiliaFont.17", ScrW() * 0.5, ScrH() * 0.97, Color(255, 255, 255, 10), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
 end
 
 function GM:OnContextMenuOpen()
@@ -652,7 +652,7 @@ function GM:CharListLoaded()
 end
 
 function GM:ForceDermaSkin()
-    return lia.config.get("DermaSkin", L("liliaSkin"))
+    return lia.config.get("DermaSkin", "Lilia Skin")
 end
 
 function GM:DermaSkinChanged()
@@ -805,10 +805,7 @@ function GM:GetMainMenuPosition(character)
             local currentChar = client:getChar()
             local currentCharID = currentChar.getID and currentChar:getID() or nil
             local viewingCharID = character.getID and character:getID() or nil
-            if currentCharID == viewingCharID then
-                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using current player position (same character)")
-                return client:GetPos(), Angle(0, 0, 0)
-            end
+            if currentCharID == viewingCharID then return client:GetPos(), Angle(0, 0, 0) end
         end
     end
 
@@ -820,25 +817,19 @@ function GM:GetMainMenuPosition(character)
             if istable(menuPos) and menuPos[currentMap] then
                 local mapPos = menuPos[currentMap]
                 if istable(mapPos) then
-                    chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using faction position for map: " .. (currentMap or "unknown"))
                     return mapPos.position, mapPos.angles
                 elseif isvector(mapPos) then
-                    chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using faction position for map: " .. (currentMap or "unknown"))
                     return mapPos, Angle(0, 0, 0)
                 end
             end
 
             if istable(menuPos) then
-                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using default faction position")
                 return menuPos.position, menuPos.angles
             elseif isvector(menuPos) then
-                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using default faction position")
                 return menuPos, Angle(0, 0, 0)
             end
         end
     end
-
-    chat.AddText(Color(255, 100, 100), "[Main Menu] ", Color(255, 255, 255), "No position found, using default")
     return nil, nil
 end
 

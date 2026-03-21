@@ -16,7 +16,7 @@ function SWEP:SecondaryAttack()
         local victim = target:IsBot() and target:Name() or target:SteamID()
         lia.admin.execCommand(action, victim)
     else
-        client:notifyErrorLocalized("cantFreezeTarget")
+        client:notifyError("You cannot freeze this!")
     end
 end
 

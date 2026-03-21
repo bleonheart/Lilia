@@ -44,8 +44,8 @@ lia.db.modules = {
                 if d then
                     d:reject(err)
                 else
-                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " * " .. query .. "\n")
-                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), " " .. err .. "\n")
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " * " .. query .. "\n")
+                    MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), " " .. err .. "\n")
                 end
             end
 
@@ -105,7 +105,7 @@ function lia.db.connect(callback, reconnect)
         lia.db.escape = dbModule.escape
         lia.db.query = dbModule.query
     else
-        lia.error(L("invalidStorageModule", lia.db.module or "Unavailable"))
+        lia.error(string.format("'%s' is not a valid data storage method!", lia.db.module or "Unavailable"))
     end
 end
 
@@ -132,8 +132,8 @@ end
 function lia.db.wipeTables(callback)
     local wipedTables = {}
     local function realCallback()
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[" .. L("database") .. "]", Color(255, 255, 255), L("dataWiped") .. "\n")
-        if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), L("wipedTables", table.concat(wipedTables, ", ")) .. "\n") end
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(0, 255, 0), "[Database]", Color(255, 255, 255), "ALL LILIA DATA HAS BEEN WIPED\n")
+        if #wipedTables > 0 then MsgC(Color(255, 255, 0), "[Lilia] ", Color(255, 255, 255), string.format("Wiped tables: %s", table.concat(wipedTables, ", ")) .. "\n") end
         if isfunction(callback) then callback() end
     end
 
@@ -567,7 +567,7 @@ end
 ]]
 function lia.db.updateTable(value, callback, dbTable, condition)
     local d = deferred.new()
-    local query = "UPDATE " .. "lia_" .. (dbTable or "characters") .. " SET " .. genUpdateList(value) .. buildWhereClause(condition)
+    local query = "UPDATE lia_" .. (dbTable or "characters") .. " SET " .. genUpdateList(value) .. buildWhereClause(condition)
     lia.db.query(query, function(results, lastID)
         if callback then callback(results, lastID) end
         d:resolve({
@@ -1590,7 +1590,7 @@ function lia.db.removeColumn(tableName, columnName)
 
             lia.db.query("PRAGMA table_info(" .. fullTableName .. ")", function(columns)
                 if not columns then
-                    d:reject(L("failedToGetTableInfo"))
+                    d:reject("Failed to get table info")
                     return
                 end
 
@@ -1606,7 +1606,7 @@ function lia.db.removeColumn(tableName, columnName)
                 end
 
                 if #newColumns == 0 then
-                    d:reject(L("cannotRemoveLastColumnFromTable"))
+                    d:reject("Cannot Remove Last Column From Table")
                     return
                 end
 
@@ -1714,8 +1714,8 @@ function lia.db.createSnapshot(tableName)
                 path = filePath,
                 records = #results
             })
-        end, function(err) d:reject(L("databaseError") .. " " .. tostring(err)) end)
-    end, function(err) d:reject(L("tableCheckError") .. " " .. tostring(err)) end)
+        end, function(err) d:reject("Database Error " .. tostring(err)) end)
+    end, function(err) d:reject("Table check error: " .. tostring(err)) end)
     return d
 end
 
@@ -1748,7 +1748,7 @@ function lia.db.loadSnapshot(fileName)
     local d = deferred.new()
     local filePath = "lilia/snapshots/" .. fileName
     if not file.Exists(filePath, "DATA") then
-        d:reject(L("snapshotFileNotFound") .. " " .. fileName .. " " .. L("notFound"))
+        d:reject("Snapshot file " .. fileName .. " not found")
         return d
     end
 
@@ -1760,7 +1760,7 @@ function lia.db.loadSnapshot(fileName)
 
     local success, snapshot = pcall(util.JSONToTable, jsonData)
     if not success then
-        d:reject(L("failedParseJSONData", tostring(snapshot)))
+        d:reject(string.format("Failed to parse JSON data: %s", tostring(snapshot)))
         return d
     end
 
@@ -1814,8 +1814,8 @@ function lia.db.loadSnapshot(fileName)
             end
 
             insertNextBatch()
-        end, function(err) d:reject(L("failedToClearTable") .. " " .. tostring(err)) end)
-    end, function(err) d:reject(L("tableCheckError") .. " " .. tostring(err)) end)
+        end, function(err) d:reject("Failed To Clear Table " .. tostring(err)) end)
+    end, function(err) d:reject("Table check error: " .. tostring(err)) end)
     return d
 end
 
@@ -1847,5 +1847,5 @@ function GM:SetupDatabase()
 end
 
 function GM:DatabaseConnected()
-    lia.bootstrap(L("database"), L("databaseConnected", lia.db.module))
+    lia.bootstrap("Database", string.format("Lilia has connected to the database. We are using %s!", lia.db.module))
 end

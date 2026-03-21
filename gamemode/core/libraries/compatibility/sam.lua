@@ -45,21 +45,21 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
     if type(client) ~= "Player" then return true end
     if lia.config.get("SAMEnforceStaff", false) then
         if cmd.permission and not client:HasPermission(cmd.permission) then
-            client:notifyErrorLocalized("staffPermissionDenied")
+            client:notifyError("You do not have permission to use this command.")
             return false
         end
 
         if client:hasPrivilege("canBypassSAMFactionWhitelist") or client:isStaffOnDuty() then
             return true
         else
-            client:notifyErrorLocalized("staffRestrictedCommand")
+            client:notifyError("You must be on duty or have bypass permissions to use this command.")
             return false
         end
     end
 end)
 
 if SERVER then
-    sam.command.new("blind"):SetPermission("blind", "superadmin"):AddArg("player"):Help(L("blindCommandHelp")):OnExecute(function(client, targets)
+    sam.command.new("blind"):SetPermission("blind", "superadmin"):AddArg("player"):Help("Blinds the players."):OnExecute(function(client, targets)
         for i = 1, #targets do
             local target = targets[i]
             net.Start("liaBlindTarget")
@@ -68,14 +68,14 @@ if SERVER then
         end
 
         if not sam.is_command_silent then
-            client:sam_send_message(L("samBlindedTargets"), {
+            client:sam_send_message("{A} Blinded {T}", {
                 A = client,
                 T = targets
             })
         end
     end):End()
 
-    sam.command.new("unblind"):SetPermission("blind", "superadmin"):AddArg("player"):Help(L("unblindCommandHelp")):OnExecute(function(client, targets)
+    sam.command.new("unblind"):SetPermission("blind", "superadmin"):AddArg("player"):Help("Unblinds the players."):OnExecute(function(client, targets)
         for i = 1, #targets do
             local target = targets[i]
             net.Start("liaBlindTarget")
@@ -84,7 +84,7 @@ if SERVER then
         end
 
         if not sam.is_command_silent then
-            client:sam_send_message(L("samUnblindedTargets"), {
+            client:sam_send_message("{A} Un-Blinded {T}", {
                 A = client,
                 T = targets
             })

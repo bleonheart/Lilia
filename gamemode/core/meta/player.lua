@@ -296,7 +296,7 @@ end
 ]]
 function playerMeta:hasPrivilege(privilegeName)
     if not isstring(privilegeName) then
-        lia.error(L("hasPrivilegeExpectedString", tostring(privilegeName)))
+        lia.error(string.format("Privilege name must be a string, got %s", tostring(privilegeName)))
         return false
     end
     return lia.admin.hasAccess(self, privilegeName)
@@ -1487,7 +1487,7 @@ function playerMeta:setWaypoint(name, vector, logo, onReach)
 
                 surface.SetFont("LiliaFont.17")
                 local nameText = name
-                local metersText = L("meters", howClose)
+                local metersText = string.format("%s Meters", howClose)
                 local nameTw, nameTh = surface.GetTextSize(nameText)
                 local metersTw, metersTh = surface.GetTextSize(metersText)
                 local containerTw = math.max(nameTw, metersTw)
@@ -1652,7 +1652,7 @@ function playerMeta:setMainCharacter(charID)
                 local daysSince = (os.time() - lastSetTime) / 86400
                 if daysSince < cooldownDays then
                     local daysRemaining = math.ceil(cooldownDays - daysSince)
-                    return false, L("mainCharacterCooldownActive", daysRemaining)
+                    return false, string.format("You must wait %d more day(s) before you can change your main character.", daysRemaining)
                 end
             end
         end
@@ -2433,14 +2433,14 @@ if SERVER then
         lia.db.insertTable({
             player = self:Name(),
             playerSteamID = steamID,
-            reason = reason or L("genericReason"),
+            reason = reason or "No reason specified.",
             bannerName = IsValid(banner) and banner:Name() or "",
             bannerSteamID = IsValid(banner) and banner:SteamID() or "",
             timestamp = os.time(),
             evidence = ""
         }, nil, "bans")
 
-        self:Kick(L("banMessage", duration or 0, reason or L("genericReason")))
+        self:Kick(string.format("You've been banned for %s minute(s). (%s)", duration or 0, reason or "No reason specified."))
     end
 
     --[[

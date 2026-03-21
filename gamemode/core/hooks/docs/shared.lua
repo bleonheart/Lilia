@@ -263,7 +263,7 @@ end
             if lia.faction.indices[factionID] and lia.faction.indices[factionID].oneCharOnly then
                 for _, other in pairs(lia.char.getAll()) do
                     if other.steamID == char.steamID and other:getFaction() == factionID then
-                        return false, L("charAlreadyInFaction")
+                        return false, "This player already has another character in this faction!"
                     end
                 end
             end
@@ -296,7 +296,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanInviteToClass", "RestrictByRank", function(client, target)
-            if not client:IsAdmin() then return false, L("insufficientPermissions") end
+            if not client:IsAdmin() then return false, "You do not have sufficient permissions." end
         end)
         ```
 ]]
@@ -328,7 +328,7 @@ end
         hook.Add("CanInviteToFaction", "BlockFullFaction", function(client, target)
             local faction = lia.faction.indices[client:Team()]
             if faction and faction.memberLimit and faction.memberLimit <= faction:countMembers() then
-                return false, L("limitFaction")
+                return false, "This faction is full. Try again later."
             end
         end)
         ```
@@ -387,7 +387,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPerformVendorEdit", "AdminOnlyVendors", function(client, vendor)
-            if not client:IsAdmin() then return false, L("insufficientPermissions") end
+            if not client:IsAdmin() then return false, "You do not have sufficient permissions." end
         end)
         ```
 ]]
@@ -417,7 +417,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPickupMoney", "RespectWantedStatus", function(client, money)
-            if client:getNetVar("isWanted") then return false, L("cannotPickupWhileWanted") end
+            if client:getNetVar("isWanted") then return false, "You cannot pick up items while wanted." end
         end)
         ```
 ]]
@@ -475,7 +475,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPlayerCreateChar", "LimitByPlaytime", function(client)
-            if not client:playTimeGreaterThan(3600) then return false, L("needMorePlaytime") end
+            if not client:playTimeGreaterThan(3600) then return false, "You need more playtime to perform this action." end
         end)
         ```
 ]]
@@ -508,7 +508,7 @@ end
         ```lua
         hook.Add("CanPlayerJoinClass", "WhitelistCheck", function(client, class, info)
             if info.requiresWhitelist and not client:getChar():getClasswhitelists()[class] then
-                return false, L("noWhitelist")
+                return false, "You are not whitelisted for this."
             end
         end)
         ```
@@ -569,7 +569,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPlayerModifyConfig", "SuperAdminOnly", function(client)
-            if not client:IsSuperAdmin() then return false, L("insufficientPermissions") end
+            if not client:IsSuperAdmin() then return false, "You do not have sufficient permissions." end
         end)
         ```
 ]]
@@ -599,7 +599,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPlayerRotateItem", "LockQuestItems", function(client, item)
-            if item:getData("questLocked") then return false, L("itemLocked") end
+            if item:getData("questLocked") then return false, "This item is locked." end
         end)
         ```
 ]]
@@ -627,7 +627,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPlayerThrowPunch", "DisallowTiedPlayers", function(client)
-            if client:getNetVar("tied") then return false, L("cannotWhileTied") end
+            if client:getNetVar("tied") then return false, "You cannot do this while tied." end
         end)
         ```
 ]]
@@ -657,7 +657,7 @@ end
     Example Usage:
         ```lua
         hook.Add("CanPlayerUseCommand", "RestrictNonStaff", function(client, command)
-            if command.adminOnly and not client:IsAdmin() then return false, L("insufficientPermissions") end
+            if command.adminOnly and not client:IsAdmin() then return false, "You do not have sufficient permissions." end
         end)
         ```
 ]]
@@ -1008,7 +1008,7 @@ end
     Example Usage:
         ```lua
         hook.Add("GetDefaultCharDesc", "StaffDesc", function(client, faction)
-            if faction == FACTION_STAFF then return L("staffCharacterDiscordSteamID", "n/a", client:SteamID()), true end
+            if faction == FACTION_STAFF then return string.format("Staff Character - Discord: %s, SteamID: %s", "n/a", client:SteamID()), true end
         end)
         ```
 ]]

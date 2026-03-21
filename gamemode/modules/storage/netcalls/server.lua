@@ -16,14 +16,14 @@ net.Receive("liaStorageUnlock", function(_, client)
     local storage = storageFunc()
     if not storage then return end
     if client.lastPasswordAttempt and CurTime() < client.lastPasswordAttempt + passwordDelay then
-        client:notifyWarningLocalized("passwordTooQuick")
+        client:notifyWarning("Please wait before setting another password!")
     else
         if storage.password == password then
             lia.log.add(client, "storageUnlock", storage:GetClass())
             storage:openInv(client)
         else
             lia.log.add(client, "storageUnlockFailed", storage:GetClass(), password)
-            client:notifyErrorLocalized("wrongPassword")
+            client:notifyError("You've entered the wrong password.")
             client.liaStorageEntity = nil
         end
 
@@ -76,7 +76,7 @@ net.Receive("liaStorageTransfer", function(_, client)
         client.storageTransaction = nil
         if IsValid(client) then lia.log.add(client, "itemTransferFailed", item:getName(), fromInv:getID(), toInv:getID()) end
         item:spawn(failItemDropPos)
-        if IsValid(client) then client:notifyInfoLocalized("itemOnGround") end
+        if IsValid(client) then client:notifyInfo("Your item has been placed on the ground.") end
     end)
 end)
 
@@ -92,46 +92,46 @@ net.Receive("liaStorageSetPassword", function(_, client)
     if not storage or not storage.receivers[client] then return end
     if action == "remove" then
         if not storage.password then
-            client:notifyErrorLocalized("storageNotLocked")
+            client:notifyError("This storage is not locked.")
             return
         end
 
         storage.password = nil
         storage:setNetVar("locked", false)
-        client:notifySuccessLocalized("storageUnlocked")
+        client:notifySuccess("Storage password has been removed.")
         lia.log.add(client, "storagePasswordRemoved", storage:GetClass())
     elseif action == "set" then
         local newPassword = net.ReadString()
         if not newPassword or newPassword == "" then
-            client:notifyErrorLocalized("invalidPassword")
+            client:notifyError("Password cannot be empty.")
             return
         end
 
         storage.password = newPassword
         storage:setNetVar("locked", true)
-        client:notifySuccessLocalized("storageLocked")
+        client:notifySuccess("Storage has been locked.")
         lia.log.add(client, "storagePasswordSet", storage:GetClass())
     elseif action == "change" then
         if not storage.password then
-            client:notifyErrorLocalized("storageNotLocked")
+            client:notifyError("This storage is not locked.")
             return
         end
 
         local oldPassword = net.ReadString()
         local newPassword = net.ReadString()
         if storage.password ~= oldPassword then
-            client:notifyErrorLocalized("wrongPassword")
+            client:notifyError("You've entered the wrong password.")
             return
         end
 
         if not newPassword or newPassword == "" then
-            client:notifyErrorLocalized("invalidPassword")
+            client:notifyError("Password cannot be empty.")
             return
         end
 
         storage.password = newPassword
         storage:setNetVar("locked", true)
-        client:notifySuccessLocalized("storagePasswordChanged")
+        client:notifySuccess("Storage password has been changed.")
         lia.log.add(client, "storagePasswordChanged", storage:GetClass())
     end
 

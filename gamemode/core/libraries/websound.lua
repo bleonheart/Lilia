@@ -183,14 +183,14 @@ local function validateSoundFile(filePath, fileData)
     if fileSize < 44 then return false, "file too small" end
     if fileSize > 50 * 1024 * 1024 then return false, "file too large" end
     local extMatch = filePath:match("%.([^%.]+)$")
-    if not extMatch then return false, L("noFileExtension") end
+    if not extMatch then return false, "no file extension" end
     local ext = extMatch:lower()
     if ext == "wav" then
-        if not fileData:find("^RIFF") or not fileData:find("WAVE") then return false, L("invalidWAVHeader") end
+        if not fileData:find("^RIFF") or not fileData:find("WAVE") then return false, "invalid wav header" end
     elseif ext == "mp3" then
         if not fileData:find("^ID3") and not fileData:find("\255\251") and not fileData:find("\255\250") then return false, "invalid mp3 format" end
     elseif ext == "ogg" then
-        if not fileData:find("^OggS") then return false, L("invalidOGGHeader") end
+        if not fileData:find("^OggS") then return false, "invalid ogg header" end
     end
     return true
 end
@@ -223,26 +223,26 @@ end
         ```
 ]]
 local function validateURL(url)
-    if not url or not isstring(url) then return false, L("urlNotValidString") end
-    if not url:find("^https?://") then return false, L("urlMustStartWithHttp") end
+    if not url or not isstring(url) then return false, "URL Not Valid String" end
+    if not url:find("^https?://") then return false, "URL Must Start With Http" end
     local domain = url:match("^https?://([^/]+)")
-    if not domain then return false, L("urlNoValidDomain") end
-    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, L("localhostUrlsNotAllowed") end
+    if not domain then return false, "URL No Valid Domain" end
+    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "Localhost URLs Not Allowed" end
     local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
     if domain:match(ipPattern) then
         local parts = string.Explode(".", domain)
-        if #parts ~= 4 then return false, L("invalidIPAddressFormat") end
+        if #parts ~= 4 then return false, "Invalid IP Address Format" end
         for _, part in ipairs(parts) do
             local num = tonumber(part)
-            if not num or num < 0 or num > 255 then return false, L("invalidIPAddressOctet") end
+            if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
         end
     else
-        if not domain:find("%.") then return false, L("domainMustContainDot") end
-        if domain:find("%.%.") then return false, L("domainContainsConsecutiveDots") end
+        if not domain:find("%.") then return false, "domain name must contain at least one dot" end
+        if domain:find("%.%.") then return false, "Domain contains consecutive dots." end
     end
 
-    if url:find("[<>\"\\|]") then return false, L("urlContainsInvalidChars") end
-    if #url > 2048 then return false, L("urlTooLong") end
+    if url:find("[<>\"\\|]") then return false, "URL contains invalid characters." end
+    if #url > 2048 then return false, "URL is too long (max 2048 characters)." end
     return true
 end
 
@@ -295,13 +295,13 @@ function lia.websound.download(name, url, cb)
     name = normalizeName(name)
     local u = url or lia.websound.stored[name]
     if not u or u == "" then
-        if cb then cb(nil, false, L("noUrlProvided")) end
+        if cb then cb(nil, false, "No URL Provided") end
         return
     end
 
     local isValidURL, urlValidationError = validateURL(u)
     if not isValidURL then
-        if cb then cb(nil, false, L("invalidUrl") .. ": " .. urlValidationError) end
+        if cb then cb(nil, false, "Invalid URL: " .. urlValidationError) end
         return
     end
 
@@ -335,7 +335,7 @@ function lia.websound.download(name, url, cb)
     http.Fetch(u, function(body)
         local isValid, downloadValidationError = validateSoundFile(name, body)
         if not isValid then
-            if cb then cb(nil, false, L("fileValidationFailed", downloadValidationError)) end
+            if cb then cb(nil, false, string.format("File validation failed: %s", downloadValidationError)) end
             return
         end
 
@@ -359,10 +359,10 @@ function lia.websound.download(name, url, cb)
                     finalize(true)
                 else
                     file.Delete(savePath)
-                    if cb then cb(nil, false, L("cachedFileInvalid") .. ": " .. cachedValidationError) end
+                    if cb then cb(nil, false, "Cached File Invalid: " .. cachedValidationError) end
                 end
             else
-                if cb then cb(nil, false, L("couldNotReadCachedFile")) end
+                if cb then cb(nil, false, "Could not read cached file") end
             end
         elseif cb then
             cb(nil, false, err)
