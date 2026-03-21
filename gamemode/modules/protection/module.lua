@@ -4,13 +4,13 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "anticheatDescription"
 MODULE.Privileges = {
     ["canSeeAltingNotifications"] = {
-        Name = "canSeeAltingNotifications",
+        Name = "See Alting Notifications",
         MinAccess = "admin",
-        Category = "exploiting",
+        Category = "Exploiting",
     },
     ["teleportToEntity"] = {
-        Name = "teleportToEntity",
+        Name = "Teleport To Entity",
         MinAccess = "admin",
-        Category = "exploiting",
+        Category = "Exploiting",
     },
 }

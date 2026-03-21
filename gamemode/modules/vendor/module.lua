@@ -4,14 +4,14 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "npcVendorDescription"
 MODULE.Privileges = {
     ["canEditVendors"] = {
-        Name = "canEditVendors",
+        Name = "Edit Vendors",
         MinAccess = "superadmin",
-        Category = "vendors",
+        Category = "Vendors",
     },
     ["canCreateVendorPresets"] = {
-        Name = "canCreateVendorPresets",
+        Name = "Create Vendor Presets",
         MinAccess = "admin",
-        Category = "vendors",
+        Category = "Vendors",
     },
 }
 

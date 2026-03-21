@@ -4,13 +4,13 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "teamsSystemDescription"
 MODULE.Privileges = {
     ["canManageFactions"] = {
-        Name = "canManageFactions",
+        Name = "Manage Factions",
         MinAccess = "admin",
-        Category = "categoryFactionManagement",
+        Category = "Faction Management",
     },
     ["manageWhitelists"] = {
-        Name = "manageWhitelists",
+        Name = "Manage Whitelists",
         MinAccess = "admin",
-        Category = "categoryFactionManagement",
+        Category = "Faction Management",
     },
 }

@@ -4,33 +4,33 @@ MODULE.discord = "@liliaplayer"
 MODULE.desc = "chatSystemDescription"
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
-        Name = "noOOCCooldown",
+        Name = "No OOC Cooldown",
         MinAccess = "admin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
     ["adminChat"] = {
-        Name = "adminChat",
+        Name = "Admin Chat",
         MinAccess = "superadmin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
     ["localEventChat"] = {
-        Name = "localEventChat",
+        Name = "Local Event Chat",
         MinAccess = "admin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
     ["eventChat"] = {
-        Name = "eventChat",
+        Name = "Event Chat",
         MinAccess = "admin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
     ["accessHelpChat"] = {
-        Name = "accessHelpChat",
+        Name = "Access Help Chat",
         MinAccess = "superadmin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
     ["bypassOOCBlock"] = {
-        Name = "bypassOOCBlockPrivilege",
+        Name = "Bypass OOC Block",
         MinAccess = "superadmin",
-        Category = "categoryChat",
+        Category = "Chat",
     },
 }
