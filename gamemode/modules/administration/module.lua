@@ -1,7 +1,7 @@
-﻿MODULE.name = "administrationModuleName"
+﻿MODULE.name = "Administration"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "administrationToolsDescription"
+MODULE.desc = "Provides comprehensive administration tools and staff management features."
 MODULE.Privileges = {
     ["ManageWeaponOverrides"] = {
         Name = "Manage Weapon Overrides",

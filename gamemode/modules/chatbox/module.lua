@@ -1,7 +1,7 @@
-﻿MODULE.name = "chatboxModuleName"
+﻿MODULE.name = "Chatbox"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "chatSystemDescription"
+MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
         Name = "No OOC Cooldown",

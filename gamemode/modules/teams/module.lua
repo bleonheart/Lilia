@@ -1,7 +1,7 @@
-﻿MODULE.name = "teamsModuleName"
+﻿MODULE.name = "Teams"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "teamsSystemDescription"
+MODULE.desc = "Manages teams and factions with whitelist support and admin controls."
 MODULE.Privileges = {
     ["canManageFactions"] = {
         Name = "Manage Factions",

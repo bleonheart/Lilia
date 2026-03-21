@@ -1,7 +1,7 @@
-﻿MODULE.name = "vendorModuleName"
+﻿MODULE.name = "Vendor"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "npcVendorDescription"
+MODULE.desc = "Provides NPC vendors who can buy and sell items with stock management and dialogue-driven transactions."
 MODULE.Privileges = {
     ["canEditVendors"] = {
         Name = "Edit Vendors",
