@@ -267,7 +267,6 @@ function lia.faction.getModelCustomizationAllowed(client, faction, context)
     return skinAllowed, bodygroupsAllowed
 end
 
-lia.faction._bodygroupNameIndexCache = lia.faction._bodygroupNameIndexCache or {}
 --[[
     Purpose:
         Builds a lookup table of bodygroup name -> bodygroup index for a specific model path.
