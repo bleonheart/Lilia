@@ -264,12 +264,10 @@ function lia.faction.getModelCustomizationAllowed(client, faction, context)
         if a ~= nil then skinAllowed = a == true end
         if b ~= nil then bodygroupsAllowed = b == true end
     end
-
     return skinAllowed, bodygroupsAllowed
 end
 
 lia.faction._bodygroupNameIndexCache = lia.faction._bodygroupNameIndexCache or {}
-
 --[[
     Purpose:
         Builds a lookup table of bodygroup name -> bodygroup index for a specific model path.
@@ -476,7 +474,6 @@ function lia.faction.getBodygroupWhitelistRule(faction, modelPath, bodygroupInde
         rule = rules[string.lower(name)]
         if rule ~= nil then return rule end
     end
-
     return nil
 end
 

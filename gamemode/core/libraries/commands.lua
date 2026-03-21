@@ -6697,7 +6697,6 @@ lia.command.add("beclass", {
 
         local currentClass = character:getClass()
         local isSameClass = currentClass == classID
-
         local function applyRequestedClassModel()
             if not istable(classData.model) then
                 character:setData("classModel", nil)
@@ -6705,7 +6704,6 @@ lia.command.add("beclass", {
             end
 
             if not isstring(requestedModel) or requestedModel == "" then return false end
-
             local function gatherModels(mdl, out)
                 if isstring(mdl) and mdl ~= "" then
                     out[#out + 1] = mdl
@@ -6718,7 +6716,6 @@ lia.command.add("beclass", {
 
             local validModels = {}
             gatherModels(classData.model, validModels)
-
             local ok = false
             for _, v in ipairs(validModels) do
                 if v == requestedModel then
@@ -6729,15 +6726,12 @@ lia.command.add("beclass", {
 
             if not ok then return false end
             if util and util.IsValidModel and not util.IsValidModel(requestedModel) then return false end
-
             character:setData("classModel", requestedModel)
             return true
         end
 
         if isSameClass then
-            if applyRequestedClassModel() then
-                client:notify("Model updated. Will apply on respawn.")
-            end
+            if applyRequestedClassModel() then client:notify("Model updated. Will apply on respawn.") end
             return
         end
 

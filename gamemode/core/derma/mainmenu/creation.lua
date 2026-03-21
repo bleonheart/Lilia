@@ -222,7 +222,6 @@ function PANEL:onStepChanged(oldStep, newStep)
                     self.buttons:SetParent(self)
                     self.buttons:SetTall(48)
                     self.buttons:MoveToFront()
-
                     self.buttons:Dock(NODOCK)
                     self.buttons._liaFullWidthBottom = true
                     if self.buttons._liaOldThink == nil then self.buttons._liaOldThink = self.buttons.Think end
@@ -291,7 +290,6 @@ function PANEL:onStepChanged(oldStep, newStep)
         if pw <= 0 then pw = ScrW() end
         if ph <= 0 then ph = ScrH() end
         local dir = self._transitionDir or 1
-
         newStep:Stop()
         newStep:Dock(NODOCK)
         newStep:SetSize(pw, ph)
@@ -300,14 +298,12 @@ function PANEL:onStepChanged(oldStep, newStep)
         newStep:SetVisible(true)
         newStep:onDisplay()
         newStep:InvalidateChildren(true)
-
         if L(key):upper() ~= self.next:GetText() then
             self.next:SetAlpha(0)
             sizeButton(self.next, L(key):upper())
         end
 
         self.next:AlphaTo(255, 0.5)
-
         local duration = 0.35
         newStep:MoveTo(0, 0, duration, 0, 0.2, function()
             if not IsValid(newStep) then return end
@@ -332,6 +328,7 @@ function PANEL:onStepChanged(oldStep, newStep)
             oldStep:SetVisible(false)
             oldStep:onHide()
         end)
+
         show()
     else
         show()

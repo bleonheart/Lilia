@@ -194,9 +194,7 @@ function MODULE:PostPlayerLoadout(client)
                         client:SetModel(class.model)
                     elseif istable(class.model) then
                         local selected = character:getData("classModel")
-                        if isstring(selected) and selected ~= "" and (not util or not util.IsValidModel or util.IsValidModel(selected)) then
-                            client:SetModel(selected)
-                        end
+                        if isstring(selected) and selected ~= "" and (not util or not util.IsValidModel or util.IsValidModel(selected)) then client:SetModel(selected) end
                     end
                 end
             end

@@ -457,9 +457,7 @@ lia.char.registerVar("model", {
                 local skinAllowed, bodygroupsAllowed = lia.faction.getModelCustomizationAllowed(client, faction, data)
                 if skinAllowed and data.skin ~= nil then
                     local desiredSkin = tonumber(data.skin) or defaultSkin
-                    if istable(faction.allowedSkins) and not lia.faction.isSkinAllowedForFaction(faction, desiredSkin) then
-                        desiredSkin = lia.faction.getDefaultAllowedSkinForFaction(faction, defaultSkin)
-                    end
+                    if istable(faction.allowedSkins) and not lia.faction.isSkinAllowedForFaction(faction, desiredSkin) then desiredSkin = lia.faction.getDefaultAllowedSkinForFaction(faction, defaultSkin) end
                     newData.skin = desiredSkin
                 else
                     newData.skin = defaultSkin
@@ -472,9 +470,7 @@ lia.char.registerVar("model", {
                         local idx = tonumber(k)
                         if idx then
                             local desiredValue = tonumber(v) or 0
-                            if istable(faction.allowedBodygroups) and not lia.faction.isBodygroupValueAllowed(faction, newData.model, idx, desiredValue) then
-                                desiredValue = tonumber(groups[idx]) or 0
-                            end
+                            if istable(faction.allowedBodygroups) and not lia.faction.isBodygroupValueAllowed(faction, newData.model, idx, desiredValue) then desiredValue = tonumber(groups[idx]) or 0 end
                             chosenGroups[idx] = desiredValue
                         end
                     end

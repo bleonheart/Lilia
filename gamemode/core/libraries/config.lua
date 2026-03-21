@@ -394,7 +394,6 @@ end
 
 if CLIENT then
     lia.config._uiBindings = lia.config._uiBindings or {}
-
     function lia.config._bindUI(key, panel, updater)
         if not isstring(key) or key == "" then return end
         if not IsValid(panel) or not isfunction(updater) then return end
@@ -442,9 +441,7 @@ if CLIENT then
         hook.Run("OnConfigUpdated", key, oldValue, lia.config.stored[key].value)
     end)
 
-    hook.Add("OnConfigUpdated", "liaConfigRefreshUIBindings", function(key, _, value)
-        lia.config._refreshBoundUI(key, value)
-    end)
+    hook.Add("OnConfigUpdated", "liaConfigRefreshUIBindings", function(key, _, value) lia.config._refreshBoundUI(key, value) end)
 end
 
 if SERVER then
@@ -1622,11 +1619,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 net.SendToServer()
             end
 
-            if CLIENT then
-                lia.config._bindUI(key, checkbox, function(v)
-                    checkbox:SetChecked(tobool(v))
-                end)
-            end
+            if CLIENT then lia.config._bindUI(key, checkbox, function(v) checkbox:SetChecked(tobool(v)) end) end
         elseif configType == "Number" or configType == "Int" or configType == "Float" or configType == "Generic" then
             local entry = p:Add("liaEntry")
             entry:Dock(RIGHT)
@@ -1655,11 +1648,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 end
             end
 
-            if CLIENT then
-                lia.config._bindUI(key, entry, function(v)
-                    entry:SetValue(tostring(v))
-                end)
-            end
+            if CLIENT then lia.config._bindUI(key, entry, function(v) entry:SetValue(tostring(v)) end) end
         elseif configType == "Color" then
             local button = p:Add("liaButton")
             button:Dock(RIGHT)
@@ -1711,11 +1700,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 net.SendToServer()
             end
 
-            if CLIENT then
-                lia.config._bindUI(key, combo, function(v)
-                    combo:SetValue(tostring(v))
-                end)
-            end
+            if CLIENT then lia.config._bindUI(key, combo, function(v) combo:SetValue(tostring(v)) end) end
         end
     end
 
@@ -1801,9 +1786,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                     table.sort(sortedCategories)
                     for _, cat in ipairs(sortedCategories) do
                         local items = categories[cat]
-                        table.sort(items, function(a, b)
-                            return (a.name or "") < (b.name or "")
-                        end)
+                        table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
                         local visibleItems = {}
                         for _, item in ipairs(items) do
                             if not filter or item.name:lower():find(filter, 1, true) or cat:lower():find(filter, 1, true) then table.insert(visibleItems, item) end

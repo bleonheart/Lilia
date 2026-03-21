@@ -680,7 +680,6 @@ lia.color.registerTheme("Teal", {
 })
 
 if CLIENT and not lia.color.theme then lia.color.applyTheme(lia.color.getCurrentThemeName(), false) end
-
 lia.color.registerTheme("Dark", {
     header = Color(40, 40, 40),
     header_text = Color(100, 100, 100),

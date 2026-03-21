@@ -763,7 +763,6 @@ function PANEL:createModelPanel(parent, cl)
 
     updateModel()
     panel.rotationAngle = 45
-    -- Create arrows if there are multiple models
     if #availableModels > 1 then
         local arrowSize, arrowSpace = 32, 8
         local function newArrow(sign, xOffset)
@@ -786,7 +785,6 @@ function PANEL:createModelPanel(parent, cl)
 
         panel.leftArrow = newArrow("<", arrowSpace)
         panel.rightArrow = newArrow(">", container:GetWide() - arrowSize - arrowSpace)
-        -- Update arrow positions when container is resized
         container.PerformLayout = function(s)
             if IsValid(panel.leftArrow) then panel.leftArrow:SetPos(arrowSpace, (s:GetTall() - arrowSize) * 0.5) end
             if IsValid(panel.rightArrow) then panel.rightArrow:SetPos(s:GetWide() - arrowSize - arrowSpace, (s:GetTall() - arrowSize) * 0.5) end
@@ -907,6 +905,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
     else
         btn:SetText(isCurrent and L("alreadyInClass") or L("joinClass"))
     end
+
     btn:SetTall(45)
     btn:Dock(TOP)
     btn:DockMargin(0, 0, 0, 0)
@@ -932,9 +931,7 @@ function PANEL:addJoinButton(parent, cl, canBe)
     btn.DoClick = function()
         lia.websound.playButtonSound()
         if isCurrent then
-            if istable(cl.model) then
-                lia.command.send("beclass", cl.index, self.selectedClassModels and self.selectedClassModels[cl.index] or nil)
-            end
+            if istable(cl.model) then lia.command.send("beclass", cl.index, self.selectedClassModels and self.selectedClassModels[cl.index] or nil) end
             return
         end
 

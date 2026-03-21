@@ -805,9 +805,9 @@ function GM:GetMainMenuPosition(character)
             local currentChar = client:getChar()
             local currentCharID = currentChar.getID and currentChar:getID() or nil
             local viewingCharID = character.getID and character:getID() or nil
-            if currentCharID == viewingCharID then 
+            if currentCharID == viewingCharID then
                 chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using current player position (same character)")
-                return client:GetPos(), Angle(0, 0, 0) 
+                return client:GetPos(), Angle(0, 0, 0)
             end
         end
     end
@@ -837,6 +837,7 @@ function GM:GetMainMenuPosition(character)
             end
         end
     end
+
     chat.AddText(Color(255, 100, 100), "[Main Menu] ", Color(255, 255, 255), "No position found, using default")
     return nil, nil
 end

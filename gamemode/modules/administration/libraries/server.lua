@@ -234,7 +234,6 @@ end
 
 function MODULE:PlayerInitialSpawn(client)
     lia.log.add(client, "playerInitialSpawn")
-
     local steam64 = IsValid(client) and client:SteamID64() or ""
     local message = "Player " .. client:Name() .. " (Steam64ID: " .. steam64 .. ") has joined the server."
     StaffAddTextShadowed(Color(0, 200, 0), "JOIN", Color(255, 255, 255), message)
@@ -242,7 +241,6 @@ end
 
 function MODULE:PlayerDisconnected(client)
     lia.log.add(client, "playerDisconnected")
-
     local steam64 = IsValid(client) and client:SteamID64() or ""
     local message = "Player " .. client:Name() .. " (Steam64ID: " .. steam64 .. ") has left the server."
     StaffAddTextShadowed(Color(128, 128, 128), "LEAVE", Color(255, 255, 255), message)

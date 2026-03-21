@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: workshop.md
 ]]
@@ -11,15 +11,13 @@
     Purpose:
         Workshop addon management system for Lilia framework.
         Handles downloading, mounting, and managing Steam Workshop content.
-    
+
     Realm:
         Shared (server/client split)
 ]]
-
 lia.workshop = lia.workshop or {}
 lia.workshop.ids = lia.workshop.ids or {}
 lia.workshop.known = lia.workshop.known or {}
-
 if SERVER then
     --[[
     Purpose:
@@ -103,7 +101,6 @@ if SERVER then
     end
 
     hook.Add("InitializedModules", "liaWorkshopInitializedModules", function() lia.workshop.cache = lia.workshop.gather() end)
-
     --[[
     Purpose:
         Send the cached workshop IDs to a player so the client knows what to download.
@@ -145,7 +142,6 @@ if SERVER then
 else
     local FORCE_ID = "3527535922"
     lia.workshop.serverIds = lia.workshop.serverIds or {}
-
     local function formatSize(bytes)
         if not bytes or bytes <= 0 then return "0 B" end
         local units = {"B", "KB", "MB", "GB", "TB"}
@@ -278,15 +274,15 @@ else
                 sheet:SetPlaceholderText(L("searchAddons"))
                 local info, totalSize = {}, 0
                 local pending = table.Count(ids)
-                if pending <= 0 then 
-                    -- Show a message when no addons are found
+                if pending <= 0 then
                     local noAddonsLabel = vgui.Create("DLabel", parent)
                     noAddonsLabel:SetText("No workshop addons found. Make sure the server has configured workshop content.")
                     noAddonsLabel:SetContentAlignment(5)
                     noAddonsLabel:Dock(FILL)
                     noAddonsLabel:SetTextColor(Color(200, 200, 200))
-                    return 
+                    return
                 end
+
                 local function populate()
                     for id, fi in pairs(info) do
                         if fi then
@@ -301,23 +297,14 @@ else
                                     size = 64
                                 })
 
-                                -- Add action buttons for the addon
                                 if rowData and rowData.panel then
-                                    -- Modify the panel's layout function to include buttons
                                     local originalPerformLayout = rowData.panel.PerformLayout
                                     rowData.panel.PerformLayout = function(panel)
-                                        -- Call original layout if it exists
                                         if originalPerformLayout then originalPerformLayout(panel) end
-                                        
-                                        -- Create button container if not exists
                                         if not rowData.buttonContainer then
                                             local buttonContainer = vgui.Create("DPanel", panel)
                                             buttonContainer:SetWide(120)
-                                            buttonContainer.Paint = function(self, w, h)
-                                                draw.RoundedBox(0, 0, h - 1, w, 1, lia.config.Color and lia.config.Color.theme or Color(100, 100, 100))
-                                            end
-                                            
-                                            -- Mount Addon button
+                                            buttonContainer.Paint = function(self, w, h) draw.RoundedBox(0, 0, h - 1, w, 1, lia.config.Color and lia.config.Color.theme or Color(100, 100, 100)) end
                                             local mountButton = vgui.Create("liaSmallButton", buttonContainer)
                                             mountButton:SetText("Mount")
                                             mountButton:SetTall(40)
@@ -325,7 +312,6 @@ else
                                             mountButton:DockMargin(0, 0, 0, 20)
                                             mountButton.DoClick = function()
                                                 lia.websound.playButtonSound()
-                                                -- Start download for this specific addon
                                                 steamworks.DownloadUGC(id, function(name, path)
                                                     if name and path then
                                                         LocalPlayer():notifyLocalized("workshopAddonDownloaded", fi.title or id)
@@ -334,8 +320,7 @@ else
                                                     end
                                                 end)
                                             end
-                                            
-                                            -- Open Workshop Link button
+
                                             local linkButton = vgui.Create("liaSmallButton", buttonContainer)
                                             linkButton:SetText("Workshop")
                                             linkButton:SetTall(40)
@@ -344,28 +329,23 @@ else
                                                 lia.websound.playButtonSound()
                                                 gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=" .. id)
                                             end
-                                            
-                                            -- Position button container at the right side of the panel, centered vertically
+
                                             local panelHeight = panel:GetTall()
-                                            local containerHeight = 100 -- 40 + 20 + 40
+                                            local containerHeight = 100
                                             local centerY = (panelHeight - containerHeight) / 2
                                             buttonContainer:SetPos(panel:GetWide() - 130, math.max(5, centerY))
                                             buttonContainer:SetTall(containerHeight)
-                                            
                                             rowData.buttonContainer = buttonContainer
                                         else
-                                            -- Update position of existing button container, centered vertically
                                             local panelHeight = panel:GetTall()
                                             local containerHeight = 100
                                             local centerY = (panelHeight - containerHeight) / 2
                                             rowData.buttonContainer:SetPos(panel:GetWide() - 130, math.max(5, centerY))
                                         end
-                                        
-                                        -- Increase panel height to accommodate buttons
+
                                         panel:SetTall(math.max(panel:GetTall(), 112))
                                     end
 
-                                    -- Trigger layout update
                                     rowData.panel:InvalidateLayout(true)
                                 end
                             elseif sheet.AddTextRow then
@@ -375,25 +355,14 @@ else
                                     compact = true
                                 })
 
-                                -- Add action buttons for text rows as well
                                 if rowData and rowData.panel then
-                                    -- Modify the panel's layout function to include buttons
                                     local originalPerformLayout = rowData.panel.PerformLayout
                                     rowData.panel.PerformLayout = function(panel)
-                                        -- Call original layout if it exists
-                                        if originalPerformLayout then
-                                            originalPerformLayout(panel)
-                                        end
-                                        
-                                        -- Create button container if not exists
+                                        if originalPerformLayout then originalPerformLayout(panel) end
                                         if not rowData.buttonContainer then
                                             local buttonContainer = vgui.Create("DPanel", panel)
                                             buttonContainer:SetWide(120)
-                                            buttonContainer.Paint = function(self, w, h)
-                                                draw.RoundedBox(0, 0, h - 1, w, 1, lia.config.Color and lia.config.Color.theme or Color(100, 100, 100))
-                                            end
-                                            
-                                            -- Mount Addon button
+                                            buttonContainer.Paint = function(self, w, h) draw.RoundedBox(0, 0, h - 1, w, 1, lia.config.Color and lia.config.Color.theme or Color(100, 100, 100)) end
                                             local mountButton = vgui.Create("liaSmallButton", buttonContainer)
                                             mountButton:SetText("Mount")
                                             mountButton:SetTall(40)
@@ -401,7 +370,6 @@ else
                                             mountButton:DockMargin(0, 0, 0, 20)
                                             mountButton.DoClick = function()
                                                 lia.websound.playButtonSound()
-                                                -- Start download for this specific addon
                                                 steamworks.DownloadUGC(id, function(name, path)
                                                     if name and path then
                                                         LocalPlayer():notifyLocalized("workshopAddonDownloaded", fi.title or id)
@@ -410,8 +378,7 @@ else
                                                     end
                                                 end)
                                             end
-                                            
-                                            -- Open Workshop Link button
+
                                             local linkButton = vgui.Create("liaSmallButton", buttonContainer)
                                             linkButton:SetText("Workshop")
                                             linkButton:SetTall(40)
@@ -420,28 +387,23 @@ else
                                                 lia.websound.playButtonSound()
                                                 gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=" .. id)
                                             end
-                                            
-                                            -- Position button container at the right side of the panel, centered vertically
+
                                             local panelHeight = panel:GetTall()
-                                            local containerHeight = 100 -- 40 + 20 + 40
+                                            local containerHeight = 100
                                             local centerY = (panelHeight - containerHeight) / 2
                                             buttonContainer:SetPos(panel:GetWide() - 130, math.max(5, centerY))
                                             buttonContainer:SetTall(containerHeight)
-                                            
                                             rowData.buttonContainer = buttonContainer
                                         else
-                                            -- Update position of existing button container, centered vertically
                                             local panelHeight = panel:GetTall()
                                             local containerHeight = 100
                                             local centerY = (panelHeight - containerHeight) / 2
                                             rowData.buttonContainer:SetPos(panel:GetWide() - 130, math.max(5, centerY))
                                         end
-                                        
-                                        -- Increase panel height to accommodate buttons
+
                                         panel:SetTall(math.max(panel:GetTall(), 102))
                                     end
-                                    
-                                    -- Trigger layout update
+
                                     rowData.panel:InvalidateLayout(true)
                                 end
                             end

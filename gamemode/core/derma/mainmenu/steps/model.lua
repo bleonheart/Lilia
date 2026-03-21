@@ -29,7 +29,6 @@ function PANEL:Init()
     self.customPanelDefaultTall = 220
     self.customPanelDefaultMargin = {0, 16, 0, 16}
     self.customPanel.Paint = nil
-
     self.controls = self.customPanel:Add("liaScrollPanel")
     self.controls:Dock(FILL)
     self.controls:DockMargin(0, 0, 0, 0)
@@ -41,10 +40,10 @@ function PANEL:Init()
         if self.controlsCanvas.SetPaintBackground then self.controlsCanvas:SetPaintBackground(false) end
         self.controlsCanvas.Paint = nil
     end
+
     self.modelsScroll = self.content:Add("liaScrollPanel")
     self.modelsScroll:Dock(FILL)
     self.modelsScroll:DockMargin(0, 0, 0, 0)
-
     local modelsParent = self.modelsScroll.GetCanvas and self.modelsScroll:GetCanvas() or self.modelsScroll
     self.models = IsValid(modelsParent) and modelsParent:Add("DIconLayout") or self.content:Add("DIconLayout")
     self.models:Dock(LEFT)
@@ -168,7 +167,6 @@ function PANEL:addCustomizationSectionPanel()
     section:DockMargin(0, 0, 0, 12)
     section:DockPadding(12, 12, 12, 12)
     section:SetTall(0)
-
     section.Paint = function(_, w, h)
         local bgColor = Color(25, 28, 35, 220)
         lia.derma.rect(0, 0, w, h):Rad(10):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
@@ -222,9 +220,7 @@ function PANEL:addSkinControl(entity, defaultSkin)
         self:updateModelPanel()
     end
 
-    if IsValid(section) then
-        section:InvalidateLayout(true)
-    end
+    if IsValid(section) then section:InvalidateLayout(true) end
 end
 
 function PANEL:addBodygroupControls(entity, defaultGroups)
@@ -261,9 +257,7 @@ function PANEL:addBodygroupControls(entity, defaultGroups)
         end
     end
 
-    if IsValid(section) then
-        section:InvalidateLayout(true)
-    end
+    if IsValid(section) then section:InvalidateLayout(true) end
 end
 
 function PANEL:updateCustomizationControls()
