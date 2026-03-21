@@ -29,6 +29,12 @@ Define the core groups and teams that players can join on your server.
       </div>
 
       <div class="input-group">
+        <label for="faction-prefix">Name Prefix (optional):</label>
+        <input type="text" id="faction-prefix" placeholder="e.g., CP">
+        <small>Added before character names during creation (FACTION.prefix)</small>
+      </div>
+
+      <div class="input-group">
         <label for="faction-desc">Description:</label>
         <textarea id="faction-desc" placeholder="e.g., Law enforcement officers responsible for maintaining order"></textarea>
       </div>
@@ -78,6 +84,38 @@ Define the core groups and teams that players can join on your server.
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
         <small>Add player model paths</small>
+      </div>
+    </div>
+
+    <div class="generator-section">
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="skin-allowed"> Allow Skin Selection
+          </label>
+          <small>Allow players to pick a skin during character creation (FACTION.skinAllowed)</small>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <input type="checkbox" id="bodygroups-allowed"> Allow Bodygroup Selection
+          </label>
+          <small>Allow players to pick bodygroups during character creation (FACTION.bodygroupsAllowed)</small>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="allowed-skins">Allowed Skins (optional Lua table):</label>
+          <textarea id="allowed-skins" placeholder="e.g., {0, 1, 2}"></textarea>
+          <small>If set (and non-empty), selected skin must be in this list (FACTION.allowedSkins)</small>
+        </div>
+
+        <div class="input-group">
+          <label for="allowed-bodygroups">Allowed Bodygroups (optional Lua table):</label>
+          <textarea id="allowed-bodygroups" placeholder="e.g., { [0] = {0, 1}, helmet = {0} }"></textarea>
+          <small>Whitelist rules by bodygroup index or name (FACTION.allowedBodygroups)</small>
+        </div>
       </div>
     </div>
 
@@ -175,6 +213,20 @@ Define the core groups and teams that players can join on your server.
       </div>
 
       <div class="input-group">
+        <label>
+          <input type="checkbox" id="scoreboard-classes-public"> Scoreboard Classes Public
+        </label>
+        <small>Players outside this faction can see this faction's class headers on the scoreboard</small>
+      </div>
+
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="scoreboard-see-all-classes"> Scoreboard See All Classes
+        </label>
+        <small>Members of this faction can see class headers for all factions (intended for staff)</small>
+      </div>
+
+      <div class="input-group">
         <label for="scoreboard-priority">Scoreboard Priority:</label>
         <input type="number" id="scoreboard-priority" placeholder="999" min="1">
         <small>Lower numbers appear first in scoreboard (default: 999)</small>
@@ -234,6 +286,24 @@ function addTextRow(containerId, placeholder, value = '') {
   container.appendChild(div);
 }
 
+function coerceTriple(expr, prefix) {
+  const v = (expr || '').trim();
+  if (!v) return '';
+  if (v.startsWith(prefix + '(')) return v;
+  const cleaned = v.replace(/[()]/g, '').trim();
+  const m = cleaned.match(/^(-?\d+(?:\.\d+)?)\s*,?\s*(-?\d+(?:\.\d+)?)\s*,?\s*(-?\d+(?:\.\d+)?)$/);
+  if (!m) return v;
+  return `${prefix}(${m[1]}, ${m[2]}, ${m[3]})`;
+}
+
+function coerceVector(expr) {
+  return coerceTriple(expr, 'Vector');
+}
+
+function coerceAngle(expr) {
+  return coerceTriple(expr, 'Angle');
+}
+
 // Helper to create a spawn row (Map, Pos, Ang)
 function addSpawnRow(map='', pos='', ang='') {
   const container = document.getElementById('spawns-list');
@@ -281,8 +351,8 @@ function getSpawnValues() {
 
   rows.forEach(row => {
   const map = row.querySelector('.spawn-map').value.trim();
-  const pos = row.querySelector('.spawn-pos').value.trim();
-  const ang = row.querySelector('.spawn-ang').value.trim();
+  const pos = coerceVector(row.querySelector('.spawn-pos').value);
+  const ang = coerceAngle(row.querySelector('.spawn-ang').value);
 
   if (map && pos) {
   if (!spawns[map]) spawns[map] = [];
@@ -299,8 +369,8 @@ function getMainMenuValues() {
 
   rows.forEach(row => {
   const map = row.querySelector('.mm-map').value.trim();
-  const pos = row.querySelector('.mm-pos').value.trim();
-  const ang = row.querySelector('.mm-ang').value.trim();
+  const pos = coerceVector(row.querySelector('.mm-pos').value);
+  const ang = coerceAngle(row.querySelector('.mm-ang').value);
 
   if (pos) {
   if (map) {
@@ -333,6 +403,7 @@ function getCommandValues() {
 function generateFaction() {
   const index = (document.getElementById('faction-index').value || '').trim() || 'FACTION_NAME';
   const name = (document.getElementById('faction-name').value || '').trim() || 'Faction Name';
+  const prefix = (document.getElementById('faction-prefix').value || '').trim();
   const desc = (document.getElementById('faction-desc').value || '').trim() || 'Faction description';
   const colorInput = document.getElementById('faction-color').value;
   const color = colorInput ? `Color(${colorInput})` : 'Color(100, 150, 200)';
@@ -349,6 +420,11 @@ function generateFaction() {
   const mainMenuPos = getMainMenuValues();
   const commands = getCommandValues();
 
+  const skinAllowed = document.getElementById('skin-allowed').checked;
+  const bodygroupsAllowed = document.getElementById('bodygroups-allowed').checked;
+  const allowedSkins = (document.getElementById('allowed-skins').value || '').trim();
+  const allowedBodygroups = (document.getElementById('allowed-bodygroups').value || '').trim();
+
   const health = document.getElementById('health').value || '100';
   const armor = document.getElementById('armor').value || '0';
   const runSpeed = document.getElementById('run-speed').value || '280';
@@ -364,6 +440,8 @@ function generateFaction() {
   const globallyRecognized = document.getElementById('globally-recognized').checked;
   const memberAutoRecognition = document.getElementById('member-auto-recognition').checked;
   const scoreboardHidden = document.getElementById('scoreboard-hidden').checked;
+  const scoreboardClassesPublic = document.getElementById('scoreboard-classes-public').checked;
+  const scoreboardSeeAllClasses = document.getElementById('scoreboard-see-all-classes').checked;
   const scoreboardPriority = document.getElementById('scoreboard-priority').value.trim();
   const logo = document.getElementById('faction-logo').value.trim();
 
@@ -381,12 +459,24 @@ function generateFaction() {
   `FACTION.limit = ${limit}`
   ];
 
+  if (prefix) {
+  lines.push('', '-- Character Creation', `FACTION.prefix = ${JSON.stringify(prefix)}`);
+  }
+
   if (models.length > 0) {
   lines.push('', '-- Models', 'FACTION.models = {');
   models.forEach(model => {
   lines.push(` ${JSON.stringify(model)},`);
   });
   lines.push('}');
+  }
+
+  if (skinAllowed || bodygroupsAllowed || allowedSkins || allowedBodygroups) {
+  lines.push('', '-- Model Customization');
+  if (skinAllowed) lines.push('FACTION.skinAllowed = true');
+  if (bodygroupsAllowed) lines.push('FACTION.bodygroupsAllowed = true');
+  if (allowedSkins) lines.push(`FACTION.allowedSkins = ${allowedSkins}`);
+  if (allowedBodygroups) lines.push(`FACTION.allowedBodygroups = ${allowedBodygroups}`);
   }
 
   lines.push(
@@ -428,12 +518,14 @@ function generateFaction() {
   lines.push('', '-- Visual', `FACTION.logo = ${JSON.stringify(logo)}`);
   }
 
-  if (recognizesGlobally || globallyRecognized || memberAutoRecognition || scoreboardHidden || (scoreboardPriority && scoreboardPriority !== '999')) {
+  if (recognizesGlobally || globallyRecognized || memberAutoRecognition || scoreboardHidden || scoreboardClassesPublic || scoreboardSeeAllClasses || (scoreboardPriority && scoreboardPriority !== '999')) {
   lines.push('', '-- Special Features');
   if (recognizesGlobally) lines.push('FACTION.RecognizesGlobally = true');
   if (globallyRecognized) lines.push('FACTION.isGloballyRecognized = true');
   if (memberAutoRecognition) lines.push('FACTION.MemberToMemberAutoRecognition = true');
   if (scoreboardHidden) lines.push('FACTION.scoreboardHidden = true');
+  if (scoreboardClassesPublic) lines.push('FACTION.scoreboardClassesPublic = true');
+  if (scoreboardSeeAllClasses) lines.push('FACTION.scoreboardSeeAllClasses = true');
   if (scoreboardPriority && scoreboardPriority !== '999') lines.push(`FACTION.scoreboardPriority = ${scoreboardPriority}`);
   }
 
@@ -538,6 +630,8 @@ function fillExampleFaction() {
   document.getElementById('globally-recognized').checked = false;
   document.getElementById('member-auto-recognition').checked = false;
   document.getElementById('scoreboard-hidden').checked = false;
+  document.getElementById('scoreboard-classes-public').checked = false;
+  document.getElementById('scoreboard-see-all-classes').checked = false;
   document.getElementById('scoreboard-priority').value = '100';
   document.getElementById('faction-logo').value = 'materials/ui/faction/citizen_logo.png';
 

@@ -805,7 +805,10 @@ function GM:GetMainMenuPosition(character)
             local currentChar = client:getChar()
             local currentCharID = currentChar.getID and currentChar:getID() or nil
             local viewingCharID = character.getID and character:getID() or nil
-            if currentCharID == viewingCharID then return client:GetPos(), Angle(0, 0, 0) end
+            if currentCharID == viewingCharID then 
+                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using current player position (same character)")
+                return client:GetPos(), Angle(0, 0, 0) 
+            end
         end
     end
 
@@ -817,19 +820,24 @@ function GM:GetMainMenuPosition(character)
             if istable(menuPos) and menuPos[currentMap] then
                 local mapPos = menuPos[currentMap]
                 if istable(mapPos) then
+                    chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using faction position for map: " .. (currentMap or "unknown"))
                     return mapPos.position, mapPos.angles
                 elseif isvector(mapPos) then
+                    chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using faction position for map: " .. (currentMap or "unknown"))
                     return mapPos, Angle(0, 0, 0)
                 end
             end
 
             if istable(menuPos) then
+                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using default faction position")
                 return menuPos.position, menuPos.angles
             elseif isvector(menuPos) then
+                chat.AddText(Color(100, 255, 100), "[Main Menu] ", Color(255, 255, 255), "Using default faction position")
                 return menuPos, Angle(0, 0, 0)
             end
         end
     end
+    chat.AddText(Color(255, 100, 100), "[Main Menu] ", Color(255, 255, 255), "No position found, using default")
     return nil, nil
 end
 
