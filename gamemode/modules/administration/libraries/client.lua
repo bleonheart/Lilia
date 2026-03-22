@@ -943,24 +943,26 @@ local function GenerateDynamicCategories()
     for _, cmdData in pairs(lia.command.list) do
         if cmdData and istable(cmdData) and cmdData.AdminStick and istable(cmdData.AdminStick) then
             adminStickCount = adminStickCount + 1
-            local category = cmdData.AdminStick.Category
-            local subcategory = cmdData.AdminStick.SubCategory
-            if category then
-                if not categories[category] then
-                    categories[category] = {
-                        name = category,
-                        icon = GetIconForCategory(category),
+            local categoryKey = cmdData.AdminStick.Category
+            local subcategoryKey = cmdData.AdminStick.SubCategory
+            local categoryName = cmdData.AdminStick.Category
+            local subcategoryName = cmdData.AdminStick.SubCategory
+            if categoryKey then
+                if not categories[categoryKey] then
+                    categories[categoryKey] = {
+                        name = categoryName,
+                        icon = GetIconForCategory(categoryKey),
                         subcategories = {}
                     }
 
-                    table.insert(categoryNames, category)
+                    table.insert(categoryNames, categoryKey)
                 end
 
-                if subcategory then
-                    if not categories[category].subcategories[subcategory] then
-                        categories[category].subcategories[subcategory] = {
-                            name = subcategory,
-                            icon = GetIconForCategory(subcategory)
+                if subcategoryKey then
+                    if not categories[categoryKey].subcategories[subcategoryKey] then
+                        categories[categoryKey].subcategories[subcategoryKey] = {
+                            name = subcategoryName,
+                            icon = GetIconForCategory(subcategoryKey)
                         }
                     end
                 end
@@ -2224,8 +2226,8 @@ function MODULE:OpenAdminStickUI(tgt)
     local categorizedCommands = {}
     local uncategorizedCommands = {}
     for _, c in ipairs(cmds) do
-        if c.data.AdminStick and c.data.AdminStick.Category then
-            local cat = c.data.AdminStick.Category
+        local cat = c.data.AdminStick and c.data.AdminStick.Category
+        if cat then
             if not categorizedCommands[cat] then categorizedCommands[cat] = {} end
             table.insert(categorizedCommands[cat], c)
         else
