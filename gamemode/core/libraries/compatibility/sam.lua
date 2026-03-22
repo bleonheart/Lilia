@@ -141,7 +141,7 @@ end)
 
 lia.command.add("cleardecals", {
     adminOnly = true,
-    desc = "cleardecalsDesc",
+    desc = "Clears all decals (blood, bullet holes, etc.) for every player.",
     onRun = function()
         for _, v in player.Iterator() do
             v:ConCommand("r_cleardecals")
@@ -150,13 +150,13 @@ lia.command.add("cleardecals", {
 })
 
 lia.config.add("AdminOnlyNotification", "adminOnlyNotifications", true, nil, {
-    desc = "adminOnlyNotificationsDesc",
+    desc = "Restricts certain notifications to admins with specific permissions or those on duty.",
     category = "Core",
     type = "Boolean"
 })
 
 lia.config.add("SAMEnforceStaff", "samEnforceStaff", true, nil, {
-    desc = "samEnforceStaffDesc",
+    desc = "Determines whether staff enforcement for SAM commands is enabled",
     category = "Core",
     type = "Boolean"
 })

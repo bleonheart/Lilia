@@ -44,7 +44,7 @@ ITEM.name = "pacoutfitName"
         ITEM.desc = "Stylish sunglasses that look great"
         ```
 ]]
-ITEM.desc = "pacoutfitDesc"
+ITEM.desc = "A PAC3 Outfit Base."
 --[[
     Purpose:
         Sets the category for inventory sorting

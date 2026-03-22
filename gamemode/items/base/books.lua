@@ -43,7 +43,7 @@ ITEM.name = "booksName"
         ITEM.desc = "A comprehensive guide to programming principles"
         ```
 ]]
-ITEM.desc = "booksDesc"
+ITEM.desc = "A book."
 --[[
     Purpose:
         Sets the category for inventory sorting

@@ -29,7 +29,7 @@ properties.Add("TogglePropBlacklist", {
 })
 
 lia.command.add("sayall", {
-    desc = "sendsPhraseToAllChatTypes",
+    desc = "Sends a phrase to all registered chat types",
     privilege = "adminChat",
     adminOnly = true,
     arguments = {

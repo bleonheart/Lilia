@@ -43,7 +43,7 @@ ITEM.name = "outfit"
         ITEM.desc = "Standard police officer uniform with vest"
         ```
 ]]
-ITEM.desc = "outfitDesc"
+ITEM.desc = "A Outfit Base."
 --[[
     Purpose:
         Sets the category for inventory sorting

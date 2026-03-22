@@ -157,7 +157,7 @@ function lia.faction.loadFromDir(directory)
         end
 
         if not FACTION.desc then
-            FACTION.desc = "noDesc"
+            FACTION.desc = "No Description"
             lia.error(string.format("Faction '%s' is missing a description. You need to add a FACTION.desc", niceName))
         end
 
@@ -972,7 +972,7 @@ end
 
 FACTION_STAFF = lia.faction.register("staff", {
     name = "factionStaffName",
-    desc = "factionStaffDesc",
+    desc = "The Staff",
     color = Color(255, 56, 252),
     isDefault = false,
     models = {"models/player/police.mdl"},

@@ -43,7 +43,7 @@ ITEM.name = "grenadeName"
         ITEM.desc = "A high-explosive fragmentation grenade"
         ```
 ]]
-ITEM.desc = "grenadeDesc"
+ITEM.desc = "Base item for grenades."
 --[[
     Purpose:
         Sets the category for inventory sorting

@@ -63,19 +63,19 @@ hook.Add("CheckValidSit", "liaSimfphys", function(client)
 end)
 
 lia.config.add("DamageInCars", "takeDamageInCars", true, nil, {
-    desc = "takeDamageInCarsDesc",
+    desc = "Whether or not you take damage while in cars",
     category = "Core",
     type = "Boolean"
 })
 
 lia.config.add("CarEntryDelayEnabled", "carEntryDelayEnabled", true, nil, {
-    desc = "carEntryDelayEnabledDesc",
+    desc = "Whether entering a vehicle requires a delay.",
     category = "Core",
     type = "Boolean"
 })
 
 lia.config.add("TimeToEnterVehicle", "timeToEnterVehicle", 4, nil, {
-    desc = "timeToEnterVehicleDesc",
+    desc = "Defines the time to enter vehicle.",
     category = "Core",
     type = "Int",
     min = 1,

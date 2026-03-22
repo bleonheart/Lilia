@@ -1,11 +1,132 @@
-﻿ITEM.name = "bagName"
-ITEM.desc = "bagDesc"
+﻿--[[
+    Folder: Definitions
+    File:  bags.md
+]]
+--[[
+    Bag Item Definition
+
+    Container storage system for the Lilia framework.
+]]
+--[[
+    Bag items provide additional inventory space for players to store items.
+    They create separate inventories that can be accessed through the bag interface.
+
+    PLACEMENT:
+    - Place in: ModuleFolder/items/bags/ItemHere.lua (for module-specific items)
+    - Place in: SchemaFolder/items/bags/ItemHere.lua (for schema-specific items)
+
+    USAGE:
+    - Bag items are opened through the inventory menu
+    - They provide additional storage space in a separate inventory
+    - Items can be transferred between main inventory and bag inventory
+    - Bags can be dropped and picked up with their contents preserved
+]]
+--[[
+    Purpose:
+        Sets the display name shown to players
+
+    Example Usage:
+        ```lua
+        -- Set the bag name
+        ITEM.name = "Backpack"
+        ```
+]]
+ITEM.name = "bagName"
+--[[
+    Purpose:
+        Sets the description text shown to players
+
+    Example Usage:
+        ```lua
+        -- Set the bag description
+        ITEM.desc = "A spacious backpack for carrying extra items"
+        ```
+]]
+ITEM.desc = "A bag to hold more items."
+--[[
+    Purpose:
+        Sets the 3D model used for the item
+
+    Example Usage:
+        ```lua
+        -- Set the bag model
+        ITEM.model = "models/props_c17/suitcase001a.mdl"
+        ```
+]]
 ITEM.model = "models/props_c17/suitcase001a.mdl"
+--[[
+    Purpose:
+        Sets the category for inventory sorting
+
+    Example Usage:
+        ```lua
+        -- Set inventory category
+        ITEM.category = "storage"
+        ```
+]]
 ITEM.category = "storage"
+--[[
+    Purpose:
+        Marks this item as a bag container
+
+    Example Usage:
+        ```lua
+        -- Mark as bag item
+        ITEM.isBag = true
+        ```
+]]
 ITEM.isBag = true
+--[[
+    Purpose:
+        Sets the width of the bag inventory in grid slots
+
+    Example Usage:
+        ```lua
+        -- Set bag inventory width
+        ITEM.invWidth = 2
+        ```
+]]
 ITEM.invWidth = 2
+--[[
+    Purpose:
+        Sets the height of the bag inventory in grid slots
+
+    Example Usage:
+        ```lua
+        -- Set bag inventory height
+        ITEM.invHeight = 2
+        ```
+]]
 ITEM.invHeight = 2
+--[[
+    Purpose:
+        Sets the sound played when interacting with the bag
+
+    Example Usage:
+        ```lua
+        -- Set bag interaction sound
+        ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
+        ```
+]]
 ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
+--[[
+    Purpose:
+        Sets PAC3 data for visual customization when equipped
+
+    Example Usage:
+        ```lua
+        -- Set PAC3 data
+        ITEM.pacData = {
+            [1] = {
+                ["children"] = {},
+                ["self"] = {
+                    ["Model"] = "models/props_c17/suitcase001a.mdl",
+                    ["ClassName"] = "model"
+                }
+            }
+        }
+        ```
+]]
 ITEM.pacData = {}
 function ITEM:onInstanced()
     local data = {

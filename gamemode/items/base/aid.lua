@@ -43,7 +43,7 @@ ITEM.name = "aidName"
         ITEM.desc = "A medical kit that restores health"
         ```
 ]]
-ITEM.desc = "aidDesc"
+ITEM.desc = "Heals you bruh."
 --[[
     Purpose:
         Sets the 3D model used for the item

@@ -529,7 +529,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "noDesc"
+        ITEM.desc = "No Description"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
@@ -549,7 +549,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "noDesc"
+        ITEM.desc = "No Description"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem

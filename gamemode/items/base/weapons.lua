@@ -43,7 +43,7 @@ ITEM.name = "weaponsName"
         ITEM.desc = "A standard 9mm pistol with moderate damage"
         ```
 ]]
-ITEM.desc = "weaponsDesc"
+ITEM.desc = "A Weapon."
 --[[
     Purpose:
         Sets the category for inventory sorting and organization

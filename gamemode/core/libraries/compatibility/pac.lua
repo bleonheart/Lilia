@@ -289,7 +289,7 @@ end
 
 lia.command.add("fixpac", {
     adminOnly = false,
-    desc = "pacFixCommandDesc",
+    desc = "Clears PAC3 caches and restarts PAC3 to fix any outfit issues.",
     onRun = function(client)
         timer.Simple(0, function() if IsValid(client) then client:ConCommand("pac_clear_parts") end end)
         timer.Simple(0.5, function()
@@ -306,7 +306,7 @@ lia.command.add("fixpac", {
 
 lia.command.add("pacenable", {
     adminOnly = false,
-    desc = "pacEnableCommandDesc",
+    desc = "Enables PAC3 (Player Appearance Customizer).",
     onRun = function(client)
         client:ConCommand("pac_enable 1")
         client:notifySuccess("PAC3 has been enabled.")
@@ -315,7 +315,7 @@ lia.command.add("pacenable", {
 
 lia.command.add("pacdisable", {
     adminOnly = false,
-    desc = "pacDisableCommandDesc",
+    desc = "Disables PAC3 (Player Appearance Customizer).",
     onRun = function(client)
         client:ConCommand("pac_enable 0")
         client:notifyInfo("PAC3 has been disabled.")
@@ -323,7 +323,7 @@ lia.command.add("pacdisable", {
 })
 
 lia.config.add("BlockPackURLoad", "blockPackUrlLoad", true, nil, {
-    desc = "blockPackUrlLoadDesc",
+    desc = "Determines whether loading PAC3 packs from a URL should be blocked.",
     category = "Core",
     noNetworking = false,
     schemaOnly = false,

@@ -54,7 +54,7 @@ ITEM.model = ""
         ITEM.desc = "A functional vending machine that can be placed in the world"
         ```
 ]]
-ITEM.desc = "entitiesDesc"
+ITEM.desc = "A Base Entity"
 --[[
     Purpose:
         Sets the category for inventory sorting

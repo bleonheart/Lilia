@@ -206,7 +206,7 @@ end
 
 lia.keybind.add("openInventory", {
     keyBind = KEY_NONE,
-    desc = "openInventoryDesc",
+    desc = "Opens your inventory menu",
     onPress = function()
         local f1Menu = vgui.Create("liaMenu")
         f1Menu:setActiveTab("Inventory")
@@ -215,7 +215,7 @@ lia.keybind.add("openInventory", {
 
 lia.keybind.add("adminMode", {
     keyBind = KEY_NONE,
-    desc = "adminModeDesc",
+    desc = "Toggles admin mode to switch between staff and regular character",
     serverOnly = true,
     shouldRun = function(client) return client:isStaff() end,
     onPress = function(client)
@@ -297,7 +297,7 @@ lia.keybind.add("adminMode", {
 
 lia.keybind.add("quickTakeItem", {
     keyBind = KEY_NONE,
-    desc = "quickTakeItemDesc",
+    desc = "Quickly takes an item from the world when looking at it",
     serverOnly = true,
     onPress = function(client)
         if not client:getChar() then return end
@@ -312,7 +312,7 @@ lia.keybind.add("quickTakeItem", {
 
 lia.keybind.add("convertEntity", {
     keyBind = KEY_NONE,
-    desc = "convertEntityDesc",
+    desc = "Converts a world entity into an item",
     onPress = function(client)
         if not IsValid(client) or not client:getChar() then return end
         local trace = client:GetEyeTrace()

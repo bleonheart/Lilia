@@ -1897,7 +1897,7 @@ else
 end
 
 lia.command.add("demorequests", {
-    desc = "demoRequestsDesc",
+    desc = "Demonstrates all available request UI functions",
     privilege = "Staff",
     onRun = function(client)
         if SERVER then
@@ -1975,7 +1975,7 @@ lia.command.add("demorequests", {
 
 lia.command.add("playtime", {
     adminOnly = false,
-    desc = "playtimeDesc",
+    desc = "Displays your total playtime on the server.",
     onRun = function(client)
         local secs = client:getPlayTime()
         if not secs then
@@ -1992,7 +1992,7 @@ lia.command.add("playtime", {
 
 lia.command.add("charid", {
     adminOnly = false,
-    desc = "charidDesc",
+    desc = "Displays your current character's ID.",
     onRun = function(client)
         local char = client:getChar()
         if not char then
@@ -2019,7 +2019,7 @@ lia.command.add("plygetplaytime", {
         SubCategory = "moderationTools",
         Icon = "icon16/time.png"
     },
-    desc = "plygetplaytimeDesc",
+    desc = "Shows the total playtime of the specified character.",
     onRun = function(client, args)
         if not args[1] then
             client:notifyError("Please specify a player.")
@@ -2054,7 +2054,7 @@ lia.command.add("plycheckid", {
         SubCategory = "moderationTools",
         Icon = "icon16/vcard.png"
     },
-    desc = "plycheckidDesc",
+    desc = "Shows the character ID of the specified player.",
     onRun = function(client, args)
         if not args[1] then
             client:notifyError("Please specify a player.")
@@ -2079,7 +2079,7 @@ lia.command.add("plycheckid", {
 })
 
 lia.command.add("checkid", {
-    desc = "charidDesc",
+    desc = "Displays your current character's ID.",
     onRun = function(client)
         local char = client:getChar()
         if not char then
@@ -2094,7 +2094,7 @@ lia.command.add("checkid", {
 
 lia.command.add("managesitrooms", {
     superAdminOnly = true,
-    desc = "manageSitroomsDesc",
+    desc = "Manage administration rooms on the current map: view existing administration rooms, teleport to them, rename them, or reposition them.",
     onRun = function(client)
         if not client:hasPrivilege("manageSitRooms") then return end
         local rooms = lia.data.get("sitrooms", {})
@@ -2106,7 +2106,7 @@ lia.command.add("managesitrooms", {
 
 lia.command.add("addsitroom", {
     superAdminOnly = true,
-    desc = "setSitroomDesc",
+    desc = "Set Administration Room",
     onRun = function(client)
         client:requestString("Enter Name", "Enter the name of the Administration Room:", function(name)
             if name == "" then
@@ -2125,7 +2125,7 @@ lia.command.add("addsitroom", {
 
 lia.command.add("sendtositroom", {
     adminOnly = true,
-    desc = "sendToSitRoomDesc",
+    desc = "Send a player to an Administration Room",
     arguments = {
         {
             name = "name",
@@ -2173,7 +2173,7 @@ lia.command.add("sendtositroom", {
 
 lia.command.add("returnsitroom", {
     adminOnly = true,
-    desc = "returnFromSitroomDesc",
+    desc = "Returns you or the specified player to their previous position before teleporting to an administration room.",
     arguments = {
         {
             name = "name",
@@ -2209,7 +2209,7 @@ lia.command.add("returnsitroom", {
 lia.command.add("charkill", {
     superAdminOnly = true,
     alias = "permakill",
-    desc = "charkillDesc",
+    desc = "Opens the PK case menu to permanently kill a character.",
     arguments = {
         {
             name = "name",
@@ -2303,7 +2303,7 @@ end
 
 lia.command.add("charlist", {
     adminOnly = true,
-    desc = "charListDesc",
+    desc = "List all characters for a player by name or Steam ID, or yourself if none is provided.",
     arguments = {
         {
             name = "playerOrSteamId",
@@ -2404,7 +2404,7 @@ lia.command.add("charlist", {
 
 lia.command.add("plyban", {
     adminOnly = true,
-    desc = "plyBanDesc",
+    desc = "Ban a player from the server for a duration.",
     arguments = {
         {
             name = "name",
@@ -2431,7 +2431,7 @@ lia.command.add("plyban", {
 
 lia.command.add("plykick", {
     adminOnly = true,
-    desc = "plyKickDesc",
+    desc = "Kick a player from the server.",
     arguments = {
         {
             name = "name",
@@ -2454,7 +2454,7 @@ lia.command.add("plykick", {
 
 lia.command.add("plykill", {
     adminOnly = true,
-    desc = "plyKillDesc",
+    desc = "Kill the specified player.",
     arguments = {
         {
             name = "name",
@@ -2472,7 +2472,7 @@ lia.command.add("plykill", {
 
 lia.command.add("plyunban", {
     adminOnly = true,
-    desc = "plyUnbanDesc",
+    desc = "Remove a player's ban by SteamID.",
     arguments = {
         {
             name = "steamid",
@@ -2491,7 +2491,7 @@ lia.command.add("plyunban", {
 
 lia.command.add("plyfreeze", {
     adminOnly = true,
-    desc = "plyFreezeDesc",
+    desc = "Freeze a player for an optional duration.",
     arguments = {
         {
             name = "name",
@@ -2508,7 +2508,7 @@ lia.command.add("plyfreeze", {
 
 lia.command.add("plyunfreeze", {
     adminOnly = true,
-    desc = "plyUnfreezeDesc",
+    desc = "Unfreeze a player.",
     arguments = {
         {
             name = "name",
@@ -2520,7 +2520,7 @@ lia.command.add("plyunfreeze", {
 
 lia.command.add("plyslay", {
     adminOnly = true,
-    desc = "plySlayDesc",
+    desc = "Slay a player instantly.",
     arguments = {
         {
             name = "name",
@@ -2532,7 +2532,7 @@ lia.command.add("plyslay", {
 
 lia.command.add("plyrespawn", {
     adminOnly = true,
-    desc = "plyRespawnDesc",
+    desc = "Force another player to respawn.",
     arguments = {
         {
             name = "name",
@@ -2550,7 +2550,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("plyblind", {
     adminOnly = true,
-    desc = "plyBlindDesc",
+    desc = "Blind a player with a black screen.",
     arguments = {
         {
             name = "name",
@@ -2567,7 +2567,7 @@ lia.command.add("plyblind", {
 
 lia.command.add("plyunblind", {
     adminOnly = true,
-    desc = "plyUnblindDesc",
+    desc = "Remove blindness from a player.",
     arguments = {
         {
             name = "name",
@@ -2579,7 +2579,7 @@ lia.command.add("plyunblind", {
 
 lia.command.add("plyblindfade", {
     adminOnly = true,
-    desc = "plyBlindFadeDesc",
+    desc = "Fade a player's screen to a color.",
     arguments = {
         {
             name = "name",
@@ -2634,7 +2634,7 @@ lia.command.add("plyblindfade", {
 
 lia.command.add("blindfadeall", {
     adminOnly = true,
-    desc = "blindFadeAllDesc",
+    desc = "Fade all non-staff players' screens.",
     arguments = {
         {
             name = "time",
@@ -2678,7 +2678,7 @@ lia.command.add("blindfadeall", {
 
 lia.command.add("plygag", {
     adminOnly = true,
-    desc = "plyGagDesc",
+    desc = "Gag a player, blocking voice chat.",
     arguments = {
         {
             name = "name",
@@ -2690,7 +2690,7 @@ lia.command.add("plygag", {
 
 lia.command.add("plyungag", {
     adminOnly = true,
-    desc = "plyUngagDesc",
+    desc = "Ungag a player.",
     arguments = {
         {
             name = "name",
@@ -2702,7 +2702,7 @@ lia.command.add("plyungag", {
 
 lia.command.add("plymute", {
     adminOnly = true,
-    desc = "plyMuteDesc",
+    desc = "Mute a player's voice chat.",
     arguments = {
         {
             name = "name",
@@ -2714,7 +2714,7 @@ lia.command.add("plymute", {
 
 lia.command.add("plyunmute", {
     adminOnly = true,
-    desc = "plyUnmuteDesc",
+    desc = "Unmute a player's voice chat.",
     arguments = {
         {
             name = "name",
@@ -2726,7 +2726,7 @@ lia.command.add("plyunmute", {
 
 lia.command.add("plybring", {
     adminOnly = true,
-    desc = "plyBringDesc",
+    desc = "Teleport a player to you.",
     arguments = {
         {
             name = "name",
@@ -2738,7 +2738,7 @@ lia.command.add("plybring", {
 
 lia.command.add("plygoto", {
     adminOnly = true,
-    desc = "plyGotoDesc",
+    desc = "Teleport yourself to a player.",
     arguments = {
         {
             name = "name",
@@ -2750,7 +2750,7 @@ lia.command.add("plygoto", {
 
 lia.command.add("plyreturn", {
     adminOnly = true,
-    desc = "plyReturnDesc",
+    desc = "Return a player to their previous position.",
     arguments = {
         {
             name = "name",
@@ -2763,7 +2763,7 @@ lia.command.add("plyreturn", {
 
 lia.command.add("plyjail", {
     adminOnly = true,
-    desc = "plyJailDesc",
+    desc = "Jail a player by locking and freezing them.",
     arguments = {
         {
             name = "name",
@@ -2775,7 +2775,7 @@ lia.command.add("plyjail", {
 
 lia.command.add("plyunjail", {
     adminOnly = true,
-    desc = "plyUnjailDesc",
+    desc = "Release a jailed player.",
     arguments = {
         {
             name = "name",
@@ -2787,7 +2787,7 @@ lia.command.add("plyunjail", {
 
 lia.command.add("plycloak", {
     adminOnly = true,
-    desc = "plyCloakDesc",
+    desc = "Make a player invisible.",
     arguments = {
         {
             name = "name",
@@ -2805,7 +2805,7 @@ lia.command.add("plycloak", {
 
 lia.command.add("plyuncloak", {
     adminOnly = true,
-    desc = "plyUncloakDesc",
+    desc = "Remove invisibility from a player.",
     arguments = {
         {
             name = "name",
@@ -2823,7 +2823,7 @@ lia.command.add("plyuncloak", {
 
 lia.command.add("plygod", {
     adminOnly = true,
-    desc = "plyGodDesc",
+    desc = "Enable god mode on a player.",
     arguments = {
         {
             name = "name",
@@ -2841,7 +2841,7 @@ lia.command.add("plygod", {
 
 lia.command.add("plyungod", {
     adminOnly = true,
-    desc = "plyUngodDesc",
+    desc = "Disable a player's god mode.",
     arguments = {
         {
             name = "name",
@@ -2859,7 +2859,7 @@ lia.command.add("plyungod", {
 
 lia.command.add("plyignite", {
     adminOnly = true,
-    desc = "plyIgniteDesc",
+    desc = "Set a player on fire.",
     arguments = {
         {
             name = "name",
@@ -2876,7 +2876,7 @@ lia.command.add("plyignite", {
 
 lia.command.add("plyextinguish", {
     adminOnly = true,
-    desc = "plyExtinguishDesc",
+    desc = "Extinguish the specified player.",
     arguments = {
         {
             name = "name",
@@ -2888,7 +2888,7 @@ lia.command.add("plyextinguish", {
 
 lia.command.add("plystrip", {
     adminOnly = true,
-    desc = "plyStripDesc",
+    desc = "Strip all weapons from a player.",
     arguments = {
         {
             name = "name",
@@ -2906,7 +2906,7 @@ lia.command.add("plystrip", {
 
 lia.command.add("charunbanoffline", {
     superAdminOnly = true,
-    desc = "charUnbanOfflineDesc",
+    desc = "Unban an offline character using their Char ID.",
     arguments = {
         {
             name = "charId",
@@ -2927,7 +2927,7 @@ lia.command.add("charunbanoffline", {
 
 lia.command.add("charbanoffline", {
     superAdminOnly = true,
-    desc = "charBanOfflineDesc",
+    desc = "Ban an offline character using their Char ID.",
     arguments = {
         {
             name = "charId",
@@ -2960,7 +2960,7 @@ lia.command.add("charbanoffline", {
 
 lia.command.add("playglobalsound", {
     superAdminOnly = true,
-    desc = "playGlobalSoundDesc",
+    desc = "Play a global sound for all players.",
     arguments = {
         {
             name = "sound",
@@ -2982,7 +2982,7 @@ lia.command.add("playglobalsound", {
 
 lia.command.add("plyspectate", {
     adminOnly = true,
-    desc = "plySpectateDesc",
+    desc = "Spectate a player in third person.",
     arguments = {
         {
             name = "name",
@@ -3026,7 +3026,7 @@ lia.command.add("plyspectate", {
 
 lia.command.add("stopspectate", {
     adminOnly = true,
-    desc = "stopSpectateDesc",
+    desc = "Stop spectating and return to normal view.",
     onRun = function(client)
         if not client.liaSpectating then
             client:notifyError("You are not currently spectating anyone")
@@ -3058,7 +3058,7 @@ lia.command.add("stopspectate", {
 
 lia.command.add("playsound", {
     superAdminOnly = true,
-    desc = "playSoundDesc",
+    desc = "Play the specified sound on a specific player.",
     arguments = {
         {
             name = "name",
@@ -3088,7 +3088,7 @@ lia.command.add("playsound", {
 
 lia.command.add("returntodeathpos", {
     adminOnly = true,
-    desc = "returnToDeathPosDesc",
+    desc = "Return to your last recorded death position.",
     onRun = function(client)
         if IsValid(client) and client:Alive() then
             local character = client:getChar()
@@ -3107,7 +3107,7 @@ lia.command.add("returntodeathpos", {
 
 lia.command.add("roll", {
     adminOnly = false,
-    desc = "rollDesc",
+    desc = "Rolls a dice and displays the result.",
     onRun = function(client)
         local rollValue = math.random(0, 100)
         lia.chat.send(client, "roll", rollValue)
@@ -3116,7 +3116,7 @@ lia.command.add("roll", {
 
 lia.command.add("forcefallover", {
     adminOnly = true,
-    desc = "forceFalloverDesc",
+    desc = "Force another player to fall over (go into ragdoll).",
     arguments = {
         {
             name = "name",
@@ -3149,7 +3149,7 @@ lia.command.add("forcefallover", {
 
 lia.command.add("forcegetup", {
     adminOnly = true,
-    desc = "forceGetUpDesc",
+    desc = "Force another player to get up from ragdoll.",
     arguments = {
         {
             name = "name",
@@ -3183,7 +3183,7 @@ lia.command.add("forcegetup", {
 
 lia.command.add("chardesc", {
     adminOnly = false,
-    desc = "changeCharDesc",
+    desc = "Change your character's description.",
     arguments = {
         {
             name = "desc",
@@ -3210,7 +3210,7 @@ lia.command.add("chardesc", {
 
 lia.command.add("chargetup", {
     adminOnly = false,
-    desc = "forceSelfGetUpDesc",
+    desc = "Force yourself to get up from ragdoll (if possible).",
     onRun = function(client)
         if not IsValid(client:GetRagdollEntity()) then
             client:notifyError("You don't have a ragdoll to get up from!")
@@ -3233,7 +3233,7 @@ lia.command.add("chargetup", {
 
 lia.command.add("fallover", {
     adminOnly = false,
-    desc = "fallOverDesc",
+    desc = "Fall over (ragdoll) for a certain duration.",
     arguments = {
         {
             name = "time",
@@ -3270,7 +3270,7 @@ lia.command.add("fallover", {
 
 lia.command.add("togglelockcharacters", {
     superAdminOnly = true,
-    desc = "toggleCharLockDesc",
+    desc = "Toggle whether players can swap characters.",
     onRun = function()
         local newVal = not GetGlobalBool("characterSwapLock", false)
         SetGlobalBool("characterSwapLock", newVal)
@@ -3284,7 +3284,7 @@ lia.command.add("togglelockcharacters", {
 
 lia.command.add("checkinventory", {
     adminOnly = true,
-    desc = "checkInventoryDesc",
+    desc = "Check another player's inventory.",
     arguments = {
         {
             name = "name",
@@ -3322,7 +3322,7 @@ lia.command.add("checkinventory", {
 
 lia.command.add("flaggive", {
     adminOnly = true,
-    desc = "flagGiveDesc",
+    desc = "Give the following flags to the player.",
     arguments = {
         {
             name = "name",
@@ -3364,7 +3364,7 @@ lia.command.add("flaggive", {
 
 lia.command.add("flaggiveall", {
     adminOnly = true,
-    desc = "giveAllFlagsDesc",
+    desc = "Give all possible flags to a character.",
     arguments = {
         {
             name = "name",
@@ -3389,7 +3389,7 @@ lia.command.add("flaggiveall", {
 
 lia.command.add("flagtakeall", {
     adminOnly = true,
-    desc = "takeAllFlagsDesc",
+    desc = "Remove all flags from a character.",
     arguments = {
         {
             name = "name",
@@ -3419,7 +3419,7 @@ lia.command.add("flagtakeall", {
 
 lia.command.add("flagtake", {
     adminOnly = true,
-    desc = "flagTakeDesc",
+    desc = "Remove the following flags from the player.",
     arguments = {
         {
             name = "name",
@@ -3452,7 +3452,7 @@ lia.command.add("flagtake", {
 
 lia.command.add("bringlostitems", {
     superAdminOnly = true,
-    desc = "bringLostItemsDesc",
+    desc = "Bring lost items in a 500 radius to your position.",
     onRun = function(client)
         for _, v in ipairs(ents.FindInSphere(client:GetPos(), 500)) do
             if v:isItem() then v:SetPos(client:GetPos()) end
@@ -3462,7 +3462,7 @@ lia.command.add("bringlostitems", {
 
 lia.command.add("charvoicetoggle", {
     adminOnly = true,
-    desc = "charVoiceToggleDesc",
+    desc = "Toggles voice chat ban for the specified character.",
     arguments = {
         {
             name = "name",
@@ -3507,7 +3507,7 @@ lia.command.add("charvoicetoggle", {
 
 lia.command.add("cleanitems", {
     superAdminOnly = true,
-    desc = "cleanItemsDesc",
+    desc = "Remove all item entities from the map.",
     onRun = function(client)
         local count = 0
         for _, v in ipairs(ents.FindByClass("lia_item")) do
@@ -3521,7 +3521,7 @@ lia.command.add("cleanitems", {
 
 lia.command.add("cleanprops", {
     superAdminOnly = true,
-    desc = "cleanPropsDesc",
+    desc = "Remove all prop entities from the map.",
     onRun = function(client)
         local count = 0
         for _, entity in ents.Iterator() do
@@ -3537,7 +3537,7 @@ lia.command.add("cleanprops", {
 
 lia.command.add("resetmapprops", {
     superAdminOnly = true,
-    desc = "resetMapPropsDesc",
+    desc = "Restore all map-created props by performing a map cleanup.",
     onRun = function(client)
         local started = SysTime()
         client:notifyInfo("Map cleanup started; map props will be restored shortly.")
@@ -3551,7 +3551,7 @@ lia.command.add("resetmapprops", {
 
 lia.command.add("cleannpcs", {
     superAdminOnly = true,
-    desc = "cleanNPCsDesc",
+    desc = "Remove all NPC entities from the map.",
     onRun = function(client)
         local count = 0
         for _, entity in ents.Iterator() do
@@ -3567,7 +3567,7 @@ lia.command.add("cleannpcs", {
 
 lia.command.add("charunban", {
     superAdminOnly = true,
-    desc = "charUnbanDesc",
+    desc = "Unban a character by name or ID.",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3631,7 +3631,7 @@ lia.command.add("charunban", {
 
 lia.command.add("clearinv", {
     superAdminOnly = true,
-    desc = "clearInvDesc",
+    desc = "Clear a player's entire inventory.",
     arguments = {
         {
             name = "name",
@@ -3658,7 +3658,7 @@ lia.command.add("clearinv", {
 
 lia.command.add("charkick", {
     adminOnly = true,
-    desc = "kickCharDesc",
+    desc = "Kick the target's active character to the character menu.",
     arguments = {
         {
             name = "name",
@@ -3694,7 +3694,7 @@ lia.command.add("charkick", {
 
 lia.command.add("freezeallprops", {
     superAdminOnly = true,
-    desc = "freezeAllPropsDesc",
+    desc = "Freeze all props owned by a specific player.",
     arguments = {
         {
             name = "name",
@@ -3726,7 +3726,7 @@ lia.command.add("freezeallprops", {
 
 lia.command.add("charban", {
     superAdminOnly = true,
-    desc = "banCharDesc",
+    desc = "Ban a character by name or ID.",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3780,7 +3780,7 @@ lia.command.add("charban", {
 
 lia.command.add("charwipe", {
     superAdminOnly = true,
-    desc = "charWipeDesc",
+    desc = "Completely wipe a character from the database by name or ID.",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3840,7 +3840,7 @@ lia.command.add("charwipe", {
 
 lia.command.add("charwipeoffline", {
     superAdminOnly = true,
-    desc = "charWipeOfflineDesc",
+    desc = "Completely wipe an offline character from the database using their Char ID.",
     arguments = {
         {
             name = "charId",
@@ -3873,7 +3873,7 @@ lia.command.add("charwipeoffline", {
 
 lia.command.add("checkmoney", {
     adminOnly = true,
-    desc = "checkMoneyDesc",
+    desc = "Check how much money the target player has.",
     arguments = {
         {
             name = "name",
@@ -3900,7 +3900,7 @@ lia.command.add("checkmoney", {
 
 lia.command.add("listbodygroups", {
     adminOnly = true,
-    desc = "listBodygroupsDesc",
+    desc = "List the available bodygroups for a target player.",
     arguments = {
         {
             name = "name",
@@ -3948,7 +3948,7 @@ lia.command.add("listbodygroups", {
 
 lia.command.add("charsetspeed", {
     adminOnly = true,
-    desc = "setSpeedDesc",
+    desc = "Set a player's run speed.",
     arguments = {
         {
             name = "name",
@@ -3980,7 +3980,7 @@ lia.command.add("charsetspeed", {
 
 lia.command.add("charsetmodel", {
     adminOnly = true,
-    desc = "setModelDesc",
+    desc = "Set a player's model.",
     arguments = {
         {
             name = "name",
@@ -4009,7 +4009,7 @@ lia.command.add("charsetmodel", {
 
 lia.command.add("chargiveitem", {
     superAdminOnly = true,
-    desc = "giveItemDesc",
+    desc = "Give an item to a player's inventory.",
     arguments = {
         {
             name = "name",
@@ -4066,7 +4066,7 @@ lia.command.add("chargiveitem", {
 
 lia.command.add("charsetdesc", {
     adminOnly = true,
-    desc = "setDescDesc",
+    desc = "Set a player's character description.",
     arguments = {
         {
             name = "name",
@@ -4105,7 +4105,7 @@ lia.command.add("charsetdesc", {
 
 lia.command.add("charsetname", {
     adminOnly = true,
-    desc = "setNameDesc",
+    desc = "Set a player's character name.",
     arguments = {
         {
             name = "name",
@@ -4140,7 +4140,7 @@ lia.command.add("charsetname", {
 
 lia.command.add("charsetscale", {
     adminOnly = true,
-    desc = "setScaleDesc",
+    desc = "Set a player's model scale.",
     arguments = {
         {
             name = "name",
@@ -4173,7 +4173,7 @@ lia.command.add("charsetscale", {
 
 lia.command.add("charsetjump", {
     adminOnly = true,
-    desc = "setJumpDesc",
+    desc = "Set a player's jump power.",
     arguments = {
         {
             name = "name",
@@ -4206,7 +4206,7 @@ lia.command.add("charsetjump", {
 
 lia.command.add("charsetbodygroup", {
     adminOnly = true,
-    desc = "setBodygroupDesc",
+    desc = "Set a specific bodygroup on a player's model.",
     arguments = {
         {
             name = "name",
@@ -4247,7 +4247,7 @@ lia.command.add("charsetbodygroup", {
 
 lia.command.add("charsetskin", {
     adminOnly = true,
-    desc = "setSkinDesc",
+    desc = "Set a player's skin.",
     arguments = {
         {
             name = "name",
@@ -4286,7 +4286,7 @@ lia.command.add("charsetskin", {
 
 lia.command.add("charsetmoney", {
     superAdminOnly = true,
-    desc = "setMoneyDesc",
+    desc = "Set a player's money to a specific amount.",
     arguments = {
         {
             name = "name",
@@ -4319,7 +4319,7 @@ lia.command.add("charsetmoney", {
 
 lia.command.add("charaddmoney", {
     superAdminOnly = true,
-    desc = "addMoneyDesc",
+    desc = "Add a certain amount of money to a player's balance.",
     arguments = {
         {
             name = "name",
@@ -4355,7 +4355,7 @@ lia.command.add("charaddmoney", {
 
 lia.command.add("globalbotsay", {
     superAdminOnly = true,
-    desc = "globalBotSayDesc",
+    desc = "Force all bots on the server to say something.",
     arguments = {
         {
             name = "message",
@@ -4377,7 +4377,7 @@ lia.command.add("globalbotsay", {
 
 lia.command.add("botsay", {
     superAdminOnly = true,
-    desc = "botSayDesc",
+    desc = "Force a specific bot to say something.",
     arguments = {
         {
             name = "botName",
@@ -4415,7 +4415,7 @@ lia.command.add("botsay", {
 
 lia.command.add("forcesay", {
     superAdminOnly = true,
-    desc = "forceSayDesc",
+    desc = "Force a player to say something in chat.",
     arguments = {
         {
             name = "name",
@@ -4451,7 +4451,7 @@ lia.command.add("forcesay", {
 })
 
 lia.command.add("getmodel", {
-    desc = "getModelDesc",
+    desc = "Get the model of the entity you are looking at.",
     onRun = function(client)
         local entity = client:getTracedEntity()
         if not IsValid(entity) then
@@ -4465,7 +4465,7 @@ lia.command.add("getmodel", {
 })
 
 lia.command.add("pm", {
-    desc = "pmDesc",
+    desc = "Sends a private message to a specified player.",
     arguments = {
         {
             name = "name",
@@ -4501,7 +4501,7 @@ lia.command.add("pm", {
 
 lia.command.add("chargetmodel", {
     adminOnly = true,
-    desc = "getCharModelDesc",
+    desc = "Get the model of a player's character.",
     arguments = {
         {
             name = "name",
@@ -4527,7 +4527,7 @@ lia.command.add("chargetmodel", {
 
 lia.command.add("checkallmoney", {
     superAdminOnly = true,
-    desc = "checkAllMoneyDesc",
+    desc = "Check every player's money balance.",
     onRun = function(client)
         for _, target in player.Iterator() do
             local char = target:getChar()
@@ -4538,7 +4538,7 @@ lia.command.add("checkallmoney", {
 
 lia.command.add("checkflags", {
     adminOnly = true,
-    desc = "checkFlagsDesc",
+    desc = "Check which flags a player has.",
     arguments = {
         {
             name = "name",
@@ -4569,7 +4569,7 @@ lia.command.add("checkflags", {
 
 lia.command.add("chargetname", {
     adminOnly = true,
-    desc = "getCharNameDesc",
+    desc = "Get a player's character name.",
     arguments = {
         {
             name = "name",
@@ -4595,7 +4595,7 @@ lia.command.add("chargetname", {
 
 lia.command.add("chargethealth", {
     adminOnly = true,
-    desc = "getHealthDesc",
+    desc = "Get a player's current health.",
     arguments = {
         {
             name = "name",
@@ -4621,7 +4621,7 @@ lia.command.add("chargethealth", {
 
 lia.command.add("chargetmoney", {
     adminOnly = true,
-    desc = "getMoneyDesc",
+    desc = "Get how much money a player has.",
     arguments = {
         {
             name = "name",
@@ -4648,7 +4648,7 @@ lia.command.add("chargetmoney", {
 
 lia.command.add("chargetinventory", {
     adminOnly = true,
-    desc = "getInventoryDesc",
+    desc = "Get the contents of a player's inventory.",
     arguments = {
         {
             name = "name",
@@ -4686,7 +4686,7 @@ lia.command.add("chargetinventory", {
 
 lia.command.add("getallinfos", {
     adminOnly = true,
-    desc = "getAllInfosDesc",
+    desc = "Print all character data columns to the console.",
     arguments = {
         {
             name = "name",
@@ -4733,7 +4733,7 @@ lia.command.add("getallinfos", {
 })
 
 lia.command.add("dropmoney", {
-    desc = "dropMoneyDesc",
+    desc = "Drop money from your character's balance as a physical entity.",
     arguments = {
         {
             name = "amount",
@@ -4787,7 +4787,7 @@ lia.command.add("dropmoney", {
 
 lia.command.add("exportprivileges", {
     adminOnly = true,
-    desc = "exportprivilegesDesc",
+    desc = "Export all current privileges to a data file",
     onRun = function(client)
         local filename = "lilia_registered_privileges.json"
         if not SERVER then return end
@@ -4911,7 +4911,7 @@ lia.command.add("exportprivileges", {
 
 lia.command.add("fillwithbots", {
     superAdminOnly = true,
-    desc = "botsManageDesc",
+    desc = "Manage server bots - list, kick, or spawn bots.",
     alias = {"bots"},
     arguments = {
         {
@@ -4969,7 +4969,7 @@ lia.command.add("fillwithbots", {
 
 lia.command.add("spawnbots", {
     superAdminOnly = true,
-    desc = "spawnBotsDesc",
+    desc = "Spawn a specific number of bots around your position.",
     arguments = {
         {
             name = "amount",
@@ -5007,7 +5007,7 @@ lia.command.add("spawnbots", {
 
 lia.command.add("bot", {
     superAdminOnly = true,
-    desc = "spawnBotDesc",
+    desc = "Spawn a bot and bring it to your location",
     onRun = function(client)
         if not SERVER then return end
         local maxPlayers = game.MaxPlayers()
@@ -5041,7 +5041,7 @@ lia.command.add("bot", {
 
 lia.command.add("botspeak", {
     superAdminOnly = true,
-    desc = "botsSpeakDesc",
+    desc = "Make all bots say a specified number of random phrases.",
     arguments = {
         {
             name = "phrases",
@@ -5102,7 +5102,7 @@ lia.command.add("botspeak", {
 
 lia.command.add("charsetattrib", {
     superAdminOnly = true,
-    desc = "setAttributes",
+    desc = "Set Attributes",
     arguments = {
         {
             name = "name",
@@ -5161,7 +5161,7 @@ lia.command.add("charsetattrib", {
 
 lia.command.add("checkattributes", {
     adminOnly = true,
-    desc = "checkAttributes",
+    desc = "Check Attributes",
     arguments = {
         {
             name = "name",
@@ -5231,7 +5231,7 @@ lia.command.add("checkattributes", {
 })
 
 lia.command.add("staffdiscord", {
-    desc = "staffdiscordDesc",
+    desc = "Sets your staff Discord username.",
     arguments = {
         {
             name = "discord",
@@ -5255,7 +5255,7 @@ lia.command.add("staffdiscord", {
 
 lia.command.add("trunk", {
     adminOnly = false,
-    desc = "trunkOpenDesc",
+    desc = "Open the vehicle trunk you're looking at to access its storage inventory.",
     onRun = function(client)
         local entity = client:getTracedEntity()
         local maxDistance = 128
@@ -5320,7 +5320,7 @@ lia.command.add("trunk", {
 
 lia.command.add("restockvendor", {
     superAdminOnly = true,
-    desc = "restockVendorDesc",
+    desc = "Restocks all items for the vendor you are looking at to their default quantities.",
     AdminStick = {
         Name = "restockVendorStickName",
         TargetClass = "lia_vendor",
@@ -5348,7 +5348,7 @@ lia.command.add("restockvendor", {
 
 lia.command.add("restockallvendors", {
     superAdminOnly = true,
-    desc = "restockAllVendorsDesc",
+    desc = "Restocks all items on every vendor on the map to their default quantities.",
     onRun = function(client)
         local count = 0
         for _, vendor in ipairs(ents.FindByClass("lia_vendor")) do
@@ -5430,7 +5430,7 @@ lia.command.add("listvendorpresets", {
 
 lia.command.add("charaddattrib", {
     superAdminOnly = true,
-    desc = "addAttributes",
+    desc = "Add Attributes",
     arguments = {
         {
             name = "name",
@@ -5488,7 +5488,7 @@ lia.command.add("charaddattrib", {
 
 lia.command.add("banooc", {
     adminOnly = true,
-    desc = "banOOCCommandDesc",
+    desc = "Bans the specified player from using out-of-character chat.",
     arguments = {
         {
             name = "name",
@@ -5516,7 +5516,7 @@ lia.command.add("banooc", {
 
 lia.command.add("unbanooc", {
     adminOnly = true,
-    desc = "unbanOOCCommandDesc",
+    desc = "Unbans the specified player from out-of-character chat.",
     arguments = {
         {
             name = "name",
@@ -5544,7 +5544,7 @@ lia.command.add("unbanooc", {
 
 lia.command.add("clearchat", {
     adminOnly = true,
-    desc = "clearChatCommandDesc",
+    desc = "Clears chat for all players.",
     onRun = function(client)
         net.Start("liaRegenChat")
         net.Broadcast()
@@ -5553,7 +5553,7 @@ lia.command.add("clearchat", {
 })
 
 lia.command.add("doorsell", {
-    desc = "doorsellDesc",
+    desc = "Sell a door you own and receive a refund based on the door's price.",
     adminOnly = false,
     AdminStick = {
         Name = "adminStickDoorSellName",
@@ -5587,7 +5587,7 @@ lia.command.add("doorsell", {
 })
 
 lia.command.add("admindoorsell", {
-    desc = "admindoorsellDesc",
+    desc = "Admin command to sell a door on behalf of its owner and refund the owner.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickAdminDoorSellName",
@@ -5623,7 +5623,7 @@ lia.command.add("admindoorsell", {
 })
 
 lia.command.add("doortogglelock", {
-    desc = "doortogglelockDesc",
+    desc = "Toggle a door's lock state between locked and unlocked.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickToggleDoorLockName",
@@ -5678,7 +5678,7 @@ lia.command.add("doortogglelock", {
 })
 
 lia.command.add("doorbuy", {
-    desc = "doorbuyDesc",
+    desc = "Purchase a door if it is available and you can afford it.",
     adminOnly = false,
     AdminStick = {
         Name = "buyDoor",
@@ -5724,7 +5724,7 @@ lia.command.add("doorbuy", {
 })
 
 lia.command.add("doortoggleownable", {
-    desc = "doortoggleownableDesc",
+    desc = "Toggle whether a door can be owned by players.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickToggleDoorOwnableName",
@@ -5765,7 +5765,7 @@ lia.command.add("doortoggleownable", {
 })
 
 lia.command.add("doorresetdata", {
-    desc = "doorresetdataDesc",
+    desc = "Reset door data to default settings.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickResetDoorDataName",
@@ -5799,7 +5799,7 @@ lia.command.add("doorresetdata", {
 })
 
 lia.command.add("doortoggleenabled", {
-    desc = "doortoggleenabledDesc",
+    desc = "Toggle door enabled state (active/inactive).",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickToggleDoorEnabledName",
@@ -5827,7 +5827,7 @@ lia.command.add("doortoggleenabled", {
 })
 
 lia.command.add("doortogglehidden", {
-    desc = "doortogglehiddenDesc",
+    desc = "Toggle the hidden state of a door.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickToggleDoorHiddenName",
@@ -5855,7 +5855,7 @@ lia.command.add("doortogglehidden", {
 })
 
 lia.command.add("doorsetprice", {
-    desc = "doorsetpriceDesc",
+    desc = "Set the price for a door.",
     arguments = {
         {
             name = "price",
@@ -5893,7 +5893,7 @@ lia.command.add("doorsetprice", {
 })
 
 lia.command.add("doorsettitle", {
-    desc = "doorsettitleDesc",
+    desc = "Set the title for a door.",
     arguments = {
         {
             name = "title",
@@ -5934,7 +5934,7 @@ lia.command.add("doorsettitle", {
 })
 
 lia.command.add("savedoors", {
-    desc = "savedoorsDesc",
+    desc = "Save door data persistently.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickSaveDoorsName",
@@ -5951,7 +5951,7 @@ lia.command.add("savedoors", {
 })
 
 lia.command.add("doorinfo", {
-    desc = "doorinfoDesc",
+    desc = "Display information about the targeted door.",
     adminOnly = true,
     AdminStick = {
         Name = "adminStickDoorInfoName",
@@ -6036,7 +6036,7 @@ lia.command.add("doorinfo", {
 })
 
 lia.command.add("doorsampledata", {
-    desc = "doorsampledataDesc",
+    desc = "Add sample information to a door using common door variables.",
     adminOnly = true,
     AdminStick = {
         Name = "Add Sample Data",
@@ -6074,7 +6074,7 @@ lia.command.add("doorsampledata", {
 })
 
 lia.command.add("dooraddfaction", {
-    desc = "dooraddfactionDesc",
+    desc = "Add a faction restriction to a door, allowing only specific factions to access it.",
     arguments = {
         {
             name = "faction",
@@ -6137,7 +6137,7 @@ lia.command.add("dooraddfaction", {
 })
 
 lia.command.add("doorremovefaction", {
-    desc = "doorremovefactionDesc",
+    desc = "Remove a faction restriction from a door, or clear all restrictions.",
     arguments = {
         {
             name = "faction",
@@ -6199,7 +6199,7 @@ lia.command.add("doorremovefaction", {
 })
 
 lia.command.add("doorsetclass", {
-    desc = "doorsetclassDesc",
+    desc = "Set a class (job) restriction for a door.",
     arguments = {
         {
             name = "class",
@@ -6270,7 +6270,7 @@ lia.command.add("doorsetclass", {
 })
 
 lia.command.add("doorremoveclass", {
-    desc = "doorremoveclassDesc",
+    desc = "Remove a class (job) restriction from a door.",
     arguments = {
         {
             name = "class",
@@ -6350,7 +6350,7 @@ lia.command.add("doorremoveclass", {
 })
 
 lia.command.add("togglealldoors", {
-    desc = "togglealldoorsDesc",
+    desc = "Toggle the enabled state for all doors in the map.",
     adminOnly = true,
     onRun = function(client)
         local toggleToDisable = false
@@ -6382,7 +6382,7 @@ lia.command.add("togglealldoors", {
 })
 
 lia.command.add("doorid", {
-    desc = "doorIDDesc",
+    desc = "Set the door ID for identification purposes.",
     adminOnly = true,
     onRun = function(client)
         local door = client:getTracedEntity()
@@ -6449,7 +6449,7 @@ lia.command.add("listdoorids", {
 
 lia.command.add("plytransfer", {
     adminOnly = true,
-    desc = "plyTransferDesc",
+    desc = "Transfers the specified player to a new faction.",
     alias = {"charsetfaction"},
     arguments = {
         {
@@ -6546,7 +6546,7 @@ lia.command.add("plytransfer", {
 
 lia.command.add("plywhitelist", {
     adminOnly = true,
-    desc = "plyWhitelistDesc",
+    desc = "Adds the specified player to a faction whitelist.",
     alias = {"factionwhitelist"},
     arguments = {
         {
@@ -6601,7 +6601,7 @@ lia.command.add("plywhitelist", {
 
 lia.command.add("plyunwhitelist", {
     adminOnly = true,
-    desc = "plyUnwhitelistDesc",
+    desc = "Removes the specified player from a faction whitelist.",
     alias = {"factionunwhitelist"},
     arguments = {
         {
@@ -6660,7 +6660,7 @@ lia.command.add("plyunwhitelist", {
 
 lia.command.add("beclass", {
     adminOnly = false,
-    desc = "beClassDesc",
+    desc = "Changes your current class to the specified class.",
     arguments = {
         {
             name = "class",
@@ -6752,7 +6752,7 @@ lia.command.add("beclass", {
 
 lia.command.add("setclass", {
     adminOnly = true,
-    desc = "setClassDesc",
+    desc = "Sets the specified player's class.",
     arguments = {
         {
             name = "name",
@@ -6823,7 +6823,7 @@ lia.command.add("setclass", {
 
 lia.command.add("classwhitelist", {
     adminOnly = true,
-    desc = "classWhitelistDesc",
+    desc = "Grants the specified player whitelist access to a class.",
     arguments = {
         {
             name = "name",
@@ -6870,7 +6870,7 @@ lia.command.add("classwhitelist", {
 
 lia.command.add("classunwhitelist", {
     adminOnly = true,
-    desc = "classUnwhitelistDesc",
+    desc = "Revokes the specified player's whitelist access to a class.",
     arguments = {
         {
             name = "name",
@@ -6917,7 +6917,7 @@ lia.command.add("classunwhitelist", {
 
 lia.command.add("spawnadd", {
     adminOnly = true,
-    desc = "spawnAddDesc",
+    desc = "Adds a spawn point at your current position for the specified faction.",
     arguments = {
         {
             name = "faction",
@@ -6962,7 +6962,7 @@ lia.command.add("spawnadd", {
 
 lia.command.add("spawnremoveinradius", {
     adminOnly = true,
-    desc = "spawnRemoveInRadiusDesc",
+    desc = "Removes all spawn points within the given radius of your position (default 120).",
     arguments = {
         {
             name = "radius",
@@ -7007,7 +7007,7 @@ lia.command.add("spawnremoveinradius", {
 
 lia.command.add("spawnremovebyname", {
     adminOnly = true,
-    desc = "spawnRemoveByNameDesc",
+    desc = "Removes all spawn points for the specified faction.",
     arguments = {
         {
             name = "faction",
@@ -7059,7 +7059,7 @@ lia.command.add("spawnremovebyname", {
 
 lia.command.add("returnitems", {
     superAdminOnly = true,
-    desc = "returnItemsDesc",
+    desc = "Returns items lost on death to the specified player, if any.",
     arguments = {
         {
             name = "name",
@@ -7105,7 +7105,7 @@ lia.command.add("returnitems", {
 
 lia.command.add("returnallitems", {
     superAdminOnly = true,
-    desc = "returnAllItemsDesc",
+    desc = "Returns items lost on death to all players who have lost items.",
     AdminStick = {
         Name = "returnAllItems",
         Category = "characterManagement",
@@ -7167,7 +7167,7 @@ end
 
 lia.command.add("viewtickets", {
     adminOnly = true,
-    desc = "viewTicketsDesc",
+    desc = "Displays all tickets requested by the specified player.",
     arguments = {
         {
             name = "name",
@@ -7228,7 +7228,7 @@ lia.command.add("viewtickets", {
 
 lia.command.add("plyviewclaims", {
     adminOnly = true,
-    desc = "plyViewClaimsDesc",
+    desc = "Displays detailed claim information for the specified player.",
     arguments = {
         {
             name = "name",
@@ -7313,7 +7313,7 @@ lia.command.add("plyviewclaims", {
 
 lia.command.add("viewallclaims", {
     adminOnly = true,
-    desc = "viewAllClaimsDesc",
+    desc = "Displays a summary table of claim data for all admins.",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
@@ -7373,7 +7373,7 @@ lia.command.add("viewallclaims", {
 
 lia.command.add("viewclaims", {
     adminOnly = true,
-    desc = "viewClaimsDesc",
+    desc = "Prints detailed claim information for every admin to chat.",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
@@ -7432,7 +7432,7 @@ lia.command.add("viewclaims", {
 
 lia.command.add("warn", {
     adminOnly = true,
-    desc = "warnDesc",
+    desc = "Issues a warning to the specified player with a given reason.",
     arguments = {
         {
             name = "target",
@@ -7522,7 +7522,7 @@ lia.command.add("previewchatmessages", {
 
 lia.command.add("viewwarns", {
     adminOnly = true,
-    desc = "viewWarnsDesc",
+    desc = "Displays all warnings issued to the specified player.",
     arguments = {
         {
             name = "target",
@@ -7599,7 +7599,7 @@ end
 
 lia.command.add("viewwarnsissued", {
     adminOnly = true,
-    desc = "viewWarnsIssuedDesc",
+    desc = "Displays all warnings issued by the specified staff member.",
     arguments = {
         {
             name = "staff",
@@ -7673,7 +7673,7 @@ lia.command.add("recogwhisper", {
             type = "player"
         },
     },
-    desc = "recogWhisperDesc",
+    desc = "Force player recognition in whisper range.",
     AdminStick = {
         Name = "adminStickForceRecognitionWhisperName",
         Category = "moderation",
@@ -7695,7 +7695,7 @@ lia.command.add("recognormal", {
             type = "player"
         },
     },
-    desc = "recogNormalDesc",
+    desc = "Force player recognition in normal range.",
     AdminStick = {
         Name = "adminStickForceRecognitionNormalName",
         Category = "moderation",
@@ -7717,7 +7717,7 @@ lia.command.add("recogyell", {
             type = "player"
         },
     },
-    desc = "recogYellDesc",
+    desc = "Force player recognition in yell range.",
     AdminStick = {
         Name = "adminStickForceRecognitionYellName",
         Category = "moderation",
@@ -7745,7 +7745,7 @@ lia.command.add("recogbots", {
             optional = true
         },
     },
-    desc = "recogBotsDesc",
+    desc = "Force all bots to recognize people around them. Optionally specify a fake name.",
     onRun = function(_, arguments)
         local range = arguments[1] or "normal"
         local fakeName = arguments[2]
@@ -7757,7 +7757,7 @@ lia.command.add("recogbots", {
 
 lia.command.add("kickbots", {
     privilege = "manageBots",
-    desc = "kickAllBotsDesc",
+    desc = "Kick all bots from the server.",
     onRun = function(client)
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         local kickedCount = 0
@@ -7790,7 +7790,7 @@ lia.command.add("kickbots", {
 
 lia.command.add("npcchangetype", {
     adminOnly = true,
-    desc = "npcchangetypeDesc",
+    desc = "Change the type of a dialog NPC you are looking at.",
     AdminStick = {
         Name = "adminStickChangeNPCType",
         Category = "moderation",
@@ -7898,7 +7898,7 @@ lia.command.add("plyrespawn", {
             type = "player"
         }
     },
-    desc = "plyRespawnDesc",
+    desc = "Force another player to respawn.",
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
@@ -7914,7 +7914,7 @@ lia.command.add("plyrespawn", {
 })
 
 lia.command.add("forcerespawn", {
-    desc = "forceRespawnDesc",
+    desc = "Force yourself to respawn after death.",
     onRun = function(client)
         if client:Alive() then
             client:notifyError("Player is already alive.")
@@ -7939,7 +7939,7 @@ lia.command.add("forcerespawn", {
 })
 
 lia.command.add("resetvendorcooldowns", {
-    desc = "resetvendorcooldownsDesc",
+    desc = "Reset vendor cooldowns for a player",
     privilege = "canEditVendors",
     adminOnly = true,
     arguments = {
@@ -7976,7 +7976,7 @@ lia.command.add("resetvendorcooldowns", {
 
 lia.command.add("storagepasswordremove", {
     adminOnly = true,
-    desc = "storagePasswordRemoveDesc",
+    desc = "Remove the password from the storage container you're looking at.",
     arguments = {},
     onRun = function(client)
         local trace = client:GetEyeTrace()
@@ -8001,7 +8001,7 @@ lia.command.add("storagepasswordremove", {
 
 lia.command.add("storagepasswordchange", {
     adminOnly = true,
-    desc = "storagePasswordChangeDesc",
+    desc = "Change the password on the storage container you're looking at.",
     arguments = {
         {
             name = "password",
@@ -8032,7 +8032,7 @@ lia.command.add("storagepasswordchange", {
 
 lia.command.add("listnearbyentities", {
     adminOnly = true,
-    desc = "listNearbyEntitiesDesc",
+    desc = "Lists all entities within a specified radius around the player.",
     arguments = {
         {
             name = "radius",

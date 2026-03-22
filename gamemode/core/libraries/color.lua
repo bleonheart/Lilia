@@ -987,7 +987,7 @@ lia.config.add("Theme", "theme", "Teal", function(_, newValue)
         lia.color.applyTheme(newValue, true)
     end
 end, {
-    desc = "themeDesc",
+    desc = "Selects the visual theme for the user interface.",
     category = "Core",
     type = "Table",
     options = function()
