@@ -170,7 +170,7 @@ function lia.faction.loadFromDir(directory)
         local overrideModels = hook.Run("OverrideFactionModels", niceName, FACTION.models)
         if overrideModels then FACTION.models = overrideModels end
         if not FACTION.color then FACTION.color = Color(150, 150, 150) end
-        team.SetUp(FACTION.index, FACTION.name or "Unknown", FACTION.color or Color(125, 125, 125))
+        team.SetUp(FACTION.index, FACTION.name or L("unknown"), FACTION.color or Color(125, 125, 125))
         FACTION.models = FACTION.models or DefaultModels
         FACTION.uniqueID = FACTION.uniqueID or niceName
         if FACTION.skinAllowed == nil then FACTION.skinAllowed = false end
