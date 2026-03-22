@@ -43,11 +43,6 @@ function MODULE:CreateChatboxPanel()
         return
     end
 
-    print("[Lilia Debug] CreateChatboxPanel: About to create liaChatBox")
-    print("[Lilia Debug] lia.color.theme exists:", lia.color.theme ~= nil)
-    print("[Lilia Debug] lia.config._initialized:", lia.config and lia.config._initialized or false)
-    print("[Lilia Debug] Stack trace:")
-    debug.Trace()
     self.panel = vgui.Create("liaChatBox")
     self.panel.skipPersist = true
     hook.Run("ChatboxPanelCreated", self.panel)
@@ -65,7 +60,7 @@ function MODULE:CreateChatboxPanel()
     if lia.chat.wasActive then self.panel:setActive(true) end
 end
 
-function MODULE:InitializedModules()
+function MODULE:InitPostEntity()
     hook.Run("CreateChatboxPanel")
 end
 

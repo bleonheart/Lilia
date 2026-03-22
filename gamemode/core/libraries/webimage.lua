@@ -102,7 +102,7 @@ end
                 end, entry.flags)
             end
 
-            hook.Add("InitializedModules", "PreloadHUDImages", function()
+            hook.Add("InitPostEntity", "PreloadHUDImages", function()
                 preloadIcons({
                     {name = "hud/armor_icon.png", url = "https://assets.example.com/images/armor_icon.png", flags = "noclamp smooth"},
                     {name = "hud/health_icon.png", url = "https://assets.example.com/images/health_icon.png", flags = "noclamp smooth"}

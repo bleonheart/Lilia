@@ -289,7 +289,7 @@ function lia.config.set(key, value)
             lia.config.save()
         end
 
-        if CLIENT and oldValue ~= value and IsValid(LocalPlayer()) then LocalPlayer():notifySuccess("Config '" .. (config.name or key) .. "' updated successfully") end
+        if CLIENT and oldValue ~= value then LocalPlayer():notifySuccess("Config '" .. (config.name or key) .. "' updated successfully") end
     end
 end
 

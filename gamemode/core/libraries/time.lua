@@ -249,7 +249,7 @@ end
                 end
             end
 
-            hook.Add("InitializedModules", "ApplyAmbientHourly", applyAmbientByHour)
+            hook.Add("InitPostEntity", "ApplyAmbientHourly", applyAmbientByHour)
         ```
 ]]
 function lia.time.getHour()

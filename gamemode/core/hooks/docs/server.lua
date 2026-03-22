@@ -1272,7 +1272,7 @@ end
 
     Returns:
         string
-            Inventory type ID (e.g., "Inventory").
+            Inventory type ID (e.g., "GridInv").
 
     Realm:
         Server

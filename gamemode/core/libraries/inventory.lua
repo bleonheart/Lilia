@@ -35,7 +35,7 @@ local function checkType(typeID, struct, expected, prefix)
         local actualValue = struct[key]
         local expectedTypeString = isstring(expectedType) and expectedType or type(expectedType)
         local fieldName = prefix .. key
-        assert(type(actualValue) == expectedTypeString, string.format("Inventory type mismatch for field %s: expected %s (ID: %s), got %s", fieldName, expectedTypeString, typeID, type(actualValue)))
+        assert(type(actualValue) == expectedTypeString, L("invTypeMismatch", fieldName, expectedTypeString, typeID, type(actualValue)))
         if istable(expectedType) then checkType(typeID, actualValue, expectedType, prefix .. key .. ".") end
     end
 end
@@ -68,8 +68,8 @@ end
         ```
 ]]
 function lia.inventory.newType(typeID, invTypeStruct)
-    assert(not lia.inventory.types[typeID], string.format("Duplicate inventory type %s", typeID))
-    assert(istable(invTypeStruct), string.format("Expected table for argument #%s", 2))
+    assert(not lia.inventory.types[typeID], L("duplicateInventoryType", typeID))
+    assert(istable(invTypeStruct), L("expectedTableArg", 2))
     checkType(typeID, invTypeStruct, InvTypeStructType)
     debug.getregistry()[invTypeStruct.className] = invTypeStruct
     lia.inventory.types[typeID] = invTypeStruct
@@ -101,7 +101,7 @@ end
 ]]
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
-    assert(class ~= nil, string.format("Bad inventory type %s", typeID))
+    assert(class ~= nil, L("badInventoryType", typeID))
     return setmetatable({
         items = {},
         config = table.Copy(class.config)
@@ -157,7 +157,7 @@ if SERVER then
             end
         end
 
-        assert(isnumber(id) and id >= 0, string.format("No inventories implement loadFromStorage for ID %s", tostring(id)))
+        assert(isnumber(id) and id >= 0, L("noInventoryLoader", tostring(id)))
         return lia.inventory.loadFromDefaultStorage(id, noCache)
     end
 
@@ -196,7 +196,7 @@ if SERVER then
             local typeID = results.invType
             local invType = lia.inventory.types[typeID]
             if not invType then
-                lia.error(string.format("Inventory %s has invalid type %s", id, typeID))
+                lia.error(L("inventoryInvalidType", id, typeID))
                 return
             end
 
@@ -213,7 +213,7 @@ if SERVER then
             instance:onLoaded()
             return instance:loadItems():next(function() return instance end)
         end, function(err)
-            lia.information(string.format("Failed to load inventory %s", tostring(id)))
+            lia.information(L("failedLoadInventory", tostring(id)))
             lia.information(err)
         end)
     end
@@ -247,8 +247,8 @@ if SERVER then
 ]]
     function lia.inventory.instance(typeID, initialData)
         local invType = lia.inventory.types[typeID]
-        assert(istable(invType), string.format("Invalid inventory type %s", tostring(typeID)))
-        assert(initialData == nil or istable(initialData), "initialData must be a table for lia.inventory.instance")
+        assert(istable(invType), L("invalidInventoryType", tostring(typeID)))
+        assert(initialData == nil or istable(initialData), L("initialDataMustBeTable"))
         initialData = initialData or {}
         return invType:initializeStorage(initialData):next(function(id)
             local instance = invType:new()
@@ -291,8 +291,8 @@ if SERVER then
         local originalCharID = charID
         charID = tonumber(charID)
         if not charID then
-            lia.error("charID must be a number (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
-            return deferred.reject("charID must be a number")
+            lia.error(L("charIDMustBeNumber") .. " (received: " .. tostring(originalCharID) .. ", type: " .. type(originalCharID) .. ")")
+            return deferred.reject(L("charIDMustBeNumber"))
         end
         return lia.db.select({"invID"}, INV_TABLE, "charID = " .. charID):next(function(res) return deferred.map(res.results or {}, function(result) return lia.inventory.loadByID(tonumber(result.invID)) end) end)
     end
@@ -443,11 +443,11 @@ if SERVER then
         ```
 ]]
     function lia.inventory.registerStorage(model, data)
-        assert(isstring(model), "Model must be a string")
-        assert(istable(data), "Data must be a table")
-        assert(isstring(data.name), "Storage name is required")
-        assert(isstring(data.invType), "Inventory type is required")
-        assert(istable(data.invData), "Inventory data is required")
+        assert(isstring(model), L("storageModelMustBeString"))
+        assert(istable(data), L("storageDataMustBeTable"))
+        assert(isstring(data.name), L("storageNameRequired"))
+        assert(isstring(data.invType), L("storageInvTypeRequired"))
+        assert(istable(data.invData), L("storageInvDataRequired"))
         lia.inventory.storage[model:lower()] = data
         return data
     end
@@ -513,11 +513,11 @@ if SERVER then
         ```
 ]]
     function lia.inventory.registerTrunk(vehicleClass, data)
-        assert(isstring(vehicleClass), "Vehicle class must be a string")
+        assert(isstring(vehicleClass), L("vehicleClassMustBeString"))
         assert(istable(data), "Data must be a table")
-        assert(isstring(data.name), "Trunk name is required")
-        assert(isstring(data.invType), "Inventory type is required")
-        assert(istable(data.invData), "Inventory data is required")
+        assert(isstring(data.name), L("trunkNameRequired"))
+        assert(isstring(data.invType), L("storageInvTypeRequired"))
+        assert(istable(data.invData), L("storageInvDataRequired"))
         if not data.invData.w then data.invData.w = lia.config.get("trunkInvW", 10) end
         if not data.invData.h then data.invData.h = lia.config.get("trunkInvH", 2) end
         data.isTrunk = true
@@ -706,7 +706,7 @@ else
         end
 
         if lia.inventory.dualInventoryOpen then
-            lia.notify("An inventory is already open.", "error")
+            lia.notify(L("inventoryAlreadyOpen"), "error")
             return nil
         end
 

@@ -243,9 +243,6 @@ end)
 
 local pendingShadowed = {}
 local function deliverShadowed(args)
-    print("[Lilia Debug] deliverShadowed called")
-    print("[Lilia Debug] lia.color.theme exists:", lia.color.theme ~= nil)
-    print("[Lilia Debug] lia.config._initialized:", lia.config and lia.config._initialized or false)
     local chatModule = lia.module.get("chatbox")
     hook.Run("CreateChatboxPanel")
     local chatPanel = chatModule and chatModule.panel or lia.gui.chat

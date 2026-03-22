@@ -707,7 +707,7 @@ function GM:SpawnMenuOpen()
     return true
 end
 
-function GM:InitializedModules()
+function GM:InitPostEntity()
     lia.joinTime = RealTime() - 0.9716
     if system.IsWindows() and not system.HasFocus() then system.FlashWindow() end
     net.Start("liaStorageSyncRequest")

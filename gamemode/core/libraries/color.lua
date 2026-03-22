@@ -585,12 +585,7 @@ else
     lia.color.register("teal", {0, 128, 128})
     lia.color.register("cyan", {0, 255, 255})
     lia.color.register("magenta", {255, 0, 255})
-    hook.Add("InitializedConfig", "ApplyTheme", function()
-        print("[Lilia Debug] InitializedConfig hook fired, applying theme...")
-        print("[Lilia Debug] Before applyTheme, lia.color.theme is:", lia.color.theme and "initialized" or "nil")
-        lia.color.applyTheme()
-        print("[Lilia Debug] After applyTheme, lia.color.theme is:", lia.color.theme and "initialized" or "still nil")
-    end)
+    hook.Add("InitializedConfig", "ApplyTheme", function() lia.color.applyTheme() end)
 end
 
 --[[
@@ -684,6 +679,7 @@ lia.color.registerTheme("Teal", {
     chatListen = Color(168, 240, 170)
 })
 
+if CLIENT and not lia.color.theme then lia.color.applyTheme(lia.color.getCurrentThemeName(), false) end
 lia.color.registerTheme("Dark", {
     header = Color(40, 40, 40),
     header_text = Color(100, 100, 100),
@@ -1004,15 +1000,3 @@ end, {
         return themes
     end
 })
-
-if CLIENT and not lia.color.theme then
-    print("[Lilia Debug] End of color.lua: lia.color.theme is nil, applying theme now...")
-    print("[Lilia Debug] lia.config exists:", lia.config ~= nil)
-    print("[Lilia Debug] lia.config._initialized:", lia.config and lia.config._initialized or false)
-    print("[Lilia Debug] All themes registered, count:", table.Count(lia.color.themes))
-    lia.color.applyTheme(lia.color.getCurrentThemeName(), false)
-    print("[Lilia Debug] After applyTheme, lia.color.theme is:", lia.color.theme and "initialized" or "still nil")
-    if lia.color.theme then
-        print("[Lilia Debug] lia.color.theme.panel exists:", lia.color.theme.panel ~= nil)
-    end
-end

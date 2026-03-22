@@ -14,7 +14,7 @@ function ITEM:onInstanced()
         h = self.invHeight
     }
 
-    lia.inventory.instance("Inventory", data):next(function(inventory)
+    lia.inventory.instance("GridInv", data):next(function(inventory)
         self:setData("id", inventory:getID())
         hook.Run("SetupBagInventoryAccessRules", inventory)
         inventory:sync()

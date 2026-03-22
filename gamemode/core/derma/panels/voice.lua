@@ -126,5 +126,5 @@ timer.Create("VoiceClean", 1, 0, function()
     end
 end)
 
-hook.Add("InitializedModules", "liaVoiceInitPostEntity", CreateVoicePanelList)
+hook.Add("InitPostEntity", "liaVoiceInitPostEntity", CreateVoicePanelList)
 hook.Add("OnReloaded", "liaVoiceOnReloaded", CreateVoicePanelList)

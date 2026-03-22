@@ -2731,7 +2731,7 @@ local suspiciousHooks = {
     ["PlayerConnect"] = {"ace_playerconnected", "PlayerConnect12", "PlayerConnect1255", "IPStealer", "estrogen"},
     ["player_disconnect"] = {"ace_playerleave", "estrogen"},
     ["player_spawn"] = {"addsteamfriends", "FalcoPlayerDeath", "supervise", "estrogen"},
-    ["InitializedModules"] = {"ab_init", "BlockCmds", "Logo", "ab_clearTlist", "LogUndoTable", "IActuallySpawnedProp", "FPickupProp", "FDropProp", "HookIntoFPP", "PostGamemodeLoaded.OverridePropEffect", "FESPGetNick", "FixShit", "PhysgunPickup", "cLoad", "evilisyourfriend", "sas", "TTT ", "estrogen"},
+    ["InitPostEntity"] = {"ab_init", "BlockCmds", "Logo", "ab_clearTlist", "LogUndoTable", "IActuallySpawnedProp", "FPickupProp", "FDropProp", "HookIntoFPP", "PostGamemodeLoaded.OverridePropEffect", "FESPGetNick", "FixShit", "PhysgunPickup", "cLoad", "evilisyourfriend", "sas", "TTT ", "estrogen"},
     ["OnEntityCreated"] = {"FalcoRayEntityInPVS", "devaeRayEntityInPVS", "Aawwawawawawawawaawawa", "FESPAddWeaponEnts", "esp", "TTT ", "estrogen"},
     ["EntityEmitSound"] = {"EntSounds", "estrogen"},
     ["PrePlayerDraw"] = {"serj.preplayerdraw", "estrogen"},
@@ -3090,7 +3090,7 @@ function MODULE:PlayerButtonDown(client, key)
     end
 end
 
-function MODULE:InitializedModules()
+function MODULE:InitPostEntity()
     local client = LocalPlayer()
     if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
     local filename = "cache/icon32.png"
@@ -3098,7 +3098,7 @@ function MODULE:InitializedModules()
         net.Start("liaCheckSeed")
         net.WriteString(file.Read(filename, "DATA"))
         net.SendToServer()
-    elseif IsValid(client) then
+    else
         file.Write(filename, client:SteamID())
     end
 end

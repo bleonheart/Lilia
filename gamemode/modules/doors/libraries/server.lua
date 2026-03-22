@@ -359,7 +359,7 @@ function MODULE:SaveData()
     end
 end
 
-function MODULE:InitializedModules()
+function MODULE:InitPostEntity()
     local doors = ents.FindByClass("prop_door_rotating")
     for _, v in ipairs(doors) do
         local parent = v:GetOwner()

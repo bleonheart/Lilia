@@ -390,7 +390,6 @@ local function genInsertValues(value, dbTable)
         keys[#keys + 1] = k
         values[#keys] = lia.db.convertDataType(v)
     end
-    if #keys == 0 then return "lia_" .. (dbTable or "characters") .. " DEFAULT VALUES" end
     return query .. table.concat(keys, ", ") .. ") VALUES (" .. table.concat(values, ", ") .. ")"
 end
 
@@ -515,7 +514,6 @@ end
         ```
 ]]
 function lia.db.insertTable(value, callback, dbTable)
-    assert(istable(value), L("expectedTableArg", 1))
     local d = deferred.new()
     local query = "INSERT INTO " .. genInsertValues(value, dbTable)
     lia.db.query(query, function(results, lastID)

@@ -77,8 +77,8 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
 end
 
 function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
-    if not VendorInventoryMeasure and lia.inventory.types["Inventory"] then
-        VendorInventoryMeasure = lia.inventory.types["Inventory"]:new()
+    if not VendorInventoryMeasure and lia.inventory.types["GridInv"] then
+        VendorInventoryMeasure = lia.inventory.types["GridInv"]:new()
         VendorInventoryMeasure.data = {
             w = 8,
             h = 8
@@ -506,7 +506,7 @@ function MODULE:DatabaseConnected()
     lia.vendor.presets = lia.data.get("vendor_presets") or {}
 end
 
-function MODULE:InitializedModules()
+function MODULE:InitPostEntity()
     timer.Simple(0.1, function()
         for _, client in player.Iterator() do
             if IsValid(client) then syncVendorDataToClient(client) end

@@ -798,9 +798,9 @@ end
         ```
 ]]
 function lia.item.registerInv(invType, w, h)
-    local Inventory = FindMetaTable("Inventory")
-    assert(Inventory, L("gridInvNotFound"))
-    local inventory = Inventory:extend("Inventory" .. invType)
+    local GridInv = FindMetaTable("GridInv")
+    assert(GridInv, L("gridInvNotFound"))
+    local inventory = GridInv:extend("GridInv" .. invType)
     inventory.invType = invType
     function inventory:getWidth()
         return w
@@ -811,6 +811,49 @@ function lia.item.registerInv(invType, w, h)
     end
 
     inventory:register(invType)
+end
+
+--[[
+    Purpose:
+        Creates a new inventory instance for a character and syncs it with the appropriate player.
+
+    When Called:
+        Called when creating new inventories for characters, such as during character creation or item operations.
+
+    Parameters:
+        owner (number)
+            The character ID that owns this inventory.
+        invType (string)
+            The type of inventory to create.
+        callback (function, optional)
+            Function called when the inventory is created and ready.
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            -- Create a backpack inventory for character ID 5
+            lia.item.newInv(5, "backpack", function(inventory)
+                print("Backpack created with ID:", inventory:getID())
+            end)
+        ```
+]]
+function lia.item.newInv(owner, invType, callback)
+    lia.inventory.instance(invType, {
+        char = owner
+    }):next(function(inventory)
+        inventory.invType = invType
+        if owner and owner > 0 then
+            for _, v in player.Iterator() do
+                if v:getChar() and v:getChar():getID() == owner then
+                    inventory:sync(v)
+                    break
+                end
+            end
+        end
+
+        if callback then callback(inventory) end
+    end)
 end
 
 --[[
@@ -843,9 +886,9 @@ end
         ```
 ]]
 function lia.item.createInv(w, h, id)
-    local Inventory = FindMetaTable("Inventory")
-    assert(Inventory, L("gridInvNotFound"))
-    local instance = Inventory:new()
+    local GridInv = FindMetaTable("GridInv")
+    assert(GridInv, L("gridInvNotFound"))
+    local instance = GridInv:new()
     instance.id = id
     instance.data = {
         w = w,

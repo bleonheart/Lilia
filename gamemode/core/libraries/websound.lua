@@ -287,7 +287,7 @@ end
                 end)
             end
 
-            hook.Add("InitializedModules", "PreloadMusicPlaylist", function() preloadNext(1) end)
+            hook.Add("InitPostEntity", "PreloadMusicPlaylist", function() preloadNext(1) end)
         ```
 ]]
 function lia.websound.download(name, url, cb)
@@ -447,7 +447,7 @@ end
                 end)
             end
 
-            hook.Add("InitializedModules", "PlayAmbientCached", playAmbient)
+            hook.Add("InitPostEntity", "PlayAmbientCached", playAmbient)
         ```
 ]]
 function lia.websound.get(name)

@@ -713,13 +713,11 @@ function GM:PlayerLoadout(client)
 end
 
 function GM:CreateDefaultInventory(character)
-    local invType = hook.Run("GetDefaultInventoryType", character) or "Inventory"
+    local invType = hook.Run("GetDefaultInventoryType", character) or "GridInv"
     local charID = character:getID()
     return lia.inventory.instance(invType, {
         char = charID
-    }):next(function(inventory)
-        return inventory
-    end)
+    })
 end
 
 function GM:SetupBotPlayer(client)
@@ -732,7 +730,7 @@ function GM:SetupBotPlayer(client)
     if #defaultFactions == 0 then return end
     local index = math.random(1, #defaultFactions)
     local faction = defaultFactions[index]
-    local invType = hook.Run("GetDefaultInventoryType") or "Inventory"
+    local invType = hook.Run("GetDefaultInventoryType") or "GridInv"
     if not invType then return end
     local inventory = lia.inventory.new(invType)
     local model = hook.Run("GetBotModel", client, faction) or "models/player/phoenix.mdl"

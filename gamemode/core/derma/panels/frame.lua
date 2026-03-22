@@ -15,14 +15,7 @@ function PANEL:Init()
     self.minWidth = 120
     self.minHeight = 80
     self.iconMat = nil
-    if not lia.color.theme then
-        print("[Lilia Debug] WARNING: lia.color.theme is nil during liaFrame:Init()")
-        print("[Lilia Debug] Stack trace:")
-        debug.Trace()
-        lia.color.applyTheme()
-        print("[Lilia Debug] Applied theme, lia.color.theme is now:", lia.color.theme and "initialized" or "still nil")
-    end
-    self.panelColor = (lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)
+    self.panelColor = lia.color.theme.panel[1]
     self:DockPadding(6, 30, 6, 6)
     self.top_panel = vgui.Create("DButton", self)
     self.top_panel:SetText("")
@@ -54,7 +47,7 @@ function PANEL:Init()
 
     self.cls = vgui.Create("Button", self)
     self.cls:SetText("")
-    self.cls.Paint = function(_, w, h) draw.SimpleText("✕", "LiliaFont.18", w * 0.5, h * 0.5, (lia.color.theme and lia.color.theme.text) or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+    self.cls.Paint = function(_, w, h) draw.SimpleText("✕", "LiliaFont.18", w * 0.5, h * 0.5, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
     self.cls.DoClick = function()
         lia.websound.playButtonSound()
         if self.deleteOnClose then
@@ -79,7 +72,7 @@ function PANEL:Init()
     self.resizer.Paint = function(_, w, h)
         if not self.sizable then return end
         draw.NoTexture()
-        surface.SetDrawColor((lia.color.theme and lia.color.theme.focus_panel) or Color(48, 72, 72))
+        surface.SetDrawColor(lia.color.theme.focus_panel)
         surface.DrawRect(0, 0, w, h)
     end
 
@@ -189,7 +182,7 @@ end
 function PANEL:Notify(text, duration, col)
     if IsValid(self.messagePanel) then self.messagePanel:Remove() end
     duration = duration or 2
-    col = col or (lia.color.theme and lia.color.theme.theme) or Color(60, 140, 140)
+    col = col or lia.color.theme.theme
     local title, remaining = text:match("^(.-)\n(.*)$")
     if not title then
         title = text
@@ -233,13 +226,13 @@ function PANEL:Notify(text, duration, col)
     mp.Paint = function(_, w, h)
         local shadowIntensity = 8
         local shadowBlur = 12
-        lia.derma.rect(0, 0, w, h):Rad(6):Color((lia.color.theme and lia.color.theme.window_shadow) or Color(18, 32, 32, 90)):Shadow(shadowIntensity, shadowBlur):Shape(lia.derma.SHAPE_IOS):Draw()
-        lia.derma.rect(0, 0, w, h):Radii(6, 6, 6, 6):Color((lia.color.theme and lia.color.theme.background) or col):Draw()
-        draw.SimpleText(title, "LiliaFont.20", w * 0.5, padding, (lia.color.theme and lia.color.theme.text) or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-        if desc ~= "" then draw.SimpleText(desc, "LiliaFont.16", w * 0.5, padding + titleH + lineSpacing, (lia.color.theme and lia.color.theme.text) or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
+        lia.derma.rect(0, 0, w, h):Rad(6):Color(lia.color.theme.window_shadow):Shadow(shadowIntensity, shadowBlur):Shape(lia.derma.SHAPE_IOS):Draw()
+        lia.derma.rect(0, 0, w, h):Radii(6, 6, 6, 6):Color(lia.color.theme.background or col):Draw()
+        draw.SimpleText(title, "LiliaFont.20", w * 0.5, padding, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+        if desc ~= "" then draw.SimpleText(desc, "LiliaFont.16", w * 0.5, padding + titleH + lineSpacing, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP) end
         if cost ~= "" then
             local costY = padding + titleH + (desc ~= "" and descH + lineSpacing * 2 or lineSpacing)
-            draw.SimpleText(cost, "LiliaFont.16", w * 0.5, costY, (lia.color.theme and lia.color.theme.accent) or (lia.color.theme and lia.color.theme.theme) or Color(60, 140, 140), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+            draw.SimpleText(cost, "LiliaFont.16", w * 0.5, costY, lia.color.theme.accent or lia.color.theme.theme, TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
         end
     end
 
@@ -261,13 +254,13 @@ function PANEL:Paint(w, h)
     if not self.bool_lite then
         if self.iconMat then
             surface.SetMaterial(self.iconMat)
-            surface.SetDrawColor((lia.color.theme and lia.color.theme.header_text) or color_white)
+            surface.SetDrawColor(lia.color.theme.header_text or color_white)
             surface.DrawTexturedRect(6, 10, 16, 16)
         end
 
-        if self.center_title ~= "" then draw.SimpleText(self.center_title, "LiliaFont.16", w * 0.5, 18, (lia.color.theme and lia.color.theme.header_text) or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        if self.center_title ~= "" then draw.SimpleText(self.center_title, "LiliaFont.16", w * 0.5, 18, lia.color.theme.header_text or color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         local titleOffset = self.iconMat and 26 or 6
-        draw.SimpleText(self.title, "LiliaFont.16", titleOffset, 10, (lia.color.theme and lia.color.theme.header_text) or color_white)
+        draw.SimpleText(self.title, "LiliaFont.16", titleOffset, 10, lia.color.theme.header_text or color_white)
     end
 end
 
