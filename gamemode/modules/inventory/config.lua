@@ -18,7 +18,7 @@
     local json = util.TableToJSON({newW})
     lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'w' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
-    desc = "Defines the width of the default inventory.",
+    desc = "invWidthDesc",
     category = "Core",
     type = "Number",
     min = 1,
@@ -45,7 +45,7 @@ lia.config.add("invH", "invHeight", 4, function(_, newH)
     local json = util.TableToJSON({newH})
     lia.db.query("UPDATE lia_invdata SET value = '" .. lia.db.escape(json) .. "' WHERE key = 'h' AND invID IN (SELECT invID FROM lia_inventories WHERE charID IS NOT NULL)")
 end, {
-    desc = "Defines the height of the default inventory.",
+    desc = "invHeightDesc",
     category = "Core",
     type = "Number",
     min = 1,
@@ -53,7 +53,7 @@ end, {
 })
 
 lia.config.add("trunkInvW", "trunkInvWidth", 10, nil, {
-    desc = "Defines the width of the default trunk inventory.",
+    desc = "trunkInvWidthDesc",
     category = "Core",
     type = "Number",
     min = 1,
@@ -61,7 +61,7 @@ lia.config.add("trunkInvW", "trunkInvWidth", 10, nil, {
 })
 
 lia.config.add("trunkInvH", "trunkInvHeight", 2, nil, {
-    desc = "Defines the height of the default trunk inventory.",
+    desc = "trunkInvHeightDesc",
     category = "Core",
     type = "Number",
     min = 1,

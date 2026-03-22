@@ -6,7 +6,7 @@ AdminStickMenuPositionCache = nil
 AdminStickMenuOpenTime = 0
 MODULE.adminStickCategories = MODULE.adminStickCategories or {}
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {}
-local playerInfoLabel = "Player Information"
+local playerInfoLabel = L("player") .. " " .. L("information")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
     warnings = "icon16/error.png",
@@ -63,31 +63,31 @@ function MODULE:ShowPlayerOptions(target, options)
     if not (isAdmin or client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or (client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty())) then return end
     local orderedOptions = {}
     table.insert(orderedOptions, {
-        name = string.format("Name: %s (copy)", target:Name()),
+        name = L("nameCopyFormat", target:Name()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "Name"))
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
             SetClipboardText(target:Name())
         end
     })
 
-    local charID = target:getChar() and target:getChar():getID() or "N/A"
+    local charID = target:getChar() and target:getChar():getID() or L("na")
     table.insert(orderedOptions, {
-        name = string.format("CharID: %s (copy)", charID),
+        name = L("charIDCopyFormat", charID),
         image = "icon16/page_copy.png",
         func = function()
             if target:getChar() then
-                client:notifySuccess(string.format("Copied CharID: %s to Clipboard", target:getChar():getID()))
+                client:notifySuccessLocalized("copiedCharID", target:getChar():getID())
                 SetClipboardText(target:getChar():getID())
             end
         end
     })
 
     table.insert(orderedOptions, {
-        name = string.format("SteamID: %s (copy)", target:SteamID()),
+        name = L("steamIDCopyFormat", target:SteamID()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccess(string.format("Copied %s's %s to Clipboard", target:Name(), "SteamID"))
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("steamID"))
             SetClipboardText(target:SteamID())
         end
     })
@@ -95,7 +95,7 @@ function MODULE:ShowPlayerOptions(target, options)
     local isBlinded = timer.Exists("liaBlind" .. target:SteamID())
     if not isBlinded then
         table.insert(orderedOptions, {
-            name = "Blind",
+            name = L("blind"),
             image = "icon16/eye.png",
             func = function() lia.admin.execCommand("blind", target) end
         })
@@ -103,7 +103,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:IsFrozen() then
         table.insert(orderedOptions, {
-            name = "Freeze",
+            name = L("freeze"),
             image = "icon16/lock.png",
             func = function() lia.admin.execCommand("freeze", target) end
         })
@@ -111,7 +111,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:getLiliaData("liaGagged", false) then
         table.insert(orderedOptions, {
-            name = "Gag",
+            name = L("gag"),
             image = "icon16/sound_mute.png",
             func = function() lia.admin.execCommand("gag", target) end
         })
@@ -119,7 +119,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:IsOnFire() then
         table.insert(orderedOptions, {
-            name = "Ignite",
+            name = L("ignite"),
             image = "icon16/fire.png",
             func = function() lia.admin.execCommand("ignite", target) end
         })
@@ -127,7 +127,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not target:isLocked() then
         table.insert(orderedOptions, {
-            name = "Jail",
+            name = L("jail"),
             image = "icon16/lock.png",
             func = function() lia.admin.execCommand("jail", target) end
         })
@@ -135,45 +135,45 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if not (target:getChar() and target:getLiliaData("liaMuted", false)) then
         table.insert(orderedOptions, {
-            name = "Mute",
+            name = L("mute"),
             image = "icon16/sound_delete.png",
             func = function() lia.admin.execCommand("mute", target) end
         })
     end
 
     table.insert(orderedOptions, {
-        name = "Slay",
+        name = L("slay"),
         image = "icon16/bomb.png",
         func = function() lia.admin.execCommand("slay", target) end
     })
 
     table.insert(orderedOptions, {
-        name = "Bring",
+        name = L("bring"),
         image = "icon16/arrow_down.png",
         func = function() lia.admin.execCommand("bring", target) end
     })
 
     table.insert(orderedOptions, {
-        name = "Goto",
+        name = L("goTo"),
         image = "icon16/arrow_right.png",
         func = function() lia.admin.execCommand("goto", target) end
     })
 
     table.insert(orderedOptions, {
-        name = "Respawn",
+        name = L("respawn"),
         image = "icon16/arrow_refresh.png",
         func = function() lia.admin.execCommand("respawn", target) end
     })
 
     table.insert(orderedOptions, {
-        name = "Return",
+        name = L("returnText"),
         image = "icon16/arrow_redo.png",
         func = function() lia.admin.execCommand("return", target) end
     })
 
     if isBlinded then
         table.insert(orderedOptions, {
-            name = "Unblind",
+            name = L("unblind"),
             image = "icon16/eye.png",
             func = function() lia.admin.execCommand("unblind", target) end
         })
@@ -181,7 +181,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:getLiliaData("liaGagged", false) then
         table.insert(orderedOptions, {
-            name = "Ungag",
+            name = L("ungag"),
             image = "icon16/sound_low.png",
             func = function() lia.admin.execCommand("ungag", target) end
         })
@@ -189,7 +189,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:IsFrozen() then
         table.insert(orderedOptions, {
-            name = "Unfreeze",
+            name = L("unfreeze"),
             image = "icon16/accept.png",
             func = function() lia.admin.execCommand("unfreeze", target) end
         })
@@ -197,7 +197,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:getChar() and target:getLiliaData("liaMuted", false) then
         table.insert(orderedOptions, {
-            name = "Unmute",
+            name = L("unmute"),
             image = "icon16/sound_add.png",
             func = function() lia.admin.execCommand("unmute", target) end
         })
@@ -205,7 +205,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:IsOnFire() then
         table.insert(orderedOptions, {
-            name = "Extinguish",
+            name = L("extinguish"),
             image = "icon16/fire_delete.png",
             func = function() lia.admin.execCommand("extinguish", target) end
         })
@@ -213,7 +213,7 @@ function MODULE:ShowPlayerOptions(target, options)
 
     if target:isLocked() then
         table.insert(orderedOptions, {
-            name = "Unjail",
+            name = L("unjail"),
             image = "icon16/lock_open.png",
             func = function() lia.admin.execCommand("unjail", target) end
         })
@@ -231,7 +231,7 @@ local function OpenFlagsPanel(panel, data)
     if not data or #data == 0 then
         local noDataLabel = panel:Add("DLabel")
         noDataLabel:Dock(FILL)
-        noDataLabel:SetText("No players with characters are currently online.\\n\\nPlayers must be online with a loaded character to appear in this list.\\n\\nYou can manage flags for offline characters using console commands:\\n? /flaggive <player> <flags>\\n? /flagtake <player> <flags>")
+        noDataLabel:SetText(L("flagsNoPlayersOnlineHelp"))
         noDataLabel:SetFont("LiliaFont.17")
         noDataLabel:SetTextColor(Color(150, 150, 150))
         noDataLabel:SetContentAlignment(5)
@@ -244,7 +244,7 @@ local function OpenFlagsPanel(panel, data)
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = panel:Add("liaTable")
     list:Dock(FILL)
@@ -255,15 +255,15 @@ local function OpenFlagsPanel(panel, data)
     panel:SizeToChildren(false, true)
     local columns = {
         {
-            name = "Name",
+            name = L("name"),
             field = "name"
         },
         {
-            name = "SteamID",
+            name = L("steamID"),
             field = "steamID"
         },
         {
-            name = "Character Flags",
+            name = L("charFlagsTitle"),
             field = "flags"
         },
     }
@@ -272,10 +272,10 @@ local function OpenFlagsPanel(panel, data)
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Row", function(rowData)
+    list:AddMenuOption(L("copyRow"), function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or string.format("Column %s", i)
+            local header = column.name or L("columnWithNumber", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -283,10 +283,10 @@ local function OpenFlagsPanel(panel, data)
         SetClipboardText(string.sub(rowString, 1, -4))
     end, "icon16/page_copy.png")
 
-    list:AddMenuOption("Modify Character Flags", function(rowData)
+    list:AddMenuOption(L("modifyCharFlags"), function(rowData)
         local steamID = rowData[2] or ""
         local currentFlags = rowData[3] or ""
-        LocalPlayer():requestString("Modify Character Flags", "Set the flags for this player.", function(text)
+        LocalPlayer():requestString(L("modifyCharFlags"), L("modifyFlagsDesc"), function(text)
             if text == false then return end
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
@@ -337,7 +337,7 @@ local function OpenFlagsPanel(panel, data)
 
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
-    list:AddMenuOption("No options available", function() end)
+    list:AddMenuOption(L("noOptionsAvailable"), function() end)
 end
 
 function MODULE:PopulateAdminTabs(pages)
@@ -401,7 +401,7 @@ function MODULE:PopulateAdminTabs(pages)
                     local columns = {
                         {
                             name = "name",
-                            field = "Name"
+                            field = L("name")
                         },
                         {
                             name = "description",
@@ -409,11 +409,11 @@ function MODULE:PopulateAdminTabs(pages)
                         },
                         {
                             name = "faction",
-                            field = "Faction"
+                            field = L("faction")
                         },
                         {
                             name = "steamID",
-                            field = "SteamID"
+                            field = L("steamID")
                         },
                         {
                             name = "lastUsed",
@@ -421,8 +421,8 @@ function MODULE:PopulateAdminTabs(pages)
                         },
                         {
                             name = "banned",
-                            field = "Banned",
-                            format = function(val) return val and "Yes" or "No" end
+                            field = L("banned"),
+                            format = function(val) return val and L("yes") or L("no") end
                         }
                     }
 
@@ -451,7 +451,7 @@ function MODULE:PopulateAdminTabs(pages)
 
                     table.insert(columns, {
                         name = "money",
-                        field = "Money",
+                        field = L("money"),
                         format = function(val) return lia.currency.get(tonumber(val) or 0) end
                     })
 
@@ -466,21 +466,21 @@ function MODULE:PopulateAdminTabs(pages)
                         search:DockMargin(0, 0, 0, 15)
                         search:SetTall(30)
                         search:SetFont("LiliaFont.17")
-                        search:SetPlaceholderText("Search...")
+                        search:SetPlaceholderText(L("search"))
                         search:SetTextColor(Color(200, 200, 200))
                         local list = container:Add("liaTable")
                         list:Dock(FILL)
                         local steamIDColumnIndex
                         for i, col in ipairs(columns) do
                             list:AddColumn(col.name)
-                            if col.field == "SteamID" then steamIDColumnIndex = i end
+                            if col.field == L("steamID") then steamIDColumnIndex = i end
                         end
 
-                        list:AddMenuOption("Copy Steam ID", function(rowData) if steamIDColumnIndex then SetClipboardText(tostring(rowData[steamIDColumnIndex]) or "") end end, "icon16/page_copy.png")
-                        list:AddMenuOption("Copy Row", function(rowData)
+                        list:AddMenuOption(L("copySteamID"), function(rowData) if steamIDColumnIndex then SetClipboardText(tostring(rowData[steamIDColumnIndex]) or "") end end, "icon16/page_copy.png")
+                        list:AddMenuOption(L("copyRow"), function(rowData)
                             local rowString = ""
                             for i, column in ipairs(columns) do
-                                local header = column.name or string.format("Column %s", i)
+                                local header = column.name or L("columnWithNumber", i)
                                 local value = tostring(rowData[i] or "")
                                 rowString = rowString .. header .. " " .. value .. " | "
                             end
@@ -488,37 +488,37 @@ function MODULE:PopulateAdminTabs(pages)
                             SetClipboardText(string.sub(rowString, 1, -4))
                         end, "icon16/page_copy.png")
 
-                        list:AddMenuOption("Wipe Character", function(rowData)
+                        list:AddMenuOption(L("wipeCharacter"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.CharID .. '"') end
                         end, "icon16/user_delete.png")
 
-                        list:AddMenuOption("Wipe Character (Offline)", function(rowData)
+                        list:AddMenuOption(L("wipeCharacterOffline"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.CharID .. '"') end
                         end, "icon16/user_delete.png")
 
-                        list:AddMenuOption("Ban Character", function(rowData)
+                        list:AddMenuOption(L("banCharacter"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if IsValid(owner) and not rowData.Banned and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.CharID .. '"') end
                         end, "icon16/cancel.png")
 
-                        list:AddMenuOption("Ban Character (Offline)", function(rowData)
+                        list:AddMenuOption(L("banCharacterOffline"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if not IsValid(owner) and not rowData.Banned and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.CharID .. '"') end
                         end, "icon16/cancel.png")
 
-                        list:AddMenuOption("Unban Character", function(rowData)
+                        list:AddMenuOption(L("unbanCharacter"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if IsValid(owner) and rowData.Banned and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.CharID .. '"') end
                         end, "icon16/accept.png")
 
-                        list:AddMenuOption("Unban Character (Offline)", function(rowData)
+                        list:AddMenuOption(L("unbanCharacterOffline"), function(rowData)
                             if not rowData.CharID then return end
                             local owner = rowData.SteamID and lia.util.getBySteamID(rowData.SteamID)
                             if not IsValid(owner) and rowData.Banned and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.CharID .. '"') end
@@ -570,7 +570,7 @@ function MODULE:PopulateAdminTabs(pages)
                     allPanel:Dock(FILL)
                     allPanel.Paint = function() end
                     createList(allPanel, data.all or {})
-                    self.sheet:AddSheet("All Characters", allPanel)
+                    self.sheet:AddSheet(L("allCharacters"), allPanel)
                     for steamID, chars in pairs(data.players or {}) do
                         local ply = lia.util.getBySteamID(tostring(steamID))
                         local pnl = self.sheet:Add("Panel")
@@ -590,7 +590,7 @@ function MODULE:PopulateAdminTabs(pages)
 
     if client:hasPrivilege("manageFlags") then
         table.insert(pages, {
-            name = "Flags Management",
+            name = L("flagsManagement"),
             icon = "icon16/flag_red.png",
             drawFunc = function(panel)
                 panelRef = panel
@@ -723,7 +723,7 @@ spawnmenu.AddContentType("inventoryitem", function(container, data)
         net.WriteString(data.id)
         net.WriteString(LocalPlayer():SteamID())
         net.SendToServer()
-        LocalPlayer():notifySuccess("Item given to yourself successfully.")
+        LocalPlayer():notifySuccess(L("itemGivenToSelf"))
         lia.websound.playButtonSound("outlands-rp/ui/ui_return.wav")
     end
 
@@ -748,8 +748,8 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     end
 
     for category, itemList in SortedPairs(categorized) do
-        if category ~= "Unsorted" or #itemList > 0 then
-            local node = tree:AddNode(category == "Unsorted" and "Unsorted" or category, "icon16/picture.png")
+        if category ~= L("unsorted") or #itemList > 0 then
+            local node = tree:AddNode(category == L("unsorted") and L("unsorted") or category, "icon16/picture.png")
             node.DoPopulate = function(btn)
                 if btn.PropPanel then return end
                 btn.PropPanel = vgui.Create("ContentContainer", pnlContent)
@@ -809,12 +809,12 @@ search.AddProvider(function(str)
     return results
 end, "inventoryitems")
 
-spawnmenu.AddCreationTab("Inventory Items", function()
+spawnmenu.AddCreationTab(L("inventoryItems"), function()
     local client = LocalPlayer()
     if not IsValid(client) or not client.hasPrivilege or not client:hasPrivilege("canUseItemSpawner") then
         local pnl = vgui.Create("DPanel")
         pnl:Dock(FILL)
-        pnl.Paint = function(_, w, h) draw.SimpleText("You don't have permission to use this.", "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
+        pnl.Paint = function(_, w, h) draw.SimpleText(L("noItemSpawnerPermission"), "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
         return pnl
     else
         local ctrl = vgui.Create("SpawnmenuContentPanel")
@@ -906,16 +906,16 @@ local function GetIconForCategory(name)
     end
 
     local localizedExactMatches = {
-        [("Moderation"):lower()] = "icon16/shield.png",
-        [("Character Management"):lower()] = "icon16/user_gray.png",
-        [("Door Management"):lower()] = "icon16/door.png",
-        [("Player Information"):lower()] = "icon16/information.png",
-        [("Teleportation"):lower()] = "icon16/arrow_right.png",
-        [("Utility"):lower()] = "icon16/application_view_tile.png",
-        [("Miscellaneous"):lower()] = "icon16/application_view_tile.png",
-        [("Items"):lower()] = "icon16/box.png",
-        [("Out of Character"):lower()] = "icon16/comment.png",
-        [("Warnings"):lower()] = "icon16/error.png",
+        [L("adminStickCategoryModeration"):lower()] = "icon16/shield.png",
+        [L("adminStickCategoryCharacterManagement"):lower()] = "icon16/user_gray.png",
+        [L("adminStickCategoryDoorManagement"):lower()] = "icon16/door.png",
+        [L("adminStickCategoryPlayerInformation"):lower()] = "icon16/information.png",
+        [L("adminStickCategoryTeleportation"):lower()] = "icon16/arrow_right.png",
+        [L("adminStickCategoryUtility"):lower()] = "icon16/application_view_tile.png",
+        [L("adminStickCategoryMiscellaneous"):lower()] = "icon16/application_view_tile.png",
+        [L("adminStickCategoryItems"):lower()] = "icon16/box.png",
+        [L("adminStickCategoryOutOfCharacter"):lower()] = "icon16/comment.png",
+        [L("adminStickCategoryWarnings"):lower()] = "icon16/error.png",
     }
 
     if localizedExactMatches[localizedName] then return localizedExactMatches[localizedName] end
@@ -943,26 +943,24 @@ local function GenerateDynamicCategories()
     for _, cmdData in pairs(lia.command.list) do
         if cmdData and istable(cmdData) and cmdData.AdminStick and istable(cmdData.AdminStick) then
             adminStickCount = adminStickCount + 1
-            local categoryKey = cmdData.AdminStick.Category
-            local subcategoryKey = cmdData.AdminStick.SubCategory
-            local categoryName = cmdData.AdminStick.Category
-            local subcategoryName = cmdData.AdminStick.SubCategory
-            if categoryKey then
-                if not categories[categoryKey] then
-                    categories[categoryKey] = {
-                        name = categoryName,
-                        icon = GetIconForCategory(categoryKey),
+            local category = cmdData.AdminStick.Category
+            local subcategory = cmdData.AdminStick.SubCategory
+            if category then
+                if not categories[category] then
+                    categories[category] = {
+                        name = category,
+                        icon = GetIconForCategory(category),
                         subcategories = {}
                     }
 
-                    table.insert(categoryNames, categoryKey)
+                    table.insert(categoryNames, category)
                 end
 
-                if subcategoryKey then
-                    if not categories[categoryKey].subcategories[subcategoryKey] then
-                        categories[categoryKey].subcategories[subcategoryKey] = {
-                            name = subcategoryName,
-                            icon = GetIconForCategory(subcategoryKey)
+                if subcategory then
+                    if not categories[category].subcategories[subcategory] then
+                        categories[category].subcategories[subcategory] = {
+                            name = subcategory,
+                            icon = GetIconForCategory(subcategory)
                         }
                     end
                 end
@@ -1007,7 +1005,7 @@ local function GenerateDynamicCategories()
 
     local hardcodedCategories = {
         moderation = {
-            name = "Moderation" or "Moderation",
+            name = L("adminStickCategoryModeration") or "Moderation",
             icon = "icon16/shield.png",
             subcategories = {
                 moderationTools = {
@@ -1015,13 +1013,13 @@ local function GenerateDynamicCategories()
                     icon = "icon16/shield.png"
                 },
                 teleportation = {
-                    name = "Teleportation" or "Teleportation",
+                    name = L("adminStickCategoryTeleportation") or "Teleportation",
                     icon = "icon16/world.png"
                 }
             }
         },
         characterManagement = {
-            name = "Character Management" or "Character Management",
+            name = L("adminStickCategoryCharacterManagement") or "Character Management",
             icon = "icon16/user_gray.png",
             subcategories = {
                 information = {
@@ -1029,29 +1027,29 @@ local function GenerateDynamicCategories()
                     icon = "icon16/information.png"
                 },
                 transfers = {
-                    name = "Transfers" or "Transfers",
+                    name = L("adminStickSubCategoryTransfers") or "Transfers",
                     icon = "icon16/arrow_right.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = "Factions" or "Factions",
+                            name = L("adminStickSubCategoryFactions") or "Factions",
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = "Classes" or "Classes",
+                            name = L("adminStickSubCategoryClasses") or "Classes",
                             icon = "icon16/user.png"
                         }
                     }
                 },
                 whitelists = {
-                    name = "Whitelists" or "Whitelists",
+                    name = L("adminStickSubCategoryWhitelists") or "Whitelists",
                     icon = "icon16/group_key.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = "Factions" or "Factions",
+                            name = L("adminStickSubCategoryFactions") or "Factions",
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = "Classes" or "Classes",
+                            name = L("adminStickSubCategoryClasses") or "Classes",
                             icon = "icon16/user.png"
                         }
                     }
@@ -1067,7 +1065,7 @@ local function GenerateDynamicCategories()
             }
         },
         doorManagement = {
-            name = "Door Management",
+            name = L("adminStickCategoryDoorManagement"),
             icon = "icon16/door.png",
             subcategories = {
                 actions = {
@@ -1085,7 +1083,7 @@ local function GenerateDynamicCategories()
             }
         },
         storageManagement = {
-            name = "Storage Management" or "Storage Management",
+            name = L("storageManagement") or "Storage Management",
             icon = "icon16/package.png"
         }
     }
@@ -1122,14 +1120,14 @@ local function GetSubMenuIcon(name)
     baseKey = baseKey:gsub("^%s*(.-)%s*$", "%1")
     if subMenuIcons[baseKey] then return subMenuIcons[baseKey] end
     if subMenuIcons[L(name)] then return subMenuIcons[L(name)] end
-    local setFactionLocalized = string.format("Set Faction (%s)", ""):match("^([^%(]+)") or string.format("Set Faction (%s)", "")
+    local setFactionLocalized = L("setFactionTitle", ""):match("^([^%(]+)") or L("setFactionTitle", "")
     setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1")
     if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
-    if name:find("Set Faction", 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
-    if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == ("Miscellaneous"):lower() then return "icon16/application_view_tile.png" end
-    if name:lower() == "items" or name:lower() == ("Items"):lower() then return "icon16/box.png" end
-    if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == ("Out of Character"):lower() then return "icon16/comment.png" end
-    if name:lower() == "warnings" or name:lower() == ("Warnings"):lower() then return "icon16/error.png" end
+    if name:find(L("adminStickSetFaction"), 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
+    if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == L("adminStickCategoryMiscellaneous"):lower() then return "icon16/application_view_tile.png" end
+    if name:lower() == "items" or name:lower() == L("adminStickCategoryItems"):lower() then return "icon16/box.png" end
+    if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == L("adminStickCategoryOutOfCharacter"):lower() then return "icon16/comment.png" end
+    if name:lower() == "warnings" or name:lower() == L("adminStickCategoryWarnings"):lower() then return "icon16/error.png" end
     if name:lower() == "commands" then return "icon16/page.png" end
     return "icon16/page.png"
 end
@@ -1161,7 +1159,7 @@ local function GetOrCreateCategoryMenu(parent, categoryKey, store)
     local category = MODULE.adminStickCategories[categoryKey]
     if not category then
         MODULE.adminStickCategories[categoryKey] = {
-            name = categoryKey == "characterManagement" and "Character Management" or (L(categoryKey) ~= categoryKey and L(categoryKey) or categoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " ")),
+            name = categoryKey == "characterManagement" and L("adminStickCategoryCharacterManagement") or (L(categoryKey) ~= categoryKey and L(categoryKey) or categoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " ")),
             icon = GetIconForCategory(categoryKey),
             subcategories = {}
         }
@@ -1252,7 +1250,7 @@ end
 local function OpenPlayerModelUI(tgt)
     AdminStickIsOpen = true
     local fr = vgui.Create("liaFrame")
-    fr:SetTitle("Change Playermodel")
+    fr:SetTitle(L("changePlayerModel"))
     fr:SetSize(1200, 800)
     fr:Center()
     function fr:OnClose()
@@ -1265,7 +1263,7 @@ local function OpenPlayerModelUI(tgt)
     ed:Dock(BOTTOM)
     ed:SetText(tgt:GetModel())
     local bt = vgui.Create("liaButton", fr)
-    bt:SetText("Change")
+    bt:SetText(L("change"))
     bt:Dock(TOP)
     function bt:DoClick()
         local txt = ed:GetValue()
@@ -1306,7 +1304,7 @@ local function OpenPlayerModelUI(tgt)
     hook.Run("AdminStickAddModels", allModList, tgt)
     table.sort(allModList, function(a, b) return a.name < b.name end)
     populateModelGrid(allWr, allModList)
-    sheet:AddSheet("All", allPanel)
+    sheet:AddSheet(L("all"), allPanel)
     local factionPanel = sheet:Add("Panel")
     local factionSheet = factionPanel:Add("liaTabs")
     factionSheet:Dock(FILL)
@@ -1387,7 +1385,7 @@ local function OpenPlayerModelUI(tgt)
         end
     end
 
-    sheet:AddSheet("Faction", factionPanel)
+    sheet:AddSheet(L("faction"), factionPanel)
     local charObj = tgt:getChar()
     if charObj then
         local classIndex = charObj:getClass()
@@ -1453,7 +1451,7 @@ local function OpenPlayerModelUI(tgt)
                 end
             end
 
-            sheet:AddSheet("Class", classPanel)
+            sheet:AddSheet(L("class"), classPanel)
         end
     end
 
@@ -1464,25 +1462,25 @@ local function OpenReasonUI(tgt, cmd)
     AdminStickIsOpen = true
     local argTypes = {}
     local defaults = {}
-    argTypes["Reason"] = "string"
-    defaults["Reason"] = ""
+    argTypes[L("reason")] = "string"
+    defaults[L("reason")] = ""
     if cmd == "banid" then
-        argTypes["Length In Days"] = "number"
-        defaults["Length In Days"] = 0
+        argTypes[L("lengthInDays")] = "number"
+        defaults[L("lengthInDays")] = 0
     end
 
-    lia.derma.requestArguments(string.format("Reason for %s", cmd), argTypes, function(success, data)
+    lia.derma.requestArguments(L("reasonFor", cmd), argTypes, function(success, data)
         if not success or not data then
             AdminStickIsOpen = false
             LocalPlayer().AdminStickTarget = nil
             return
         end
 
-        local txt = data["Reason"] or ""
+        local txt = data[L("reason")] or ""
         local id = GetIdentifier(tgt)
         if cmd == "banid" then
             if id ~= "" then
-                local duration = tonumber(data["Length In Days"]) or 0
+                local duration = tonumber(data[L("lengthInDays")]) or 0
                 local len = duration * 60 * 24
                 RunAdminCommand("ban", tgt, len, txt)
             end
@@ -1496,9 +1494,9 @@ local function OpenReasonUI(tgt, cmd)
 end
 
 local function HandleModerationOption(opt, tgt)
-    if opt.name == "Ban" then
+    if opt.name == L("ban") then
         OpenReasonUI(tgt, "banid")
-    elseif opt.name == "Kick" then
+    elseif opt.name == L("kick") then
         OpenReasonUI(tgt, "kick")
     else
         RunAdminCommand(opt.cmd, tgt)
@@ -1521,13 +1519,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
     local isBlinded = timer.Exists("liaBlind" .. tgt:SteamID())
     if isBlinded then
         mods[#mods + 1] = {
-            name = "Unblind",
+            name = L("unblind"),
             cmd = "unblind",
             icon = "icon16/eye.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Blind",
+            name = L("blind"),
             cmd = "blind",
             icon = "icon16/eye.png"
         }
@@ -1535,13 +1533,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     if tgt:IsFrozen() then
         mods[#mods + 1] = {
-            name = "Unfreeze",
+            name = L("unfreeze"),
             cmd = "unfreeze",
             icon = "icon16/accept.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Freeze",
+            name = L("freeze"),
             cmd = "freeze",
             icon = "icon16/lock.png"
         }
@@ -1549,13 +1547,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     if tgt:getLiliaData("liaGagged", false) then
         mods[#mods + 1] = {
-            name = "Ungag",
+            name = L("ungag"),
             cmd = "ungag",
             icon = "icon16/sound_low.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Gag",
+            name = L("gag"),
             cmd = "gag",
             icon = "icon16/sound_mute.png"
         }
@@ -1563,13 +1561,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     if tgt:getChar() and tgt:getLiliaData("liaMuted", false) then
         mods[#mods + 1] = {
-            name = "Unmute",
+            name = L("unmute"),
             cmd = "unmute",
             icon = "icon16/sound_add.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Mute",
+            name = L("mute"),
             cmd = "mute",
             icon = "icon16/sound_delete.png"
         }
@@ -1577,13 +1575,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     if tgt:IsOnFire() then
         mods[#mods + 1] = {
-            name = "Extinguish",
+            name = L("extinguish"),
             cmd = "extinguish",
             icon = "icon16/fire_delete.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Ignite",
+            name = L("ignite"),
             cmd = "ignite",
             icon = "icon16/fire.png"
         }
@@ -1591,13 +1589,13 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     if tgt:isLocked() then
         mods[#mods + 1] = {
-            name = "Unjail",
+            name = L("unjail"),
             cmd = "unjail",
             icon = "icon16/lock_open.png"
         }
     else
         mods[#mods + 1] = {
-            name = "Jail",
+            name = L("jail"),
             cmd = "jail",
             icon = "icon16/lock.png"
         }
@@ -1605,7 +1603,7 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     local otherMods = {
         {
-            name = "Slay",
+            name = L("slay"),
             cmd = "slay",
             icon = "icon16/bomb.png"
         }
@@ -1632,17 +1630,17 @@ local function IncludeAdminMenu(tgt, menu, stores)
 
     local utilityCommands = {
         {
-            name = "No Clip",
+            name = L("noclip"),
             cmd = "noclip",
             icon = "icon16/shape_square.png"
         },
         {
-            name = "God Mode",
+            name = L("godmode"),
             cmd = "godmode",
             icon = "icon16/shield.png"
         },
         {
-            name = "Spectate",
+            name = L("spectate"),
             cmd = "spectate",
             icon = "icon16/eye.png"
         }
@@ -1669,22 +1667,22 @@ local function IncludeTeleportation(tgt, menu, stores)
     local tpCategory = GetOrCreateSubCategoryMenu(moderationCategory, "moderation", "teleportation", stores)
     local tp = {
         {
-            name = "Bring",
+            name = L("bring"),
             cmd = "bring",
             icon = "icon16/arrow_down.png"
         },
         {
-            name = "Goto",
+            name = L("goTo"),
             cmd = "goto",
             icon = "icon16/arrow_right.png"
         },
         {
-            name = "Return",
+            name = L("returnText"),
             cmd = "return",
             icon = "icon16/arrow_redo.png"
         },
         {
-            name = "Respawn",
+            name = L("respawn"),
             cmd = "respawn",
             icon = "icon16/arrow_refresh.png"
         }
@@ -1709,7 +1707,7 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
     if not charCategory then return end
     if cl:hasPrivilege("manageCharacterInformation") then
-        charCategory:AddOption("Change Playermodel", function()
+        charCategory:AddOption(L("changePlayerModel"), function()
             OpenPlayerModelUI(tgt)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/user_suit.png")
@@ -1728,13 +1726,13 @@ local function IncludeFlagManagement(tgt, menu, stores)
     for fl in pairs(lia.flag.list) do
         if not charObj or not charObj:hasFlags(fl) then
             table.insert(toGive, {
-                name = string.format("Give Flag %s", fl),
+                name = L("giveFlagFormat", fl),
                 cmd = 'say /giveflag ' .. QuoteArgs(GetIdentifier(tgt), fl),
                 icon = "icon16/flag_blue.png"
             })
         else
             table.insert(toTake, {
-                name = string.format("Take Flag %s", fl),
+                name = L("takeFlagFormat", fl),
                 cmd = 'say /takeflag ' .. QuoteArgs(GetIdentifier(tgt), fl),
                 icon = "icon16/flag_red.png"
             })
@@ -1762,9 +1760,9 @@ local function IncludeFlagManagement(tgt, menu, stores)
     end
 
     if cf and IsValid(cf) then
-        cf:AddOption("Modify Character Flags", function()
+        cf:AddOption(L("modifyCharFlags"), function()
             local currentFlags = charObj and charObj:getFlags() or ""
-            tgt:requestString("Modify Character Flags", "Set the flags for this player.", function(text)
+            tgt:requestString(L("modifyCharFlags"), L("modifyFlagsDesc"), function(text)
                 if text == false then return end
                 text = string.gsub(text or "", "%s", "")
                 net.Start("liaModifyFlags")
@@ -1777,7 +1775,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/flag_orange.png")
 
-        cf:AddOption("Give All Character Flags", function()
+        cf:AddOption(L("giveAllCharFlags"), function()
             local allFlags = ""
             for fl in pairs(lia.flag.list) do
                 allFlags = allFlags .. fl
@@ -1794,7 +1792,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/flag_blue.png")
 
-        cf:AddOption("Take All Character Flags", function()
+        cf:AddOption(L("takeAllCharFlags"), function()
             net.Start("liaModifyFlags")
             net.WriteString(tgt:SteamID())
             net.WriteString("")
@@ -1803,7 +1801,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/flag_red.png")
 
-        cf:AddOption("List Character Flags", function()
+        cf:AddOption(L("listCharFlags"), function()
             local currentFlags = charObj and charObj:getFlags() or ""
             local flagList = ""
             if currentFlags ~= "" then
@@ -1815,7 +1813,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
                 flagList = string.Trim(flagList)
             end
 
-            Derma_Message("Current Character Flags: " .. (flagList ~= "" and flagList or "None"), "Character Flags", "ok")
+            Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("charFlagsTitle"), L("ok"))
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/information.png")
     end
@@ -1915,7 +1913,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                 }
             }
 
-            local reasonKey = "Reason" or "reason"
+            local reasonKey = L("reason") or "reason"
             local function openReason(selectedSeverity)
                 lia.derma.requestArguments(L(name) .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
                     if not success or not argData then
@@ -1999,20 +1997,20 @@ function MODULE:OpenAdminStickUI(tgt)
     MODULE.adminStickCategoryOrder = {}
     local hasOptions = false
     if tgt:IsPlayer() then
-        local charID = tgt:getChar() and tgt:getChar():getID() or "N/A"
+        local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local info = {
             {
-                name = string.format("CharID: %s (copy)", charID),
+                name = L("charIDCopyFormat", charID),
                 cmd = function() end,
                 icon = "icon16/page_copy.png"
             },
             {
-                name = string.format("Name: %s (copy)", tgt:Name()),
+                name = L("nameCopyFormat", tgt:Name()),
                 cmd = function() end,
                 icon = "icon16/page_copy.png"
             },
             {
-                name = string.format("SteamID: %s (copy)", tgt:SteamID()),
+                name = L("steamIDCopyFormat", tgt:SteamID()),
                 cmd = function() end,
                 icon = "icon16/page_copy.png"
             },
@@ -2053,7 +2051,7 @@ function MODULE:OpenAdminStickUI(tgt)
     hook.Run("PopulateAdminStick", tempMenu, tgt, tempStores)
     tempMenu:Remove()
     if not hasOptions then
-        cl:notifyInfo("No options available")
+        cl:notifyInfoLocalized("adminStickNoOptions")
         return
     end
 
@@ -2082,7 +2080,7 @@ function MODULE:OpenAdminStickUI(tgt)
     end
 
     if tgt:IsPlayer() then
-        local charID = tgt:getChar() and tgt:getChar():getID() or "N/A"
+        local charID = tgt:getChar() and tgt:getChar():getID() or L("na")
         local charName = tgt:getChar() and tgt:getChar():getName() or tgt:Name()
         local steamName = tgt:IsBot() and "BOT" or tgt:SteamName() or ""
         local steamID = tgt:IsBot() and "BOT" or tgt:SteamID() or ""
@@ -2094,7 +2092,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = "Steam Name: " .. steamName .. " (copy)",
                 cmd = function()
                     if steamName ~= "BOT" and steamName ~= "" then
-                        cl:notifySuccess("Copied to clipboard")
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamName)
                     end
 
@@ -2107,7 +2105,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = "Steam Profile: " .. (steamProfileLink ~= "" and steamProfileLink or "N/A") .. " (copy)",
                 cmd = function()
                     if steamProfileLink ~= "" then
-                        cl:notifySuccess("Copied to clipboard")
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamProfileLink)
                     end
 
@@ -2117,10 +2115,10 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = string.format("SteamID: %s (copy)", steamID),
+                name = L("steamIDCopyFormat", steamID),
                 cmd = function()
                     if steamID ~= "BOT" and steamID ~= "" then
-                        cl:notifySuccess("Copied to clipboard")
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamID)
                     end
 
@@ -2133,7 +2131,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = "SteamID64: " .. steamID64 .. " (copy)",
                 cmd = function()
                     if steamID64 ~= "BOT" and steamID64 ~= "" then
-                        cl:notifySuccess("Copied to clipboard")
+                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                         SetClipboardText(steamID64)
                     end
 
@@ -2143,9 +2141,9 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = string.format("Name: %s (copy)", charName),
+                name = L("nameCopyFormat", charName),
                 cmd = function()
-                    cl:notifySuccess("Copied to clipboard")
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     SetClipboardText(charName)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
@@ -2153,10 +2151,10 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = string.format("CharID: %s (copy)", charID),
+                name = L("charIDCopyFormat", charID),
                 cmd = function()
                     if tgt:getChar() then
-                        cl:notifySuccess("Character ID copied to clipboard")
+                        cl:notifySuccessLocalized("adminStickCopiedCharID")
                         SetClipboardText(tgt:getChar():getID())
                     end
 
@@ -2168,7 +2166,7 @@ function MODULE:OpenAdminStickUI(tgt)
             {
                 name = "Model: " .. model .. " (copy)",
                 cmd = function()
-                    cl:notifySuccess("Copied to clipboard")
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     SetClipboardText(model)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
@@ -2185,7 +2183,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 cmd = function()
                     local client = cl
                     if not IsValid(client) then
-                        chat.AddText(Color(255, 0, 0), "[Lilia] Error PrefixThis command can only be used by players.")
+                        chat.AddText(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers"))
                         return
                     end
 
@@ -2194,7 +2192,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
                     chat.AddText(Color(255, 255, 255), posStr)
                     SetClipboardText(posStr)
-                    cl:notifySuccess("Copied to clipboard")
+                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2226,8 +2224,8 @@ function MODULE:OpenAdminStickUI(tgt)
     local categorizedCommands = {}
     local uncategorizedCommands = {}
     for _, c in ipairs(cmds) do
-        local cat = c.data.AdminStick and c.data.AdminStick.Category
-        if cat then
+        if c.data.AdminStick and c.data.AdminStick.Category then
+            local cat = c.data.AdminStick.Category
             if not categorizedCommands[cat] then categorizedCommands[cat] = {} end
             table.insert(categorizedCommands[cat], c)
         else
@@ -2270,7 +2268,7 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             categories.moderation.subcategories.teleportation = {
-                name = "Teleportation" or "Teleportation",
+                name = L("adminStickCategoryTeleportation") or "Teleportation",
                 icon = "icon16/world.png"
             }
         end
@@ -2283,11 +2281,11 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             categories.characterManagement.subcategories.transfers = {
-                name = "Transfers" or "Transfers",
+                name = L("adminStickSubCategoryTransfers") or "Transfers",
                 icon = "icon16/arrow_right.png",
                 subcategories = {
                     adminStickSubCategoryFactions = {
-                        name = "Factions",
+                        name = L("factions"),
                         icon = "icon16/group.png"
                     },
                     adminStickSubCategoryClasses = {
@@ -2298,33 +2296,33 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             categories.characterManagement.subcategories.whitelists = {
-                name = "Whitelists" or "Whitelists",
+                name = L("adminStickSubCategoryWhitelists") or "Whitelists",
                 icon = "icon16/group_key.png",
                 subcategories = {
                     adminStickSubCategoryClasses = {
-                        name = "Classes",
+                        name = L("classes"),
                         icon = "icon16/user.png",
                         subcategories = {
                             adminStickClassAddWhitelist = {
-                                name = "Add Whitelist",
+                                name = L("addWhitelist"),
                                 icon = "icon16/user_add.png"
                             },
                             adminStickClassRemoveWhitelist = {
-                                name = "Remove Whititelist",
+                                name = L("removeWhitelist"),
                                 icon = "icon16/user_delete.png"
                             }
                         }
                     },
                     adminStickSubCategoryFactions = {
-                        name = "Faction",
+                        name = L("faction"),
                         icon = "icon16/group.png",
                         subcategories = {
                             adminStickFactionAddWhitelist = {
-                                name = "Add Whitelist",
+                                name = L("addWhitelist"),
                                 icon = "icon16/group_add.png"
                             },
                             adminStickFactionRemoveWhitelist = {
-                                name = "Remove Whititelist",
+                                name = L("removeWhitelist"),
                                 icon = "icon16/group_delete.png"
                             }
                         }
@@ -2398,15 +2396,15 @@ function MODULE:OpenAdminStickUI(tgt)
         if target.isStorageEntity then
             local storageOptions = {
                 {
-                    name = "Remove Password",
+                    name = L("removePassword"),
                     icon = "icon16/key_delete.png",
                     callback = function() RunConsoleCommand("say", "/storagepasswordremove") end
                 },
                 {
-                    name = "Change Password",
+                    name = L("changePassword"),
                     icon = "icon16/key.png",
                     callback = function()
-                        lia.derma.requestString("Enter new password:", "Enter new password:", function(password)
+                        lia.derma.requestString(L("enterNewPassword"), L("enterNewPassword"), function(password)
                             if password == false then return end
                             if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end
                         end, "")
@@ -2415,7 +2413,7 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             table.insert(lists, {
-                name = "Storage" or "Storage",
+                name = L("storage") or "Storage",
                 category = "storageManagement",
                 subcategory = "storageActions",
                 items = storageOptions
@@ -2441,7 +2439,7 @@ function MODULE:OpenAdminStickUI(tgt)
 
                 if #facOptions > 0 then
                     table.insert(lists, {
-                        name = "Factions",
+                        name = L("factions"),
                         category = "characterManagement",
                         subcategory = "transfers",
                         subSubcategory = "adminStickSubCategoryFactions",
@@ -2506,7 +2504,7 @@ function MODULE:OpenAdminStickUI(tgt)
 
                 if #facAdd > 0 then
                     table.insert(lists, {
-                        name = "Factions",
+                        name = L("factions"),
                         category = "characterManagement",
                         subcategory = "whitelists",
                         subSubcategory = "adminStickSubCategoryFactions",
@@ -2517,7 +2515,7 @@ function MODULE:OpenAdminStickUI(tgt)
 
                 if #facRemove > 0 then
                     table.insert(lists, {
-                        name = "Factions",
+                        name = L("factions"),
                         category = "characterManagement",
                         subcategory = "whitelists",
                         subSubcategory = "adminStickSubCategoryFactions",
@@ -2680,7 +2678,7 @@ local function CreateLogsUI(panel, categories)
     if not categories or #categories == 0 then
         local noLogsLabel = panel:Add("DLabel")
         noLogsLabel:Dock(FILL)
-        noLogsLabel:SetText("No logs available.")
+        noLogsLabel:SetText(L("noLogsAvailable"))
         noLogsLabel:SetTextColor(Color(150, 150, 150))
         noLogsLabel:SetFont("LiliaFont.20")
         noLogsLabel:SetContentAlignment(5)
@@ -2704,7 +2702,7 @@ local function CreateLogsUI(panel, categories)
 
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
-        loadingLabel:SetText("Loading...")
+        loadingLabel:SetText(L("loading"))
         loadingLabel:SetTextColor(Color(150, 150, 150))
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
@@ -2723,7 +2721,7 @@ local function CreateLogsUI(panel, categories)
         pagePanel.category = category
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
-        loadingLabel:SetText("Loading...")
+        loadingLabel:SetText(L("loading"))
         loadingLabel:SetTextColor(Color(150, 150, 150))
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
@@ -2807,7 +2805,7 @@ local function UpdateLogsUI(panel, logsData)
     searchBox:DockMargin(0, 0, 0, 15)
     searchBox:SetTall(30)
     searchBox:SetFont("LiliaFont.17")
-    searchBox:SetPlaceholderText("Search logs...")
+    searchBox:SetPlaceholderText(L("searchLogs"))
     searchBox:SetTextColor(Color(200, 200, 200))
     searchBox:SetText(categoryData.searchFilter)
     local paginationContainer = pagePanel:Add("DPanel")
@@ -2818,7 +2816,7 @@ local function UpdateLogsUI(panel, logsData)
     local prevButton = paginationContainer:Add("liaButton")
     prevButton:Dock(LEFT)
     prevButton:SetWide(80)
-    prevButton:SetText("Previous")
+    prevButton:SetText(L("previousPage"))
     prevButton:DockMargin(5, 5, 5, 5)
     local pageLabel = paginationContainer:Add("DLabel")
     pageLabel:Dock(FILL)
@@ -2829,22 +2827,22 @@ local function UpdateLogsUI(panel, logsData)
     local nextButton = paginationContainer:Add("liaButton")
     nextButton:Dock(RIGHT)
     nextButton:SetWide(80)
-    nextButton:SetText("Next")
+    nextButton:SetText(L("nextPage"))
     nextButton:DockMargin(5, 5, 5, 5)
     local list = pagePanel:Add("liaTable")
     list:Dock(FILL)
     list:DockMargin(0, 0, 0, 10)
     local columns = {
         {
-            name = "Timestamp",
+            name = L("timestamp"),
             field = "timestamp"
         },
         {
-            name = "Message",
+            name = L("message"),
             field = "message"
         },
         {
-            name = "SteamID",
+            name = L("steamID"),
             field = "steamID"
         }
     }
@@ -2853,10 +2851,10 @@ local function UpdateLogsUI(panel, logsData)
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Steam ID", function(rowData) if rowData[3] and rowData[3] ~= "" then SetClipboardText(tostring(rowData[3])) end end, "icon16/page_copy.png")
-    list:AddMenuOption("Copy Log Message", function(rowData) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData[3] and rowData[3] ~= "" then SetClipboardText(tostring(rowData[3])) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyLogMessage"), function(rowData) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
     local function updatePagination()
-        pageLabel:SetText(string.format("Page %d of %d", categoryData.currentPage, categoryData.totalPages))
+        pageLabel:SetText(L("pageIndicator", categoryData.currentPage, categoryData.totalPages))
         prevButton:SetDisabled(categoryData.currentPage <= 1)
         nextButton:SetDisabled(categoryData.currentPage >= categoryData.totalPages)
         prevButton:SetTextColor(categoryData.currentPage <= 1 and Color(100, 100, 100) or Color(200, 200, 200))
@@ -2913,7 +2911,7 @@ liaLogsPanel = liaLogsPanel or nil
 net.Receive("liaSendLogsCategories", function()
     local categories = net.ReadTable()
     if not categories or #categories == 0 then
-        chat.AddText(Color(255, 0, 0), "Failed to retrieve logs.")
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         return
     end
 
@@ -2931,7 +2929,7 @@ net.Receive("liaSendLogsCategories", function()
     if IsValid(logsPanel) then
         CreateLogsUI(logsPanel, categories)
     else
-        chat.AddText(Color(255, 100, 100), "Logs panel not found. Please reopen the logs tab.")
+        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
     end
 end)
 
@@ -2959,7 +2957,7 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     end
 
     if not logsData then
-        chat.AddText(Color(255, 0, 0), "Failed to retrieve logs.")
+        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
         removeLoadingLabel()
         return
     end
@@ -2971,7 +2969,7 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
             removeLoadingLabel()
         end
     else
-        chat.AddText(Color(255, 100, 100), "Logs panel not found. Please reopen the logs tab.")
+        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
     end
 end)
 
@@ -3016,7 +3014,7 @@ end)
 
 net.Receive("liaAdminModeSwapCharacter", function()
     local id = net.ReadInt(32)
-    assert(isnumber(id), "id must be a number")
+    assert(isnumber(id), L("idMustBeNumber"))
     local d = deferred.new()
     net.Receive("liaCharChoose", function()
         local message = net.ReadString()
@@ -3057,7 +3055,7 @@ net.Receive("liaAdminModeSwapCharacter", function()
                 net.WriteString(name)
                 if action == 2 then
                     local prompt = vgui.Create("liaFrame")
-                    prompt:SetTitle("Rename Administration Room")
+                    prompt:SetTitle(L("renameSitroomTitle"))
                     prompt:SetSize(300, 100)
                     prompt:Center()
                     prompt:MakePopup()
@@ -3065,7 +3063,7 @@ net.Receive("liaAdminModeSwapCharacter", function()
                     txt:Dock(FILL)
                     local ok = vgui.Create("liaButton", prompt)
                     ok:Dock(BOTTOM)
-                    ok:SetText(string.upper("ok"))
+                    ok:SetText(string.upper(L("ok")))
                     ok.DoClick = function()
                         net.WriteString(txt:GetValue())
                         net.SendToServer()
@@ -3097,7 +3095,7 @@ net.Receive("liaAllPks", function()
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
@@ -3107,19 +3105,19 @@ net.Receive("liaAllPks", function()
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = "Timestamp",
+            name = L("timestamp"),
             field = "timestamp"
         },
         {
-            name = "Character",
+            name = L("character"),
             field = "character"
         },
         {
-            name = "Submitter",
+            name = L("submitter"),
             field = "submitter"
         },
         {
-            name = "Evidence",
+            name = L("evidence"),
             field = "evidence"
         }
     }
@@ -3132,8 +3130,8 @@ net.Receive("liaAllPks", function()
         list:Clear()
         filter = string.lower(filter or "")
         for _, c in ipairs(cases) do
-            local charInfo = string.format("%s (%s, %s)", c.player or "N/A", c.steamID or "N/A", c.charID or "N/A")
-            local submitInfo = string.format("%s (%s)", c.submitterName or "N/A", c.submitterSteamID or "N/A")
+            local charInfo = string.format("%s (%s, %s)", c.player or L("na"), c.steamID or L("na"), c.charID or L("na"))
+            local submitInfo = string.format("%s (%s)", c.submitterName or L("na"), c.submitterSteamID or L("na"))
             local timestamp = os.date("%Y-%m-%d %H:%M:%S", tonumber(c.timestamp) or 0)
             local lineData = {timestamp, charInfo, submitInfo, c.evidence or ""}
             local searchStr = table.concat(lineData, " ") .. " " .. (c.reason or "")
@@ -3153,42 +3151,42 @@ net.Receive("liaAllPks", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption("Copy Submitter", function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
-    list:AddMenuOption("Copy Reason", function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
-    list:AddMenuOption("Copy Evidence", function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
-    list:AddMenuOption("Copy Steam ID", function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
-    list:AddMenuOption("View Evidence", function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
-    list:AddMenuOption("Ban Character", function(rowData)
+    list:AddMenuOption(L("copySubmitter"), function(rowData) if rowData.submitter and rowData.submitterSteamID then SetClipboardText(string.format("%s (%s)", rowData.submitter, rowData.submitterSteamID)) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyReason"), function(rowData) if rowData.reason then SetClipboardText(rowData.reason) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copyEvidence"), function(rowData) if rowData.evidence then SetClipboardText(rowData.evidence) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copySteamID"), function(rowData) if rowData.steamID then SetClipboardText(rowData.steamID) end end, "icon16/page_copy.png")
+    list:AddMenuOption(L("viewEvidence"), function(rowData) if rowData.evidence and rowData.evidence:match("^https?://") then gui.OpenURL(rowData.evidence) end end, "icon16/world.png")
+    list:AddMenuOption(L("banCharacter"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charban") then LocalPlayer():ConCommand('say "/charban ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
-    list:AddMenuOption("Wipe Character", function(rowData)
+    list:AddMenuOption(L("wipeCharacter"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipe") then LocalPlayer():ConCommand('say "/charwipe ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
-    list:AddMenuOption("Unban Character", function(rowData)
+    list:AddMenuOption(L("unbanCharacter"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunban") then LocalPlayer():ConCommand('say "/charunban ' .. rowData.charID .. '"') end
     end, "icon16/accept.png")
 
-    list:AddMenuOption("Ban Character (Offline)", function(rowData)
+    list:AddMenuOption(L("banCharacterOffline"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charbanoffline") then LocalPlayer():ConCommand('say "/charbanoffline ' .. rowData.charID .. '"') end
     end, "icon16/cancel.png")
 
-    list:AddMenuOption("Wipe Character (Offline)", function(rowData)
+    list:AddMenuOption(L("wipeCharacterOffline"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then LocalPlayer():ConCommand('say "/charwipeoffline ' .. rowData.charID .. '"') end
     end, "icon16/user_delete.png")
 
-    list:AddMenuOption("Unban Character (Offline)", function(rowData)
+    list:AddMenuOption(L("unbanCharacterOffline"), function(rowData)
         if not rowData.charID then return end
         local owner = rowData.steamID and lia.util.getBySteamID(rowData.steamID)
         if not IsValid(owner) and lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then LocalPlayer():ConCommand('say "/charunbanoffline ' .. rowData.charID .. '"') end
@@ -3216,7 +3214,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
@@ -3226,51 +3224,51 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = "Player",
+            name = L("player"),
             field = "player"
         },
         {
-            name = "Player Steam ID",
+            name = L("playerSteamID"),
             field = "steamID"
         },
         {
-            name = "Usergroup",
+            name = L("usergroup"),
             field = "usergroup"
         },
         {
-            name = "Warning Count",
+            name = L("warningCount"),
             field = "warnings"
         },
         {
-            name = "Ticket Count",
+            name = L("ticketCount"),
             field = "tickets"
         },
         {
-            name = "Kick Count",
+            name = L("kickCount"),
             field = "kicks"
         },
         {
-            name = "Kill Count",
+            name = L("killCount"),
             field = "kills"
         },
         {
-            name = "Respawn Count",
+            name = L("respawnCount"),
             field = "respawns"
         },
         {
-            name = "Blind Count",
+            name = L("blindCount"),
             field = "blinds"
         },
         {
-            name = "Mute Count",
+            name = L("muteCount"),
             field = "mutes"
         },
         {
-            name = "Jail Count",
+            name = L("jailCount"),
             field = "jails"
         },
         {
-            name = "Strip Count",
+            name = L("stripCount"),
             field = "strips"
         }
     }
@@ -3279,10 +3277,10 @@ lia.net.readBigTable("liaStaffSummary", function(data)
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Row", function(rowData)
+    list:AddMenuOption(L("copyRow"), function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or string.format("Column %s", i)
+            local header = column.name or L("columnWithNumber", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -3290,13 +3288,13 @@ lia.net.readBigTable("liaStaffSummary", function(data)
         SetClipboardText(string.sub(rowString, 1, -4))
     end, "icon16/page_copy.png")
 
-    list:AddMenuOption("View Warnings Issued", function(rowData)
+    list:AddMenuOption(L("viewWarningsIssued"), function(rowData)
         local steamID = rowData[2] or ""
         local warningCount = tonumber(rowData[4]) or 0
         if steamID ~= "" and warningCount > 0 then LocalPlayer():ConCommand("say /viewwarnsissued " .. steamID) end
     end, "icon16/error.png")
 
-    list:AddMenuOption("View Ticket Claims", function(rowData)
+    list:AddMenuOption(L("viewTicketClaims"), function(rowData)
         local steamID = rowData[2] or ""
         local ticketCount = tonumber(rowData[5]) or 0
         if steamID ~= "" and ticketCount > 0 then LocalPlayer():ConCommand("say /plyviewclaims " .. steamID) end
@@ -3341,7 +3339,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
@@ -3351,35 +3349,35 @@ lia.net.readBigTable("liaAllPlayers", function(players)
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = "Steam Name",
+            name = L("steamName"),
             field = "steamName"
         },
         {
-            name = "SteamID",
+            name = L("steamID"),
             field = "steamID"
         },
         {
-            name = "Usergroup",
+            name = L("usergroup"),
             field = "userGroup"
         },
         {
-            name = "First Join",
+            name = L("firstJoin"),
             field = "firstJoin"
         },
         {
-            name = "Last Online",
+            name = L("lastOnline"),
             field = "lastOnline"
         },
         {
-            name = "Playtime",
+            name = L("playtime"),
             field = "playtime"
         },
         {
-            name = "Characters",
+            name = L("characters"),
             field = "characters"
         },
         {
-            name = "Warnings",
+            name = L("warnings"),
             field = "warnings"
         }
     }
@@ -3388,10 +3386,10 @@ lia.net.readBigTable("liaAllPlayers", function(players)
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Row", function(rowData)
+    list:AddMenuOption(L("copyRow"), function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or string.format("Column %s", i)
+            local header = column.name or L("columnWithNumber", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -3399,7 +3397,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
         SetClipboardText(string.sub(rowString, 1, -4))
     end, "icon16/page_copy.png")
 
-    list:AddMenuOption("Copy Steam ID", function(rowData) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
+    list:AddMenuOption(L("copySteamID"), function(rowData) SetClipboardText(tostring(rowData[2] or "")) end, "icon16/page_copy.png")
     local function populate(filter)
         list:Clear()
         filter = string.lower(filter or "")
@@ -3410,16 +3408,16 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             local ply = player.GetBySteamID(steamID)
             local lastOnlineText
             if IsValid(ply) then
-                lastOnlineText = "Online now"
+                lastOnlineText = L("onlineNow")
             else
                 local last = tonumber(v.lastOnline)
                 if last and last > 0 then
                     local lastDiff = os.time() - last
                     local timeSince = lia.time.timeSince(last)
                     local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                    lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.formatDHM(lastDiff))
+                    lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                 else
-                    lastOnlineText = "Unknown"
+                    lastOnlineText = L("unknown")
                 end
             end
 
@@ -3435,7 +3433,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             local ticketRequests = tonumber(v.ticketsRequested) or 0
             local ticketClaims = tonumber(v.ticketsClaimed) or 0
             if filter == "" or steamName:lower():find(filter, 1, true) or steamID:lower():find(filter, 1, true) or userGroup:lower():find(filter, 1, true) then
-                local lineData = {steamName, steamID, userGroup, v.firstJoin or "Unknown", lastOnlineText, playtime, charCount, warnings}
+                local lineData = {steamName, steamID, userGroup, v.firstJoin or L("unknown"), lastOnlineText, playtime, charCount, warnings}
                 lineData.steamID = v.steamID
                 lineData.ticketRequests = ticketRequests
                 lineData.ticketClaims = ticketClaims
@@ -3448,9 +3446,9 @@ lia.net.readBigTable("liaAllPlayers", function(players)
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption("Open Steam Profile", function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
-    list:AddMenuOption("View Warnings", function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
-    list:AddMenuOption("View Ticket Requests", function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
+    list:AddMenuOption(L("openSteamProfile"), function(rowData) if rowData.steamID then gui.OpenURL("https://steamcommunity.com/profiles/" .. util.SteamIDTo64(rowData.steamID)) end end, "icon16/world.png")
+    list:AddMenuOption(L("viewWarnings"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewwarns") then LocalPlayer():ConCommand("say /viewwarns " .. rowData.steamID) end end, "icon16/error.png")
+    list:AddMenuOption(L("viewTicketRequests"), function(rowData) if rowData.steamID and lia.command.hasAccess(LocalPlayer(), "viewtickets") then LocalPlayer():ConCommand("say /viewtickets " .. rowData.steamID) end end, "icon16/help.png")
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
@@ -3555,14 +3553,14 @@ function MODULE:HUDPaint()
             baseColor = hookResult.baseColor
             customRender = hookResult.customRender
         elseif ent:IsPlayer() and lia.option.get("espPlayers", false) then
-            kind = "Players"
+            kind = L("players")
             subLabel = ent:Name():gsub("#", "\226\128\139#")
             label = subLabel
             baseColor = lia.option.get("espPlayersColor")
         elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
-            kind = "Items"
+            kind = L("items")
             local item = ent:getItemTable()
-            label = item and item:getName() or "Unknown"
+            label = item and item:getName() or L("unknown")
             baseColor = lia.option.get("espItemsColor")
         elseif lia.option.get("espEntities", false) and ent:GetClass():StartWith("lia_") then
             if ent:GetClass() == "lia_npc" then
@@ -3573,7 +3571,7 @@ function MODULE:HUDPaint()
                     baseColor = lia.option.get("espEntitiesColor")
                 end
             else
-                kind = "Entities"
+                kind = L("entities")
                 label = ent.PrintName or ent:GetClass()
                 baseColor = lia.option.get("espEntitiesColor")
             end
@@ -3581,11 +3579,11 @@ function MODULE:HUDPaint()
             local doorData = lia.doors.getData(ent)
             local isConfigured = doorData and ((doorData.factions and #doorData.factions > 0) or (doorData.classes and #doorData.classes > 0) or (doorData.name and doorData.name ~= "") or (doorData.title and doorData.title ~= "") or (doorData.price or 0) > 0 or doorData.locked or doorData.disabled or doorData.hidden or doorData.noSell)
             if lia.option.get("espUnconfiguredDoors", false) and not isConfigured then
-                kind = "Unconfigured Door"
+                kind = L("doorUnconfigured")
                 label = kind
                 baseColor = lia.option.get("espUnconfiguredDoorsColor")
             elseif lia.option.get("espConfiguredDoors", false) and isConfigured then
-                kind = "Configured Door"
+                kind = L("doorConfigured")
                 label = kind
                 baseColor = lia.option.get("espConfiguredDoorsColor")
             end
@@ -3631,7 +3629,7 @@ net.Receive("liaDisplayCharList", function()
     local columns = {
         {
             name = "name",
-            field = "Name"
+            field = L("name")
         },
         {
             name = "description",
@@ -3639,11 +3637,11 @@ net.Receive("liaDisplayCharList", function()
         },
         {
             name = "faction",
-            field = "Faction"
+            field = L("faction")
         },
         {
             name = "banned",
-            field = "Banned"
+            field = L("banned")
         },
         {
             name = "banningAdminName",
@@ -3659,7 +3657,7 @@ net.Receive("liaDisplayCharList", function()
         },
         {
             name = "charMoney",
-            field = "Money"
+            field = L("money")
         },
         {
             name = "lastUsed",
@@ -3674,12 +3672,12 @@ net.Receive("liaDisplayCharList", function()
         })
     end
 
-    local _, listView = lia.util.createTableUI(string.format("Charlist for SteamID: %s", targetSteamIDsafe), columns, sendData)
+    local _, listView = lia.util.createTableUI(L("charlistTitle", targetSteamIDsafe), columns, sendData)
     if IsValid(listView) then
         for _, line in ipairs(listView:GetLines()) do
             local dataIndex = line:GetID()
             local rowData = sendData[dataIndex]
-            if rowData and rowData.Banned == "Yes" then
+            if rowData and rowData.Banned == L("yes") then
                 line.DoPaint = line.Paint
                 line.Paint = function(pnl, w, h)
                     surface.SetDrawColor(200, 100, 100)
@@ -3706,32 +3704,32 @@ net.Receive("liaDisplayCharList", function()
             local dMenu = lia.derma.dermaMenu()
             if IsValid(owner) then
                 if lia.command.hasAccess(LocalPlayer(), "charban") then
-                    local opt1 = dMenu:AddOption("Ban Character", function() LocalPlayer():ConCommand('say "/charban ' .. ln.CharID .. '"') end)
+                    local opt1 = dMenu:AddOption(L("banCharacter"), function() LocalPlayer():ConCommand('say "/charban ' .. ln.CharID .. '"') end)
                     opt1:SetIcon("icon16/cancel.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charwipe") then
-                    local opt1_5 = dMenu:AddOption("Wipe Character", function() LocalPlayer():ConCommand('say "/charwipe ' .. ln.CharID .. '"') end)
+                    local opt1_5 = dMenu:AddOption(L("wipeCharacter"), function() LocalPlayer():ConCommand('say "/charwipe ' .. ln.CharID .. '"') end)
                     opt1_5:SetIcon("icon16/user_delete.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charunban") then
-                    local opt2 = dMenu:AddOption("Unban Character", function() LocalPlayer():ConCommand('say "/charunban ' .. ln.CharID .. '"') end)
+                    local opt2 = dMenu:AddOption(L("unbanCharacter"), function() LocalPlayer():ConCommand('say "/charunban ' .. ln.CharID .. '"') end)
                     opt2:SetIcon("icon16/accept.png")
                 end
             else
                 if lia.command.hasAccess(LocalPlayer(), "charbanoffline") then
-                    local opt3 = dMenu:AddOption("Ban Character (Offline)", function() LocalPlayer():ConCommand('say "/charbanoffline ' .. ln.CharID .. '"') end)
+                    local opt3 = dMenu:AddOption(L("banCharacterOffline"), function() LocalPlayer():ConCommand('say "/charbanoffline ' .. ln.CharID .. '"') end)
                     opt3:SetIcon("icon16/cancel.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charwipeoffline") then
-                    local opt3_5 = dMenu:AddOption("Wipe Character (Offline)", function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. ln.CharID .. '"') end)
+                    local opt3_5 = dMenu:AddOption(L("wipeCharacterOffline"), function() LocalPlayer():ConCommand('say "/charwipeoffline ' .. ln.CharID .. '"') end)
                     opt3_5:SetIcon("icon16/user_delete.png")
                 end
 
                 if lia.command.hasAccess(LocalPlayer(), "charunbanoffline") then
-                    local opt4 = dMenu:AddOption("Unban Character (Offline)", function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. ln.CharID .. '"') end)
+                    local opt4 = dMenu:AddOption(L("unbanCharacterOffline"), function() LocalPlayer():ConCommand('say "/charunbanoffline ' .. ln.CharID .. '"') end)
                     opt4:SetIcon("icon16/accept.png")
                 end
             end
@@ -3765,7 +3763,7 @@ local function CreateTicketFrame(requester, message, claimed)
     frm.idiot = requester
     frm:ShowCloseButton(false)
     if claimed and IsValid(claimed) and claimed:IsPlayer() then
-        frm:SetTitle(string.format("%s - Claimed by %s", requester:Nick(), claimed:Nick()))
+        frm:SetTitle(L("ticketTitleClaimed", requester:Nick(), claimed:Nick()))
         if claimed ~= LocalPlayer() then frm.headerColor = Color(207, 0, 15) end
     else
         frm:SetTitle(requester:Nick())
@@ -3791,7 +3789,7 @@ local function CreateTicketFrame(requester, message, claimed)
         btn:SetText(text)
         btn.Disabled = disabled
         btn.DoClick = function() if not btn.Disabled then clickFunc() end end
-        if disabled then btn:SetTooltip("You cannot perform this action on your own ticket.") end
+        if disabled then btn:SetTooltip(L("ticketActionSelf")) end
         return btn
     end
 
@@ -3807,15 +3805,15 @@ local function CreateTicketFrame(requester, message, claimed)
         if not frm.title then return end
         if not shouldClose then
             local title = frm.title
-            if title and title:lower():find(("Claimed by"):lower()) then
-                chat.AddText(Color(255, 150, 0), "[ERROR] Case has already been claimed")
+            if title and title:lower():find(L("claimedBy"):lower()) then
+                chat.AddText(Color(255, 150, 0), "[" .. L("error") .. "] " .. L("caseAlreadyClaimed"))
                 surface.PlaySound("common/wpn_denyselect.wav")
             else
                 net.Start("liaTicketSystemClaim")
                 net.WriteEntity(requester)
                 net.SendToServer()
                 shouldClose = true
-                claimButton:SetText("Close case")
+                claimButton:SetText(L("closeCase"))
             end
         else
             net.Start("liaTicketSystemClose")
@@ -3826,7 +3824,7 @@ local function CreateTicketFrame(requester, message, claimed)
 
     local closeButton = vgui.Create("liaButton", frm)
     closeButton:SetText("X")
-    closeButton:SetTooltip("Close")
+    closeButton:SetTooltip(L("close"))
     closeButton:SetPos(frameWidth - 18, 2)
     closeButton:SetSize(16, 16)
     closeButton.DoClick = function() frm:Remove() end
@@ -3858,25 +3856,25 @@ net.Receive("liaActiveTickets", function()
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = ticketPanel:Add("liaTable")
     list:Dock(FILL)
     local columns = {
         {
-            name = "Timestamp",
+            name = L("timestamp"),
             field = "timestamp"
         },
         {
-            name = "Requester",
+            name = L("requester"),
             field = "requesterDisplay"
         },
         {
-            name = "Admin",
+            name = L("admin"),
             field = "adminDisplay"
         },
         {
-            name = "Message",
+            name = L("message"),
             field = "message"
         }
     }
@@ -3885,10 +3883,10 @@ net.Receive("liaActiveTickets", function()
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Row", function(rowData)
+    list:AddMenuOption(L("copyRow"), function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or string.format("Column %s", i)
+            local header = column.name or L("columnWithNumber", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end
@@ -3909,7 +3907,7 @@ net.Receive("liaActiveTickets", function()
             end
 
             local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            local adminDisplay = "Unassigned"
+            local adminDisplay = L("unassigned")
             if t.admin then
                 local adminPly = lia.util.getBySteamID(t.admin)
                 local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
@@ -3937,7 +3935,7 @@ net.Receive("liaActiveTickets", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption("No options available", function() end)
+    list:AddMenuOption(L("noOptionsAvailable"), function() end)
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)
@@ -3947,10 +3945,10 @@ net.Receive("liaViewClaims", function()
     local steamid = net.ReadString()
     if steamid and steamid ~= "" and steamid ~= " " then
         local v = tbl[steamid]
-        lia.information(string.format("%s - %s claims - last claim %s ago", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
+        lia.information(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
     else
         for _, v in pairs(tbl) do
-            lia.information(string.format("%s - %s claims", v.name, v.claims))
+            lia.information(L("claimRecord", v.name, v.claims))
         end
     end
 end)
@@ -3967,7 +3965,7 @@ net.Receive("liaTicketSystemClaim", function()
     local requester = net.ReadEntity()
     for _, v in pairs(TicketFrames) do
         if v.idiot == requester then
-            v:SetTitle(requester:Nick() .. " - Claimed by " .. pl:Nick())
+            v:SetTitle(requester:Nick() .. " - " .. L("claimedBy") .. " " .. pl:Nick())
             local bu = v:GetChildren()[11]
             if not bu or not IsValid(bu) then return end
             bu.DoClick = function()
@@ -4015,29 +4013,29 @@ net.Receive("liaAllWarnings", function()
     search:DockMargin(0, 20, 0, 15)
     search:SetTall(30)
     search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText("Search...")
+    search:SetPlaceholderText(L("search"))
     search:SetTextColor(Color(200, 200, 200))
     local list = panelRef:Add("liaTable")
     list:Dock(FILL)
     local columns = {
         {
-            name = "Timestamp",
+            name = L("timestamp"),
             field = "timestamp"
         },
         {
-            name = "Warned",
+            name = L("warned"),
             field = "warnedDisplay"
         },
         {
-            name = "Admin",
+            name = L("admin"),
             field = "adminDisplay"
         },
         {
-            name = "Warning Message",
+            name = L("warningMessage"),
             field = "message"
         },
         {
-            name = "Severity",
+            name = L("warningSeverity"),
             field = "severity"
         }
     }
@@ -4046,10 +4044,10 @@ net.Receive("liaAllWarnings", function()
         list:AddColumn(col.name)
     end
 
-    list:AddMenuOption("Copy Row", function(rowData)
+    list:AddMenuOption(L("copyRow"), function(rowData)
         local rowString = ""
         for i, column in ipairs(columns) do
-            local header = column.name or string.format("Column %s", i)
+            local header = column.name or L("columnWithNumber", i)
             local value = tostring(rowData[i] or "")
             rowString = rowString .. header .. " " .. value .. " | "
         end

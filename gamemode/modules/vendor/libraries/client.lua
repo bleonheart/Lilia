@@ -161,9 +161,9 @@ end)
 function MODULE:AddToAdminStickHUD(client, target, information)
     if not IsValid(target) or not target.IsVendor then return end
     local name = target:getName()
-    if name and name ~= "" then table.insert(information, "Vendor Name: " .. name) end
+    if name and name ~= "" then table.insert(information, L("vendorNameLabel") .. name) end
     local animation = lia.vendor.getVendorProperty(target, "animation")
-    if animation and animation ~= "" then table.insert(information, "Animation: " .. animation) end
+    if animation and animation ~= "" then table.insert(information, L("animationLabel") .. animation) end
     local itemCount = 0
     if target.items then
         for _, itemData in pairs(target.items) do
@@ -171,7 +171,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         end
     end
 
-    table.insert(information, "Item Count: " .. itemCount)
+    table.insert(information, L("vendorItemCountLabel") .. itemCount)
     local factionNames = {}
     if target.factions then
         for factionID, _ in pairs(target.factions) do
@@ -181,14 +181,14 @@ function MODULE:AddToAdminStickHUD(client, target, information)
     end
 
     if #factionNames > 0 then
-        table.insert(information, "Allowed Factions:")
+        table.insert(information, L("allowedFactionsLabel"))
         for _, factionName in ipairs(factionNames) do
             table.insert(information, "- " .. factionName)
         end
 
         table.insert(information, "")
     else
-        table.insert(information, "Factions: All")
+        table.insert(information, L("allFactionsLabel"))
     end
 
     local classNames = {}
@@ -200,7 +200,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
     end
 
     if #classNames > 0 then
-        table.insert(information, "Allowed Classes:")
+        table.insert(information, L("allowedClassesLabel"))
         for _, className in ipairs(classNames) do
             table.insert(information, "- " .. className)
         end

@@ -38,7 +38,7 @@ if SERVER then
     function lia.workshop.addWorkshop(id)
         id = tostring(id)
         if not lia.workshop.ids[id] then
-            lia.bootstrap("Workshop Downloader", string.format("Downloading workshop %s", id))
+            lia.bootstrap(L("workshopDownloader"), L("workshopDownloading", id))
             lia.workshop.ids[id] = true
         end
     end
@@ -47,7 +47,7 @@ if SERVER then
         id = tostring(id)
         if not lia.workshop.known[id] then
             lia.workshop.known[id] = true
-            lia.bootstrap("Workshop Downloader", string.format("Added workshop %s to download list", id))
+            lia.bootstrap(L("workshopDownloader"), L("workshopAdded", id))
         end
     end
 
@@ -238,7 +238,7 @@ else
         end
 
         if #needed == 0 then
-            lia.bootstrap("Workshop Downloader", "All workshop addons already installed. Skipping download.")
+            lia.bootstrap(L("workshopDownloader"), L("workshopAllInstalled"))
             return
         end
 
@@ -248,15 +248,15 @@ else
                 if fi and fi.size then totalSize = totalSize + fi.size end
                 pending = pending - 1
                 if pending <= 0 then
-                    lia.derma.requestPopupQuestion(string.format("Download %s of workshop content?", formatSize(totalSize)), {
+                    lia.derma.requestPopupQuestion(L("workshopConfirmMount", formatSize(totalSize)), {
                         {
-                            "Yes",
+                            L("yes"),
                             function()
                                 net.Start("liaWorkshopDownloaderRequest")
                                 net.SendToServer()
                             end
                         },
-                        {"No"}
+                        {L("no")}
                     })
                 end
             end)
@@ -271,7 +271,7 @@ else
                 local ids = lia.workshop.serverIds or {}
                 local sheet = vgui.Create("liaSheet", parent)
                 sheet:Dock(FILL)
-                sheet:SetPlaceholderText("Search addons...")
+                sheet:SetPlaceholderText(L("searchAddons"))
                 local info, totalSize = {}, 0
                 local pending = table.Count(ids)
                 if pending <= 0 then
@@ -291,8 +291,8 @@ else
                             local url = fi.previewurl or ""
                             if sheet.AddPreviewRow then
                                 local rowData = sheet:AddPreviewRow({
-                                    title = fi.title or string.format("ID: %s", id),
-                                    desc = fi.size and string.format("This addon is %s. It takes up %s of the downloaded and mounted addons via Lilia", formatSize(fi.size), percent) or "",
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
                                     url = url,
                                     size = 64
                                 })
@@ -350,8 +350,8 @@ else
                                 end
                             elseif sheet.AddTextRow then
                                 local rowData = sheet:AddTextRow({
-                                    title = fi.title or string.format("ID: %s", id),
-                                    desc = fi.size and string.format("This addon is %s. It takes up %s of the downloaded and mounted addons via Lilia", formatSize(fi.size), percent) or "",
+                                    title = fi.title or L("idPrefix", id),
+                                    desc = fi.size and L("addonSize", formatSize(fi.size), percent) or "",
                                     compact = true
                                 })
 

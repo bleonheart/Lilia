@@ -46,14 +46,14 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
         ```
 ]]
 function lia.faction.register(uniqueID, data)
-    assert(isstring(uniqueID), "Faction Unique ID String")
-    assert(istable(data), "data must be a table")
+    assert(isstring(uniqueID), L("factionUniqueIDString"))
+    assert(istable(data), L("factionDataTable"))
     local existing = lia.faction.teams[uniqueID]
     local constantName = "FACTION_" .. string.upper(uniqueID)
     local providedIndex = tonumber(data.index)
     local constantIndex = tonumber(_G[constantName])
     local index = providedIndex or constantIndex or existing and existing.index or table.Count(lia.faction.teams) + 1
-    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, "Faction Index In Use")
+    assert(not lia.faction.indices[index] or lia.faction.indices[index] == existing, L("factionIndexInUse"))
     local faction = existing or {
         index = index,
         isDefault = true
@@ -77,7 +77,7 @@ function lia.faction.register(uniqueID, data)
     if overrideDesc then faction.desc = overrideDesc end
     local overrideModels = hook.Run("OverrideFactionModels", uniqueID, faction.models)
     if overrideModels then faction.models = overrideModels end
-    team.SetUp(faction.index, faction.name or L and "Unknown" or "unknown", faction.color or Color(125, 125, 125))
+    team.SetUp(faction.index, faction.name or L and L("unknown") or "unknown", faction.color or Color(125, 125, 125))
     lia.faction.cacheModels(faction.models)
     lia.faction.indices[faction.index] = faction
     lia.faction.teams[uniqueID] = faction
@@ -153,12 +153,12 @@ function lia.faction.loadFromDir(directory)
         lia.loader.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
             FACTION.name = "unknown"
-            lia.error(string.format("Faction '%s' is missing a name. You need to add a FACTION.name", niceName))
+            lia.error(L("factionMissingName", niceName))
         end
 
         if not FACTION.desc then
-            FACTION.desc = "No Description"
-            lia.error(string.format("Faction '%s' is missing a description. You need to add a FACTION.desc", niceName))
+            FACTION.desc = "noDesc"
+            lia.error(L("factionMissingDesc", niceName))
         end
 
         FACTION.name = L(FACTION.name)
@@ -972,7 +972,7 @@ end
 
 FACTION_STAFF = lia.faction.register("staff", {
     name = "factionStaffName",
-    desc = "The Staff",
+    desc = "factionStaffDesc",
     color = Color(255, 56, 252),
     isDefault = false,
     models = {"models/player/police.mdl"},

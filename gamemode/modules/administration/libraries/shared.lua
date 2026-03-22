@@ -3,7 +3,7 @@
 end
 
 properties.Add("TogglePropBlacklist", {
-    MenuLabel = "Toggle Prop Blacklist",
+    MenuLabel = L("togglePropBlacklist"),
     Order = 900,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply) return IsValid(ent) and ent:GetClass() == "prop_physics" and ply:hasPrivilege("managePropBlacklist") end,
@@ -19,17 +19,17 @@ properties.Add("TogglePropBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
+            ply:notifySuccessLocalized("removedFromBlacklist", model)
         else
             table.insert(list, model)
             lia.data.set("prop_blacklist", list, true, true)
-            ply:notifySuccess(string.format("Added to blacklist: %s", model))
+            ply:notifySuccessLocalized("addedToBlacklist", model)
         end
     end
 })
 
 lia.command.add("sayall", {
-    desc = "Sends a phrase to all registered chat types",
+    desc = "sendsPhraseToAllChatTypes",
     privilege = "adminChat",
     adminOnly = true,
     arguments = {
@@ -41,7 +41,7 @@ lia.command.add("sayall", {
     onRun = function(client, arguments)
         local phrase = table.concat(arguments, " ")
         if not phrase or phrase == "" then
-            client:notifyError("You must provide a phrase to send.")
+            client:notifyErrorLocalized("invalidPhrase")
             return
         end
 
@@ -53,12 +53,12 @@ lia.command.add("sayall", {
             end
         end
 
-        client:notifySuccess(string.format("Sent phrase '%s' to %d chat types.", chatCount, phrase))
+        client:notifySuccessLocalized("sentToAllChats", chatCount, phrase)
     end
 })
 
 properties.Add("ToggleCarBlacklist", {
-    MenuLabel = "Toggle Car Blacklist",
+    MenuLabel = L("toggleCarBlacklist"),
     Order = 901,
     MenuIcon = "icon16/link.png",
     Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("manageVehicleBlacklist") end,
@@ -74,17 +74,17 @@ properties.Add("ToggleCarBlacklist", {
         if table.HasValue(list, model) then
             table.RemoveByValue(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccess(string.format("Removed from blacklist: %s", model))
+            ply:notifySuccessLocalized("removedFromBlacklist", model)
         else
             table.insert(list, model)
             lia.data.set("carBlacklist", list, true, true)
-            ply:notifySuccess(string.format("Added to blacklist: %s", model))
+            ply:notifySuccessLocalized("addedToBlacklist", model)
         end
     end
 })
 
 properties.Add("copytoclipboard", {
-    MenuLabel = "Copy Model to Clipboard",
+    MenuLabel = L("copyModelClipboard"),
     Order = 999,
     MenuIcon = "icon16/cup.png",
     Filter = function(_, ent)
@@ -117,7 +117,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
 
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
-                    client:notifySuccess(string.format("You added spawn for %s.", L(factionInfo.name)))
+                    client:notifySuccessLocalized("spawnAdded", L(factionInfo.name))
                 end)
             end)
         else
@@ -129,7 +129,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
             end
 
             if #names == 0 then
-                client:notifyError("The specified faction is not valid.")
+                client:notifyErrorLocalized("invalidFaction")
                 return
             end
 
@@ -200,7 +200,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
 
             lia.data.set("spawns", data)
             lia.log.add(client, "classSpawnAdd", classData.name)
-            client:notifySuccess(string.format("You added spawn for %s.", L(classData.name)))
+            client:notifySuccessLocalized("spawnAdded", L(classData.name))
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.class.list or {}) do
@@ -212,7 +212,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
             end
 
             if #names == 0 then
-                client:notifyError("The specified class is not valid.")
+                client:notifyErrorLocalized("invalidClass")
                 return
             end
 
@@ -272,13 +272,13 @@ lia.util.setPositionCallback("Sit Room", {
             local rooms = lia.data.get("sitrooms", {})
             rooms[name] = pos
             lia.data.set("sitrooms", rooms)
-            client:notifySuccess("Administration Room has been set!")
-            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(pos)), "Set the administration room location")
+            client:notifySuccessLocalized("sitroomSet")
+            lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(pos)), L("logSetSitroom"))
         elseif CLIENT then
-            client:requestString("Enter Name", "Enter the name of the Administration Room:", function(name)
+            client:requestString(L("enterNamePrompt"), L("enterSitroomPrompt") .. ":", function(name)
                 if name == false then return end
                 if not name or name == "" then
-                    client:notifyError("Invalid name!")
+                    client:notifyErrorLocalized("invalidName")
                     return
                 end
 

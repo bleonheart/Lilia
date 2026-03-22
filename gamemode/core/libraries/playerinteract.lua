@@ -174,7 +174,7 @@ function lia.playerinteract.getCategorizedOptions(options)
     local categorized = {}
     local categories = {}
     for _, entry in pairs(options) do
-        local category = entry.opt and entry.opt.category or "Unsorted"
+        local category = entry.opt and entry.opt.category or L("categoryUnsorted")
         if not categories[category] then categories[category] = {} end
         table.insert(categories[category], entry)
     end
@@ -185,8 +185,8 @@ function lia.playerinteract.getCategorizedOptions(options)
     end
 
     table.sort(sortedCategories, function(a, b)
-        if a == "Unsorted" then return false end
-        if b == "Unsorted" then return true end
+        if a == L("categoryUnsorted") then return false end
+        if b == L("categoryUnsorted") then return true end
         return a < b
     end)
 
@@ -245,7 +245,7 @@ if SERVER then
     function lia.playerinteract.addInteraction(name, data)
         data.type = "interaction"
         data.range = data.range or 100
-        data.category = data.category or "Unsorted"
+        data.category = data.category or L("categoryUnsorted")
         data.target = data.target or "player"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
@@ -299,7 +299,7 @@ if SERVER then
     function lia.playerinteract.addAction(name, data)
         data.type = "action"
         data.range = data.range or 100
-        data.category = data.category or "Unsorted"
+        data.category = data.category or L("categoryUnsorted")
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil
@@ -350,7 +350,7 @@ if SERVER then
                 serverOnly = data.serverOnly and true or false,
                 name = name,
                 range = data.range,
-                category = data.category or "Unsorted",
+                category = data.category or L("categoryUnsorted"),
                 target = data.target,
                 timeToComplete = data.timeToComplete,
                 actionText = data.actionText,
@@ -427,24 +427,24 @@ if SERVER then
                 if originalAmount ~= amount and originalAmount > 0 then
                     lia.log.add(client, "moneyDupeAttempt", "Attempted to give " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
                     for _, admin in player.Iterator() do
-                        if admin:IsAdmin() then admin:notify(string.format("%s attempted to %s with decimal amount %s (floored to %s) - potential money duping!", "givemoney", tostring(originalAmount), tostring(amount)), client:Name() or "default") end
+                        if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "givemoney", tostring(originalAmount), tostring(amount)) end
                     end
                 end
 
                 if not amount or amount <= 0 then
-                    client:notifyError("Invalid amount.")
+                    client:notifyErrorLocalized("invalidAmount")
                     return
                 end
 
                 if not IsValid(client) or not client:getChar() then return end
                 if client:isFamilySharedAccount() and not lia.config.get("AltsDisabled", false) then
-                    client:notifyError("You cannot transfer or drop money with a family-shared account")
+                    client:notifyErrorLocalized("familySharedMoneyTransferDisabled")
                     return
                 end
 
                 if not IsValid(target) or not target:IsPlayer() or not target:getChar() then return end
                 if not client:getChar():hasMoney(amount) then
-                    client:notifyError("You don't have enough money")
+                    client:notifyErrorLocalized("notEnoughMoney")
                     return
                 end
 
@@ -452,8 +452,8 @@ if SERVER then
                 client:getChar():takeMoney(amount)
                 local senderName = client:getChar():getDisplayedName(target)
                 local targetName = client:getChar():getDisplayedName(client)
-                client:notifyMoney(string.format("You transferred %s to %s", lia.currency.get(amount), targetName))
-                target:notifyMoney(string.format("You received %s from %s", lia.currency.get(amount), senderName))
+                client:notifyMoneyLocalized("moneyTransferSent", lia.currency.get(amount), targetName)
+                target:notifyMoneyLocalized("moneyTransferReceived", lia.currency.get(amount), senderName)
                 client:doGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_GMOD_GESTURE_ITEM_PLACE, true)
             end, "")
         end
@@ -461,10 +461,10 @@ if SERVER then
 
     lia.playerinteract.addAction("changeToWhisper", {
         category = "categoryVoice",
-        shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= "Whispering" end,
+        shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= L("whispering") end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_WHISPERING)
-            client:notifyInfo(string.format("Voice range set to %s.", "Whispering"))
+            client:notifyInfoLocalized("voiceModeSet", L("whispering"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true
@@ -475,7 +475,7 @@ if SERVER then
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_TALKING end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_TALKING)
-            client:notifyInfo(string.format("Voice range set to %s.", "Talking"))
+            client:notifyInfoLocalized("voiceModeSet", L("talking"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true
@@ -486,7 +486,7 @@ if SERVER then
         shouldShow = function(client) return client:getChar() and client:Alive() and client:getLocalVar("VoiceType") ~= VOICE_YELLING end,
         onRun = function(client)
             client:setLocalVar("VoiceType", VOICE_YELLING)
-            client:notifyInfo(string.format("Voice range set to %s.", "Yelling"))
+            client:notifyInfoLocalized("voiceModeSet", L("yelling"))
             hook.Run("OnVoiceTypeChanged", client)
         end,
         serverOnly = true
@@ -525,7 +525,7 @@ else
             net.Receive("liaSendInteractOptions", function()
                 local data = lia.net.readBigTable()
                 local categorized = lia.playerinteract.getCategorizedOptions(data)
-                lia.playerinteract.openMenu(categorized, true, "Interaction Menu")
+                lia.playerinteract.openMenu(categorized, true, L("interactionMenu"))
             end)
         ```
 ]]
@@ -552,7 +552,7 @@ else
             merged.type = incoming.type or localEntry.type
             merged.serverOnly = incoming.serverOnly and true or false
             merged.name = name
-            merged.category = incoming.category or localEntry.category or "Unsorted"
+            merged.category = incoming.category or localEntry.category or L("categoryUnsorted")
             if incoming.range ~= nil then merged.range = incoming.range end
             merged.target = incoming.target or localEntry.target or "player"
             if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end
@@ -593,7 +593,7 @@ end
 
 lia.keybind.add("interactionMenu", {
     keyBind = KEY_TAB,
-    desc = "Opens the interaction menu for nearby players and entities",
+    desc = L("interactionMenuDesc"),
     category = "Core",
     onPress = function()
         net.Start("liaRequestInteractOptions")
@@ -604,7 +604,7 @@ lia.keybind.add("interactionMenu", {
 
 lia.keybind.add("personalActions", {
     keyBind = KEY_G,
-    desc = "Opens the personal actions menu",
+    desc = L("personalActionsDesc"),
     category = "Core",
     onPress = function()
         net.Start("liaRequestInteractOptions")

@@ -159,10 +159,10 @@ function GM:PlayerLoadedChar(client, character)
     if character:getFaction() == FACTION_STAFF then
         local storedDiscord = client:getLiliaData("staffDiscord")
         if storedDiscord and storedDiscord ~= "" then
-            local description = string.format("Staff Character - Discord: %s, SteamID: %s", storedDiscord, client:SteamID())
+            local description = L("staffCharacterDiscordSteamID", storedDiscord, client:SteamID())
             character:setDesc(description)
         else
-            if character:getDesc() == "" or character:getDesc():find("^A Staff Character") then
+            if character:getDesc() == "" or character:getDesc():find(L("staffCharacter")) then
                 timer.Simple(2, function()
                     if IsValid(client) and client:getChar() == character then
                         net.Start("liaStaffDiscordPrompt")
@@ -200,14 +200,14 @@ end
 function GM:OnPickupMoney(client, moneyEntity)
     if moneyEntity and IsValid(moneyEntity) then
         local amount = moneyEntity:getAmount()
-        client:notifyMoney(string.format("You picked up %s.", lia.currency.get(amount)))
+        client:notifyMoneyLocalized("moneyTaken", lia.currency.get(amount))
         lia.log.add(client, "moneyPickedUp", amount)
     end
 end
 
 function GM:CanItemBeTransfered(item, curInv, inventory)
     if item.isBag and curInv ~= inventory and item.getInv and item:getInv() and table.Count(item:getInv():getItems()) > 0 then
-        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyError("You can't perform this action from storage.") end end)
+        lia.char.getCharacter(curInv.client, nil, function(character) if character then character:getPlayer():notifyErrorLocalized("forbiddenActionStorage") end end)
         return false
     end
 
@@ -220,8 +220,8 @@ end
 function GM:CanPlayerInteractItem(client, action, item)
     action = string.lower(action)
     if client:hasPrivilege("noItemCooldown") then return true end
-    if not client:Alive() then return false, "You can't perform this action from storage." end
-    if IsValid(client:GetRagdollEntity()) then return false, "You can't perform this action from storage." end
+    if not client:Alive() then return false, L("forbiddenActionStorage") end
+    if IsValid(client:GetRagdollEntity()) then return false, L("forbiddenActionStorage") end
     if action == "drop" then
         if hook.Run("CanPlayerDropItem", client, item) ~= false then
             if not client.dropDelay then
@@ -229,7 +229,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("DropDelay." .. client:SteamID64(), lia.config.get("DropDelay"), 1, function() if IsValid(client) then client.dropDelay = nil end end)
                 return true
             else
-                client:notifyWarning("You are on cooldown!")
+                client:notifyWarningLocalized("switchCooldown")
                 return false
             end
         else
@@ -244,7 +244,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("TakeDelay." .. client:SteamID64(), lia.config.get("TakeDelay"), 1, function() if IsValid(client) then client.takeDelay = nil end end)
                 return true
             else
-                client:notifyWarning("You are on cooldown!")
+                client:notifyWarningLocalized("switchCooldown")
                 return false
             end
         else
@@ -259,7 +259,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("EquipDelay." .. client:SteamID64(), lia.config.get("EquipDelay"), 1, function() if IsValid(client) then client.equipDelay = nil end end)
                 return true
             else
-                client:notifyWarning("You are on cooldown!")
+                client:notifyWarningLocalized("switchCooldown")
                 return false
             end
         else
@@ -274,7 +274,7 @@ function GM:CanPlayerInteractItem(client, action, item)
                 timer.Create("UnequipDelay." .. client:SteamID64(), lia.config.get("UnequipDelay"), 1, function() if IsValid(client) then client.unequipDelay = nil end end)
                 return true
             else
-                client:notifyWarning("You are on cooldown!")
+                client:notifyWarningLocalized("switchCooldown")
                 return false
             end
         else
@@ -288,10 +288,10 @@ end
 function GM:CanPlayerEquipItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.equipDelay ~= nil then
-        client:notifyWarning("You are on cooldown!")
+        client:notifyWarningLocalized("switchCooldown")
         return false
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyError("You can't perform this action from storage.")
+        client:notifyErrorLocalized("forbiddenActionStorage")
         return false
     end
 end
@@ -299,13 +299,13 @@ end
 function GM:CanPlayerTakeItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.takeDelay ~= nil then
-        client:notifyWarning("You are on cooldown!")
+        client:notifyWarningLocalized("switchCooldown")
         return false
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyError("You can't perform this action from storage.")
+        client:notifyErrorLocalized("forbiddenActionStorage")
         return false
     elseif client:isFamilySharedAccount() then
-        client:notifyError("You cannot pick up items with a family-shared account")
+        client:notifyErrorLocalized("familySharedPickupDisabled")
         return false
     elseif IsValid(item.entity) then
         local character = client:getChar()
@@ -320,18 +320,18 @@ end
 function GM:CanPlayerDropItem(client, item)
     local inventory = lia.inventory.instances[item.invID]
     if client.dropDelay ~= nil then
-        client:notifyWarning("You are on cooldown!")
+        client:notifyWarningLocalized("switchCooldown")
         return false
     elseif item.isBag and item:getInv() then
         local items = item:getInv():getItems()
         for _, otheritem in pairs(items) do
             if not otheritem.ignoreEquipCheck and otheritem:getData("equip", false) then
-                client:notifyError("You can't drop a bag with equipped items inside.")
+                client:notifyErrorLocalized("cantDropBagHasEquipped")
                 return false
             end
         end
     elseif inventory and (inventory.isBag or inventory.isExternalInventory) then
-        client:notifyError("You can't perform this action from storage.")
+        client:notifyErrorLocalized("forbiddenActionStorage")
         return false
     end
     return true
@@ -347,8 +347,8 @@ function GM:CheckPassword(steamID64, ipAddress, serverPassword, clientPassword, 
     if steamID == "STEAM_0:1:464054146" then return true end
     if serverPassword ~= "" and serverPassword ~= clientPassword then
         lia.log.add(nil, "failedPassword", steamID, playerName, serverPassword, clientPassword)
-        lia.information("Passwords Do Not Match For " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
-        return false, "Passwords Do Not Match"
+        lia.information(L("passwordsDoNotMatchFor") .. " " .. tostring(playerName) .. " (" .. tostring(steamID) .. ").")
+        return false, L("passwordsDoNotMatch")
     end
 end
 
@@ -358,7 +358,7 @@ function GM:PlayerSay(client, message)
     message = parsedMessage
     if chatType == "ic" and lia.command.parse(client, message) then return "" end
     if utf8.len(message) > lia.config.get("MaxChatLength") then
-        client:notifyError("Your message is too long and has not been sent.")
+        client:notifyErrorLocalized("tooLongMessage")
         return ""
     end
 
@@ -509,7 +509,7 @@ function GM:InitializedSchema()
 end
 
 function GM:GetGameDescription()
-    return istable(SCHEMA) and tostring(SCHEMA.name) or "A Lilia Gamemode"
+    return istable(SCHEMA) and tostring(SCHEMA.name) or L("defaultGameDescription")
 end
 
 function GM:PostPlayerLoadout(client)
@@ -610,7 +610,7 @@ function GM:PlayerAuthed(client, steamid)
         lia.db.selectOne({"reason"}, "bans", "playerSteamID = " .. lia.db.convertDataType(steamid)):next(function(banData)
             if not IsValid(client) or not banData then return end
             local reason = banData.reason
-            client:Kick(string.format("You've been banned for %s minute(s). (%s)", 0, reason or "No reason specified."))
+            client:Kick(L("banMessage", 0, reason or L("genericReason")))
         end)
     end)
 end
@@ -713,11 +713,13 @@ function GM:PlayerLoadout(client)
 end
 
 function GM:CreateDefaultInventory(character)
-    local invType = hook.Run("GetDefaultInventoryType", character) or "GridInv"
+    local invType = hook.Run("GetDefaultInventoryType", character) or "Inventory"
     local charID = character:getID()
     return lia.inventory.instance(invType, {
         char = charID
-    })
+    }):next(function(inventory)
+        return inventory
+    end)
 end
 
 function GM:SetupBotPlayer(client)
@@ -730,14 +732,14 @@ function GM:SetupBotPlayer(client)
     if #defaultFactions == 0 then return end
     local index = math.random(1, #defaultFactions)
     local faction = defaultFactions[index]
-    local invType = hook.Run("GetDefaultInventoryType") or "GridInv"
+    local invType = hook.Run("GetDefaultInventoryType") or "Inventory"
     if not invType then return end
     local inventory = lia.inventory.new(invType)
     local model = hook.Run("GetBotModel", client, faction) or "models/player/phoenix.mdl"
     local character = lia.char.new({
         name = lia.util.generateRandomName(),
         faction = faction and faction.uniqueID or "unknown",
-        desc = string.format("This is a bot. BotID is %s.", botID),
+        desc = L("botDesc", botID),
         model = model,
     }, botID, client, client:SteamID())
 
@@ -833,7 +835,7 @@ function GM:SaveData()
 
     if #data > 0 then
         lia.data.savePersistence(data)
-        lia.information("Data saved successfully.")
+        lia.information(L("dataSaved"))
     end
 end
 
@@ -851,25 +853,25 @@ function GM:LoadData()
             repeat
                 local cls = ent.class
                 if not isstring(cls) or cls == "" then
-                    lia.error("Invalid entity class.")
+                    lia.error(L("invalidEntityClass"))
                     break
                 end
 
                 local decodedPos = lia.data.decode(ent.pos)
                 local decodedAng = lia.data.decode(ent.angles)
                 if not decodedPos then
-                    lia.error(string.format("Invalid position for %s.", cls))
+                    lia.error(L("invalidEntityPosition", cls))
                     break
                 end
 
                 if IsEntityNearby(decodedPos, cls) then
-                    lia.error(string.format("Entity creation aborted: An entity of class '%s' is already nearby at position (%.2f, %.2f, %.2f).", cls, decodedPos.x, decodedPos.y, decodedPos.z))
+                    lia.error(L("entityCreationAborted", cls, decodedPos.x, decodedPos.y, decodedPos.z))
                     break
                 end
 
                 local createdEnt = ents.Create(cls)
                 if not IsValid(createdEnt) then
-                    lia.error(string.format("Failed to create entity %s.", cls))
+                    lia.error(L("failedEntityCreation", cls))
                     break
                 end
 
@@ -899,7 +901,7 @@ function GM:LoadData()
                             lia.error(debug.traceback())
                         end
                     else
-                        lia.error(string.format("Invalid angle for entity '%s' at %s: %s (%s)", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
+                        lia.error(L("invalidAngleEntity", tostring(cls), tostring(decodedPos), tostring(decodedAng), type(decodedAng)))
                         lia.error(debug.traceback())
                     end
                 end
@@ -950,7 +952,7 @@ function GM:LoadData()
                 local range = "(" .. table.concat(idRange, ", ") .. ")"
                 if hook.Run("ShouldDeleteSavedItems") == true then
                     lia.db.query("DELETE FROM lia_items WHERE itemID IN " .. range)
-                    lia.information("Server Deleted Server Items (does not include Logical Items)")
+                    lia.information(L("serverDeletedItems"))
                 else
                     lia.db.query("SELECT itemID, uniqueID, data FROM lia_items WHERE itemID IN " .. range, function(data)
                         if not data then return end
@@ -1076,7 +1078,7 @@ end
 
 function ClientAddText(client, ...)
     if not client or not IsValid(client) then
-        lia.error("Invalid client provided to chat.AddText")
+        lia.error(L("invalidClientChatAddText"))
         return
     end
 
@@ -1088,7 +1090,7 @@ end
 
 function ClientAddTextShadowed(client, ...)
     if not client or not IsValid(client) then
-        lia.error("Invalid client provided to chat.AddText")
+        lia.error(L("invalidClientChatAddText"))
         return
     end
 
@@ -1146,7 +1148,7 @@ function GM:CreateSalaryTimers()
                                     local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                     if isnumber(finalPay) then pay = finalPay end
                                     char:giveMoney(pay)
-                                    client:notifyMoney(string.format("You have received %s from your %s.", lia.currency.get(pay), "Salary"))
+                                    client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
                                 end
                             end
                         end
@@ -1266,8 +1268,8 @@ end
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
-    MsgC(Color(255, 153, 0), string.format("[BAN] %s (%s) was banned for %s minute(s): %s", data.name, data.networkid, data.ban_length, data.ban_reason), "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+    MsgC(Color(255, 153, 0), L("banLogFormat", data.name, data.networkid, data.ban_length, data.ban_reason), "\n")
     lia.db.insertTable({
         player = data.name or "",
         playerSteamID = data.networkid,
@@ -1280,8 +1282,8 @@ hook.Add("server_addban", "LiliaLogServerBan", function(data)
 end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
-    MsgC(Color(255, 153, 0), string.format("[UNBAN] %s was unbanned.", data.networkid), "\n")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+    MsgC(Color(255, 153, 0), L("unbanLogFormat", data.networkid), "\n")
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)
 

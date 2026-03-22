@@ -145,9 +145,9 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
         folder = path,
         module = existing or prev,
         uniqueID = uniqueID,
-        name = "Unknown",
-        desc = "No Description",
-        author = "Anonymous",
+        name = L("unknown"),
+        desc = L("noDesc"),
+        author = L("anonymous"),
         enabled = true,
         IsValid = function() return true end
     }
@@ -165,7 +165,7 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
     MODULE.name = L(MODULE.name)
     MODULE.desc = L(MODULE.desc)
     if not file.Exists(coreFile, "LUA") then
-        lia.bootstrap("Module Skipped", string.format("Skipping module '%s' - missing %s.lua", uniqueID, lowerVar))
+        lia.bootstrap(L("moduleSkipped"), L("moduleSkipMissing", uniqueID, lowerVar))
         _G[variable] = prev
         return
     end
@@ -180,9 +180,9 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
 
     if uniqueID ~= "schema" and not enabled then
         if disableReason then
-            lia.bootstrap("Module Disabled", disableReason)
+            lia.bootstrap(L("moduleDisabledTitle"), disableReason)
         else
-            lia.bootstrap("Module Disabled", MODULE.name)
+            lia.bootstrap(L("moduleDisabledTitle"), MODULE.name)
         end
 
         _G[variable] = prev
@@ -213,7 +213,7 @@ function lia.module.load(uniqueID, path, variable, skipSubmodules)
         lia.module.list[uniqueID] = MODULE
         if not skipSubmodules then loadSubmodules(path) end
         if MODULE.ModuleLoaded then MODULE:ModuleLoaded() end
-        if string.StartsWith(path, engine.ActiveGamemode():gsub("\\", "/") .. "/modules") then lia.bootstrap("Module", string.format("Finished Loading Module '%s'", MODULE.name)) end
+        if string.StartsWith(path, engine.ActiveGamemode():gsub("\\", "/") .. "/modules") then lia.bootstrap(L("module"), L("moduleFinishedLoading", MODULE.name)) end
         _G[variable] = prev
     end
 end
@@ -250,7 +250,7 @@ function lia.module.initialize()
     end
 
     for id in pairs(collectModuleIDs("lilia/gamemode/modules")) do
-        if not preloadIDs[id] and gamemodeIDs[id] then lia.bootstrap("Module", string.format("Module '%s' is overridden by the schema. Place it in preload for faster loading", id)) end
+        if not preloadIDs[id] and gamemodeIDs[id] then lia.bootstrap(L("module"), L("modulePreloadSuggestion", id)) end
     end
 
     lia.module.loadFromDir("lilia/gamemode/modules", "module", preloadIDs)

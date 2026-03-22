@@ -562,7 +562,7 @@ function PANEL:CreateRow(rowIndex, rowData)
             end
         end
 
-        if not addedAny then menu:AddOption("No options available", function() end) end
+        if not addedAny then menu:AddOption(L("adminStickNoOptions"), function() end) end
         menu:Open()
     end
 

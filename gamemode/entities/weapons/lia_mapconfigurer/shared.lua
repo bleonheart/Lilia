@@ -1,7 +1,7 @@
 ﻿SWEP.Author = "liliaplayer"
 SWEP.Contact = "@liliaplayer"
-SWEP.PrintName = "Map Configurer"
-SWEP.Instructions = "\\nLeft click: Set position at aim \\nRight click: Use current position \\nReload: Cycle mode \\nShift + E: Open removal menu"
+SWEP.PrintName = L("positionTool")
+SWEP.Instructions = L("positionToolPurpose")
 SWEP.Category = "Lilia"
 SWEP.ViewModelFOV = 50
 SWEP.ViewModelFlip = false

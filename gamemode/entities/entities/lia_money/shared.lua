@@ -1,5 +1,5 @@
 ﻿ENT.Type = "anim"
-ENT.PrintName = "Money"
+ENT.PrintName = L("money")
 ENT.Author = "Samael"
 ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"

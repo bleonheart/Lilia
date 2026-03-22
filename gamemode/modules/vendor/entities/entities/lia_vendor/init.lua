@@ -12,7 +12,7 @@ end
 
 function ENT:Use(activator)
     if not hook.Run("CanPlayerAccessVendor", activator, self) then
-        if self.messages[VENDOR_NOTRADE] then activator:notifyError(string.format("%s: %s", lia.vendor.getVendorProperty(self, "name"), L(self.messages[VENDOR_NOTRADE], activator))) end
+        if self.messages[VENDOR_NOTRADE] then activator:notifyErrorLocalized("vendorMessageFormat", lia.vendor.getVendorProperty(self, "name"), L(self.messages[VENDOR_NOTRADE], activator)) end
         return
     end
 
@@ -174,7 +174,7 @@ function ENT:OnRemove()
 end
 
 function ENT:setModel(model)
-    assert(isstring(model), "Model must be a string")
+    assert(isstring(model), L("vendorModelString"))
     model = model:lower()
     self:SetModel(model)
     if self:isReadyForAnim() then self:setAnim() end

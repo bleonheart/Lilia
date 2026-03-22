@@ -7,25 +7,25 @@
 
 function MODULE:GetDisplayedDescription(client, isHUD)
     local lp = LocalPlayer()
-    if not IsValid(client) or not IsValid(lp) then return "Unknown" end
+    if not IsValid(client) or not IsValid(lp) then return L("unknown") end
     if client:getChar() and client ~= lp and lp:getChar() and not lp:getChar():doesRecognize(client:getChar():getID()) then
         if isHUD then return client:getChar():getDesc() end
-        return "You do not recognize this person."
+        return L("noRecog")
     end
 end
 
 function MODULE:GetDisplayedName(client, chatType)
     local lp = LocalPlayer()
-    if not IsValid(client) or not IsValid(lp) then return "Unknown" end
+    if not IsValid(client) or not IsValid(lp) then return L("unknown") end
     local character = client:getChar()
     local ourCharacter = lp:getChar()
-    if not character or not ourCharacter then return "Unknown" end
+    if not character or not ourCharacter then return L("unknown") end
     local myReg = ourCharacter:getFakeName()
     local characterID = character:getID()
     if not ourCharacter:doesRecognize(characterID) then
         if ourCharacter:doesFakeRecognize(characterID) and myReg[characterID] then return myReg[characterID] end
-        if chatType and (ChatIsRecognized[chatType] or hook.Run("IsRecognizedChatType", chatType)) then return "[Unknown]" end
-        return "Unknown"
+        if chatType and (ChatIsRecognized[chatType] or hook.Run("IsRecognizedChatType", chatType)) then return "[" .. L("unknown") .. "]" end
+        return L("unknown")
     end
 end
 

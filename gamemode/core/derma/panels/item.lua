@@ -82,7 +82,7 @@ end
 
 function PANEL:openActionMenu()
     local itemTable = self.itemTable
-    assert(itemTable, "Cannot open action menu for invalid item")
+    assert(itemTable, L("invalidActionMenuItem"))
     itemTable.player = LocalPlayer()
     local menu = lia.derma.dermaMenu()
     if hook.Run("OnCreateItemInteractionMenu", self, menu, itemTable) then
@@ -137,7 +137,7 @@ function PANEL:setItemType(itemTypeOrID)
         self.itemType = itemTypeOrID
     end
 
-    assert(item, string.format("Invalid item type or ID %s", item and item.name or itemTypeOrID))
+    assert(item, L("invalidItemTypeOrID", item and item.name or itemTypeOrID))
     self.liaToolTip = true
     self.itemTable = item
     self:SetModel(item:getModel())

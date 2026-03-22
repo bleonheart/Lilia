@@ -44,7 +44,7 @@ ITEM.name = "pacoutfitName"
         ITEM.desc = "Stylish sunglasses that look great"
         ```
 ]]
-ITEM.desc = "A PAC3 Outfit Base."
+ITEM.desc = "pacoutfitDesc"
 --[[
     Purpose:
         Sets the category for inventory sorting
@@ -165,7 +165,7 @@ ITEM.functions.Equip = {
         local items = char:getInv():getItems()
         for _, v in pairs(items) do
             if v.id ~= item.id and v.pacData and v.outfitCategory == item.outfitCategory and v:getData("equip") then
-                client:notifyError("You are already wearing an item of this type.")
+                client:notifyErrorLocalized("outfitTypeEquipAlready")
                 return false
             end
         end

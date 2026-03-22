@@ -522,7 +522,7 @@ function SKIN:PaintPropertySheet(panel, w, h)
     lia.derma.rect(0, 0, w, h):Rad(8):Color(bgColor):Shape(lia.derma.SHAPE_IOS):Draw()
 end
 
-derma.DefineSkin("Lilia Skin", "The skin for the Lilia framework.", SKIN)
+derma.DefineSkin(L("liliaSkin"), L("liliaSkinDesc"), SKIN)
 local skinTestFrame
 local function addRow(list, title, height, builder)
     local row = list:Add("DPanel")

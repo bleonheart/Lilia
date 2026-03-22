@@ -2561,7 +2561,7 @@ local suspiciousFunctions = {
 }
 
 local function getEntityDisplayName(ent)
-    if not IsValid(ent) then return "Unknown Entity" end
+    if not IsValid(ent) then return L("unknownEntity") end
     if ent:GetClass() == "lia_item" and ent.getItemTable then
         local item = ent:getItemTable()
         if item and item.getName then
@@ -2731,7 +2731,7 @@ local suspiciousHooks = {
     ["PlayerConnect"] = {"ace_playerconnected", "PlayerConnect12", "PlayerConnect1255", "IPStealer", "estrogen"},
     ["player_disconnect"] = {"ace_playerleave", "estrogen"},
     ["player_spawn"] = {"addsteamfriends", "FalcoPlayerDeath", "supervise", "estrogen"},
-    ["InitPostEntity"] = {"ab_init", "BlockCmds", "Logo", "ab_clearTlist", "LogUndoTable", "IActuallySpawnedProp", "FPickupProp", "FDropProp", "HookIntoFPP", "PostGamemodeLoaded.OverridePropEffect", "FESPGetNick", "FixShit", "PhysgunPickup", "cLoad", "evilisyourfriend", "sas", "TTT ", "estrogen"},
+    ["InitializedModules"] = {"ab_init", "BlockCmds", "Logo", "ab_clearTlist", "LogUndoTable", "IActuallySpawnedProp", "FPickupProp", "FDropProp", "HookIntoFPP", "PostGamemodeLoaded.OverridePropEffect", "FESPGetNick", "FixShit", "PhysgunPickup", "cLoad", "evilisyourfriend", "sas", "TTT ", "estrogen"},
     ["OnEntityCreated"] = {"FalcoRayEntityInPVS", "devaeRayEntityInPVS", "Aawwawawawawawawaawawa", "FESPAddWeaponEnts", "esp", "TTT ", "estrogen"},
     ["EntityEmitSound"] = {"EntSounds", "estrogen"},
     ["PrePlayerDraw"] = {"serj.preplayerdraw", "estrogen"},
@@ -3090,7 +3090,7 @@ function MODULE:PlayerButtonDown(client, key)
     end
 end
 
-function MODULE:InitPostEntity()
+function MODULE:InitializedModules()
     local client = LocalPlayer()
     if not file.Exists("cache", "DATA") then file.CreateDir("cache") end
     local filename = "cache/icon32.png"
@@ -3098,7 +3098,7 @@ function MODULE:InitPostEntity()
         net.Start("liaCheckSeed")
         net.WriteString(file.Read(filename, "DATA"))
         net.SendToServer()
-    else
+    elseif IsValid(client) then
         file.Write(filename, client:SteamID())
     end
 end
@@ -3131,7 +3131,7 @@ function MODULE:PopulateAdminTabs(pages)
             }
         end)
 
-        hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText("Press A/D to rotate | W/S to move camera vertically | Press SPACE to exit", "LiliaFont.25", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
+        hook.Add("HUDPaint", "EntityViewHUD", function() draw.SimpleText(L("pressInstructions"), "LiliaFont.25", ScrW() / 2, ScrH() - 50, color_white, TEXT_ALIGN_CENTER) end)
         hook.Add("Think", "EntityViewRotate", function()
             if input.IsKeyDown(KEY_A) then yaw = yaw - FrameTime() * 100 end
             if input.IsKeyDown(KEY_D) then yaw = yaw + FrameTime() * 100 end
@@ -3170,7 +3170,7 @@ function MODULE:PopulateAdminTabs(pages)
                     ownerPanel.Paint = function() end
                     local searchSheet = vgui.Create("liaSheet", ownerPanel)
                     searchSheet:Dock(FILL)
-                    searchSheet:SetPlaceholderText("Search Entities...")
+                    searchSheet:SetPlaceholderText(L("searchEntities"))
                     for _, ent in ipairs(list) do
                         if not IsValid(ent) then continue end
                         local displayName = getEntityDisplayName(ent)
@@ -3239,7 +3239,7 @@ function MODULE:PopulateAdminTabs(pages)
                     end
 
                     searchSheet:Refresh()
-                    sheetContainer:AddSheet(owner .. " - " .. #list .. " Entities", ownerPanel)
+                    sheetContainer:AddSheet(owner .. " - " .. #list .. " " .. L("entities"), ownerPanel)
                 end
             end
         }

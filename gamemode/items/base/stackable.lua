@@ -100,7 +100,7 @@ ITEM.maxQuantity = 10
 ]]
 ITEM.canSplit = true
 function ITEM:getDesc()
-    return string.format("Amount: %s", self:getQuantity())
+    return L("stackableDesc", self:getQuantity())
 end
 
 function ITEM:paintOver(item)

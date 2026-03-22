@@ -38,7 +38,7 @@ lia.currency.plural = L(lia.config.get("CurrencyPluralName", "currencyPlural"))
 
     Example Usage:
         ```lua
-        chat.AddText(string.format("You received %s.", lia.currency.get(250)))
+        chat.AddText(L("youReceivedMoney", lia.currency.get(250)))
         lia.log.add(client, "moneyPickedUp", 250)
         ```
 ]]
@@ -82,9 +82,9 @@ if SERVER then
 ]]
     function lia.currency.spawn(pos, amount, angle)
         if not pos then
-            lia.information("[Lilia] Can't create currency entity: Invalid Position")
+            lia.information(L("invalidCurrencyPosition"))
         elseif not amount or amount < 0 then
-            lia.information("[Lilia] Can't create currency entity: Invalid Amount of money")
+            lia.information(L("invalidCurrencyAmount"))
         else
             local money = ents.Create("lia_money")
             money:SetPos(pos)

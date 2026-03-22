@@ -70,7 +70,7 @@ local DefaultFunctions = {
                 d:resolve()
             end):catch(function(err)
                 if err == "noFit" then
-                    client:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", item:getWidth(), item:getHeight()))
+                    client:notifyErrorLocalized("itemNoFit", item:getWidth(), item:getHeight())
                 else
                     client:notifyErrorLocalized(err)
                 end
@@ -94,7 +94,7 @@ local DefaultFunctions = {
                 local h = newRot and (item.width or 1) or item.height or 1
                 local invW, invH = inv:getSize()
                 if x < 1 or y < 1 or x + w - 1 > invW or y + h - 1 > invH then
-                    item.player:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", w, h))
+                    item.player:notifyErrorLocalized("itemNoFit", w, h)
                     return false
                 end
 
@@ -107,7 +107,7 @@ local DefaultFunctions = {
                             local x2 = x + w - 1
                             local y2 = y + h - 1
                             if x <= ix2 and ix <= x2 and y <= iy2 and iy <= y2 then
-                                item.player:notifyError(string.format("This item can't fit in your inventory. (%sx%s)", w, h))
+                                item.player:notifyErrorLocalized("itemNoFit", w, h)
                                 return false
                             end
                         end
@@ -136,16 +136,16 @@ local DefaultFunctions = {
             local targetInv = target:getChar():getInv()
             if not target or not targetInv then return false end
             if not targetInv:doesFitInventory(item) then
-                client:notify("This item can not fit in your inventory.", "default" or "default")
+                client:notifyLocalized("noFit")
                 return false
             end
 
-            target:requestBinaryQuestion(string.format("%s wants to give you a %s. Accept?", client:Name(), L(item.name)), "Yes", "No", function(choice)
+            target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), L(item.name)), L("yes"), L("no"), function(choice)
                 if choice == 0 then
                     inv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
                     targetInv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
-                    client:setAction(string.format("Giving %s to %s", L(item.name), target:Name()), lia.config.get("ItemGiveSpeed", 6))
-                    target:setAction(string.format("%s is giving you a %s", client:Name(), L(item.name)), lia.config.get("ItemGiveSpeed", 6))
+                    client:setAction(L("givingItemTo", L(item.name), target:Name()), lia.config.get("ItemGiveSpeed", 6))
+                    target:setAction(L("givingYouItem", client:Name(), L(item.name)), lia.config.get("ItemGiveSpeed", 6))
                     client:doStaredAction(target, function()
                         local res = hook.Run("HandleItemTransferRequest", client, item:getID(), nil, nil, targetInv:getID())
                         if not res then return end
@@ -157,8 +157,8 @@ local DefaultFunctions = {
                         end)
                     end, lia.config.get("ItemGiveSpeed", 6), function() client:setAction() end, 100)
                 else
-                    client:notify("%s declined your item offer.", target:Name() or "default")
-                    target:notify("You declined %s's item offer.", client:Name() or "default")
+                    client:notifyLocalized("itemGiveDeclined", target:Name())
+                    target:notifyLocalized("itemGiveDeclinedSelf", client:Name())
                 end
             end)
             return false
@@ -264,9 +264,9 @@ end
         ```
 ]]
 function lia.item.getItemByID(itemID)
-    assert(isnumber(itemID), "Item ID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
-    if not item then return nil, "Item not found" end
+    if not item then return nil, L("itemNotFound") end
     local location = "unknown"
     if item.invID then
         local inventory = lia.item.getInv(item.invID)
@@ -309,9 +309,9 @@ end
         ```
 ]]
 function lia.item.getInstancedItemByID(itemID)
-    assert(isnumber(itemID), "Item ID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
-    if not item then return nil, "Item not found" end
+    if not item then return nil, L("itemNotFound") end
     return item
 end
 
@@ -344,9 +344,9 @@ end
         ```
 ]]
 function lia.item.getItemDataByID(itemID)
-    assert(isnumber(itemID), "Item ID must be a number")
+    assert(isnumber(itemID), L("itemIDNumberRequired"))
     local item = lia.item.instances[itemID]
-    if not item then return nil, "Item not found" end
+    if not item then return nil, L("itemNotFound") end
     return item.data
 end
 
@@ -382,9 +382,9 @@ function lia.item.load(path, baseID, isBaseItem)
         lia.item.register(uniqueID, baseID, isBaseItem, path)
     elseif path:find("%.txt$") then
         local formatted = path:gsub("\\", "/"):lower()
-        if not formatted:find("^lilia/") then lia.error("[Lilia] " .. string.format("Text file found at '%s'  to use it properly, it needs to be a .lua file.", path) .. "\n") end
+        if not formatted:find("^lilia/") then lia.error("[Lilia] " .. L("textFileLuaRequired", path) .. "\n") end
     else
-        lia.error("[Lilia] " .. string.format("Item at '%s' follows an invalid naming convention!", path) .. "\n")
+        lia.error("[Lilia] " .. L("invalidItemNaming", path) .. "\n")
     end
 end
 
@@ -472,8 +472,8 @@ end
         ```
 ]]
 function lia.item.addRarities(name, color)
-    assert(isstring(name), "Rarity name must be a string")
-    assert(IsColor(color), "Color must be a Color")
+    assert(isstring(name), L("vendorRarityNameString"))
+    assert(IsColor(color), L("vendorColorMustBeColor"))
     lia.item.rarities[name] = color
 end
 
@@ -512,9 +512,9 @@ end
         ```
 ]]
 function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
-    assert(isstring(uniqueID), "uniqueID must be a string")
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
     local baseTable = lia.item.base[baseID] or lia.meta.item
-    if baseID then assert(baseTable, string.format("Item base not found for item %s with base ID %s", uniqueID, baseID)) end
+    if baseID then assert(baseTable, L("itemBaseNotFound", uniqueID, baseID)) end
     local targetTable = isBaseItem and lia.item.base or lia.item.list
     if luaGenerated then
         ITEM = setmetatable({
@@ -529,7 +529,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "No Description"
+        ITEM.desc = "noDesc"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
@@ -549,7 +549,7 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "No Description"
+        ITEM.desc = "noDesc"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
@@ -616,7 +616,7 @@ end
         ```
 ]]
 function lia.item.registerItem(id, base, properties)
-    assert(isstring(id), "uniqueID must be a string")
+    assert(isstring(id), L("itemUniqueIDString"))
     if properties ~= nil and not istable(properties) then
         local errorMsg = string.format("properties must be a table or nil, got %s (type: %s)", tostring(properties), type(properties))
         lia.error(string.format("[Lilia] registerItem called with invalid properties for item '%s': %s\n", id, errorMsg))
@@ -673,7 +673,7 @@ end
         ```
 ]]
 function lia.item.overrideItem(uniqueID, overrides)
-    assert(isstring(uniqueID), "uniqueID must be a string")
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
     assert(istable(overrides), "overrides must be a table")
     if not lia.item.pendingOverrides[uniqueID] then lia.item.pendingOverrides[uniqueID] = {} end
     for key, value in pairs(overrides) do
@@ -751,7 +751,7 @@ end
 ]]
 function lia.item.new(uniqueID, id)
     id = id and tonumber(id) or id
-    assert(isnumber(id), "Item Non Number ID")
+    assert(isnumber(id), L("itemNonNumberID"))
     if lia.item.instances[id] and lia.item.instances[id].uniqueID == uniqueID then return lia.item.instances[id] end
     local stockItem = lia.item.list[uniqueID]
     if stockItem then
@@ -768,7 +768,7 @@ function lia.item.new(uniqueID, id)
         hook.Run("OnItemCreated", item)
         return item
     else
-        error("[Lilia] " .. string.format("An inventory has an unknown item '%s'", tostring(uniqueID)) .. "\n")
+        error("[Lilia] " .. L("unknownItem", tostring(uniqueID)) .. "\n")
     end
 end
 
@@ -798,9 +798,9 @@ end
         ```
 ]]
 function lia.item.registerInv(invType, w, h)
-    local GridInv = FindMetaTable("GridInv")
-    assert(GridInv, "Grid Inventory Not Found")
-    local inventory = GridInv:extend("GridInv" .. invType)
+    local Inventory = FindMetaTable("Inventory")
+    assert(Inventory, L("gridInvNotFound"))
+    local inventory = Inventory:extend("Inventory" .. invType)
     inventory.invType = invType
     function inventory:getWidth()
         return w
@@ -811,49 +811,6 @@ function lia.item.registerInv(invType, w, h)
     end
 
     inventory:register(invType)
-end
-
---[[
-    Purpose:
-        Creates a new inventory instance for a character and syncs it with the appropriate player.
-
-    When Called:
-        Called when creating new inventories for characters, such as during character creation or item operations.
-
-    Parameters:
-        owner (number)
-            The character ID that owns this inventory.
-        invType (string)
-            The type of inventory to create.
-        callback (function, optional)
-            Function called when the inventory is created and ready.
-    Realm:
-        Shared
-
-    Example Usage:
-        ```lua
-            -- Create a backpack inventory for character ID 5
-            lia.item.newInv(5, "backpack", function(inventory)
-                print("Backpack created with ID:", inventory:getID())
-            end)
-        ```
-]]
-function lia.item.newInv(owner, invType, callback)
-    lia.inventory.instance(invType, {
-        char = owner
-    }):next(function(inventory)
-        inventory.invType = invType
-        if owner and owner > 0 then
-            for _, v in player.Iterator() do
-                if v:getChar() and v:getChar():getID() == owner then
-                    inventory:sync(v)
-                    break
-                end
-            end
-        end
-
-        if callback then callback(inventory) end
-    end)
 end
 
 --[[
@@ -886,9 +843,9 @@ end
         ```
 ]]
 function lia.item.createInv(w, h, id)
-    local GridInv = FindMetaTable("GridInv")
-    assert(GridInv, "Grid Inventory Not Found")
-    local instance = GridInv:new()
+    local Inventory = FindMetaTable("Inventory")
+    assert(Inventory, L("gridInvNotFound"))
+    local instance = Inventory:new()
     instance.id = id
     instance.data = {
         w = w,
@@ -1056,10 +1013,10 @@ if SERVER then
         ```
 ]]
     function lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)
-        assert(isnumber(itemID), "Item ID must be a number")
-        assert(isstring(key), "Item Key String")
+        assert(isnumber(itemID), L("itemIDNumberRequired"))
+        assert(isstring(key), L("itemKeyString"))
         local item = lia.item.instances[itemID]
-        if not item then return false, "Item not found" end
+        if not item then return false, L("itemNotFound") end
         item:setData(key, value, receivers, noSave, noCheckEntity)
         return true
     end
@@ -1109,7 +1066,7 @@ if SERVER then
         local d = deferred.new()
         local itemTable = lia.item.list[uniqueID]
         if not itemTable then
-            d:reject(string.format("An inventory has a missing item '%s'", tostring(uniqueID)))
+            d:reject(L("invalidItemInstantiate", tostring(uniqueID)))
             return d
         end
 
@@ -1282,7 +1239,7 @@ if SERVER then
             if reason and reason:find("An inventory has a missing item") then
                 lia.error(reason)
             else
-                lia.error(string.format("Failed to spawn item: %s", tostring(reason or "Unknown error")))
+                lia.error(L("failedToSpawnItem", tostring(reason or L("unknownError"))))
             end
 
             if callback then callback(nil) end
@@ -1354,8 +1311,8 @@ hook.Add("InitializedModules", "liaItems", function()
 
             local properties = {
                 name = hook.Run("GetWeaponName", wep) or override.name or className,
-                desc = override.desc or "A Weapon.",
-                category = override.category or isGrenade and "Grenades" or "Weapons",
+                desc = override.desc or L("weaponsDesc"),
+                category = override.category or isGrenade and L("itemCatGrenades") or L("weapons"),
                 model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
                 class = override.class or className,
                 width = override.width or size.width,
@@ -1406,7 +1363,7 @@ hook.Add("InitializedModules", "liaItems", function()
             local properties = {
                 name = itemName,
                 desc = override.desc or "A Box of " .. ammoType .. " Ammunition",
-                category = override.category or "Ammunition",
+                category = override.category or L("itemCatAmmunition"),
                 model = override.model or "models/items/boxsrounds.mdl",
                 entityid = override.entityid or entityID,
                 width = override.width or 1,
@@ -1577,7 +1534,7 @@ else
                 searchBar:Dock(TOP)
                 searchBar:DockMargin(10, 10, 10, 10)
                 searchBar:SetTall(35)
-                searchBar:SetPlaceholderText("Search Weapons..." or "Search Weapons...")
+                searchBar:SetPlaceholderText(L("searchWeapons") or "Search Weapons...")
                 local scroll = parent:Add("liaScrollPanel")
                 scroll:Dock(FILL)
                 local function Populate(filter)

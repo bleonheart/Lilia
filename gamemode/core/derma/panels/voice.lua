@@ -58,7 +58,7 @@ function PANEL:UpdateTooltip()
     local displayName = self.name or "Unknown"
     local lines = {}
     lines[#lines + 1] = "<font=LiliaFont.16b>" .. displayName .. "</font>"
-    lines[#lines + 1] = "<font=LiliaFont.16>You are " .. voiceTypeText .. "</font>"
+    lines[#lines + 1] = "<font=LiliaFont.16>" .. L("youAre") .. " " .. voiceTypeText .. "</font>"
     local voiceRanges = {
         [VOICE_WHISPERING] = lia.config.get("WhisperRange", 70),
         [VOICE_TALKING] = lia.config.get("TalkRange", 280),
@@ -66,7 +66,7 @@ function PANEL:UpdateTooltip()
     }
 
     local range = voiceRanges[vt]
-    if range then lines[#lines + 1] = "<font=LiliaFont.16>Voice Range: " .. range .. " units</font>" end
+    if range then lines[#lines + 1] = "<font=LiliaFont.16>" .. L("voiceRange") .. ": " .. range .. " units</font>" end
     self:SetTooltip(table.concat(lines, "\n"))
 end
 
@@ -126,5 +126,5 @@ timer.Create("VoiceClean", 1, 0, function()
     end
 end)
 
-hook.Add("InitPostEntity", "liaVoiceInitPostEntity", CreateVoicePanelList)
+hook.Add("InitializedModules", "liaVoiceInitPostEntity", CreateVoicePanelList)
 hook.Add("OnReloaded", "liaVoiceOnReloaded", CreateVoicePanelList)

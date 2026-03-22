@@ -6,7 +6,7 @@ function PANEL:Init()
     self.radius = 12
     self.icon = ""
     self.icon_size = 16
-    self.text = "Button"
+    self.text = L("button")
     self.col = Color(25, 28, 35, 250)
     self.col_hov = (lia.color.theme and lia.color.theme.button_hovered) or Color(70, 140, 140)
     self.BaseClass.SetText(self, "")

@@ -57,9 +57,9 @@ function MODULE:HUDPaint()
         local text
         local displayLeft = ceil(left)
         if displayLeft <= 0 then
-            text = "Press SPACE to respawn"
+            text = L("pressAnyKeyToRespawn")
         else
-            text = string.format("Respawn available in %s seconds", displayLeft)
+            text = L("respawnIn", displayLeft)
         end
 
         local dw = select(1, surface.GetTextSize(text))
@@ -69,7 +69,7 @@ function MODULE:HUDPaint()
         local timePassed = os.time() - lastDeath
         if timePassed >= (baseTime * 1.25) then
             surface.SetFont("LiliaFont.17")
-            local hintText = "If stuck, use /forcerespawn to respawn"
+            local hintText = L("forceRespawnHint")
             local hw = select(1, surface.GetTextSize(hintText))
             local hx, hy = (ScrW() - hw) / 2, dy + 50
             lia.util.drawText(hintText, hx + 1, hy + 1, Color(0, 0, 0, 200), 0, 0, "LiliaFont.17")

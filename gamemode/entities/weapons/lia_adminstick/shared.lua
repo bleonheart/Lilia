@@ -1,7 +1,7 @@
 ﻿SWEP.Author = "liliaplayer"
 SWEP.Contact = "@liliaplayer"
-SWEP.PrintName = "Admin Stick"
-SWEP.Instructions = "\\nLeft click selects target \\nRight click freezes player \\nShift + R selects yourself \\nR clears the selection"
+SWEP.PrintName = L("adminStick")
+SWEP.Instructions = L("adminStickPurpose")
 SWEP.Category = "Lilia"
 SWEP.ViewModelFOV = 50
 SWEP.ViewModelFlip = false

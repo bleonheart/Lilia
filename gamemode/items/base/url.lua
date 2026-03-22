@@ -43,7 +43,7 @@ ITEM.name = "urlName"
         ITEM.desc = "Opens the Lilia framework documentation website"
         ```
 ]]
-ITEM.desc = "Generic Description"
+ITEM.desc = "urlDesc"
 --[[
     Purpose:
         Sets the 3D model used for the item

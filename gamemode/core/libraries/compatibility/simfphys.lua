@@ -29,14 +29,14 @@
         local enabled = lia.config.get("CarEntryDelayEnabled", true)
         if not enabled then return end
         if entity.IsBeingEntered then
-            client:notifyWarning("Someone is entering this car!")
+            client:notifyWarningLocalized("carOccupiedNotice")
             return true
         end
 
         local delay = lia.config.get("TimeToEnterVehicle", 5)
         if entity:isSimfphysCar() and delay > 0 then
             entity.IsBeingEntered = true
-            client:setAction("Entering Vehicle...", delay, function()
+            client:setAction(L("enteringVehicle"), delay, function()
                 if IsValid(entity) and IsValid(client) then
                     local distance = client:GetPos():Distance(entity:GetPos())
                     if distance <= 150 then
@@ -44,7 +44,7 @@
                         entity:SetPassenger(client)
                     else
                         entity.IsBeingEntered = false
-                        client:notifyWarning("You are too far away!")
+                        client:notifyWarningLocalized("tooFarAway")
                     end
                 elseif IsValid(entity) then
                     entity.IsBeingEntered = false
@@ -63,19 +63,19 @@ hook.Add("CheckValidSit", "liaSimfphys", function(client)
 end)
 
 lia.config.add("DamageInCars", "takeDamageInCars", true, nil, {
-    desc = "Whether or not you take damage while in cars",
+    desc = "takeDamageInCarsDesc",
     category = "Core",
     type = "Boolean"
 })
 
 lia.config.add("CarEntryDelayEnabled", "carEntryDelayEnabled", true, nil, {
-    desc = "Whether entering a vehicle requires a delay.",
+    desc = "carEntryDelayEnabledDesc",
     category = "Core",
     type = "Boolean"
 })
 
 lia.config.add("TimeToEnterVehicle", "timeToEnterVehicle", 4, nil, {
-    desc = "Defines the time to enter vehicle.",
+    desc = "timeToEnterVehicleDesc",
     category = "Core",
     type = "Int",
     min = 1,

@@ -54,7 +54,7 @@ function lia.time.timeSince(strTime)
         timestamp = strTime
     elseif isstring(strTime) then
         local year, month, day = lia.time.ParseTime(strTime)
-        if not (year and month and day) then return "Invalid date" end
+        if not (year and month and day) then return L("invalidDate") end
         timestamp = os.time{
             year = year,
             month = month,
@@ -64,18 +64,18 @@ function lia.time.timeSince(strTime)
             sec = 0
         }
     else
-        return "Invalid input"
+        return L("invalidInput")
     end
 
     local diff = os.time() - timestamp
     if diff < 60 then
-        return string.format("%s seconds ago", diff)
+        return L("secondsAgo", diff)
     elseif diff < 3600 then
-        return string.format("%s minutes ago", math.floor(diff / 60))
+        return L("minutesAgo", math.floor(diff / 60))
     elseif diff < 86400 then
-        return string.format("%s hours ago", math.floor(diff / 3600))
+        return L("hoursAgo", math.floor(diff / 3600))
     else
-        return string.format("%s days ago", math.floor(diff / 86400))
+        return L("daysAgo", math.floor(diff / 86400))
     end
 end
 
@@ -164,7 +164,7 @@ function lia.time.getDate()
     local weekdayKeys = {"weekdaySunday", "weekdayMonday", "weekdayTuesday", "weekdayWednesday", "weekdayThursday", "weekdayFriday", "weekdaySaturday"}
     local monthKeys = {"monthJanuary", "monthFebruary", "monthMarch", "monthApril", "monthMay", "monthJune", "monthJuly", "monthAugust", "monthSeptember", "monthOctober", "monthNovember", "monthDecember"}
     if american then
-        local suffix = ct.hour < 12 and "am" or "pm"
+        local suffix = ct.hour < 12 and L("am") or L("pm")
         local hour12 = ct.hour % 12
         if hour12 == 0 then hour12 = 12 end
         return string.format("%s, %s %02d, %04d, %02d:%02d:%02d%s", L(weekdayKeys[ct.wday]), L(monthKeys[ct.month]), ct.day, ct.year, hour12, ct.min, ct.sec, suffix)
@@ -215,7 +215,7 @@ function lia.time.formatDHM(seconds)
     local hours = math.floor(seconds / 3600)
     seconds = seconds % 3600
     local minutes = math.floor(seconds / 60)
-    return string.format("%sd %sh %sm", days, hours, minutes)
+    return L("daysHoursMinutes", days, hours, minutes)
 end
 
 --[[
@@ -249,14 +249,14 @@ end
                 end
             end
 
-            hook.Add("InitPostEntity", "ApplyAmbientHourly", applyAmbientByHour)
+            hook.Add("InitializedModules", "ApplyAmbientHourly", applyAmbientByHour)
         ```
 ]]
 function lia.time.getHour()
     local ct = os.date("*t")
     local american = lia.config.get("AmericanTimeStamps", false)
     if american then
-        local suffix = ct.hour < 12 and "am" or "pm"
+        local suffix = ct.hour < 12 and L("am") or L("pm")
         local hour12 = ct.hour % 12
         if hour12 == 0 then hour12 = 12 end
         return string.format("%d%s", hour12, suffix)

@@ -82,7 +82,7 @@ end
 ensureDefaults(lia.admin.groups)
 local privilegeCategoryCache = {}
 function getPrivilegeCategory(privilegeName)
-    if not privilegeName then return "Unassigned" end
+    if not privilegeName then return L("unassigned") end
     if privilegeCategoryCache[privilegeName] then return privilegeCategoryCache[privilegeName] end
     local categoryChecks = {
         {
@@ -127,7 +127,7 @@ function getPrivilegeCategory(privilegeName)
     if lia.admin and lia.admin.privilegeCategories and lia.admin.privilegeCategories[privilegeName] then
         category = L(lia.admin.privilegeCategories[privilegeName])
     elseif lia.command and lia.command.list and lia.command.list[privilegeName] then
-        category = "Staff Permissions"
+        category = L("staffPermissions")
     else
         for _, module in pairs(lia.module.list) do
             if module.Privileges and istable(module.Privileges) then
@@ -157,7 +157,7 @@ function getPrivilegeCategory(privilegeName)
         end
     end
 
-    if not category then category = "Unassigned" end
+    if not category then category = L("unassigned") end
     privilegeCategoryCache[privilegeName] = category
     return category
 end
@@ -374,7 +374,7 @@ end
 ]]
 function lia.admin.hasAccess(ply, privilege)
     if not isstring(privilege) then
-        lia.error(string.format("Expected string for privilege '%s'", tostring(privilege)))
+        lia.error(L("hasAccessExpectedString", tostring(privilege)))
         return false
     end
 
@@ -395,7 +395,7 @@ function lia.admin.hasAccess(ply, privilege)
             local prop = properties.List[propName]
             if prop then
                 lia.admin.registerPrivilege({
-                    Name = string.format("Access to %s property", prop.MenuLabel or propName),
+                    Name = L("accessPropertyPrivilege", prop.MenuLabel or propName),
                     ID = privilege,
                     MinAccess = "admin",
                     Category = "staffPermissions",
@@ -406,7 +406,7 @@ function lia.admin.hasAccess(ply, privilege)
             for _, wep in ipairs(weapons.GetList()) do
                 if wep.ClassName == "gmod_tool" and wep.Tool and wep.Tool[toolName] then
                     lia.admin.registerPrivilege({
-                        Name = string.format("Access Tool %s", toolName:gsub("^%l", string.upper)),
+                        Name = L("accessToolPrivilege", toolName:gsub("^%l", string.upper)),
                         ID = privilege,
                         MinAccess = defaultUserTools[string.lower(toolName)] and "user" or "admin",
                         Category = "staffPermissions",
@@ -535,7 +535,7 @@ end
 ]]
 function lia.admin.registerPrivilege(priv)
     if not priv or not priv.ID then
-        lia.error("Privilege registration requires an ID field")
+        lia.error(L("privilegeRegistrationError"))
         return
     end
 
@@ -700,8 +700,8 @@ function lia.admin.load()
             camiBootstrapFromExisting()
         end
 
-        MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
-        MsgC(Color(255, 153, 0), "Admin system has loaded", "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+        MsgC(Color(255, 153, 0), L("adminSystemLoaded"), "\n")
         clearGroupLevelCache()
         hook.Run("OnAdminSystemLoaded", lia.admin.groups or {}, lia.admin.privileges or {})
     end
@@ -770,7 +770,7 @@ end
 ]]
 function lia.admin.createGroup(groupName, info)
     if lia.admin.groups[groupName] then
-        lia.error("[Lilia Administration] This usergroup already exists!")
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -814,12 +814,12 @@ end
 ]]
 function lia.admin.removeGroup(groupName)
     if groupName == "user" or groupName == "admin" or groupName == "superadmin" then
-        lia.error("[Lilia Administration] The base usergroups cannot be removed!")
+        lia.error(L("baseUsergroupCannotBeRemoved"))
         return
     end
 
     if not lia.admin.groups[groupName] then
-        lia.error(string.format("[Lilia Administration] The usergroup '%s' doesn't exist!", groupName))
+        lia.error(L("usergroupDoesntExist", groupName))
         return
     end
 
@@ -857,17 +857,17 @@ end
 ]]
 function lia.admin.renameGroup(oldName, newName)
     if lia.admin.DefaultGroups[oldName] then
-        lia.error("[Lilia Administration] The base usergroups cannot be renamed!")
+        lia.error(L("baseUsergroupCannotBeRenamed"))
         return
     end
 
     if not lia.admin.groups[oldName] then
-        lia.error(string.format("[Lilia Administration] The usergroup '%s' doesn't exist!", oldName))
+        lia.error(L("usergroupDoesntExist", oldName))
         return
     end
 
     if lia.admin.groups[newName] then
-        lia.error("[Lilia Administration] This usergroup already exists!")
+        lia.error(L("usergroupExists"))
         return
     end
 
@@ -946,7 +946,7 @@ if SERVER then
             if lia.admin._loading then return end
             if not lia.admin.missingGroups[groupName] then
                 lia.admin.missingGroups[groupName] = true
-                lia.error(string.format("[Lilia Administration] The usergroup '%s' doesn't exist!", groupName))
+                lia.error(L("usergroupDoesntExist", groupName))
             end
             return
         end
@@ -989,7 +989,7 @@ if SERVER then
             if lia.admin._loading then return end
             if not lia.admin.missingGroups[groupName] then
                 lia.admin.missingGroups[groupName] = true
-                lia.error(string.format("[Lilia Administration] The usergroup '%s' doesn't exist!", groupName))
+                lia.error(L("usergroupDoesntExist", groupName))
             end
             return
         end
@@ -1212,7 +1212,7 @@ if SERVER then
     function lia.admin.serverExecCommand(cmd, victim, dur, reason, admin)
         local privilegeID = string.lower("command_" .. cmd)
         if not lia.admin.hasAccess(admin, privilegeID) then
-            admin:notifyError("You are not allowed to do this.")
+            admin:notifyErrorLocalized("noPerm")
             lia.log.add(admin, "unauthorizedCommand", cmd)
             return false
         end
@@ -1229,14 +1229,14 @@ if SERVER then
         end
 
         if not IsValid(target) then
-            admin:notifyError("Target not found")
+            admin:notifyErrorLocalized("targetNotFound")
             return false
         end
 
         local targetInfo = target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")"
         if cmd == "kick" then
-            target:Kick(reason or "No reason specified.")
-            admin:notifySuccess("Player kicked.")
+            target:Kick(reason or L("genericReason"))
+            admin:notifySuccessLocalized("plyKicked")
             lia.log.add(admin, "plyKick", target:Name())
             staffAction("KICK", admin:Name() .. " kicked " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
             lia.db.insertTable({
@@ -1251,7 +1251,7 @@ if SERVER then
             return true
         elseif cmd == "ban" then
             target:banPlayer(reason, tonumber(dur) or 0, admin)
-            admin:notifySuccess("Player banned.")
+            admin:notifySuccessLocalized("plyBanned")
             lia.log.add(admin, "plyBan", target:Name())
             staffAction("BAN", admin:Name() .. " banned " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
             return true
@@ -1259,7 +1259,7 @@ if SERVER then
             local steamid = IsValid(target) and target:SteamID() or tostring(victim)
             if steamid and steamid ~= "" then
                 lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
-                admin:notifySuccess("Player unbanned")
+                admin:notifySuccessLocalized("playerUnbanned")
                 lia.log.add(admin, "plyUnban", steamid)
                 staffAction("UNBAN", admin:Name() .. " unbanned SteamID " .. steamid)
                 return true
@@ -1267,7 +1267,7 @@ if SERVER then
         elseif cmd == "mute" then
             if target:getChar() then
                 target:setLiliaData("liaMuted", true)
-                admin:notifySuccess("Player muted successfully.")
+                admin:notifySuccessLocalized("plyMuted")
                 lia.log.add(admin, "plyMute", target:Name())
                 lia.db.insertTable({
                     player = target:Name(),
@@ -1286,7 +1286,7 @@ if SERVER then
         elseif cmd == "unmute" then
             if target:getChar() then
                 target:setLiliaData("liaMuted", false)
-                admin:notifySuccess("Player unmuted successfully.")
+                admin:notifySuccessLocalized("plyUnmuted")
                 lia.log.add(admin, "plyUnmute", target:Name())
                 staffAction("UNMUTE", admin:Name() .. " unmuted " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
                 hook.Run("PlayerUnmuted", target, admin)
@@ -1294,14 +1294,14 @@ if SERVER then
             end
         elseif cmd == "gag" then
             target:setLiliaData("liaGagged", true)
-            admin:notifySuccess("Player gagged successfully.")
+            admin:notifySuccessLocalized("plyGagged")
             lia.log.add(admin, "plyGag", target:Name())
             staffAction("GAG", admin:Name() .. " gagged " .. targetInfo)
             hook.Run("PlayerGagged", target, admin)
             return true
         elseif cmd == "ungag" then
             target:setLiliaData("liaGagged", false)
-            admin:notifySuccess("Player ungagged successfully.")
+            admin:notifySuccessLocalized("plyUngagged")
             lia.log.add(admin, "plyUngag", target:Name())
             staffAction("UNGAG", admin:Name() .. " ungagged " .. targetInfo)
             hook.Run("PlayerUngagged", target, admin)
@@ -1310,26 +1310,26 @@ if SERVER then
             target:Freeze(true)
             local duration = tonumber(dur) or 0
             if duration > 0 then timer.Simple(duration, function() if IsValid(target) then target:Freeze(false) end end) end
-            admin:notifySuccess(string.format("%s frozen successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyFrozen", target:Name())
             lia.log.add(admin, "plyFreeze", target:Name(), duration)
             staffAction("FREEZE", admin:Name() .. " froze " .. targetInfo)
             return true
         elseif cmd == "unfreeze" then
             target:Freeze(false)
-            admin:notifySuccess(string.format("%s unfrozen successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyUnfrozen", target:Name())
             lia.log.add(admin, "plyUnfreeze", target:Name())
             staffAction("UNFREEZE", admin:Name() .. " unfroze " .. targetInfo)
             return true
         elseif cmd == "slay" then
             target:Kill()
             timer.Simple(0.05, function() if IsValid(target) and not target:Alive() then hook.Run("PlayerDeath", target, nil, admin) end end)
-            admin:notifySuccess("Player killed.")
+            admin:notifySuccessLocalized("plyKilled")
             lia.log.add(admin, "plySlay", target:Name())
             staffAction("SLAY", admin:Name() .. " slayed " .. targetInfo)
             return true
         elseif cmd == "kill" then
             target:Kill()
-            admin:notifySuccess("Player killed.")
+            admin:notifySuccessLocalized("plyKilled")
             lia.log.add(admin, "plyKill", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1347,7 +1347,7 @@ if SERVER then
             returnPositions = returnPositions or {}
             returnPositions[target] = target:GetPos()
             target:SetPos(admin:GetPos() + admin:GetForward() * 50)
-            admin:notifySuccess(string.format("%s brought successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyBrought", target:Name())
             lia.log.add(admin, "plyBring", target:Name())
             staffAction("BRING", admin:Name() .. " brought " .. targetInfo)
             return true
@@ -1355,7 +1355,7 @@ if SERVER then
             returnPositions = returnPositions or {}
             returnPositions[admin] = admin:GetPos()
             admin:SetPos(target:GetPos() + target:GetForward() * 50)
-            admin:notifySuccess(string.format("Teleported to %s successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyGoto", target:Name())
             lia.log.add(admin, "plyGoto", target:Name())
             staffAction("GOTO", admin:Name() .. " went to " .. targetInfo)
             return true
@@ -1366,7 +1366,7 @@ if SERVER then
                 (IsValid(target) and target or admin):SetPos(pos)
                 returnPositions[target] = nil
                 returnPositions[admin] = nil
-                admin:notifySuccess(string.format("%s returned successfully.", IsValid(target) and target:Name() or admin:Name()))
+                admin:notifySuccessLocalized("plyReturned", IsValid(target) and target:Name() or admin:Name())
                 lia.log.add(admin, "plyReturn", IsValid(target) and target:Name() or admin:Name())
                 staffAction("RETURN", admin:Name() .. " returned " .. targetInfo)
                 return true
@@ -1374,7 +1374,7 @@ if SERVER then
         elseif cmd == "jail" then
             target:Lock()
             target:Freeze(true)
-            admin:notifySuccess(string.format("%s jailed successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyJailed", target:Name())
             lia.log.add(admin, "plyJail", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1391,50 +1391,50 @@ if SERVER then
         elseif cmd == "unjail" then
             target:UnLock()
             target:Freeze(false)
-            admin:notifySuccess(string.format("%s unjailed successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyUnjailed", target:Name())
             lia.log.add(admin, "plyUnjail", target:Name())
             staffAction("UNJAIL", admin:Name() .. " unjailed " .. targetInfo)
             return true
         elseif cmd == "cloak" then
             target:SetNoDraw(true)
-            admin:notifySuccess(string.format("%s cloaked successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyCloaked", target:Name())
             lia.log.add(admin, "plyCloak", target:Name())
             staffAction("CLOAK", admin:Name() .. " cloaked " .. targetInfo)
             return true
         elseif cmd == "uncloak" then
             target:SetNoDraw(false)
-            admin:notifySuccess(string.format("%s uncloaked successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyUncloaked", target:Name())
             lia.log.add(admin, "plyUncloak", target:Name())
             staffAction("UNCLOAK", admin:Name() .. " uncloaked " .. targetInfo)
             return true
         elseif cmd == "god" then
             target:GodEnable()
-            admin:notifySuccess(string.format("%s godded successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyGodded", target:Name())
             lia.log.add(admin, "plyGod", target:Name())
             staffAction("GOD", admin:Name() .. " enabled god mode for " .. targetInfo)
             return true
         elseif cmd == "ungod" then
             target:GodDisable()
-            admin:notifySuccess(string.format("%s ungodded successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyUngodded", target:Name())
             lia.log.add(admin, "plyUngod", target:Name())
             staffAction("UNGOD", admin:Name() .. " disabled god mode for " .. targetInfo)
             return true
         elseif cmd == "ignite" then
             local duration = tonumber(dur) or 5
             target:Ignite(duration)
-            admin:notifySuccess(string.format("%s ignited successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyIgnited", target:Name())
             lia.log.add(admin, "plyIgnite", target:Name(), duration)
             staffAction("IGNITE", admin:Name() .. " ignited " .. targetInfo)
             return true
         elseif cmd == "extinguish" or cmd == "unignite" then
             target:Extinguish()
-            admin:notifySuccess(string.format("%s extinguished successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyExtinguished", target:Name())
             lia.log.add(admin, "plyExtinguish", target:Name())
             staffAction("EXTINGUISH", admin:Name() .. " extinguished " .. targetInfo)
             return true
         elseif cmd == "strip" then
             target:StripWeapons()
-            admin:notifySuccess(string.format("%s stripped successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyStripped", target:Name())
             lia.log.add(admin, "plyStrip", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1451,7 +1451,7 @@ if SERVER then
         elseif cmd == "respawn" then
             target:Spawn()
             target:setLocalVar("lastDeathTime", 0)
-            admin:notifySuccess(string.format("%s respawned successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyRespawned", target:Name())
             lia.log.add(admin, "plyRespawn", target:Name())
             lia.db.insertTable({
                 player = target:Name(),
@@ -1480,7 +1480,7 @@ if SERVER then
                 end)
             end
 
-            admin:notifySuccess(string.format("%s blinded successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyBlinded", target:Name())
             lia.log.add(admin, "plyBlind", target:Name(), duration)
             lia.db.insertTable({
                 player = target:Name(),
@@ -1498,7 +1498,7 @@ if SERVER then
             net.Start("liaBlindTarget")
             net.WriteBool(false)
             net.Send(target)
-            admin:notifySuccess(string.format("%s unblinded successfully.", target:Name()))
+            admin:notifySuccessLocalized("plyUnblinded", target:Name())
             lia.log.add(admin, "plyUnblind", target:Name())
             staffAction("UNBLIND", admin:Name() .. " unblinded " .. targetInfo)
             return true
@@ -1600,7 +1600,7 @@ if properties and properties.List then
         if name ~= "persist" and name ~= "drive" and name ~= "bonemanipulate" then
             local id = "property_" .. tostring(name)
             lia.admin.registerPrivilege({
-                Name = string.format("Access to %s property", prop.MenuLabel or name),
+                Name = L("accessPropertyPrivilege", prop.MenuLabel or name),
                 ID = id,
                 MinAccess = "admin",
                 Category = "staffPermissions"
@@ -1614,7 +1614,7 @@ for _, wep in ipairs(weapons.GetList()) do
         for tool in pairs(wep.Tool) do
             local id = "tool_" .. tostring(tool)
             lia.admin.registerPrivilege({
-                Name = string.format("Access Tool %s", tool:gsub("^%l", string.upper)),
+                Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                 ID = id,
                 MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
                 Category = "staffPermissions"
@@ -1725,7 +1725,7 @@ else
     end
 
     local function promptCreateGroup()
-        lia.derma.requestArguments("Create Group", {
+        lia.derma.requestArguments(L("create") .. " " .. L("group"), {
             Name = "string",
             Inheritance = {"table", {"user", "admin", "superadmin"}},
             Staff = "boolean",
@@ -1782,8 +1782,8 @@ else
                 end
             else
                 local function showBaseRankNotification()
-                    local message = "Base usergroups (user, admin, superadmin) cannot be edited. Please create a new usergroup instead using the 'Create Group' button." or "Base usergroups (user, admin, superadmin) cannot be edited. Please create a new usergroup instead using the 'Create Group' button."
-                    LocalPlayer():notifyError(string.format("Base usergroups cannot be edited", message))
+                    local message = L("baseUsergroupCannotBeEditedDesc") or "Base usergroups (user, admin, superadmin) cannot be edited. Please create a new usergroup instead using the 'Create Group' button."
+                    LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited", message)
                 end
 
                 row.OnChange = showBaseRankNotification
@@ -1857,22 +1857,22 @@ else
         createBtn:Dock(LEFT)
         createBtn:SetWide(120)
         createBtn:DockMargin(0, 0, 10, 0)
-        createBtn:SetTxt("Create Group")
+        createBtn:SetTxt(L("create") .. " " .. L("group"))
         createBtn.DoClick = function() promptCreateGroup() end
         local renameBtn = vgui.Create("liaButton", bottom)
         renameBtn:Dock(LEFT)
         renameBtn:SetWide(120)
         renameBtn:DockMargin(0, 0, 10, 0)
-        renameBtn:SetTxt("Rename Group")
+        renameBtn:SetTxt(L("rename") .. " " .. L("group"))
         renameBtn.DoClick = function()
             local activeTab = tabs:GetActiveTab()
             if not activeTab or not activeTab.groupName then return end
             if lia.admin.DefaultGroups[activeTab.groupName] then
-                LocalPlayer():notifyError("[Lilia Administration] The base usergroups cannot be renamed!")
+                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRenamed")
                 return
             end
 
-            LocalPlayer():requestString("Rename Group", string.format("New name for '%s'", activeTab.groupName) .. ":", function(txt)
+            LocalPlayer():requestString(L("rename") .. " " .. L("group"), L("renameGroupPrompt", activeTab.groupName) .. ":", function(txt)
                 txt = string.Trim(txt or "")
                 if txt ~= "" and txt ~= activeTab.groupName then
                     net.Start("liaGroupsRename")
@@ -1887,16 +1887,16 @@ else
         deleteBtn:Dock(LEFT)
         deleteBtn:SetWide(120)
         deleteBtn:DockMargin(0, 0, 10, 0)
-        deleteBtn:SetTxt("Delete Group")
+        deleteBtn:SetTxt(L("delete") .. " " .. L("group"))
         deleteBtn.DoClick = function()
             local activeTab = tabs:GetActiveTab()
             if not activeTab or not activeTab.groupName then return end
             if lia.admin.DefaultGroups[activeTab.groupName] then
-                LocalPlayer():notifyError("[Lilia Administration] The base usergroups cannot be removed!")
+                LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeRemoved")
                 return
             end
 
-            LocalPlayer():requestString("Confirm", string.format("Delete group '%s'?", activeTab.groupName), function(value)
+            LocalPlayer():requestString(L("confirm"), L("deleteGroupPrompt", activeTab.groupName), function(value)
                 if value and value:lower() == "yes" then
                     net.Start("liaGroupsRemove")
                     net.WriteString(activeTab.groupName)

@@ -43,7 +43,7 @@ ITEM.name = "outfit"
         ITEM.desc = "Standard police officer uniform with vest"
         ```
 ]]
-ITEM.desc = "A Outfit Base."
+ITEM.desc = "outfitDesc"
 --[[
     Purpose:
         Sets the category for inventory sorting
@@ -223,7 +223,7 @@ ITEM.functions.Equip = {
         local items = character:getInv():getItems()
         for _, other in pairs(items) do
             if item ~= other and item.outfitCategory == other.outfitCategory and other:getData("equip") then
-                item.player:notifyError("You are already wearing something in this outfit category.")
+                item.player:notifyErrorLocalized("sameOutfitCategory")
                 return false
             end
         end

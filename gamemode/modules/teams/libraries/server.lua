@@ -5,7 +5,7 @@
         if info.OnSet then info:OnSet(client) end
         if oldClass ~= class and info.OnTransferred then info:OnTransferred(client, oldClass) end
     else
-        lia.error(string.format("Invalid class '%s' provided for client.", tostring(class)))
+        lia.error(L("invalidClassError", tostring(class)))
     end
 
     if info2 and info2.OnLeave then info2:OnLeave(client) end
@@ -47,7 +47,7 @@ end
 
 function MODULE:PlayerLoadedChar(client, character)
     if character:getData("factionKickWarn") then
-        client:notifyWarning("You were kicked from your faction!")
+        client:notifyWarningLocalized("kickedFromFaction")
         hook.Run("OnTransferred", client)
         local faction = lia.faction.indices[client:Team()]
         if faction and faction.OnTransferred then faction:OnTransferred(client) end
@@ -152,7 +152,7 @@ end
 function MODULE:CanCharBeTransfered(character, faction)
     if faction.oneCharOnly then
         for _, otherCharacter in next, lia.char.getAll() do
-            if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, "This player already has another character in this faction!" end
+            if otherCharacter.steamID == character.steamID and faction.index == otherCharacter:getFaction() then return false, L("charAlreadyInFaction") end
         end
     end
 end
@@ -206,12 +206,12 @@ end
 
 function MODULE:CanPlayerUseChar(client, character)
     local faction = lia.faction.indices[character:getFaction()]
-    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, "This faction is full. Try again later." end
+    if faction and hook.Run("CheckFactionLimitReached", faction, character, client) then return false, L("limitFaction") end
 end
 
 function MODULE:CanPlayerSwitchChar(client, currentCharacter, newCharacter)
     local faction = lia.faction.indices[newCharacter:getFaction()]
-    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, "This faction is full. Try again later." end
+    if self:CheckFactionLimitReached(faction, newCharacter, client) then return false, L("limitFaction") end
 end
 
 net.Receive("liaRequestFactionMembers", function(_, client)
@@ -238,13 +238,13 @@ net.Receive("liaRequestFactionMembers", function(_, client)
             end
 
             if IsValid(owner) and owner:getChar() and owner:getChar():getID() == row.id then
-                lastOnlineText = "Online now"
+                lastOnlineText = L("onlineNow")
             else
-                lastOnlineText = row.lastJoinTime or "Unknown"
+                lastOnlineText = row.lastJoinTime or L("unknown")
             end
 
             table.insert(members, {
-                name = row.name or "Unknown",
+                name = row.name or L("unknown"),
                 lastOnline = lastOnlineText,
                 charID = row.id,
                 steamID = row.steamID
@@ -284,7 +284,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
     end
 
     if not defaultFaction then
-        client:notifyError("The specified faction is not valid.")
+        client:notifyErrorLocalized("invalidFaction")
         return
     end
 
@@ -296,19 +296,19 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             local oldFaction = targetChar:getFaction()
             local oldFactionData = lia.faction.indices[oldFaction]
             if oldFactionData and oldFactionData.isDefault then
-                client:notifyError("Character is already in the base faction.")
+                client:notifyErrorLocalized("alreadyInBaseFaction")
                 return
             end
 
             if hook.Run("CanCharBeTransfered", targetChar, defaultFaction, oldFaction) == false then return end
-            target:notifyWarning("You were kicked from your faction!")
+            target:notifyWarningLocalized("kickedFromFaction")
             targetChar.vars.faction = defaultFaction.uniqueID
             targetChar:setFaction(defaultFaction.index)
             hook.Run("OnTransferred", target)
             if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
             hook.Run("PlayerLoadout", target)
             targetChar:save()
-            client:notifySuccess(string.format("%s has been transferred to %s.", target:Name(), L(defaultFaction.name)))
+            client:notifySuccessLocalized("transferSuccess", target:Name(), L(defaultFaction.name))
             lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
@@ -316,14 +316,14 @@ net.Receive("liaKickCharacterToBase", function(_, client)
     if not isOnline then
         lia.db.query("SELECT faction FROM lia_characters WHERE id = " .. characterID):next(function(data)
             if not data or not data[1] then
-                client:notifyError("Character not found.")
+                client:notifyErrorLocalized("characterNotFound")
                 return
             end
 
             local currentFaction = data[1].faction
             local currentFactionData = lia.faction.get(currentFaction)
             if currentFactionData and currentFactionData.isDefault then
-                client:notifyError("Character is already in the base faction.")
+                client:notifyErrorLocalized("alreadyInBaseFaction")
                 return
             end
 
@@ -331,8 +331,8 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
 
-            client:notifySuccess(string.format("%s has been transferred to %s.", "Character", L(defaultFaction.name)))
-            lia.log.add(client, "kickToBaseFaction", "Character", currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
+            client:notifySuccessLocalized("transferSuccess", L("character"), L(defaultFaction.name))
+            lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end
 end)

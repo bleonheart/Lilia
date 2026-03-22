@@ -167,7 +167,7 @@ local function RemovedDropOnDeathItems(client)
     end
 
     local lostCount = #client.LostItems
-    if lostCount > 0 then client:notifyWarning(string.format("You lost %s item(s) on death.", lostCount)) end
+    if lostCount > 0 then client:notifyWarningLocalized("itemsLostOnDeath", lostCount) end
 end
 
 function MODULE:PlayerSpawn(client)
@@ -201,22 +201,22 @@ function MODULE:PlayerDeath(client, _, attacker)
     if lia.config.get("DeathPopupEnabled", true) then
         local dateStr = os.date("%d/%m/%Y", os.time())
         local timeStr = os.date("%H:%M:%S", os.time())
-        local attackerName = "N/A"
+        local attackerName = L("na")
         local attackerChar = nil
         if IsValid(attacker) then
             if attacker == client or attacker:IsWorld() or attacker:GetClass() == "worldspawn" then
                 attackerName = "the environment"
             elseif attacker:IsPlayer() then
                 attackerChar = attacker:getChar()
-                local charID = attackerChar and tostring(attackerChar:getID()) or "N/A"
+                local charID = attackerChar and tostring(attackerChar:getID()) or L("na")
                 local steamID = attacker:SteamID64()
                 attackerName = "Character ID " .. charID .. " [STEAMID64 " .. steamID .. "]"
             else
-                attackerName = attacker:GetClass() or "N/A"
+                attackerName = attacker:GetClass() or L("na")
             end
         end
 
-        local killedByText = "You were killed by " .. attackerName .. " at " .. timeStr
+        local killedByText = L("killedBy") .. " " .. attackerName .. " at " .. timeStr
         ClientAddText(client, Color(255, 255, 255), dateStr .. " - ", Color(255, 255, 255), killedByText)
         local logTimestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
         local attackerDisplay = "unknown"
@@ -226,9 +226,9 @@ function MODULE:PlayerDeath(client, _, attacker)
             elseif attacker:IsPlayer() then
                 attackerChar = attackerChar or attacker:getChar()
                 local steamId = attacker:SteamID64()
-                attackerDisplay = attackerChar and ("Character " .. attackerChar:getID() .. " | Steam64ID " .. steamId) or "N/A"
+                attackerDisplay = attackerChar and ("Character " .. attackerChar:getID() .. " | Steam64ID " .. steamId) or L("na")
             else
-                attackerDisplay = attacker:GetClass() or "N/A"
+                attackerDisplay = attacker:GetClass() or L("na")
             end
         end
 

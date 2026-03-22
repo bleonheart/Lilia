@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: command.md
 ]]
@@ -100,12 +100,12 @@ function lia.command.add(command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     if not data.onRun then
-        lia.error(string.format("Command '%s' does not have a callback, not adding!", command))
+        lia.error(L("commandNoCallback", command))
         return
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = data.privilege and L(data.privilege) or string.format("Access to %s", command)
+        local privilegeName = data.privilege and L(data.privilege) or L("accessTo", command)
         local privilegeID = data.privilege or string.lower("command_" .. command)
         lia.admin.registerPrivilege({
             Name = privilegeName,
@@ -159,7 +159,7 @@ function lia.command.add(command, data)
                 if superAdminOnly or adminOnly then
                     local aliasPrivilegeID = data.privilege or string.lower("command_" .. v)
                     lia.admin.registerPrivilege({
-                        Name = data.privilege and L(data.privilege) or string.format("Access to %s", v),
+                        Name = data.privilege and L(data.privilege) or L("accessTo", v),
                         ID = aliasPrivilegeID,
                         MinAccess = superAdminOnly and "superadmin" or "admin",
                         Category = "commands"
@@ -173,7 +173,7 @@ function lia.command.add(command, data)
             if superAdminOnly or adminOnly then
                 local aliasPrivilegeID = data.privilege or string.lower("command_" .. alias)
                 lia.admin.registerPrivilege({
-                    Name = data.privilege and L(data.privilege) or string.format("Access to %s", alias),
+                    Name = data.privilege and L(data.privilege) or L("accessTo", alias),
                     ID = aliasPrivilegeID,
                     MinAccess = superAdminOnly and "superadmin" or "admin",
                     Category = "commands"
@@ -227,7 +227,7 @@ function lia.command.hasAccess(client, command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
-    local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and "Global" or string.format("Access to %s", command)
+    local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
     if data.onCheckAccess then
         local accessResult, customPrivilegeName = data.onCheckAccess(client, command, data)
         if accessResult ~= nil then return accessResult, customPrivilegeName or privilegeName end
@@ -236,7 +236,7 @@ function lia.command.hasAccess(client, command, data)
     local hasAccess = true
     if accessLevels ~= "user" then
         if not isstring(privilegeID) then
-            lia.error("' has invalid privilege ID type: ")
+            lia.error(L("invalidPrivilegeIDType"))
             return false, privilegeName
         end
 
@@ -411,7 +411,7 @@ if SERVER then
     ]]
     function lia.command.parse(client, text, realCommand, arguments)
         if realCommand or utf8.sub(text, 1, 1) == "/" then
-            local match = realCommand or text:lower():match("/([_%w]+)")
+            local match = realCommand or text:lower():match("/" .. "([_%w]+)")
             if not match then
                 local post = string.Explode(" ", text)
                 local len = string.len(post[1])
@@ -423,7 +423,7 @@ if SERVER then
             if command then
                 local hasAccess = lia.command.hasAccess(client, match, command)
                 if not hasAccess then
-                    if IsValid(client) then client:notifyError("No Access") end
+                    if IsValid(client) then client:notifyErrorLocalized("noAccess") end
                     return true
                 end
 
@@ -459,9 +459,9 @@ if SERVER then
                 if not realCommand then lia.log.add(client, "command", text) end
             else
                 if IsValid(client) then
-                    client:notifyError("Sorry, that command does not exist.")
+                    client:notifyErrorLocalized("cmdNoExist")
                 else
-                    lia.information("Sorry, that command does not exist.")
+                    lia.information(L("cmdNoExist"))
                 end
             end
             return true
@@ -540,7 +540,7 @@ else
                 local ctrl
                 if fieldType == "player" then
                     ctrl = vgui.Create("liaComboBox", panel)
-                    ctrl:SetValue("Select Player")
+                    ctrl:SetValue(L("select") .. " " .. L("player"))
                     local players = {}
                     for _, plyObj in player.Iterator() do
                         if IsValid(plyObj) then players[#players + 1] = plyObj end
@@ -561,7 +561,7 @@ else
                     ctrl:PostInit()
                 elseif fieldType == "table" then
                     ctrl = vgui.Create("liaComboBox", panel)
-                    ctrl:SetValue("Select " .. L(name))
+                    ctrl:SetValue(L("select") .. " " .. L(name))
                     local opts = options
                     if isfunction(opts) then
                         local ok, res = pcall(opts, LocalPlayer(), prefix)
@@ -649,7 +649,7 @@ else
         submit:Dock(LEFT)
         submit:DockMargin(0, 0, 15, 0)
         submit:SetWide(270)
-        submit:SetTxt("Submit")
+        submit:SetTxt(L("submit"))
         submit:SetEnabled(false)
         validate = function()
             if not IsValid(submit) then return end
@@ -691,7 +691,7 @@ else
         local cancel = vgui.Create("liaButton", buttons)
         cancel:Dock(RIGHT)
         cancel:SetWide(270)
-        cancel:SetTxt("Cancel")
+        cancel:SetTxt(L("cancel"))
         cancel.DoClick = function() frame:Remove() end
         submit.DoClick = function()
             local args = {}
@@ -760,7 +760,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
             parent:Clear()
             local sheet = vgui.Create("liaSheet", parent)
             sheet:Dock(FILL)
-            sheet:SetPlaceholderText("Search Commands")
+            sheet:SetPlaceholderText(L("searchCommands"))
             local useList = false
             if useList then
                 local data = {}
@@ -778,7 +778,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                 end
 
                 sheet:AddListViewRow({
-                    columns = {"Command", "Description", "Privilege"},
+                    columns = {L("command"), L("description"), L("privilege")},
                     data = data,
                     height = 300
                 })
@@ -790,7 +790,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                             local text = "/" .. cmdName
                             if cmdData.syntax and cmdData.syntax ~= "" then text = text .. " " .. L(cmdData.syntax) end
                             local desc = cmdData.desc ~= "" and L(cmdData.desc) or ""
-                            local right = privilege and privilege ~= "Global" and privilege or ""
+                            local right = privilege and privilege ~= L("globalAccess") and privilege or ""
                             local row = sheet:AddTextRow({
                                 title = text,
                                 desc = desc,
@@ -934,17 +934,17 @@ if SERVER then
     concommand.Add("kickbots", function()
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         for _, bot in player.Iterator() do
-            if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, "All bots kicked") end
+            if bot:IsBot() then lia.admin.execCommand("kick", bot, nil, L("allBotsKicked")) end
         end
     end)
 
     concommand.Add("lia_check_updates", function(client)
         if IsValid(client) and not client:IsSuperAdmin() then
-            client:notifyError("You do not have permission to use this command.")
+            client:notifyErrorLocalized("staffPermissionDenied")
             return
         end
 
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Checking for updates...\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("checkingForUpdates") .. "\n")
         lia.loader.checkForUpdates()
     end)
 
@@ -953,24 +953,24 @@ if SERVER then
         local usergroup = string.Trim(args[2] or "")
         local canUse = not IsValid(ply) or not game.IsDedicated() or ply:hasPrivilege("setUserGroup")
         if not canUse then
-            ply:notifyError("You are not allowed to do this.")
+            ply:notifyErrorLocalized("noPerm")
             return
         end
 
         if steamID == "" or not string.match(steamID, "^STEAM_%d+:%d+:%d+$") then
             if IsValid(ply) then
-                ply:notifyError(string.format("Invalid player: %s", steamID))
+                ply:notifyErrorLocalized("invalidPlayer", steamID)
             else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid player: %s", steamID) .. "\n")
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer", steamID) .. "\n")
             end
             return
         end
 
         if usergroup == "" or not lia.admin.groups[usergroup] then
             if IsValid(ply) then
-                ply:notifyError(string.format("Invalid usergroup: %s", usergroup))
+                ply:notifyErrorLocalized("invalidUsergroup", usergroup)
             else
-                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid usergroup: %s", usergroup) .. "\n")
+                MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidUsergroup", usergroup) .. "\n")
             end
             return
         end
@@ -979,9 +979,9 @@ if SERVER then
         lia.db.selectOne({"steamName", "userGroup"}, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function(data)
             if not data then
                 if IsValid(ply) then
-                    ply:notifyError("Player does not exist.")
+                    ply:notifyErrorLocalized("plyNoExist")
                 else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Invalid player: %s", steamID) .. "\n")
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("invalidPlayer", steamID) .. "\n")
                 end
                 return
             end
@@ -990,10 +990,10 @@ if SERVER then
                 userGroup = usergroup
             }, nil, "players", "steamID = " .. lia.db.convertDataType(steamID)):next(function()
                 lia.admin.setSteamIDUsergroup(steamID, usergroup, IsValid(ply) and ply:Name() or "Console")
-                if IsValid(target) and isfunction(target.getName) then target:notifyInfo(string.format("Usergroup set to %s.", usergroup)) end
+                if IsValid(target) and isfunction(target.getName) then target:notifyInfoLocalized("userGroupSet", usergroup) end
                 if IsValid(ply) then
                     local targetName = isfunction(target and target.getName) and target:getName() or data.steamName or steamID
-                    ply:notifyInfo(string.format("%s's usergroup has been set to %s by an admin.", targetName, usergroup))
+                    ply:notifyInfoLocalized("userGroupSetBy", targetName, usergroup)
                 end
 
                 lia.log.add(IsValid(ply) and ply or nil, "usergroup", IsValid(target) and target or steamID, usergroup)
@@ -1011,7 +1011,7 @@ if SERVER then
                 v:ConCommand("stopsound")
             end
         else
-            client:notifyError("You are not allowed to do this.")
+            client:notifyErrorLocalized("noPerm")
         end
     end)
 
@@ -1027,12 +1027,12 @@ if SERVER then
 
     concommand.Add("lia_wipedb", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.db.wipeTables(function()
-            lia.information("Database Wiped")
+            lia.information(L("dbWiped"))
             lia.db.loadTables()
             hook.Add("PostLoadData", "lia_wipedb_changemap", function()
                 hook.Remove("PostLoadData", "lia_wipedb_changemap")
@@ -1046,69 +1046,69 @@ if SERVER then
 
     concommand.Add("lia_resetconfig", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.config.load(true)
-        lia.information("Config Reloaded")
+        lia.information(L("configReloaded"))
     end)
 
     concommand.Add("lia_wipecharacters", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.db.wipeCharacters()
-        lia.information("All characters have been wiped!")
+        lia.information(L("charsWiped"))
     end)
 
     concommand.Add("lia_wipelogs", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.db.wipeLogs()
-        lia.information("All logs have been wiped!")
+        lia.information(L("logsWiped"))
     end)
 
     concommand.Add("lia_wipebans", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.db.wipeBans()
-        lia.information("All bans have been wiped!")
+        lia.information(L("bansWiped"))
     end)
 
     concommand.Add("lia_wipepersistence", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.data.deleteAll()
-        lia.information("All persistence data has been wiped!")
+        lia.information(L("persistenceWiped"))
     end)
 
     concommand.Add("lia_wipeconfig", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.config.reset()
-        lia.information("All configuration has been wiped!")
+        lia.information(L("configWiped"))
     end)
 
     concommand.Add("list_entities", function(client)
         local entityCount = {}
         local totalEntities = 0
         if not IsValid(client) then
-            lia.information("Entities on the server:")
+            lia.information(L("entitiesOnServer") .. ":")
             for _, entity in ents.Iterator() do
                 local class = entity:GetClass()
                 entityCount[class] = (entityCount[class] or 0) + 1
@@ -1119,9 +1119,9 @@ if SERVER then
                 MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), class .. ": " .. count .. "\n")
             end
 
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Total entities on the server: %s", totalEntities) .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("totalEntities", totalEntities) .. "\n")
         else
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
         end
     end)
 
@@ -1129,9 +1129,9 @@ if SERVER then
         if IsValid(ply) then return end
         lia.db.getCharacterTable(function(columns)
             if #columns == 0 then
-                lia.error("No columns found in lia_characters.")
+                lia.error(L("dbColumnsNone"))
             else
-                lia.information(string.format("Columns in lia_characters: %s", #columns))
+                lia.information(L("dbColumnsList", #columns))
                 for _, column in ipairs(columns) do
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), column .. "\n")
                 end
@@ -1141,51 +1141,51 @@ if SERVER then
 
     concommand.Add("lia_fix_characters", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.db.fixCharacters()
-        lia.information("Characters Fixed")
+        lia.information(L("charsFixed"))
     end)
 
     concommand.Add("lia_redownload_assets", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
         lia.loader.downloadAssets()
-        lia.information("Assets Redownloaded")
+        lia.information(L("assetsRedownloaded"))
     end)
 
     concommand.Add("test_existing_notifications", function(client)
         if IsValid(client) then
-            client:notifyError("This command can only be run from the server console.")
+            client:notifyErrorLocalized("commandConsoleOnly")
             return
         end
 
-        lia.notices.notify(nil, "Test Notification", "default" or "default")
-        lia.notices.notify(nil, "Test Notification Info", "info")
-        lia.notices.notify(nil, "Test Notification Warning", "warning")
-        lia.notices.notify(nil, "Test Notification Error", "error")
-        lia.notices.notify(nil, "Test Notification Success", "success")
+        lia.notices.notifyLocalized("testNotification")
+        lia.notices.notifyInfoLocalized("testNotificationInfo")
+        lia.notices.notifyWarningLocalized("testNotificationWarning")
+        lia.notices.notifyErrorLocalized("testNotificationError")
+        lia.notices.notifySuccessLocalized("testNotificationSuccess")
     end)
 
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error PrefixThis command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
         local pos = client:GetPos()
         local vec = Vector(pos.x, pos.y, pos.z)
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Vector: " .. tostring(vec) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("vector") .. ": " .. tostring(vec) .. "\n")
     end)
 
     concommand.Add("print_angle", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error PrefixThis command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -1201,26 +1201,26 @@ if SERVER then
 
     concommand.Add("lia_snapshot", function(_, _, args)
         if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot <table_name>\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotTableUsage") .. "\n")
             return
         end
 
         local tableName = args[1]
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Creating snapshot for table: %s", tableName) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("creatingSnapshot", tableName) .. "\n")
         lia.db.createSnapshot(tableName):next(function(snapshot)
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Snapshot created successfully!\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Records: %s", snapshot.records) .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Path: %s", snapshot.path) .. "\n")
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Snapshot failed: %s", tostring(err)) .. "\n") end)
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotCreated") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotRecords", snapshot.records) .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotPath", snapshot.path) .. "\n")
+        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotFailed", tostring(err)) .. "\n") end)
     end)
 
     concommand.Add("lia_snapshot_load", function(_, _, args)
         if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_snapshot_load <filename>\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "Available snapshots:\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotUsage") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("availableSnapshots") .. "\n")
             local files = file.Find("lilia/snapshots/*", "DATA")
             if #files == 0 then
-                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), "No snapshots found\n")
+                MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("noSnapshotsFound") .. "\n")
             else
                 for _, fileName in ipairs(files) do
                     MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), "  - " .. fileName .. "\n")
@@ -1230,28 +1230,28 @@ if SERVER then
         end
 
         local fileName = args[1]
-        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Loading snapshot: %s", fileName) .. "\n")
+        MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("loadingSnapshot", fileName) .. "\n")
         lia.db.loadSnapshot(fileName):next(function(result)
-            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Snapshot loaded successfully!\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Table: %s", result.table) .. "\n")
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Records: %s", result.records) .. "\n")
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Snapshot load failed: %s", tostring(err)) .. "\n") end)
+            MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotLoaded") .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotTable", result.table) .. "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("snapshotRecords", result.records) .. "\n")
+        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("snapshotLoadFailed", tostring(err)) .. "\n") end)
     end)
 
     concommand.Add("lia_wipetable", function(_, _, args)
         if not args[1] then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Usage: lia_wipetable <table_name>\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("wipeTableUsage") .. "\n")
             return
         end
 
         local tableName = args[1]
         local fullTableName = "lia_" .. tableName
-        MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format("Creating backup before wiping table: %s", tableName) .. "\n")
+        MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("creatingBackupBeforeWipe", tableName) .. "\n")
         lia.db.createSnapshot(tableName):next(function(snapshot)
-            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), string.format("Backup created: %s", snapshot.file) .. "\n")
-            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), string.format("Wiping table: %s", fullTableName) .. "\n")
-            lia.db.query("DELETE FROM " .. fullTableName, function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), string.format("Table %s has been wiped successfully!", fullTableName) .. "\n") end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Failed to wipe table: %s", tostring(err)) .. "\n") end)
-        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), string.format("Backup failed, aborting wipe: %s", tostring(err)) .. "\n") end)
+            MsgC(Color(83, 143, 239), "[Lilia] ", Color(255, 255, 255), L("backupCreated", snapshot.file) .. "\n")
+            MsgC(Color(255, 165, 0), "[Lilia] ", Color(255, 255, 255), L("wipingTable", fullTableName) .. "\n")
+            lia.db.query("DELETE FROM " .. fullTableName, function() MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("tableWiped", fullTableName) .. "\n") end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("tableWipeFailed", tostring(err)) .. "\n") end)
+        end, function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("backupFailedAbortingWipe", tostring(err)) .. "\n") end)
     end)
 else
     concommand.Add("weighpoint_stop", function() hook.Remove("HUDPaint", "WeighPoint") end)
@@ -1482,7 +1482,7 @@ else
         end
 
         local f = vgui.Create("liaFrame")
-        f:SetTitle("Saved sounds:")
+        f:SetTitle(L("savedSounds"))
         f:SetSize(600, 500)
         f:Center()
         f:MakePopup()
@@ -1511,7 +1511,7 @@ else
             nameLabel:DockMargin(10, 0, 0, 0)
             nameLabel:SetWide(300)
             local playButton = vgui.Create("liaButton", panel)
-            playButton:SetText("? Play")
+            playButton:SetText("▶ Play")
             playButton:SetWide(80)
             playButton:Dock(RIGHT)
             playButton:DockMargin(5, 5, 5, 5)
@@ -1533,7 +1533,7 @@ else
             end
 
             local stopButton = vgui.Create("liaButton", panel)
-            stopButton:SetText("■ Stop")
+            stopButton:SetText("⏹ Stop")
             stopButton:SetWide(80)
             stopButton:Dock(RIGHT)
             stopButton:DockMargin(5, 5, 5, 5)
@@ -1557,7 +1557,7 @@ else
             end
         end
 
-        LocalPlayer():ChatPrint("Sounds Wiped (" .. deletedCount .. " files)")
+        LocalPlayer():ChatPrint(L("soundsWiped") .. " (" .. deletedCount .. " files)")
     end)
 
     concommand.Add("lia_validate_sounds", function()
@@ -1586,7 +1586,7 @@ else
             end
         end
 
-        LocalPlayer():ChatPrint(string.format("Sound validation complete: %d valid, %d invalid", validCount, invalidCount))
+        LocalPlayer():ChatPrint(L("soundValidationComplete", validCount, invalidCount))
     end)
 
     concommand.Add("lia_cleanup_sounds", function()
@@ -1615,16 +1615,16 @@ else
             end
         end
 
-        LocalPlayer():ChatPrint(string.format("Cleaned up %d invalid sound files", removedCount))
+        LocalPlayer():ChatPrint(L("cleanedUpInvalidSounds", removedCount))
     end)
 
     concommand.Add("lia_list_sounds", function()
         local baseDir = "lilia/websounds/"
         local files = file.Find(baseDir .. "**", "DATA")
         if #files == 0 then return end
-        LocalPlayer():ChatPrint("Saved sounds:")
+        LocalPlayer():ChatPrint(L("savedSounds"))
         for _, fileName in ipairs(files) do
-            if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") or string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint(string.format("  %s", string.StripExtension(fileName))) end
+            if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") or string.EndsWith(fileName, ".dat") then LocalPlayer():ChatPrint(L("soundFileList", string.StripExtension(fileName))) end
         end
     end)
 
@@ -1677,7 +1677,7 @@ else
         end
 
         local f = vgui.Create("liaFrame")
-        f:SetTitle("Saved Images")
+        f:SetTitle(L("savedImages"))
         f:SetSize(700, 600)
         f:Center()
         f:MakePopup()
@@ -1709,7 +1709,7 @@ else
             nameLabel:SetPos(120, 10)
             nameLabel:SetWide(300)
             local viewButton = vgui.Create("liaButton", panel)
-            viewButton:SetText("?? View")
+            viewButton:SetText("👁 View")
             viewButton:SetWide(80)
             viewButton:SetPos(120, 40)
             viewButton.DoClick = function()
@@ -1725,7 +1725,7 @@ else
             end
 
             local copyButton = vgui.Create("liaButton", panel)
-            copyButton:SetText("?? Copy Path")
+            copyButton:SetText("📋 Copy Path")
             copyButton:SetWide(100)
             copyButton:SetPos(210, 40)
             copyButton.DoClick = function()
@@ -1743,7 +1743,7 @@ else
             if not file.Exists(filePath, "DATA") then removedCount = removedCount + 1 end
         end
 
-        LocalPlayer():ChatPrint(string.format("Found %d image files", #files))
+        LocalPlayer():ChatPrint(L("foundImageFiles", #files))
     end)
 
     concommand.Add("lia_wipewebimages", function()
@@ -1751,23 +1751,23 @@ else
         deleteDirectoryRecursive(baseDir)
         cache = {}
         urlMap = {}
-        LocalPlayer():ChatPrint("Web Images Wiped")
+        LocalPlayer():ChatPrint(L("webImagesWiped"))
     end)
 
     concommand.Add("test_webimage_menu", function()
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle("WebImage Tester")
+        frame:SetTitle(L("webImageTesterTitle"))
         frame:SetSize(500, 400)
         frame:Center()
         frame:MakePopup()
         local textEntry = vgui.Create("liaEntry", frame)
         textEntry:Dock(TOP)
         textEntry:DockMargin(5, 5, 5, 5)
-        textEntry:SetPlaceholderText("Web Image Tester URL")
+        textEntry:SetPlaceholderText(L("webImageTesterURL"))
         local button = vgui.Create("liaButton", frame)
         button:Dock(TOP)
         button:DockMargin(5, 0, 5, 5)
-        button:SetText("Web Image Tester Load")
+        button:SetText(L("webImageTesterLoad"))
         local imagePanel = vgui.Create("DPanel", frame)
         imagePanel:Dock(FILL)
         imagePanel:DockMargin(5, 5, 5, 5)
@@ -1836,7 +1836,7 @@ else
 
     concommand.Add("printpos", function(client)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error PrefixThis command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
@@ -1847,13 +1847,13 @@ else
 
     concommand.Add("debugFactionMaps", function(client, _, args)
         if not IsValid(client) then
-            MsgC(Color(255, 0, 0), "[Lilia] Error PrefixThis command can only be used by players.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
             return
         end
 
         local factionName = args[1]
         if not factionName then
-            MsgC(Color(255, 193, 7), "[Lilia] Usage: debugFactionMaps <faction_name>\n")
+            MsgC(Color(255, 193, 7), "[Lilia] " .. L("debugFactionMapsUsage") .. "\n")
             return
         end
 
@@ -1866,30 +1866,30 @@ else
         end
 
         if not faction then
-            MsgC(Color(255, 0, 0), "[Lilia] Faction not found.\n")
+            MsgC(Color(255, 0, 0), "[Lilia] " .. L("factionNotFound") .. "\n")
             return
         end
 
-        MsgC(Color(0, 255, 0), "[Lilia] " .. string.format("Debug info for faction '%s':", faction.name) .. "\n")
+        MsgC(Color(0, 255, 0), "[Lilia] " .. L("debugFactionInfo", faction.name) .. "\n")
         MsgC(Color(255, 255, 0), "Current map: " .. game.GetMap() .. "\n")
         if not faction.mainMenuPosition then
-            MsgC(Color(255, 0, 0), "No mainMenuPosition defined for this faction.\n")
+            MsgC(Color(255, 0, 0), L("noMainMenuPosition") .. "\n")
             return
         end
 
         if isvector(faction.mainMenuPosition) then
             MsgC(Color(0, 255, 0), "Simple vector position: " .. tostring(faction.mainMenuPosition) .. "\n")
         elseif istable(faction.mainMenuPosition) then
-            MsgC(Color(0, 255, 0), "Map-specific positions:\n")
+            MsgC(Color(0, 255, 0), L("mapSpecificPositions") .. "\n")
             for mapName, posData in pairs(faction.mainMenuPosition) do
                 local isCurrentMap = mapName == lia.data.getEquivalencyMap(game.GetMap())
                 local mapColor = isCurrentMap and Color(0, 255, 0) or Color(255, 255, 255)
                 MsgC(mapColor, "  " .. (isCurrentMap and ">>> " or "    ") .. mapName .. ":\n")
                 if istable(posData) then
-                    MsgC(mapColor, "    Position: " .. tostring(posData.position or posData) .. "\n")
-                    if posData.angles then MsgC(mapColor, "    angles: " .. tostring(posData.angles) .. "\n") end
+                    MsgC(mapColor, "    " .. L("position") .. ": " .. tostring(posData.position or posData) .. "\n")
+                    if posData.angles then MsgC(mapColor, "    " .. L("angles") .. ": " .. tostring(posData.angles) .. "\n") end
                 elseif isvector(posData) then
-                    MsgC(mapColor, "    Position: " .. tostring(posData) .. "\n")
+                    MsgC(mapColor, "    " .. L("position") .. ": " .. tostring(posData) .. "\n")
                 end
             end
         end
@@ -1897,20 +1897,20 @@ else
 end
 
 lia.command.add("demorequests", {
-    desc = "Demonstrates all available request UI functions",
+    desc = "demoRequestsDesc",
     privilege = "Staff",
     onRun = function(client)
         if SERVER then
-            client:notifyInfo("Opening request UI demo...")
-            client:requestBinaryQuestion("UI Demo", "Would you like to see all the request UI demos?", "Yes, show me!", "No, thanks", function(confirmed)
+            client:notifyInfoLocalized("openingDemo")
+            client:requestBinaryQuestion("UI Demo", L("demoQuestion"), L("yesShowMe"), L("noThanks"), function(confirmed)
                 if confirmed then
-                    client:requestDropdown("Demo: Dropdown Selection", "Choose your favorite color:", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
+                    client:requestDropdown(L("demoDropdownTitle"), L("chooseColor"), {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}, {"Yellow", "yellow"}}, function(selected)
                         if selected ~= nil then
-                            client:requestOptions("Demo: Multi-Select Options", "Select your favorite activities (max 3):", {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
+                            client:requestOptions(L("demoOptionsTitle"), L("selectFavoriteActivities"), {{"Gaming", "gaming"}, {"Reading", "reading"}, {"Sports", "sports"}, {"Music", "music"}, {"Cooking", "cooking"}, {"Travel", "travel"}}, 3, function(selectedOptions)
                                 if selectedOptions and #selectedOptions > 0 then
-                                    client:requestString("Demo: Text Input", "Enter a fun message (max 50 characters):", function(message)
+                                    client:requestString(L("demoTextInputTitle"), L("enterFunMessage"), function(message)
                                         if message then
-                                            client:requestArguments("Demo: Structured Input", {
+                                            client:requestArguments(L("demoStructuredTitle"), {
                                                 {"Name", "string"},
                                                 {
                                                     "Age",
@@ -1922,51 +1922,51 @@ lia.command.add("demorequests", {
                                                         }
                                                     }
                                                 },
-                                                {"Favorite Color", {"table", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}}}},
-                                                {"Agree to Terms", "boolean"}
+                                                {L("favoriteColor"), {"table", {{"Red", "red"}, {"Blue", "blue"}, {"Green", "green"}}}},
+                                                {L("agreeToTerms"), "boolean"}
                                             }, function(success, argumentsData)
                                                 if success and argumentsData then
-                                                    client:requestButtons("Demo: Button Selection", {
+                                                    client:requestButtons(L("demoButtonSelection"), {
                                                         {
-                                                            text = "Save Progress",
+                                                            text = L("saveProgress"),
                                                             icon = "icon16/disk.png"
                                                         },
                                                         {
-                                                            text = "Load Previous",
+                                                            text = L("loadPrevious"),
                                                             icon = "icon16/folder.png"
                                                         },
                                                         {
-                                                            text = "Start Over",
+                                                            text = L("startOver"),
                                                             icon = "icon16/arrow_refresh.png"
                                                         },
                                                         {
-                                                            text = "Exit Demo",
+                                                            text = L("exitDemo"),
                                                             icon = "icon16/door.png"
                                                         }
-                                                    }, function(_, buttonText) client:notify("Demo completed! You selected: " .. buttonText, "success") end, "Choose what to do next:")
+                                                    }, function(_, buttonText) client:notify(L("demoCompleted") .. " " .. buttonText, "success") end, L("chooseNextAction"))
                                                 else
-                                                    client:notifyWarning("Arguments demo cancelled")
+                                                    client:notifyWarningLocalized("argumentsDemoCancelled")
                                                 end
                                             end, {
-                                                Name = "Demo User",
+                                                Name = L("demoUser"),
                                                 Age = 25,
-                                                ["Favorite Color"] = {"Blue", "blue"},
-                                                ["Agree to Terms"] = true
+                                                [L("favoriteColor")] = {"Blue", "blue"},
+                                                [L("agreeToTerms")] = true
                                             })
                                         else
-                                            client:notifyWarning("String input demo cancelled")
+                                            client:notifyWarningLocalized("stringInputDemoCancelled")
                                         end
                                     end, "", 50)
                                 else
-                                    client:notifyWarning("Options demo cancelled")
+                                    client:notifyWarningLocalized("optionsDemoCancelled")
                                 end
                             end)
                         else
-                            client:notifyWarning("Dropdown demo cancelled")
+                            client:notifyWarningLocalized("dropdownDemoCancelled")
                         end
                     end)
                 else
-                    client:notifyInfo("Demo cancelled - no problem!")
+                    client:notifyInfoLocalized("demoCancelledNoProblem")
                 end
             end)
         end
@@ -1975,33 +1975,33 @@ lia.command.add("demorequests", {
 
 lia.command.add("playtime", {
     adminOnly = false,
-    desc = "Displays your total playtime on the server.",
+    desc = "playtimeDesc",
     onRun = function(client)
         local secs = client:getPlayTime()
         if not secs then
-            client:notifyError("Could not retrieve your playtime.")
+            client:notifyErrorLocalized("playtimeError")
             return
         end
 
         local h = math.floor(secs / 3600)
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
-        client:notifyInfo(string.format("Your playtime is %s hours, %s minutes, and %s seconds.", h, m, s))
+        client:notifyInfoLocalized("playtimeYour", h, m, s)
     end
 })
 
 lia.command.add("charid", {
     adminOnly = false,
-    desc = "Displays your current character's ID.",
+    desc = "charidDesc",
     onRun = function(client)
         local char = client:getChar()
         if not char then
-            client:notifyError("You have no character selected")
+            client:notifyErrorLocalized("noCharacterSelected")
             return
         end
 
         local charID = char:getID()
-        client:notifyInfo(string.format("Your character ID is: %s", charID))
+        client:notifyInfoLocalized("charidYour", charID)
     end
 })
 
@@ -2014,21 +2014,21 @@ lia.command.add("plygetplaytime", {
         },
     },
     AdminStick = {
-        Name = "Get Player Playtime",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickGetPlayTimeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/time.png"
     },
-    desc = "Shows the total playtime of the specified character.",
+    desc = "plygetplaytimeDesc",
     onRun = function(client, args)
         if not args[1] then
-            client:notifyError("Please specify a player.")
+            client:notifyErrorLocalized("specifyPlayer")
             return
         end
 
         local target = lia.util.findPlayer(client, args[1])
         if not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -2036,7 +2036,7 @@ lia.command.add("plygetplaytime", {
         local h = math.floor(secs / 3600)
         local m = math.floor((secs % 3600) / 60)
         local s = secs % 60
-        client:ChatPrint(string.format("%s's playtime is %s hours, %s minutes, and %s seconds.", target:Nick(), h, m, s))
+        client:ChatPrint(L("playtimeFor", target:Nick(), h, m, s))
     end
 })
 
@@ -2049,52 +2049,52 @@ lia.command.add("plycheckid", {
         },
     },
     AdminStick = {
-        Name = "Check Character ID",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickCheckCharIDName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/vcard.png"
     },
-    desc = "Shows the character ID of the specified player.",
+    desc = "plycheckidDesc",
     onRun = function(client, args)
         if not args[1] then
-            client:notifyError("Please specify a player.")
+            client:notifyErrorLocalized("specifyPlayer")
             return
         end
 
         local target = lia.util.findPlayer(client, args[1])
         if not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local char = target:getChar()
         if not char then
-            client:notifyError("Player has no character loaded")
+            client:notifyErrorLocalized("noCharacterLoaded")
             return
         end
 
         local charID = char:getID()
-        client:ChatPrint(string.format("%s's character ID is: %s", target:Nick(), charID))
+        client:ChatPrint(L("charidFor", target:Nick(), charID))
     end
 })
 
 lia.command.add("checkid", {
-    desc = "Displays your current character's ID.",
+    desc = "charidDesc",
     onRun = function(client)
         local char = client:getChar()
         if not char then
-            client:notifyError("You have no character selected")
+            client:notifyErrorLocalized("noCharacterSelected")
             return
         end
 
         local charID = char:getID()
-        client:ChatPrint(string.format("Your character ID is: %s", charID))
+        client:ChatPrint(L("charidYour", charID))
     end
 })
 
 lia.command.add("managesitrooms", {
     superAdminOnly = true,
-    desc = "Manage administration rooms on the current map: view existing administration rooms, teleport to them, rename them, or reposition them.",
+    desc = "manageSitroomsDesc",
     onRun = function(client)
         if not client:hasPrivilege("manageSitRooms") then return end
         local rooms = lia.data.get("sitrooms", {})
@@ -2106,26 +2106,26 @@ lia.command.add("managesitrooms", {
 
 lia.command.add("addsitroom", {
     superAdminOnly = true,
-    desc = "Set Administration Room",
+    desc = "setSitroomDesc",
     onRun = function(client)
-        client:requestString("Enter Name", "Enter the name of the Administration Room:", function(name)
+        client:requestString(L("enterNamePrompt"), L("enterSitroomPrompt") .. ":", function(name)
             if name == "" then
-                client:notifyError("Invalid name!")
+                client:notifyErrorLocalized("invalidName")
                 return
             end
 
             local rooms = lia.data.get("sitrooms", {})
             rooms[name] = client:GetPos()
             lia.data.set("sitrooms", rooms)
-            client:notifySuccess("Administration Room has been set!")
-            lia.log.add(client, "sitRoomSet", string.format("Name: %s | Position: %s", name, tostring(client:GetPos())), "Set the administration room location")
+            client:notifySuccessLocalized("sitroomSet")
+            lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(client:GetPos())), L("logSetSitroom"))
         end)
     end
 })
 
 lia.command.add("sendtositroom", {
     adminOnly = true,
-    desc = "Send a player to an Administration Room",
+    desc = "sendToSitRoomDesc",
     arguments = {
         {
             name = "name",
@@ -2133,15 +2133,15 @@ lia.command.add("sendtositroom", {
         },
     },
     AdminStick = {
-        Name = "Send To Administration Room",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "sendToSitRoom",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/arrow_down.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -2152,20 +2152,20 @@ lia.command.add("sendtositroom", {
         end
 
         if #names == 0 then
-            client:notifyError("No Administration Room has been set!")
+            client:notifyErrorLocalized("sitroomNotSet")
             return
         end
 
-        client:requestDropdown("Choose an Administration Room", "Select an Administration Room to send the player to:", names, function(selection)
+        client:requestDropdown(L("chooseSitroomTitle"), L("selectSitroomPrompt") .. ":", names, function(selection)
             local pos = rooms[selection]
             if not pos then
-                client:notifyError("No Administration Room has been set!")
+                client:notifyErrorLocalized("sitroomNotSet")
                 return
             end
 
             target:SetPos(pos)
-            client:notifySuccess(string.format("You have been teleported to Administration Room: %s.", target:Nick()))
-            target:notifyInfo("You have arrived at an Administration Room.")
+            client:notifySuccessLocalized("sitroomTeleport", target:Nick())
+            target:notifyInfoLocalized("sitroomArrive")
             lia.log.add(client, "sendToSitRoom", target:Nick(), selection)
         end)
     end
@@ -2173,7 +2173,7 @@ lia.command.add("sendtositroom", {
 
 lia.command.add("returnsitroom", {
     adminOnly = true,
-    desc = "Returns you or the specified player to their previous position before teleporting to an administration room.",
+    desc = "returnFromSitroomDesc",
     arguments = {
         {
             name = "name",
@@ -2181,27 +2181,27 @@ lia.command.add("returnsitroom", {
         },
     },
     AdminStick = {
-        Name = "Return From Administration Room",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "returnFromSitroom",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/arrow_up.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1]) or client
         if not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local prev = target.previousSitroomPos
         if not prev then
-            client:notifyError("No previous sitroom position")
+            client:notifyErrorLocalized("noPreviousSitroomPos")
             return
         end
 
         target:SetPos(prev)
-        client:notifySuccess("Successfully returned to sitroom")
-        if target ~= client then target:notifyInfo("Returned to your previous position.") end
+        client:notifySuccessLocalized("sitroomReturnSuccess")
+        if target ~= client then target:notifyInfoLocalized("sitroomReturned") end
         lia.log.add(client, "sitRoomReturn", target:Nick())
     end
 })
@@ -2209,7 +2209,7 @@ lia.command.add("returnsitroom", {
 lia.command.add("charkill", {
     superAdminOnly = true,
     alias = "permakill",
-    desc = "Opens the PK case menu to permanently kill a character.",
+    desc = "charkillDesc",
     arguments = {
         {
             name = "name",
@@ -2217,26 +2217,26 @@ lia.command.add("charkill", {
         }
     },
     AdminStick = {
-        Name = "Character Kill (Permakill)",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickCharKillName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
     },
     onRun = function(client, args)
         if not args[1] then
-            client:notifyError("Please specify a player.")
+            client:notifyErrorLocalized("specifyPlayer")
             return
         end
 
         local ply = lia.util.findPlayer(client, args[1])
         if not IsValid(ply) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local char = ply:getChar()
         if not char then
-            client:notifyError("Player has no character loaded")
+            client:notifyErrorLocalized("noCharacterLoaded")
             return
         end
 
@@ -2244,12 +2244,12 @@ lia.command.add("charkill", {
         if isPermakilled then
             char:setData("permakilled", nil)
             lia.db.delete("permakills", "charID = " .. lia.db.convertDataType(char:getID()))
-            client:notifySuccess(string.format("%s removed permakill marking from character %s.", client:Name(), ply:Nick()))
+            client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
             lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
         else
-            local reasonKey = "Reason"
-            local evidenceKey = "Evidence"
-            client:requestArguments("PK Reason & Evidence", {
+            local reasonKey = L("reason")
+            local evidenceKey = L("evidence")
+            client:requestArguments(L("pkReasonMenu"), {
                 [reasonKey] = "string",
                 [evidenceKey] = "string"
             }, function(success, data)
@@ -2268,18 +2268,18 @@ lia.command.add("charkill", {
                 }, nil, "permakills")
 
                 char:setData("permakilled", true)
-                local instantDeathKey = "Kill instantly (auto-ban)"
-                client:requestArguments("PK Death Option", {
+                local instantDeathKey = L("instantDeath")
+                client:requestArguments(L("pkDeathOptionMenu"), {
                     [instantDeathKey] = "boolean"
                 }, function(success2, data2)
                     if not success2 then return end
                     local instantDeath = data2[instantDeathKey]
                     if instantDeath then
                         ply:Kill()
-                        client:notifySuccess(string.format("%s marked character %s for permakill and killed them instantly.", client:Name(), ply:Nick()))
+                        client:notifySuccessLocalized("charKillInstant", client:Name(), ply:Nick())
                         lia.log.add(client, "charKillInstant", ply:Nick(), char:getID(), reason)
                     else
-                        client:notifySuccess(string.format("%s marked character %s for permakill.", client:Name(), ply:Nick()))
+                        client:notifySuccessLocalized("charKill", client:Name(), ply:Nick())
                         lia.log.add(client, "charKill", ply:Nick(), char:getID(), reason)
                     end
                 end)
@@ -2303,7 +2303,7 @@ end
 
 lia.command.add("charlist", {
     adminOnly = true,
-    desc = "List all characters for a player by name or Steam ID, or yourself if none is provided.",
+    desc = "charListDesc",
     arguments = {
         {
             name = "playerOrSteamId",
@@ -2321,7 +2321,7 @@ lia.command.add("charlist", {
             elseif identifier:match("^STEAM_%d:%d:%d+$") then
                 steamID = identifier
             else
-                client:notifyError("Target not found")
+                client:notifyErrorLocalized("targetNotFound")
                 return
             end
         else
@@ -2331,7 +2331,7 @@ lia.command.add("charlist", {
         local query = [[SELECT c.*, d.value AS charBanInfo FROM lia_characters AS c LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo' WHERE c.steamID = ]] .. lia.db.convertDataType(steamID)
         lia.db.query(query, function(data)
             if not data or #data == 0 then
-                client:notifyInfo("No characters found for this player.")
+                client:notifyInfoLocalized("noCharactersForPlayer")
                 return
             end
 
@@ -2378,12 +2378,12 @@ lia.command.add("charlist", {
                     Name = stored and stored:getName() or row.name,
                     Desc = row.desc,
                     Faction = row.faction,
-                    Banned = isBanned and "Yes" or "No",
+                    Banned = isBanned and L("yes") or L("no"),
                     BanningAdminName = banInfo and banInfo.name or "",
                     BanningAdminSteamID = banInfo and banInfo.steamID or "",
                     BanningAdminRank = banInfo and banInfo.rank or "",
                     Money = row.money,
-                    LastUsed = stored and "Online now" or row.lastJoinTime,
+                    LastUsed = stored and L("onlineNow") or row.lastJoinTime,
                     allVars = allVars
                 }
 
@@ -2404,7 +2404,7 @@ lia.command.add("charlist", {
 
 lia.command.add("plyban", {
     adminOnly = true,
-    desc = "Ban a player from the server for a duration.",
+    desc = "plyBanDesc",
     arguments = {
         {
             name = "name",
@@ -2421,9 +2421,9 @@ lia.command.add("plyban", {
         },
     },
     AdminStick = {
-        Name = "Ban Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickBanName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/lock.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("ban", arguments[1], arguments[2], arguments[3], client) end
@@ -2431,7 +2431,7 @@ lia.command.add("plyban", {
 
 lia.command.add("plykick", {
     adminOnly = true,
-    desc = "Kick a player from the server.",
+    desc = "plyKickDesc",
     arguments = {
         {
             name = "name",
@@ -2444,9 +2444,9 @@ lia.command.add("plykick", {
         },
     },
     AdminStick = {
-        Name = "Kick Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickKickPlayerName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("kick", arguments[1], nil, arguments[2], client) end
@@ -2454,7 +2454,7 @@ lia.command.add("plykick", {
 
 lia.command.add("plykill", {
     adminOnly = true,
-    desc = "Kill the specified player.",
+    desc = "plyKillDesc",
     arguments = {
         {
             name = "name",
@@ -2462,9 +2462,9 @@ lia.command.add("plykill", {
         },
     },
     AdminStick = {
-        Name = "Kill Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickKillPlayerName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("kill", arguments[1], nil, nil, client) end
@@ -2472,7 +2472,7 @@ lia.command.add("plykill", {
 
 lia.command.add("plyunban", {
     adminOnly = true,
-    desc = "Remove a player's ban by SteamID.",
+    desc = "plyUnbanDesc",
     arguments = {
         {
             name = "steamid",
@@ -2483,7 +2483,7 @@ lia.command.add("plyunban", {
         local steamid = arguments[1]
         if steamid and steamid ~= "" then
             lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
-            client:notifySuccess("Player unbanned")
+            client:notifySuccessLocalized("playerUnbanned")
             lia.log.add(client, "plyUnban", steamid)
         end
     end
@@ -2491,7 +2491,7 @@ lia.command.add("plyunban", {
 
 lia.command.add("plyfreeze", {
     adminOnly = true,
-    desc = "Freeze a player for an optional duration.",
+    desc = "plyFreezeDesc",
     arguments = {
         {
             name = "name",
@@ -2508,7 +2508,7 @@ lia.command.add("plyfreeze", {
 
 lia.command.add("plyunfreeze", {
     adminOnly = true,
-    desc = "Unfreeze a player.",
+    desc = "plyUnfreezeDesc",
     arguments = {
         {
             name = "name",
@@ -2520,7 +2520,7 @@ lia.command.add("plyunfreeze", {
 
 lia.command.add("plyslay", {
     adminOnly = true,
-    desc = "Slay a player instantly.",
+    desc = "plySlayDesc",
     arguments = {
         {
             name = "name",
@@ -2532,7 +2532,7 @@ lia.command.add("plyslay", {
 
 lia.command.add("plyrespawn", {
     adminOnly = true,
-    desc = "Force another player to respawn.",
+    desc = "plyRespawnDesc",
     arguments = {
         {
             name = "name",
@@ -2540,9 +2540,9 @@ lia.command.add("plyrespawn", {
         },
     },
     AdminStick = {
-        Name = "Respawn Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickRespawnPlayerName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/arrow_refresh.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("respawn", arguments[1], nil, nil, client) end
@@ -2550,7 +2550,7 @@ lia.command.add("plyrespawn", {
 
 lia.command.add("plyblind", {
     adminOnly = true,
-    desc = "Blind a player with a black screen.",
+    desc = "plyBlindDesc",
     arguments = {
         {
             name = "name",
@@ -2567,7 +2567,7 @@ lia.command.add("plyblind", {
 
 lia.command.add("plyunblind", {
     adminOnly = true,
-    desc = "Remove blindness from a player.",
+    desc = "plyUnblindDesc",
     arguments = {
         {
             name = "name",
@@ -2579,7 +2579,7 @@ lia.command.add("plyunblind", {
 
 lia.command.add("plyblindfade", {
     adminOnly = true,
-    desc = "Fade a player's screen to a color.",
+    desc = "plyBlindFadeDesc",
     arguments = {
         {
             name = "name",
@@ -2607,9 +2607,9 @@ lia.command.add("plyblindfade", {
         },
     },
     AdminStick = {
-        Name = "Blind Player (Fade)",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickBlindFadeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/eye.png"
     },
     onRun = function(client, arguments)
@@ -2634,7 +2634,7 @@ lia.command.add("plyblindfade", {
 
 lia.command.add("blindfadeall", {
     adminOnly = true,
-    desc = "Fade all non-staff players' screens.",
+    desc = "blindFadeAllDesc",
     arguments = {
         {
             name = "time",
@@ -2678,7 +2678,7 @@ lia.command.add("blindfadeall", {
 
 lia.command.add("plygag", {
     adminOnly = true,
-    desc = "Gag a player, blocking voice chat.",
+    desc = "plyGagDesc",
     arguments = {
         {
             name = "name",
@@ -2690,7 +2690,7 @@ lia.command.add("plygag", {
 
 lia.command.add("plyungag", {
     adminOnly = true,
-    desc = "Ungag a player.",
+    desc = "plyUngagDesc",
     arguments = {
         {
             name = "name",
@@ -2702,7 +2702,7 @@ lia.command.add("plyungag", {
 
 lia.command.add("plymute", {
     adminOnly = true,
-    desc = "Mute a player's voice chat.",
+    desc = "plyMuteDesc",
     arguments = {
         {
             name = "name",
@@ -2714,7 +2714,7 @@ lia.command.add("plymute", {
 
 lia.command.add("plyunmute", {
     adminOnly = true,
-    desc = "Unmute a player's voice chat.",
+    desc = "plyUnmuteDesc",
     arguments = {
         {
             name = "name",
@@ -2726,7 +2726,7 @@ lia.command.add("plyunmute", {
 
 lia.command.add("plybring", {
     adminOnly = true,
-    desc = "Teleport a player to you.",
+    desc = "plyBringDesc",
     arguments = {
         {
             name = "name",
@@ -2738,7 +2738,7 @@ lia.command.add("plybring", {
 
 lia.command.add("plygoto", {
     adminOnly = true,
-    desc = "Teleport yourself to a player.",
+    desc = "plyGotoDesc",
     arguments = {
         {
             name = "name",
@@ -2750,7 +2750,7 @@ lia.command.add("plygoto", {
 
 lia.command.add("plyreturn", {
     adminOnly = true,
-    desc = "Return a player to their previous position.",
+    desc = "plyReturnDesc",
     arguments = {
         {
             name = "name",
@@ -2763,7 +2763,7 @@ lia.command.add("plyreturn", {
 
 lia.command.add("plyjail", {
     adminOnly = true,
-    desc = "Jail a player by locking and freezing them.",
+    desc = "plyJailDesc",
     arguments = {
         {
             name = "name",
@@ -2775,7 +2775,7 @@ lia.command.add("plyjail", {
 
 lia.command.add("plyunjail", {
     adminOnly = true,
-    desc = "Release a jailed player.",
+    desc = "plyUnjailDesc",
     arguments = {
         {
             name = "name",
@@ -2787,7 +2787,7 @@ lia.command.add("plyunjail", {
 
 lia.command.add("plycloak", {
     adminOnly = true,
-    desc = "Make a player invisible.",
+    desc = "plyCloakDesc",
     arguments = {
         {
             name = "name",
@@ -2795,9 +2795,9 @@ lia.command.add("plycloak", {
         },
     },
     AdminStick = {
-        Name = "Cloak Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickCloakName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/status_offline.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("cloak", arguments[1], nil, nil, client) end
@@ -2805,7 +2805,7 @@ lia.command.add("plycloak", {
 
 lia.command.add("plyuncloak", {
     adminOnly = true,
-    desc = "Remove invisibility from a player.",
+    desc = "plyUncloakDesc",
     arguments = {
         {
             name = "name",
@@ -2813,9 +2813,9 @@ lia.command.add("plyuncloak", {
         },
     },
     AdminStick = {
-        Name = "Uncloak Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickUncloakName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/status_online.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("uncloak", arguments[1], nil, nil, client) end
@@ -2823,7 +2823,7 @@ lia.command.add("plyuncloak", {
 
 lia.command.add("plygod", {
     adminOnly = true,
-    desc = "Enable god mode on a player.",
+    desc = "plyGodDesc",
     arguments = {
         {
             name = "name",
@@ -2831,9 +2831,9 @@ lia.command.add("plygod", {
         },
     },
     AdminStick = {
-        Name = "Give God Mode",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickGodModeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/shield.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("god", arguments[1], nil, nil, client) end
@@ -2841,7 +2841,7 @@ lia.command.add("plygod", {
 
 lia.command.add("plyungod", {
     adminOnly = true,
-    desc = "Disable a player's god mode.",
+    desc = "plyUngodDesc",
     arguments = {
         {
             name = "name",
@@ -2849,9 +2849,9 @@ lia.command.add("plyungod", {
         },
     },
     AdminStick = {
-        Name = "Remove God Mode",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickRemoveGodModeName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/shield_delete.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("ungod", arguments[1], nil, nil, client) end
@@ -2859,7 +2859,7 @@ lia.command.add("plyungod", {
 
 lia.command.add("plyignite", {
     adminOnly = true,
-    desc = "Set a player on fire.",
+    desc = "plyIgniteDesc",
     arguments = {
         {
             name = "name",
@@ -2876,7 +2876,7 @@ lia.command.add("plyignite", {
 
 lia.command.add("plyextinguish", {
     adminOnly = true,
-    desc = "Extinguish the specified player.",
+    desc = "plyExtinguishDesc",
     arguments = {
         {
             name = "name",
@@ -2888,7 +2888,7 @@ lia.command.add("plyextinguish", {
 
 lia.command.add("plystrip", {
     adminOnly = true,
-    desc = "Strip all weapons from a player.",
+    desc = "plyStripDesc",
     arguments = {
         {
             name = "name",
@@ -2896,9 +2896,9 @@ lia.command.add("plystrip", {
         },
     },
     AdminStick = {
-        Name = "Strip Weapons",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickStripWeaponsName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/gun.png"
     },
     onRun = function(client, arguments) lia.admin.serverExecCommand("strip", arguments[1], nil, nil, client) end
@@ -2906,7 +2906,7 @@ lia.command.add("plystrip", {
 
 lia.command.add("charunbanoffline", {
     superAdminOnly = true,
-    desc = "Unban an offline character using their Char ID.",
+    desc = "charUnbanOfflineDesc",
     arguments = {
         {
             name = "charId",
@@ -2915,19 +2915,19 @@ lia.command.add("charunbanoffline", {
     },
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
-        if not charID then return client:notifyError("Invalid character ID.") end
+        if not charID then return client:notifyErrorLocalized("invalidCharID") end
         local result = sql.Query("SELECT id FROM lia_characters WHERE id = " .. charID .. " LIMIT 1")
-        if not istable(result) or not result[1] then return client:notifyError("Character not found.") end
+        if not istable(result) or not result[1] then return client:notifyErrorLocalized("characterNotFound") end
         lia.char.setCharDatabase(charID, "banned", 0)
         lia.char.setCharDatabase(charID, "charBanInfo", nil)
-        client:notifySuccess(string.format("Offline character ID %s has been unbanned.", charID))
+        client:notifySuccessLocalized("offlineCharUnbanned", charID)
         lia.log.add(client, "charUnbanOffline", charID)
     end
 })
 
 lia.command.add("charbanoffline", {
     superAdminOnly = true,
-    desc = "Ban an offline character using their Char ID.",
+    desc = "charBanOfflineDesc",
     arguments = {
         {
             name = "charId",
@@ -2936,9 +2936,9 @@ lia.command.add("charbanoffline", {
     },
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
-        if not charID then return client:notifyError("Invalid character ID.") end
+        if not charID then return client:notifyErrorLocalized("invalidCharID") end
         local result = sql.Query("SELECT id FROM lia_characters WHERE id = " .. charID .. " LIMIT 1")
-        if not istable(result) or not result[1] then return client:notifyError("Character not found.") end
+        if not istable(result) or not result[1] then return client:notifyErrorLocalized("characterNotFound") end
         lia.char.setCharDatabase(charID, "banned", -1)
         lia.char.setCharDatabase(charID, "charBanInfo", {
             name = client:Nick(),
@@ -2948,19 +2948,19 @@ lia.command.add("charbanoffline", {
 
         for _, ply in player.Iterator() do
             if ply:getChar() and ply:getChar():getID() == charID then
-                ply:Kick("You have been banned.")
+                ply:Kick(L("youHaveBeenBanned"))
                 break
             end
         end
 
-        client:notifySuccess(string.format("Offline character ID %s has been banned.", charID))
+        client:notifySuccessLocalized("offlineCharBanned", charID)
         lia.log.add(client, "charBanOffline", charID)
     end
 })
 
 lia.command.add("playglobalsound", {
     superAdminOnly = true,
-    desc = "Play a global sound for all players.",
+    desc = "playGlobalSoundDesc",
     arguments = {
         {
             name = "sound",
@@ -2970,7 +2970,7 @@ lia.command.add("playglobalsound", {
     onRun = function(client, arguments)
         local sound = arguments[1]
         if not sound or sound == "" then
-            client:notifyError("You must specify a sound to play.")
+            client:notifyErrorLocalized("mustSpecifySound")
             return
         end
 
@@ -2982,7 +2982,7 @@ lia.command.add("playglobalsound", {
 
 lia.command.add("plyspectate", {
     adminOnly = true,
-    desc = "Spectate a player in third person.",
+    desc = "plySpectateDesc",
     arguments = {
         {
             name = "name",
@@ -2990,25 +2990,25 @@ lia.command.add("plyspectate", {
         },
     },
     AdminStick = {
-        Name = "Spectate Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickSpectateName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/zoom.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if target == client then
-            client:notifyError("You cannot spectate yourself")
+            client:notifyErrorLocalized("cannotSpectateSelf")
             return
         end
 
         if target.liaSpectating then
-            client:notifyError("That player is already being spectated")
+            client:notifyErrorLocalized("targetAlreadySpectated")
             return
         end
 
@@ -3018,18 +3018,18 @@ lia.command.add("plyspectate", {
         client:SpectateEntity(target)
         client:GodEnable()
         client.liaSpectating = true
-        client:notifySuccess(string.format("You are now spectating %s.", target:Nick()))
-        target:notifyInfo(string.format("%s is now spectating you.", client:Nick()))
+        client:notifySuccessLocalized("spectateStarted", target:Nick())
+        target:notifyInfoLocalized("beingSpectated", client:Nick())
         lia.log.add(client, "plySpectate", target:Nick())
     end
 })
 
 lia.command.add("stopspectate", {
     adminOnly = true,
-    desc = "Stop spectating and return to normal view.",
+    desc = "stopSpectateDesc",
     onRun = function(client)
         if not client.liaSpectating then
-            client:notifyError("You are not currently spectating anyone")
+            client:notifyErrorLocalized("notSpectating")
             return
         end
 
@@ -3051,14 +3051,14 @@ lia.command.add("stopspectate", {
         client:Give("weapon_physgun")
         client:Give("weapon_physcannon")
         client:Give("gmod_tool")
-        client:notifySuccess("You have stopped spectating.")
+        client:notifySuccessLocalized("spectateStopped")
         lia.log.add(client, "stopSpectate")
     end
 })
 
 lia.command.add("playsound", {
     superAdminOnly = true,
-    desc = "Play the specified sound on a specific player.",
+    desc = "playSoundDesc",
     arguments = {
         {
             name = "name",
@@ -3073,12 +3073,12 @@ lia.command.add("playsound", {
         local target = lia.util.findPlayer(client, arguments[1])
         local sound = arguments[2]
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not sound or sound == "" then
-            client:notifyError("You must specify a sound path or name.")
+            client:notifyErrorLocalized("noSound")
             return
         end
 
@@ -3088,7 +3088,7 @@ lia.command.add("playsound", {
 
 lia.command.add("returntodeathpos", {
     adminOnly = true,
-    desc = "Return to your last recorded death position.",
+    desc = "returnToDeathPosDesc",
     onRun = function(client)
         if IsValid(client) and client:Alive() then
             local character = client:getChar()
@@ -3097,17 +3097,17 @@ lia.command.add("returntodeathpos", {
                 client:SetPos(oldPos)
                 character:setData("deathPos", nil)
             else
-                client:notifyError("No death position saved.")
+                client:notifyErrorLocalized("noDeathPosition")
             end
         else
-            client:notifyWarning("Wait until you respawn.")
+            client:notifyWarningLocalized("waitRespawn")
         end
     end
 })
 
 lia.command.add("roll", {
     adminOnly = false,
-    desc = "Rolls a dice and displays the result.",
+    desc = "rollDesc",
     onRun = function(client)
         local rollValue = math.random(0, 100)
         lia.chat.send(client, "roll", rollValue)
@@ -3116,7 +3116,7 @@ lia.command.add("roll", {
 
 lia.command.add("forcefallover", {
     adminOnly = true,
-    desc = "Force another player to fall over (go into ragdoll).",
+    desc = "forceFalloverDesc",
     arguments = {
         {
             name = "name",
@@ -3131,7 +3131,7 @@ lia.command.add("forcefallover", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3149,7 +3149,7 @@ lia.command.add("forcefallover", {
 
 lia.command.add("forcegetup", {
     adminOnly = true,
-    desc = "Force another player to get up from ragdoll.",
+    desc = "forceGetUpDesc",
     arguments = {
         {
             name = "name",
@@ -3159,12 +3159,12 @@ lia.command.add("forcegetup", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not IsValid(target:GetRagdollEntity()) then
-            target:notifyError("You don't have a ragdoll to get up from!")
+            target:notifyErrorLocalized("noRagdoll")
             return
         end
 
@@ -3183,7 +3183,7 @@ lia.command.add("forcegetup", {
 
 lia.command.add("chardesc", {
     adminOnly = false,
-    desc = "Change your character's description.",
+    desc = "changeCharDesc",
     arguments = {
         {
             name = "desc",
@@ -3193,12 +3193,12 @@ lia.command.add("chardesc", {
     },
     onRun = function(client, arguments)
         local desc = table.concat(arguments, " ")
-        if not desc:find("%S") then return client:requestString("Change Name", "Enter the character's new name below.", function(text) lia.command.run(client, "chardesc", {text}) end, client:getChar() and client:getChar():getDesc() or "") end
+        if not desc:find("%S") then return client:requestString(L("chgName"), L("chgNameDesc"), function(text) lia.command.run(client, "chardesc", {text}) end, client:getChar() and client:getChar():getDesc() or "") end
         local trimmedDesc = string.Trim(desc)
         local descWithoutSpaces = string.gsub(trimmedDesc, "%s", "")
         local minLength = lia.config.get("MinDescLen", 16)
         if #descWithoutSpaces < minLength then
-            client:notifyError(string.format("Description must be at least %s characters long.", minLength))
+            client:notifyErrorLocalized("descMinLen", minLength)
             return
         end
 
@@ -3210,10 +3210,10 @@ lia.command.add("chardesc", {
 
 lia.command.add("chargetup", {
     adminOnly = false,
-    desc = "Force yourself to get up from ragdoll (if possible).",
+    desc = "forceSelfGetUpDesc",
     onRun = function(client)
         if not IsValid(client:GetRagdollEntity()) then
-            client:notifyError("You don't have a ragdoll to get up from!")
+            client:notifyErrorLocalized("noRagdoll")
             return
         end
 
@@ -3233,7 +3233,7 @@ lia.command.add("chargetup", {
 
 lia.command.add("fallover", {
     adminOnly = false,
-    desc = "Fall over (ragdoll) for a certain duration.",
+    desc = "fallOverDesc",
     arguments = {
         {
             name = "time",
@@ -3243,19 +3243,19 @@ lia.command.add("fallover", {
     },
     onRun = function(client, arguments)
         if client.FallOverCooldown then
-            client:notifyWarning("This Command Is In Cooldown!")
+            client:notifyWarningLocalized("cmdCooldown")
             return
         elseif client:IsFrozen() then
-            client:notifyWarning("You cannot use this while frozen!")
+            client:notifyWarningLocalized("cmdFrozen")
             return
         elseif not client:Alive() then
-            client:notifyError("You cannot use this while dead!")
+            client:notifyErrorLocalized("cmdDead")
             return
         elseif IsValid(client:GetVehicle()) then
-            client:notifyWarning("You cannot use this as you are in a vehicle!")
+            client:notifyWarningLocalized("cmdVehicle")
             return
         elseif client:GetMoveType() == MOVETYPE_NOCLIP then
-            client:notifyWarning("You cannot use this while in noclip!")
+            client:notifyWarningLocalized("cmdNoclip")
             return
         elseif IsValid(client:GetRagdollEntity()) then
             return
@@ -3270,21 +3270,21 @@ lia.command.add("fallover", {
 
 lia.command.add("togglelockcharacters", {
     superAdminOnly = true,
-    desc = "Toggle whether players can swap characters.",
+    desc = "toggleCharLockDesc",
     onRun = function()
         local newVal = not GetGlobalBool("characterSwapLock", false)
         SetGlobalBool("characterSwapLock", newVal)
         if not newVal then
-            return "Now the players will be able to change character"
+            return L("characterLockDisabled")
         else
-            return "Now the players won't be able to change character until the server is restarted or until you re-enable it"
+            return L("characterLockEnabled")
         end
     end
 })
 
 lia.command.add("checkinventory", {
     adminOnly = true,
-    desc = "Check another player's inventory.",
+    desc = "checkInventoryDesc",
     arguments = {
         {
             name = "name",
@@ -3292,20 +3292,20 @@ lia.command.add("checkinventory", {
         },
     },
     AdminStick = {
-        Name = "Check Inventory",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "adminStickCheckInventoryName",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/box.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if target == client then
-            client:notifyError("This isn't meant for checking your own inventory.")
+            client:notifyErrorLocalized("invCheckSelf")
             return
         end
 
@@ -3322,7 +3322,7 @@ lia.command.add("checkinventory", {
 
 lia.command.add("flaggive", {
     adminOnly = true,
-    desc = "Give the following flags to the player.",
+    desc = "flagGiveDesc",
     arguments = {
         {
             name = "name",
@@ -3336,7 +3336,7 @@ lia.command.add("flaggive", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3349,14 +3349,14 @@ lia.command.add("flaggive", {
 
             available = available:Trim()
             if available == "" then
-                client:notifyInfo("No available flags to give.")
+                client:notifyInfoLocalized("noAvailableFlags")
                 return
             end
-            return client:requestString("Give Flags", "Give the following flags to the player.", function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
+            return client:requestString(L("give") .. " " .. L("flags"), L("flagGiveDesc"), function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
         target:giveFlags(flags)
-        client:notifySuccess(string.format("%s has given %s '%s' flags.", client:Name(), flags, target:Name()))
+        client:notifySuccessLocalized("flagGive", client:Name(), flags, target:Name())
         lia.log.add(client, "flagGive", target:Name(), flags)
     end,
     alias = {"giveflag", "chargiveflag"}
@@ -3364,7 +3364,7 @@ lia.command.add("flaggive", {
 
 lia.command.add("flaggiveall", {
     adminOnly = true,
-    desc = "Give all possible flags to a character.",
+    desc = "giveAllFlagsDesc",
     arguments = {
         {
             name = "name",
@@ -3374,7 +3374,7 @@ lia.command.add("flaggiveall", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3382,14 +3382,14 @@ lia.command.add("flaggiveall", {
             if not target:hasFlags(k) then target:giveFlags(k) end
         end
 
-        client:notifySuccess("You gave this player all flags!")
+        client:notifySuccessLocalized("gaveAllFlags")
         lia.log.add(client, "flagGiveAll", target:Name())
     end
 })
 
 lia.command.add("flagtakeall", {
     adminOnly = true,
-    desc = "Remove all flags from a character.",
+    desc = "takeAllFlagsDesc",
     arguments = {
         {
             name = "name",
@@ -3399,12 +3399,12 @@ lia.command.add("flagtakeall", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not target:getChar() then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
@@ -3412,14 +3412,14 @@ lia.command.add("flagtakeall", {
             if target:hasFlags(k) then target:takeFlags(k) end
         end
 
-        client:notifySuccess("You took this player's flags!")
+        client:notifySuccessLocalized("tookAllFlags")
         lia.log.add(client, "flagTakeAll", target:Name())
     end
 })
 
 lia.command.add("flagtake", {
     adminOnly = true,
-    desc = "Remove the following flags from the player.",
+    desc = "flagTakeDesc",
     arguments = {
         {
             name = "name",
@@ -3433,18 +3433,18 @@ lia.command.add("flagtake", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local flags = arguments[2]
         if not flags then
             local currentFlags = target:getFlags()
-            return client:requestString("Take Flags", "Remove the following flags from the player.", function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
+            return client:requestString(L("take") .. " " .. L("flags"), L("flagTakeDesc"), function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
         target:takeFlags(flags)
-        client:notifySuccess(string.format("%s has taken '%s' flags from %s.", client:Name(), flags, target:Name()))
+        client:notifySuccessLocalized("flagTake", client:Name(), flags, target:Name())
         lia.log.add(client, "flagTake", target:Name(), flags)
     end,
     alias = {"takeflag"}
@@ -3452,7 +3452,7 @@ lia.command.add("flagtake", {
 
 lia.command.add("bringlostitems", {
     superAdminOnly = true,
-    desc = "Bring lost items in a 500 radius to your position.",
+    desc = "bringLostItemsDesc",
     onRun = function(client)
         for _, v in ipairs(ents.FindInSphere(client:GetPos(), 500)) do
             if v:isItem() then v:SetPos(client:GetPos()) end
@@ -3462,7 +3462,7 @@ lia.command.add("bringlostitems", {
 
 lia.command.add("charvoicetoggle", {
     adminOnly = true,
-    desc = "Toggles voice chat ban for the specified character.",
+    desc = "charVoiceToggleDesc",
     arguments = {
         {
             name = "name",
@@ -3470,20 +3470,20 @@ lia.command.add("charvoicetoggle", {
         },
     },
     AdminStick = {
-        Name = "Toggle Voice",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "toggleVoice",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if target == client then
-            client:notifyError("You cannot toggle mute on yourself.")
+            client:notifyErrorLocalized("cannotMuteSelf")
             return false
         end
 
@@ -3491,23 +3491,23 @@ lia.command.add("charvoicetoggle", {
             local isMuted = target:getLiliaData("liaMuted", false)
             target:setLiliaData("liaMuted", not isMuted)
             if isMuted then
-                client:notifySuccess(string.format("%s has been unmuted for text chat.", target:Name()))
-                target:notifyInfo("You have been unmuted for text chat by an admin.")
+                client:notifySuccessLocalized("textUnmuted", target:Name())
+                target:notifyInfoLocalized("textUnmutedByAdmin")
             else
-                client:notifySuccess(string.format("%s has been muted for text chat.", target:Name()))
-                target:notifyWarning("You have been muted for text chat by an admin.")
+                client:notifySuccessLocalized("textMuted", target:Name())
+                target:notifyWarningLocalized("textMutedByAdmin")
             end
 
-            lia.log.add(client, "textToggle", target:Name(), isMuted and "Unmuted" or "Muted")
+            lia.log.add(client, "textToggle", target:Name(), isMuted and L("unmuted") or L("muted"))
         else
-            client:notifyError("The target does not have a valid character.")
+            client:notifyErrorLocalized("noValidCharacter")
         end
     end
 })
 
 lia.command.add("cleanitems", {
     superAdminOnly = true,
-    desc = "Remove all item entities from the map.",
+    desc = "cleanItemsDesc",
     onRun = function(client)
         local count = 0
         for _, v in ipairs(ents.FindByClass("lia_item")) do
@@ -3515,13 +3515,13 @@ lia.command.add("cleanitems", {
             SafeRemoveEntity(v)
         end
 
-        client:notifySuccess(string.format("You cleaned up %s: %s entities removed.", "Items", count))
+        client:notifySuccessLocalized("cleaningFinished", L("items"), count)
     end
 })
 
 lia.command.add("cleanprops", {
     superAdminOnly = true,
-    desc = "Remove all prop entities from the map.",
+    desc = "cleanPropsDesc",
     onRun = function(client)
         local count = 0
         for _, entity in ents.Iterator() do
@@ -3531,27 +3531,27 @@ lia.command.add("cleanprops", {
             end
         end
 
-        client:notifySuccess(string.format("You cleaned up %s: %s entities removed.", "Props", count))
+        client:notifySuccessLocalized("cleaningFinished", L("props"), count)
     end
 })
 
 lia.command.add("resetmapprops", {
     superAdminOnly = true,
-    desc = "Restore all map-created props by performing a map cleanup.",
+    desc = "resetMapPropsDesc",
     onRun = function(client)
         local started = SysTime()
-        client:notifyInfo("Map cleanup started; map props will be restored shortly.")
+        client:notifyInfoLocalized("resetMapPropsRunning")
         game.CleanUpMap(false, nil, function()
             if not IsValid(client) then return end
             local elapsed = math.Round((SysTime() - started) * 1000)
-            client:notifySuccess(string.format("Map cleanup finished in %d ms; map props restored.", elapsed))
+            client:notifySuccessLocalized("resetMapPropsSuccess", elapsed)
         end)
     end
 })
 
 lia.command.add("cleannpcs", {
     superAdminOnly = true,
-    desc = "Remove all NPC entities from the map.",
+    desc = "cleanNPCsDesc",
     onRun = function(client)
         local count = 0
         for _, entity in ents.Iterator() do
@@ -3561,13 +3561,13 @@ lia.command.add("cleannpcs", {
             end
         end
 
-        client:notifySuccess(string.format("You cleaned up %s: %s entities removed.", "NPCs", count))
+        client:notifySuccessLocalized("cleaningFinished", L("npcs"), count)
     end
 })
 
 lia.command.add("charunban", {
     superAdminOnly = true,
-    desc = "Unban a character by name or ID.",
+    desc = "charUnbanDesc",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3575,7 +3575,7 @@ lia.command.add("charunban", {
         },
     },
     onRun = function(client, arguments)
-        if (client.liaNextSearch or 0) >= CurTime() then return "Searching for character..." end
+        if (client.liaNextSearch or 0) >= CurTime() then return L("searchingChar") end
         local queryArg = table.concat(arguments, " ")
         local charFound
         local id = tonumber(queryArg)
@@ -3601,10 +3601,10 @@ lia.command.add("charunban", {
                 charFound:setData("permakilled", nil)
                 charFound:setData("charBanInfo", nil)
                 charFound:save()
-                client:notifySuccess(string.format("%s has unbanned the character %s.", client:Name(), charFound:getName()))
+                client:notifySuccessLocalized("charUnBan", client:Name(), charFound:getName())
                 lia.log.add(client, "charUnban", charFound:getName(), charFound:getID())
             else
-                return "This character isn't banned!"
+                return L("charNotBanned")
             end
         end
 
@@ -3616,13 +3616,13 @@ lia.command.add("charunban", {
                 local banned = lia.char.getCharBanned(charID)
                 client.liaNextSearch = 0
                 if not banned or banned == 0 then
-                    client:notifyInfo("This character isn't banned!")
+                    client:notifyInfoLocalized("charNotBanned")
                     return
                 end
 
                 lia.char.setCharDatabase(charID, "banned", 0)
                 lia.char.setCharDatabase(charID, "charBanInfo", nil)
-                client:notifySuccess(string.format("%s has unbanned the character %s.", client:Name(), data[1].name))
+                client:notifySuccessLocalized("charUnBan", client:Name(), data[1].name)
                 lia.log.add(client, "charUnban", data[1].name, charID)
             end
         end)
@@ -3631,7 +3631,7 @@ lia.command.add("charunban", {
 
 lia.command.add("clearinv", {
     superAdminOnly = true,
-    desc = "Clear a player's entire inventory.",
+    desc = "clearInvDesc",
     arguments = {
         {
             name = "name",
@@ -3639,26 +3639,26 @@ lia.command.add("clearinv", {
         },
     },
     AdminStick = {
-        Name = "Clear Inventory",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "adminStickClearInventoryName",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/bin.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:getChar():getInv():wipeItems()
-        client:notifySuccess(string.format("You have cleared %s's inventory!", target:getChar():getName()))
+        client:notifySuccessLocalized("resetInv", target:getChar():getName())
     end
 })
 
 lia.command.add("charkick", {
     adminOnly = true,
-    desc = "Kick the target's active character to the character menu.",
+    desc = "kickCharDesc",
     arguments = {
         {
             name = "name",
@@ -3666,35 +3666,35 @@ lia.command.add("charkick", {
         },
     },
     AdminStick = {
-        Name = "Kick Character",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickKickCharacterName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local character = target:getChar()
         if character then
             for _, targets in player.Iterator() do
-                targets:notifyInfo(string.format("%s kicked character %s.", client:Name(), target:Name()))
+                targets:notifyInfoLocalized("charKick", client:Name(), target:Name())
             end
 
             character:kick()
             lia.log.add(client, "charKick", target:Name(), character:getID())
         else
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
         end
     end
 })
 
 lia.command.add("freezeallprops", {
     superAdminOnly = true,
-    desc = "Freeze all props owned by a specific player.",
+    desc = "freezeAllPropsDesc",
     arguments = {
         {
             name = "name",
@@ -3704,7 +3704,7 @@ lia.command.add("freezeallprops", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3719,14 +3719,14 @@ lia.command.add("freezeallprops", {
             end
         end
 
-        client:notifySuccess(string.format("You have frozen all of %s's Entities.", target:Name()))
-        client:notifySuccess(string.format("Frozen %s Entities belonging to %s.", count, target:Name()))
+        client:notifySuccessLocalized("freezeAllProps", target:Name())
+        client:notifySuccessLocalized("freezeAllPropsCount", count, target:Name())
     end
 })
 
 lia.command.add("charban", {
     superAdminOnly = true,
-    desc = "Ban a character by name or ID.",
+    desc = "banCharDesc",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3734,9 +3734,9 @@ lia.command.add("charban", {
         },
     },
     AdminStick = {
-        Name = "Ban Character",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "banCharacter",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
     },
     onRun = function(client, arguments)
@@ -3755,7 +3755,7 @@ lia.command.add("charban", {
         end
 
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3770,17 +3770,17 @@ lia.command.add("charban", {
 
             character:save()
             character:kick()
-            client:notifySuccess(string.format("%s banned the character %s.", client:Name(), target:Name()))
+            client:notifySuccessLocalized("charBan", client:Name(), target:Name())
             lia.log.add(client, "charBan", target:Name(), character:getID())
         else
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
         end
     end
 })
 
 lia.command.add("charwipe", {
     superAdminOnly = true,
-    desc = "Completely wipe a character from the database by name or ID.",
+    desc = "charWipeDesc",
     arguments = {
         {
             name = "nameOrNumberId",
@@ -3788,9 +3788,9 @@ lia.command.add("charwipe", {
         },
     },
     AdminStick = {
-        Name = "Wipe Character",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "wipeCharacter",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
     },
     onRun = function(client, arguments)
@@ -3809,7 +3809,7 @@ lia.command.add("charwipe", {
         end
 
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3830,17 +3830,17 @@ lia.command.add("charwipe", {
                 hook.Run("SyncCharList", target)
             end
 
-            client:notifySuccess(string.format("%s wiped the character %s from the database.", client:Name(), charName))
+            client:notifySuccessLocalized("charWipe", client:Name(), charName)
             lia.log.add(client, "charWipe", charName, charID)
         else
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
         end
     end
 })
 
 lia.command.add("charwipeoffline", {
     superAdminOnly = true,
-    desc = "Completely wipe an offline character from the database using their Char ID.",
+    desc = "charWipeOfflineDesc",
     arguments = {
         {
             name = "charId",
@@ -3849,23 +3849,23 @@ lia.command.add("charwipeoffline", {
     },
     onRun = function(client, arguments)
         local charID = tonumber(arguments[1])
-        if not charID then return client:notifyError("Invalid character ID.") end
+        if not charID then return client:notifyErrorLocalized("invalidCharID") end
         lia.db.query("SELECT name FROM lia_characters WHERE id = " .. charID, function(data)
             if not data or #data == 0 then
-                client:notifyError("Character not found.")
+                client:notifyErrorLocalized("characterNotFound")
                 return
             end
 
             local charName = data[1].name
             for _, ply in player.Iterator() do
                 if ply:getChar() and ply:getChar():getID() == charID then
-                    ply:Kick("Your character has been wiped from the database.")
+                    ply:Kick(L("youHaveBeenWiped"))
                     break
                 end
             end
 
             lia.char.delete(charID)
-            client:notifySuccess(string.format("Offline character ID %s has been wiped from the database.", charID))
+            client:notifySuccessLocalized("offlineCharWiped", charID)
             lia.log.add(client, "charWipeOffline", charName, charID)
         end)
     end
@@ -3873,7 +3873,7 @@ lia.command.add("charwipeoffline", {
 
 lia.command.add("checkmoney", {
     adminOnly = true,
-    desc = "Check how much money the target player has.",
+    desc = "checkMoneyDesc",
     arguments = {
         {
             name = "name",
@@ -3881,26 +3881,26 @@ lia.command.add("checkmoney", {
         },
     },
     AdminStick = {
-        Name = "Check Money",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "adminStickCheckMoneyName",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/money.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local money = target:getChar():getMoney()
-        client:notifyMoney(string.format("%s has %s", target:GetName(), lia.currency.get(money)))
+        client:notifyMoneyLocalized("playerMoney", target:GetName(), lia.currency.get(money))
     end
 })
 
 lia.command.add("listbodygroups", {
     adminOnly = true,
-    desc = "List the available bodygroups for a target player.",
+    desc = "listBodygroupsDesc",
     arguments = {
         {
             name = "name",
@@ -3910,7 +3910,7 @@ lia.command.add("listbodygroups", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3926,7 +3926,7 @@ lia.command.add("listbodygroups", {
         end
 
         if #bodygroups > 0 then
-            lia.util.sendTableUI(client, string.format("Bodygroups for %s", target:Nick()), {
+            lia.util.sendTableUI(client, L("uiBodygroupsFor", target:Nick()), {
                 {
                     name = "groupID",
                     field = "group"
@@ -3941,14 +3941,14 @@ lia.command.add("listbodygroups", {
                 }
             }, bodygroups)
         else
-            client:notifyInfo("No bodygroups available for this model.")
+            client:notifyInfoLocalized("noBodygroups")
         end
     end
 })
 
 lia.command.add("charsetspeed", {
     adminOnly = true,
-    desc = "Set a player's run speed.",
+    desc = "setSpeedDesc",
     arguments = {
         {
             name = "name",
@@ -3961,15 +3961,15 @@ lia.command.add("charsetspeed", {
         },
     },
     AdminStick = {
-        Name = "Set Character Speed",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharSpeedName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/lightning.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -3980,7 +3980,7 @@ lia.command.add("charsetspeed", {
 
 lia.command.add("charsetmodel", {
     adminOnly = true,
-    desc = "Set a player's model.",
+    desc = "setModelDesc",
     arguments = {
         {
             name = "name",
@@ -3995,21 +3995,21 @@ lia.command.add("charsetmodel", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local oldModel = target:getChar():getModel()
         target:getChar():setModel(arguments[2] or oldModel)
         target:SetupHands()
-        client:notifySuccess(string.format("%s changed %s's model to %s.", client:Name(), target:Name(), arguments[2] or oldModel))
+        client:notifySuccessLocalized("changeModelAdmin", client:Name(), target:Name(), arguments[2] or oldModel)
         lia.log.add(client, "charsetmodel", target:Name(), arguments[2], oldModel)
     end
 })
 
 lia.command.add("chargiveitem", {
     superAdminOnly = true,
-    desc = "Give an item to a player's inventory.",
+    desc = "giveItemDesc",
     arguments = {
         {
             name = "name",
@@ -4021,21 +4021,21 @@ lia.command.add("chargiveitem", {
         },
     },
     AdminStick = {
-        Name = "Give Item",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "adminStickGiveItemName",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
         local itemName = arguments[2]
         if not itemName or itemName == "" then
-            client:notifyError("You must specify an item to give.")
+            client:notifyErrorLocalized("mustSpecifyItem")
             return
         end
 
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -4048,16 +4048,16 @@ lia.command.add("chargiveitem", {
         end
 
         if not uniqueID then
-            client:notifyError("Sorry, the item that you requested does not exist.")
+            client:notifyErrorLocalized("itemNoExist")
             return
         end
 
         local inv = target:getChar():getInv()
         local succ, err = inv:add(uniqueID)
         if succ then
-            target:notifySuccess("Item created successfully.")
-            if target ~= client then client:notifySuccess("Item created successfully.") end
-            lia.log.add(client, "chargiveItem", lia.item.list[uniqueID] and lia.item.list[uniqueID].name or uniqueID, target, "Command")
+            target:notifySuccessLocalized("itemCreated")
+            if target ~= client then client:notifySuccessLocalized("itemCreated") end
+            lia.log.add(client, "chargiveItem", lia.item.list[uniqueID] and lia.item.list[uniqueID].name or uniqueID, target, L("command"))
         else
             target:notifyErrorLocalized(err or "unknownError")
         end
@@ -4066,7 +4066,7 @@ lia.command.add("chargiveitem", {
 
 lia.command.add("charsetdesc", {
     adminOnly = true,
-    desc = "Set a player's character description.",
+    desc = "setDescDesc",
     arguments = {
         {
             name = "name",
@@ -4079,33 +4079,33 @@ lia.command.add("charsetdesc", {
         },
     },
     AdminStick = {
-        Name = "Set Character Description",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharDescName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/user_comment.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not target:getChar() then
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
             return
         end
 
         local desc = table.concat(arguments, " ", 2)
-        if not desc:find("%S") then return client:requestString(string.format("Change %s's Description", target:Name()), "Enter new description", function(text) lia.command.run(client, "charsetdesc", {arguments[1], text}) end, target:getChar():getDesc()) end
+        if not desc:find("%S") then return client:requestString(L("chgDescTitle", target:Name()), L("enterNewDesc"), function(text) lia.command.run(client, "charsetdesc", {arguments[1], text}) end, target:getChar():getDesc()) end
         target:getChar():setDesc(desc)
-        return string.format("%s has changed %s's character description.", client:Name(), target:Name())
+        return L("descChangedTarget", client:Name(), target:Name())
     end
 })
 
 lia.command.add("charsetname", {
     adminOnly = true,
-    desc = "Set a player's character name.",
+    desc = "setNameDesc",
     arguments = {
         {
             name = "name",
@@ -4118,29 +4118,29 @@ lia.command.add("charsetname", {
         },
     },
     AdminStick = {
-        Name = "Set Character Name",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharNameName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/user_edit.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local newName = table.concat(arguments, " ", 2)
-        if newName == "" then return client:requestString("Change Name", "Enter the character's new name below.", function(text) lia.command.run(client, "charsetname", {target:Name(), text}) end, target:Name()) end
+        if newName == "" then return client:requestString(L("chgName"), L("chgNameDesc"), function(text) lia.command.run(client, "charsetname", {target:Name(), text}) end, target:Name()) end
         local oldName = target:getChar():getName()
         target:getChar():setName(newName:gsub("#", "#?"))
-        client:notifySuccess(string.format("%s changed %s's name to %s.", client:Name(), oldName, newName))
+        client:notifySuccessLocalized("changeName", client:Name(), oldName, newName)
     end
 })
 
 lia.command.add("charsetscale", {
     adminOnly = true,
-    desc = "Set a player's model scale.",
+    desc = "setScaleDesc",
     arguments = {
         {
             name = "name",
@@ -4153,27 +4153,27 @@ lia.command.add("charsetscale", {
         },
     },
     AdminStick = {
-        Name = "Set Character Scale",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharScaleName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/arrow_out.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local scale = tonumber(arguments[2]) or 1
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:SetModelScale(scale, 0)
-        client:notifySuccess(string.format("You changed %s's model scale to %s.", target:Name(), scale))
+        client:notifySuccessLocalized("changedScale", target:Name(), scale)
     end
 })
 
 lia.command.add("charsetjump", {
     adminOnly = true,
-    desc = "Set a player's jump power.",
+    desc = "setJumpDesc",
     arguments = {
         {
             name = "name",
@@ -4186,27 +4186,27 @@ lia.command.add("charsetjump", {
         },
     },
     AdminStick = {
-        Name = "Set Character Jump Height",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharJumpName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/arrow_up.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local power = tonumber(arguments[2]) or 200
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:SetJumpPower(power)
-        client:notifySuccess(string.format("You changed %s's jump power to %s.", target:Name(), power))
+        client:notifySuccessLocalized("changedJump", target:Name(), power)
     end
 })
 
 lia.command.add("charsetbodygroup", {
     adminOnly = true,
-    desc = "Set a specific bodygroup on a player's model.",
+    desc = "setBodygroupDesc",
     arguments = {
         {
             name = "name",
@@ -4227,7 +4227,7 @@ lia.command.add("charsetbodygroup", {
         local value = tonumber(arguments[3])
         local target = lia.util.findPlayer(client, name)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -4238,16 +4238,16 @@ lia.command.add("charsetbodygroup", {
             groups[index] = value
             target:getChar():setBodygroups(groups)
             target:SetBodygroup(index, value or 0)
-            client:notifySuccess(string.format("%s changed %s's bodygroup \\", client:Name(), target:Name(), bodyGroup, value or 0))
+            client:notifySuccessLocalized("changeBodygroups", client:Name(), target:Name(), bodyGroup, value or 0)
         else
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
         end
     end
 })
 
 lia.command.add("charsetskin", {
     adminOnly = true,
-    desc = "Set a player's skin.",
+    desc = "setSkinDesc",
     arguments = {
         {
             name = "name",
@@ -4259,9 +4259,9 @@ lia.command.add("charsetskin", {
         },
     },
     AdminStick = {
-        Name = "Set Character Skin",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickSetCharSkinName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
@@ -4269,24 +4269,24 @@ lia.command.add("charsetskin", {
         local skin = tonumber(arguments[2])
         local target = lia.util.findPlayer(client, name)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not skin then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         end
 
         target:getChar():setSkin(skin)
         target:SetSkin(skin)
-        client:notifySuccess(string.format("%s changed %s's skin to %s.", client:Name(), target:Name(), skin))
+        client:notifySuccessLocalized("changeSkin", client:Name(), target:Name(), skin)
     end
 })
 
 lia.command.add("charsetmoney", {
     superAdminOnly = true,
-    desc = "Set a player's money to a specific amount.",
+    desc = "setMoneyDesc",
     arguments = {
         {
             name = "name",
@@ -4301,17 +4301,17 @@ lia.command.add("charsetmoney", {
         local target = lia.util.findPlayer(client, arguments[1])
         local amount = tonumber(arguments[2])
         if not amount or amount < 0 then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         end
 
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:getChar():setMoney(math.floor(amount))
-        client:notifyMoney(string.format("You set %s's money to %s.", target:Name(), lia.currency.get(math.floor(amount))))
+        client:notifyMoneyLocalized("setMoney", target:Name(), lia.currency.get(math.floor(amount)))
         lia.log.add(client, "charSetMoney", target:Name(), math.floor(amount))
         StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " set money of " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ") to " .. lia.currency.get(math.floor(amount)))
     end
@@ -4319,7 +4319,7 @@ lia.command.add("charsetmoney", {
 
 lia.command.add("charaddmoney", {
     superAdminOnly = true,
-    desc = "Add a certain amount of money to a player's balance.",
+    desc = "addMoneyDesc",
     arguments = {
         {
             name = "name",
@@ -4334,19 +4334,19 @@ lia.command.add("charaddmoney", {
         local target = lia.util.findPlayer(client, arguments[1])
         local amount = tonumber(arguments[2])
         if not amount then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         end
 
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         amount = math.Round(amount)
         local currentMoney = target:getChar():getMoney()
         target:getChar():setMoney(currentMoney + amount)
-        client:notifyMoney(string.format("You gave %s an additional %s. Total: %s", target:Name(), lia.currency.get(amount), lia.currency.get(currentMoney + amount)))
+        client:notifyMoneyLocalized("addMoney", target:Name(), lia.currency.get(amount), lia.currency.get(currentMoney + amount))
         lia.log.add(client, "charAddMoney", target:Name(), amount, currentMoney + amount)
         StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " gave " .. lia.currency.get(amount) .. " to " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. "). New balance: " .. lia.currency.get(currentMoney + amount))
     end,
@@ -4355,7 +4355,7 @@ lia.command.add("charaddmoney", {
 
 lia.command.add("globalbotsay", {
     superAdminOnly = true,
-    desc = "Force all bots on the server to say something.",
+    desc = "globalBotSayDesc",
     arguments = {
         {
             name = "message",
@@ -4365,7 +4365,7 @@ lia.command.add("globalbotsay", {
     onRun = function(client, arguments)
         local message = table.concat(arguments, " ")
         if message == "" then
-            client:notifyError("You must specify a message.")
+            client:notifyErrorLocalized("noMessage")
             return
         end
 
@@ -4377,7 +4377,7 @@ lia.command.add("globalbotsay", {
 
 lia.command.add("botsay", {
     superAdminOnly = true,
-    desc = "Force a specific bot to say something.",
+    desc = "botSayDesc",
     arguments = {
         {
             name = "botName",
@@ -4390,7 +4390,7 @@ lia.command.add("botsay", {
     },
     onRun = function(client, arguments)
         if #arguments < 2 then
-            client:notifyError("You must specify a bot and a message.")
+            client:notifyErrorLocalized("needBotAndMessage")
             return
         end
 
@@ -4405,7 +4405,7 @@ lia.command.add("botsay", {
         end
 
         if not targetBot then
-            client:notifyError(string.format("No bot found with the name: %s", botName))
+            client:notifyErrorLocalized("botNotFound", botName)
             return
         end
 
@@ -4415,7 +4415,7 @@ lia.command.add("botsay", {
 
 lia.command.add("forcesay", {
     superAdminOnly = true,
-    desc = "Force a player to say something in chat.",
+    desc = "forceSayDesc",
     arguments = {
         {
             name = "name",
@@ -4427,21 +4427,21 @@ lia.command.add("forcesay", {
         },
     },
     AdminStick = {
-        Name = "Force Say",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickForceSayName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/comments.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         local message = table.concat(arguments, " ", 2)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if message == "" then
-            client:notifyError("You must specify a message.")
+            client:notifyErrorLocalized("noMessage")
             return
         end
 
@@ -4451,21 +4451,21 @@ lia.command.add("forcesay", {
 })
 
 lia.command.add("getmodel", {
-    desc = "Get the model of the entity you are looking at.",
+    desc = "getModelDesc",
     onRun = function(client)
         local entity = client:getTracedEntity()
         if not IsValid(entity) then
-            client:notifyError("No valid entity found in front of you.")
+            client:notifyErrorLocalized("noEntityInFront")
             return
         end
 
         local model = entity:GetModel()
-        client:ChatPrint(model and string.format("The model is: %s", model) or "No model found.")
+        client:ChatPrint(model and L("modelIs", model) or L("noModelFound"))
     end
 })
 
 lia.command.add("pm", {
-    desc = "Sends a private message to a specified player.",
+    desc = "pmDesc",
     arguments = {
         {
             name = "name",
@@ -4478,7 +4478,7 @@ lia.command.add("pm", {
     },
     onRun = function(client, arguments)
         if not lia.config.get("AllowPMs") then
-            client:notifyError("Private Messages are Disabled")
+            client:notifyErrorLocalized("pmsDisabled")
             return
         end
 
@@ -4486,12 +4486,12 @@ lia.command.add("pm", {
         local message = table.concat(arguments, " ", 2)
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not message:find("%S") then
-            client:notifyError("You must specify a message.")
+            client:notifyErrorLocalized("noMessage")
             return
         end
 
@@ -4501,7 +4501,7 @@ lia.command.add("pm", {
 
 lia.command.add("chargetmodel", {
     adminOnly = true,
-    desc = "Get the model of a player's character.",
+    desc = "getCharModelDesc",
     arguments = {
         {
             name = "name",
@@ -4509,36 +4509,36 @@ lia.command.add("chargetmodel", {
         },
     },
     AdminStick = {
-        Name = "Get Character Model",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharModelName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/user_gray.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
-        client:ChatPrint(string.format("Character Model: %s", target:GetModel()))
+        client:ChatPrint(L("charModelIs", target:GetModel()))
     end
 })
 
 lia.command.add("checkallmoney", {
     superAdminOnly = true,
-    desc = "Check every player's money balance.",
+    desc = "checkAllMoneyDesc",
     onRun = function(client)
         for _, target in player.Iterator() do
             local char = target:getChar()
-            if char then client:ChatPrint(string.format("%s has %s", target:GetName(), lia.currency.get(char:getMoney()))) end
+            if char then client:ChatPrint(L("playerMoney", target:GetName(), lia.currency.get(char:getMoney()))) end
         end
     end
 })
 
 lia.command.add("checkflags", {
     adminOnly = true,
-    desc = "Check which flags a player has.",
+    desc = "checkFlagsDesc",
     arguments = {
         {
             name = "name",
@@ -4546,30 +4546,30 @@ lia.command.add("checkflags", {
         },
     },
     AdminStick = {
-        Name = "Get Character Flags",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharFlagsName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/flag_yellow.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local flags = target:getFlags()
         if flags and #flags > 0 then
-            client:ChatPrint(string.format("Character flags for %s: %s", target:Name(), table.concat(flags, ", ")))
+            client:ChatPrint(L("charFlags", target:Name(), table.concat(flags, ", ")))
         else
-            client:notifyInfo(string.format("%s has no flags.", target:Name()))
+            client:notifyInfoLocalized("noFlags", target:Name())
         end
     end
 })
 
 lia.command.add("chargetname", {
     adminOnly = true,
-    desc = "Get a player's character name.",
+    desc = "getCharNameDesc",
     arguments = {
         {
             name = "name",
@@ -4577,25 +4577,25 @@ lia.command.add("chargetname", {
         },
     },
     AdminStick = {
-        Name = "Get Character Name",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharNameName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/user.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
-        client:ChatPrint(string.format("Character Name: %s", target:getChar():getName()))
+        client:ChatPrint(L("charNameIs", target:getChar():getName()))
     end
 })
 
 lia.command.add("chargethealth", {
     adminOnly = true,
-    desc = "Get a player's current health.",
+    desc = "getHealthDesc",
     arguments = {
         {
             name = "name",
@@ -4603,25 +4603,25 @@ lia.command.add("chargethealth", {
         },
     },
     AdminStick = {
-        Name = "Get Character Health",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharHealthName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/heart.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
-        client:ChatPrint(string.format("Character Health: %s/%s", target:Health(), target:GetMaxHealth()))
+        client:ChatPrint(L("charHealthIs", target:Health(), target:GetMaxHealth()))
     end
 })
 
 lia.command.add("chargetmoney", {
     adminOnly = true,
-    desc = "Get how much money a player has.",
+    desc = "getMoneyDesc",
     arguments = {
         {
             name = "name",
@@ -4629,26 +4629,26 @@ lia.command.add("chargetmoney", {
         },
     },
     AdminStick = {
-        Name = "Get Character Money",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharMoneyName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/money.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local money = target:getChar():getMoney()
-        client:ChatPrint(string.format("Character Money: %s", lia.currency.get(money)))
+        client:ChatPrint(L("charMoneyIs", lia.currency.get(money)))
     end
 })
 
 lia.command.add("chargetinventory", {
     adminOnly = true,
-    desc = "Get the contents of a player's inventory.",
+    desc = "getInventoryDesc",
     arguments = {
         {
             name = "name",
@@ -4656,22 +4656,22 @@ lia.command.add("chargetinventory", {
         },
     },
     AdminStick = {
-        Name = "Get Character Inventory",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetCharInventoryName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/box.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local inventory = target:getChar():getInv()
         local items = inventory:getItems()
         if not items or table.Count(items) < 1 then
-            client:notifyInfo("Character Inventory is empty.")
+            client:notifyInfoLocalized("charInvEmpty")
             return
         end
 
@@ -4680,13 +4680,13 @@ lia.command.add("chargetinventory", {
             table.insert(result, item.name)
         end
 
-        client:ChatPrint(string.format("Character Inventory: %s", table.concat(result, ", ")))
+        client:ChatPrint(L("charInventoryIs", table.concat(result, ", ")))
     end
 })
 
 lia.command.add("getallinfos", {
     adminOnly = true,
-    desc = "Print all character data columns to the console.",
+    desc = "getAllInfosDesc",
     arguments = {
         {
             name = "name",
@@ -4694,31 +4694,31 @@ lia.command.add("getallinfos", {
         },
     },
     AdminStick = {
-        Name = "Get All Informations",
-        Category = "Character Management",
-        SubCategory = "Information",
+        Name = "adminStickGetAllInfosName",
+        Category = "characterManagement",
+        SubCategory = "information",
         Icon = "icon16/table.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local char = target:getChar()
         if not char then
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
             return
         end
 
         local data = lia.char.getCharData(char:getID())
         if not data then
-            client:notifyError("No character found!")
+            client:notifyErrorLocalized("noChar")
             return
         end
 
-        lia.admin(string.format("=== All information for %s ===", char:getName()))
+        lia.admin(L("allInfoFor", char:getName()))
         for column, value in pairs(data) do
             if istable(value) then
                 lia.admin(column .. ":")
@@ -4728,12 +4728,12 @@ lia.command.add("getallinfos", {
             end
         end
 
-        client:notifyInfo("Character information printed to console.")
+        client:notifyInfoLocalized("infoPrintedConsole")
     end
 })
 
 lia.command.add("dropmoney", {
-    desc = "Drop money from your character's balance as a physical entity.",
+    desc = "dropMoneyDesc",
     arguments = {
         {
             name = "amount",
@@ -4746,18 +4746,18 @@ lia.command.add("dropmoney", {
         if originalAmount ~= amount and originalAmount > 0 then
             lia.log.add(client, "moneyDupeAttempt", "Attempted to drop " .. tostring(originalAmount) .. " money (floored to " .. amount .. ")")
             for _, admin in player.Iterator() do
-                if admin:IsAdmin() then admin:notify(string.format("%s attempted to %s with decimal amount %s (floored to %s) - potential money duping!", "dropmoney", tostring(originalAmount), tostring(amount)), client:Name() or "default") end
+                if admin:IsAdmin() then admin:notifyLocalized("moneyDupeAttempt", client:Name(), "dropmoney", tostring(originalAmount), tostring(amount)) end
             end
         end
 
         if not amount or amount <= 0 then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         end
 
         local character = client:getChar()
         if not character or not character:hasMoney(amount) then
-            client:notifyError("You don't have enough money")
+            client:notifyErrorLocalized("notEnoughMoney")
             return
         end
 
@@ -4768,7 +4768,7 @@ lia.command.add("dropmoney", {
         end
 
         if existingMoneyEntities >= maxEntities then
-            client:notifyError(string.format("You have reached the maximum number of money entities (%d). Please wait for them to be picked up or removed.", maxEntities))
+            client:notifyErrorLocalized("maxMoneyEntitiesReached", maxEntities)
             return
         end
 
@@ -4777,7 +4777,7 @@ lia.command.add("dropmoney", {
         if IsValid(money) then
             money.client = client
             money.charID = character:getID()
-            client:notifyMoney(string.format("You dropped %s on the ground.", lia.currency.get(amount)))
+            client:notifyMoneyLocalized("moneyDropped", lia.currency.get(amount))
             lia.log.add(client, "moneyDropped", amount)
         end
 
@@ -4787,7 +4787,7 @@ lia.command.add("dropmoney", {
 
 lia.command.add("exportprivileges", {
     adminOnly = true,
-    desc = "Export all current privileges to a data file",
+    desc = "exportprivilegesDesc",
     onRun = function(client)
         local filename = "lilia_registered_privileges.json"
         if not SERVER then return end
@@ -4898,20 +4898,20 @@ lia.command.add("exportprivileges", {
         end
 
         if wrote then
-            client:notifySuccess(string.format("Privileges exported successfully to: %s", filename))
-            MsgC(Color(83, 143, 239), "[Lilia] ", "[Admin] ")
-            MsgC(Color(255, 153, 0), string.format("Privileges exported by %s to: %s", client:Nick(), filename), "\n")
+            client:notifySuccessLocalized("privilegesExportedSuccessfully", filename)
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+            MsgC(Color(255, 153, 0), L("privilegesExportedBy", client:Nick(), filename), "\n")
             lia.log.add(client, "privilegesExported", filename)
         else
-            client:notifyError("Failed to export privileges to expected locations")
-            lia.error("Failed to export privileges to expected locations")
+            client:notifyErrorLocalized("privilegesExportFailed")
+            lia.error(L("privilegesExportFailed"))
         end
     end
 })
 
 lia.command.add("fillwithbots", {
     superAdminOnly = true,
-    desc = "Manage server bots - list, kick, or spawn bots.",
+    desc = "botsManageDesc",
     alias = {"bots"},
     arguments = {
         {
@@ -4923,7 +4923,7 @@ lia.command.add("fillwithbots", {
     onRun = function(client, arguments)
         if not SERVER then return end
         if timer.Exists("Bots_Add_Timer") then
-            client:notifyError("Bots are already being added to the server.")
+            client:notifyErrorLocalized("botsAlreadyAdding")
             return
         end
 
@@ -4933,12 +4933,12 @@ lia.command.add("fillwithbots", {
             local maxPlayers = game.MaxPlayers()
             local availableSlots = maxPlayers - player.GetCount()
             if requestedAmount > availableSlots then
-                client:notifyError(string.format("Cannot spawn %d bots. Only %d slots available (server limit: %d).", requestedAmount, availableSlots, maxPlayers))
+                client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots, maxPlayers)
                 return
             end
 
             if requestedAmount <= 0 then
-                client:notifyError("Invalid amount. Please specify a positive number of bots to spawn.")
+                client:notifyErrorLocalized("spawnBotsInvalidAmount")
                 return
             end
 
@@ -4952,7 +4952,7 @@ lia.command.add("fillwithbots", {
                 end
             end)
 
-            client:notifyInfo(string.format("Spawning %d bots...", requestedAmount))
+            client:notifyInfoLocalized("spawningBots", requestedAmount)
         else
             timer.Create("Bots_Add_Timer", 2, 0, function()
                 if player.GetCount() < game.MaxPlayers() then
@@ -4962,14 +4962,14 @@ lia.command.add("fillwithbots", {
                 end
             end)
 
-            client:notifyInfo("Filling server with bots...")
+            client:notifyInfoLocalized("botsFillingServer")
         end
     end
 })
 
 lia.command.add("spawnbots", {
     superAdminOnly = true,
-    desc = "Spawn a specific number of bots around your position.",
+    desc = "spawnBotsDesc",
     arguments = {
         {
             name = "amount",
@@ -4982,17 +4982,17 @@ lia.command.add("spawnbots", {
         local maxPlayers = game.MaxPlayers()
         local availableSlots = maxPlayers - player.GetCount()
         if requestedAmount > availableSlots then
-            client:notifyError(string.format("Cannot spawn %d bots. Only %d slots available (server limit: %d).", requestedAmount, availableSlots, maxPlayers))
+            client:notifyErrorLocalized("spawnBotsLimit", requestedAmount, availableSlots, maxPlayers)
             return
         end
 
         if requestedAmount <= 0 then
-            client:notifyError("Invalid amount. Please specify a positive number of bots to spawn.")
+            client:notifyErrorLocalized("spawnBotsInvalidAmount")
             return
         end
 
         local botsSpawned = 0
-        client:notifyInfo(string.format("Spawning %d bots...", requestedAmount))
+        client:notifyInfoLocalized("spawningBots", requestedAmount)
         for i = 1, requestedAmount do
             timer.Simple((i - 1) * 0.5, function()
                 if not IsValid(client) then return end
@@ -5001,22 +5001,22 @@ lia.command.add("spawnbots", {
             end)
         end
 
-        timer.Simple(requestedAmount * 0.5 + 2, function() if IsValid(client) then client:notifySuccess(string.format("Successfully spawned %d bots!", botsSpawned)) end end)
+        timer.Simple(requestedAmount * 0.5 + 2, function() if IsValid(client) then client:notifySuccessLocalized("botsSpawnedSimple", botsSpawned) end end)
     end
 })
 
 lia.command.add("bot", {
     superAdminOnly = true,
-    desc = "Spawn a bot and bring it to your location",
+    desc = "spawnBotDesc",
     onRun = function(client)
         if not SERVER then return end
         local maxPlayers = game.MaxPlayers()
         if player.GetCount() >= maxPlayers then
-            client:notifyError(string.format("Cannot spawn %d bots. Only %d slots available (server limit: %d).", 1, 0, maxPlayers))
+            client:notifyErrorLocalized("spawnBotsLimit", 1, 0, maxPlayers)
             return
         end
 
-        client:notifyInfo(string.format("Spawning %d bots...", 1))
+        client:notifyInfoLocalized("spawningBots", 1)
         game.ConsoleCommand("bot\n")
         timer.Simple(0.5, function()
             if not IsValid(client) then return end
@@ -5031,9 +5031,9 @@ lia.command.add("bot", {
                 bot:SetPos(client:GetPos() + client:GetForward() * 50)
                 local botName = bot:Name()
                 if botName == "" then botName = "Bot" .. bot:UserID() end
-                client:notifySuccess(string.format("Bot '%s' spawned and brought to your location!", botName))
+                client:notifySuccessLocalized("botSpawnedAndBrought", botName)
             else
-                client:notifyError("Failed to spawn bot.")
+                client:notifyErrorLocalized("botSpawnFailed")
             end
         end)
     end
@@ -5041,7 +5041,7 @@ lia.command.add("bot", {
 
 lia.command.add("botspeak", {
     superAdminOnly = true,
-    desc = "Make all bots say a specified number of random phrases.",
+    desc = "botsSpeakDesc",
     arguments = {
         {
             name = "phrases",
@@ -5060,12 +5060,12 @@ lia.command.add("botspeak", {
         end
 
         if #bots == 0 then
-            client:notifyError("No bots found on the server.")
+            client:notifyErrorLocalized("noBotsFound")
             return
         end
 
-        client:notifyInfo(string.format("Found %d bots. Starting phrase sequence with %d phrases per bot...", #bots, phrasesPerBot))
-        local randomPhrases = {"Hello there!", "What's going on?", "I need help!", "Over here!", "Watch out!", "Come on!", "Let's go!", "This way!", "Behind you!", "Enemy spotted!", "Clear!", "Move up!", "Hold position!", "Cover me!", "Reloading!", "Taking fire!", "Need backup!", "All clear!", "Contact!", "Engaging!", "Fall back!", "Push forward!", "Hold the line!", "Secure the area!", "Enemy down!", "Got one!", "Nice shot!", "Good work!", "Keep moving!", "Stay alert!"}
+        client:notifyInfoLocalized("foundBotsStarting", #bots, phrasesPerBot)
+        local randomPhrases = {L("chatHelloThere"), L("chatWhatsGoingOn"), L("chatNeedHelp"), L("chatOverHere"), L("chatWatchOut"), L("chatComeOn"), L("chatLetsGo"), L("chatThisWay"), L("chatBehindYou"), L("chatEnemySpotted"), L("chatClear"), L("chatMoveUp"), L("chatHoldPosition"), L("chatCoverMe"), L("chatReloading"), L("chatTakingFire"), L("chatNeedBackup"), L("chatAllClear"), L("chatContact"), L("chatEngaging"), L("chatFallBack"), L("chatPushForward"), L("chatHoldTheLine"), L("chatSecureArea"), L("chatEnemyDown"), L("chatGotOne"), L("chatNiceShot"), L("chatGoodWork"), L("chatKeepMoving"), L("chatStayAlert")}
         local phraseCount = {}
         for _, bot in ipairs(bots) do
             phraseCount[bot] = 0
@@ -5080,7 +5080,7 @@ lia.command.add("botspeak", {
                 if phraseCount[bot] < phrasesPerBot then
                     timer.Simple(cooldown, function() if IsValid(bot) then makeBotSpeak(bot) end end)
                 else
-                    client:notifySuccess(string.format("Bot %s finished all %d phrases", bot:GetName() or tostring(bot), phrasesPerBot))
+                    client:notifySuccessLocalized("botFinishedPhrases", bot:GetName() or tostring(bot), phrasesPerBot)
                 end
             end
         end
@@ -5095,14 +5095,14 @@ lia.command.add("botspeak", {
                 totalPhrases = totalPhrases + count
             end
 
-            client:notifySuccess(string.format("All bots finished! Total phrases said: %d", totalPhrases))
+            client:notifySuccessLocalized("allBotsFinished", totalPhrases)
         end)
     end
 })
 
 lia.command.add("charsetattrib", {
     superAdminOnly = true,
-    desc = "Set Attributes",
+    desc = "setAttributes",
     arguments = {
         {
             name = "name",
@@ -5125,14 +5125,14 @@ lia.command.add("charsetattrib", {
         }
     },
     AdminStick = {
-        Name = "Set Attributes",
-        Category = "Character Management",
-        SubCategory = "Properties",
+        Name = "setAttributes",
+        Category = "characterManagement",
+        SubCategory = "properties",
         Icon = "icon16/wrench.png"
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
-            client:notifyError("No attributes are currently registered in the system.")
+            client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
 
@@ -5140,7 +5140,7 @@ lia.command.add("charsetattrib", {
         local attribName = arguments[2]
         local attribNumber = tonumber(arguments[3])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -5150,7 +5150,7 @@ lia.command.add("charsetattrib", {
             for k, v in pairs(lia.attribs.list) do
                 if lia.util.stringMatches(L(v.name), attribName) or lia.util.stringMatches(k, attribName) then
                     character:setAttrib(k, math.abs(attribNumber))
-                    client:notifySuccess(string.format("You set %s's %s to %s.", target:Name(), L(v.name), math.abs(attribNumber)))
+                    client:notifySuccessLocalized("attribSet", target:Name(), L(v.name), math.abs(attribNumber))
                     lia.log.add(client, "attribSet", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -5161,7 +5161,7 @@ lia.command.add("charsetattrib", {
 
 lia.command.add("checkattributes", {
     adminOnly = true,
-    desc = "Check Attributes",
+    desc = "checkAttributes",
     arguments = {
         {
             name = "name",
@@ -5169,20 +5169,20 @@ lia.command.add("checkattributes", {
         },
     },
     AdminStick = {
-        Name = "Check Attributes",
-        Category = "Character Management",
-        SubCategory = "Properties",
+        Name = "checkAttributes",
+        Category = "characterManagement",
+        SubCategory = "properties",
         Icon = "icon16/zoom.png"
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
-            client:notifyError("No attributes are currently registered in the system.")
+            client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
 
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -5221,8 +5221,8 @@ lia.command.add("checkattributes", {
             {
                 name = "changeAttribute",
                 ExtraFields = {
-                    ["Amount"] = "text",
-                    ["Mode"] = {"Add", "set"}
+                    [L("attribAmount")] = "text",
+                    [L("attribMode")] = {L("add"), L("set")}
                 },
                 net = "ChangeAttribute"
             }
@@ -5231,7 +5231,7 @@ lia.command.add("checkattributes", {
 })
 
 lia.command.add("staffdiscord", {
-    desc = "Sets your staff Discord username.",
+    desc = "staffdiscordDesc",
     arguments = {
         {
             name = "discord",
@@ -5242,41 +5242,41 @@ lia.command.add("staffdiscord", {
         local discord = arguments[1]
         local character = client:getChar()
         if not character or character:getFaction() ~= FACTION_STAFF then
-            client:notifyError("No staff character found. Create one in the staff faction.")
+            client:notifyErrorLocalized("noStaffChar")
             return
         end
 
         client:setLiliaData("staffDiscord", discord)
-        local description = string.format("Staff Character - Discord: %s, SteamID: %s", discord, client:SteamID())
+        local description = L("staffCharacterDiscordSteamID", discord, client:SteamID())
         character:setDesc(description)
-        client:notifySuccess("Staff character description updated!")
+        client:notifySuccessLocalized("staffDescUpdated")
     end
 })
 
 lia.command.add("trunk", {
     adminOnly = false,
-    desc = "Open the vehicle trunk you're looking at to access its storage inventory.",
+    desc = "trunkOpenDesc",
     onRun = function(client)
         local entity = client:getTracedEntity()
         local maxDistance = 128
         local openTime = 0.7
         if not IsValid(entity) then
-            client:notifyError("You're not looking at any vehicle!")
+            client:notifyErrorLocalized("notLookingAtVehicle")
             return
         end
 
         if hook.Run("IsSuitableForTrunk", entity) == false then
-            client:notifyError("You're not looking at any vehicle!")
+            client:notifyErrorLocalized("notLookingAtVehicle")
             return
         end
 
         if client:GetPos():Distance(entity:GetPos()) > maxDistance then
-            client:notifyError("You're too far to open the trunk!")
+            client:notifyErrorLocalized("tooFarToOpenTrunk")
             return
         end
 
         client.liaStorageEntity = entity
-        client:setAction("Opening...", openTime, function()
+        client:setAction(L("openingTrunk"), openTime, function()
             if not IsValid(entity) then
                 client.liaStorageEntity = nil
                 return
@@ -5293,7 +5293,7 @@ lia.command.add("trunk", {
             local inv = invID and lia.inventory.instances[invID]
             local function openStorage(storageInv)
                 if not storageInv then
-                    client:notifyError("Player has no inventory")
+                    client:notifyErrorLocalized("noInventory")
                     client.liaStorageEntity = nil
                     return
                 end
@@ -5310,7 +5310,7 @@ lia.command.add("trunk", {
                 openStorage(inv)
             else
                 lia.module.get("storage"):InitializeStorage(entity):next(openStorage, function(err)
-                    client:notifyError(string.format("Unable to create storage entity for %s\\n%s", entity:GetClass(), err))
+                    client:notifyErrorLocalized("unableCreateStorageEntity", entity:GetClass(), err)
                     client.liaStorageEntity = nil
                 end)
             end
@@ -5320,7 +5320,7 @@ lia.command.add("trunk", {
 
 lia.command.add("restockvendor", {
     superAdminOnly = true,
-    desc = "Restocks all items for the vendor you are looking at to their default quantities.",
+    desc = "restockVendorDesc",
     AdminStick = {
         Name = "restockVendorStickName",
         TargetClass = "lia_vendor",
@@ -5329,7 +5329,7 @@ lia.command.add("restockvendor", {
     onRun = function(client)
         local target = client:getTracedEntity()
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -5338,17 +5338,17 @@ lia.command.add("restockvendor", {
                 if itemData[2] and itemData[4] then target.items[id][2] = itemData[4] end
             end
 
-            client:notifySuccess("The vendor has been restocked.")
+            client:notifySuccessLocalized("vendorRestocked")
             lia.log.add(client, "restockvendor", target)
         else
-            client:notifyError("You are not looking at a valid vendor.")
+            client:notifyErrorLocalized("notLookingAtValidVendor")
         end
     end
 })
 
 lia.command.add("restockallvendors", {
     superAdminOnly = true,
-    desc = "Restocks all items on every vendor on the map to their default quantities.",
+    desc = "restockAllVendorsDesc",
     onRun = function(client)
         local count = 0
         for _, vendor in ipairs(ents.FindByClass("lia_vendor")) do
@@ -5360,7 +5360,7 @@ lia.command.add("restockallvendors", {
             lia.log.add(client, "restockvendor", vendor)
         end
 
-        client:notifySuccess(string.format("All vendors have been restocked. Total vendors restocked: %s.", count))
+        client:notifySuccessLocalized("vendorAllVendorsRestocked", count)
         lia.log.add(client, "restockallvendors", count)
     end
 })
@@ -5376,19 +5376,19 @@ lia.command.add("deletevendorpreset", {
     },
     onRun = function(client, arguments)
         if not client:hasPrivilege("canCreateVendorPresets") then
-            client:notifyError("No Permission")
+            client:notifyErrorLocalized("noPermission")
             return
         end
 
         local presetName = arguments[1]
         if not presetName or presetName:Trim() == "" then
-            client:notifyError("Preset name is required")
+            client:notifyErrorLocalized("vendorPresetNameRequired")
             return
         end
 
         presetName = presetName:Trim():lower()
         if not lia.vendor.presets[presetName] then
-            client:notifyError(string.format("Vendor preset '%s' not found.", presetName))
+            client:notifyErrorLocalized("vendorPresetNotFound", presetName)
             return
         end
 
@@ -5400,7 +5400,7 @@ lia.command.add("deletevendorpreset", {
             net.Broadcast()
         end
 
-        client:notifySuccess(string.format("Vendor preset '%s' has been deleted.", presetName))
+        client:notifySuccessLocalized("vendorPresetDeleted", presetName)
         lia.log.add(client, "deletevendorpreset", presetName)
     end
 })
@@ -5410,7 +5410,7 @@ lia.command.add("listvendorpresets", {
     desc = "listVendorPresetsDesc",
     onRun = function(client)
         if not client:hasPrivilege("canCreateVendorPresets") then
-            client:notifyError("No Permission")
+            client:notifyErrorLocalized("noPermission")
             return
         end
 
@@ -5420,17 +5420,17 @@ lia.command.add("listvendorpresets", {
         end
 
         if #presets == 0 then
-            client:notifyInfo("No vendor presets found.")
+            client:notifyInfoLocalized("vendorNoPresets")
         else
             table.sort(presets)
-            client:notifyInfo(string.format("Available presets: %s", table.concat(presets, ", ")))
+            client:notifyInfoLocalized("vendorPresetList", table.concat(presets, ", "))
         end
     end
 })
 
 lia.command.add("charaddattrib", {
     superAdminOnly = true,
-    desc = "Add Attributes",
+    desc = "addAttributes",
     arguments = {
         {
             name = "name",
@@ -5453,14 +5453,14 @@ lia.command.add("charaddattrib", {
         }
     },
     AdminStick = {
-        Name = "Add Attributes",
-        Category = "Character Management",
-        SubCategory = "Properties",
+        Name = "addAttributes",
+        Category = "characterManagement",
+        SubCategory = "properties",
         Icon = "icon16/add.png"
     },
     onRun = function(client, arguments)
         if table.IsEmpty(lia.attribs.list) then
-            client:notifyError("No attributes are currently registered in the system.")
+            client:notifyErrorLocalized("noAttributesRegistered")
             return
         end
 
@@ -5468,7 +5468,7 @@ lia.command.add("charaddattrib", {
         local attribName = arguments[2]
         local attribNumber = tonumber(arguments[3])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -5477,7 +5477,7 @@ lia.command.add("charaddattrib", {
             for k, v in pairs(lia.attribs.list) do
                 if lia.util.stringMatches(L(v.name), attribName) or lia.util.stringMatches(k, attribName) then
                     character:updateAttrib(k, math.abs(attribNumber))
-                    client:notifySuccess(string.format("You added %s's %s by %s.", target:Name(), L(v.name), math.abs(attribNumber)))
+                    client:notifySuccessLocalized("attribUpdate", target:Name(), L(v.name), math.abs(attribNumber))
                     lia.log.add(client, "attribAdd", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -5488,7 +5488,7 @@ lia.command.add("charaddattrib", {
 
 lia.command.add("banooc", {
     adminOnly = true,
-    desc = "Bans the specified player from using out-of-character chat.",
+    desc = "banOOCCommandDesc",
     arguments = {
         {
             name = "name",
@@ -5496,27 +5496,27 @@ lia.command.add("banooc", {
         },
     },
     AdminStick = {
-        Name = "Ban OOC",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "banOOCStickName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:setLiliaData("oocBanned", true)
-        client:notifySuccess(string.format("%s has been banned from OOC.", target:Name()))
+        client:notifySuccessLocalized("playerBannedFromOOC", target:Name())
         lia.log.add(client, "banOOC", target:Name(), target:SteamID())
     end
 })
 
 lia.command.add("unbanooc", {
     adminOnly = true,
-    desc = "Unbans the specified player from out-of-character chat.",
+    desc = "unbanOOCCommandDesc",
     arguments = {
         {
             name = "name",
@@ -5524,27 +5524,27 @@ lia.command.add("unbanooc", {
         },
     },
     AdminStick = {
-        Name = "Unban OOC",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "unbanOOCStickName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/sound.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         target:setLiliaData("oocBanned", nil)
-        client:notifySuccess(string.format("%s has been unbanned from OOC.", target:Name()))
+        client:notifySuccessLocalized("playerUnbannedFromOOC", target:Name())
         lia.log.add(client, "unbanOOC", target:Name(), target:SteamID())
     end
 })
 
 lia.command.add("clearchat", {
     adminOnly = true,
-    desc = "Clears chat for all players.",
+    desc = "clearChatCommandDesc",
     onRun = function(client)
         net.Start("liaRegenChat")
         net.Broadcast()
@@ -5553,12 +5553,12 @@ lia.command.add("clearchat", {
 })
 
 lia.command.add("doorsell", {
-    desc = "Sell a door you own and receive a refund based on the door's price.",
+    desc = "doorsellDesc",
     adminOnly = false,
     AdminStick = {
-        Name = "Sell Door",
-        Category = "Door Management",
-        SubCategory = "Actions",
+        Name = "adminStickDoorSellName",
+        Category = "doorManagement",
+        SubCategory = "actions",
         TargetClass = "door",
         Icon = "icon16/money.png"
     },
@@ -5571,28 +5571,28 @@ lia.command.add("doorsell", {
                     local price = math.Round((doorData.price or 0) * lia.config.get("DoorSellRatio", 0.5))
                     door:removeDoorAccessData()
                     client:getChar():giveMoney(price)
-                    client:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
+                    client:notifyMoneyLocalized("doorSold", lia.currency.get(price))
                     hook.Run("OnPlayerPurchaseDoor", client, door, false)
                     lia.log.add(client, "doorsell", price)
                 else
-                    client:notifyError("You do not own this door.")
+                    client:notifyErrorLocalized("doorNotOwner")
                 end
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("admindoorsell", {
-    desc = "Admin command to sell a door on behalf of its owner and refund the owner.",
+    desc = "admindoorsellDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Admin Sell Door",
-        Category = "Door Management",
-        SubCategory = "Actions",
+        Name = "adminStickAdminDoorSellName",
+        Category = "doorManagement",
+        SubCategory = "actions",
         TargetClass = "door",
         Icon = "icon16/money_delete.png"
     },
@@ -5606,29 +5606,29 @@ lia.command.add("admindoorsell", {
                     local price = math.Round((doorData.price or 0) * lia.config.get("DoorSellRatio", 0.5))
                     door:removeDoorAccessData()
                     owner:getChar():giveMoney(price)
-                    owner:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
-                    client:notifyMoney(string.format("You have sold this door for %s.", lia.currency.get(price)))
+                    owner:notifyMoneyLocalized("doorSold", lia.currency.get(price))
+                    client:notifyMoneyLocalized("doorSold", lia.currency.get(price))
                     hook.Run("OnPlayerPurchaseDoor", owner, door, false)
                     lia.log.add(client, "admindoorsell", owner:Name(), price)
                 else
-                    client:notifyError("You do not own this door.")
+                    client:notifyErrorLocalized("doorNotOwner")
                 end
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doortogglelock", {
-    desc = "Toggle a door's lock state between locked and unlocked.",
+    desc = "doortogglelockDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Toggle Door Lock",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickToggleDoorLockName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/lock.png"
     },
@@ -5644,15 +5644,15 @@ lia.command.add("doortogglelock", {
                     door:EmitSound("doors/door_latch3.wav")
                     doorData.locked = true
                     lia.doors.setCachedData(door, doorData)
-                    client:notifyInfo(string.format("The door has been %s.", ("Locked"):lower()))
-                    lia.log.add(client, "toggleLock", door, "Locked")
+                    client:notifyInfoLocalized("doorToggleLocked", L("locked"):lower())
+                    lia.log.add(client, "toggleLock", door, L("locked"))
                 else
                     door:Fire("unlock")
                     door:EmitSound("doors/door_latch1.wav")
                     doorData.locked = false
                     lia.doors.setCachedData(door, doorData)
-                    client:notifyInfo(string.format("The door has been %s.", "unlocked"))
-                    lia.log.add(client, "toggleLock", door, "unlocked")
+                    client:notifyInfoLocalized("doorToggleLocked", L("unlocked"))
+                    lia.log.add(client, "toggleLock", door, L("unlocked"))
                 end
 
                 local partner = door:getDoorPartner()
@@ -5669,21 +5669,21 @@ lia.command.add("doortogglelock", {
                     end
                 end
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorbuy", {
-    desc = "Purchase a door if it is available and you can afford it.",
+    desc = "doorbuyDesc",
     adminOnly = false,
     AdminStick = {
-        Name = "Buy Door",
-        Category = "Door Management",
-        SubCategory = "Actions",
+        Name = "buyDoor",
+        Category = "doorManagement",
+        SubCategory = "actions",
         TargetClass = "door",
         Icon = "icon16/money_add.png"
     },
@@ -5694,9 +5694,9 @@ lia.command.add("doorbuy", {
             if not doorData.disabled then
                 local factions = doorData.factions
                 local classes = doorData.classes
-                if doorData.noSell or (factions and #factions > 0) or (classes and #classes > 0) then return client:notifyError("You are not allowed to own this door.") end
+                if doorData.noSell or (factions and #factions > 0) or (classes and #classes > 0) then return client:notifyErrorLocalized("doorNotAllowedToOwn") end
                 if IsValid(door:GetDTEntity(0)) then
-                    client:notifyInfo(string.format("This door is owned by %s.", door:GetDTEntity(0):Name()))
+                    client:notifyInfoLocalized("doorOwnedBy", door:GetDTEntity(0):Name())
                     return false
                 end
 
@@ -5708,35 +5708,34 @@ lia.command.add("doorbuy", {
                     }
 
                     client:getChar():takeMoney(price)
-                    client:notifySuccess(string.format("You have purchased this door for %s.", lia.currency.get(price)))
+                    client:notifySuccessLocalized("doorPurchased", lia.currency.get(price))
                     hook.Run("OnPlayerPurchaseDoor", client, door, true)
                     lia.log.add(client, "buydoor", price)
                 else
-                    client:notifyError("You cannot afford this door.")
+                    client:notifyErrorLocalized("doorCanNotAfford")
                 end
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doortoggleownable", {
-    desc = "Toggle whether a door can be owned by players.",
+    desc = "doortoggleownableDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Toggle Door Ownable",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickToggleDoorOwnableName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/pencil.png"
     },
     onRun = function(client)
         local door = client:getTracedEntity()
         if IsValid(door) and door:isDoor() then
-            lia.log.add(client, "doorToggleOwnable", door)
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local factions = doorData.factions or {}
@@ -5746,7 +5745,7 @@ lia.command.add("doortoggleownable", {
                 local isUnownable = doorData.noSell or false
                 local newState = not isUnownable
                 if newState and (hasFactions or hasClasses) then
-                    client:notifyError("This door cannot be owned.")
+                    client:notifyErrorLocalized("doorIsNotOwnable")
                     return false
                 end
 
@@ -5757,21 +5756,21 @@ lia.command.add("doortoggleownable", {
                 client:notifySuccessLocalized(newState and "doorMadeUnownable" or "doorMadeOwnable")
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorresetdata", {
-    desc = "Reset door data to default settings.",
+    desc = "doorresetdataDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Reset Door Data",
-        Category = "Door Management",
-        SubCategory = "Actions",
+        Name = "adminStickResetDoorDataName",
+        Category = "doorManagement",
+        SubCategory = "actions",
         TargetClass = "door",
         Icon = "icon16/arrow_refresh.png"
     },
@@ -5791,21 +5790,21 @@ lia.command.add("doorresetdata", {
             }
 
             lia.doors.setData(door, doorData)
-            client:notifySuccess("The door data has been reset.")
+            client:notifySuccessLocalized("doorResetData")
             lia.module.get("doors"):SaveData()
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doortoggleenabled", {
-    desc = "Toggle door enabled state (active/inactive).",
+    desc = "doortoggleenabledDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Toggle Door Enabled",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickToggleDoorEnabledName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/stop.png"
     },
@@ -5822,18 +5821,18 @@ lia.command.add("doortoggleenabled", {
             client:notifySuccessLocalized(newState and "doorSetDisabled" or "doorSetNotDisabled")
             lia.module.get("doors").list["doors"]:SaveData()
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doortogglehidden", {
-    desc = "Toggle the hidden state of a door.",
+    desc = "doortogglehiddenDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Toggle Door Hidden",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickToggleDoorHiddenName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/eye.png"
     },
@@ -5850,13 +5849,13 @@ lia.command.add("doortogglehidden", {
             client:notifySuccessLocalized(newState and "doorSetHidden" or "doorSetNotHidden")
             lia.module.get("doors"):SaveData()
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorsetprice", {
-    desc = "Set the price for a door.",
+    desc = "doorsetpriceDesc",
     arguments = {
         {
             name = "price",
@@ -5865,9 +5864,9 @@ lia.command.add("doorsetprice", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "Set Door Price",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickSetDoorPriceName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/money.png"
     },
@@ -5876,25 +5875,25 @@ lia.command.add("doorsetprice", {
         if IsValid(door) and door:isDoor() then
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
-                if not arguments[1] or not tonumber(arguments[1]) then return client:notifyError("The specified class is not valid.") end
+                if not arguments[1] or not tonumber(arguments[1]) then return client:notifyErrorLocalized("invalidClass") end
                 local price = math.Clamp(math.floor(tonumber(arguments[1])), 0, 1000000)
                 doorData.price = price
                 lia.doors.setData(door, doorData)
                 lia.log.add(client, "doorSetPrice", door, price)
                 hook.Run("DoorPriceSet", client, door, price)
-                client:notifySuccess(string.format("You have set this door's price to %s.", lia.currency.get(price)))
+                client:notifySuccessLocalized("doorSetPrice", lia.currency.get(price))
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorsettitle", {
-    desc = "Set the title for a door.",
+    desc = "doorsettitleDesc",
     arguments = {
         {
             name = "title",
@@ -5903,9 +5902,9 @@ lia.command.add("doorsettitle", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "Set Door Title",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickSetDoorTitleName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/textfield.png"
     },
@@ -5915,49 +5914,49 @@ lia.command.add("doorsettitle", {
             local doorData = lia.doors.getData(door)
             if not doorData.disabled then
                 local name = table.concat(arguments, " ")
-                if not name:find("%S") then return client:notifyError("The specified class is not valid.") end
+                if not name:find("%S") then return client:notifyErrorLocalized("invalidClass") end
                 if door:checkDoorAccess(client, DOOR_TENANT) or client:isStaff() then
                     doorData.name = name
                     lia.doors.setData(door, doorData)
                     hook.Run("DoorTitleSet", client, door, name)
                     lia.log.add(client, "doorSetTitle", door, name)
-                    client:notifySuccess(string.format("Door title set to '%s'.", name))
+                    client:notifySuccessLocalized("doorTitleSet", name)
                 else
-                    client:notifyError("You do not own this door.")
+                    client:notifyErrorLocalized("doorNotOwner")
                 end
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("savedoors", {
-    desc = "Save door data persistently.",
+    desc = "savedoorsDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Save Doors",
-        Category = "Door Management",
-        SubCategory = "Actions",
+        Name = "adminStickSaveDoorsName",
+        Category = "doorManagement",
+        SubCategory = "actions",
         TargetClass = "door",
         Icon = "icon16/disk.png"
     },
     onRun = function(client)
         lia.module.get("doors"):SaveData()
         lia.log.add(client, "doorSaveData")
-        client:notifySuccess("Saved Doors!")
+        client:notifySuccessLocalized("doorsSaved")
     end
 })
 
 lia.command.add("doorinfo", {
-    desc = "Display information about the targeted door.",
+    desc = "doorinfoDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Get Door Information",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickDoorInfoName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/information.png"
     },
@@ -5987,40 +5986,40 @@ lia.command.add("doorinfo", {
             local locked = doorData.locked or false
             local infoData = {
                 {
-                    property = "Disabled",
+                    property = L("doorInfoDisabled"),
                     value = tostring(disabled)
                 },
                 {
-                    property = "Name",
-                    value = tostring(doorData.name or "Unowned Door")
+                    property = L("name"),
+                    value = tostring(doorData.name or L("doorTitle"))
                 },
                 {
-                    property = "Price",
+                    property = L("price"),
                     value = lia.currency.get(price)
                 },
                 {
-                    property = "No Sell",
+                    property = L("doorInfoNoSell"),
                     value = tostring(noSell)
                 },
                 {
-                    property = "Factions",
-                    value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or "None")
+                    property = L("factions"),
+                    value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
                 },
                 {
-                    property = "Classes",
-                    value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or "None")
+                    property = L("classes"),
+                    value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
                 },
                 {
-                    property = "Hidden",
+                    property = L("doorInfoHidden"),
                     value = tostring(hidden)
                 },
                 {
-                    property = "Locked",
+                    property = L("locked"),
                     value = tostring(locked)
                 }
             }
 
-            lia.util.sendTableUI(client, "Door Information", {
+            lia.util.sendTableUI(client, L("door") .. " " .. L("information"), {
                 {
                     name = "doorInfoProperty",
                     field = "property"
@@ -6031,18 +6030,18 @@ lia.command.add("doorinfo", {
                 }
             }, infoData)
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorsampledata", {
-    desc = "Add sample information to a door using common door variables.",
+    desc = "doorsampledataDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "Add Sample Data",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = L("adminStickDoorSampleName"),
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/add.png"
     },
@@ -6066,16 +6065,16 @@ lia.command.add("doorsampledata", {
             end
 
             lia.doors.setData(door, doorData)
-            client:notify("Door sample data applied successfully!", "default" or "default")
+            client:notifyLocalized("doorSampleDataApplied")
             lia.log.add(client, "doorSampleData", door)
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("dooraddfaction", {
-    desc = "Add a faction restriction to a door, allowing only specific factions to access it.",
+    desc = "dooraddfactionDesc",
     arguments = {
         {
             name = "faction",
@@ -6095,7 +6094,7 @@ lia.command.add("dooraddfaction", {
                     if factionIndex then
                         faction = lia.faction.indices[factionIndex]
                         if not faction then
-                            client:notifyError("The specified faction is not valid.")
+                            client:notifyErrorLocalized("invalidFaction")
                             return
                         end
                     else
@@ -6116,29 +6115,29 @@ lia.command.add("dooraddfaction", {
                     doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetFaction", door, faction.name)
-                    client:notifySuccess(string.format("This door now belongs to the '%s' faction.", faction.name))
+                    client:notifySuccessLocalized("doorSetFaction", faction.name)
                 elseif arguments[1] then
-                    client:notifyError("The specified faction is not valid.")
+                    client:notifyErrorLocalized("invalidFaction")
                 else
                     doorData.factions = {}
                     door.liaFactions = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, "all")
-                    client:notifySuccess("This door no longer belongs to any faction.")
+                    client:notifySuccessLocalized("doorRemoveFaction")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorremovefaction", {
-    desc = "Remove a faction restriction from a door, or clear all restrictions.",
+    desc = "doorremovefactionDesc",
     arguments = {
         {
             name = "faction",
@@ -6158,7 +6157,7 @@ lia.command.add("doorremovefaction", {
                     if factionIndex then
                         faction = lia.faction.indices[factionIndex]
                         if not faction then
-                            client:notifyError("The specified faction is not valid.")
+                            client:notifyErrorLocalized("invalidFaction")
                             return
                         end
                     else
@@ -6178,29 +6177,29 @@ lia.command.add("doorremovefaction", {
                     door.liaFactions = facs
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, faction.name)
-                    client:notifySuccess(string.format("This door no longer belongs to the '%s' faction.", faction.name))
+                    client:notifySuccessLocalized("doorRemoveFactionSpecific", faction.name)
                 elseif arguments[1] then
-                    client:notifyError("The specified faction is not valid.")
+                    client:notifyErrorLocalized("invalidFaction")
                 else
                     doorData.factions = {}
                     door.liaFactions = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveFaction", door, "all")
-                    client:notifySuccess("This door no longer belongs to any faction.")
+                    client:notifySuccessLocalized("doorRemoveFaction")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("doorsetclass", {
-    desc = "Set a class (job) restriction for a door.",
+    desc = "doorsetclassDesc",
     arguments = {
         {
             name = "class",
@@ -6222,7 +6221,7 @@ lia.command.add("doorsetclass", {
                         if classData then
                             class = classIndex
                         else
-                            client:notifyError("The specified class is not valid.")
+                            client:notifyErrorLocalized("invalidClass")
                             return
                         end
                     else
@@ -6248,30 +6247,30 @@ lia.command.add("doorsetclass", {
                     doorData.noSell = true
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorSetClass", door, classData.name)
-                    client:notifySuccess(string.format("This door now belongs to the '%s' class.", classData.name))
+                    client:notifySuccessLocalized("doorSetClass", classData.name)
                 elseif arguments[1] then
-                    client:notifyError("The specified class is not valid.")
+                    client:notifyErrorLocalized("invalidClass")
                 else
                     doorData.classes = {}
                     door.liaClasses = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveClass", door)
-                    client:notifySuccess("This door no longer belongs to any class.")
+                    client:notifySuccessLocalized("doorRemoveClass")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end,
     alias = {"jobdoor"}
 })
 
 lia.command.add("doorremoveclass", {
-    desc = "Remove a class (job) restriction from a door.",
+    desc = "doorremoveclassDesc",
     arguments = {
         {
             name = "class",
@@ -6280,9 +6279,9 @@ lia.command.add("doorremoveclass", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "Remove Door Class",
-        Category = "Door Management",
-        SubCategory = "Settings",
+        Name = "adminStickDoorRemoveClassName",
+        Category = "doorManagement",
+        SubCategory = "settings",
         TargetClass = "door",
         Icon = "icon16/delete.png"
     },
@@ -6300,7 +6299,7 @@ lia.command.add("doorremoveclass", {
                         if classData then
                             class = classIndex
                         else
-                            client:notifyError("The specified class is not valid.")
+                            client:notifyErrorLocalized("invalidClass")
                             return
                         end
                     else
@@ -6326,32 +6325,32 @@ lia.command.add("doorremoveclass", {
                         door.liaClasses = classes
                         lia.doors.setData(door, doorData)
                         lia.log.add(client, "doorRemoveClassSpecific", door, classData.name)
-                        client:notifySuccess(string.format("The '%s' class has been removed from this door.", classData.name))
+                        client:notifySuccessLocalized("doorRemoveClassSpecific", classData.name)
                     else
-                        client:notifyError(string.format("The '%s' class is not assigned to this door.", classData.name))
+                        client:notifyErrorLocalized("doorClassNotAssigned", classData.name)
                     end
                 elseif arguments[1] then
-                    client:notifyError("The specified class is not valid.")
+                    client:notifyErrorLocalized("invalidClass")
                 else
                     doorData.classes = {}
                     door.liaClasses = nil
                     lia.doors.setData(door, doorData)
                     lia.log.add(client, "doorRemoveClass", door)
-                    client:notifySuccess("This door no longer belongs to any class.")
+                    client:notifySuccessLocalized("doorRemoveClass")
                 end
 
                 lia.module.get("doors"):SaveData()
             else
-                client:notifyError("You are not looking at a valid door.")
+                client:notifyErrorLocalized("doorNotValid")
             end
         else
-            client:notifyError("You are not looking at a valid door.")
+            client:notifyErrorLocalized("doorNotValid")
         end
     end
 })
 
 lia.command.add("togglealldoors", {
-    desc = "Toggle the enabled state for all doors in the map.",
+    desc = "togglealldoorsDesc",
     adminOnly = true,
     onRun = function(client)
         local toggleToDisable = false
@@ -6383,7 +6382,7 @@ lia.command.add("togglealldoors", {
 })
 
 lia.command.add("doorid", {
-    desc = "Set the door ID for identification purposes.",
+    desc = "doorIDDesc",
     adminOnly = true,
     onRun = function(client)
         local door = client:getTracedEntity()
@@ -6391,13 +6390,13 @@ lia.command.add("doorid", {
             local mapID = door:MapCreationID()
             if mapID and mapID > 0 then
                 local pos = door:GetPos()
-                client:notifyInfoLocalized("doorID " .. mapID .. " | Position: " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
+                client:notifyInfoLocalized("doorID" .. " " .. mapID .. " | " .. L("position") .. ": " .. string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z))
                 lia.log.add(client, "doorID", door, mapID)
             else
-                client:notifyError("No valid map ID found for this door.")
+                client:notifyErrorLocalized("doorNoValidMapID")
             end
         else
-            client:notifyError("You must be looking at a door.")
+            client:notifyErrorLocalized("doorMustBeLookingAt")
         end
     end
 })
@@ -6415,14 +6414,14 @@ lia.command.add("listdoorids", {
                     table.insert(doorData, {
                         id = mapID,
                         position = string.format("%.0f, %.0f, %.0f", pos.x, pos.y, pos.z),
-                        model = door:GetModel() or "Unknown"
+                        model = door:GetModel() or L("unknown")
                     })
                 end
             end
         end
 
         if #doorData == 0 then
-            client:notifyInfo("No doors found.")
+            client:notifyInfoLocalized("doorNoDoorsFound")
             return
         end
 
@@ -6430,18 +6429,18 @@ lia.command.add("listdoorids", {
         local doorList = {}
         for _, data in ipairs(doorData) do
             table.insert(doorList, {
-                property = "Door ID" .. data.id,
-                value = "Position: " .. data.position .. "Model Label" .. data.model
+                property = L("doorIDProperty") .. data.id,
+                value = L("positionLabel") .. data.position .. L("modelLabel") .. data.model
             })
         end
 
-        lia.util.sendTableUI(client, string.format("Door IDs on map %s", game.GetMap()), {
+        lia.util.sendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
             {
-                name = "Door ID",
+                name = L("doorIDColumn"),
                 field = "property"
             },
             {
-                name = "Details Column",
+                name = L("detailsColumn"),
                 field = "value"
             }
         }, doorList)
@@ -6450,7 +6449,7 @@ lia.command.add("listdoorids", {
 
 lia.command.add("plytransfer", {
     adminOnly = true,
-    desc = "Transfers the specified player to a new faction.",
+    desc = "plyTransferDesc",
     alias = {"charsetfaction"},
     arguments = {
         {
@@ -6510,7 +6509,7 @@ lia.command.add("plytransfer", {
         end
 
         if not targetPlayer or not IsValid(targetPlayer) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -6527,7 +6526,7 @@ lia.command.add("plytransfer", {
         end
 
         if faction.uniqueID == "staff" then
-            client:notifyError("You cannot transfer a player to the staff faction through commands. Staff characters must be created through the menu system.")
+            client:notifyErrorLocalized("staffTransferBlocked")
             return
         end
 
@@ -6539,15 +6538,15 @@ lia.command.add("plytransfer", {
         targetChar:setFaction(faction.index)
         hook.Run("OnTransferred", targetPlayer)
         if faction.OnTransferred then faction:OnTransferred(targetPlayer, oldFaction) end
-        client:notifySuccess(string.format("%s has been transferred to %s.", targetPlayer:Name(), L(faction.name, client)))
-        if client ~= targetPlayer then targetPlayer:notifyInfo(string.format("You have been transferred to %s by %s.", L(faction.name, targetPlayer), client:Name())) end
+        client:notifySuccessLocalized("transferSuccess", targetPlayer:Name(), L(faction.name, client))
+        if client ~= targetPlayer then targetPlayer:notifyInfoLocalized("transferNotification", L(faction.name, targetPlayer), client:Name()) end
         lia.log.add(client, "plyTransfer", targetPlayer:Name(), oldFactionName, faction.name)
     end
 })
 
 lia.command.add("plywhitelist", {
     adminOnly = true,
-    desc = "Adds the specified player to a faction whitelist.",
+    desc = "plyWhitelistDesc",
     alias = {"factionwhitelist"},
     arguments = {
         {
@@ -6569,18 +6568,18 @@ lia.command.add("plywhitelist", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local faction = lia.util.findFaction(client, arguments[2])
         if not faction then
-            client:notifyError("The specified faction is not valid.")
+            client:notifyErrorLocalized("invalidFaction")
             return
         end
 
         if faction.uniqueID == "staff" then
-            client:notifyError("You cannot whitelist a player to the staff faction through commands. Staff characters must be created through the menu system.")
+            client:notifyErrorLocalized("staffWhitelistBlocked")
             return
         end
 
@@ -6592,7 +6591,7 @@ lia.command.add("plywhitelist", {
             whitelists[SCHEMA.folder][data.uniqueID] = true
             target:setLiliaData("whitelists", whitelists)
             for _, v in player.Iterator() do
-                v:notifyInfo(string.format("%s has whitelisted %s for the %s faction.", client:Name(), target:Name(), L(faction.name, v)))
+                v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
             end
 
             lia.log.add(client, "plyWhitelist", target:Name(), faction.name)
@@ -6602,7 +6601,7 @@ lia.command.add("plywhitelist", {
 
 lia.command.add("plyunwhitelist", {
     adminOnly = true,
-    desc = "Removes the specified player from a faction whitelist.",
+    desc = "plyUnwhitelistDesc",
     alias = {"factionunwhitelist"},
     arguments = {
         {
@@ -6624,18 +6623,18 @@ lia.command.add("plyunwhitelist", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         local faction = lia.util.findFaction(client, arguments[2])
         if not faction then
-            client:notifyError("The specified faction is not valid.")
+            client:notifyErrorLocalized("invalidFaction")
             return
         end
 
         if faction.uniqueID == "staff" then
-            client:notifyError("You cannot unwhitelist a player from the staff faction through commands. Staff character management must be done through the menu system.")
+            client:notifyErrorLocalized("staffUnwhitelistBlocked")
             return
         end
 
@@ -6648,20 +6647,20 @@ lia.command.add("plyunwhitelist", {
                 whitelists[SCHEMA.folder][data.uniqueID] = nil
                 target:setLiliaData("whitelists", whitelists)
                 for _, v in player.Iterator() do
-                    v:notifyInfo(string.format("%s has unwhitelisted %s from the %s faction.", client:Name(), target:Name(), L(faction.name, v)))
+                    v:notifyInfoLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
                 end
 
                 lia.log.add(client, "plyUnwhitelist", target:Name(), faction.name)
             end
         else
-            client:notifyError("The specified faction is not valid.")
+            client:notifyErrorLocalized("invalidFaction")
         end
     end
 })
 
 lia.command.add("beclass", {
     adminOnly = false,
-    desc = "Changes your current class to the specified class.",
+    desc = "beClassDesc",
     arguments = {
         {
             name = "class",
@@ -6685,14 +6684,14 @@ lia.command.add("beclass", {
         local requestedModel = arguments[2]
         local character = client:getChar()
         if not IsValid(client) or not character then
-            client:notifyError("You are not whitelisted for this faction.")
+            client:notifyErrorLocalized("illegalAccess")
             return
         end
 
         local classID = tonumber(className) or lia.class.retrieveClass(className)
         local classData = lia.class.get(classID)
         if not classData then
-            client:notifyError("The specified class is not valid.")
+            client:notifyErrorLocalized("invalidClass")
             return
         end
 
@@ -6740,20 +6739,20 @@ lia.command.add("beclass", {
             if character:joinClass(classID) then
                 if not istable(classData.model) then character:setData("classModel", nil) end
                 applyRequestedClassModel()
-                client:notifySuccess(string.format("You have become %s.", L(classData.name)))
+                client:notifySuccessLocalized("becomeClass", L(classData.name))
                 lia.log.add(client, "beClass", classData.name)
             else
-                client:notifyError(string.format("Failed to become %s.", L(classData.name)))
+                client:notifyErrorLocalized("becomeClassFail", L(classData.name))
             end
         else
-            client:notifyError("The specified class is not valid.")
+            client:notifyErrorLocalized("invalidClass")
         end
     end
 })
 
 lia.command.add("setclass", {
     adminOnly = true,
-    desc = "Sets the specified player's class.",
+    desc = "setClassDesc",
     arguments = {
         {
             name = "name",
@@ -6782,24 +6781,24 @@ lia.command.add("setclass", {
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if not target:getChar() then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         if not lia.class.list or table.IsEmpty(lia.class.list) then
-            client:notifyError("No classes are currently available.")
+            client:notifyErrorLocalized("noClassesAvailable")
             return
         end
 
         local targetFaction = target:Team()
         local factionClasses = lia.faction.getClasses(targetFaction)
         if not factionClasses or #factionClasses == 0 then
-            client:notifyError("The target player's faction does not have any classes.")
+            client:notifyErrorLocalized("factionHasNoClasses")
             return
         end
 
@@ -6810,21 +6809,21 @@ lia.command.add("setclass", {
             if target:Team() == classData.faction then
                 target:getChar():joinClass(classID, true)
                 lia.log.add(client, "setClass", target:Name(), classData.name)
-                target:notifyInfo(string.format("Your class was set to %s%s.", L(classData.name), client:GetName()))
-                if client ~= target then client:notifySuccess(string.format("You set %s class to %s.", target:GetName(), L(classData.name))) end
+                target:notifyInfoLocalized("classSet", L(classData.name), client:GetName())
+                if client ~= target then client:notifySuccessLocalized("classSetOther", target:GetName(), L(classData.name)) end
                 hook.Run("PlayerLoadout", target)
             else
-                client:notifyError("The class does not match the target's faction!")
+                client:notifyErrorLocalized("classFactionMismatch")
             end
         else
-            client:notifyError("The specified class is not valid.")
+            client:notifyErrorLocalized("invalidClass")
         end
     end
 })
 
 lia.command.add("classwhitelist", {
     adminOnly = true,
-    desc = "Grants the specified player whitelist access to a class.",
+    desc = "classWhitelistDesc",
     arguments = {
         {
             name = "name",
@@ -6846,24 +6845,24 @@ lia.command.add("classwhitelist", {
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(arguments[2])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         elseif not classID then
-            client:notifyError("The specified class is not valid.")
+            client:notifyErrorLocalized("invalidClass")
             return
         end
 
         local classData = lia.class.list[classID]
         if target:Team() ~= classData.faction then
-            client:notifyError("You cannot whitelist a class outside the faction.")
+            client:notifyErrorLocalized("whitelistFactionMismatch")
         elseif target:getChar():getClasswhitelists()[classID] then
-            client:notifyInfo("This player is already whitelisted.")
+            client:notifyInfoLocalized("alreadyWhitelisted")
         else
             local wl = target:getChar():getClasswhitelists()
             wl[classID] = true
             target:getChar():setClasswhitelists(wl)
-            client:notifySuccess("Successfully whitelisted the player.")
-            target:notifyInfo(string.format("Class '%s' has been assigned to your current character.", L(classData.name)))
+            client:notifySuccessLocalized("whitelistedSuccess")
+            target:notifyInfoLocalized("classAssigned", L(classData.name))
             lia.log.add(client, "classWhitelist", target:Name(), classData.name)
         end
     end
@@ -6871,7 +6870,7 @@ lia.command.add("classwhitelist", {
 
 lia.command.add("classunwhitelist", {
     adminOnly = true,
-    desc = "Revokes the specified player's whitelist access to a class.",
+    desc = "classUnwhitelistDesc",
     arguments = {
         {
             name = "name",
@@ -6893,24 +6892,24 @@ lia.command.add("classunwhitelist", {
         local target = lia.util.findPlayer(client, arguments[1])
         local classID = lia.class.retrieveClass(arguments[2])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         elseif not classID then
-            client:notifyError("The specified class is not valid.")
+            client:notifyErrorLocalized("invalidClass")
             return
         end
 
         local classData = lia.class.list[classID]
         if target:Team() ~= classData.faction then
-            client:notifyError("You cannot whitelist a class outside the faction.")
+            client:notifyErrorLocalized("whitelistFactionMismatch")
         elseif not target:getChar():getClasswhitelists()[classID] then
-            client:notifyInfo("This player is not whitelisted.")
+            client:notifyInfoLocalized("notWhitelisted")
         else
             local wl = target:getChar():getClasswhitelists()
             wl[classID] = nil
             target:getChar():setClasswhitelists(wl)
-            client:notifySuccess("Successfully removed the player's whitelist.")
-            target:notifyInfo(string.format("Class '%s' has been removed from your character.", L(classData.name)))
+            client:notifySuccessLocalized("unwhitelistedSuccess")
+            target:notifyInfoLocalized("classUnassigned", L(classData.name))
             lia.log.add(client, "classUnwhitelist", target:Name(), classData.name)
         end
     end
@@ -6918,7 +6917,7 @@ lia.command.add("classunwhitelist", {
 
 lia.command.add("spawnadd", {
     adminOnly = true,
-    desc = "Adds a spawn point at your current position for the specified faction.",
+    desc = "spawnAddDesc",
     arguments = {
         {
             name = "faction",
@@ -6935,7 +6934,7 @@ lia.command.add("spawnadd", {
     onRun = function(client, arguments)
         local factionName = arguments[1]
         if not factionName then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         end
 
@@ -6952,18 +6951,18 @@ lia.command.add("spawnadd", {
                 table.insert(spawns[factionInfo.uniqueID], newSpawn)
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnAdd", factionInfo.name)
-                    client:notifySuccess(string.format("You added spawn for %s.", L(factionInfo.name)))
+                    client:notifySuccessLocalized("spawnAdded", L(factionInfo.name))
                 end)
             end)
         else
-            client:notifyError("The specified faction is not valid.")
+            client:notifyErrorLocalized("invalidFaction")
         end
     end
 })
 
 lia.command.add("spawnremoveinradius", {
     adminOnly = true,
-    desc = "Removes all spawn points within the given radius of your position (default 120).",
+    desc = "spawnRemoveInRadiusDesc",
     arguments = {
         {
             name = "radius",
@@ -6996,11 +6995,11 @@ lia.command.add("spawnremoveinradius", {
             if removedCount > 0 then
                 lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                     lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
-                    client:notifySuccess(string.format("You have removed %s spawn point(s).", removedCount))
+                    client:notifySuccessLocalized("spawnDeleted", removedCount)
                 end)
             else
                 lia.log.add(client, "spawnRemoveRadius", radius, removedCount)
-                client:notifySuccess(string.format("You have removed %s spawn point(s).", removedCount))
+                client:notifySuccessLocalized("spawnDeleted", removedCount)
             end
         end)
     end
@@ -7008,7 +7007,7 @@ lia.command.add("spawnremoveinradius", {
 
 lia.command.add("spawnremovebyname", {
     adminOnly = true,
-    desc = "Removes all spawn points for the specified faction.",
+    desc = "spawnRemoveByNameDesc",
     arguments = {
         {
             name = "faction",
@@ -7043,24 +7042,24 @@ lia.command.add("spawnremovebyname", {
                         if #list == 0 then spawns[factionInfo.uniqueID] = nil end
                         lia.module.get("spawns"):StoreSpawns(spawns):next(function()
                             lia.log.add(client, "spawnRemoveByName", factionInfo.name, removedCount)
-                            client:notifySuccess(string.format("Deleted %s spawn point(s) for faction: %s.", L(factionInfo.name), removedCount))
+                            client:notifySuccessLocalized("spawnDeletedByName", L(factionInfo.name), removedCount)
                         end)
                     else
-                        client:notifyInfo("No spawn points exist for this faction.")
+                        client:notifyInfoLocalized("noSpawnsForFaction")
                     end
                 else
-                    client:notifyInfo("No spawn points exist for this faction.")
+                    client:notifyInfoLocalized("noSpawnsForFaction")
                 end
             end)
         else
-            client:notifyError("The specified faction is not valid.")
+            client:notifyErrorLocalized("invalidFaction")
         end
     end
 })
 
 lia.command.add("returnitems", {
     superAdminOnly = true,
-    desc = "Returns items lost on death to the specified player, if any.",
+    desc = "returnItemsDesc",
     arguments = {
         {
             name = "name",
@@ -7068,21 +7067,21 @@ lia.command.add("returnitems", {
         },
     },
     AdminStick = {
-        Name = "Return Items",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "returnItems",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/arrow_refresh.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         if lia.config.get("LoseItemsonDeathHuman", false) or lia.config.get("LoseItemsonDeathNPC", false) then
             if not target.LostItems or table.IsEmpty(target.LostItems) then
-                client:notifyInfo("The target hasn't lost any items or they've already been returned.")
+                client:notifyInfoLocalized("returnItemsTargetNoItems")
                 return
             end
 
@@ -7095,27 +7094,27 @@ lia.command.add("returnitems", {
             end
 
             target.LostItems = nil
-            target:notifySuccess("Your items have been returned.")
-            client:notifySuccess("Returned the items.")
+            target:notifySuccessLocalized("returnItemsReturnedToPlayer")
+            client:notifySuccessLocalized("returnItemsAdminConfirmed")
             lia.log.add(client, "returnItems", target:Name())
         else
-            client:notifyInfo("Item loss on death is not enabled!")
+            client:notifyInfoLocalized("returnItemsNotEnabled")
         end
     end
 })
 
 lia.command.add("returnallitems", {
     superAdminOnly = true,
-    desc = "Returns items lost on death to all players who have lost items.",
+    desc = "returnAllItemsDesc",
     AdminStick = {
-        Name = "Return All Items",
-        Category = "Character Management",
-        SubCategory = "Items",
+        Name = "returnAllItems",
+        Category = "characterManagement",
+        SubCategory = "items",
         Icon = "icon16/arrow_refresh.png"
     },
     onRun = function(client)
         if not lia.config.get("LoseItemsonDeathHuman", false) and not lia.config.get("LoseItemsonDeathNPC", false) then
-            client:notifyInfo("Item loss on death is not enabled!")
+            client:notifyInfoLocalized("returnItemsNotEnabled")
             return
         end
 
@@ -7134,16 +7133,16 @@ lia.command.add("returnallitems", {
             end
 
             target.LostItems = nil
-            target:notifySuccess("Your items have been returned.")
+            target:notifySuccessLocalized("returnItemsReturnedToPlayer")
             returnedCount = returnedCount + 1
             totalItems = totalItems + playerItemCount
             lia.log.add(client, "returnItems", target:Name())
         end
 
         if returnedCount > 0 then
-            client:notifySuccess(string.format("Returned items to %d players (%d total items).", returnedCount, totalItems))
+            client:notifySuccessLocalized("returnAllItemsAdminConfirmed", returnedCount, totalItems)
         else
-            client:notifyInfo("No players have lost items to return.")
+            client:notifyInfoLocalized("returnAllItemsNoItemsFound")
         end
     end
 })
@@ -7168,7 +7167,7 @@ end
 
 lia.command.add("viewtickets", {
     adminOnly = true,
-    desc = "Displays all tickets requested by the specified player.",
+    desc = "viewTicketsDesc",
     arguments = {
         {
             name = "name",
@@ -7178,7 +7177,7 @@ lia.command.add("viewtickets", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyError("You must specify a player name.")
+            client:notifyErrorLocalized("mustSpecifyPlayer")
             return
         end
 
@@ -7194,7 +7193,7 @@ lia.command.add("viewtickets", {
 
         GetTicketsByRequester(steamID):next(function(tickets)
             if #tickets == 0 then
-                client:notifyInfo("No tickets found for the specified player.")
+                client:notifyInfoLocalized("noTicketsFound")
                 return
             end
 
@@ -7202,12 +7201,12 @@ lia.command.add("viewtickets", {
             for _, ticket in ipairs(tickets) do
                 ticketsData[#ticketsData + 1] = {
                     timestamp = os.date("%Y-%m-%d %H:%M:%S", ticket.timestamp),
-                    admin = string.format("%s (%s)", ticket.admin or "N/A", ticket.adminSteamID or "N/A"),
+                    admin = string.format("%s (%s)", ticket.admin or L("na"), ticket.adminSteamID or L("na")),
                     message = ticket.message or ""
                 }
             end
 
-            lia.util.sendTableUI(client, string.format("Tickets for %s", displayName), {
+            lia.util.sendTableUI(client, L("ticketsForTitle", displayName), {
                 {
                     name = "timestamp",
                     field = "timestamp"
@@ -7229,7 +7228,7 @@ lia.command.add("viewtickets", {
 
 lia.command.add("plyviewclaims", {
     adminOnly = true,
-    desc = "Displays detailed claim information for the specified player.",
+    desc = "plyViewClaimsDesc",
     arguments = {
         {
             name = "name",
@@ -7237,21 +7236,21 @@ lia.command.add("plyviewclaims", {
         },
     },
     AdminStick = {
-        Name = "View Ticket Claims",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "viewTicketClaims",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/page_white_text.png"
     },
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyError("You must specify a player name.")
+            client:notifyErrorLocalized("mustSpecifyPlayer")
             return
         end
 
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -7259,7 +7258,7 @@ lia.command.add("plyviewclaims", {
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             local claim = caseclaims[steamID]
             if not claim then
-                client:notifyInfo("No claims found for the specified player.")
+                client:notifyInfoLocalized("noClaimsFound")
                 return
             end
 
@@ -7270,7 +7269,7 @@ lia.command.add("plyviewclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -7280,7 +7279,7 @@ lia.command.add("plyviewclaims", {
                 }
             }
 
-            lia.util.sendTableUI(client, string.format("Claims for %s", target:Nick()), {
+            lia.util.sendTableUI(client, L("claimsForTitle", target:Nick()), {
                 {
                     name = "steamID",
                     field = "steamID"
@@ -7314,11 +7313,11 @@ lia.command.add("plyviewclaims", {
 
 lia.command.add("viewallclaims", {
     adminOnly = true,
-    desc = "Displays a summary table of claim data for all admins.",
+    desc = "viewAllClaimsDesc",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:notifyInfo("No claims have been recorded yet.")
+                client:notifyInfoLocalized("noClaimsRecorded")
                 return
             end
 
@@ -7330,7 +7329,7 @@ lia.command.add("viewallclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -7374,11 +7373,11 @@ lia.command.add("viewallclaims", {
 
 lia.command.add("viewclaims", {
     adminOnly = true,
-    desc = "Prints detailed claim information for every admin to chat.",
+    desc = "viewClaimsDesc",
     onRun = function(client)
         lia.module.get("administration"):GetAllCaseClaims():next(function(caseclaims)
             if table.IsEmpty(caseclaims) then
-                client:notifyInfo("No claims data available.")
+                client:notifyInfoLocalized("noClaimsData")
                 return
             end
 
@@ -7391,7 +7390,7 @@ lia.command.add("viewclaims", {
                     claims = claim.claims,
                     lastclaim = os.date("%Y-%m-%d %H:%M:%S", claim.lastclaim),
                     timeSinceLastClaim = lia.time.timeSince(claim.lastclaim),
-                    claimedFor = table.IsEmpty(claim.claimedFor) and "None" or table.concat((function()
+                    claimedFor = table.IsEmpty(claim.claimedFor) and L("none") or table.concat((function()
                         local t = {}
                         for sid, name in pairs(claim.claimedFor) do
                             table.insert(t, string.format("%s (%s)", name, sid))
@@ -7433,7 +7432,7 @@ lia.command.add("viewclaims", {
 
 lia.command.add("warn", {
     adminOnly = true,
-    desc = "Issues a warning to the specified player with a given reason.",
+    desc = "warnDesc",
     arguments = {
         {
             name = "target",
@@ -7450,9 +7449,9 @@ lia.command.add("warn", {
         },
     },
     AdminStick = {
-        Name = "Warn Player",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "warnPlayer",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/error.png"
     },
     onRun = function(client, arguments)
@@ -7473,17 +7472,17 @@ lia.command.add("warn", {
         if normalized then
             severity = normalized
         elseif rawSeverity and rawSeverity ~= "" then
-            client:notifyError("Invalid argument.")
+            client:notifyErrorLocalized("invalidArg")
             return
         else
             reasonStartIndex = 2
         end
 
         local reason = table.concat(arguments, " ", reasonStartIndex)
-        if not targetName or reason == "" then return "Usage: warn [player] [severity] [reason]" end
+        if not targetName or reason == "" then return L("warnUsage") end
         local target = lia.util.findPlayer(client, targetName)
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -7492,8 +7491,8 @@ lia.command.add("warn", {
         local warnerSteamID = client:SteamID()
         hook.Run("AddWarning", target:getChar():getID(), target:Nick(), target:SteamID(), timestamp, reason, warnerName, warnerSteamID, severity)
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
-            target:notifyWarning(string.format("You have been warned by %s (%s) for: %s", warnerName .. " (" .. warnerSteamID .. ")", severity, reason))
-            client:notifySuccess(string.format("Warning issued to %s", target:Nick()))
+            target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", severity, reason)
+            client:notifySuccessLocalized("warningIssued", target:Nick())
             local message = warnerName .. " warned " .. target:Name() .. " (Character " .. target:getChar():getID() .. " | Steam64ID: " .. target:SteamID64() .. ") for \"" .. reason .. "\" [Severity: " .. severity .. "]."
             StaffAddTextShadowed(Color(255, 140, 0), "WARNING", Color(255, 255, 255), message)
             hook.Run("WarningIssued", client, target, reason, severity, count, warnerSteamID, target:SteamID())
@@ -7523,7 +7522,7 @@ lia.command.add("previewchatmessages", {
 
 lia.command.add("viewwarns", {
     adminOnly = true,
-    desc = "Displays all warnings issued to the specified player.",
+    desc = "viewWarnsDesc",
     arguments = {
         {
             name = "target",
@@ -7531,21 +7530,21 @@ lia.command.add("viewwarns", {
         },
     },
     AdminStick = {
-        Name = "View Player Warnings",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "viewPlayerWarnings",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/eye.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
         lia.module.get("administration"):GetWarnings(target:getChar():getID()):next(function(warns)
             if #warns == 0 then
-                client:notifyInfo(string.format("%s has no warnings.", target:Nick()))
+                client:notifyInfoLocalized("noWarnings", target:Nick())
                 return
             end
 
@@ -7553,14 +7552,14 @@ lia.command.add("viewwarns", {
             for index, warn in ipairs(warns) do
                 table.insert(warningList, {
                     index = index,
-                    timestamp = warn.timestamp or "N/A",
-                    admin = string.format("%s (%s)", warn.warner or "N/A", warn.warnerSteamID or "N/A"),
-                    warningMessage = warn.message or "N/A",
+                    timestamp = warn.timestamp or L("na"),
+                    admin = string.format("%s (%s)", warn.warner or L("na"), warn.warnerSteamID or L("na")),
+                    warningMessage = warn.message or L("na"),
                     severity = warn.severity or "Medium"
                 })
             end
 
-            lia.util.sendTableUI(client, string.format("%s's Warnings", target:Nick()), {
+            lia.util.sendTableUI(client, L("playerWarningsTitle", target:Nick()), {
                 {
                     name = "id",
                     field = "index"
@@ -7578,7 +7577,7 @@ lia.command.add("viewwarns", {
                     field = "warningMessage"
                 },
                 {
-                    name = "Severity",
+                    name = L("warningSeverity"),
                     field = "severity"
                 }
             }, warningList, {
@@ -7600,7 +7599,7 @@ end
 
 lia.command.add("viewwarnsissued", {
     adminOnly = true,
-    desc = "Displays all warnings issued by the specified staff member.",
+    desc = "viewWarnsIssuedDesc",
     arguments = {
         {
             name = "staff",
@@ -7610,7 +7609,7 @@ lia.command.add("viewwarnsissued", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyError("Target not found")
+            client:notifyErrorLocalized("targetNotFound")
             return
         end
 
@@ -7623,7 +7622,7 @@ lia.command.add("viewwarnsissued", {
 
         GetWarningsByIssuer(steamID):next(function(warns)
             if #warns == 0 then
-                client:notifyInfo(string.format("%s has no warnings.", displayName))
+                client:notifyInfoLocalized("noWarnings", displayName)
                 return
             end
 
@@ -7631,14 +7630,14 @@ lia.command.add("viewwarnsissued", {
             for index, warn in ipairs(warns) do
                 warningList[#warningList + 1] = {
                     index = index,
-                    timestamp = warn.timestamp or "N/A",
-                    player = string.format("%s (%s)", warn.warned or "N/A", warn.warnedSteamID or "N/A"),
-                    warningMessage = warn.message or "N/A",
+                    timestamp = warn.timestamp or L("na"),
+                    player = string.format("%s (%s)", warn.warned or L("na"), warn.warnedSteamID or L("na")),
+                    warningMessage = warn.message or L("na"),
                     severity = warn.severity or "Medium"
                 }
             end
 
-            lia.util.sendTableUI(client, string.format("Warnings Issued by %s", displayName), {
+            lia.util.sendTableUI(client, L("warningsIssuedTitle", displayName), {
                 {
                     name = "id",
                     field = "index"
@@ -7656,7 +7655,7 @@ lia.command.add("viewwarnsissued", {
                     field = "warningMessage"
                 },
                 {
-                    name = "Severity",
+                    name = L("warningSeverity"),
                     field = "severity"
                 }
             }, warningList)
@@ -7674,11 +7673,11 @@ lia.command.add("recogwhisper", {
             type = "player"
         },
     },
-    desc = "Force player recognition in whisper range.",
+    desc = "recogWhisperDesc",
     AdminStick = {
-        Name = "Force Recognition (Whisper)",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickForceRecognitionWhisperName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_comment.png"
     },
     onRun = function(client, arguments)
@@ -7696,11 +7695,11 @@ lia.command.add("recognormal", {
             type = "player"
         },
     },
-    desc = "Force player recognition in normal range.",
+    desc = "recogNormalDesc",
     AdminStick = {
-        Name = "Force Recognition (Normal)",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickForceRecognitionNormalName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_green.png"
     },
     onRun = function(client, arguments)
@@ -7718,11 +7717,11 @@ lia.command.add("recogyell", {
             type = "player"
         },
     },
-    desc = "Force player recognition in yell range.",
+    desc = "recogYellDesc",
     AdminStick = {
-        Name = "Force Recognition (Yell)",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickForceRecognitionYellName",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
     },
     onRun = function(client, arguments)
@@ -7746,7 +7745,7 @@ lia.command.add("recogbots", {
             optional = true
         },
     },
-    desc = "Force all bots to recognize people around them. Optionally specify a fake name.",
+    desc = "recogBotsDesc",
     onRun = function(_, arguments)
         local range = arguments[1] or "normal"
         local fakeName = arguments[2]
@@ -7758,14 +7757,14 @@ lia.command.add("recogbots", {
 
 lia.command.add("kickbots", {
     privilege = "manageBots",
-    desc = "Kick all bots from the server.",
+    desc = "kickAllBotsDesc",
     onRun = function(client)
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
         local kickedCount = 0
         for _, bot in player.Iterator() do
             if bot:IsBot() then
-                bot:Kick("All bots kicked")
-                client:notifySuccess("Player kicked.")
+                bot:Kick(L("allBotsKicked"))
+                client:notifySuccessLocalized("plyKicked")
                 lia.log.add(client, "plyKick", bot:Name())
                 lia.db.insertTable({
                     player = bot:Name(),
@@ -7782,20 +7781,20 @@ lia.command.add("kickbots", {
         end
 
         if kickedCount == 0 then
-            client:notifyError("No bots to kick.")
+            client:notifyErrorLocalized("noBotsToKick")
         else
-            client:notifyInfo(string.format("Kicked %d bots from the server.", kickedCount))
+            client:notifyInfoLocalized("botsKickedAll", kickedCount)
         end
     end
 })
 
 lia.command.add("npcchangetype", {
     adminOnly = true,
-    desc = "Change the type of a dialog NPC you are looking at.",
+    desc = "npcchangetypeDesc",
     AdminStick = {
-        Name = "Change NPC Type",
-        Category = "Moderation",
-        SubCategory = "Moderation Tools",
+        Name = "adminStickChangeNPCType",
+        Category = "moderation",
+        SubCategory = "moderationTools",
         TargetClass = "lia_npc",
         Icon = "icon16/user_edit.png"
     },
@@ -7899,26 +7898,26 @@ lia.command.add("plyrespawn", {
             type = "player"
         }
     },
-    desc = "Force another player to respawn.",
+    desc = "plyRespawnDesc",
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not target or not IsValid(target) then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         target:Spawn()
-        client:notifySuccess(string.format("Successfully force respawned %s.", target:Name()))
-        target:notify("You were force respawned by an admin.", "default" or "default")
+        client:notifySuccessLocalized("playerForceRespawned", target:Name())
+        target:notifyLocalized("youWereForceRespawned")
         lia.log.add(client, "plyrespawn", target:Name())
     end
 })
 
 lia.command.add("forcerespawn", {
-    desc = "Force yourself to respawn after death.",
+    desc = "forceRespawnDesc",
     onRun = function(client)
         if client:Alive() then
-            client:notifyError("Player is already alive.")
+            client:notifyErrorLocalized("playerAlreadyAlive")
             return
         end
 
@@ -7927,20 +7926,20 @@ lia.command.add("forcerespawn", {
         local lastDeath = client:getLocalVar("lastDeathTime", os.time())
         local timePassed = os.time() - lastDeath
         if timePassed < baseTime then
-            client:notifyError(string.format("You cannot respawn yet. Please wait %s seconds.", baseTime - timePassed))
+            client:notifyErrorLocalized("cannotRespawnYet", baseTime - timePassed)
             return
         end
 
         client:Spawn()
         client:setLocalVar("lastDeathTime", 0)
-        client:notifySuccess(string.format("Successfully force respawned %s.", client:Name()))
-        client:notify("You were force respawned by an admin.", "default" or "default")
+        client:notifySuccessLocalized("playerForceRespawned", client:Name())
+        client:notifyLocalized("youWereForceRespawned")
         lia.log.add(client, "forcerespawn", client:Name())
     end
 })
 
 lia.command.add("resetvendorcooldowns", {
-    desc = "Reset vendor cooldowns for a player",
+    desc = "resetvendorcooldownsDesc",
     privilege = "canEditVendors",
     adminOnly = true,
     arguments = {
@@ -7951,50 +7950,50 @@ lia.command.add("resetvendorcooldowns", {
         }
     },
     AdminStick = {
-        Name = "Reset Vendor Cooldowns",
-        Category = "Character Management",
-        SubCategory = "Properties",
+        Name = "adminStickResetVendorCooldownsName",
+        Category = "characterManagement",
+        SubCategory = "properties",
         Icon = "icon16/time_delete.png"
     },
     onRun = function(client, arguments)
         local target = lia.util.findPlayer(client, arguments[1])
         if not IsValid(target) then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         local character = target:getChar()
         if not character then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         character:setData("vendorCooldowns", {})
-        client:notify("Vendor cooldowns have been reset for %s.", target:Name() or "default")
-        target:notify("Your vendor cooldowns have been reset by an administrator.", "default" or "default")
+        client:notifyLocalized("vendorCooldownsReset", target:Name())
+        target:notifyLocalized("vendorCooldownsResetByAdmin")
     end
 })
 
 lia.command.add("storagepasswordremove", {
     adminOnly = true,
-    desc = "Remove the password from the storage container you're looking at.",
+    desc = "storagePasswordRemoveDesc",
     arguments = {},
     onRun = function(client)
         local trace = client:GetEyeTrace()
         local entity = trace.Entity
         if not IsValid(entity) or trace.HitPos:Distance(client:GetPos()) > 128 then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         if not entity.password then
-            client:notifyError("This storage is not locked.")
+            client:notifyErrorLocalized("storageNotLocked")
             return
         end
 
         entity.password = nil
         entity:setNetVar("locked", false)
-        client:notifySuccess("Storage password has been removed.")
+        client:notifySuccessLocalized("storageUnlocked")
         lia.log.add(client, "storagePasswordRemoved", entity:GetClass())
         hook.Run("UpdateEntityPersistence", entity)
     end
@@ -8002,7 +8001,7 @@ lia.command.add("storagepasswordremove", {
 
 lia.command.add("storagepasswordchange", {
     adminOnly = true,
-    desc = "Change the password on the storage container you're looking at.",
+    desc = "storagePasswordChangeDesc",
     arguments = {
         {
             name = "password",
@@ -8014,18 +8013,18 @@ lia.command.add("storagepasswordchange", {
         local entity = trace.Entity
         local newPassword = arguments[1]
         if not IsValid(entity) or trace.HitPos:Distance(client:GetPos()) > 128 then
-            client:notifyError("Invalid Target!")
+            client:notifyErrorLocalized("invalidTarget")
             return
         end
 
         if not newPassword or newPassword == "" then
-            client:notifyError("Password cannot be empty.")
+            client:notifyErrorLocalized("invalidPassword")
             return
         end
 
         entity.password = newPassword
         entity:setNetVar("locked", true)
-        client:notifySuccess("Storage password has been changed.")
+        client:notifySuccessLocalized("storagePasswordChanged")
         lia.log.add(client, "storagePasswordChanged", entity:GetClass())
         hook.Run("UpdateEntityPersistence", entity)
     end
@@ -8033,7 +8032,7 @@ lia.command.add("storagepasswordchange", {
 
 lia.command.add("listnearbyentities", {
     adminOnly = true,
-    desc = "Lists all entities within a specified radius around the player.",
+    desc = "listNearbyEntitiesDesc",
     arguments = {
         {
             name = "radius",
@@ -8110,7 +8109,7 @@ lia.command.add("listnearbyentities", {
 
 concommand.Add("lia_setextrachars", function(client, _, args)
     if IsValid(client) then
-        client:notifyError("This command can only be run from the server console.")
+        client:notifyErrorLocalized("commandConsoleOnly")
         return
     end
 
@@ -8269,7 +8268,7 @@ end)
 
 concommand.Add("lia_give_money_steamid", function(client, _, args)
     if IsValid(client) then
-        client:notifyError("This command can only be run from the server console.")
+        client:notifyErrorLocalized("commandConsoleOnly")
         return
     end
 

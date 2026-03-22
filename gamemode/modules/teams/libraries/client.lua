@@ -3,15 +3,15 @@
     if not IsValid(client) then return end
     local character = client:getChar()
     if not character then return end
-    hook.Run("AddTextField", "General Info", "faction", "Faction", function()
+    hook.Run("AddTextField", L("generalInfo"), "faction", L("faction"), function()
         local factionName = team.GetName(client:Team())
-        return string.format("You are part of the %s faction", factionName)
+        return L("factionMember", factionName)
     end)
 
     local classID = character:getClass()
     if not lia.class or not lia.class.list then return end
     local classData = lia.class.list[classID]
-    if classID and classData and classData.name then hook.Run("AddTextField", "General Info", "class", "Class", function() return string.format("You are part of the %s class", classData.name) end) end
+    if classID and classData and classData.name then hook.Run("AddTextField", L("generalInfo"), "class", L("class"), function() return L("classMember", classData.name) end) end
 end
 
 function MODULE:DrawCharInfo(client, character, info)
@@ -19,7 +19,7 @@ function MODULE:DrawCharInfo(client, character, info)
     local charClass = client:getClassData()
     if charClass then
         local classColor = charClass.color or Color(255, 255, 255)
-        info[#info + 1] = {L(charClass.name) or "Undefined Class", classColor}
+        info[#info + 1] = {L(charClass.name) or L("undefinedClass"), classColor}
     end
 end
 
@@ -39,7 +39,7 @@ function MODULE:CreateMenuButtons(tabs)
             panel.Paint = nil
             local loadingLabel = panel:Add("DLabel")
             loadingLabel:Dock(FILL)
-            loadingLabel:SetText("Loading...")
+            loadingLabel:SetText(L("loading"))
             loadingLabel:SetTextColor(Color(150, 150, 150))
             loadingLabel:SetFont("LiliaFont.20")
             loadingLabel:SetContentAlignment(5)
@@ -53,7 +53,7 @@ function MODULE:CreateMenuButtons(tabs)
                 net.WriteString(faction.uniqueID)
                 net.SendToServer()
             else
-                loadingLabel:SetText("No factions found.")
+                loadingLabel:SetText(L("noFactionsFound"))
             end
         end
     end
@@ -81,7 +81,7 @@ local function CreateFactionManagementUI(panel)
     if #factions == 0 then
         local noFactionsLabel = panel:Add("DLabel")
         noFactionsLabel:Dock(FILL)
-        noFactionsLabel:SetText("No options available")
+        noFactionsLabel:SetText(L("noOptionsAvailable"))
         noFactionsLabel:SetTextColor(Color(150, 150, 150))
         noFactionsLabel:SetFont("LiliaFont.20")
         noFactionsLabel:SetContentAlignment(5)
@@ -105,7 +105,7 @@ local function CreateFactionManagementUI(panel)
 
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
-        loadingLabel:SetText("Loading...")
+        loadingLabel:SetText(L("loading"))
         loadingLabel:SetTextColor(Color(150, 150, 150))
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
@@ -123,7 +123,7 @@ local function CreateFactionManagementUI(panel)
         pagePanel.factionUniqueID = factionData.uniqueID
         local loadingLabel = pagePanel:Add("DLabel")
         loadingLabel:Dock(FILL)
-        loadingLabel:SetText("Loading...")
+        loadingLabel:SetText(L("loading"))
         loadingLabel:SetTextColor(Color(150, 150, 150))
         loadingLabel:SetFont("LiliaFont.20")
         loadingLabel:SetContentAlignment(5)
@@ -166,7 +166,7 @@ local function UpdateFactionRosterUI(panel, data)
     if #members == 0 then
         local noMembersLabel = panel:Add("DLabel")
         noMembersLabel:Dock(FILL)
-        noMembersLabel:SetText("No options available")
+        noMembersLabel:SetText(L("noOptionsAvailable"))
         noMembersLabel:SetTextColor(Color(150, 150, 150))
         noMembersLabel:SetFont("LiliaFont.20")
         noMembersLabel:SetContentAlignment(5)
@@ -176,10 +176,10 @@ local function UpdateFactionRosterUI(panel, data)
     local list = panel:Add("liaTable")
     list:Dock(FILL)
     list:DockMargin(0, 0, 0, 0)
-    list:AddColumn("Name")
-    list:AddColumn("Character ID")
+    list:AddColumn(L("name"))
+    list:AddColumn(L("characterID"))
     for _, member in ipairs(members) do
-        local line = list:AddLine(member.name or "Unknown", member.charID or "Unknown")
+        local line = list:AddLine(member.name or L("unknown"), member.charID or L("unknown"))
         if line then
             line.charID = member.charID
             line.steamID = member.steamID
@@ -212,24 +212,24 @@ local function UpdateFactionMembersUI(panel, data)
     local list = pagePanel:Add("liaTable")
     list:Dock(FILL)
     list:DockMargin(0, 0, 0, 0)
-    list:AddColumn("Name")
-    list:AddColumn("Character ID")
-    list:AddColumn("SteamID")
-    list:AddColumn("Last Online")
+    list:AddColumn(L("name"))
+    list:AddColumn(L("characterID"))
+    list:AddColumn(L("steamID"))
+    list:AddColumn(L("lastOnline"))
     for _, member in ipairs(factionData.members) do
-        local lastOnlineText = member.lastOnline or "Unknown"
+        local lastOnlineText = member.lastOnline or L("unknown")
         local isOnline = false
-        if lastOnlineText == "Online now" then
+        if lastOnlineText == L("onlineNow") then
             isOnline = true
         elseif member.charID then
             local owner = lia.char.getOwnerByID(member.charID)
             if IsValid(owner) and owner:getChar() and owner:getChar():getID() == member.charID then
                 isOnline = true
-                lastOnlineText = "Online now"
+                lastOnlineText = L("onlineNow")
             end
         end
 
-        if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= "Unknown" then
+        if not isOnline and isstring(lastOnlineText) and lastOnlineText ~= L("unknown") then
             local timeParts = lia.time.toNumber(lastOnlineText)
             if timeParts and timeParts.year then
                 local timestamp = os.time{
@@ -244,22 +244,22 @@ local function UpdateFactionMembersUI(panel, data)
                 local lastDiff = os.time() - timestamp
                 if lastDiff > 0 then
                     local timeSince = lia.time.timeSince(timestamp)
-                    if timeSince and timeSince ~= "Invalid date" and timeSince ~= "Invalid input" then
+                    if timeSince and timeSince ~= L("invalidDate") and timeSince ~= L("invalidInput") then
                         local timeStripped = timeSince:match("^(.-)%sago$") or timeSince
-                        lastOnlineText = string.format("%s (%s) ago", timeStripped, lia.time.formatDHM(lastDiff))
+                        lastOnlineText = L("agoFormat", timeStripped, lia.time.formatDHM(lastDiff))
                     end
                 end
             end
         end
 
-        local line = list:AddLine(member.name or "Unknown", member.charID or "Unknown", member.steamID or "Unknown", lastOnlineText)
+        local line = list:AddLine(member.name or L("unknown"), member.charID or L("unknown"), member.steamID or L("unknown"), lastOnlineText)
         if line then
             line.charID = member.charID
             line.steamID = member.steamID
         end
     end
 
-    list:AddMenuOption("Kick to Base Faction", function(rowData)
+    list:AddMenuOption(L("kickToBaseFaction"), function(rowData)
         if not rowData or not rowData.charID then return end
         net.Start("liaKickCharacterToBase")
         net.WriteUInt(rowData.charID, 32)

@@ -43,7 +43,7 @@ ITEM.name = "aidName"
         ITEM.desc = "A medical kit that restores health"
         ```
 ]]
-ITEM.desc = "Heals you bruh."
+ITEM.desc = "aidDesc"
 --[[
     Purpose:
         Sets the 3D model used for the item
@@ -146,7 +146,7 @@ ITEM.functions.target = {
                 if item.stamina > 0 then client:restoreStamina(item.stamina) end
                 return true
             else
-                client:notifyError("You must be looking at a valid, living player to use this.")
+                client:notifyErrorLocalized("invalidTargetNeedLiving")
                 return false
             end
         end

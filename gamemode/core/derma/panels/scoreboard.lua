@@ -264,7 +264,7 @@ function PANEL:addPlayer(ply, parent)
     slot.model:setHidden(slot.lastHidden)
     local initialOpts = {}
     hook.Run("ShowPlayerOptions", ply, initialOpts)
-    if #initialOpts > 0 then slot.model:SetTooltip("Scoreboard Options.") end
+    if #initialOpts > 0 then slot.model:SetTooltip(L("sbOptions")) end
     slot.model.DoClick = function()
         local opts = {}
         hook.Run("ShowPlayerOptions", ply, opts)
@@ -273,7 +273,7 @@ function PANEL:addPlayer(ply, parent)
             frame:SetSize(360, 450)
             frame:Center()
             frame:MakePopup()
-            frame:SetTitle("Scoreboard Options.")
+            frame:SetTitle(L("sbOptions"))
             frame:LiteMode()
             table.insert(self.playerOptionFrames, frame)
             frame.OnRemove = function()

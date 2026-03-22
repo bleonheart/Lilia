@@ -1,16 +1,16 @@
-﻿MODULE.name = "Protection"
+﻿MODULE.name = "protectionModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Provides anti-cheat and anti-exploit protections."
+MODULE.desc = "anticheatDescription"
 MODULE.Privileges = {
     ["canSeeAltingNotifications"] = {
-        Name = "See Alting Notifications",
+        Name = "canSeeAltingNotifications",
         MinAccess = "admin",
-        Category = "Exploiting",
+        Category = "exploiting",
     },
     ["teleportToEntity"] = {
-        Name = "Teleport To Entity",
+        Name = "teleportToEntity",
         MinAccess = "admin",
-        Category = "Exploiting",
+        Category = "exploiting",
     },
 }

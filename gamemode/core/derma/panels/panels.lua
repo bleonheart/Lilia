@@ -131,8 +131,8 @@ local QuickPanel = {}
 function QuickPanel:Init()
     if IsValid(lia.gui.quick) then lia.gui.quick:Remove() end
     lia.gui.quick = self
-    self:SetSkin(lia.config.get("DermaSkin", "Lilia Skin"))
-    self:SetTitle("Quick Settings")
+    self:SetSkin(lia.config.get("DermaSkin", L("liliaSkin")))
+    self:SetTitle(L("quickSettings"))
     self:SetAlphaBackground(false)
     self:DockPadding(6, 7, 6, 7)
     self:SetDraggable(false)
@@ -387,7 +387,7 @@ function QuickPanel:populateOptions()
     for _, info in ipairs(allOptions) do
         local opt = info.opt
         if not opt.visible or (isfunction(opt.visible) and opt.visible()) then
-            local categoryName = (opt.data and opt.data.category) or "Unsorted"
+            local categoryName = (opt.data and opt.data.category) or L("categoryUnsorted")
             if not categories[categoryName] then categories[categoryName] = {} end
             table.insert(categories[categoryName], info)
         end
@@ -399,8 +399,8 @@ function QuickPanel:populateOptions()
     end
 
     table.sort(sortedCategories, function(a, b)
-        if a == "Unsorted" then return false end
-        if b == "Unsorted" then return true end
+        if a == L("categoryUnsorted") then return false end
+        if b == L("categoryUnsorted") then return true end
         return a < b
     end)
 

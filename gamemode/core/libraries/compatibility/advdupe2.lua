@@ -2,7 +2,7 @@
     entities = entities or {}
     for _, ent in pairs(entities) do
         if ent.ModelScale and ent.ModelScale > 10 then
-            client:notifyError("A model within this duplication exceeds the size limit!")
+            client:notifyErrorLocalized("duplicationSizeLimit")
             lia.log.add(client, "dupeCrashAttempt")
             return false
         end
@@ -26,7 +26,7 @@ hook.Add("CanTool", "liaAdvDupe2", function(client, _, tool)
     if not dupe then return end
     for _, ent in pairs(dupe.Entities or {}) do
         if ent.NoDuplicate then
-            client:notifyError(string.format("This entity cannot be duplicated using %s.", tool))
+            client:notifyErrorLocalized("cannotDuplicateEntity", tool)
             return false
         end
     end
@@ -76,4 +76,4 @@ hook.Add("AdvDupe_FinishPasting", "Betterdupe_AdvDupe_FinishPasting", function(t
     ply.tempBetterDupe = nil
 end)
 
-lia.log.addType("dupeCrashAttempt", function(client) return string.format("Player '%s' [%s] attempted to duplicate oversized entities.", IsValid(client) and client:Name() or "Unknown", IsValid(client) and client:SteamID() or "N/A") end, "Security")
+lia.log.addType("dupeCrashAttempt", function(client) return L("dupeCrashAttemptLog", IsValid(client) and client:Name() or L("unknown"), IsValid(client) and client:SteamID() or L("na")) end, L("categorySecurity"))

@@ -46,26 +46,26 @@ local function buildMaterial(p, flags)
 end
 
 local function validateURL(url)
-    if not url or not isstring(url) then return false, "URL Not Valid String" end
-    if not url:find("^https?://") then return false, "URL Must Start With Http" end
+    if not url or not isstring(url) then return false, L("urlNotValidString") end
+    if not url:find("^https?://") then return false, L("urlMustStartWithHttp") end
     local domain = url:match("^https?://([^/]+)")
-    if not domain then return false, "URL No Valid Domain" end
-    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, "Localhost URLs Not Allowed" end
+    if not domain then return false, L("urlNoValidDomain") end
+    if domain:find("^localhost") or domain:find("^127%.0%.0%.1") then return false, L("localhostUrlsNotAllowed") end
     local ipPattern = "^%d+%.%d+%.%d+%.%d+$"
     if domain:match(ipPattern) then
         local parts = string.Explode(".", domain)
-        if #parts ~= 4 then return false, "Invalid IP Address Format" end
+        if #parts ~= 4 then return false, L("invalidIPAddressFormat") end
         for _, part in ipairs(parts) do
             local num = tonumber(part)
-            if not num or num < 0 or num > 255 then return false, "invalid IP address octet" end
+            if not num or num < 0 or num > 255 then return false, L("invalidIPAddressOctet") end
         end
     else
-        if not domain:find("%.") then return false, "domain name must contain at least one dot" end
-        if domain:find("%.%.") then return false, "Domain contains consecutive dots." end
+        if not domain:find("%.") then return false, L("domainMustContainDot") end
+        if domain:find("%.%.") then return false, L("domainContainsConsecutiveDots") end
     end
 
-    if url:find("[<>\"\\|]") then return false, "URL contains invalid characters." end
-    if #url > 2048 then return false, "URL is too long (max 2048 characters)." end
+    if url:find("[<>\"\\|]") then return false, L("urlContainsInvalidChars") end
+    if #url > 2048 then return false, L("urlTooLong") end
     return true
 end
 
@@ -102,7 +102,7 @@ end
                 end, entry.flags)
             end
 
-            hook.Add("InitPostEntity", "PreloadHUDImages", function()
+            hook.Add("InitializedModules", "PreloadHUDImages", function()
                 preloadIcons({
                     {name = "hud/armor_icon.png", url = "https://assets.example.com/images/armor_icon.png", flags = "noclamp smooth"},
                     {name = "hud/health_icon.png", url = "https://assets.example.com/images/health_icon.png", flags = "noclamp smooth"}
@@ -158,7 +158,7 @@ function lia.webimage.download(n, u, cb, flags)
         end
 
         if not extension then
-            if cb then cb(nil, false, "Invalid file format - not PNG or JPEG") end
+            if cb then cb(nil, false, L("invalidFileFormatNotPngJpeg")) end
             return
         end
 

@@ -281,7 +281,7 @@ function lia.lang.getLocalizedString(key, ...)
 
     local success, result = pcall(string.format, template, unpack(args))
     if not success then
-        lia.error("Format Error In Localization String '" .. tostring(key) .. "': " .. result)
+        lia.error(L("formatErrorInLocalizationString") .. " '" .. tostring(key) .. "': " .. result)
         return tostring(key)
     end
 

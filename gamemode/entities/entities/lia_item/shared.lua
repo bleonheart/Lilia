@@ -1,6 +1,6 @@
 ﻿ENT.Base = "base_entity"
 ENT.Type = "anim"
-ENT.PrintName = "Item"
+ENT.PrintName = L("item")
 ENT.Author = "Samael"
 ENT.Contact = "@liliaplayer"
 ENT.Category = "Lilia"

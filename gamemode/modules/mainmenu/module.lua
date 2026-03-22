@@ -1,7 +1,7 @@
-﻿MODULE.name = "Main Menu"
+﻿MODULE.name = "mainMenuModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Creates the in-game main menu used for selecting, creating, and managing player characters before entering the world."
+MODULE.desc = "mainMenuDescription"
 if SERVER then
     function MODULE:SyncCharList(client)
         if not client.liaCharList then return end
@@ -35,7 +35,7 @@ else
     end
 
     function MODULE:ChooseCharacter(id)
-        assert(isnumber(id), "id must be a number")
+        assert(isnumber(id), L("idMustBeNumber"))
         local d = deferred.new()
         net.Receive("liaCharChoose", function()
             local message = net.ReadString()
@@ -59,7 +59,7 @@ else
 
     function MODULE:CreateCharacter(data)
         local client = LocalPlayer()
-        assert(istable(data), "Data must be a table")
+        assert(istable(data), L("dataMustBeTable"))
         local d = deferred.new()
         local payload = {}
         for key, charVar in pairs(lia.char.vars) do
@@ -102,7 +102,7 @@ else
     end
 
     function MODULE:DeleteCharacter(id)
-        assert(isnumber(id), "id must be a number")
+        assert(isnumber(id), L("idMustBeNumber"))
         net.Start("liaCharDelete")
         net.WriteUInt(id, 32)
         net.SendToServer()
@@ -126,7 +126,7 @@ else
     function MODULE:LoadMainCharacter()
         local mainCharID = hook.Run("GetMainCharacterID")
         if not mainCharID then
-            LocalPlayer():notifyError("No main character set.")
+            LocalPlayer():notifyErrorLocalized("noMainCharacter")
             return
         end
         return self:ChooseCharacter(mainCharID):next(function() if IsValid(lia.gui.character) then lia.gui.character:Remove() end end):catch(function(err) if err and err ~= "" then LocalPlayer():notifyErrorLocalized(err) end end)
@@ -186,13 +186,13 @@ else
         if IsValid(client) then
             lia.localData = lia.localData or {}
             lia.localData["mainCharacter"] = charID
-            client:notify("Character set as main character.", "default" or "default")
+            client:notifyLocalized("mainCharacterSet")
             if IsValid(lia.gui.character) and lia.gui.character.isLoadMode then lia.gui.character:updateSelectedCharacter() end
         end
     end)
 
     net.Receive("liaStaffDiscordPrompt", function()
-        lia.derma.requestString("Staff Character Setup", "Please enter your Discord username for your staff character description:", function(discord)
+        lia.derma.requestString(L("staffCharacterSetup"), L("discordUsernamePrompt"), function(discord)
             if discord and discord:Trim() ~= "" then
                 net.Start("liaStaffDiscordResponse")
                 net.WriteString(discord:Trim())
@@ -202,7 +202,7 @@ else
                 net.WriteString("not provided")
                 net.SendToServer()
             else
-                LocalPlayer():notifyError("Discord username cannot be empty!")
+                LocalPlayer():notifyErrorLocalized("discordUsernameEmpty")
             end
         end, "", nil)
     end)

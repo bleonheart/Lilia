@@ -318,7 +318,7 @@ local ConditionalFiles = {
         ```
 ]]
 function lia.loader.include(path, realm)
-    if not path then lia.error("Missing file path") end
+    if not path then lia.error(L("missingFilePath")) end
     path = path:gsub("\\", "/")
     local resolved = realm
     if not resolved then
@@ -537,76 +537,76 @@ function lia.loader.checkForUpdates()
             end
 
             if not match then
-                MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
-                MsgC(Color(0, 255, 255), string.format("Module with uniqueID '%s' not found", mod.versionID), "\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("moduleUniqueIDNotFound", mod.versionID), "\n")
             elseif not match.version then
-                MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
-                MsgC(Color(0, 255, 255), string.format("Module '%s' has no remote version info", mod.name), "\n")
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                MsgC(Color(0, 255, 255), L("moduleNoRemoteVersion", mod.name), "\n")
             elseif mod.version and versionCompare(mod.version, match.version) < 0 then
-                MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
+                MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
                 if isPrivate then
-                    MsgC(Color(0, 255, 255), string.format("Module '%s' is outdated, please report back to the author", mod.name), "\n")
+                    MsgC(Color(0, 255, 255), L("privateModuleOutdated", mod.name), "\n")
                 else
-                    MsgC(Color(0, 255, 255), string.format("Module '%s' is outdated. Update to version %s", mod.name, match.version), "\n")
+                    MsgC(Color(0, 255, 255), L("moduleOutdated", mod.name, match.version), "\n")
                 end
             end
         end
     end
 
     local function logError(message)
-        MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
+        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
         MsgC(Color(0, 255, 255), message, "\n")
     end
 
     if #publicModules then
         fetchURL(publicURL, function(body, code)
             if code ~= 200 then
-                logError(string.format("Error fetching module list (HTTP %s) - which is the public repository", code))
+                logError(L("moduleListHTTPError", code))
                 return
             end
 
             local remote = util.JSONToTable(body)
             if not remote then
-                logError("Error parsing module data")
+                logError(L("moduleDataParseError"))
                 return
             end
 
             processModuleUpdates(publicModules, remote, false)
-        end, function(err) logError(string.format("Error fetching module list: %s", err)) end)
+        end, function(err) logError(L("moduleListError", err)) end)
     end
 
     if #privateModules then
         fetchURL(privateURL, function(body, code)
             if code ~= 200 then
-                logError(string.format("Error fetching module list (HTTP %s) - which is the private repository", code))
+                logError(L("privateModuleListHTTPError", code))
                 return
             end
 
             local remote = util.JSONToTable(body)
             if not remote then
-                logError("Error parsing private module data")
+                logError(L("privateModuleDataParseError"))
                 return
             end
 
             processModuleUpdates(privateModules, remote, true)
-        end, function(err) logError(string.format("Error fetching private module list: %s", err)) end)
+        end, function(err) logError(L("privateModuleListError", err)) end)
     end
 
     fetchURL(versionURL, function(body, code)
         if code ~= 200 then
-            logError(string.format("Error fetching framework version (HTTP %s)", code))
+            logError(L("frameworkVersionHTTPError", code))
             return
         end
 
         local remote = util.JSONToTable(body)
         if not remote or not remote.version then
-            logError("Error parsing framework version data")
+            logError(L("frameworkVersionDataParseError"))
             return
         end
 
         local localVersion = GAMEMODE.version
         if not localVersion then
-            logError("Error reading local framework version")
+            logError(L("localFrameworkVersionError"))
             return
         end
 
@@ -616,15 +616,15 @@ function lia.loader.checkForUpdates()
                 local diff = remoteNum - localNum
                 diff = math.Round(diff, 3)
                 if diff > 0 then
-                    MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
-                    MsgC(Color(0, 255, 255), string.format("Your Lilia installation is %s versions behind.", diff), "\n")
+                    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+                    MsgC(Color(0, 255, 255), L("frameworkBehindCount", diff), "\n")
                 end
             end
 
-            MsgC(Color(83, 143, 239), "[Lilia] ", "[Updater] ")
-            MsgC(Color(0, 255, 255), "Framework is outdated. Restart the Server to update it", "\n")
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logUpdater") .. "] ")
+            MsgC(Color(0, 255, 255), L("frameworkOutdated"), "\n")
         end
-    end, function(err) logError(string.format("Error fetching framework version: %s", err)) end)
+    end, function(err) logError(L("frameworkVersionError", err)) end)
 end
 
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
@@ -656,7 +656,7 @@ lia.loader.include("lilia/gamemode/core/libraries/data.lua", "shared")
         ```
 ]]
 function lia.error(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Error] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logError") .. "] ")
     MsgC(Color(255, 0, 0), tostring(msg), "\n")
 end
 
@@ -681,7 +681,7 @@ end
         ```
 ]]
 function lia.warning(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Warning] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
     MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
@@ -706,7 +706,7 @@ end
         ```
 ]]
 function lia.information(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Information] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
@@ -736,7 +736,7 @@ end
 ]]
 function lia.bootstrap(section, msg)
     if lia.isReloading and section ~= "HotReload" then return end
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[Bootstrap] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logBootstrap") .. "] ")
     MsgC(Color(0, 255, 0), "[" .. section .. "] ")
     MsgC(Color(255, 255, 255), tostring(msg), "\n")
 end
@@ -769,16 +769,16 @@ end
 function lia.relaydiscordMessage(embed)
     if not lia.discordWebhook or not istable(embed) then return end
     local ForceHTTPMode = not util.IsBinaryModuleInstalled("chttp")
-    embed.title = embed.title or "Lilia"
+    embed.title = embed.title or L("discordRelayLilia")
     embed.color = tonumber(embed.color) or 7506394
     embed.timestamp = embed.timestamp or os.date("!%Y-%m-%dT%H:%M:%SZ")
     embed.footer = embed.footer or {
-        text = "Lilia Discord Relay"
+        text = L("discordRelayLiliaDiscordRelay")
     }
 
     local payload = {
         embeds = {embed},
-        username = "Lilia Logger"
+        username = L("discordRelayLiliaLogger")
     }
 
     hook.Run("DiscordRelaySend", embed)
@@ -993,7 +993,7 @@ function lia.loader.initializeGamemode(isReload)
     end
 
     if isReload then
-        lia.bootstrap("HotReload", "Gamemode hotreloaded successfully!")
+        lia.bootstrap("HotReload", L("gamemodeHotreloadedSuccessfully"))
         lia.isReloading = false
     end
 end
@@ -1014,7 +1014,7 @@ local function CreateCharacterSaveTimer()
 end
 
 function GM:Initialize()
-    if engine.ActiveGamemode() == "lilia" then lia.error("No schema loaded. Please place the schema in your gamemodes folder, then set it as your gamemode.") end
+    if engine.ActiveGamemode() == "lilia" then lia.error(L("noSchemaLoaded")) end
     lia.loader.initializeGamemode(false)
     if SERVER then CreateCharacterSaveTimer() end
 end
@@ -1032,7 +1032,7 @@ for _, compatFile in ipairs(ConditionalFiles) do
         if ok then
             shouldLoad = result
         else
-            lia.error(string.format("Compatibility condition error: %s", tostring(result)))
+            lia.error(L("compatibilityConditionError", tostring(result)))
         end
     elseif compatFile.global then
         shouldLoad = _G[compatFile.global] ~= nil
@@ -1044,5 +1044,5 @@ for _, compatFile in ipairs(ConditionalFiles) do
     end
 end
 
-if #loadedCompatibility > 0 then lia.bootstrap("Compatibility", #loadedCompatibility == 1 and string.format("Loaded compatibility for the following addons: %s", loadedCompatibility[1]) or string.format("Loaded the compatibilities for the following addons: %s", table.concat(loadedCompatibility, ", "))) end
+if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
 if game.IsDedicated() then concommand.Remove("gm_save") end

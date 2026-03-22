@@ -1,36 +1,36 @@
-﻿MODULE.name = "Chatbox"
+﻿MODULE.name = "chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "Replaces the default chat with a configurable box that supports colored text, command parsing, and dedicated staff channels."
+MODULE.desc = "chatSystemDescription"
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
-        Name = "No OOC Cooldown",
+        Name = "noOOCCooldown",
         MinAccess = "admin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
     ["adminChat"] = {
-        Name = "Admin Chat",
+        Name = "adminChat",
         MinAccess = "superadmin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
     ["localEventChat"] = {
-        Name = "Local Event Chat",
+        Name = "localEventChat",
         MinAccess = "admin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
     ["eventChat"] = {
-        Name = "Event Chat",
+        Name = "eventChat",
         MinAccess = "admin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
     ["accessHelpChat"] = {
-        Name = "Access Help Chat",
+        Name = "accessHelpChat",
         MinAccess = "superadmin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
     ["bypassOOCBlock"] = {
-        Name = "Bypass OOC Block",
+        Name = "bypassOOCBlockPrivilege",
         MinAccess = "superadmin",
-        Category = "Chat",
+        Category = "categoryChat",
     },
 }

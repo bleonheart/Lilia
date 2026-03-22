@@ -8,7 +8,7 @@ hook.Add("CanTool", "liaPermaProps", function(ply, trace, tool)
     local entClass = entity:GetClass()
     local canPersist = hook.Run("CanPersistEntity", entity)
     if canPersist ~= false and (string.StartWith(entClass, "lia_") or entity.IsPersistent or entity:CreatedByMap()) then
-        ply:notifyError(string.format("You cannot use %s on this entity.", tool))
+        ply:notifyErrorLocalized("toolCantUseEntity", tool)
         return false
     end
 end)
@@ -18,7 +18,7 @@ hook.Add("PermaProps.OnEntityCreated", "liaPermaPropsOverlapWarning", function(e
     local pos = entity:GetPos()
     for _, existing in ipairs(spawnedPositions) do
         if pos:DistToSqr(existing) <= radiusSqr then
-            if CLIENT then LocalPlayer():notifyWarning("Warning: perma-props spawning too close together!") end
+            if CLIENT then LocalPlayer():notifyWarningLocalized("permaPropOverlapWarning") end
             break
         end
     end
@@ -39,5 +39,5 @@ hook.Add("PermaProps.OnEntitySaved", "liaLogPermaPropSaved", function(ent)
 end)
 
 hook.Add("PostCleanupMap", "liaPermaPropsClearList", function() spawnedPositions = {} end)
-lia.log.addType("permaPropSaved", function(client, class, model, pos) return string.format("%s perma-propped %s (%s) at %s", client:Name(), class, model, pos) end, "PermaProps")
-lia.log.addType("permaPropOverlap", function(_, pos, other) return string.format("Perma-prop spawned at %s overlapping prop at %s.", pos, other) end, "PermaProps")
+lia.log.addType("permaPropSaved", function(client, class, model, pos) return L("permaPropSavedLog", client:Name(), class, model, pos) end, L("categoryPermaProps"))
+lia.log.addType("permaPropOverlap", function(_, pos, other) return L("permaPropOverlapLog", pos, other) end, L("categoryPermaProps"))

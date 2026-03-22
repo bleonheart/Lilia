@@ -1367,7 +1367,7 @@ else
     })
 
     properties.Add("liaConfigureNPC", {
-        MenuLabel = "Configure NPC",
+        MenuLabel = L("configureNPC"),
         Order = 100,
         MenuIcon = "icon16/wrench.png",
         Filter = function(_, ent, ply)

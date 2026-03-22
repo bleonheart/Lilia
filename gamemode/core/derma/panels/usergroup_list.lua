@@ -14,7 +14,7 @@ function PANEL:SetupUI()
     header:DockMargin(0, 0, 0, 5)
     header.Paint = function(_, w, h)
         lia.derma.rect(0, 0, w, h):Rad(8):Color(lia.color.theme.panel[1]):Shape(lia.derma.SHAPE_IOS):Draw()
-        draw.SimpleText("Groups", "LiliaFont.25", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(L("groups"), "LiliaFont.25", w / 2, h / 2, lia.color.theme.text, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
     end
 
     self.scrollPanel = self:Add("liaScrollPanel")

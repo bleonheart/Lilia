@@ -228,7 +228,7 @@ end
     Example Usage:
         ```lua
         local paycheck = DarkRP.formatMoney(500)
-        chat.AddText(string.format("You received your payday: %s.", paycheck))
+        chat.AddText(L("paydayReceived", paycheck))
         ```
 ]]
 function lia.darkrp.formatMoney(amount)
@@ -267,10 +267,10 @@ function lia.darkrp.createEntity(name, data)
     ITEM.name = name
     ITEM.model = data.model or ""
     ITEM.desc = data.desc or ""
-    ITEM.category = data.category or "Entities"
+    ITEM.category = data.category or L("entities")
     ITEM.entityid = data.ent or ""
     ITEM.price = data.price or 0
-    lia.information(string.format("Generated DarkRP entity as item %s", name))
+    lia.information(L("generatedDarkRPItem", name))
 end
 
 --[[

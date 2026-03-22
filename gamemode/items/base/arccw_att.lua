@@ -1,103 +1,10 @@
-﻿--[[
-    Folder: Definitions
-    File:  arccw_att.md
-]]
---[[
-    ArcCW Attachment Item Definition
-
-    Weapon attachment system for the Lilia framework with ArcCW integration.
-]]
---[[
-    ArcCW attachment items allow players to equip and manage weapon attachments.
-    They integrate with the ArcCW weapon system for enhanced functionality.
-
-    PLACEMENT:
-    - Place in: ModuleFolder/items/attachments/ItemHere.lua (for module-specific items)
-    - Place in: SchemaFolder/items/attachments/ItemHere.lua (for schema-specific items)
-
-    USAGE:
-    - Attachment items are equipped through the inventory menu
-    - They are applied to compatible weapons in the ArcCW system
-    - Attachments can be unequipped and returned to inventory
-    - Supports automatic attachment management on loadout changes
-]]
---[[
-    Purpose:
-        Sets the display name shown to players
-
-    Example Usage:
-        ```lua
-        -- Set the attachment name
-        ITEM.name = "Red Dot Sight"
-        ```
-]]
-if not ArcCWInstalled then return end
+﻿if not ArcCWInstalled then return end
 ITEM.name = "arccwAttachment"
---[[
-    Purpose:
-        Sets the description text shown to players
-
-    Example Usage:
-        ```lua
-        -- Set the attachment description
-        ITEM.desc = "A tactical red dot sight for improved accuracy"
-        ```
-]]
 ITEM.desc = "arccwAttachmentDesc"
---[[
-    Purpose:
-        Sets the category for inventory sorting
-
-    Example Usage:
-        ```lua
-        -- Set inventory category
-        ITEM.category = "attachments"
-        ```
-]]
 ITEM.category = "attachments"
---[[
-    Purpose:
-        Sets the 3D model used for the item
-
-    Example Usage:
-        ```lua
-        -- Set the item model
-        ITEM.model = "models/Items/BoxSRounds.mdl"
-        ```
-]]
 ITEM.model = "models/Items/BoxSRounds.mdl"
---[[
-    Purpose:
-        Sets the width of the item in inventory grid slots
-
-    Example Usage:
-        ```lua
-        -- Set item width
-        ITEM.width = 1
-        ```
-]]
 ITEM.width = 1
---[[
-    Purpose:
-        Sets the height of the item in inventory grid slots
-
-    Example Usage:
-        ```lua
-        -- Set item height
-        ITEM.height = 1
-        ```
-]]
 ITEM.height = 1
---[[
-    Purpose:
-        Sets the ArcCW attachment ID to be used by this item
-
-    Example Usage:
-        ```lua
-        -- Set the attachment ID
-        ITEM.att = "kry_acog"
-        ```
-]]
 ITEM.att = ""
 if CLIENT then
     function ITEM:paintOver(item, w, h)
