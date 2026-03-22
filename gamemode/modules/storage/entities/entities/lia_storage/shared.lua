@@ -20,7 +20,7 @@ function ENT:getStorageInfo()
     if not storageInfo then
         storageInfo = {
             name = "Storage Container",
-            desc = "storageContainerDesc",
+            desc = "A container for storing items.",
             invType = "GridInv",
             invData = {
                 w = 4,
