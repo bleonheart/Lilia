@@ -373,9 +373,9 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             end
         end
 
-        if target.liaAccess then table.insert(information, "Access Data: " .. util.TableToJSON(target.liaAccess)) end
-        if target.liaPartner and IsValid(target.liaPartner) then table.insert(information, "Partner Door: " .. tostring(target.liaPartner)) end
-        table.insert(information, "Is Locked: " .. (target:isLocked() and "Yes" or "No"))
-        table.insert(information, "ID: " .. tostring(target:MapCreationID()))
+        if target.liaAccess then table.insert(information, L("doorAccessDataLabel", util.TableToJSON(target.liaAccess))) end
+        if target.liaPartner and IsValid(target.liaPartner) then table.insert(information, L("doorPartnerDoorLabel", tostring(target.liaPartner))) end
+        table.insert(information, L("doorIsLockedLabel", target:isLocked() and L("yes") or L("no")))
+        table.insert(information, L("doorIDLabel", tostring(target:MapCreationID())))
     end
 end

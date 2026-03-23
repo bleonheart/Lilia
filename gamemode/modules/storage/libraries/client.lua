@@ -117,7 +117,11 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     removeBtn:SetSize(buttonWidth, 22)
     removeBtn:SetPos(20 + buttonWidth * 2, buttonY)
     removeBtn:PaintButton(lia.color.theme and lia.color.theme.button or Color(80, 50, 50), lia.color.theme and lia.color.theme.button_hovered or Color(100, 60, 60))
-    removeBtn.DoClick = function() LocalPlayer():requestString(L("removePassword"), L("confirmRemovePassword"), function(value) if value and value:lower() == "yes" then SetStoragePassword("remove") end end) end
+    removeBtn.DoClick = function()
+        LocalPlayer():requestString(L("removePassword"), L("confirmRemovePassword"), function(value)
+            if value and value:lower() == L("yes"):lower() then SetStoragePassword("remove") end
+        end)
+    end
     local updateButtons = function()
         local isLocked = storage:getNetVar("locked", false)
         lockBtn:SetEnabled(not isLocked)

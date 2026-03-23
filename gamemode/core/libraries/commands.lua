@@ -1302,18 +1302,18 @@ else
             visiblePanels = visiblePanels + count
         end
 
-        LocalPlayer():ChatPrint("Total panels on screen (including subpanels): " .. panelCount)
-        LocalPlayer():ChatPrint("Visible panels: " .. visiblePanels)
+        LocalPlayer():ChatPrint(L("totalPanelsOnScreen", panelCount))
+        LocalPlayer():ChatPrint(L("visiblePanels", visiblePanels))
         if table.Count(panelTypes) > 0 then
-            LocalPlayer():ChatPrint("Visible panel types:")
+            LocalPlayer():ChatPrint(L("visiblePanelTypes"))
             for panelType, count in pairs(panelTypes) do
                 LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
             end
         end
 
-        LocalPlayer():ChatPrint("Hidden panels: " .. (panelCount - visiblePanels))
+        LocalPlayer():ChatPrint(L("hiddenPanels", panelCount - visiblePanels))
         if table.Count(hiddenPanelTypes) > 0 then
-            LocalPlayer():ChatPrint("Hidden panel types:")
+            LocalPlayer():ChatPrint(L("hiddenPanelTypes"))
             for panelType, count in pairs(hiddenPanelTypes) do
                 LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
             end
@@ -1323,7 +1323,7 @@ else
     concommand.Add("lia_test_panels", function(_, _, args)
         local delay = tonumber(args[1]) or 0
         if delay > 0 then
-            LocalPlayer():ChatPrint("Checking panels in " .. delay .. " seconds...")
+            LocalPlayer():ChatPrint(L("checkingPanelsInSeconds", delay))
             timer.Simple(delay, function()
                 if not IsValid(LocalPlayer()) then return end
                 performPanelCheck()
@@ -1350,7 +1350,7 @@ else
         table.sort(liaPanels)
         table.sort(gmodPanels)
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle("VGUI Panel Browser")
+        frame:SetTitle(L("vguiPanelBrowser"))
         frame:SetSize(900, 700)
         frame:Center()
         frame:MakePopup()
@@ -1363,15 +1363,15 @@ else
         infoPanel:DockMargin(0, 0, 0, 5)
         infoPanel.Paint = function(_, w, h)
             lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.panel[1]):Draw()
-            draw.SimpleText("Total Panels: " .. #allPanels, "LiliaFont.18", 10, 10, lia.color.theme.text)
-            draw.SimpleText("Lilia Panels: " .. #liaPanels, "LiliaFont.16", 10, 35, lia.color.theme.accent)
-            draw.SimpleText("GMod Panels: " .. #gmodPanels, "LiliaFont.16", 200, 35, lia.color.theme.text)
+            draw.SimpleText(L("totalPanels", #allPanels), "LiliaFont.18", 10, 10, lia.color.theme.text)
+            draw.SimpleText(L("liliaPanels", #liaPanels), "LiliaFont.16", 10, 35, lia.color.theme.accent)
+            draw.SimpleText(L("gmodPanels", #gmodPanels), "LiliaFont.16", 200, 35, lia.color.theme.text)
         end
 
         local searchBox = vgui.Create("liaEntry", frame)
         searchBox:Dock(TOP)
         searchBox:DockMargin(0, 0, 0, 5)
-        searchBox:SetPlaceholderText("Search panels...")
+        searchBox:SetPlaceholderText(L("searchPanels"))
         searchBox:SetTall(35)
         local categorySheet = vgui.Create("DPropertySheet", frame)
         categorySheet:Dock(FILL)
@@ -1400,7 +1400,7 @@ else
                         end
 
                         local spawnBtn = vgui.Create("liaButton", panelItem)
-                        spawnBtn:SetText("Test")
+                        spawnBtn:SetText(L("test"))
                         spawnBtn:SetWide(80)
                         spawnBtn:Dock(RIGHT)
                         spawnBtn:DockMargin(5, 5, 5, 5)
@@ -1417,23 +1417,23 @@ else
 
                                     if testPanel.MakePopup then testPanel:MakePopup() end
                                     if testPanel.SetVisible then testPanel:SetVisible(true) end
-                                    LocalPlayer():ChatPrint("Created test instance of: " .. panelName)
+                                    LocalPlayer():ChatPrint(L("createdTestInstance", panelName))
                                 else
-                                    LocalPlayer():ChatPrint("Failed to create: " .. panelName)
+                                    LocalPlayer():ChatPrint(L("failedToCreatePanel", panelName))
                                 end
                             end)
 
-                            if not success then LocalPlayer():ChatPrint("Error creating " .. panelName .. ": " .. tostring(err)) end
+                            if not success then LocalPlayer():ChatPrint(L("errorCreatingPanel", panelName, tostring(err))) end
                         end
 
                         local copyBtn = vgui.Create("liaButton", panelItem)
-                        copyBtn:SetText("Copy")
+                        copyBtn:SetText(L("copy"))
                         copyBtn:SetWide(80)
                         copyBtn:Dock(RIGHT)
                         copyBtn:DockMargin(5, 5, 5, 5)
                         copyBtn.DoClick = function()
                             SetClipboardText(panelName)
-                            LocalPlayer():ChatPrint("Copied to clipboard: " .. panelName)
+                            LocalPlayer():ChatPrint(L("copiedToClipboardValue", panelName))
                         end
 
                         table.insert(panelItems, panelItem)
@@ -1448,22 +1448,22 @@ else
         local allTab = vgui.Create("DPanel")
         allTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local allPopulate = createPanelList(allTab, allPanels)
-        categorySheet:AddSheet("All Panels (" .. #allPanels .. ")", allTab, "icon16/application_view_list.png")
+        categorySheet:AddSheet(L("allPanelsCount", #allPanels), allTab, "icon16/application_view_list.png")
         local liaTab = vgui.Create("DPanel")
         liaTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local liaPopulate = createPanelList(liaTab, liaPanels)
-        categorySheet:AddSheet("Lilia Panels (" .. #liaPanels .. ")", liaTab, "icon16/star.png")
+        categorySheet:AddSheet(L("liliaPanelsCount", #liaPanels), liaTab, "icon16/star.png")
         local gmodTab = vgui.Create("DPanel")
         gmodTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
         local gmodPopulate = createPanelList(gmodTab, gmodPanels)
-        categorySheet:AddSheet("GMod Panels (" .. #gmodPanels .. ")", gmodTab, "icon16/wrench.png")
+        categorySheet:AddSheet(L("gmodPanelsCount", #gmodPanels), gmodTab, "icon16/wrench.png")
         searchBox.OnValueChange = function(_, value)
             allPopulate(value)
             liaPopulate(value)
             gmodPopulate(value)
         end
 
-        LocalPlayer():ChatPrint("Panel Browser opened! Found " .. #allPanels .. " registered panels.")
+        LocalPlayer():ChatPrint(L("panelBrowserOpened", #allPanels))
     end)
 
     concommand.Add("lia_saved_sounds", function()
@@ -1477,7 +1477,7 @@ else
         end
 
         if #soundFiles == 0 then
-            LocalPlayer():ChatPrint("No saved sounds found!")
+            LocalPlayer():ChatPrint(L("noSavedSoundsFound"))
             return
         end
 
@@ -1511,7 +1511,7 @@ else
             nameLabel:DockMargin(10, 0, 0, 0)
             nameLabel:SetWide(300)
             local playButton = vgui.Create("liaButton", panel)
-            playButton:SetText("▶ Play")
+            playButton:SetText("▶ " .. L("play"))
             playButton:SetWide(80)
             playButton:Dock(RIGHT)
             playButton:DockMargin(5, 5, 5, 5)
@@ -1521,26 +1521,26 @@ else
                     timer.Simple(0.1, function()
                         sound.PlayFile(fullPath, "", function(channel, _, errorString)
                             if IsValid(channel) then
-                                LocalPlayer():ChatPrint("Playing: " .. soundName)
+                                LocalPlayer():ChatPrint(L("playingSound", soundName))
                             else
-                                LocalPlayer():ChatPrint("Failed to play: " .. soundName .. " (" .. (errorString or "unknown error") .. ")")
+                                LocalPlayer():ChatPrint(L("failedToPlaySound", soundName, errorString or L("unknown")))
                             end
                         end)
                     end)
                 else
-                    LocalPlayer():ChatPrint("Sound file not found: " .. soundName)
+                    LocalPlayer():ChatPrint(L("soundFileNotFound", soundName))
                 end
             end
 
             local stopButton = vgui.Create("liaButton", panel)
-            stopButton:SetText("⏹ Stop")
+            stopButton:SetText("⏹ " .. L("stop"))
             stopButton:SetWide(80)
             stopButton:Dock(RIGHT)
             stopButton:DockMargin(5, 5, 5, 5)
             stopButton.DoClick = function()
                 timer.Simple(0.1, function()
                     sound.PlayFile("", "", function() end)
-                    LocalPlayer():ChatPrint("Stopped all sounds")
+                    LocalPlayer():ChatPrint(L("stoppedAllSounds"))
                 end)
             end
         end
@@ -1672,7 +1672,7 @@ else
         end
 
         if #imageFiles == 0 then
-            LocalPlayer():ChatPrint("No saved images found!")
+            LocalPlayer():ChatPrint(L("noSavedImagesFound"))
             return
         end
 
@@ -1709,12 +1709,12 @@ else
             nameLabel:SetPos(120, 10)
             nameLabel:SetWide(300)
             local viewButton = vgui.Create("liaButton", panel)
-            viewButton:SetText("👁 View")
+            viewButton:SetText("👁 " .. L("view"))
             viewButton:SetWide(80)
             viewButton:SetPos(120, 40)
             viewButton.DoClick = function()
                 local viewFrame = vgui.Create("liaFrame")
-                viewFrame:SetTitle("Image Viewer - " .. imageName)
+                viewFrame:SetTitle(L("imageViewerTitle", imageName))
                 viewFrame:SetSize(800, 600)
                 viewFrame:Center()
                 viewFrame:MakePopup()
@@ -1725,12 +1725,12 @@ else
             end
 
             local copyButton = vgui.Create("liaButton", panel)
-            copyButton:SetText("📋 Copy Path")
+            copyButton:SetText("📋 " .. L("copyPath"))
             copyButton:SetWide(100)
             copyButton:SetPos(210, 40)
             copyButton.DoClick = function()
                 SetClipboardText("data/" .. imagePath)
-                LocalPlayer():ChatPrint("Image path copied to clipboard: data/" .. imagePath)
+                LocalPlayer():ChatPrint(L("imagePathCopied", "data/" .. imagePath))
             end
         end
     end)
@@ -1796,13 +1796,13 @@ else
             local fullPath = "data/" .. baseDir .. testFile
             sound.PlayFile(fullPath, "", function(channel, _, errorString)
                 if IsValid(channel) then
-                    LocalPlayer():ChatPrint("Direct test successful: " .. testFile)
+                    LocalPlayer():ChatPrint(L("directTestSuccessful", testFile))
                 else
-                    LocalPlayer():ChatPrint("Direct test failed: " .. testFile .. " (" .. (errorString or "unknown error") .. ")")
+                    LocalPlayer():ChatPrint(L("directTestFailed", testFile, errorString or L("unknown")))
                 end
             end)
         else
-            LocalPlayer():ChatPrint("No sound files found for testing")
+            LocalPlayer():ChatPrint(L("noSoundFilesForTesting"))
         end
     end)
 
@@ -4313,7 +4313,7 @@ lia.command.add("charsetmoney", {
         target:getChar():setMoney(math.floor(amount))
         client:notifyMoneyLocalized("setMoney", target:Name(), lia.currency.get(math.floor(amount)))
         lia.log.add(client, "charSetMoney", target:Name(), math.floor(amount))
-        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " set money of " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ") to " .. lia.currency.get(math.floor(amount)))
+        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), L("staffLogSetMoney", client:Name(), target:Name(), target:SteamID64(), lia.currency.get(math.floor(amount))))
     end
 })
 
@@ -4348,7 +4348,7 @@ lia.command.add("charaddmoney", {
         target:getChar():setMoney(currentMoney + amount)
         client:notifyMoneyLocalized("addMoney", target:Name(), lia.currency.get(amount), lia.currency.get(currentMoney + amount))
         lia.log.add(client, "charAddMoney", target:Name(), amount, currentMoney + amount)
-        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), client:Name() .. " gave " .. lia.currency.get(amount) .. " to " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. "). New balance: " .. lia.currency.get(currentMoney + amount))
+        StaffAddTextShadowed(Color(34, 139, 34), "MONEY", Color(255, 255, 255), L("staffLogGaveMoney", client:Name(), lia.currency.get(amount), target:Name(), target:SteamID64(), lia.currency.get(currentMoney + amount)))
     end,
     alias = {"chargivemoney"}
 })
@@ -6050,7 +6050,7 @@ lia.command.add("doorsampledata", {
         if IsValid(door) and door:isDoor() then
             local doorData = lia.doors.getData(door)
             local sampleData = {
-                name = "Sample Door " .. (door:MapCreationID() or "Unknown"),
+                name = L("sampleDoorName", door:MapCreationID() or L("unknown")),
                 price = 1000,
                 locked = false,
                 disabled = false,
@@ -7493,7 +7493,7 @@ lia.command.add("warn", {
         lia.db.count("warnings", "charID = " .. lia.db.convertDataType(target:getChar():getID())):next(function(count)
             target:notifyWarningLocalized("playerWarned", warnerName .. " (" .. warnerSteamID .. ")", severity, reason)
             client:notifySuccessLocalized("warningIssued", target:Nick())
-            local message = warnerName .. " warned " .. target:Name() .. " (Character " .. target:getChar():getID() .. " | Steam64ID: " .. target:SteamID64() .. ") for \"" .. reason .. "\" [Severity: " .. severity .. "]."
+            local message = L("staffLogWarnedPlayer", warnerName, target:Name(), target:getChar():getID(), target:SteamID64(), reason, severity)
             StaffAddTextShadowed(Color(255, 140, 0), "WARNING", Color(255, 255, 255), message)
             hook.Run("WarningIssued", client, target, reason, severity, count, warnerSteamID, target:SteamID())
         end)
@@ -7817,7 +7817,7 @@ lia.command.add("npcchangetype", {
             if not table.IsEmpty(npcOptions) then
                 client.npcDisplayToUniqueID = displayToUniqueID
                 client.npcEntity = ent
-                client:requestDropdown("Change NPC Type", "Choose what type of NPC this should be:", npcOptions, function(selectedDisplayName, selectedUniqueID)
+                client:requestDropdown(L("npcChangeTypeTitle"), L("npcChangeTypePrompt"), npcOptions, function(selectedDisplayName, selectedUniqueID)
                     if selectedDisplayName and selectedDisplayName ~= "" then
                         local uniqueID = selectedUniqueID or (client.npcDisplayToUniqueID and client.npcDisplayToUniqueID[selectedDisplayName])
                         if uniqueID and IsValid(client.npcEntity) then
@@ -8073,23 +8073,23 @@ lia.command.add("listnearbyentities", {
 
             table.insert(entityCategories[category], {
                 class = class,
-                model = ent:GetModel() or "N/A",
+                model = ent:GetModel() or L("na"),
                 pos = ent:GetPos(),
                 distance = pos:Distance(ent:GetPos()),
-                health = ent.Health and ent:Health() or "N/A",
-                name = ent.GetName and ent:GetName() or "N/A"
+                health = ent.Health and ent:Health() or L("na"),
+                name = ent.GetName and ent:GetName() or L("na")
             })
         end
 
-        client:ChatPrint("=== Entities within " .. radius .. " units ===")
+        client:ChatPrint(L("entitiesWithinRadiusHeader", radius))
         for categoryName, entitiesInCategory in pairs(entityCategories) do
             if #entitiesInCategory > 0 then
-                client:ChatPrint("--- " .. categoryName:upper() .. " (" .. #entitiesInCategory .. ") ---")
+                client:ChatPrint(L("entityCategoryHeader", L(categoryName):upper(), #entitiesInCategory))
                 table.sort(entitiesInCategory, function(a, b) return a.distance < b.distance end)
                 for _, entData in ipairs(entitiesInCategory) do
-                    local info = string.format("%.1f units: %s", entData.distance, entData.class)
-                    if entData.name ~= "N/A" and entData.name ~= "" then info = info .. " (" .. entData.name .. ")" end
-                    if entData.health ~= "N/A" then info = info .. " [HP: " .. entData.health .. "]" end
+                    local info = L("entityDistanceClassInfo", string.format("%.1f", entData.distance), entData.class)
+                    if entData.name ~= L("na") and entData.name ~= "" then info = info .. " (" .. entData.name .. ")" end
+                    if entData.health ~= L("na") then info = info .. " [" .. L("entityHealthLabel", entData.health) .. "]" end
                     client:ChatPrint(info)
                 end
 
@@ -8102,7 +8102,7 @@ lia.command.add("listnearbyentities", {
             totalEntities = totalEntities + #entitiesInCategory
         end
 
-        client:ChatPrint("Total entities found: " .. totalEntities)
+        client:ChatPrint(L("totalEntitiesFound", totalEntities))
         client:notifyLocalized("listedEntitiesWithinRadius", totalEntities, radius)
     end
 })
@@ -8183,7 +8183,7 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
     lia.db.select({"id", "name"}, "characters", "steamID = " .. lia.db.convertDataType(steamID)):next(function(res)
         local characters = res.results or {}
         if not characters or #characters == 0 then
-            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "No characters found for SteamID: " .. steamID .. "\n")
+            MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("noCharactersFoundForSteamID", steamID) .. "\n")
             return
         end
 
@@ -8203,12 +8203,12 @@ concommand.Add("lia_set_inventory_size_all_chars", function(client, _, args)
                 if character then
                     character:setData("invSizeOverride", sizeOverride)
                     if not hasNotifiedPlayer then
-                        ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " Your inventory size has been changed to " .. width .. "x" .. height .. ". Please swap characters for the change to take effect.")
+                        ClientAddTextShadowed(ply, Color(255, 0, 0), "INVENTORY", Color(255, 255, 255), " " .. L("inventorySizeChangedSwapCharacters", width, height))
                         hasNotifiedPlayer = true
                     end
 
                     if not hasNotifiedStaff then
-                        local staffMessage = "Inventory size set to " .. width .. "x" .. height .. " for " .. ply:Name() .. " (Steam64ID: " .. ply:SteamID64() .. ")."
+                        local staffMessage = L("staffLogInventorySizeSet", width, height, ply:Name(), ply:SteamID64())
                         StaffAddTextShadowed(Color(199, 21, 133), "INVENTORY", Color(255, 255, 255), staffMessage)
                         hasNotifiedStaff = true
                     end
@@ -8304,23 +8304,23 @@ concommand.Add("lia_give_money_steamid", function(client, _, args)
                 char:giveMoney(amount)
                 local actualNewMoney = char:getMoney()
                 updatedCount = updatedCount + 1
-                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(actualNewMoney) .. " (player online)\n")
+                MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("gaveMoneyToCharacterOnline", lia.currency.get(amount), charName, charID, lia.currency.get(actualNewMoney)) .. "\n")
                 if updatedCount == #characters then
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully gave " .. lia.currency.get(amount) .. " to " .. #characters .. " characters owned by SteamID: " .. steamID .. "\n")
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("successfullyGaveMoneyToCharacters", lia.currency.get(amount), #characters, steamID) .. "\n")
                     lia.log.add(nil, "giveMoneySteamID", steamID, amount, #characters)
                 end
             else
                 if lia.char.setCharDatabase(charID, "money", newMoney) then
                     updatedCount = updatedCount + 1
-                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Gave " .. lia.currency.get(amount) .. " to character '" .. charName .. "' (ID: " .. charID .. "). New balance: " .. lia.currency.get(newMoney) .. " (player offline)\n")
+                    MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("gaveMoneyToCharacterOffline", lia.currency.get(amount), charName, charID, lia.currency.get(newMoney)) .. "\n")
                     if updatedCount == #characters then
-                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), "Successfully gave " .. lia.currency.get(amount) .. " to " .. #characters .. " characters owned by SteamID: " .. steamID .. "\n")
+                        MsgC(Color(0, 255, 0), "[Lilia] ", Color(255, 255, 255), L("successfullyGaveMoneyToCharacters", lia.currency.get(amount), #characters, steamID) .. "\n")
                         lia.log.add(nil, "giveMoneySteamID", steamID, amount, #characters)
                     end
                 else
-                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Error updating money for character '" .. charName .. "' (ID: " .. charID .. ")\n")
+                    MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("errorUpdatingMoneyForCharacter", charName, charID) .. "\n")
                 end
             end
         end
-    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), "Database error: " .. tostring(err) .. "\n") end)
+    end):catch(function(err) MsgC(Color(255, 0, 0), "[Lilia] ", Color(255, 255, 255), L("databaseErrorValue", tostring(err)) .. "\n") end)
 end)

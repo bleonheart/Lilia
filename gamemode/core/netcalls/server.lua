@@ -194,7 +194,7 @@ net.Receive("liaCheckHack", function(_, client)
             local severity = "High"
             hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
             local charID = client:getChar():getID()
-            local message = client:Name() .. " (Character " .. charID .. " | Steam64ID: " .. client:SteamID64() .. ") was flagged for cheating. Severity: " .. severity .. "."
+            local message = L("staffLogCheaterFlagged", client:Name(), charID, client:SteamID64(), severity)
             StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("receiveCheaterNotifications") end)
         end
     end

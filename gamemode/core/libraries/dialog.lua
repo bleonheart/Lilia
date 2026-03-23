@@ -618,7 +618,7 @@ if SERVER then
     function lia.dialog.openDialog(client, npc, npcID)
         local npcData = lia.dialog.getOriginalNPCData(npcID)
         if not npcData then
-            client:notifyWarning("This NPC type is not registered. Please select a valid NPC type.")
+            client:notifyWarningLocalized("npcTypeNotRegistered")
             lia.dialog.syncToClients(client)
             timer.Simple(0.1, function()
                 if not IsValid(client) or not IsValid(npc) then return end

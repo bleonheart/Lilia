@@ -1009,7 +1009,7 @@ local function GenerateDynamicCategories()
             icon = "icon16/shield.png",
             subcategories = {
                 moderationTools = {
-                    name = "Moderation Tools",
+                    name = L("moderationTools"),
                     icon = "icon16/shield.png"
                 },
                 teleportation = {
@@ -1340,33 +1340,33 @@ local function OpenPlayerModelUI(tgt)
                 for _, categoryModels in pairs(models) do
                     if istable(categoryModels) then
                         for _, modelData in ipairs(categoryModels) do
-                            processFactionModel(modelData, faction.name or "Unknown Faction", modList)
+                            processFactionModel(modelData, faction.name or L("unknownFaction"), modList)
                         end
                     else
-                        processFactionModel(categoryModels, faction.name or "Unknown Faction", modList)
+                        processFactionModel(categoryModels, faction.name or L("unknownFaction"), modList)
                     end
                 end
             else
                 if models.male or models.female then
                     if models.male then
                         for _, modelData in ipairs(models.male) do
-                            processFactionModel(modelData, faction.name or "Unknown Faction", modList)
+                            processFactionModel(modelData, faction.name or L("unknownFaction"), modList)
                         end
                     end
 
                     if models.female then
                         for _, modelData in ipairs(models.female) do
-                            processFactionModel(modelData, faction.name or "Unknown Faction", modList)
+                            processFactionModel(modelData, faction.name or L("unknownFaction"), modList)
                         end
                     end
                 else
                     for _, modelData in ipairs(models) do
-                        processFactionModel(modelData, faction.name or "Unknown Faction", modList)
+                        processFactionModel(modelData, faction.name or L("unknownFaction"), modList)
                     end
                 end
             end
         else
-            processFactionModel(models, faction.name or "Unknown Faction", modList)
+            processFactionModel(models, faction.name or L("unknownFaction"), modList)
         end
     end
 
@@ -1381,7 +1381,7 @@ local function OpenPlayerModelUI(tgt)
             processFactionModels(faction, factionModList)
             table.sort(factionModList, function(a, b) return a.name < b.name end)
             populateModelGrid(factionWr, factionModList)
-            factionSheet:AddSheet(faction.name or "Unknown Faction", factionSubPanel)
+            factionSheet:AddSheet(faction.name or L("unknownFaction"), factionSubPanel)
         end
     end
 
@@ -1447,7 +1447,7 @@ local function OpenPlayerModelUI(tgt)
                     processClassModels(class, classModList)
                     table.sort(classModList, function(a, b) return a.name < b.name end)
                     populateModelGrid(classWr, classModList)
-                    classSheet:AddSheet(class.name or "Unknown Class", classSubPanel)
+                    classSheet:AddSheet(class.name or L("unknownClass"), classSubPanel)
                 end
             end
 
@@ -1900,15 +1900,15 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
             if warnOption then warnOption:SetIcon(ic) end
             local severityOptions = {
                 {
-                    label = "Low",
+                    label = L("severityLow"),
                     value = "Low"
                 },
                 {
-                    label = "Medium",
+                    label = L("severityMedium"),
                     value = "Medium"
                 },
                 {
-                    label = "High",
+                    label = L("severityHigh"),
                     value = "High"
                 }
             }
@@ -2089,7 +2089,7 @@ function MODULE:OpenAdminStickUI(tgt)
         local steamProfileLink = steamID64 ~= "BOT" and steamID64 ~= "" and ("https://steamcommunity.com/profiles/" .. steamID64) or ""
         local info = {
             {
-                name = "Steam Name: " .. steamName .. " (copy)",
+                name = L("copySteamNameFormat", steamName),
                 cmd = function()
                     if steamName ~= "BOT" and steamName ~= "" then
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
@@ -2102,7 +2102,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = "Steam Profile: " .. (steamProfileLink ~= "" and steamProfileLink or "N/A") .. " (copy)",
+                name = L("copySteamProfileFormat", steamProfileLink ~= "" and steamProfileLink or L("na")),
                 cmd = function()
                     if steamProfileLink ~= "" then
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
@@ -2128,7 +2128,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = "SteamID64: " .. steamID64 .. " (copy)",
+                name = L("copySteamID64Format", steamID64),
                 cmd = function()
                     if steamID64 ~= "BOT" and steamID64 ~= "" then
                         cl:notifySuccessLocalized("adminStickCopiedToClipboard")
@@ -2164,7 +2164,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 icon = "icon16/page_copy.png"
             },
             {
-                name = "Model: " .. model .. " (copy)",
+                name = L("copyModelFormat", model),
                 cmd = function()
                     cl:notifySuccessLocalized("adminStickCopiedToClipboard")
                     SetClipboardText(model)
@@ -2178,7 +2178,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     local currentPos = tgt:GetPos()
                     local currentAng = tgt:GetAngles()
                     local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
-                    return "Position: " .. posStr .. " (copy)"
+                    return L("copyPositionFormat", posStr)
                 end,
                 cmd = function()
                     local client = cl
@@ -2263,7 +2263,7 @@ function MODULE:OpenAdminStickUI(tgt)
         if categories.moderation then
             categories.moderation.subcategories = categories.moderation.subcategories or {}
             categories.moderation.subcategories.moderationTools = {
-                name = "Moderation Tools",
+                name = L("moderationTools"),
                 icon = "icon16/shield.png"
             }
 
@@ -2356,31 +2356,31 @@ function MODULE:OpenAdminStickUI(tgt)
         local displayName
         if target:IsPlayer() then
             local char = target:getChar()
-            displayName = (char and char:getName()) or target:Nick() or target:Name() or "Unknown"
+            displayName = (char and char:getName()) or target:Nick() or target:Name() or L("unknown")
         elseif target.GetName and target:GetName() ~= "" then
             displayName = target:GetName()
         else
-            displayName = target:GetClass() or "Unknown"
+            displayName = target:GetClass() or L("unknown")
         end
 
         local copyItems = {
             {
-                name = "Copy Name",
+                name = L("copyName"),
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(displayName) end
             },
             {
-                name = "Copy Position",
+                name = L("copyPosition"),
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(posStr) end
             },
             {
-                name = "Copy Angles",
+                name = L("copyAngles"),
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(angStr) end
             },
             {
-                name = "Copy Pos + Ang (printpos)",
+                name = L("copyPosAngPrintpos"),
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(setPosAngStr) end
             }
@@ -2965,7 +2965,7 @@ lia.net.readBigTable("liaSendLogs", function(logsData)
     if IsValid(logsPanel) then
         local success, err = pcall(UpdateLogsUI, logsPanel, logsData)
         if not success then
-            chat.AddText(Color(255, 0, 0), "Error updating logs UI: " .. tostring(err))
+            chat.AddText(Color(255, 0, 0), L("logsUIUpdateError", tostring(err)))
             removeLoadingLabel()
         end
     else
@@ -3520,13 +3520,13 @@ function MODULE:HUDPaint()
                 if isvector(pos) then
                     local screenPos = (pos + Vector(0, 0, 16)):ToScreen()
                     if screenPos.visible then
-                        local label = entry.label ~= "" and entry.label or "Position"
+                        local label = entry.label ~= "" and entry.label or L("position")
                         if typeInfo.id == "faction_spawn_adder" then
-                            label = "Spawn For Faction '" .. label .. "'"
+                            label = L("spawnForFactionFormat", label)
                         elseif typeInfo.id == "class_spawn_adder" then
-                            label = "Spawn For Class '" .. label .. "'"
+                            label = L("spawnForClassFormat", label)
                         elseif typeInfo.id == "sit_room" then
-                            label = "Sit Room " .. label
+                            label = L("sitRoomLabelFormat", label)
                         end
 
                         lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, "LiliaFont.24", 1)
@@ -3567,7 +3567,7 @@ function MODULE:HUDPaint()
                 local uniqueID = ent:getNetVar("uniqueID", "")
                 if uniqueID ~= "" then
                     kind = "npcs"
-                    label = ent:getNetVar("NPCName", "Unconfigured NPC")
+                    label = ent:getNetVar("NPCName", L("unconfiguredNPC"))
                     baseColor = lia.option.get("espEntitiesColor")
                 end
             else
@@ -4140,25 +4140,25 @@ function MODULE:AdminStickAddModels(modList)
                     for _, categoryModels in pairs(faction.models) do
                         if istable(categoryModels) then
                             for _, modelData in ipairs(categoryModels) do
-                                processModelData(modelData, faction.name or "Unknown Faction")
+                                processModelData(modelData, faction.name or L("unknownFaction"))
                             end
                         else
-                            processModelData(categoryModels, faction.name or "Unknown Faction")
+                            processModelData(categoryModels, faction.name or L("unknownFaction"))
                         end
                     end
                 else
                     for _, modelData in ipairs(faction.models) do
-                        processModelData(modelData, faction.name or "Unknown Faction")
+                        processModelData(modelData, faction.name or L("unknownFaction"))
                     end
                 end
             else
-                processModelData(faction.models, faction.name or "Unknown Faction")
+                processModelData(faction.models, faction.name or L("unknownFaction"))
             end
         end
     end
 
     for _, class in pairs(lia.class.list or {}) do
-        if class.model and isstring(class.model) then addModel(class.model, class.name or "Unknown Class") end
+        if class.model and isstring(class.model) then addModel(class.model, class.name or L("unknownClass")) end
     end
 end
 
@@ -4172,27 +4172,27 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             local char = target:getChar()
             local charName = char and char:getName() or target:Nick()
             local steamName = target:IsBot() and "BOT" or target:SteamName() or ""
-            table.insert(infoLines, "Name: " .. charName)
-            table.insert(infoLines, "Steam Name: " .. steamName)
-            table.insert(infoLines, "Health: " .. target:Health() .. "/" .. target:GetMaxHealth())
+            table.insert(infoLines, L("adminHUDName", charName))
+            table.insert(infoLines, L("adminHUDSteamName", steamName))
+            table.insert(infoLines, L("adminHUDHealth", target:Health(), target:GetMaxHealth()))
             local activeWeapon = target:GetActiveWeapon()
-            local weaponName = "None"
+            local weaponName = L("none")
             if IsValid(activeWeapon) then weaponName = activeWeapon:GetPrintName() or activeWeapon:GetClass() end
-            table.insert(infoLines, "Weapon: " .. weaponName)
-            table.insert(infoLines, "User Group: " .. target:GetUserGroup())
+            table.insert(infoLines, L("adminHUDWeapon", weaponName))
+            table.insert(infoLines, L("adminHUDUserGroup", target:GetUserGroup()))
             local velocity = target:GetVelocity()
             local speed = math.Round(velocity:Length())
-            table.insert(infoLines, "Speed: " .. speed)
+            table.insert(infoLines, L("adminHUDSpeed", speed))
         else
-            table.insert(infoLines, "Class: " .. target:GetClass())
+            table.insert(infoLines, L("adminHUDEntityClass", target:GetClass()))
             local owner = target:GetOwner()
             if IsValid(owner) and owner:IsPlayer() then
-                table.insert(infoLines, "Owner: " .. owner:Nick())
+                table.insert(infoLines, L("adminHUDOwner", owner:Nick()))
             else
-                table.insert(infoLines, "Owner: World")
+                table.insert(infoLines, L("adminHUDOwnerWorld"))
             end
 
-            table.insert(infoLines, "Entity ID: " .. target:EntIndex())
+            table.insert(infoLines, L("adminHUDEntityID", target:EntIndex()))
         end
 
         hook.Run("AddToAdminStickHUD", client, target, infoLines)
@@ -4305,7 +4305,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         table.insert(hudInfos, hudInfo)
     end
 
-    local instructions = {"Left Click: Selects target", "Right Click: Freezes player", "Shift + R: Selects yourself", "R: Clears the selection"}
+    local instructions = {L("adminStickInstructionSelectTarget"), L("adminStickInstructionFreezePlayer"), L("adminStickInstructionSelectSelf"), L("adminStickInstructionClearSelection")}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",
@@ -4341,9 +4341,9 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
 end
 
 local function DisplayPositionToolHUD(client, hudInfos, weapon)
-    local instructions = {"Left Click: Set position at aim", "Right Click: Use current position", "Reload: Cycle mode", "Shift + E: Open removal menu"}
+    local instructions = {L("positionToolInstructionSetAim"), L("positionToolInstructionUseCurrentPosition"), L("positionToolInstructionCycleMode"), L("positionToolInstructionOpenRemovalMenu")}
     local typeInfo = weapon.GetPositionToolMode and weapon:GetPositionToolMode()
-    if typeInfo and typeInfo.name then table.insert(instructions, 1, "Mode: " .. typeInfo.name) end
+    if typeInfo and typeInfo.name then table.insert(instructions, 1, L("positionToolCurrentMode", typeInfo.name)) end
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",
@@ -4451,7 +4451,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
         })
     else
         table.insert(hudInfos, {
-            text = "Click to set start point",
+            text = L("distanceMeasureClickToSetStart"),
             font = "LiliaFont.16",
             color = Color(180, 180, 180),
             position = {

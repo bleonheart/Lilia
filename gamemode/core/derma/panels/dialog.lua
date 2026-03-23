@@ -383,7 +383,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
 
     if not skipBackButton and #self.conversationStack > 0 then
         table.insert(validOptions, {
-            label = "Back",
+            label = L("back"),
             info = {
                 Response = "",
                 isAutoBack = true

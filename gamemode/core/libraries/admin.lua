@@ -1233,12 +1233,12 @@ if SERVER then
             return false
         end
 
-        local targetInfo = target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")"
+        local targetInfo = L("staffLogPlayerSteam64", target:Name(), target:SteamID64())
         if cmd == "kick" then
             target:Kick(reason or L("genericReason"))
             admin:notifySuccessLocalized("plyKicked")
             lia.log.add(admin, "plyKick", target:Name())
-            staffAction("KICK", admin:Name() .. " kicked " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
+            staffAction("KICK", L("staffActionKicked", admin:Name(), target:Name(), target:SteamID64()))
             lia.db.insertTable({
                 player = target:Name(),
                 playerSteamID = target:SteamID(),
@@ -1253,7 +1253,7 @@ if SERVER then
             target:banPlayer(reason, tonumber(dur) or 0, admin)
             admin:notifySuccessLocalized("plyBanned")
             lia.log.add(admin, "plyBan", target:Name())
-            staffAction("BAN", admin:Name() .. " banned " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
+            staffAction("BAN", L("staffActionBanned", admin:Name(), target:Name(), target:SteamID64()))
             return true
         elseif cmd == "unban" then
             local steamid = IsValid(target) and target:SteamID() or tostring(victim)
@@ -1261,7 +1261,7 @@ if SERVER then
                 lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(steamid))
                 admin:notifySuccessLocalized("playerUnbanned")
                 lia.log.add(admin, "plyUnban", steamid)
-                staffAction("UNBAN", admin:Name() .. " unbanned SteamID " .. steamid)
+                staffAction("UNBAN", L("staffActionUnbannedSteamID", admin:Name(), steamid))
                 return true
             end
         elseif cmd == "mute" then
@@ -1279,7 +1279,7 @@ if SERVER then
                     timestamp = os.time()
                 }, nil, "staffactions")
 
-                staffAction("MUTE", admin:Name() .. " muted " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
+                staffAction("MUTE", L("staffActionMuted", admin:Name(), target:Name(), target:SteamID64()))
                 hook.Run("PlayerMuted", target, admin)
                 return true
             end
@@ -1288,7 +1288,7 @@ if SERVER then
                 target:setLiliaData("liaMuted", false)
                 admin:notifySuccessLocalized("plyUnmuted")
                 lia.log.add(admin, "plyUnmute", target:Name())
-                staffAction("UNMUTE", admin:Name() .. " unmuted " .. target:Name() .. " (Steam64ID: " .. target:SteamID64() .. ")")
+                staffAction("UNMUTE", L("staffActionUnmuted", admin:Name(), target:Name(), target:SteamID64()))
                 hook.Run("PlayerUnmuted", target, admin)
                 return true
             end

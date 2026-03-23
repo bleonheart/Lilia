@@ -338,9 +338,9 @@ net.Receive("liaKickCharacterToBase", function(_, client)
 end)
 
 lia.command.add("speed", {
-    desc = "Check your current movement speeds.",
+    desc = "speedCommandDesc",
     onRun = function(client)
-        client:notify(string.format("Current speeds - Run: %d, Walk: %d", client:GetRunSpeed(), client:GetWalkSpeed()))
+        client:notifyLocalized("speedCommandStatus", client:GetRunSpeed(), client:GetWalkSpeed())
         return ""
     end
 })

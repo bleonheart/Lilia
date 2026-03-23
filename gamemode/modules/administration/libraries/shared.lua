@@ -100,7 +100,7 @@ properties.Add("copytoclipboard", {
     end,
 })
 
-lia.util.setPositionCallback("Faction Spawn Adder", {
+lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
     onRun = function(pos, client, typeId)
         if SERVER then
             local factionID = net.ReadString()
@@ -133,7 +133,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
                 return
             end
 
-            lia.derma.requestDropdown("Faction Spawn Adder", names, function(selection)
+            lia.derma.requestDropdown(L("factionSpawnAdderTitle"), names, function(selection)
                 if not selection or selection == false then return end
                 local factionID = idByDisplay[selection]
                 if not factionID then return end
@@ -180,7 +180,7 @@ lia.util.setPositionCallback("Faction Spawn Adder", {
     serverOnly = true
 })
 
-lia.util.setPositionCallback("Class Spawn Adder", {
+lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
     onRun = function(pos, client, typeId)
         if SERVER then
             local classID = net.ReadString()
@@ -216,7 +216,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
                 return
             end
 
-            lia.derma.requestDropdown("Class Spawn Adder", names, function(selection)
+            lia.derma.requestDropdown(L("classSpawnAdderTitle"), names, function(selection)
                 if not selection or selection == false then return end
                 local classID = idByDisplay[selection]
                 if not classID then return end
@@ -264,7 +264,7 @@ lia.util.setPositionCallback("Class Spawn Adder", {
     serverOnly = true
 })
 
-lia.util.setPositionCallback("Sit Room", {
+lia.util.setPositionCallback(L("sitRoomTitle"), {
     onRun = function(pos, client, typeId)
         if SERVER then
             local name = net.ReadString()

@@ -1251,7 +1251,7 @@ net.Receive("liaAssureClientSideAssets", function()
                 else
                     failedSounds = failedSounds + 1
                     local errorMessage = errorMsg or L("unknownError")
-                    chat.AddText(Color(255, 100, 100), "[Sound Download] ", Color(255, 255, 255), L("failedToDownloadSound", download.name, errorMessage))
+                    chat.AddText(Color(255, 100, 100), L("soundDownload"), Color(255, 255, 255), L("failedToDownloadSound", download.name, errorMessage))
                 end
 
                 processNextDownload()
@@ -1274,19 +1274,19 @@ net.Receive("liaAssureClientSideAssets", function()
                 lia.bootstrap("AssetDownload", "===========================================")
                 lia.bootstrap("AssetDownload", L("assetDownloadComplete"))
                 lia.bootstrap("AssetDownload", L("downloadSummary"))
-                lia.bootstrap("AssetDownload", string.format("Images: %d/%d completed (%d failed)", completedImages, totalImages, failedImages))
-                lia.bootstrap("AssetDownload", string.format("Sounds: %d/%d completed (%d failed)", completedSounds, totalSounds, failedSounds))
+                lia.bootstrap("AssetDownload", L("assetSummaryImagesCompleted", completedImages, totalImages, failedImages))
+                lia.bootstrap("AssetDownload", L("assetSummarySoundsCompleted", completedSounds, totalSounds, failedSounds))
                 lia.bootstrap("AssetDownload", L("currentStatistics"))
-                lia.bootstrap("AssetDownload", string.format("Images: %d downloaded | %d stored", imageStats.downloaded, imageStats.stored))
-                lia.bootstrap("AssetDownload", string.format("Sounds: %d downloaded | %d stored", soundStats.downloaded, soundStats.stored))
-                lia.bootstrap("AssetDownload", string.format("Combined: %d downloaded | %d stored", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
+                lia.bootstrap("AssetDownload", L("assetStatisticsImages", imageStats.downloaded, imageStats.stored))
+                lia.bootstrap("AssetDownload", L("assetStatisticsSounds", soundStats.downloaded, soundStats.stored))
+                lia.bootstrap("AssetDownload", L("assetStatisticsCombined", imageStats.downloaded + soundStats.downloaded, imageStats.stored + soundStats.stored))
                 lia.bootstrap("AssetDownload", "===========================================")
                 if failedImages > 0 or failedSounds > 0 then
                     lia.warning(L("warningAssetsFailedToDownload"))
-                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), L("assetsDownloadWarning", failedImages, "image(s)")) end
-                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), "[Asset Download] ", Color(255, 255, 255), L("assetsDownloadWarning", failedSounds, "sound(s)")) end
+                    if failedImages > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("assetsDownloadWarning", failedImages, L("assetTypeImages"))) end
+                    if failedSounds > 0 then chat.AddText(Color(255, 150, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("assetsDownloadWarning", failedSounds, L("assetTypeSounds"))) end
                 else
-                    chat.AddText(Color(100, 255, 100), "[Asset Download] ", Color(255, 255, 255), L("allAssetsDownloadedSuccessfully"))
+                    chat.AddText(Color(100, 255, 100), L("assetDownloadLabel"), Color(255, 255, 255), L("allAssetsDownloadedSuccessfully"))
                 end
             end)
         end

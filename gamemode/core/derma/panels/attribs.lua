@@ -126,7 +126,7 @@ PANEL = {}
 function PANEL:Init()
     local client = LocalPlayer()
     self.title = self:addLabel("attributes")
-    self.leftLabel = self:addLabel("points left")
+    self.leftLabel = self:addLabel("pointsLeft")
     self.leftLabel:SetFont("LiliaFont.32")
     self.leftLabel:SetTextColor(color_white)
     self.title:SetTextColor(color_white)
