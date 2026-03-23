@@ -6731,7 +6731,7 @@ lia.command.add("beclass", {
         end
 
         if isSameClass then
-            if applyRequestedClassModel() then client:notify("Model updated. Will apply on respawn.") end
+            if applyRequestedClassModel() then client:notifyLocalized("modelUpdatedOnRespawn") end
             return
         end
 
@@ -8103,7 +8103,7 @@ lia.command.add("listnearbyentities", {
         end
 
         client:ChatPrint("Total entities found: " .. totalEntities)
-        client:notify("Listed " .. totalEntities .. " entities within " .. radius .. " units")
+        client:notifyLocalized("listedEntitiesWithinRadius", totalEntities, radius)
     end
 })
 

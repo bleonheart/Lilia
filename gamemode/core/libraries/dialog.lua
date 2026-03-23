@@ -793,7 +793,7 @@ else
         configID = configID or "appearance"
         if not IsValid(npc) then return end
         local frame = vgui.Create("liaFrame")
-        frame:SetTitle("Customize NPC")
+        frame:SetTitle(L("customizeNPC"))
         frame:SetSize(800, 700)
         frame:Center()
         frame:MakePopup()
@@ -869,7 +869,7 @@ else
 
         local nameLabel = vgui.Create("DLabel", scroll)
         nameLabel:Dock(TOP)
-        nameLabel:SetText("NPC Name:")
+        nameLabel:SetText(L("npcNameLabel"))
         nameLabel:SetTall(20)
         nameLabel:DockMargin(0, 5, 0, 5)
         local nameEntry = vgui.Create("liaEntry", scroll)
@@ -879,7 +879,7 @@ else
         nameEntry:DockMargin(0, 0, 0, 10)
         local modelLabel = vgui.Create("DLabel", scroll)
         modelLabel:Dock(TOP)
-        modelLabel:SetText("Model Path:")
+        modelLabel:SetText(L("modelPathLabel"))
         modelLabel:SetTall(20)
         modelLabel:DockMargin(0, 5, 0, 5)
         local modelEntry = vgui.Create("liaEntry", scroll)
@@ -904,7 +904,7 @@ else
                         skinSlider:SetValue(0)
                     end
 
-                    LocalPlayer():notifySuccess("NPC model updated to: " .. value .. ". Bodygroups and skin have been reset.")
+                    LocalPlayer():notifySuccessLocalized("npcModelUpdated", value)
                 end
             end
         end
@@ -912,7 +912,7 @@ else
         if hasBodygroups then
             local bodygroupLabel = vgui.Create("DLabel", scroll)
             bodygroupLabel:Dock(TOP)
-            bodygroupLabel:SetText("Bodygroups:")
+            bodygroupLabel:SetText(L("bodygroupsLabel"))
             bodygroupLabel:SetTall(20)
             bodygroupLabel:DockMargin(0, 5, 0, 5)
             local bodygroupPanel = vgui.Create("DPanel", scroll)
@@ -931,7 +931,7 @@ else
         if hasSkin then
             local skinLabel = vgui.Create("DLabel", scroll)
             skinLabel:Dock(TOP)
-            skinLabel:SetText("Skin:")
+            skinLabel:SetText(L("skinLabel"))
             skinLabel:SetTall(20)
             skinLabel:DockMargin(0, 5, 0, 5)
             skinSlider = vgui.Create("DNumSlider", scroll)
@@ -978,14 +978,14 @@ else
         if hasAnimations then
             local animationLabel = vgui.Create("DLabel", scroll)
             animationLabel:Dock(TOP)
-            animationLabel:SetText("Animation:")
+            animationLabel:SetText(L("animationLabel"))
             animationLabel:SetTall(20)
             animationLabel:DockMargin(0, 5, 0, 5)
             animationCombo = vgui.Create("liaComboBox", scroll)
             animationCombo:Dock(TOP)
             animationCombo:SetTall(25)
             animationCombo:DockMargin(0, 0, 0, 10)
-            animationCombo:SetValue(selectedAnimation == "auto" and "Auto (idle animation)" or selectedAnimation)
+            animationCombo:SetValue(selectedAnimation == "auto" and L("npcAnimationAuto") or selectedAnimation)
             local selectedIndex = 0
             if selectedAnimation == "auto" then
                 selectedIndex = 1
@@ -999,7 +999,7 @@ else
             end
 
             animationCombo:ChooseOption(selectedAnimation, selectedIndex)
-            animationCombo:AddChoice("Auto (idle animation)", "auto", selectedAnimation == "auto")
+            animationCombo:AddChoice(L("npcAnimationAuto"), "auto", selectedAnimation == "auto")
             for _, animName in ipairs(availableAnimations) do
                 animationCombo:AddChoice(animName, animName, animName == selectedAnimation)
             end
@@ -1018,27 +1018,27 @@ else
             refreshBtn:Dock(TOP)
             refreshBtn:SetTall(25)
             refreshBtn:DockMargin(0, 5, 0, 10)
-            refreshBtn:SetText("Refresh Animation List")
+            refreshBtn:SetText(L("refreshAnimationList"))
             refreshBtn.DoClick = function()
                 if IsValid(npc) then
                     local sequences = npc:GetSequenceList()
                     if sequences and #sequences > 0 then
                         animationCombo:Clear()
-                        animationCombo:AddChoice("Auto (idle animation)", "auto", selectedAnimation == "auto")
+                        animationCombo:AddChoice(L("npcAnimationAuto"), "auto", selectedAnimation == "auto")
                         for _, animName in ipairs(sequences) do
                             animationCombo:AddChoice(animName, animName, animName == selectedAnimation)
                         end
 
-                        LocalPlayer():notifySuccess("Animation list refreshed! Found " .. #sequences .. " animations.")
+                        LocalPlayer():notifySuccessLocalized("animationListRefreshed", #sequences)
                     else
-                        LocalPlayer():notifyError("No animations found for this model.")
+                        LocalPlayer():notifyErrorLocalized("noAnimationsFoundForModel")
                     end
                 end
             end
         else
             local noAnimLabel = vgui.Create("DLabel", scroll)
             noAnimLabel:Dock(TOP)
-            noAnimLabel:SetText("No animations found for this model.")
+            noAnimLabel:SetText(L("noAnimationsFoundForModel"))
             noAnimLabel:SetTall(20)
             noAnimLabel:DockMargin(0, 5, 0, 5)
             noAnimLabel:SetTextColor(Color(255, 100, 100))
@@ -1046,14 +1046,14 @@ else
             refreshAnimBtn:Dock(TOP)
             refreshAnimBtn:SetTall(25)
             refreshAnimBtn:DockMargin(0, 5, 0, 10)
-            refreshAnimBtn:SetText("Try Refresh Animations")
+            refreshAnimBtn:SetText(L("tryRefreshAnimations"))
             refreshAnimBtn.DoClick = function()
                 if IsValid(npc) then
                     local sequences = npc:GetSequenceList()
                     if sequences and #sequences > 0 then
-                        LocalPlayer():notifySuccess("Found " .. #sequences .. " animations! Please reopen the customization menu.")
+                        LocalPlayer():notifySuccessLocalized("animationsFoundReopenMenu", #sequences)
                     else
-                        LocalPlayer():notifyError("Still no animations found. The model might not have animations.")
+                        LocalPlayer():notifyErrorLocalized("stillNoAnimationsFound")
                     end
                 end
             end
@@ -1061,7 +1061,7 @@ else
 
         local dialogTypeLabel = vgui.Create("DLabel", scroll)
         dialogTypeLabel:Dock(TOP)
-        dialogTypeLabel:SetText("Dialog Type:")
+        dialogTypeLabel:SetText(L("dialogTypeLabel"))
         dialogTypeLabel:SetTall(20)
         dialogTypeLabel:DockMargin(0, 15, 0, 5)
         local currentType = npc:getNetVar("uniqueID", npc.uniqueID) or "none"
@@ -1070,7 +1070,7 @@ else
         dialogTypeCombo:Dock(TOP)
         dialogTypeCombo:SetTall(30)
         dialogTypeCombo:DockMargin(0, 0, 0, 10)
-        dialogTypeCombo:AddChoice("None (No Dialog)", "none", currentType == "none" or currentType == nil)
+        dialogTypeCombo:AddChoice(L("noneNoDialog"), "none", currentType == "none" or currentType == nil)
         for uniqueID, data in pairs(lia.dialog.stored) do
             local displayName = data.PrintName or uniqueID
             dialogTypeCombo:AddChoice(displayName, uniqueID, uniqueID == currentType)
@@ -1082,7 +1082,7 @@ else
         local applyBtn = vgui.Create("liaButton", scroll)
         applyBtn:Dock(TOP)
         applyBtn:SetTall(35)
-        applyBtn:SetText("Apply Customizations")
+        applyBtn:SetText(L("applyCustomizations"))
         applyBtn:DockMargin(0, 5, 0, 10)
         applyBtn.DoClick = function()
             local nameValue = nameEntry:GetValue() or ""
@@ -1125,7 +1125,7 @@ else
             separator.Paint = function(_, w, h) draw.RoundedBox(0, 0, 0, w, h, Color(100, 100, 100, 100)) end
             local otherLabel = vgui.Create("DLabel", scroll)
             otherLabel:Dock(TOP)
-            otherLabel:SetText("Other Configurations:")
+            otherLabel:SetText(L("otherConfigurations"))
             otherLabel:SetTall(20)
             otherLabel:SetTextColor(color_white)
             otherLabel:DockMargin(0, 5, 0, 5)
@@ -1134,7 +1134,7 @@ else
                     local configBtn = vgui.Create("liaButton", scroll)
                     configBtn:Dock(TOP)
                     configBtn:SetTall(30)
-                    configBtn:SetText(config.name or config.id or "Configuration")
+                    configBtn:SetText(config.name or config.id or L("configuration"))
                     configBtn:DockMargin(0, 5, 0, 5)
                     configBtn.DoClick = function()
                         frame:Close()
@@ -1147,7 +1147,7 @@ else
         local cancelBtn = vgui.Create("liaButton", scroll)
         cancelBtn:Dock(TOP)
         cancelBtn:SetTall(30)
-        cancelBtn:SetText("Cancel")
+        cancelBtn:SetText(L("cancel"))
         cancelBtn:DockMargin(0, 5, 0, 10)
         cancelBtn.DoClick = function() frame:Close() end
     end

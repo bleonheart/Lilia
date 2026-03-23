@@ -2,7 +2,7 @@
 function PANEL:Init()
     if IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end
     lia.dialog.vgui = self
-    self:SetTitle("Dialog")
+    self:SetTitle(L("dialog"))
     self:SetSize(ScrW() * 0.4, ScrH() * 0.45)
     self:Center()
     self:ShowCloseButton(true)
@@ -11,7 +11,7 @@ function PANEL:Init()
     self:SetMouseInputEnabled(true)
     if IsValid(lia.dialog.historyFrame) then lia.dialog.historyFrame:Remove() end
     self.dialogHistoryFrame = vgui.Create("liaFrame")
-    self.dialogHistoryFrame:SetTitle("History")
+    self.dialogHistoryFrame:SetTitle(L("history"))
     self.dialogHistoryFrame:ShowCloseButton(false)
     local historyW = ScrW() * 0.2
     self.dialogHistoryFrame:SetSize(historyW, ScrH() * 0.45)

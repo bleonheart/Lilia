@@ -68,7 +68,7 @@ net.Receive("liaWeaponOverrideUpdate", function(len, ply)
     lia.data.set("weaponOverrides", lia.item.WeaponOverrides, true, true)
     local itemDef = lia.item.list[className]
     if itemDef then itemDef[key] = value end
-    ply:notify("Successfully updated " .. key .. " for " .. className)
+    ply:notifyLocalized("weaponOverrideUpdated", key, className)
     net.Start("liaWeaponOverrideSync")
     net.WriteBool(false)
     net.WriteString(className)
