@@ -635,7 +635,7 @@ if SERVER then
                     net.WriteTable(npcOptions)
                     net.Send(client)
                 else
-                    client:notifyError("No NPC types available! The server may still be loading modules. Please try again in a moment.")
+                    client:notifyErrorLocalized("noNPCTypesAvailable")
                 end
             end)
             return
@@ -1233,7 +1233,7 @@ function lia.dialog.openConfigurationPicker(npc, npcID)
     local ply = LocalPlayer()
     local configurations = lia.dialog.getAvailableConfigurations(ply, npc, npcID)
     if #configurations == 0 then
-        LocalPlayer():notifyError("No NPC configurations are available.")
+        LocalPlayer():notifyErrorLocalized("noNPCConfigurationsAvailable")
         return
     end
 
@@ -1286,7 +1286,7 @@ if SERVER then
                 npc.uniqueID = customData.dialogType
                 hook.Run("UpdateEntityPersistence", npc)
                 hook.Run("SaveData")
-                ply:notifySuccess("NPC dialog type updated successfully!")
+                ply:notifySuccessLocalized("npcDialogTypeUpdated")
             end
         end
     })
@@ -1358,7 +1358,7 @@ if SERVER then
             npc:setNetVar("NPCName", npc.NPCName)
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")
-            ply:notifySuccess("NPC customized successfully!")
+            ply:notifySuccessLocalized("npcCustomizedSuccessfully")
         end
     })
 else

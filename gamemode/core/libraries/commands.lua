@@ -7516,7 +7516,7 @@ lia.command.add("previewchatmessages", {
         ClientAddTextShadowed(client, Color(34, 139, 34), "MONEY", Color(255, 255, 255), " | " .. ts .. " | $5,000 granted to player preview.")
         ClientAddTextShadowed(client, Color(123, 104, 238), "SIT", Color(255, 255, 255), " | " .. ts .. " | Teleport preview to sit room.")
         ClientAddText(client, Color(200, 200, 200), "[Preview] ", Color(255, 255, 255), "Non-shadowed chat line for comparison.")
-        client:notifySuccess("Preview messages sent to your chat.")
+        client:notifySuccessLocalized("previewMessagesSent")
     end
 })
 
@@ -7799,10 +7799,10 @@ lia.command.add("npcchangetype", {
         Icon = "icon16/user_edit.png"
     },
     onRun = function(client)
-        if not client:hasPrivilege("Can Manage NPCs") then return client:notifyError("You lack permission to manage NPCs.") end
+        if not client:hasPrivilege("Can Manage NPCs") then return client:notifyErrorLocalized("noManageNPCPermission") end
         local ent = client:getTracedEntity()
-        if not ent or not IsValid(ent) then return client:notifyError("You must be looking at a valid entity.") end
-        if ent:GetClass() ~= "lia_npc" then return client:notifyError("You must be looking at a dialog NPC.") end
+        if not ent or not IsValid(ent) then return client:notifyErrorLocalized("mustLookAtValidEntity") end
+        if ent:GetClass() ~= "lia_npc" then return client:notifyErrorLocalized("mustLookAtDialogNPC") end
         lia.dialog.syncToClients(client)
         timer.Simple(0.1, function()
             if not IsValid(client) or not IsValid(ent) then return end
@@ -7878,13 +7878,13 @@ lia.command.add("npcchangetype", {
 
                                 npc:setNetVar("NPCName", npc.NPCName)
                                 hook.Run("UpdateEntityPersistence", npc)
-                                client:notifyInfo("NPC type changed to: " .. (npcData.PrintName or npcType))
+                                client:notifyInfoLocalized("npcTypeChanged", npcData.PrintName or npcType)
                             end
                         end
                     end
                 end)
             else
-                client:notifyError("No NPC types available! The server may still be loading modules. Please try again in a moment.")
+                client:notifyErrorLocalized("noNPCTypesAvailable")
             end
         end)
     end

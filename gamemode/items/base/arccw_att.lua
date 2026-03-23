@@ -42,9 +42,9 @@ ITEM.functions.Unequip = {
     icon = "icon16/cross.png",
     onRun = function(item)
         if item:removeAttachment(item.player) then
-            item.player:notifySuccess("Attachment unequipped.")
+            item.player:notifySuccessLocalized("attachmentUnequipped")
         else
-            item.player:notifyError("Failed to unequip attachment.")
+            item.player:notifyErrorLocalized("attachmentUnequipFailed")
         end
         return false
     end,
@@ -58,7 +58,7 @@ ITEM.functions.Equip = {
     onRun = function(item)
         item:setData("equip", true)
         item:addAttachment(item.player)
-        item.player:notifySuccess("Attachment equipped.")
+        item.player:notifySuccessLocalized("attachmentEquipped")
         return false
     end,
     onCanRun = function(item) return not IsValid(item.entity) and item:getData("equip") ~= true end
