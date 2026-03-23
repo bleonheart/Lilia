@@ -1019,47 +1019,47 @@ local function GenerateDynamicCategories()
             }
         },
         characterManagement = {
-            name = L("adminStickCategoryCharacterManagement") or "Character Management",
+            name = L("adminStickCategoryCharacterManagement"),
             icon = "icon16/user_gray.png",
             subcategories = {
                 information = {
-                    name = "Information",
+                    name = L("information"),
                     icon = "icon16/information.png"
                 },
                 transfers = {
-                    name = L("adminStickSubCategoryTransfers") or "Transfers",
+                    name = L("adminStickSubCategoryTransfers"),
                     icon = "icon16/arrow_right.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = L("adminStickSubCategoryFactions") or "Factions",
+                            name = L("adminStickSubCategoryFactions"),
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = L("adminStickSubCategoryClasses") or "Classes",
+                            name = L("adminStickSubCategoryClasses"),
                             icon = "icon16/user.png"
                         }
                     }
                 },
                 whitelists = {
-                    name = L("adminStickSubCategoryWhitelists") or "Whitelists",
+                    name = L("adminStickSubCategoryWhitelists"),
                     icon = "icon16/group_key.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = L("adminStickSubCategoryFactions") or "Factions",
+                            name = L("adminStickSubCategoryFactions"),
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = L("adminStickSubCategoryClasses") or "Classes",
+                            name = L("adminStickSubCategoryClasses"),
                             icon = "icon16/user.png"
                         }
                     }
                 },
                 properties = {
-                    name = "Properties",
+                    name = L("properties"),
                     icon = "icon16/application_view_tile.png"
                 },
                 items = {
-                    name = "Items",
+                    name = L("items"),
                     icon = "icon16/box.png"
                 }
             }
@@ -1069,21 +1069,21 @@ local function GenerateDynamicCategories()
             icon = "icon16/door.png",
             subcategories = {
                 actions = {
-                    name = "Actions",
+                    name = L("actions"),
                     icon = "icon16/lightning.png"
                 },
                 settings = {
-                    name = "Settings",
+                    name = L("settings"),
                     icon = "icon16/cog.png"
                 },
                 access = {
-                    name = "Access",
+                    name = L("access"),
                     icon = "icon16/group.png"
                 }
             }
         },
         storageManagement = {
-            name = L("storageManagement") or "Storage Management",
+            name = L("storageManagement"),
             icon = "icon16/package.png"
         }
     }
@@ -4379,7 +4379,7 @@ local function DisplayPositionToolHUD(client, hudInfos, weapon)
 end
 
 local function DisplayDistanceToolHUD(client, hudInfos, weapon)
-    local instructions = {"Left Click: Set point", "Right Click: Clear points", "Reload: Measure current"}
+    local instructions = {L("distanceToolSetPoint"), L("distanceToolClearPoints"), L("distanceToolMeasureCurrent")}
     table.insert(hudInfos, {
         text = instructions,
         font = "LiliaFont.18",

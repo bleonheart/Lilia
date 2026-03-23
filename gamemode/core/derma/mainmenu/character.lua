@@ -266,7 +266,7 @@ function PANEL:createWelcomeScreen()
         contentY = contentY + logoSize + 25
     end
 
-    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
+    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
     local welcomeLabel = container:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
@@ -340,7 +340,7 @@ function PANEL:createWelcomeScreen()
     container:MoveTo(finalX, newFinalY, 0.4, 0, 0.3)
     local function updateWelcomeText()
         if not IsValid(welcomeLabel) then return end
-        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
+        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
         if isFirstJoin then
             welcomeLabel:SetText(L("welcomePlayer", currentSteamName))
         else
@@ -352,8 +352,8 @@ function PANEL:createWelcomeScreen()
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
-            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
-            if currentSteamName ~= lastSteamName and currentSteamName ~= "Player" then
+            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
+            if currentSteamName ~= lastSteamName and currentSteamName ~= L("genericPlayer") then
                 lastSteamName = currentSteamName
                 updateWelcomeText()
             end
