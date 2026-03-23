@@ -2276,12 +2276,12 @@ function MODULE:OpenAdminStickUI(tgt)
         if categories.characterManagement then
             categories.characterManagement.subcategories = categories.characterManagement.subcategories or {}
             categories.characterManagement.subcategories.information = {
-                name = "Information",
+                name = L("information"),
                 icon = "icon16/information.png"
             }
 
             categories.characterManagement.subcategories.transfers = {
-                name = L("adminStickSubCategoryTransfers") or "Transfers",
+                name = L("adminStickSubCategoryTransfers"),
                 icon = "icon16/arrow_right.png",
                 subcategories = {
                     adminStickSubCategoryFactions = {
@@ -2289,14 +2289,14 @@ function MODULE:OpenAdminStickUI(tgt)
                         icon = "icon16/group.png"
                     },
                     adminStickSubCategoryClasses = {
-                        name = "Classes",
+                        name = L("classes"),
                         icon = "icon16/user.png"
                     }
                 }
             }
 
             categories.characterManagement.subcategories.whitelists = {
-                name = L("adminStickSubCategoryWhitelists") or "Whitelists",
+                name = L("adminStickSubCategoryWhitelists"),
                 icon = "icon16/group_key.png",
                 subcategories = {
                     adminStickSubCategoryClasses = {
@@ -2331,12 +2331,12 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             categories.characterManagement.subcategories.properties = {
-                name = "Properties",
+                name = L("properties"),
                 icon = "icon16/application_view_tile.png"
             }
 
             categories.characterManagement.subcategories.items = {
-                name = "Items",
+                name = L("items"),
                 icon = "icon16/box.png"
             }
         end
@@ -2466,7 +2466,7 @@ function MODULE:OpenAdminStickUI(tgt)
 
                     if #cls > 0 then
                         table.insert(lists, {
-                            name = "Classes",
+                            name = L("classes"),
                             category = "characterManagement",
                             subcategory = "transfers",
                             subSubcategory = "adminStickSubCategoryClasses",
