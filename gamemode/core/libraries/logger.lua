@@ -268,7 +268,7 @@ end
         category (string)
             Category label used in console output and DB.
     Realm:
-        Shared
+        Server
 
     Example Usage:
         ```lua
@@ -302,7 +302,7 @@ end
             logString, category
 
     Realm:
-        Shared
+        Server
 
     Example Usage:
         ```lua
@@ -332,7 +332,7 @@ end
         ... (vararg)
             Formatter args for the log type.
     Realm:
-        Shared
+        Server
 
     Example Usage:
         ```lua
