@@ -16,6 +16,8 @@ function PANEL:Init()
     self.minHeight = 80
     self.iconMat = nil
     self.panelColor = lia.color.theme.panel[1]
+PrintTable(lia.color.theme.panel)
+print(lia.color.theme and "exists" or " no exist")
     self:DockPadding(6, 30, 6, 6)
     self.top_panel = vgui.Create("DButton", self)
     self.top_panel:SetText("")

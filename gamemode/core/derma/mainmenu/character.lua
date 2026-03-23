@@ -283,11 +283,11 @@ function PANEL:createWelcomeScreen()
         local minutes = math.floor((playtime % 3600) / 60)
         local playtimeStr = L("youHavePlayedFor")
         if days > 0 then
-            playtimeStr = playtimeStr .. days .. "d " .. hours .. "h " .. minutes .. "m"
+            playtimeStr = playtimeStr .. L("playtimeDaysHoursMinutes", days, hours, minutes)
         elseif hours > 0 then
-            playtimeStr = playtimeStr .. hours .. "h " .. minutes .. "m"
+            playtimeStr = playtimeStr .. L("playtimeHoursMinutes", hours, minutes)
         else
-            playtimeStr = playtimeStr .. minutes .. "m"
+            playtimeStr = playtimeStr .. L("playtimeMinutes", minutes)
         end
 
         local playtimeContainer = container:Add("DPanel")

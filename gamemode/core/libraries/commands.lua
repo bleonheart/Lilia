@@ -1307,7 +1307,7 @@ else
         if table.Count(panelTypes) > 0 then
             LocalPlayer():ChatPrint(L("visiblePanelTypes"))
             for panelType, count in pairs(panelTypes) do
-                LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
+                LocalPlayer():ChatPrint(L("panelTypeCount", panelType, count))
             end
         end
 
@@ -1315,7 +1315,7 @@ else
         if table.Count(hiddenPanelTypes) > 0 then
             LocalPlayer():ChatPrint(L("hiddenPanelTypes"))
             for panelType, count in pairs(hiddenPanelTypes) do
-                LocalPlayer():ChatPrint("  " .. panelType .. ": " .. count)
+                LocalPlayer():ChatPrint(L("panelTypeCount", panelType, count))
             end
         end
     end
@@ -1817,7 +1817,7 @@ else
         end
 
         for i, fileName in ipairs(soundFiles) do
-            LocalPlayer():ChatPrint("  " .. i .. ": " .. fileName)
+            LocalPlayer():ChatPrint(L("indexedFileEntry", i, fileName))
         end
 
         local baseDir2 = "lilia/webimages/"
@@ -1830,7 +1830,7 @@ else
         end
 
         for i, fileName in ipairs(imageFiles) do
-            LocalPlayer():ChatPrint("  " .. i .. ": " .. fileName)
+            LocalPlayer():ChatPrint(L("indexedFileEntry", i, fileName))
         end
     end)
 

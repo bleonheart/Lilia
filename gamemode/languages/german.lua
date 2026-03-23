@@ -3824,5 +3824,15 @@ LANGUAGE = {
     assetStatisticsCombined = "Combined: %d downloaded | %d stored",
     assetTypeImages = "image(s)",
     assetTypeSounds = "sound(s)",
-    logsUIUpdateError = "Error updating logs UI: %s"
+    logsUIUpdateError = "Error updating logs UI: %s",
+    advDupeBusy = "Better Duplicator is busy.",
+    betterDupeName = "Better dupe",
+    wireInvalidExpressionChip = "Invalid Expression chip specified. Upload aborted.",
+    wireNotAllowedExpressionChipUpload = "You are not allowed to upload to the target Expression chip. Upload aborted.",
+    wireExpressionUploadFailed = "Expression 2 upload failed! Error message:\n%s",
+    playtimeDaysHoursMinutes = "%sd %sh %sm",
+    playtimeHoursMinutes = "%sh %sm",
+    playtimeMinutes = "%sm",
+    panelTypeCount = "  %s: %s",
+    indexedFileEntry = "  %s: %s"
 }

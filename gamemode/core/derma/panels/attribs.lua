@@ -232,7 +232,7 @@ function PANEL:setAttribute(key, attribute)
     self.key = key
     local startingMax = lia.attribs.list[key].startingMax or nil
     self.name:SetText(L(attribute.name))
-    self:SetTooltip(L(attribute.desc or "noDesc") .. (startingMax and " Max: " .. startingMax or ""))
+    self:SetTooltip(L(attribute.desc or "noDesc") .. (startingMax and " " .. L("max", startingMax) or ""))
 end
 
 function PANEL:delta(delta)
