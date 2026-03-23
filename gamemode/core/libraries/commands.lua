@@ -7502,7 +7502,7 @@ lia.command.add("warn", {
 
 lia.command.add("previewchatmessages", {
     superAdminOnly = true,
-    desc = "Preview chat outputs",
+    desc = "previewChatOutputs",
     onRun = function(client)
         if not IsValid(client) then return end
         local ts = os.date("%Y-%m-%d %H:%M:%S")

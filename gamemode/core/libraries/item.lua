@@ -1558,26 +1558,26 @@ else
 
         local defWidth = 2
         local defHeight = 1
-        AddField("Name", "name", weaponTable.PrintName or className, false)
-        AddField("Description", "desc", "A weapon", false)
-        AddField("Model", "model", weaponTable.WorldModel or "models/props_c17/BriefCase001a.mdl", false)
-        AddField("Width", "width", defWidth, true)
-        AddField("Height", "height", defHeight, true)
-        AddField("Price", "price", 500, true)
-        AddField("Category", "category", "Weapons", false)
+        AddField(L("weaponItemName"), "name", weaponTable.PrintName or className, false)
+        AddField(L("weaponItemDescription"), "desc", L("weaponDefaultDescription"), false)
+        AddField(L("weaponItemModel"), "model", weaponTable.WorldModel or "models/props_c17/BriefCase001a.mdl", false)
+        AddField(L("weaponItemWidth"), "width", defWidth, true)
+        AddField(L("weaponItemHeight"), "height", defHeight, true)
+        AddField(L("weaponItemPrice"), "price", 500, true)
+        AddField(L("weaponItemCategory"), "category", L("weaponDefaultCategory"), false)
     end
 
     hook.Add("PopulateConfigurationButtons", "liaWeaponItemsConfig", function(pages)
         if hook.Run("CanPlayerModifyConfig", LocalPlayer()) == false then return end
         pages[#pages + 1] = {
-            name = "Weapon Items Config",
+            name = L("weaponItemsConfig"),
             drawFunc = function(parent)
                 parent:Clear()
                 local searchBar = parent:Add("liaEntry")
                 searchBar:Dock(TOP)
                 searchBar:DockMargin(10, 10, 10, 10)
                 searchBar:SetTall(35)
-                searchBar:SetPlaceholderText(L("searchWeapons") or "Search Weapons...")
+                searchBar:SetPlaceholderText(L("searchWeapons"))
                 local scroll = parent:Add("liaScrollPanel")
                 scroll:Dock(FILL)
                 local function Populate(filter)

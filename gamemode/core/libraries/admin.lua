@@ -1782,7 +1782,7 @@ else
                 end
             else
                 local function showBaseRankNotification()
-                    local message = L("baseUsergroupCannotBeEditedDesc") or "Base usergroups (user, admin, superadmin) cannot be edited. Please create a new usergroup instead using the 'Create Group' button."
+                    local message = L("baseUsergroupCannotBeEditedDesc")
                     LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited", message)
                 end
 

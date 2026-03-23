@@ -77,7 +77,7 @@ function PANEL:Init()
         if label.BaseClass and label.BaseClass.PerformLayout then label.BaseClass.PerformLayout(label) end
     end
 
-    self.npcDisplayName = "Dialog"
+    self.npcDisplayName = L("dialog")
     self.lastResponseText = ""
     self.pendingResponse = false
     self.hasHistoryMessage = false
@@ -92,7 +92,7 @@ function PANEL:SetDialogText(text)
 end
 
 function PANEL:SetDialogTitle(title)
-    local resolved = title or "Dialog"
+    local resolved = title or L("dialog")
     self.npcDisplayName = resolved
     self:SetTitle(resolved)
 end
@@ -132,7 +132,7 @@ function PANEL:AppendDialogLine(text, isPlayer, skipResponseUpdate)
     local prefix
     if isPlayer then
         local ply = LocalPlayer()
-        prefix = (IsValid(ply) and ply:Name()) or "You"
+        prefix = (IsValid(ply) and ply:Name()) or L("you")
     else
         prefix = self.npcDisplayName or self:GetTitle()
     end
