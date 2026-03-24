@@ -96,6 +96,19 @@ function lia.command.add(command, data)
     data.syntax = data.syntax or lia.command.buildSyntaxFromArguments(data.arguments)
     data.syntax = isstring(data.syntax) and lia.lang.resolveToken(data.syntax) or data.syntax or ""
     data.desc = isstring(data.desc) and lia.lang.resolveToken(data.desc) or data.desc or ""
+    if istable(data.AdminStick) then
+        data.AdminStick.Name = isstring(data.AdminStick.Name) and lia.lang.resolveToken(data.AdminStick.Name) or data.AdminStick.Name
+        data.AdminStick.Category = isstring(data.AdminStick.Category) and lia.lang.resolveToken(data.AdminStick.Category) or data.AdminStick.Category
+        data.AdminStick.SubCategory = isstring(data.AdminStick.SubCategory) and lia.lang.resolveToken(data.AdminStick.SubCategory) or data.AdminStick.SubCategory
+    end
+
+    if isstring(data.privilege) and data.privilege:sub(1, 1) == "@" then
+        data.privilegeName = lia.lang.resolveToken(data.privilege)
+        data.privilege = data.privilege:sub(2)
+    else
+        data.privilegeName = data.privilegeName or data.privilege
+    end
+
     data.privilege = data.privilege or nil
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
@@ -105,13 +118,13 @@ function lia.command.add(command, data)
     end
 
     if superAdminOnly or adminOnly then
-        local privilegeName = data.privilege and L(data.privilege) or L("accessTo", command)
+        local privilegeName = data.privilegeName or L("accessTo", command)
         local privilegeID = data.privilege or string.lower("command_" .. command)
         lia.admin.registerPrivilege({
             Name = privilegeName,
             ID = privilegeID,
             MinAccess = superAdminOnly and "superadmin" or "admin",
-            Category = "staffPermissions"
+            Category = "@staffPermissions"
         })
     end
 
@@ -159,10 +172,10 @@ function lia.command.add(command, data)
                 if superAdminOnly or adminOnly then
                     local aliasPrivilegeID = data.privilege or string.lower("command_" .. v)
                     lia.admin.registerPrivilege({
-                        Name = data.privilege and L(data.privilege) or L("accessTo", v),
+                        Name = data.privilegeName or L("accessTo", v),
                         ID = aliasPrivilegeID,
                         MinAccess = superAdminOnly and "superadmin" or "admin",
-                        Category = "commands"
+                        Category = "@commands"
                     })
                 end
             end
@@ -173,10 +186,10 @@ function lia.command.add(command, data)
             if superAdminOnly or adminOnly then
                 local aliasPrivilegeID = data.privilege or string.lower("command_" .. alias)
                 lia.admin.registerPrivilege({
-                    Name = data.privilege and L(data.privilege) or L("accessTo", alias),
+                    Name = data.privilegeName or L("accessTo", alias),
                     ID = aliasPrivilegeID,
                     MinAccess = superAdminOnly and "superadmin" or "admin",
-                    Category = "commands"
+                    Category = "@commands"
                 })
             end
         end
@@ -227,7 +240,7 @@ function lia.command.hasAccess(client, command, data)
     local superAdminOnly = data.superAdminOnly
     local adminOnly = data.adminOnly
     local accessLevels = superAdminOnly and "superadmin" or adminOnly and "admin" or "user"
-    local privilegeName = data.privilege and L(data.privilege) or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
+    local privilegeName = data.privilegeName or accessLevels == "user" and L("globalAccess") or L("accessTo", command)
     if data.onCheckAccess then
         local accessResult, customPrivilegeName = data.onCheckAccess(client, command, data)
         if accessResult ~= nil then return accessResult, customPrivilegeName or privilegeName end
@@ -1887,7 +1900,7 @@ lia.command.add("plygetplaytime", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetPlayTimeName",
+        Name = "@adminStickGetPlayTimeName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/time.png"
@@ -1922,7 +1935,7 @@ lia.command.add("plycheckid", {
         },
     },
     AdminStick = {
-        Name = "adminStickCheckCharIDName",
+        Name = "@adminStickCheckCharIDName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/vcard.png"
@@ -2006,7 +2019,7 @@ lia.command.add("sendtositroom", {
         },
     },
     AdminStick = {
-        Name = "sendToSitRoom",
+        Name = "@sendToSitRoom",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/arrow_down.png"
@@ -2054,7 +2067,7 @@ lia.command.add("returnsitroom", {
         },
     },
     AdminStick = {
-        Name = "returnFromSitroom",
+        Name = "@returnFromSitroom",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/arrow_up.png"
@@ -2090,7 +2103,7 @@ lia.command.add("charkill", {
         }
     },
     AdminStick = {
-        Name = "adminStickCharKillName",
+        Name = "@adminStickCharKillName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
@@ -2294,7 +2307,7 @@ lia.command.add("plyban", {
         },
     },
     AdminStick = {
-        Name = "adminStickBanName",
+        Name = "@adminStickBanName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/lock.png"
@@ -2317,7 +2330,7 @@ lia.command.add("plykick", {
         },
     },
     AdminStick = {
-        Name = "adminStickKickPlayerName",
+        Name = "@adminStickKickPlayerName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
@@ -2335,7 +2348,7 @@ lia.command.add("plykill", {
         },
     },
     AdminStick = {
-        Name = "adminStickKillPlayerName",
+        Name = "@adminStickKillPlayerName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
@@ -2413,7 +2426,7 @@ lia.command.add("plyrespawn", {
         },
     },
     AdminStick = {
-        Name = "adminStickRespawnPlayerName",
+        Name = "@adminStickRespawnPlayerName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/arrow_refresh.png"
@@ -2480,7 +2493,7 @@ lia.command.add("plyblindfade", {
         },
     },
     AdminStick = {
-        Name = "adminStickBlindFadeName",
+        Name = "@adminStickBlindFadeName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/eye.png"
@@ -2668,7 +2681,7 @@ lia.command.add("plycloak", {
         },
     },
     AdminStick = {
-        Name = "adminStickCloakName",
+        Name = "@adminStickCloakName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/status_offline.png"
@@ -2686,7 +2699,7 @@ lia.command.add("plyuncloak", {
         },
     },
     AdminStick = {
-        Name = "adminStickUncloakName",
+        Name = "@adminStickUncloakName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/status_online.png"
@@ -2704,7 +2717,7 @@ lia.command.add("plygod", {
         },
     },
     AdminStick = {
-        Name = "adminStickGodModeName",
+        Name = "@adminStickGodModeName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/shield.png"
@@ -2722,7 +2735,7 @@ lia.command.add("plyungod", {
         },
     },
     AdminStick = {
-        Name = "adminStickRemoveGodModeName",
+        Name = "@adminStickRemoveGodModeName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/shield_delete.png"
@@ -2769,7 +2782,7 @@ lia.command.add("plystrip", {
         },
     },
     AdminStick = {
-        Name = "adminStickStripWeaponsName",
+        Name = "@adminStickStripWeaponsName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/gun.png"
@@ -2863,7 +2876,7 @@ lia.command.add("plyspectate", {
         },
     },
     AdminStick = {
-        Name = "adminStickSpectateName",
+        Name = "@adminStickSpectateName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/zoom.png"
@@ -3165,7 +3178,7 @@ lia.command.add("checkinventory", {
         },
     },
     AdminStick = {
-        Name = "adminStickCheckInventoryName",
+        Name = "@adminStickCheckInventoryName",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/box.png"
@@ -3343,7 +3356,7 @@ lia.command.add("charvoicetoggle", {
         },
     },
     AdminStick = {
-        Name = "toggleVoice",
+        Name = "@toggleVoice",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
@@ -3512,7 +3525,7 @@ lia.command.add("clearinv", {
         },
     },
     AdminStick = {
-        Name = "adminStickClearInventoryName",
+        Name = "@adminStickClearInventoryName",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/bin.png"
@@ -3539,7 +3552,7 @@ lia.command.add("charkick", {
         },
     },
     AdminStick = {
-        Name = "adminStickKickCharacterName",
+        Name = "@adminStickKickCharacterName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
@@ -3607,7 +3620,7 @@ lia.command.add("charban", {
         },
     },
     AdminStick = {
-        Name = "banCharacter",
+        Name = "@banCharacter",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
@@ -3661,7 +3674,7 @@ lia.command.add("charwipe", {
         },
     },
     AdminStick = {
-        Name = "wipeCharacter",
+        Name = "@wipeCharacter",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
@@ -3754,7 +3767,7 @@ lia.command.add("checkmoney", {
         },
     },
     AdminStick = {
-        Name = "adminStickCheckMoneyName",
+        Name = "@adminStickCheckMoneyName",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/money.png"
@@ -3834,7 +3847,7 @@ lia.command.add("charsetspeed", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharSpeedName",
+        Name = "@adminStickSetCharSpeedName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/lightning.png"
@@ -3894,7 +3907,7 @@ lia.command.add("chargiveitem", {
         },
     },
     AdminStick = {
-        Name = "adminStickGiveItemName",
+        Name = "@adminStickGiveItemName",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/user_gray.png"
@@ -3952,7 +3965,7 @@ lia.command.add("charsetdesc", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharDescName",
+        Name = "@adminStickSetCharDescName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/user_comment.png"
@@ -3991,7 +4004,7 @@ lia.command.add("charsetname", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharNameName",
+        Name = "@adminStickSetCharNameName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/user_edit.png"
@@ -4026,7 +4039,7 @@ lia.command.add("charsetscale", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharScaleName",
+        Name = "@adminStickSetCharScaleName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/arrow_out.png"
@@ -4059,7 +4072,7 @@ lia.command.add("charsetjump", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharJumpName",
+        Name = "@adminStickSetCharJumpName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/arrow_up.png"
@@ -4132,7 +4145,7 @@ lia.command.add("charsetskin", {
         },
     },
     AdminStick = {
-        Name = "adminStickSetCharSkinName",
+        Name = "@adminStickSetCharSkinName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/user_gray.png"
@@ -4300,7 +4313,7 @@ lia.command.add("forcesay", {
         },
     },
     AdminStick = {
-        Name = "adminStickForceSayName",
+        Name = "@adminStickForceSayName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/comments.png"
@@ -4382,7 +4395,7 @@ lia.command.add("chargetmodel", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharModelName",
+        Name = "@adminStickGetCharModelName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/user_gray.png"
@@ -4419,7 +4432,7 @@ lia.command.add("checkflags", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharFlagsName",
+        Name = "@adminStickGetCharFlagsName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/flag_yellow.png"
@@ -4450,7 +4463,7 @@ lia.command.add("chargetname", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharNameName",
+        Name = "@adminStickGetCharNameName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/user.png"
@@ -4476,7 +4489,7 @@ lia.command.add("chargethealth", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharHealthName",
+        Name = "@adminStickGetCharHealthName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/heart.png"
@@ -4502,7 +4515,7 @@ lia.command.add("chargetmoney", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharMoneyName",
+        Name = "@adminStickGetCharMoneyName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/money.png"
@@ -4529,7 +4542,7 @@ lia.command.add("chargetinventory", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetCharInventoryName",
+        Name = "@adminStickGetCharInventoryName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/box.png"
@@ -4567,7 +4580,7 @@ lia.command.add("getallinfos", {
         },
     },
     AdminStick = {
-        Name = "adminStickGetAllInfosName",
+        Name = "@adminStickGetAllInfosName",
         Category = "characterManagement",
         SubCategory = "information",
         Icon = "icon16/table.png"
@@ -4998,7 +5011,7 @@ lia.command.add("charsetattrib", {
         }
     },
     AdminStick = {
-        Name = "setAttributes",
+        Name = "@setAttributes",
         Category = "characterManagement",
         SubCategory = "properties",
         Icon = "icon16/wrench.png"
@@ -5042,7 +5055,7 @@ lia.command.add("checkattributes", {
         },
     },
     AdminStick = {
-        Name = "checkAttributes",
+        Name = "@checkAttributes",
         Category = "characterManagement",
         SubCategory = "properties",
         Icon = "icon16/zoom.png"
@@ -5195,7 +5208,7 @@ lia.command.add("restockvendor", {
     superAdminOnly = true,
     desc = "@restockVendorDesc",
     AdminStick = {
-        Name = "restockVendorStickName",
+        Name = "@restockVendorStickName",
         TargetClass = "lia_vendor",
         Icon = "icon16/box.png"
     },
@@ -5326,7 +5339,7 @@ lia.command.add("charaddattrib", {
         }
     },
     AdminStick = {
-        Name = "addAttributes",
+        Name = "@addAttributes",
         Category = "characterManagement",
         SubCategory = "properties",
         Icon = "icon16/add.png"
@@ -5369,7 +5382,7 @@ lia.command.add("banooc", {
         },
     },
     AdminStick = {
-        Name = "banOOCStickName",
+        Name = "@banOOCStickName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
@@ -5397,7 +5410,7 @@ lia.command.add("unbanooc", {
         },
     },
     AdminStick = {
-        Name = "unbanOOCStickName",
+        Name = "@unbanOOCStickName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/sound.png"
@@ -5429,7 +5442,7 @@ lia.command.add("doorsell", {
     desc = "@doorsellDesc",
     adminOnly = false,
     AdminStick = {
-        Name = "adminStickDoorSellName",
+        Name = "@adminStickDoorSellName",
         Category = "doorManagement",
         SubCategory = "actions",
         TargetClass = "door",
@@ -5463,7 +5476,7 @@ lia.command.add("admindoorsell", {
     desc = "@admindoorsellDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickAdminDoorSellName",
+        Name = "@adminStickAdminDoorSellName",
         Category = "doorManagement",
         SubCategory = "actions",
         TargetClass = "door",
@@ -5499,7 +5512,7 @@ lia.command.add("doortogglelock", {
     desc = "@doortogglelockDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickToggleDoorLockName",
+        Name = "@adminStickToggleDoorLockName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5554,7 +5567,7 @@ lia.command.add("doorbuy", {
     desc = "@doorbuyDesc",
     adminOnly = false,
     AdminStick = {
-        Name = "buyDoor",
+        Name = "@buyDoor",
         Category = "doorManagement",
         SubCategory = "actions",
         TargetClass = "door",
@@ -5600,7 +5613,7 @@ lia.command.add("doortoggleownable", {
     desc = "@doortoggleownableDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickToggleDoorOwnableName",
+        Name = "@adminStickToggleDoorOwnableName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5641,7 +5654,7 @@ lia.command.add("doorresetdata", {
     desc = "@doorresetdataDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickResetDoorDataName",
+        Name = "@adminStickResetDoorDataName",
         Category = "doorManagement",
         SubCategory = "actions",
         TargetClass = "door",
@@ -5675,7 +5688,7 @@ lia.command.add("doortoggleenabled", {
     desc = "@doortoggleenabledDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickToggleDoorEnabledName",
+        Name = "@adminStickToggleDoorEnabledName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5703,7 +5716,7 @@ lia.command.add("doortogglehidden", {
     desc = "@doortogglehiddenDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickToggleDoorHiddenName",
+        Name = "@adminStickToggleDoorHiddenName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5737,7 +5750,7 @@ lia.command.add("doorsetprice", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickSetDoorPriceName",
+        Name = "@adminStickSetDoorPriceName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5775,7 +5788,7 @@ lia.command.add("doorsettitle", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickSetDoorTitleName",
+        Name = "@adminStickSetDoorTitleName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5810,7 +5823,7 @@ lia.command.add("savedoors", {
     desc = "@savedoorsDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickSaveDoorsName",
+        Name = "@adminStickSaveDoorsName",
         Category = "doorManagement",
         SubCategory = "actions",
         TargetClass = "door",
@@ -5827,7 +5840,7 @@ lia.command.add("doorinfo", {
     desc = "@doorinfoDesc",
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickDoorInfoName",
+        Name = "@adminStickDoorInfoName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -5912,7 +5925,7 @@ lia.command.add("doorsampledata", {
     desc = "@doorsampledataDesc",
     adminOnly = true,
     AdminStick = {
-        Name = L("adminStickDoorSampleName"),
+        Name = "@adminStickDoorSampleName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -6152,7 +6165,7 @@ lia.command.add("doorremoveclass", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "adminStickDoorRemoveClassName",
+        Name = "@adminStickDoorRemoveClassName",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -6940,7 +6953,7 @@ lia.command.add("returnitems", {
         },
     },
     AdminStick = {
-        Name = "returnItems",
+        Name = "@returnItems",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/arrow_refresh.png"
@@ -6980,7 +6993,7 @@ lia.command.add("returnallitems", {
     superAdminOnly = true,
     desc = "@returnAllItemsDesc",
     AdminStick = {
-        Name = "returnAllItems",
+        Name = "@returnAllItems",
         Category = "characterManagement",
         SubCategory = "items",
         Icon = "icon16/arrow_refresh.png"
@@ -7109,7 +7122,7 @@ lia.command.add("plyviewclaims", {
         },
     },
     AdminStick = {
-        Name = "viewTicketClaims",
+        Name = "@viewTicketClaims",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/page_white_text.png"
@@ -7322,7 +7335,7 @@ lia.command.add("warn", {
         },
     },
     AdminStick = {
-        Name = "warnPlayer",
+        Name = "@warnPlayer",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/error.png"
@@ -7403,7 +7416,7 @@ lia.command.add("viewwarns", {
         },
     },
     AdminStick = {
-        Name = "viewPlayerWarnings",
+        Name = "@viewPlayerWarnings",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/eye.png"
@@ -7548,7 +7561,7 @@ lia.command.add("recogwhisper", {
     },
     desc = "@recogWhisperDesc",
     AdminStick = {
-        Name = "adminStickForceRecognitionWhisperName",
+        Name = "@adminStickForceRecognitionWhisperName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_comment.png"
@@ -7570,7 +7583,7 @@ lia.command.add("recognormal", {
     },
     desc = "@recogNormalDesc",
     AdminStick = {
-        Name = "adminStickForceRecognitionNormalName",
+        Name = "@adminStickForceRecognitionNormalName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_green.png"
@@ -7592,7 +7605,7 @@ lia.command.add("recogyell", {
     },
     desc = "@recogYellDesc",
     AdminStick = {
-        Name = "adminStickForceRecognitionYellName",
+        Name = "@adminStickForceRecognitionYellName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_red.png"
@@ -7629,7 +7642,7 @@ lia.command.add("recogbots", {
 })
 
 lia.command.add("kickbots", {
-    privilege = "manageBots",
+    privilege = "@manageBots",
     desc = "@kickAllBotsDesc",
     onRun = function(client)
         if timer.Exists("Bots_Add_Timer") then timer.Remove("Bots_Add_Timer") end
@@ -7665,7 +7678,7 @@ lia.command.add("npcchangetype", {
     adminOnly = true,
     desc = "@npcchangetypeDesc",
     AdminStick = {
-        Name = "adminStickChangeNPCType",
+        Name = "@adminStickChangeNPCType",
         Category = "moderation",
         SubCategory = "moderationTools",
         TargetClass = "lia_npc",
@@ -7813,7 +7826,7 @@ lia.command.add("forcerespawn", {
 
 lia.command.add("resetvendorcooldowns", {
     desc = "@resetvendorcooldownsDesc",
-    privilege = "canEditVendors",
+    privilege = "@canEditVendors",
     adminOnly = true,
     arguments = {
         {
@@ -7823,7 +7836,7 @@ lia.command.add("resetvendorcooldowns", {
         }
     },
     AdminStick = {
-        Name = "adminStickResetVendorCooldownsName",
+        Name = "@adminStickResetVendorCooldownsName",
         Category = "characterManagement",
         SubCategory = "properties",
         Icon = "icon16/time_delete.png"

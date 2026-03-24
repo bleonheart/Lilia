@@ -192,7 +192,7 @@ else
     end)
 
     net.Receive("liaStaffDiscordPrompt", function()
-    lia.derma.requestString("@staffCharacterSetup", "@discordUsernamePrompt", function(discord)
+        lia.derma.requestString("@staffCharacterSetup", "@discordUsernamePrompt", function(discord)
             if discord and discord:Trim() ~= "" then
                 net.Start("liaStaffDiscordResponse")
                 net.WriteString(discord:Trim())

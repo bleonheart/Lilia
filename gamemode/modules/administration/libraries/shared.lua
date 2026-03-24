@@ -30,7 +30,7 @@ properties.Add("TogglePropBlacklist", {
 
 lia.command.add("sayall", {
     desc = "@sendsPhraseToAllChatTypes",
-    privilege = "adminChat",
+    privilege = "@adminChat",
     adminOnly = true,
     arguments = {
         {
@@ -133,7 +133,7 @@ lia.util.setPositionCallback(L("factionSpawnAdderTitle"), {
                 return
             end
 
-    lia.derma.requestDropdown("@factionSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("@factionSpawnAdderTitle", names, function(selection)
                 if not selection or selection == false then return end
                 local factionID = idByDisplay[selection]
                 if not factionID then return end
@@ -216,7 +216,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
                 return
             end
 
-    lia.derma.requestDropdown("@classSpawnAdderTitle", names, function(selection)
+            lia.derma.requestDropdown("@classSpawnAdderTitle", names, function(selection)
                 if not selection or selection == false then return end
                 local classID = idByDisplay[selection]
                 if not classID then return end
@@ -275,7 +275,7 @@ lia.util.setPositionCallback(L("sitRoomTitle"), {
             client:notifySuccessLocalized("sitroomSet")
             lia.log.add(client, "sitRoomSet", L("sitroomSetDetail", name, tostring(pos)), L("logSetSitroom"))
         elseif CLIENT then
-    client:requestString("@enterNamePrompt", L("enterSitroomPrompt") .. ":", function(name)
+            client:requestString("@enterNamePrompt", L("enterSitroomPrompt") .. ":", function(name)
                 if name == false then return end
                 if not name or name == "" then
                     client:notifyErrorLocalized("invalidName")

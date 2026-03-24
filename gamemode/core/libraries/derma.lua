@@ -3687,6 +3687,16 @@ end
 ]]
 local function resolveRequestText(text, fallback)
     if text == nil then return fallback end
+    if istable(text) then
+        local token = text[1]
+        if isstring(token) and token:sub(1, 1) == "@" then
+            return lia.lang.resolveToken(token, unpack(text, 2))
+        elseif token ~= nil then
+            return token
+        end
+        return fallback
+    end
+
     if isstring(text) and text:sub(1, 1) == "@" then return L(text:sub(2)) end
     return text
 end

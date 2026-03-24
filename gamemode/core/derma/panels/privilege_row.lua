@@ -32,7 +32,7 @@ function PANEL:SetPrivilege(privilegeName, checked, editable)
     self.checked = checked or false
     self.editable = editable ~= false
     local displayKey = lia.admin.privilegeNames[privilegeName] or privilegeName
-    self.label:SetText(L(displayKey))
+    self.label:SetText(displayKey)
     self.checkbox:SetChecked(self.checked)
     self.checkbox:SetMouseInputEnabled(self.editable)
     if not self.editable then

@@ -82,7 +82,7 @@ end
 ensureDefaults(lia.admin.groups)
 local privilegeCategoryCache = {}
 function getPrivilegeCategory(privilegeName)
-    if not privilegeName then return L("unassigned") end
+    if not privilegeName then return lia.lang.resolveToken("@unassigned") end
     if privilegeCategoryCache[privilegeName] then return privilegeCategoryCache[privilegeName] end
     local categoryChecks = {
         {
@@ -125,9 +125,9 @@ function getPrivilegeCategory(privilegeName)
 
     local category
     if lia.admin and lia.admin.privilegeCategories and lia.admin.privilegeCategories[privilegeName] then
-        category = L(lia.admin.privilegeCategories[privilegeName])
+        category = lia.admin.privilegeCategories[privilegeName]
     elseif lia.command and lia.command.list and lia.command.list[privilegeName] then
-        category = L("staffPermissions")
+        category = lia.lang.resolveToken("@staffPermissions")
     else
         for _, module in pairs(lia.module.list) do
             if module.Privileges and istable(module.Privileges) then
@@ -398,7 +398,7 @@ function lia.admin.hasAccess(ply, privilege)
                     Name = L("accessPropertyPrivilege", prop.MenuLabel or propName),
                     ID = privilege,
                     MinAccess = "admin",
-                    Category = "staffPermissions",
+                    Category = "@staffPermissions",
                 })
             end
         elseif privilege:find("^tool_") then
@@ -409,7 +409,7 @@ function lia.admin.hasAccess(ply, privilege)
                         Name = L("accessToolPrivilege", toolName:gsub("^%l", string.upper)),
                         ID = privilege,
                         MinAccess = defaultUserTools[string.lower(toolName)] and "user" or "admin",
-                        Category = "staffPermissions",
+                        Category = "@staffPermissions",
                     })
 
                     break
@@ -544,9 +544,9 @@ function lia.admin.registerPrivilege(priv)
     if lia.admin.privileges[id] ~= nil then return end
     local min = tostring(priv.MinAccess or "user"):lower()
     lia.admin.privileges[id] = min
-    lia.admin.privilegeNames[id] = priv.Name or priv.ID
+    lia.admin.privilegeNames[id] = lia.lang.resolveToken(priv.Name or priv.ID)
     clearPrivilegeCategoryCache()
-    if priv.Category then lia.admin.privilegeCategories[id] = priv.Category end
+    if priv.Category then lia.admin.privilegeCategories[id] = lia.lang.resolveToken(priv.Category) end
     local defaultGroups = lia.admin.DefaultGroups or {}
     local minLevel = defaultGroups[tostring(min):lower()] or 1
     for groupName, perms in pairs(lia.admin.groups) do
@@ -555,7 +555,7 @@ function lia.admin.registerPrivilege(priv)
         if getGroupLevel(groupName) >= minLevel then perms[id] = true end
     end
 
-    local name = lia.lang.resolveToken(priv.Name or priv.ID)
+    local name = lia.admin.privilegeNames[id]
     if CAMI then camiRegisterPrivilege(priv.ID, min) end
     local category = getPrivilegeCategory(id)
     hook.Run("OnPrivilegeRegistered", {
@@ -1603,7 +1603,7 @@ if properties and properties.List then
                 Name = L("accessPropertyPrivilege", prop.MenuLabel or name),
                 ID = id,
                 MinAccess = "admin",
-                Category = "staffPermissions"
+                Category = "@staffPermissions"
             })
         end
     end
@@ -1617,7 +1617,7 @@ for _, wep in ipairs(weapons.GetList()) do
                 Name = L("accessToolPrivilege", tool:gsub("^%l", string.upper)),
                 ID = id,
                 MinAccess = defaultUserTools[string.lower(tool)] and "user" or "admin",
-                Category = "staffPermissions"
+                Category = "@staffPermissions"
             })
         end
     end
@@ -1896,7 +1896,7 @@ else
                 return
             end
 
-    LocalPlayer():requestString("@confirm", L("deleteGroupPrompt", activeTab.groupName), function(value)
+            LocalPlayer():requestString("@confirm", L("deleteGroupPrompt", activeTab.groupName), function(value)
                 if value and value:lower() == "yes" then
                     net.Start("liaGroupsRemove")
                     net.WriteString(activeTab.groupName)

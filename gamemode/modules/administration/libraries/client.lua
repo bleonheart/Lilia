@@ -286,7 +286,7 @@ local function OpenFlagsPanel(panel, data)
     list:AddMenuOption(L("modifyCharFlags"), function(rowData)
         local steamID = rowData[2] or ""
         local currentFlags = rowData[3] or ""
-    LocalPlayer():requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
+        LocalPlayer():requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
             if text == false then return end
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
@@ -826,12 +826,10 @@ end, "icon16/briefcase.png")
 
 local function GetIconForCategory(name)
     if subMenuIcons[name] then return subMenuIcons[name] end
-    if subMenuIcons[L(name)] then return subMenuIcons[L(name)] end
     local baseKey = name:match("^([^%(]+)") or name
     baseKey = baseKey:gsub("^%s*(.-)%s*$", "%1")
     if subMenuIcons[baseKey] then return subMenuIcons[baseKey] end
     local nameLower = name:lower()
-    local localizedName = L(name):lower()
     local iconMappings = {
         ["moderation"] = "icon16/shield.png",
         ["admin"] = "icon16/shield.png",
@@ -902,7 +900,7 @@ local function GetIconForCategory(name)
     }
 
     for keyword, icon in pairs(iconMappings) do
-        if nameLower:find(keyword) or localizedName:find(keyword) then return icon end
+        if nameLower:find(keyword) then return icon end
     end
 
     local localizedExactMatches = {
@@ -918,7 +916,7 @@ local function GetIconForCategory(name)
         [L("adminStickCategoryWarnings"):lower()] = "icon16/error.png",
     }
 
-    if localizedExactMatches[localizedName] then return localizedExactMatches[localizedName] end
+    if localizedExactMatches[nameLower] then return localizedExactMatches[nameLower] end
     if nameLower:find("management") or nameLower:find("admin") then return "icon16/cog.png" end
     if nameLower:find("stat") or nameLower:find("number") or nameLower:find("count") then return "icon16/chart_bar.png" end
     if nameLower:find("set") or nameLower:find("config") then return "icon16/cog.png" end
@@ -973,10 +971,10 @@ local function GenerateDynamicCategories()
     for _, categoryKey in ipairs(categoryNames) do
         local category = categories[categoryKey]
         if category then
-            local displayName = L(category.name)
+            local displayName = category.name
             local existingKey = nil
             for existingKeyCheck, existingCategory in pairs(mergedCategories) do
-                if L(existingCategory.name) == displayName then
+                if existingCategory.name == displayName then
                     existingKey = existingKeyCheck
                     break
                 end
@@ -1119,7 +1117,6 @@ local function GetSubMenuIcon(name)
     local baseKey = name:match("^([^%(]+)") or name
     baseKey = baseKey:gsub("^%s*(.-)%s*$", "%1")
     if subMenuIcons[baseKey] then return subMenuIcons[baseKey] end
-    if subMenuIcons[L(name)] then return subMenuIcons[L(name)] end
     local setFactionLocalized = L("setFactionTitle", ""):match("^([^%(]+)") or L("setFactionTitle", "")
     setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1")
     if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
@@ -1142,7 +1139,7 @@ local function GetOrCreateSubMenu(parent, name, store, category, subcategory)
     end
 
     if not store[fullName] then
-        local menu, panel = parent:AddSubMenu(L(name))
+        local menu, panel = parent:AddSubMenu(name)
         local icon = GetSubMenuIcon(name)
         if icon and panel then panel:SetIcon(icon) end
         if IsValid(menu) then
@@ -1762,7 +1759,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if cf and IsValid(cf) then
         cf:AddOption(L("modifyCharFlags"), function()
             local currentFlags = charObj and charObj:getFlags() or ""
-    tgt:requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
+            tgt:requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
                 if text == false then return end
                 text = string.gsub(text or "", "%s", "")
                 net.Start("liaModifyFlags")
@@ -1896,7 +1893,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
         local baseCmd = "say /" .. key
         if id ~= "" then baseCmd = baseCmd .. " " .. QuoteArgs(id) end
         if key == "warn" then
-            local warnMenu, warnOption = m:AddSubMenu(L(name))
+            local warnMenu, warnOption = m:AddSubMenu(name)
             if warnOption then warnOption:SetIcon(ic) end
             local severityOptions = {
                 {
@@ -1915,7 +1912,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
 
             local reasonKey = L("reason") or "reason"
             local function openReason(selectedSeverity)
-                lia.derma.requestArguments(L(name) .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
+                lia.derma.requestArguments(name .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
                     if not success or not argData then
                         timer.Simple(0.1, function() AdminStickIsOpen = false end)
                         LocalPlayer().AdminStickTarget = nil
@@ -1938,7 +1935,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
             return
         end
 
-        m:AddOption(L(name), function()
+        m:AddOption(name, function()
             local cmd = baseCmd
             if data.arguments and #data.arguments > 0 then
                 local argTypes = {}
@@ -2246,7 +2243,7 @@ function MODULE:OpenAdminStickUI(tgt)
         if not commandsSubCategory then return end
         for _, c in ipairs(uncategorizedCommands) do
             local ic = c.data.AdminStick and c.data.AdminStick.Icon or "icon16/page.png"
-            commandsSubCategory:AddOption(L(c.name), function()
+            commandsSubCategory:AddOption(c.name, function()
                 local id = GetIdentifier(tgt)
                 local cmd = "say /" .. c.key
                 if id ~= "" then cmd = cmd .. " " .. QuoteArgs(id) end
@@ -2404,7 +2401,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     name = L("changePassword"),
                     icon = "icon16/key.png",
                     callback = function()
-                    lia.derma.requestString("@enterNewPassword", "@enterNewPassword", function(password)
+                        lia.derma.requestString("@enterNewPassword", "@enterNewPassword", function(password)
                             if password == false then return end
                             if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end
                         end, "")

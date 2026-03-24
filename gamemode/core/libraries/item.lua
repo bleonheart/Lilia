@@ -140,7 +140,7 @@ local DefaultFunctions = {
                 return false
             end
 
-    target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), L(item.name)), "@yes", "@no", function(choice)
+            target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), L(item.name)), "@yes", "@no", function(choice)
                 if choice == 0 then
                     inv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
                     targetInv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
