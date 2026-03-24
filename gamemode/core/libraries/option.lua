@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: option.md
 ]]
@@ -681,16 +681,6 @@ lia.option.add("waterReflections", "optionWaterReflections", "optionWaterReflect
 })
 
 lia.option.add("gameMonitors", "optionGameMonitors", "optionGameMonitorsDesc", false, function(_, value) RunConsoleCommand("cl_drawmonitors", value and "1" or "0") end, {
-    category = "categoryPerformance",
-    type = "Boolean"
-})
-
-lia.option.add("alienBlood", "optionAlienBlood", "optionAlienBloodDesc", false, function(_, value) RunConsoleCommand("violence_ablood", value and "1" or "0") end, {
-    category = "categoryPerformance",
-    type = "Boolean"
-})
-
-lia.option.add("humanBlood", "optionHumanBlood", "optionHumanBloodDesc", false, function(_, value) RunConsoleCommand("violence_hblood", value and "1" or "0") end, {
     category = "categoryPerformance",
     type = "Boolean"
 })

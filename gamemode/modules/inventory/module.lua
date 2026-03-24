@@ -11,12 +11,15 @@ MODULE.Privileges = {
     }
 }
 
+--[[
 if MODULE.IsWeightBased then
+    lia.loader.include(MODULE.folder .. "/gridinv.lua", "shared")
+    lia.loader.includeDir(MODULE.folder .. "/gridinv")
+
 else
     lia.loader.include(MODULE.folder .. "/gridinv.lua", "shared")
-    lia.loader.includeDir("gridinv")
-end
-
+    lia.loader.includeDir(MODULE.folder .. "/gridinv")
+end]]
 MODULE.Dependencies = {
     {
         File = "gridinv.lua",

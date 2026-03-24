@@ -7,6 +7,8 @@ ITEM.invWidth = 2
 ITEM.invHeight = 2
 ITEM.BagSound = {"physics/cardboard/cardboard_box_impact_soft2.wav", 50}
 ITEM.pacData = {}
+ITEM.weight = -5
+
 function ITEM:onInstanced()
     local data = {
         item = self:getID(),
