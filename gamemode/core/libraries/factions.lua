@@ -65,8 +65,8 @@ function lia.faction.register(uniqueID, data)
 
     faction.index = index
     faction.uniqueID = uniqueID
-    faction.name = lia.lang.resolveToken(faction.name) or "unknown"
-    faction.desc = lia.lang.resolveToken(faction.desc) or "noDesc"
+    faction.name = lia.lang.resolveToken(faction.name) or lia.lang.resolveToken("@unknown")
+    faction.desc = lia.lang.resolveToken(faction.desc) or lia.lang.resolveToken("@noDesc")
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
     if faction.skinAllowed == nil then faction.skinAllowed = false end
@@ -152,12 +152,12 @@ function lia.faction.loadFromDir(directory)
 
         lia.loader.include(directory .. "/" .. v, "shared")
         if not FACTION.name then
-            FACTION.name = "unknown"
+            FACTION.name = "@unknown"
             lia.error(L("factionMissingName", niceName))
         end
 
         if not FACTION.desc then
-            FACTION.desc = "noDesc"
+            FACTION.desc = "@noDesc"
             lia.error(L("factionMissingDesc", niceName))
         end
 

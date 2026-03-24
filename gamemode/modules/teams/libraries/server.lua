@@ -308,7 +308,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
             if defaultFaction.OnTransferred then defaultFaction:OnTransferred(target, oldFaction) end
             hook.Run("PlayerLoadout", target)
             targetChar:save()
-            client:notifySuccessLocalized("transferSuccess", target:Name(), L(defaultFaction.name))
+            client:notifySuccessLocalized("transferSuccess", target:Name(), defaultFaction.name)
             lia.log.add(client, "kickToBaseFaction", target:Name(), oldFactionData and oldFactionData.name or tostring(oldFaction), defaultFaction.name)
         end
     end
@@ -331,7 +331,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
 
-            client:notifySuccessLocalized("transferSuccess", L("character"), L(defaultFaction.name))
+            client:notifySuccessLocalized("transferSuccess", L("character"), defaultFaction.name)
             lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end

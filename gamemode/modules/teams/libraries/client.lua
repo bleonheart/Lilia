@@ -275,7 +275,7 @@ function MODULE:PopulateAdminTabs(pages)
     if not IsValid(client) then return end
     if client:hasPrivilege("listCharacters") then
         table.insert(pages, {
-            name = "factionManagement",
+            name = "@factionManagement",
             icon = "icon16/group.png",
             drawFunc = function(panel)
                 if not panel.factionManagementInitialized then

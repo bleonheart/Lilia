@@ -345,7 +345,7 @@ function MODULE:PopulateAdminTabs(pages)
     if not IsValid(client) then return end
     if client:hasPrivilege("viewStaffManagement") then
         table.insert(pages, {
-            name = "moduleStaffManagementName",
+            name = "@moduleStaffManagementName",
             icon = "icon16/shield.png",
             drawFunc = function(panel)
                 panelRef = panel
@@ -357,7 +357,7 @@ function MODULE:PopulateAdminTabs(pages)
 
     if client:hasPrivilege("canAccessPlayerList") then
         table.insert(pages, {
-            name = "players",
+            name = "@players",
             icon = "icon16/user.png",
             drawFunc = function(panel)
                 panelRef = panel
@@ -369,7 +369,7 @@ function MODULE:PopulateAdminTabs(pages)
 
     if client:hasPrivilege("listCharacters") then
         table.insert(pages, {
-            name = "characterList",
+            name = "@characterList",
             icon = "icon16/book.png",
             drawFunc = function(panel)
                 panelRef = panel

@@ -529,11 +529,11 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "noDesc"
+        ITEM.desc = "@noDesc"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "misc"
+        ITEM.category = ITEM.category or "@misc"
         ITEM.functions = table.Copy(baseTable.functions or DefaultFunctions)
         hook.Run("ItemDefaultFunctions", ITEM.functions)
     else
@@ -549,11 +549,11 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
         })
 
         ITEM.__tostring = baseTable.__tostring
-        ITEM.desc = "noDesc"
+        ITEM.desc = "@noDesc"
         ITEM.uniqueID = uniqueID
         ITEM.base = baseID
         ITEM.isBase = isBaseItem
-        ITEM.category = ITEM.category or "misc"
+        ITEM.category = ITEM.category or "@misc"
         ITEM.functions = ITEM.functions or table.Copy(baseTable.functions or DefaultFunctions)
         hook.Run("ItemDefaultFunctions", ITEM.functions)
     end

@@ -65,8 +65,8 @@ function lia.class.register(uniqueID, data)
     end
 
     class.uniqueID = uniqueID
-    class.name = lia.lang.resolveToken(class.name) or L("unknown")
-    class.desc = lia.lang.resolveToken(class.desc) or L("noDesc")
+    class.name = lia.lang.resolveToken(class.name) or lia.lang.resolveToken("@unknown")
+    class.desc = lia.lang.resolveToken(class.desc) or lia.lang.resolveToken("@noDesc")
     class.limit = class.limit or 0
     if not class.faction or not team.Valid(class.faction) then
         lia.error(L("classNoValidFaction", uniqueID))

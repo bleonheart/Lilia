@@ -1107,7 +1107,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local baseMargin = 8
         for i, page in ipairs(pages) do
             surface.SetFont("LiliaFont.18")
-            local textWidth = surface.GetTextSize(L(page.name))
+            local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
             local iconWidth = 0
             local padding = 20
             local minWidth = 80
@@ -1120,7 +1120,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabButton:Dock(LEFT)
             tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
             tabButton:SetTall(36)
-            tabButton:SetText(L(page.name))
+            tabButton:SetText(lia.lang.resolveToken(page.name))
             tabButton:SetActive(i == 1)
             tabButton:SetWide(baseTabWidths[i] or 80)
             tabButton:SetDoClick(function()
@@ -1213,7 +1213,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local baseMargin = 8
         for i, page in ipairs(pages) do
             surface.SetFont("LiliaFont.18")
-            local textWidth = surface.GetTextSize(L(page.name))
+            local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
             local iconWidth = 0
             local padding = 20
             local minWidth = 80
@@ -1226,7 +1226,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabButton:Dock(LEFT)
             tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
             tabButton:SetTall(36)
-            tabButton:SetText(L(page.name))
+            tabButton:SetText(lia.lang.resolveToken(page.name))
             tabButton:SetActive(i == 1)
             tabButton:SetWide(baseTabWidths[i] or 80)
             tabButton:SetDoClick(function()
@@ -1437,7 +1437,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             local baseMargin = 8
             for i, page in ipairs(pages) do
                 surface.SetFont("LiliaFont.18")
-                local textWidth = surface.GetTextSize(L(page.name))
+        local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
                 local iconWidth = 0
                 local padding = 20
                 local minWidth = 80
@@ -1450,7 +1450,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 tabButton:Dock(LEFT)
                 tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
                 tabButton:SetTall(36)
-                tabButton:SetText(L(page.name))
+        tabButton:SetText(lia.lang.resolveToken(page.name))
                 tabButton:SetActive(i == 1)
                 tabButton:SetWide(baseTabWidths[i] or 80)
                 tabButton:SetDoClick(function()
