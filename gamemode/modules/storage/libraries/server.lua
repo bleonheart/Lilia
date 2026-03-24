@@ -128,7 +128,7 @@ function MODULE:SaveData()
 end
 
 lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
-    name = L("storageContainer"),
+    name = "@storageContainer",
     invType = "GridInv",
     invData = {
         w = 6,
@@ -137,7 +137,7 @@ lia.inventory.registerStorage("models/props_junk/wood_crate001a.mdl", {
 })
 
 lia.inventory.registerTrunk("vehicle", {
-    name = L("vehicleTrunk"),
+    name = "@vehicleTrunk",
     invType = "GridInv",
     invData = {
         w = lia.config.get("trunkInvW", 10),

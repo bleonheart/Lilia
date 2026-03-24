@@ -46,7 +46,7 @@ function MODULE:StorageOpen(storage, isCar)
     else
         local storageInfo = storage:getStorageInfo()
         if storageInfo and storageInfo.name then
-            storageInvPanel:SetTitle(L(storageInfo.name))
+            storageInvPanel:SetTitle(storageInfo.name)
         else
             storageInvPanel:SetTitle(L("storageContainer"))
         end

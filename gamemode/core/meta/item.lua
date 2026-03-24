@@ -1261,7 +1261,7 @@ end
         ```
 ]]
 function ITEM:getCategory()
-    return self.category and L(self.category) or L("misc")
+    return self.category or L("misc")
 end
 
 lia.meta.item = ITEM

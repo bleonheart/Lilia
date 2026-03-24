@@ -337,4 +337,4 @@ lia.admin.registerPrivilege({
     Category = "@compatibility"
 })
 
-lia.flag.add("P", "flagPac3")
+lia.flag.add("P", "@flagPac3")

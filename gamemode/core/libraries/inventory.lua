@@ -448,6 +448,8 @@ if SERVER then
         assert(isstring(data.name), L("storageNameRequired"))
         assert(isstring(data.invType), L("storageInvTypeRequired"))
         assert(istable(data.invData), L("storageInvDataRequired"))
+        data.name = lia.lang.resolveToken(data.name)
+        if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
         lia.inventory.storage[model:lower()] = data
         return data
     end
@@ -518,6 +520,8 @@ if SERVER then
         assert(isstring(data.name), L("trunkNameRequired"))
         assert(isstring(data.invType), L("storageInvTypeRequired"))
         assert(istable(data.invData), L("storageInvDataRequired"))
+        data.name = lia.lang.resolveToken(data.name)
+        if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
         if not data.invData.w then data.invData.w = lia.config.get("trunkInvW", 10) end
         if not data.invData.h then data.invData.h = lia.config.get("trunkInvH", 2) end
         data.isTrunk = true

@@ -200,12 +200,12 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
 
             lia.data.set("spawns", data)
             lia.log.add(client, "classSpawnAdd", classData.name)
-            client:notifySuccessLocalized("spawnAdded", L(classData.name))
+            client:notifySuccessLocalized("spawnAdded", classData.name)
         else
             local names, idByDisplay = {}, {}
             for k, v in pairs(lia.class.list or {}) do
                 if isnumber(k) and istable(v) and v.name then
-                    local display = L(v.name) or v.name or tostring(k)
+                    local display = v.name or tostring(k)
                     names[#names + 1] = display
                     idByDisplay[display] = tostring(k)
                 end
@@ -237,7 +237,7 @@ lia.util.setPositionCallback(L("classSpawnAdderTitle"), {
             local curMap = lia.data.getEquivalencyMap(game.GetMap()):lower()
             for classID, classSpawns in pairs(classes) do
                 local classData = lia.class.get(tonumber(classID))
-                local label = classData and (classData.name and L(classData.name) or tostring(classID)) or tostring(classID)
+                local label = classData and (classData.name or tostring(classID)) or tostring(classID)
                 for i = 1, #(classSpawns or {}) do
                     local spawnData = classSpawns[i]
                     local pos = spawnData.pos or spawnData.position

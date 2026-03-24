@@ -140,12 +140,12 @@ local DefaultFunctions = {
                 return false
             end
 
-            target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), L(item.name)), "@yes", "@no", function(choice)
+            target:requestBinaryQuestion(L("itemGiveRequest", client:Name(), item.name), "@yes", "@no", function(choice)
                 if choice == 0 then
                     inv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
                     targetInv:addAccessRule(canTransferItemsFromInventoryUsingGiveForward)
-                    client:setAction(L("givingItemTo", L(item.name), target:Name()), lia.config.get("ItemGiveSpeed", 6))
-                    target:setAction(L("givingYouItem", client:Name(), L(item.name)), lia.config.get("ItemGiveSpeed", 6))
+                    client:setAction(L("givingItemTo", item.name, target:Name()), lia.config.get("ItemGiveSpeed", 6))
+                    target:setAction(L("givingYouItem", client:Name(), item.name), lia.config.get("ItemGiveSpeed", 6))
                     client:doStaredAction(target, function()
                         local res = hook.Run("HandleItemTransferRequest", client, item:getID(), nil, nil, targetInv:getID())
                         if not res then return end
@@ -561,22 +561,21 @@ function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
     if not luaGenerated and path then lia.loader.include(path, "shared") end
     for funcName, funcTable in pairs(ITEM.functions) do
         if isstring(funcTable.name) then
-            funcTable.name = L(funcTable.name)
+            funcTable.name = lia.lang.resolveToken(funcTable.name)
         else
-            funcTable.name = L(funcName)
+            funcTable.name = lia.lang.resolveToken("@" .. funcName)
         end
 
-        if isstring(funcTable.tip) then funcTable.tip = L(funcTable.tip) end
+        if isstring(funcTable.tip) then funcTable.tip = lia.lang.resolveToken(funcTable.tip) end
     end
 
-    if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
-    if isstring(ITEM.desc) then ITEM.desc = L(ITEM.desc) end
+    if isstring(ITEM.name) then ITEM.name = lia.lang.resolveToken(ITEM.name) end
+    if isstring(ITEM.desc) then ITEM.desc = lia.lang.resolveToken(ITEM.desc) end
+    if isstring(ITEM.category) then ITEM.category = lia.lang.resolveToken(ITEM.category) end
     ITEM:onRegistered()
     local itemType = ITEM.uniqueID
     targetTable[itemType] = ITEM
     if not isBaseItem then lia.item.applyWeaponOverride(itemType) end
-    if isstring(ITEM.name) then ITEM.name = L(ITEM.name) end
-    if isstring(ITEM.desc) then ITEM.desc = L(ITEM.desc) end
     hook.Run("OnItemRegistered", ITEM)
     ITEM = nil
     return targetTable[itemType]

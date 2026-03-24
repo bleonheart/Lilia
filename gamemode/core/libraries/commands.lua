@@ -5034,9 +5034,9 @@ lia.command.add("charsetattrib", {
         local character = target:getChar()
         if character then
             for k, v in pairs(lia.attribs.list) do
-                if lia.util.stringMatches(L(v.name), attribName) or lia.util.stringMatches(k, attribName) then
+            if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
                     character:setAttrib(k, math.abs(attribNumber))
-                    client:notifySuccessLocalized("attribSet", target:Name(), L(v.name), math.abs(attribNumber))
+                client:notifySuccessLocalized("attribSet", target:Name(), v.name, math.abs(attribNumber))
                     lia.log.add(client, "attribSet", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -5361,9 +5361,9 @@ lia.command.add("charaddattrib", {
         local character = target:getChar()
         if character then
             for k, v in pairs(lia.attribs.list) do
-                if lia.util.stringMatches(L(v.name), attribName) or lia.util.stringMatches(k, attribName) then
+            if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
                     character:updateAttrib(k, math.abs(attribNumber))
-                    client:notifySuccessLocalized("attribUpdate", target:Name(), L(v.name), math.abs(attribNumber))
+                client:notifySuccessLocalized("attribUpdate", target:Name(), v.name, math.abs(attribNumber))
                     lia.log.add(client, "attribAdd", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -6554,7 +6554,7 @@ lia.command.add("beclass", {
             options = function()
                 local options = {}
                 for _, v in pairs(lia.class.list) do
-                    options[L(v.name)] = v.uniqueID
+                    options[v.name] = v.uniqueID
                 end
                 return options
             end
@@ -6625,10 +6625,10 @@ lia.command.add("beclass", {
             if character:joinClass(classID) then
                 if not istable(classData.model) then character:setData("classModel", nil) end
                 applyRequestedClassModel()
-                client:notifySuccessLocalized("becomeClass", L(classData.name))
+                client:notifySuccessLocalized("becomeClass", classData.name)
                 lia.log.add(client, "beClass", classData.name)
             else
-                client:notifyErrorLocalized("becomeClassFail", L(classData.name))
+                client:notifyErrorLocalized("becomeClassFail", classData.name)
             end
         else
             client:notifyErrorLocalized("invalidClass")
@@ -6658,7 +6658,7 @@ lia.command.add("setclass", {
                 for _, v in pairs(factionClasses) do
                     local canAccess = true
                     if lia.class.hasWhitelist(v.index) then canAccess = target:getChar():getClasswhitelists()[v.index] end
-                    if canAccess and target:getChar():getClass() ~= v.uniqueID then options[L(v.name)] = v.uniqueID end
+                    if canAccess and target:getChar():getClass() ~= v.uniqueID then options[v.name] = v.uniqueID end
                 end
                 return options
             end
@@ -6695,8 +6695,8 @@ lia.command.add("setclass", {
             if target:Team() == classData.faction then
                 target:getChar():joinClass(classID, true)
                 lia.log.add(client, "setClass", target:Name(), classData.name)
-                target:notifyInfoLocalized("classSet", L(classData.name), client:GetName())
-                if client ~= target then client:notifySuccessLocalized("classSetOther", target:GetName(), L(classData.name)) end
+                target:notifyInfoLocalized("classSet", classData.name, client:GetName())
+                if client ~= target then client:notifySuccessLocalized("classSetOther", target:GetName(), classData.name) end
                 hook.Run("PlayerLoadout", target)
             else
                 client:notifyErrorLocalized("classFactionMismatch")
@@ -6721,7 +6721,7 @@ lia.command.add("classwhitelist", {
             options = function()
                 local options = {}
                 for _, v in pairs(lia.class.list) do
-                    options[L(v.name)] = v.uniqueID
+                    options[v.name] = v.uniqueID
                 end
                 return options
             end
@@ -6748,7 +6748,7 @@ lia.command.add("classwhitelist", {
             wl[classID] = true
             target:getChar():setClasswhitelists(wl)
             client:notifySuccessLocalized("whitelistedSuccess")
-            target:notifyInfoLocalized("classAssigned", L(classData.name))
+            target:notifyInfoLocalized("classAssigned", classData.name)
             lia.log.add(client, "classWhitelist", target:Name(), classData.name)
         end
     end
@@ -6768,7 +6768,7 @@ lia.command.add("classunwhitelist", {
             options = function()
                 local options = {}
                 for _, v in pairs(lia.class.list) do
-                    options[L(v.name)] = v.uniqueID
+                    options[v.name] = v.uniqueID
                 end
                 return options
             end
@@ -6795,7 +6795,7 @@ lia.command.add("classunwhitelist", {
             wl[classID] = nil
             target:getChar():setClasswhitelists(wl)
             client:notifySuccessLocalized("unwhitelistedSuccess")
-            target:notifyInfoLocalized("classUnassigned", L(classData.name))
+            target:notifyInfoLocalized("classUnassigned", classData.name)
             lia.log.add(client, "classUnwhitelist", target:Name(), classData.name)
         end
     end
