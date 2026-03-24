@@ -1,7 +1,7 @@
-﻿MODULE.name = "mainMenuModuleName"
+MODULE.name = "@mainMenuModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "mainMenuDescription"
+MODULE.desc = "@mainMenuDescription"
 if SERVER then
     function MODULE:SyncCharList(client)
         if not client.liaCharList then return end
@@ -192,7 +192,7 @@ else
     end)
 
     net.Receive("liaStaffDiscordPrompt", function()
-        lia.derma.requestString(L("staffCharacterSetup"), L("discordUsernamePrompt"), function(discord)
+    lia.derma.requestString("@staffCharacterSetup", "@discordUsernamePrompt", function(discord)
             if discord and discord:Trim() ~= "" then
                 net.Start("liaStaffDiscordResponse")
                 net.WriteString(discord:Trim())

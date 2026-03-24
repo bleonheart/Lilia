@@ -1,13 +1,13 @@
-﻿MODULE.name = "inventoryModuleName"
+MODULE.name = "@inventoryModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "inventorySystemDescription"
+MODULE.desc = "@inventorySystemDescription"
 MODULE.IsWeightBased = true
 MODULE.Privileges = {
     ["noItemCooldown"] = {
-        Name = "noItemCooldown",
+        Name = "@noItemCooldown",
         MinAccess = "admin",
-        Category = "categoryStaffManagement"
+        Category = "@categoryStaffManagement"
     }
 }
 

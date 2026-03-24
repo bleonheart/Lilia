@@ -651,6 +651,7 @@ net.Receive("liaRequestDropdown", function(_, client)
     for _, opt in ipairs(allowed) do
         local optionText = opt
         if istable(opt) then optionText = opt[1] end
+        if isstring(optionText) and optionText:sub(1, 1) == "@" then optionText = L(optionText:sub(2)) end
         if string.lower(tostring(optionText)) == string.lower(tostring(selectedOption)) then
             isValid = true
             break
@@ -694,6 +695,7 @@ net.Receive("liaOptionsRequest", function(_, client)
         for _, a in ipairs(allowed) do
             local allowedText = a
             if istable(a) then allowedText = a[1] end
+            if isstring(allowedText) and allowedText:sub(1, 1) == "@" then allowedText = L(allowedText:sub(2)) end
             if string.lower(tostring(allowedText)) == string.lower(tostring(opt)) then
                 ok = true
                 break

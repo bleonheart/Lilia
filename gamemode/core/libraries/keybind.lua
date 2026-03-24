@@ -185,7 +185,7 @@ function lia.keybind.add(k, d, desc, cb)
     end
 
     local c = isstring(key) and KeybindKeys[string.lower(key)] or key
-    description = isstring(description) and L(description) or description
+    description = isstring(description) and lia.lang.resolveToken(description) or description
     if not c then return end
     if not istable(callbacks) or not callbacks.onPress then
         lia.error(L("keybindAddInvalidCallbackFormat") .. " '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
@@ -206,7 +206,7 @@ end
 
 lia.keybind.add("openInventory", {
     keyBind = KEY_NONE,
-    desc = "openInventoryDesc",
+    desc = "@openInventoryDesc",
     onPress = function()
         local f1Menu = vgui.Create("liaMenu")
         f1Menu:setActiveTab(L("inv"))
@@ -215,7 +215,7 @@ lia.keybind.add("openInventory", {
 
 lia.keybind.add("adminMode", {
     keyBind = KEY_NONE,
-    desc = "adminModeDesc",
+    desc = "@adminModeDesc",
     serverOnly = true,
     shouldRun = function(client) return client:isStaff() end,
     onPress = function(client)
@@ -297,7 +297,7 @@ lia.keybind.add("adminMode", {
 
 lia.keybind.add("quickTakeItem", {
     keyBind = KEY_NONE,
-    desc = "quickTakeItemDesc",
+    desc = "@quickTakeItemDesc",
     serverOnly = true,
     onPress = function(client)
         if not client:getChar() then return end
@@ -312,7 +312,7 @@ lia.keybind.add("quickTakeItem", {
 
 lia.keybind.add("convertEntity", {
     keyBind = KEY_NONE,
-    desc = "convertEntityDesc",
+    desc = "@convertEntityDesc",
     onPress = function(client)
         if not IsValid(client) or not client:getChar() then return end
         local trace = client:GetEyeTrace()

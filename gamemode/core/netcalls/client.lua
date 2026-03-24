@@ -617,11 +617,11 @@ end)
 lia.net.readBigTable("liaSendTableUI", function(data) lia.util.createTableUI(data.title, data.columns, data.data, data.options, data.characterID) end)
 net.Receive("liaOptionsRequest", function()
     local id = net.ReadUInt(32)
-    local titleKey = net.ReadString()
-    local _ = net.ReadString()
+    local title = net.ReadString()
+    local subTitle = net.ReadString()
     local options = net.ReadTable()
     local limit = net.ReadUInt(32)
-    lia.derma.requestOptions(L(titleKey), options, function(selectedOptions)
+    lia.derma.requestOptions(title, subTitle, options, function(selectedOptions)
         if limit > 0 and #selectedOptions > limit then
             local limited = {}
             for i = 1, limit do
@@ -686,10 +686,10 @@ end)
 
 net.Receive("liaRequestDropdown", function()
     local id = net.ReadUInt(32)
-    local titleKey = net.ReadString()
+    local title = net.ReadString()
     net.ReadString()
     local options = net.ReadTable()
-    lia.derma.requestDropdown(L(titleKey), options, function(selectedText, selectedData)
+    lia.derma.requestDropdown(title, options, function(selectedText, selectedData)
         if selectedText == false then
             net.Start("liaRequestDropdownCancel")
             net.WriteUInt(id, 32)
@@ -732,8 +732,6 @@ net.Receive("liaStringRequest", function()
     local title = net.ReadString()
     local subTitle = net.ReadString()
     local default = net.ReadString()
-    if title:sub(1, 1) == "@" then title = L(title:sub(2)) end
-    if subTitle:sub(1, 1) == "@" then subTitle = L(subTitle:sub(2)) end
     lia.derma.requestString(title, subTitle, function(value)
         if value == false then
             net.Start("liaStringRequestCancel")
@@ -969,7 +967,7 @@ end)
 
 net.Receive("liaButtonRequest", function()
     local id = net.ReadUInt(32)
-    local titleKey = net.ReadString()
+    local title = net.ReadString()
     local count = net.ReadUInt(8)
     local options = {}
     for i = 1, count do
@@ -977,9 +975,9 @@ net.Receive("liaButtonRequest", function()
     end
 
     local buttons = {}
-    for i, key in ipairs(options) do
+    for i, buttonText in ipairs(options) do
         table.insert(buttons, {
-            text = L(key),
+            text = buttonText,
             callback = function()
                 net.Start("liaButtonRequest")
                 net.WriteUInt(id, 32)
@@ -989,7 +987,7 @@ net.Receive("liaButtonRequest", function()
         })
     end
 
-    lia.derma.requestButtons(L(titleKey), buttons, function(selectedIndex) if selectedIndex and selectedIndex > 0 and selectedIndex <= #buttons then buttons[selectedIndex].callback() end end)
+    lia.derma.requestButtons(title, buttons, function(selectedIndex) if selectedIndex and selectedIndex > 0 and selectedIndex <= #buttons then buttons[selectedIndex].callback() end end)
 end)
 
 net.Receive("liaAnimationStatus", function()

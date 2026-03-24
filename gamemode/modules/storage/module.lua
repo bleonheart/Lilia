@@ -1,11 +1,11 @@
-﻿MODULE.name = "storageModuleName"
+MODULE.name = "@storageModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "storageSystemDescription"
+MODULE.desc = "@storageSystemDescription"
 MODULE.Privileges = {
     ["canSpawnStorage"] = {
-        Name = "canSpawnStorage",
+        Name = "@canSpawnStorage",
         MinAccess = "superadmin",
-        Category = "spawnPermissions",
+        Category = "@spawnPermissions",
     }
 }

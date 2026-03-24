@@ -593,7 +593,7 @@ end
 
 lia.keybind.add("interactionMenu", {
     keyBind = KEY_TAB,
-    desc = L("interactionMenuDesc"),
+    desc = "@interactionMenuDesc",
     category = "Core",
     onPress = function()
         net.Start("liaRequestInteractOptions")
@@ -604,7 +604,7 @@ lia.keybind.add("interactionMenu", {
 
 lia.keybind.add("personalActions", {
     keyBind = KEY_G,
-    desc = L("personalActionsDesc"),
+    desc = "@personalActionsDesc",
     category = "Core",
     onPress = function()
         net.Start("liaRequestInteractOptions")

@@ -15,7 +15,7 @@ end
 
 local function promptName(ply, cb)
     if lia.config.get("FakeNamesEnabled", false) then
-        ply:requestString(L("recogFakeNamePrompt"), "", function(nm)
+    ply:requestString("@recogFakeNamePrompt", "", function(nm)
             nm = (nm or ""):Trim()
             local finalName = nm == "" and ply:getChar():getName() or nm
             cb(finalName)

@@ -1,5 +1,5 @@
-lia.config.add("CurrencyNotificationImage", "currencyNotificationImage", "icon16/money.png", nil, {
-    desc = "currencyNotificationImageDesc",
+lia.config.add("CurrencyNotificationImage", "@currencyNotificationImage", "icon16/money.png", nil, {
+    desc = "@currencyNotificationImageDesc",
     category = "core",
     type = "string"
 })

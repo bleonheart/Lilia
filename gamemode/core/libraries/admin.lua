@@ -133,7 +133,7 @@ function getPrivilegeCategory(privilegeName)
             if module.Privileges and istable(module.Privileges) then
                 for privID, priv in pairs(module.Privileges) do
                     if privID == privilegeName then
-                        category = L(priv.Category or module.name or "unassigned")
+                        category = lia.lang.resolveToken(priv.Category or module.name or "@unassigned")
                         break
                     end
                 end
@@ -145,19 +145,19 @@ function getPrivilegeCategory(privilegeName)
 
     if not category and CAMI then
         local camiPriv = CAMI.GetPrivilege(privilegeName)
-        if camiPriv and camiPriv.Category then category = L(camiPriv.Category) end
+        if camiPriv and camiPriv.Category then category = lia.lang.resolveToken(camiPriv.Category) end
     end
 
     if not category then
         for _, check in ipairs(categoryChecks) do
             if check.match(privilegeName) then
-                category = L(check.category)
+                category = lia.lang.resolveToken("@" .. check.category)
                 break
             end
         end
     end
 
-    if not category then category = L("unassigned") end
+    if not category then category = lia.lang.resolveToken("@unassigned") end
     privilegeCategoryCache[privilegeName] = category
     return category
 end
@@ -555,7 +555,7 @@ function lia.admin.registerPrivilege(priv)
         if getGroupLevel(groupName) >= minLevel then perms[id] = true end
     end
 
-    local name = L(priv.Name or priv.ID)
+    local name = lia.lang.resolveToken(priv.Name or priv.ID)
     if CAMI then camiRegisterPrivilege(priv.ID, min) end
     local category = getPrivilegeCategory(id)
     hook.Run("OnPrivilegeRegistered", {
@@ -1896,7 +1896,7 @@ else
                 return
             end
 
-            LocalPlayer():requestString(L("confirm"), L("deleteGroupPrompt", activeTab.groupName), function(value)
+    LocalPlayer():requestString("@confirm", L("deleteGroupPrompt", activeTab.groupName), function(value)
                 if value and value:lower() == "yes" then
                     net.Start("liaGroupsRemove")
                     net.WriteString(activeTab.groupName)

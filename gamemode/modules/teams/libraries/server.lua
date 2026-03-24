@@ -1,4 +1,4 @@
-﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
+function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -338,7 +338,7 @@ net.Receive("liaKickCharacterToBase", function(_, client)
 end)
 
 lia.command.add("speed", {
-    desc = "speedCommandDesc",
+    desc = "@speedCommandDesc",
     onRun = function(client)
         client:notifyLocalized("speedCommandStatus", client:GetRunSpeed(), client:GetWalkSpeed())
         return ""

@@ -1316,7 +1316,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn.DoClick = function()
         if character:isBanned() then
             local characterName = character:getName()
-            LocalPlayer():requestString(L("permaKillTitle"), L("pkDialogMessage", characterName), function() end)
+                LocalPlayer():requestString("@permaKillTitle", L("pkDialogMessage", characterName), function() end)
             return
         end
 

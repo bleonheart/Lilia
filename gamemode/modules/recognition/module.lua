@@ -1,4 +1,4 @@
-﻿MODULE.name = "recognitionModuleName"
+MODULE.name = "@recognitionModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "recognitionSystemDescription"
+MODULE.desc = "@recognitionSystemDescription"

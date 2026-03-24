@@ -286,7 +286,7 @@ local function OpenFlagsPanel(panel, data)
     list:AddMenuOption(L("modifyCharFlags"), function(rowData)
         local steamID = rowData[2] or ""
         local currentFlags = rowData[3] or ""
-        LocalPlayer():requestString(L("modifyCharFlags"), L("modifyFlagsDesc"), function(text)
+    LocalPlayer():requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
             if text == false then return end
             text = string.gsub(text or "", "%s", "")
             net.Start("liaModifyFlags")
@@ -1762,7 +1762,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
     if cf and IsValid(cf) then
         cf:AddOption(L("modifyCharFlags"), function()
             local currentFlags = charObj and charObj:getFlags() or ""
-            tgt:requestString(L("modifyCharFlags"), L("modifyFlagsDesc"), function(text)
+    tgt:requestString("@modifyCharFlags", "@modifyFlagsDesc", function(text)
                 if text == false then return end
                 text = string.gsub(text or "", "%s", "")
                 net.Start("liaModifyFlags")
@@ -2404,7 +2404,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     name = L("changePassword"),
                     icon = "icon16/key.png",
                     callback = function()
-                        lia.derma.requestString(L("enterNewPassword"), L("enterNewPassword"), function(password)
+                    lia.derma.requestString("@enterNewPassword", "@enterNewPassword", function(password)
                             if password == false then return end
                             if password and password ~= "" then RunConsoleCommand("say", "/storagepasswordchange \"" .. password .. "\"") end
                         end, "")

@@ -53,6 +53,7 @@ function lia.option.add(key, name, desc, default, callback, data)
     assert(isstring(key), L("optionKeyString", type(key)))
     assert(isstring(name), L("optionNameString", type(name)))
     assert(istable(data), L("optionDataTable", type(data)))
+    local resolveToken = lia.lang.resolveToken
     local t = type(default)
     local optionType = t == "boolean" and "Boolean" or t == "number" and (math.floor(default) == default and "Int" or "Float") or t == "table" and default.r and default.g and default.b and "Color" or "Generic"
     if optionType == "Int" or optionType == "Float" then
@@ -65,17 +66,17 @@ function lia.option.add(key, name, desc, default, callback, data)
     local value = old and old.value or default
     if istable(data.options) then
         for k, v in pairs(data.options) do
-            if isstring(v) then data.options[k] = L(v) end
+            if isstring(v) then data.options[k] = resolveToken(v) end
         end
     elseif isfunction(data.options) then
         data.optionsFunc = data.options
         data.options = nil
     end
 
-    data.category = isstring(data.category) and L(data.category) or data.category
+    data.category = isstring(data.category) and resolveToken(data.category) or data.category
     lia.option.stored[key] = {
-        name = isstring(name) and L(name) or name,
-        desc = isstring(desc) and L(desc) or desc,
+        name = isstring(name) and resolveToken(name) or name,
+        desc = isstring(desc) and resolveToken(desc) or desc,
         data = data,
         value = value,
         default = default,
@@ -457,19 +458,19 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
     }
 end)
 
-lia.option.add("descriptionWidth", "descriptionWidth", "descriptionWidthDesc", 0.5, nil, {
+lia.option.add("descriptionWidth", "@descriptionWidth", "@descriptionWidthDesc", 0.5, nil, {
     category = "Core",
     min = 0.1,
     max = 1,
     decimals = 2
 })
 
-lia.option.add("invertWeaponScroll", "invertWeaponScroll", "invertWeaponScrollDesc", false, nil, {
+lia.option.add("invertWeaponScroll", "@invertWeaponScroll", "@invertWeaponScrollDesc", false, nil, {
     category = "Core",
     isQuick = true,
 })
 
-lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
+lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -479,7 +480,7 @@ lia.option.add("espEnabled", "espEnabled", "espEnabledDesc", false, nil, {
     end
 })
 
-lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
+lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -489,7 +490,7 @@ lia.option.add("espPlayers", "espPlayers", "espPlayersDesc", false, nil, {
     end
 })
 
-lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
+lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -499,7 +500,7 @@ lia.option.add("espItems", "espItems", "espItemsDesc", false, nil, {
     end
 })
 
-lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
+lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -509,7 +510,7 @@ lia.option.add("espEntities", "espEntities", "espEntitiesDesc", false, nil, {
     end
 })
 
-lia.option.add("espUnconfiguredDoors", "espUnconfiguredDoors", "espUnconfiguredDoorsDesc", false, nil, {
+lia.option.add("espUnconfiguredDoors", "@espUnconfiguredDoors", "@espUnconfiguredDoorsDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -519,7 +520,7 @@ lia.option.add("espUnconfiguredDoors", "espUnconfiguredDoors", "espUnconfiguredD
     end
 })
 
-lia.option.add("espItemsColor", "espItemsColor", "espItemsColorDesc", {
+lia.option.add("espItemsColor", "@espItemsColor", "@espItemsColorDesc", {
     r = 0,
     g = 255,
     b = 0,
@@ -533,7 +534,7 @@ lia.option.add("espItemsColor", "espItemsColor", "espItemsColorDesc", {
     end
 })
 
-lia.option.add("espEntitiesColor", "espEntitiesColor", "espEntitiesColorDesc", {
+lia.option.add("espEntitiesColor", "@espEntitiesColor", "@espEntitiesColorDesc", {
     r = 255,
     g = 255,
     b = 0,
@@ -547,7 +548,7 @@ lia.option.add("espEntitiesColor", "espEntitiesColor", "espEntitiesColorDesc", {
     end
 })
 
-lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnconfiguredDoorsColorDesc", {
+lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColorDesc", {
     r = 255,
     g = 0,
     b = 255,
@@ -561,7 +562,7 @@ lia.option.add("espUnconfiguredDoorsColor", "espUnconfiguredDoorsColor", "espUnc
     end
 })
 
-lia.option.add("espConfiguredDoors", "espConfiguredDoors", "espConfiguredDoorsDesc", false, nil, {
+lia.option.add("espConfiguredDoors", "@espConfiguredDoors", "@espConfiguredDoorsDesc", false, nil, {
     category = "ESP",
     isQuick = true,
     visible = function()
@@ -571,7 +572,7 @@ lia.option.add("espConfiguredDoors", "espConfiguredDoors", "espConfiguredDoorsDe
     end
 })
 
-lia.option.add("espConfiguredDoorsColor", "espConfiguredDoorsColor", "espConfiguredDoorsColorDesc", {
+lia.option.add("espConfiguredDoorsColor", "@espConfiguredDoorsColor", "@espConfiguredDoorsColorDesc", {
     r = 0,
     g = 255,
     b = 0,
@@ -585,7 +586,7 @@ lia.option.add("espConfiguredDoorsColor", "espConfiguredDoorsColor", "espConfigu
     end
 })
 
-lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
+lia.option.add("espPlayersColor", "@espPlayersColor", "@espPlayersColorDesc", {
     r = 0,
     g = 0,
     b = 255,
@@ -599,165 +600,165 @@ lia.option.add("espPlayersColor", "espPlayersColor", "espPlayersColorDesc", {
     end
 })
 
-lia.option.add("BarsAlwaysVisible", "barsAlwaysVisible", "barsAlwaysVisibleDesc", false, nil, {
+lia.option.add("BarsAlwaysVisible", "@barsAlwaysVisible", "@barsAlwaysVisibleDesc", false, nil, {
     category = "Core",
     isQuick = true,
 })
 
-lia.option.add("thirdPersonEnabled", "thirdPersonEnabled", "thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("ThirdPersonToggled", newValue) end, {
-    category = "categoryThirdPerson",
+lia.option.add("thirdPersonEnabled", "@thirdPersonEnabled", "@thirdPersonEnabledDesc", false, function(_, newValue) hook.Run("ThirdPersonToggled", newValue) end, {
+    category = "@categoryThirdPerson",
     isQuick = true,
 })
 
-lia.option.add("thirdPersonClassicMode", "thirdPersonClassicMode", "thirdPersonClassicModeDesc", false, nil, {
-    category = "categoryThirdPerson",
+lia.option.add("thirdPersonClassicMode", "@thirdPersonClassicMode", "@thirdPersonClassicModeDesc", false, nil, {
+    category = "@categoryThirdPerson",
     isQuick = true,
 })
 
-lia.option.add("thirdPersonHeight", "thirdPersonHeight", "thirdPersonHeightDesc", 10, nil, {
-    category = "categoryThirdPerson",
+lia.option.add("thirdPersonHeight", "@thirdPersonHeight", "@thirdPersonHeightDesc", 10, nil, {
+    category = "@categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHeight", 30),
 })
 
-lia.option.add("thirdPersonHorizontal", "thirdPersonHorizontal", "thirdPersonHorizontalDesc", 0, nil, {
-    category = "categoryThirdPerson",
+lia.option.add("thirdPersonHorizontal", "@thirdPersonHorizontal", "@thirdPersonHorizontalDesc", 0, nil, {
+    category = "@categoryThirdPerson",
     min = -lia.config.get("MaxThirdPersonHorizontal", 30),
     isQuick = true,
     max = lia.config.get("MaxThirdPersonHorizontal", 30),
 })
 
-lia.option.add("thirdPersonDistance", "thirdPersonDistance", "thirdPersonDistanceDesc", 50, nil, {
-    category = "categoryThirdPerson",
+lia.option.add("thirdPersonDistance", "@thirdPersonDistance", "@thirdPersonDistanceDesc", 50, nil, {
+    category = "@categoryThirdPerson",
     min = 0,
     isQuick = true,
     max = lia.config.get("MaxThirdPersonDistance", 100),
 })
 
-lia.option.add("ChatShowTime", "chatShowTime", "chatShowTimeDesc", false, nil, {
+lia.option.add("ChatShowTime", "@chatShowTime", "@chatShowTimeDesc", false, nil, {
     category = "Core",
     type = "Boolean"
 })
 
-lia.option.add("shadows", "optionShadows", "optionShadowsDesc", false, function(_, value) RunConsoleCommand("r_shadows", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("shadows", "@optionShadows", "@optionShadowsDesc", false, function(_, value) RunConsoleCommand("r_shadows", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("dynamicLighting", "optionDynamicLighting", "optionDynamicLightingDesc", false, function(_, value) RunConsoleCommand("r_dynamic", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("dynamicLighting", "@optionDynamicLighting", "@optionDynamicLightingDesc", false, function(_, value) RunConsoleCommand("r_dynamic", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("eyeMovement", "optionEyeMovement", "optionEyeMovementDesc", false, function(_, value) RunConsoleCommand("r_eyemove", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("eyeMovement", "@optionEyeMovement", "@optionEyeMovementDesc", false, function(_, value) RunConsoleCommand("r_eyemove", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("facialExpressions", "optionFacialExpressions", "optionFacialExpressionsDesc", false, function(_, value) RunConsoleCommand("r_flex", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("facialExpressions", "@optionFacialExpressions", "@optionFacialExpressionsDesc", false, function(_, value) RunConsoleCommand("r_flex", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("antiAliasing", "optionAntiAliasing", "optionAntiAliasingDesc", false, function(_, value) RunConsoleCommand("mat_antialias", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("antiAliasing", "@optionAntiAliasing", "@optionAntiAliasingDesc", false, function(_, value) RunConsoleCommand("mat_antialias", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("hdrLighting", "optionHDRLighting", "optionHDRLightingDesc", false, function(_, value) RunConsoleCommand("mat_hdr_level", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("hdrLighting", "@optionHDRLighting", "@optionHDRLightingDesc", false, function(_, value) RunConsoleCommand("mat_hdr_level", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("motionBlur", "optionMotionBlur", "optionMotionBlurDesc", false, function(_, value) RunConsoleCommand("mat_motion_blur_enabled", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("motionBlur", "@optionMotionBlur", "@optionMotionBlurDesc", false, function(_, value) RunConsoleCommand("mat_motion_blur_enabled", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("waterReflections", "optionWaterReflections", "optionWaterReflectionsDesc", false, function(_, value) RunConsoleCommand("r_waterdrawreflection", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("waterReflections", "@optionWaterReflections", "@optionWaterReflectionsDesc", false, function(_, value) RunConsoleCommand("r_waterdrawreflection", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("gameMonitors", "optionGameMonitors", "optionGameMonitorsDesc", false, function(_, value) RunConsoleCommand("cl_drawmonitors", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("gameMonitors", "@optionGameMonitors", "@optionGameMonitorsDesc", false, function(_, value) RunConsoleCommand("cl_drawmonitors", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("alienGibs", "optionAlienGibs", "optionAlienGibsDesc", false, function(_, value) RunConsoleCommand("violence_agibs", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("alienGibs", "@optionAlienGibs", "@optionAlienGibsDesc", false, function(_, value) RunConsoleCommand("violence_agibs", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("humanGibs", "optionHumanGibs", "optionHumanGibsDesc", false, function(_, value) RunConsoleCommand("violence_hgibs", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("humanGibs", "@optionHumanGibs", "@optionHumanGibsDesc", false, function(_, value) RunConsoleCommand("violence_hgibs", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("waterSplashes", "optionWaterSplashes", "optionWaterSplashesDesc", false, function(_, value) RunConsoleCommand("cl_show_splashes", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("waterSplashes", "@optionWaterSplashes", "@optionWaterSplashesDesc", false, function(_, value) RunConsoleCommand("cl_show_splashes", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("shellEjection", "optionShellEjection", "optionShellEjectionDesc", false, function(_, value) RunConsoleCommand("cl_ejectbrass", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("shellEjection", "@optionShellEjection", "@optionShellEjectionDesc", false, function(_, value) RunConsoleCommand("cl_ejectbrass", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("sprayLifetime", "optionSprayLifetime", "optionSprayLifetimeDesc", 1, function(_, value) RunConsoleCommand("r_spray_lifetime", tostring(value)) end, {
+lia.option.add("sprayLifetime", "@optionSprayLifetime", "@optionSprayLifetimeDesc", 1, function(_, value) RunConsoleCommand("r_spray_lifetime", tostring(value)) end, {
     min = 0,
     max = 300,
-    category = "categoryPerformance",
+    category = "@categoryPerformance",
     type = "Int"
 })
 
-lia.option.add("modelDecals", "optionModelDecals", "optionModelDecalsDesc", true, function(_, value) RunConsoleCommand("r_drawmodeldecals", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("modelDecals", "@optionModelDecals", "@optionModelDecalsDesc", true, function(_, value) RunConsoleCommand("r_drawmodeldecals", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("multiplayerDecals", "optionMultiplayerDecals", "optionMultiplayerDecalsDesc", 1, function(_, value) RunConsoleCommand("mp_decals", tostring(value)) end, {
+lia.option.add("multiplayerDecals", "@optionMultiplayerDecals", "@optionMultiplayerDecalsDesc", 1, function(_, value) RunConsoleCommand("mp_decals", tostring(value)) end, {
     min = 0,
     max = 50,
-    category = "categoryPerformance",
+    category = "@categoryPerformance",
     type = "Int"
 })
 
-lia.option.add("detailFadeDistance", "optionDetailFadeDistance", "optionDetailFadeDistanceDesc", 800, function(_, value) RunConsoleCommand("cl_detailfade", tostring(value)) end, {
+lia.option.add("detailFadeDistance", "@optionDetailFadeDistance", "@optionDetailFadeDistanceDesc", 800, function(_, value) RunConsoleCommand("cl_detailfade", tostring(value)) end, {
     min = 400,
     max = 2000,
-    category = "categoryPerformance",
+    category = "@categoryPerformance",
     type = "Int"
 })
 
-lia.option.add("detailDistance", "optionDetailDistance", "optionDetailDistanceDesc", 0, function(_, value) RunConsoleCommand("cl_detaildist", tostring(value)) end, {
+lia.option.add("detailDistance", "@optionDetailDistance", "@optionDetailDistanceDesc", 0, function(_, value) RunConsoleCommand("cl_detaildist", tostring(value)) end, {
     min = 0,
     max = 1200,
-    category = "categoryPerformance",
+    category = "@categoryPerformance",
     type = "Int"
 })
 
-lia.option.add("networkSmoothing", "optionNetworkSmoothing", "optionNetworkSmoothingDesc", false, function(_, value) RunConsoleCommand("cl_smooth", value and "1" or "0") end, {
-    category = "categoryPerformance",
+lia.option.add("networkSmoothing", "@optionNetworkSmoothing", "@optionNetworkSmoothingDesc", false, function(_, value) RunConsoleCommand("cl_smooth", value and "1" or "0") end, {
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
-lia.option.add("smoothingTime", "optionSmoothingTime", "optionSmoothingTimeDesc", 0.05, function(_, value) RunConsoleCommand("cl_smoothtime", tostring(value)) end, {
+lia.option.add("smoothingTime", "@optionSmoothingTime", "@optionSmoothingTimeDesc", 0.05, function(_, value) RunConsoleCommand("cl_smoothtime", tostring(value)) end, {
     min = 0.01,
     max = 0.2,
     decimals = 2,
-    category = "categoryPerformance",
+    category = "@categoryPerformance",
     type = "Float"
 })
 
-lia.option.add("voiceRange", "voiceRange", "voiceRangeDesc", false, nil, {
+lia.option.add("voiceRange", "@voiceRange", "@voiceRangeDesc", false, nil, {
     category = "Core",
     isQuick = true,
     type = "Boolean"
 })
 
-lia.option.add("weaponSelectorPosition", "weaponSelectorPosition", "weaponSelectorPositionDesc", "Left", nil, {
+lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "Left", nil, {
     category = "Core",
     type = "Table",
     options = {"Left", "Right", "Center"}
