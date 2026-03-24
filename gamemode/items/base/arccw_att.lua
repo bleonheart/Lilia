@@ -38,7 +38,7 @@ ITEM:hook("transfer", unEquip)
 ITEM:hook("drop", unEquip)
 ITEM.functions.Unequip = {
     name = "unequip",
-    tip = "Unequip this item",
+    tip = "unequipThisItem",
     icon = "icon16/cross.png",
     onRun = function(item)
         if item:removeAttachment(item.player) then
@@ -53,7 +53,7 @@ ITEM.functions.Unequip = {
 
 ITEM.functions.Equip = {
     name = "equip",
-    tip = "Equip this item",
+    tip = "equipThisItem",
     icon = "icon16/tick.png",
     onRun = function(item)
         item:setData("equip", true)

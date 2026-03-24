@@ -88,7 +88,7 @@ function PANEL:Paint(w, h)
             surface.SetMaterial(lockIcon)
             surface.DrawTexturedRect(w - 90, (h - 16) / 2, 16, 16)
         else
-            draw.SimpleText("LOCK", "LiliaFont.12", w - 90, h / 2, Color(150, 150, 150, 180), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+            draw.SimpleText(L("lock"):upper(), "LiliaFont.12", w - 90, h / 2, Color(150, 150, 150, 180), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         end
     end
 

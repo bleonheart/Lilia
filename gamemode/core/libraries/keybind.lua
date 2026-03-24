@@ -669,7 +669,7 @@ if CLIENT then
                 searchEntry:Dock(TOP)
                 searchEntry:SetTall(35)
                 searchEntry:DockMargin(10, 10, 10, 10)
-                searchEntry:SetPlaceholderText(L("searchKeybinds") or "Search keybinds...")
+                searchEntry:SetPlaceholderText(L("searchKeybinds"))
                 searchEntry:SetFont("LiliaFont.18")
                 local scroll = parent:Add("liaScrollPanel")
                 scroll:Dock(FILL)

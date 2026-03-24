@@ -199,7 +199,7 @@ else
                 net.SendToServer()
             elseif discord == false then
                 net.Start("liaStaffDiscordResponse")
-                net.WriteString("not provided")
+                net.WriteString(L("notProvided"))
                 net.SendToServer()
             else
                 LocalPlayer():notifyErrorLocalized("discordUsernameEmpty")
