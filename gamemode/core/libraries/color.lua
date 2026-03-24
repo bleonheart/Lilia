@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: color.md
 ]]
@@ -988,7 +988,7 @@ lia.config.add("Theme", "@theme", "Teal", function(_, newValue)
     end
 end, {
     desc = "@themeDesc",
-    category = "Core",
+    category = "@Core",
     type = "Table",
     options = function()
         local themes = {}

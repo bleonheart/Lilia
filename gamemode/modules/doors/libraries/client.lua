@@ -333,7 +333,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
                 elseif istable(displayValue) then
                     displayValue = util.TableToJSON(displayValue)
                 elseif isstring(displayValue) and displayValue == "" then
-                    displayValue = "(none)"
+                    displayValue = L("none")
                 end
 
                 table.insert(information, label .. ": " .. displayValue)

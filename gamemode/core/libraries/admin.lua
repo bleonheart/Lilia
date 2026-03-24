@@ -1897,7 +1897,9 @@ else
             end
 
             LocalPlayer():requestString("@confirm", L("deleteGroupPrompt", activeTab.groupName), function(value)
-                if value and value:lower() == "yes" then
+                local normalizedValue = isstring(value) and value:Trim():lower() or ""
+                local localizedYes = string.lower(L("yes"))
+                if normalizedValue == localizedYes then
                     net.Start("liaGroupsRemove")
                     net.WriteString(activeTab.groupName)
                     net.SendToServer()

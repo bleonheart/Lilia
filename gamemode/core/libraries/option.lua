@@ -41,7 +41,7 @@ lia.option.stored = lia.option.stored or {}
         lia.option.add("hudScale", "HUD Scale", "Scale HUD elements", 1.0, function(old, new)
             hook.Run("HUDScaleChanged", old, new)
         end, {
-            category = "Core",
+            category = "@Core",
             min = 0.5,
             max = 1.5,
             decimals = 2,
@@ -459,19 +459,19 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 end)
 
 lia.option.add("descriptionWidth", "@descriptionWidth", "@descriptionWidthDesc", 0.5, nil, {
-    category = "Core",
+    category = "@Core",
     min = 0.1,
     max = 1,
     decimals = 2
 })
 
 lia.option.add("invertWeaponScroll", "@invertWeaponScroll", "@invertWeaponScrollDesc", false, nil, {
-    category = "Core",
+    category = "@Core",
     isQuick = true,
 })
 
 lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -481,7 +481,7 @@ lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
 })
 
 lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -491,7 +491,7 @@ lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
 })
 
 lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -501,7 +501,7 @@ lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
 })
 
 lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -511,7 +511,7 @@ lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
 })
 
 lia.option.add("espUnconfiguredDoors", "@espUnconfiguredDoors", "@espUnconfiguredDoorsDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -526,7 +526,7 @@ lia.option.add("espItemsColor", "@espItemsColor", "@espItemsColorDesc", {
     b = 0,
     a = 255
 }, nil, {
-    category = "ESP",
+    category = "@ESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -540,7 +540,7 @@ lia.option.add("espEntitiesColor", "@espEntitiesColor", "@espEntitiesColorDesc",
     b = 0,
     a = 255
 }, nil, {
-    category = "ESP",
+    category = "@ESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -554,7 +554,7 @@ lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espU
     b = 255,
     a = 255
 }, nil, {
-    category = "ESP",
+    category = "@ESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -563,7 +563,7 @@ lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espU
 })
 
 lia.option.add("espConfiguredDoors", "@espConfiguredDoors", "@espConfiguredDoorsDesc", false, nil, {
-    category = "ESP",
+    category = "@ESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -578,7 +578,7 @@ lia.option.add("espConfiguredDoorsColor", "@espConfiguredDoorsColor", "@espConfi
     b = 0,
     a = 255
 }, nil, {
-    category = "ESP",
+    category = "@ESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -592,7 +592,7 @@ lia.option.add("espPlayersColor", "@espPlayersColor", "@espPlayersColorDesc", {
     b = 255,
     a = 255
 }, nil, {
-    category = "ESP",
+    category = "@ESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -601,7 +601,7 @@ lia.option.add("espPlayersColor", "@espPlayersColor", "@espPlayersColorDesc", {
 })
 
 lia.option.add("BarsAlwaysVisible", "@barsAlwaysVisible", "@barsAlwaysVisibleDesc", false, nil, {
-    category = "Core",
+    category = "@Core",
     isQuick = true,
 })
 
@@ -637,7 +637,7 @@ lia.option.add("thirdPersonDistance", "@thirdPersonDistance", "@thirdPersonDista
 })
 
 lia.option.add("ChatShowTime", "@chatShowTime", "@chatShowTimeDesc", false, nil, {
-    category = "Core",
+    category = "@Core",
     type = "Boolean"
 })
 
@@ -753,13 +753,13 @@ lia.option.add("smoothingTime", "@optionSmoothingTime", "@optionSmoothingTimeDes
 })
 
 lia.option.add("voiceRange", "@voiceRange", "@voiceRangeDesc", false, nil, {
-    category = "Core",
+    category = "@Core",
     isQuick = true,
     type = "Boolean"
 })
 
 lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "Left", nil, {
-    category = "Core",
+    category = "@Core",
     type = "Table",
     options = {"Left", "Right", "Center"}
 })

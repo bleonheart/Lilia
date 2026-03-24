@@ -7970,7 +7970,8 @@ lia.command.add("listnearbyentities", {
         client:ChatPrint(L("entitiesWithinRadiusHeader", radius))
         for categoryName, entitiesInCategory in pairs(entityCategories) do
             if #entitiesInCategory > 0 then
-                client:ChatPrint(L("entityCategoryHeader", L(categoryName):upper(), #entitiesInCategory))
+                local displayCategoryName = lia.lang.resolveToken("@" .. categoryName):upper()
+                client:ChatPrint(L("entityCategoryHeader", displayCategoryName, #entitiesInCategory))
                 table.sort(entitiesInCategory, function(a, b) return a.distance < b.distance end)
                 for _, entData in ipairs(entitiesInCategory) do
                     local info = L("entityDistanceClassInfo", string.format("%.1f", entData.distance), entData.class)

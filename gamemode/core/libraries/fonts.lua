@@ -1,4 +1,4 @@
-﻿--[[
+--[[
     Folder: Libraries
     File: font.md
 ]]
@@ -393,7 +393,7 @@ lia.config.add("Font", "@font", "Montserrat Medium", function()
     hook.Run("RefreshFonts")
 end, {
     desc = "@fontDesc",
-    category = "Core",
+    category = "@Core",
     type = "Table",
     options = lia.font.getAvailableFonts()
 })

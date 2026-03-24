@@ -186,6 +186,7 @@ function lia.keybind.add(k, d, desc, cb)
 
     local c = isstring(key) and KeybindKeys[string.lower(key)] or key
     description = isstring(description) and lia.lang.resolveToken(description) or description
+    category = isstring(category) and lia.lang.resolveToken(category) or category
     if not c then return end
     if not istable(callbacks) or not callbacks.onPress then
         lia.error(L("keybindAddInvalidCallbackFormat") .. " '" .. tostring(actionName) .. "'. Must use table with 'onPress' function. (Function: lia.keybind.add)")
