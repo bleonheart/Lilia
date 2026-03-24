@@ -1390,13 +1390,13 @@ hook.Add("InitializedModules", "liaItems", function()
             local itemName
             if isArc9Ammo then
                 ammoType = className:gsub("^arc9_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or "[ARC9] " .. ammoType .. " Ammunition"
+                itemName = override.name or L("generatedArc9AmmoName", ammoType)
             elseif isArccwAmmo then
                 ammoType = className:gsub("^arccw_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or "[ARCCW] " .. ammoType .. " Ammunition"
+                itemName = override.name or L("generatedArccwAmmoName", ammoType)
             elseif isTfaAmmo then
                 ammoType = className:gsub("^tfa_ammo_", ""):gsub("_", " "):lower():gsub("(%a)([%w_']*)", function(first, rest) return first:upper() .. rest end)
-                itemName = override.name or "[TFA] " .. ammoType .. " Ammunition"
+                itemName = override.name or L("generatedTfaAmmoName", ammoType)
             else
                 itemName = override.name or className
                 ammoType = className
@@ -1404,7 +1404,7 @@ hook.Add("InitializedModules", "liaItems", function()
 
             local properties = {
                 name = itemName,
-                desc = override.desc or "A Box of " .. ammoType .. " Ammunition",
+                desc = override.desc or L("generatedAmmoBoxDesc", ammoType),
                 category = override.category or L("itemCatAmmunition"),
                 model = override.model or "models/items/boxsrounds.mdl",
                 entityid = override.entityid or entityID,

@@ -1104,7 +1104,7 @@ local function findOption(options, label, ply)
     if isfunction(options) then options = options(ply) end
     if not istable(options) then return nil end
     for k, v in pairs(options) do
-        if k == label then return v end
+        if k == label or lia.lang.resolveToken(k) == label then return v end
         if v.options then
             local found = findOption(v.options, label, ply)
             if found then return found end
@@ -1119,7 +1119,7 @@ local function buildResponsePayload(response)
         local payload = {}
         local function pushLine(line)
             if isstring(line) then
-                payload[#payload + 1] = line
+                payload[#payload + 1] = lia.lang.resolveToken(line)
             elseif line ~= nil then
                 payload[#payload + 1] = tostring(line)
             end
@@ -1136,7 +1136,7 @@ local function buildResponsePayload(response)
         end
         return #payload > 0 and payload or nil
     end
-    return {tostring(response)}
+    return {lia.lang.resolveToken(tostring(response))}
 end
 
 local function setupNPCType(client, npc)
@@ -1157,7 +1157,7 @@ local function setupNPCType(client, npc)
         end
 
         if npcData.Skin then npc:SetSkin(npcData.Skin) end
-        npc.NPCName = npcData.PrintName or "NPC"
+        npc.NPCName = npcData.PrintName or L("defaultNPCName")
         npc:setNetVar("uniqueID", npcType)
         npc:setNetVar("NPCName", npc.NPCName)
         npc:SetMoveType(MOVETYPE_VPHYSICS)

@@ -371,6 +371,15 @@ function PANEL:OnRemove()
 end
 
 function PANEL:AddDialogOptions(options, npc, skipBackButton)
+    local function labelMatches(text, ...)
+        local normalized = string.Trim(string.lower(tostring(text or "")))
+        for i = 1, select("#", ...) do
+            local candidate = select(i, ...)
+            if normalized == string.Trim(string.lower(tostring(candidate or ""))) then return true end
+        end
+        return false
+    end
+
     local ply = LocalPlayer()
     if isfunction(options) then options = options(ply, npc) end
     local validOptions = {}
@@ -398,12 +407,12 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         local bIsAdmin = labelB:find("^%[admin%]") or labelB:find("^%[admin%]:")
         if aIsAdmin and not bIsAdmin then return true end
         if bIsAdmin and not aIsAdmin then return false end
-        local aIsBack = (labelA == "back") and a.info.isAutoBack
-        local bIsBack = (labelB == "back") and b.info.isAutoBack
+        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", L("back"), "return", L("return"))
+        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", L("back"), "return", L("return"))
         if aIsBack and not bIsBack then return true end
         if bIsBack and not aIsBack then return false end
-        local aIsGoodbye = (labelA == "goodbye") or (labelA == "bye") or (labelA == "farewell")
-        local bIsGoodbye = labelB == "goodbye" or labelB == "bye" or labelB == "farewell"
+        local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", L("close"))
+        local bIsGoodbye = b.info.closeDialog or labelMatches(b.label, "goodbye", "bye", "farewell", "close", L("close"))
         if aIsGoodbye and not bIsGoodbye then return false end
         if bIsGoodbye and not aIsGoodbye then return true end
         return a.label < b.label
@@ -419,8 +428,8 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         choiceBtn:SetText(label)
         choiceBtn:SetFont("LiliaFont.32")
         choiceBtn.DoClick = function()
-            local isGoodbye = string.lower(label) == "goodbye" or string.lower(label) == "bye" or string.lower(label) == "farewell" or string.lower(label) == "close"
-            local isBack = string.lower(label) == "back" or string.lower(label) == "return"
+            local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", L("close"))
+            local isBack = labelMatches(label, "back", L("back"), "return", L("return"))
             if isBack and info.isAutoBack then
                 self:AppendDialogLine(label, true)
                 if #self.conversationStack > 0 then

@@ -135,6 +135,7 @@ function lia.command.add(command, data)
             arg.type = "string"
         end
 
+        arg.description = isstring(arg.description) and lia.lang.resolveToken(arg.description) or arg.description
         arg.optional = arg.optional or false
     end
 
@@ -7832,7 +7833,7 @@ lia.command.add("resetvendorcooldowns", {
         {
             name = "target",
             type = "player",
-            description = "The player to reset cooldowns for"
+            description = "@resetVendorCooldownsTargetDesc"
         }
     },
     AdminStick = {

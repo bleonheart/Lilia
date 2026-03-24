@@ -259,6 +259,17 @@ if SERVER then
         return tostring(response)
     end
 
+    local function resolveDialogValue(value)
+        if istable(value) then
+            local resolved = {}
+            for k, v in pairs(value) do
+                resolved[k] = resolveDialogValue(v)
+            end
+            return resolved
+        end
+        return lia.lang.resolveToken(value)
+    end
+
     local function addResponseMetadata(entry, source)
         if not istable(entry) or not istable(source) then return end
         local response = source.Response
@@ -279,6 +290,7 @@ if SERVER then
         if not istable(tbl) then return tbl end
         local out = {}
         for label, info in pairs(tbl) do
+            local resolvedLabel = lia.lang.resolveToken(label)
             local entry = {}
             if istable(info) then
                 for k, v in pairs(info) do
@@ -292,14 +304,22 @@ if SERVER then
                 if entry.serverOnly then entry.Callback = nil end
                 entry.ShouldShow = nil
                 addResponseMetadata(entry, info)
+                entry.Response = resolveDialogValue(entry.Response)
                 if info.options and istable(info.options) and not entry.options then entry.options = sanitizeConversationTable(info.options) end
-                out[label] = entry
+                out[resolvedLabel] = entry
             elseif not isfunction(info) then
-                entry = info
-                out[label] = entry
+                out[resolvedLabel] = resolveDialogValue(info)
             end
         end
         return out
+    end
+
+    local function resolveDialogData(data)
+        if not istable(data) then return data end
+        data.PrintName = lia.lang.resolveToken(data.PrintName)
+        data.Greeting = resolveDialogValue(data.Greeting)
+        if istable(data.Conversation) then data.Conversation = sanitizeConversationTable(data.Conversation) end
+        return data
     end
 
     local function flattenGreetings(conversation)
@@ -371,7 +391,7 @@ if SERVER then
             for uniqueID, data in pairs(lia.dialog.stored) do
                 local filteredNPCData = table.Copy(data)
                 if filteredNPCData.Conversation then filteredNPCData.Conversation = filterConversationOptions(filteredNPCData.Conversation, ply, nil) end
-                filteredData[uniqueID] = sanitizeConversationTable(filteredNPCData)
+                filteredData[uniqueID] = resolveDialogData(filteredNPCData)
             end
 
             local dataHash = getDataHash(filteredData)
@@ -466,88 +486,88 @@ if SERVER then
     end
 
     lia.dialog.registerNPC("tutorial_guide", {
-        PrintName = "Tutorial Guide",
-        Greeting = "Hello there! I'm here to help new players learn the ropes. What would you like to know?",
+        PrintName = "@dialogTutorialGuideName",
+        Greeting = "@dialogTutorialGuideGreeting",
         Conversation = {
-            ["I'm new here, can you help me?"] = {
+            ["@dialogTutorialOptionNewHere"] = {
                 options = {
-                    ["Tell me about factions"] = {
+                    ["@dialogTutorialOptionTellFactions"] = {
                         ShouldShow = function() return true end,
-                        Response = "Factions are the main groups in this roleplay world. Every character belongs to one!",
+                        Response = "@dialogTutorialResponseTellFactions",
                         options = {
-                            ["What factions are available?"] = {
+                            ["@dialogTutorialOptionWhatFactionsAvailable"] = {
                                 ShouldShow = function() return true end,
-                                Response = "Citizens are usually the default - regular people living their lives. There might be police, medical, or other specialized factions.",
+                                Response = "@dialogTutorialResponseWhatFactionsAvailable",
                                 options = {
-                                    ["How do I join a faction?"] = {
+                                    ["@dialogTutorialOptionJoinFaction"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Open your character menu (usually F1) and select 'Create Character'. Choose your faction from the dropdown menu.",
+                                        Response = "@dialogTutorialResponseJoinFaction",
                                     },
-                                    ["Are there faction limits?"] = {
+                                    ["@dialogTutorialOptionFactionLimits"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Some factions have player limits to maintain balance. Popular factions like police might be restricted.",
+                                        Response = "@dialogTutorialResponseFactionLimits",
                                     }
                                 }
                             },
-                            ["What's the difference between factions and classes?"] = {
+                            ["@dialogTutorialOptionFactionVsClass"] = {
                                 ShouldShow = function() return true end,
-                                Response = "Factions are broad groups (like 'Police Department'), while classes are specialized roles within factions (like 'Detective' or 'SWAT').",
+                                Response = "@dialogTutorialResponseFactionVsClass",
                                 options = {
-                                    ["Tell me more about classes"] = {
+                                    ["@dialogTutorialOptionMoreClasses"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Classes give you special equipment, abilities, or restrictions. For example, a SWAT class might have better armor and weapons but move slower.",
+                                        Response = "@dialogTutorialResponseMoreClasses",
                                     },
-                                    ["Can I have multiple classes?"] = {
+                                    ["@dialogTutorialOptionMultipleClasses"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Usually one class per character, but you can have multiple characters with different classes!",
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    ["How do I get started with items?"] = {
-                        ShouldShow = function() return true end,
-                        Response = "Items are crucial! They include weapons, tools, food, and more.",
-                        options = {
-                            ["How do I open my inventory?"] = {
-                                ShouldShow = function() return true end,
-                                Response = "Press F2 or the inventory key to open your inventory. You can drag items, equip them, or use them from there.",
-                            },
-                            ["Where can I buy items?"] = {
-                                ShouldShow = function() return true end,
-                                Response = "Look for vendors (NPCs with shopping carts above their heads) or business owners. Some factions give starting items.",
-                                options = {
-                                    ["How does money work?"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "You earn money through jobs, selling items, or roleplaying. Use /givemoney to give money to others, or drop it as an item.",
-                                    },
-                                    ["Can I trade items?"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "Yes! Drag items from your inventory to another player's inventory when they're nearby, or use the trade system if available.",
+                                        Response = "@dialogTutorialResponseMultipleClasses",
                                     }
                                 }
                             }
                         }
                     },
-                    ["What about roleplaying?"] = {
+                    ["@dialogTutorialOptionGetStartedItems"] = {
                         ShouldShow = function() return true end,
-                        Response = "Roleplaying is the heart of this server! Stay in character, follow server rules, and have fun.",
+                        Response = "@dialogTutorialResponseGetStartedItems",
                         options = {
-                            ["How do I talk in character?"] = {
+                            ["@dialogTutorialOptionOpenInventory"] = {
                                 ShouldShow = function() return true end,
-                                Response = "Use /say or just type normally for local chat. /yell for shouting, /whisper for quiet talking, /me for actions, /it for environmental descriptions.",
+                                Response = "@dialogTutorialResponseOpenInventory",
                             },
-                            ["What are the basic rules?"] = {
+                            ["@dialogTutorialOptionBuyItems"] = {
                                 ShouldShow = function() return true end,
-                                Response = "No random deathmatching, respect other players' roleplay, follow faction rules, and don't metagame (using OOC info in IC situations).",
+                                Response = "@dialogTutorialResponseBuyItems",
                                 options = {
-                                    ["What is metagaming?"] = {
+                                    ["@dialogTutorialOptionMoneyWork"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Metagaming is using out-of-character knowledge in roleplay. For example, knowing someone's identity from their Steam name.",
+                                        Response = "@dialogTutorialResponseMoneyWork",
                                     },
-                                    ["How do I report rule breakers?"] = {
+                                    ["@dialogTutorialOptionTradeItems"] = {
                                         ShouldShow = function() return true end,
-                                        Response = "Contact admins using @ or the admin chat. For serious issues, use /report or find an admin in-game.",
+                                        Response = "@dialogTutorialResponseTradeItems",
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    ["@dialogTutorialOptionRoleplaying"] = {
+                        ShouldShow = function() return true end,
+                        Response = "@dialogTutorialResponseRoleplaying",
+                        options = {
+                            ["@dialogTutorialOptionTalkInCharacter"] = {
+                                ShouldShow = function() return true end,
+                                Response = "@dialogTutorialResponseTalkInCharacter",
+                            },
+                            ["@dialogTutorialOptionBasicRules"] = {
+                                ShouldShow = function() return true end,
+                                Response = "@dialogTutorialResponseBasicRules",
+                                options = {
+                                    ["@dialogTutorialOptionMetagaming"] = {
+                                        ShouldShow = function() return true end,
+                                        Response = "@dialogTutorialResponseMetagaming",
+                                    },
+                                    ["@dialogTutorialOptionReportRuleBreakers"] = {
+                                        ShouldShow = function() return true end,
+                                        Response = "@dialogTutorialResponseReportRuleBreakers",
                                     }
                                 }
                             }
@@ -555,33 +575,34 @@ if SERVER then
                     }
                 }
             },
-            ["I need help with something specific"] = {
+            ["@dialogTutorialOptionSpecificHelp"] = {
                 options = {
-                    ["I'm stuck or bugged"] = {
+                    ["@dialogTutorialOptionStuckBugged"] = {
                         ShouldShow = function() return true end,
-                        Response = "Try relogging first. If that doesn't work, contact an admin with /admin or @. Include details about what happened.",
+                        Response = "@dialogTutorialResponseStuckBugged",
                     },
-                    ["How do I change my character?"] = {
+                    ["@dialogTutorialOptionChangeCharacter"] = {
                         ShouldShow = function() return true end,
-                        Response = "Press F1 to open the character menu, then select 'Load Character' to switch between your characters.",
+                        Response = "@dialogTutorialResponseChangeCharacter",
                     },
-                    ["I lost my items"] = {
+                    ["@dialogTutorialOptionLostItems"] = {
                         ShouldShow = function() return true end,
-                        Response = "Items save automatically. If you lost them due to a bug, contact an admin immediately with details about what you had.",
+                        Response = "@dialogTutorialResponseLostItems",
                     },
-                    ["How do I get admin help?"] = {
+                    ["@dialogTutorialOptionAdminHelp"] = {
                         ShouldShow = function() return true end,
-                        Response = "Use @ message or /admin command to contact admins. Be patient - they help when available!",
+                        Response = "@dialogTutorialResponseAdminHelp",
                     }
                 }
             },
-            ["I'm ready to explore!"] = {
+            ["@dialogTutorialOptionReadyExplore"] = {
                 ShouldShow = function() return true end,
-                Response = "Great! Remember: stay in character, respect others, and have fun. The character menu (F1) and inventory (F2) are your best friends!",
+                Response = "@dialogTutorialResponseReadyExplore",
                 serverOnly = false
             },
-            ["Goodbye"] = {
-                Response = "Good luck out there! Feel free to come back if you have any more questions.",
+            ["@dialogTutorialOptionGoodbye"] = {
+                Response = "@dialogTutorialResponseGoodbye",
+                closeDialog = true,
                 Callback = function() if IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end end,
                 serverOnly = false
             }
@@ -624,7 +645,7 @@ if SERVER then
                 if not IsValid(client) or not IsValid(npc) then return end
                 local npcOptions = {}
                 for uniqueID, data in pairs(lia.dialog.stored) do
-                    local displayName = data.PrintName or uniqueID
+                    local displayName = lia.lang.resolveToken(data.PrintName or uniqueID)
                     table.insert(npcOptions, {displayName, uniqueID})
                 end
 
@@ -675,7 +696,7 @@ if SERVER then
 
         filteredData.UniqueID = npcID
         hook.Run("OnNPCTypeSet", client, npc, npcID, filteredData)
-        if filteredData.Conversation then filteredData.Conversation = sanitizeConversationTable(filteredData.Conversation) end
+        filteredData = resolveDialogData(filteredData)
         local function safeRemoveFunctions(tbl, depth)
             depth = depth or 0
             if depth > 10 then return tbl end
@@ -1072,7 +1093,7 @@ else
         dialogTypeCombo:DockMargin(0, 0, 0, 10)
         dialogTypeCombo:AddChoice(L("noneNoDialog"), "none", currentType == "none" or currentType == nil)
         for uniqueID, data in pairs(lia.dialog.stored) do
-            local displayName = data.PrintName or uniqueID
+                    local displayName = lia.lang.resolveToken(data.PrintName or uniqueID)
             dialogTypeCombo:AddChoice(displayName, uniqueID, uniqueID == currentType)
         end
 
@@ -1134,7 +1155,7 @@ else
                     local configBtn = vgui.Create("liaButton", scroll)
                     configBtn:Dock(TOP)
                     configBtn:SetTall(30)
-                    configBtn:SetText(config.name or config.id or L("configuration"))
+                    configBtn:SetText(lia.lang.resolveToken(config.name or config.id) or L("configuration"))
                     configBtn:DockMargin(0, 5, 0, 5)
                     configBtn.DoClick = function()
                         frame:Close()
@@ -1271,8 +1292,8 @@ local function canAccessNPCConfigurations(ply)
 end
 
 lia.dialog.registerConfiguration("appearance", {
-    name = "Appearance",
-    description = "Rename NPCs and adjust their models, skins, bodygroups, and animations.",
+    name = "@npcConfigAppearanceName",
+    description = "@npcConfigAppearanceDesc",
     order = 0,
     shouldShow = function(ply) return canAccessNPCConfigurations(ply) end
 })
@@ -1300,7 +1321,7 @@ if SERVER then
                 if trimmedName ~= "" then
                     npc.NPCName = trimmedName
                 else
-                    npc.NPCName = "NPC"
+                    npc.NPCName = L("defaultNPCName")
                 end
             end
 
@@ -1354,7 +1375,7 @@ if SERVER then
 
             npc:setAnim()
             npc.customData = customData
-            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = "NPC" end
+            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = L("defaultNPCName") end
             npc:setNetVar("NPCName", npc.NPCName)
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")
