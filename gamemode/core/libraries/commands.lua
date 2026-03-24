@@ -5000,7 +5000,7 @@ lia.command.add("charsetattrib", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.attribs.list) do
-                    options[L(v.name)] = k
+                    options[v.name] = k
                 end
                 return options
             end
@@ -5328,7 +5328,7 @@ lia.command.add("charaddattrib", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.attribs.list) do
-                    options[L(v.name)] = k
+                    options[v.name] = k
                 end
                 return options
             end
@@ -6348,7 +6348,7 @@ lia.command.add("plytransfer", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    if k ~= "staff" then options[L(v.name)] = k end
+                    if k ~= "staff" then options[v.name] = k end
                 end
                 return options
             end
@@ -6424,8 +6424,8 @@ lia.command.add("plytransfer", {
         targetChar:setFaction(faction.index)
         hook.Run("OnTransferred", targetPlayer)
         if faction.OnTransferred then faction:OnTransferred(targetPlayer, oldFaction) end
-        client:notifySuccessLocalized("transferSuccess", targetPlayer:Name(), L(faction.name, client))
-        if client ~= targetPlayer then targetPlayer:notifyInfoLocalized("transferNotification", L(faction.name, targetPlayer), client:Name()) end
+        client:notifySuccessLocalized("transferSuccess", targetPlayer:Name(), faction.name)
+        if client ~= targetPlayer then targetPlayer:notifyInfoLocalized("transferNotification", faction.name, client:Name()) end
         lia.log.add(client, "plyTransfer", targetPlayer:Name(), oldFactionName, faction.name)
     end
 })
@@ -6445,7 +6445,7 @@ lia.command.add("plywhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    if k ~= "staff" then options[L(v.name)] = k end
+                    if k ~= "staff" then options[v.name] = k end
                 end
                 return options
             end
@@ -6477,7 +6477,7 @@ lia.command.add("plywhitelist", {
             whitelists[SCHEMA.folder][data.uniqueID] = true
             target:setLiliaData("whitelists", whitelists)
             for _, v in player.Iterator() do
-                v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), L(faction.name, v))
+                    v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), faction.name)
             end
 
             lia.log.add(client, "plyWhitelist", target:Name(), faction.name)
@@ -6500,7 +6500,7 @@ lia.command.add("plyunwhitelist", {
             options = function()
                 local options = {}
                 for k, v in pairs(lia.faction.teams) do
-                    if k ~= "staff" then options[L(v.name)] = k end
+                    if k ~= "staff" then options[v.name] = k end
                 end
                 return options
             end
@@ -6533,7 +6533,7 @@ lia.command.add("plyunwhitelist", {
                 whitelists[SCHEMA.folder][data.uniqueID] = nil
                 target:setLiliaData("whitelists", whitelists)
                 for _, v in player.Iterator() do
-                    v:notifyInfoLocalized("unwhitelist", client:Name(), target:Name(), L(faction.name, v))
+                    v:notifyInfoLocalized("unwhitelist", client:Name(), target:Name(), faction.name)
                 end
 
                 lia.log.add(client, "plyUnwhitelist", target:Name(), faction.name)

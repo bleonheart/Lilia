@@ -1003,61 +1003,61 @@ local function GenerateDynamicCategories()
 
     local hardcodedCategories = {
         moderation = {
-            name = L("adminStickCategoryModeration") or "Moderation",
+            name = lia.lang.resolveToken("@adminStickCategoryModeration") or "Moderation",
             icon = "icon16/shield.png",
             subcategories = {
                 moderationTools = {
-                    name = L("moderationTools"),
+                    name = lia.lang.resolveToken("@moderationTools"),
                     icon = "icon16/shield.png"
                 },
                 teleportation = {
-                    name = L("adminStickCategoryTeleportation") or "Teleportation",
+                    name = lia.lang.resolveToken("@adminStickCategoryTeleportation") or "Teleportation",
                     icon = "icon16/world.png"
                 }
             }
         },
         characterManagement = {
-            name = L("adminStickCategoryCharacterManagement"),
+            name = lia.lang.resolveToken("@adminStickCategoryCharacterManagement"),
             icon = "icon16/user_gray.png",
             subcategories = {
                 information = {
-                    name = L("information"),
+                    name = lia.lang.resolveToken("@information"),
                     icon = "icon16/information.png"
                 },
                 transfers = {
-                    name = L("adminStickSubCategoryTransfers"),
+                    name = lia.lang.resolveToken("@adminStickSubCategoryTransfers"),
                     icon = "icon16/arrow_right.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = L("adminStickSubCategoryFactions"),
+                            name = lia.lang.resolveToken("@adminStickSubCategoryFactions"),
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = L("adminStickSubCategoryClasses"),
+                            name = lia.lang.resolveToken("@adminStickSubCategoryClasses"),
                             icon = "icon16/user.png"
                         }
                     }
                 },
                 whitelists = {
-                    name = L("adminStickSubCategoryWhitelists"),
+                    name = lia.lang.resolveToken("@adminStickSubCategoryWhitelists"),
                     icon = "icon16/group_key.png",
                     subcategories = {
                         adminStickSubCategoryFactions = {
-                            name = L("adminStickSubCategoryFactions"),
+                            name = lia.lang.resolveToken("@adminStickSubCategoryFactions"),
                             icon = "icon16/group.png"
                         },
                         adminStickSubCategoryClasses = {
-                            name = L("adminStickSubCategoryClasses"),
+                            name = lia.lang.resolveToken("@adminStickSubCategoryClasses"),
                             icon = "icon16/user.png"
                         }
                     }
                 },
                 properties = {
-                    name = L("properties"),
+                    name = lia.lang.resolveToken("@properties"),
                     icon = "icon16/application_view_tile.png"
                 },
                 items = {
-                    name = L("items"),
+                    name = lia.lang.resolveToken("@items"),
                     icon = "icon16/box.png"
                 }
             }
@@ -2260,12 +2260,12 @@ function MODULE:OpenAdminStickUI(tgt)
         if categories.moderation then
             categories.moderation.subcategories = categories.moderation.subcategories or {}
             categories.moderation.subcategories.moderationTools = {
-                name = L("moderationTools"),
+                name = lia.lang.resolveToken("@moderationTools"),
                 icon = "icon16/shield.png"
             }
 
             categories.moderation.subcategories.teleportation = {
-                name = L("adminStickCategoryTeleportation") or "Teleportation",
+                name = lia.lang.resolveToken("@adminStickCategoryTeleportation") or "Teleportation",
                 icon = "icon16/world.png"
             }
         end
@@ -2273,53 +2273,53 @@ function MODULE:OpenAdminStickUI(tgt)
         if categories.characterManagement then
             categories.characterManagement.subcategories = categories.characterManagement.subcategories or {}
             categories.characterManagement.subcategories.information = {
-                name = L("information"),
+                name = lia.lang.resolveToken("@information"),
                 icon = "icon16/information.png"
             }
 
             categories.characterManagement.subcategories.transfers = {
-                name = L("adminStickSubCategoryTransfers"),
+                name = lia.lang.resolveToken("@adminStickSubCategoryTransfers"),
                 icon = "icon16/arrow_right.png",
                 subcategories = {
                     adminStickSubCategoryFactions = {
-                        name = L("factions"),
+                        name = lia.lang.resolveToken("@factions"),
                         icon = "icon16/group.png"
                     },
                     adminStickSubCategoryClasses = {
-                        name = L("classes"),
+                        name = lia.lang.resolveToken("@classes"),
                         icon = "icon16/user.png"
                     }
                 }
             }
 
             categories.characterManagement.subcategories.whitelists = {
-                name = L("adminStickSubCategoryWhitelists"),
+                name = lia.lang.resolveToken("@adminStickSubCategoryWhitelists"),
                 icon = "icon16/group_key.png",
                 subcategories = {
                     adminStickSubCategoryClasses = {
-                        name = L("classes"),
+                        name = lia.lang.resolveToken("@classes"),
                         icon = "icon16/user.png",
                         subcategories = {
                             adminStickClassAddWhitelist = {
-                                name = L("addWhitelist"),
+                                name = lia.lang.resolveToken("@addWhitelist"),
                                 icon = "icon16/user_add.png"
                             },
                             adminStickClassRemoveWhitelist = {
-                                name = L("removeWhitelist"),
+                                name = lia.lang.resolveToken("@removeWhitelist"),
                                 icon = "icon16/user_delete.png"
                             }
                         }
                     },
                     adminStickSubCategoryFactions = {
-                        name = L("faction"),
+                        name = lia.lang.resolveToken("@faction"),
                         icon = "icon16/group.png",
                         subcategories = {
                             adminStickFactionAddWhitelist = {
-                                name = L("addWhitelist"),
+                                name = lia.lang.resolveToken("@addWhitelist"),
                                 icon = "icon16/group_add.png"
                             },
                             adminStickFactionRemoveWhitelist = {
-                                name = L("removeWhitelist"),
+                                name = lia.lang.resolveToken("@removeWhitelist"),
                                 icon = "icon16/group_delete.png"
                             }
                         }
@@ -2328,12 +2328,12 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             categories.characterManagement.subcategories.properties = {
-                name = L("properties"),
+                name = lia.lang.resolveToken("@properties"),
                 icon = "icon16/application_view_tile.png"
             }
 
             categories.characterManagement.subcategories.items = {
-                name = L("items"),
+                name = lia.lang.resolveToken("@items"),
                 icon = "icon16/box.png"
             }
         end
@@ -2362,22 +2362,22 @@ function MODULE:OpenAdminStickUI(tgt)
 
         local copyItems = {
             {
-                name = L("copyName"),
+                name = "@copyName",
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(displayName) end
             },
             {
-                name = L("copyPosition"),
+                name = "@copyPosition",
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(posStr) end
             },
             {
-                name = L("copyAngles"),
+                name = "@copyAngles",
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(angStr) end
             },
             {
-                name = L("copyPosAngPrintpos"),
+                name = "@copyPosAngPrintpos",
                 icon = "icon16/page_copy.png",
                 callback = function() SetClipboardText(setPosAngStr) end
             }
@@ -2393,12 +2393,12 @@ function MODULE:OpenAdminStickUI(tgt)
         if target.isStorageEntity then
             local storageOptions = {
                 {
-                    name = L("removePassword"),
+                    name = "@removePassword",
                     icon = "icon16/key_delete.png",
                     callback = function() RunConsoleCommand("say", "/storagepasswordremove") end
                 },
                 {
-                    name = L("changePassword"),
+                    name = "@changePassword",
                     icon = "icon16/key.png",
                     callback = function()
                         lia.derma.requestString("@enterNewPassword", "@enterNewPassword", function(password)
@@ -2410,7 +2410,7 @@ function MODULE:OpenAdminStickUI(tgt)
             }
 
             table.insert(lists, {
-                name = L("storage") or "Storage",
+                name = "@storage",
                 category = "storageManagement",
                 subcategory = "storageActions",
                 items = storageOptions
@@ -2436,10 +2436,10 @@ function MODULE:OpenAdminStickUI(tgt)
 
                 if #facOptions > 0 then
                     table.insert(lists, {
-                        name = L("factions"),
+                        name = "@factions",
                         category = "characterManagement",
                         subcategory = "transfers",
-                        subSubcategory = "adminStickSubCategoryFactions",
+                        subSubcategory = "@adminStickSubCategoryFactions",
                         items = facOptions
                     })
                 end
@@ -2463,10 +2463,10 @@ function MODULE:OpenAdminStickUI(tgt)
 
                     if #cls > 0 then
                         table.insert(lists, {
-                            name = L("classes"),
+                            name = "@classes",
                             category = "characterManagement",
                             subcategory = "transfers",
-                            subSubcategory = "adminStickSubCategoryClasses",
+                            subSubcategory = "@adminStickSubCategoryClasses",
                             items = cls
                         })
                     end
@@ -2501,22 +2501,22 @@ function MODULE:OpenAdminStickUI(tgt)
 
                 if #facAdd > 0 then
                     table.insert(lists, {
-                        name = L("factions"),
+                        name = "@factions",
                         category = "characterManagement",
                         subcategory = "whitelists",
-                        subSubcategory = "adminStickSubCategoryFactions",
-                        subSubSubcategory = "adminStickFactionAddWhitelist",
+                        subSubcategory = "@adminStickSubCategoryFactions",
+                        subSubSubcategory = "@adminStickFactionAddWhitelist",
                         items = facAdd
                     })
                 end
 
                 if #facRemove > 0 then
                     table.insert(lists, {
-                        name = L("factions"),
+                        name = "@factions",
                         category = "characterManagement",
                         subcategory = "whitelists",
-                        subSubcategory = "adminStickSubCategoryFactions",
-                        subSubSubcategory = "adminStickFactionRemoveWhitelist",
+                        subSubcategory = "@adminStickSubCategoryFactions",
+                        subSubSubcategory = "@adminStickFactionRemoveWhitelist",
                         items = facRemove
                     })
                 end
@@ -2563,8 +2563,8 @@ function MODULE:OpenAdminStickUI(tgt)
                             name = factionData.name,
                             category = "characterManagement",
                             subcategory = "whitelists",
-                            subSubcategory = "adminStickSubCategoryClasses",
-                            subSubSubcategory = "adminStickClassAddWhitelist",
+                            subSubcategory = "@adminStickSubCategoryClasses",
+                            subSubSubcategory = "@adminStickClassAddWhitelist",
                             subSubSubSubcategory = factionID,
                             items = factionData.addItems
                         })
@@ -2575,8 +2575,8 @@ function MODULE:OpenAdminStickUI(tgt)
                             name = factionData.name,
                             category = "characterManagement",
                             subcategory = "whitelists",
-                            subSubcategory = "adminStickSubCategoryClasses",
-                            subSubSubcategory = "adminStickClassRemoveWhitelist",
+                            subSubcategory = "@adminStickSubCategoryClasses",
+                            subSubSubcategory = "@adminStickClassRemoveWhitelist",
                             subSubSubSubcategory = factionID,
                             items = factionData.removeItems
                         })
@@ -2590,12 +2590,12 @@ function MODULE:OpenAdminStickUI(tgt)
         local lists = {}
         hook.Run("GetAdminStickLists", currentTarget, lists)
         for _, listData in ipairs(lists) do
-            local listName = listData.name
+            local listName = isstring(listData.name) and lia.lang.resolveToken(listData.name) or listData.name
             local categoryKey = listData.category
             local subcategoryKey = listData.subcategory
-            local subSubcategoryKey = listData.subSubcategory
-            local subSubSubcategoryKey = listData.subSubSubcategory
-            local subSubSubSubcategoryKey = listData.subSubSubSubcategory
+            local subSubcategoryKey = isstring(listData.subSubcategory) and lia.lang.resolveToken(listData.subSubcategory) or listData.subSubcategory
+            local subSubSubcategoryKey = isstring(listData.subSubSubcategory) and lia.lang.resolveToken(listData.subSubSubcategory) or listData.subSubSubcategory
+            local subSubSubSubcategoryKey = isstring(listData.subSubSubSubcategory) and lia.lang.resolveToken(listData.subSubSubSubcategory) or listData.subSubSubSubcategory
             local items = listData.items
             if not (listName and categoryKey and subcategoryKey and items and #items > 0) then continue end
             local category = GetOrCreateCategoryMenu(currentMenu, categoryKey, currentStores)
@@ -2610,7 +2610,8 @@ function MODULE:OpenAdminStickUI(tgt)
             table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
             local icon = subMenuIcons[listName] or "icon16/page.png"
             for _, item in ipairs(items) do
-                local option = targetMenu:AddOption(L(item.name), function()
+                local itemName = isstring(item.name) and lia.lang.resolveToken(item.name) or item.name
+                local option = targetMenu:AddOption(itemName, function()
                     if item.callback then item.callback(currentTarget, item) end
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end)

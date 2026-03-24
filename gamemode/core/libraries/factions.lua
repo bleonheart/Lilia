@@ -65,8 +65,8 @@ function lia.faction.register(uniqueID, data)
 
     faction.index = index
     faction.uniqueID = uniqueID
-    faction.name = L(faction.name) or "unknown"
-    faction.desc = L(faction.desc) or "noDesc"
+    faction.name = lia.lang.resolveToken(faction.name) or "unknown"
+    faction.desc = lia.lang.resolveToken(faction.desc) or "noDesc"
     faction.color = faction.color or Color(150, 150, 150)
     faction.models = faction.models or DefaultModels
     if faction.skinAllowed == nil then faction.skinAllowed = false end
@@ -161,8 +161,8 @@ function lia.faction.loadFromDir(directory)
             lia.error(L("factionMissingDesc", niceName))
         end
 
-        FACTION.name = L(FACTION.name)
-        FACTION.desc = L(FACTION.desc)
+        FACTION.name = lia.lang.resolveToken(FACTION.name)
+        FACTION.desc = lia.lang.resolveToken(FACTION.desc)
         local overrideName = hook.Run("OverrideFactionName", niceName, FACTION.name)
         if overrideName then FACTION.name = overrideName end
         local overrideDesc = hook.Run("OverrideFactionDesc", niceName, FACTION.desc)
@@ -971,8 +971,8 @@ function lia.faction.getDefaultClass(id)
 end
 
 FACTION_STAFF = lia.faction.register("staff", {
-    name = "factionStaffName",
-    desc = "factionStaffDesc",
+    name = "@factionStaffName",
+    desc = "@factionStaffDesc",
     color = Color(255, 56, 252),
     isDefault = false,
     models = {"models/player/police.mdl"},
