@@ -301,27 +301,6 @@ function lia.config.get(key, default)
 end
 
 if CLIENT then
-    lia.config._uiBindings = lia.config._uiBindings or {}
-    function lia.config._bindUI(key, panel, updater)
-        if not isstring(key) or key == "" then return end
-        if not IsValid(panel) or not isfunction(updater) then return end
-        lia.config._uiBindings[key] = lia.config._uiBindings[key] or {}
-        lia.config._uiBindings[key][panel] = updater
-    end
-
-    function lia.config._refreshBoundUI(key, value)
-        local bindings = lia.config._uiBindings and lia.config._uiBindings[key]
-        if not bindings then return end
-        for pnl, updater in pairs(bindings) do
-            if IsValid(pnl) then
-                local ok = pcall(updater, value)
-                if not ok then bindings[pnl] = nil end
-            else
-                bindings[pnl] = nil
-            end
-        end
-    end
-
     net.Receive("liaCfgList", function()
         local data = net.ReadTable() or {}
         for k, v in pairs(data) do
@@ -347,8 +326,6 @@ if CLIENT then
         lia.config.stored[key].value = cfgCoerceValue(key, value)
         hook.Run("OnConfigUpdated", key, oldValue, lia.config.stored[key].value)
     end)
-
-    hook.Add("OnConfigUpdated", "liaConfigRefreshUIBindings", function(key, _, value) lia.config._refreshBoundUI(key, value) end)
 end
 
 if SERVER then
@@ -666,7 +643,6 @@ else
                 net.SendToServer()
             end
 
-            if CLIENT then lia.config._bindUI(key, checkbox, function(v) checkbox:SetChecked(tobool(v)) end) end
         elseif configType == "Number" or configType == "Int" or configType == "Float" or configType == "Generic" then
             local entry = p:Add("liaEntry")
             entry:Dock(RIGHT)
@@ -695,7 +671,6 @@ else
                 end
             end
 
-            if CLIENT then lia.config._bindUI(key, entry, function(v) entry:SetValue(tostring(v)) end) end
         elseif configType == "Color" then
             local button = p:Add("liaButton")
             button:Dock(RIGHT)
@@ -747,7 +722,6 @@ else
                 net.SendToServer()
             end
 
-            if CLIENT then lia.config._bindUI(key, combo, function(v) combo:SetValue(tostring(v)) end) end
         end
     end
 
