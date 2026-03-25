@@ -7171,7 +7171,7 @@ lia.command.add("viewwarns", {
                 }
             }, warningList, {
                 {
-                    name = "removeWarning",
+                    name = L("removeThing", L("warning")),
                     net = "liaRequestRemoveWarning"
                 }
             }, target:getChar():getID())

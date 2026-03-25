@@ -781,7 +781,7 @@ function PANEL:createStartButton()
         if not tooltip or tooltip == "" then tooltip = L("loadExistingCharacter") end
         table.insert(buttonsData, {
             id = "load",
-            text = L("loadCharacter"),
+            text = L("loadThing", L("character")),
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
@@ -806,10 +806,10 @@ function PANEL:createStartButton()
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         local tooltip = hook.Run("GetCharacterLoadMainButtonTooltip", client)
-        if not tooltip or tooltip == "" then tooltip = L("loadMainCharacter") end
+        if not tooltip or tooltip == "" then tooltip = L("loadThing", L("mainCharacter")) end
         table.insert(buttonsData, {
             id = "loadmain",
-            text = L("loadMainCharacter"),
+            text = L("loadThing", L("mainCharacter")),
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -820,10 +820,10 @@ function PANEL:createStartButton()
 
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
-        if not tooltip or tooltip == "" then tooltip = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter") end
+        if not tooltip or tooltip == "" then tooltip = hasStaffChar and L("loadThing", L("staffCharacterLabel")) or L("createStaffCharacter") end
         table.insert(buttonsData, {
             id = "staff",
-            text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
+            text = hasStaffChar and L("loadThing", L("staffCharacterLabel")) or L("createStaffCharacter"),
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do

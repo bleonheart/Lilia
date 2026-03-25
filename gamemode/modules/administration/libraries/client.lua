@@ -2182,7 +2182,7 @@ function MODULE:OpenAdminStickUI(tgt)
         if target.isStorageEntity then
             local storageOptions = {
                 {
-                    name = "@removePassword",
+                    name = L("removeThing", L("password")),
                     icon = "icon16/key_delete.png",
                     callback = function() RunConsoleCommand("say", "/storagepasswordremove") end
                 },
@@ -3976,7 +3976,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             if IsValid(owner) and owner:IsPlayer() then
                 table.insert(infoLines, L("adminHUDOwner", owner:Nick()))
             else
-                table.insert(infoLines, L("adminHUDOwnerWorld"))
+                table.insert(infoLines, L("adminHUDOwner", L("categoryWorld")))
             end
 
             table.insert(infoLines, L("adminHUDEntityID", target:EntIndex()))

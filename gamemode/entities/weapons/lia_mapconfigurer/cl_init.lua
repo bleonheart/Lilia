@@ -163,7 +163,7 @@ function SWEP:OpenRemovalMenu()
     REMOVAL_MENU_OPEN = true
     local frame = vgui.Create("DFrame")
     frame:SetSize(600, 400)
-    frame:SetTitle(L("removePointsTitle", typeInfo.name or L("points")))
+    frame:SetTitle(L("removeThing", typeInfo.name or L("points")))
     frame:Center()
     frame:MakePopup()
     function frame:OnClose()

@@ -3912,7 +3912,7 @@ end
 
     Parameters:
         title (string|nil)
-            Title text key; defaults to `"selectOptions"`.
+            Title text key; defaults to the localized "Select Options" prompt.
         options (table)
             Array where each entry is either a value or `{display, data}` table; tables create dropdowns, values create checkboxes.
         callback (function|nil)
@@ -3941,7 +3941,7 @@ function lia.derma.requestOptions(title, subTitle, options, callback, onCancel)
     frame:Center()
     frame:MakePopup()
     frame:SetTitle("")
-    frame:SetCenterTitle(resolveRequestText(title, L("selectOptions")))
+    frame:SetCenterTitle(resolveRequestText(title, L("selectPrompt", L("options"))))
     if subTitle then
         local subTitleLabel = vgui.Create("DLabel", frame)
         subTitleLabel:SetText(resolveRequestText(subTitle, subTitle))

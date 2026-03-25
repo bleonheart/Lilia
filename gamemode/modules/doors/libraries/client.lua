@@ -206,7 +206,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #removeFactionItems > 0 then
         table.insert(lists, {
-            name = L("removeFactions"),
+            name = L("removeThing", L("factions")),
             category = "doorManagement",
             subcategory = "factions",
             subSubcategory = "removeFactions",
@@ -266,7 +266,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #removeClassItems > 0 then
         table.insert(lists, {
-            name = L("removeClasses"),
+            name = L("removeThing", L("classes")),
             category = "doorManagement",
             subcategory = "classes",
             subSubcategory = "removeClasses",

@@ -14,11 +14,13 @@ if SERVER then
         net.Send(client)
     end
 else
-    local function openCharacterMenu(callback)
+    local function openCharacterMenu(callback, options)
         local client = LocalPlayer()
+        options = options or {}
         if not lia.config.initialized then lia.config.load() end
         lia.config.onInitialized(function()
-            if not IsValid(client) or client:getChar() then return end
+            if not IsValid(client) then return end
+            if client:getChar() and not options.allowActiveCharacter then return end
             local panel = IsValid(lia.gui.character) and lia.gui.character or vgui.Create("liaCharacter")
             if isfunction(callback) then callback(panel) end
         end)
@@ -177,7 +179,9 @@ else
             end
 
             if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-            openCharacterMenu()
+            openCharacterMenu(nil, {
+                allowActiveCharacter = true
+            })
         end
     end
 

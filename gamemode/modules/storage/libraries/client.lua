@@ -113,12 +113,12 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     changeBtn:PaintButton(lia.color.theme and lia.color.theme.button or Color(50, 50, 80), lia.color.theme and lia.color.theme.button_hovered or Color(60, 60, 100))
     changeBtn.DoClick = function() LocalPlayer():requestString("@enterCurrentPassword", "@enterCurrentPassword", function(currentPass) if currentPass and currentPass ~= "" then LocalPlayer():requestString("@enterNewPassword", "@enterNewPassword", function(newPass) if newPass and newPass ~= "" then SetStoragePassword("change", currentPass, newPass) end end, "") end end, "") end
     local removeBtn = vgui.Create("liaButton", lockPanelRef)
-    removeBtn:SetTxt(L("removePassword"))
+    removeBtn:SetTxt(L("removeThing", L("password")))
     removeBtn:SetSize(buttonWidth, 22)
     removeBtn:SetPos(20 + buttonWidth * 2, buttonY)
     removeBtn:PaintButton(lia.color.theme and lia.color.theme.button or Color(80, 50, 50), lia.color.theme and lia.color.theme.button_hovered or Color(100, 60, 60))
     removeBtn.DoClick = function()
-        LocalPlayer():requestString("@removePassword", "@confirmRemovePassword", function(value)
+        LocalPlayer():requestString(L("removeThing", L("password")), "@confirmRemovePassword", function(value)
             if value and value:lower() == L("yes"):lower() then SetStoragePassword("remove") end
         end)
     end

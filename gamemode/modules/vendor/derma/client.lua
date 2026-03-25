@@ -1385,7 +1385,7 @@ function PANEL:initializeGeneralInfoPanel(entity)
         self.presetButton = self.generalScroll:Add("liaButton")
         self.presetButton:Dock(TOP)
         self.presetButton:DockMargin(0, 0, 0, 8)
-        self.presetButton:SetText(L("vendorLoadPreset"))
+        self.presetButton:SetText(L("loadThing", L("preset")))
         self.presetButton:SetTooltip(L("vendorLoadPresetTooltip"))
         self.presetButton.DoClick = function() self:openPresetSelector() end
     end
@@ -1710,7 +1710,7 @@ end
 
 function PANEL:refreshPresetButton()
     if not IsValid(self.presetButton) then return end
-    self.presetButton:SetText(L("vendorLoadPreset"))
+    self.presetButton:SetText(L("loadThing", L("preset")))
 end
 
 function PANEL:openPresetSelector()
@@ -1730,7 +1730,7 @@ function PANEL:openPresetSelector()
     end
 
     self.leftFrame = self.presetSelector:Add("liaFrame")
-    self.leftFrame:SetTitle(L("vendorLoadPreset"))
+    self.leftFrame:SetTitle(L("loadThing", L("preset")))
     self.leftFrame:SetSize(300, 500)
     self.leftFrame:SetPos(0, 0)
     self.leftFrame.OnRemove = function() if IsValid(self.presetSelector) then self.presetSelector:Remove() end end
