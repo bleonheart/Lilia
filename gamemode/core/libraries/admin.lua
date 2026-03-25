@@ -1782,8 +1782,7 @@ else
                 end
             else
                 local function showBaseRankNotification()
-                    local message = L("baseUsergroupCannotBeEditedDesc")
-                    LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited", message)
+                    LocalPlayer():notifyErrorLocalized("baseUsergroupCannotBeEdited")
                 end
 
                 row.OnChange = showBaseRankNotification

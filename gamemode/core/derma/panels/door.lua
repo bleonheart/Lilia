@@ -1,12 +1,12 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self:SetSize(700, 600)
-    self:SetTitle(L("door") .. " " .. L("adminStickSubCategorySettings"))
+    self:SetTitle(L("door") .. " " .. L("settings"))
     self:Center()
     self:MakePopup()
     self.access = self:Add("liaTable")
     self.access:Dock(FILL)
-    self.access:AddColumn(L("PrintName"), 400)
+    self.access:AddColumn(L("name"), 400)
     self.access:AddColumn(L("doorAccess"), 250, TEXT_ALIGN_RIGHT)
     self.access.OnAction = function(rowData)
         local ply = rowData._player
@@ -50,7 +50,7 @@ function PANEL:setDoor(door, accessData, fallback)
         btnPanel.Paint = nil
         local btn = btnPanel:Add("liaButton")
         btn:Dock(FILL)
-        btn:SetText(L("doorSell"))
+        btn:SetText(L("sell"))
         btn.DoClick = function()
             self:Remove()
             lia.command.send("doorsell")

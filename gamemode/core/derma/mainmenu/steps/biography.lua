@@ -259,7 +259,7 @@ function PANEL:updateAttributesLabel()
         end
 
         local left = math.max((total or 0) - sum, 0)
-        self.attrLabelText:SetText(L("adminStickSubCategoryAttributes"):upper() .. " - " .. left .. " " .. L("pointsLeft"):lower())
+        self.attrLabelText:SetText(L("attributesModuleName"):upper() .. " - " .. left .. " " .. L("pointsLeft"):lower())
         self.attrLabelText:SizeToContents()
     end
 

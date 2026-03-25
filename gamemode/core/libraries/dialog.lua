@@ -1321,7 +1321,7 @@ if SERVER then
                 if trimmedName ~= "" then
                     npc.NPCName = trimmedName
                 else
-                    npc.NPCName = L("defaultNPCName")
+                    npc.NPCName = L("npc")
                 end
             end
 
@@ -1375,7 +1375,7 @@ if SERVER then
 
             npc:setAnim()
             npc.customData = customData
-            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = L("defaultNPCName") end
+            if not npc.NPCName or npc.NPCName == "" then npc.NPCName = L("npc") end
             npc:setNetVar("NPCName", npc.NPCName)
             hook.Run("UpdateEntityPersistence", npc)
             hook.Run("SaveData")

@@ -512,7 +512,7 @@ end
         ```
 ]]
 function lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)
-    assert(isstring(uniqueID), L("classUniqueIDString"))
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
     local baseTable = lia.item.base[baseID] or lia.meta.item
     if baseID then assert(baseTable, L("itemBaseNotFound", uniqueID, baseID)) end
     local targetTable = isBaseItem and lia.item.base or lia.item.list
@@ -615,7 +615,7 @@ end
         ```
 ]]
 function lia.item.registerItem(id, base, properties)
-    assert(isstring(id), L("classUniqueIDString"))
+    assert(isstring(id), L("itemUniqueIDString"))
     if properties ~= nil and not istable(properties) then
         local errorMsg = string.format("properties must be a table or nil, got %s (type: %s)", tostring(properties), type(properties))
         lia.error(string.format("[Lilia] registerItem called with invalid properties for item '%s': %s\n", id, errorMsg))
@@ -672,7 +672,7 @@ end
         ```
 ]]
 function lia.item.overrideItem(uniqueID, overrides)
-    assert(isstring(uniqueID), L("classUniqueIDString"))
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
     assert(istable(overrides), "overrides must be a table")
     if not lia.item.pendingOverrides[uniqueID] then lia.item.pendingOverrides[uniqueID] = {} end
     for key, value in pairs(overrides) do
@@ -1354,7 +1354,7 @@ hook.Add("InitializedModules", "liaItems", function()
             local properties = {
                 name = hook.Run("GetWeaponName", wep) or override.name or className,
                 desc = override.desc or L("weaponsDesc"),
-                category = override.category or isGrenade and L("itemCatGrenades") or L("weaponDefaultCategory"),
+                category = override.category or isGrenade and L("itemCatGrenades") or L("weapons"),
                 model = override.model or wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
                 class = override.class or className,
                 width = override.width or size.width,
@@ -1557,13 +1557,13 @@ else
 
         local defWidth = 2
         local defHeight = 1
-        AddField(L("PrintName"), "name", weaponTable.PrintName or className, false)
+        AddField(L("name"), "name", weaponTable.PrintName or className, false)
         AddField(L("desc"), "desc", L("weaponDefaultDescription"), false)
         AddField(L("model"), "model", weaponTable.WorldModel or "models/props_c17/BriefCase001a.mdl", false)
         AddField(L("weaponItemWidth"), "width", defWidth, true)
-        AddField(L("thirdPersonHeight"), "height", defHeight, true)
+        AddField(L("weaponItemHeight"), "height", defHeight, true)
         AddField(L("price"), "price", 500, true)
-        AddField(L("Category"), "category", L("weaponDefaultCategory"), false)
+        AddField(L("Category"), "category", L("weapons"), false)
     end
 
     hook.Add("PopulateConfigurationButtons", "liaWeaponItemsConfig", function(pages)

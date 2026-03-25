@@ -554,7 +554,7 @@ else
                 local ctrl
                 if fieldType == "player" then
                     ctrl = vgui.Create("liaComboBox", panel)
-                    ctrl:SetValue(L("select") .. " " .. L("discordAntiCheatPlayer"))
+                    ctrl:SetValue(L("select") .. " " .. L("player"))
                     local players = {}
                     for _, plyObj in player.Iterator() do
                         if IsValid(plyObj) then players[#players + 1] = plyObj end
@@ -1173,19 +1173,6 @@ if SERVER then
         lia.information(L("assetsRedownloaded"))
     end)
 
-    concommand.Add("test_existing_notifications", function(client)
-        if IsValid(client) then
-            client:notifyErrorLocalized("commandConsoleOnly")
-            return
-        end
-
-        lia.notices.notifyLocalized("testNotification")
-        lia.notices.notifyInfoLocalized("testNotificationInfo")
-        lia.notices.notifyWarningLocalized("testNotificationWarning")
-        lia.notices.notifyErrorLocalized("testNotificationError")
-        lia.notices.notifySuccessLocalized("testNotificationSuccess")
-    end)
-
     concommand.Add("print_vector", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
@@ -1273,211 +1260,6 @@ else
         for _, v in pairs(vgui.GetWorldPanel():GetChildren()) do
             if not (v.Init and debug.getinfo(v.Init, "Sln").short_src:find("chatbox")) then v:Remove() end
         end
-    end)
-
-    local function performPanelCheck()
-        local function enumeratePanels(panel, depth)
-            depth = depth or 0
-            local children = panel:GetChildren()
-            local count = 0
-            for _, child in ipairs(children) do
-                if IsValid(child) then
-                    count = count + 1
-                    count = count + enumeratePanels(child, depth + 1)
-                end
-            end
-            return count
-        end
-
-        local function collectPanelData(panel, panelTypes, hiddenPanelTypes, depth)
-            depth = depth or 0
-            local children = panel:GetChildren()
-            for _, child in ipairs(children) do
-                if IsValid(child) then
-                    local panelType = child:GetName() or "Unknown"
-                    if child:IsVisible() then
-                        panelTypes[panelType] = (panelTypes[panelType] or 0) + 1
-                    else
-                        hiddenPanelTypes[panelType] = (hiddenPanelTypes[panelType] or 0) + 1
-                    end
-
-                    collectPanelData(child, panelTypes, hiddenPanelTypes, depth + 1)
-                end
-            end
-        end
-
-        local worldPanel = vgui.GetWorldPanel()
-        local panelCount = enumeratePanels(worldPanel)
-        local visiblePanels = 0
-        local panelTypes = {}
-        local hiddenPanelTypes = {}
-        collectPanelData(worldPanel, panelTypes, hiddenPanelTypes)
-        for _, count in pairs(panelTypes) do
-            visiblePanels = visiblePanels + count
-        end
-
-        LocalPlayer():ChatPrint(L("totalPanelsOnScreen", panelCount))
-        LocalPlayer():ChatPrint(L("visiblePanels", visiblePanels))
-        if table.Count(panelTypes) > 0 then
-            LocalPlayer():ChatPrint(L("visiblePanelTypes"))
-            for panelType, count in pairs(panelTypes) do
-                LocalPlayer():ChatPrint(L("panelTypeCount", panelType, count))
-            end
-        end
-
-        LocalPlayer():ChatPrint(L("hiddenPanels", panelCount - visiblePanels))
-        if table.Count(hiddenPanelTypes) > 0 then
-            LocalPlayer():ChatPrint(L("hiddenPanelTypes"))
-            for panelType, count in pairs(hiddenPanelTypes) do
-                LocalPlayer():ChatPrint(L("panelTypeCount", panelType, count))
-            end
-        end
-    end
-
-    concommand.Add("lia_test_panels", function(_, _, args)
-        local delay = tonumber(args[1]) or 0
-        if delay > 0 then
-            LocalPlayer():ChatPrint(L("checkingPanelsInSeconds", delay))
-            timer.Simple(delay, function()
-                if not IsValid(LocalPlayer()) then return end
-                performPanelCheck()
-            end)
-        else
-            performPanelCheck()
-        end
-    end)
-
-    concommand.Add("lia_panel_browser", function()
-        local allPanels = {}
-        local liaPanels = {}
-        local gmodPanels = {}
-        for panelName, _ in pairs(vgui.GetTypes()) do
-            table.insert(allPanels, panelName)
-            if string.StartWith(panelName, "lia") or string.StartWith(panelName, "Lia") then
-                table.insert(liaPanels, panelName)
-            else
-                table.insert(gmodPanels, panelName)
-            end
-        end
-
-        table.sort(allPanels)
-        table.sort(liaPanels)
-        table.sort(gmodPanels)
-        local frame = vgui.Create("liaFrame")
-        frame:SetTitle(L("vguiPanelBrowser"))
-        frame:SetSize(900, 700)
-        frame:Center()
-        frame:MakePopup()
-        frame:SetSizable(true)
-        frame:SetMinWidth(600)
-        frame:SetMinHeight(400)
-        local infoPanel = vgui.Create("DPanel", frame)
-        infoPanel:Dock(TOP)
-        infoPanel:SetTall(60)
-        infoPanel:DockMargin(0, 0, 0, 5)
-        infoPanel.Paint = function(_, w, h)
-            lia.derma.rect(0, 0, w, h):Rad(4):Color(lia.color.theme.panel[1]):Draw()
-            draw.SimpleText(L("totalPanels", #allPanels), "LiliaFont.18", 10, 10, lia.color.theme.text)
-            draw.SimpleText(L("liliaPanels", #liaPanels), "LiliaFont.16", 10, 35, lia.color.theme.accent)
-            draw.SimpleText(L("gmodPanels", #gmodPanels), "LiliaFont.16", 200, 35, lia.color.theme.text)
-        end
-
-        local searchBox = vgui.Create("liaEntry", frame)
-        searchBox:Dock(TOP)
-        searchBox:DockMargin(0, 0, 0, 5)
-        searchBox:SetPlaceholderText(L("searchPanels"))
-        searchBox:SetTall(35)
-        local categorySheet = vgui.Create("DPropertySheet", frame)
-        categorySheet:Dock(FILL)
-        categorySheet:DockMargin(0, 0, 0, 0)
-        local function createPanelList(parent, panelList)
-            local scroll = vgui.Create("liaScrollPanel", parent)
-            scroll:Dock(FILL)
-            local panelItems = {}
-            local function populateList(filter)
-                for _, item in ipairs(panelItems) do
-                    if IsValid(item) then item:Remove() end
-                end
-
-                panelItems = {}
-                for _, panelName in ipairs(panelList) do
-                    if not filter or filter == "" or string.find(string.lower(panelName), string.lower(filter)) then
-                        local panelItem = vgui.Create("DPanel", scroll)
-                        panelItem:Dock(TOP)
-                        panelItem:SetTall(50)
-                        panelItem:DockMargin(2, 2, 2, 2)
-                        panelItem.Paint = function(_, w, h)
-                            local col = lia.color.theme.panel[2]
-                            if panelItem:IsHovered() then col = ColorAlpha(lia.color.theme.accent, 30) end
-                            lia.derma.rect(0, 0, w, h):Rad(4):Color(col):Draw()
-                            draw.SimpleText(panelName, "LiliaFont.17", 10, h * 0.5, lia.color.theme.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-                        end
-
-                        local spawnBtn = vgui.Create("liaButton", panelItem)
-                        spawnBtn:SetText(L("test"))
-                        spawnBtn:SetWide(80)
-                        spawnBtn:Dock(RIGHT)
-                        spawnBtn:DockMargin(5, 5, 5, 5)
-                        spawnBtn.DoClick = function()
-                            local success, err = pcall(function()
-                                local testPanel = vgui.Create(panelName)
-                                if IsValid(testPanel) then
-                                    if testPanel.SetSize then testPanel:SetSize(400, 300) end
-                                    if testPanel.Center then
-                                        testPanel:Center()
-                                    else
-                                        testPanel:SetPos(ScrW() * 0.5 - 200, ScrH() * 0.5 - 150)
-                                    end
-
-                                    if testPanel.MakePopup then testPanel:MakePopup() end
-                                    if testPanel.SetVisible then testPanel:SetVisible(true) end
-                                    LocalPlayer():ChatPrint(L("createdTestInstance", panelName))
-                                else
-                                    LocalPlayer():ChatPrint(L("failedToCreatePanel", panelName))
-                                end
-                            end)
-
-                            if not success then LocalPlayer():ChatPrint(L("errorCreatingPanel", panelName, tostring(err))) end
-                        end
-
-                        local copyBtn = vgui.Create("liaButton", panelItem)
-                        copyBtn:SetText(L("copy"))
-                        copyBtn:SetWide(80)
-                        copyBtn:Dock(RIGHT)
-                        copyBtn:DockMargin(5, 5, 5, 5)
-                        copyBtn.DoClick = function()
-                            SetClipboardText(panelName)
-                            LocalPlayer():ChatPrint(L("copiedToClipboardValue", panelName))
-                        end
-
-                        table.insert(panelItems, panelItem)
-                    end
-                end
-            end
-
-            populateList()
-            return populateList
-        end
-
-        local allTab = vgui.Create("DPanel")
-        allTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
-        local allPopulate = createPanelList(allTab, allPanels)
-        categorySheet:AddSheet(L("allPanelsCount", #allPanels), allTab, "icon16/application_view_list.png")
-        local liaTab = vgui.Create("DPanel")
-        liaTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
-        local liaPopulate = createPanelList(liaTab, liaPanels)
-        categorySheet:AddSheet(L("liliaPanelsCount", #liaPanels), liaTab, "icon16/star.png")
-        local gmodTab = vgui.Create("DPanel")
-        gmodTab.Paint = function(_, w, h) lia.derma.rect(0, 0, w, h):Rad(4):Color(Color(25, 28, 35, 250)):Draw() end
-        local gmodPopulate = createPanelList(gmodTab, gmodPanels)
-        categorySheet:AddSheet(L("gmodPanelsCount", #gmodPanels), gmodTab, "icon16/wrench.png")
-        searchBox.OnValueChange = function(_, value)
-            allPopulate(value)
-            liaPopulate(value)
-            gmodPopulate(value)
-        end
-
-        LocalPlayer():ChatPrint(L("panelBrowserOpened", #allPanels))
     end)
 
     concommand.Add("lia_saved_sounds", function()
@@ -1768,86 +1550,6 @@ else
         LocalPlayer():ChatPrint(L("webImagesWiped"))
     end)
 
-    concommand.Add("test_webimage_menu", function()
-        local frame = vgui.Create("liaFrame")
-        frame:SetTitle(L("webImageTesterTitle"))
-        frame:SetSize(500, 400)
-        frame:Center()
-        frame:MakePopup()
-        local textEntry = vgui.Create("liaEntry", frame)
-        textEntry:Dock(TOP)
-        textEntry:DockMargin(5, 5, 5, 5)
-        textEntry:SetPlaceholderText(L("webImageTesterURL"))
-        local button = vgui.Create("liaButton", frame)
-        button:Dock(TOP)
-        button:DockMargin(5, 0, 5, 5)
-        button:SetText(L("webImageTesterLoad"))
-        local imagePanel = vgui.Create("DPanel", frame)
-        imagePanel:Dock(FILL)
-        imagePanel:DockMargin(5, 5, 5, 5)
-        button.DoClick = function()
-            local url = textEntry:GetValue()
-            if url and url ~= "" then
-                local img = vgui.Create("DImage", imagePanel)
-                img:Dock(FILL)
-                img:SetImage(url)
-            end
-        end
-    end)
-
-    concommand.Add("test_sound_playback", function()
-        local baseDir = "lilia/websounds/"
-        local files = file.Find(baseDir .. "**", "DATA")
-        local soundFiles = {}
-        if files then
-            for _, fileName in ipairs(files) do
-                if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") then table.insert(soundFiles, fileName) end
-            end
-        end
-
-        if #soundFiles > 0 then
-            local testFile = soundFiles[1]
-            local fullPath = "data/" .. baseDir .. testFile
-            sound.PlayFile(fullPath, "", function(channel, _, errorString)
-                if IsValid(channel) then
-                    LocalPlayer():ChatPrint(L("directTestSuccessful", testFile))
-                else
-                    LocalPlayer():ChatPrint(L("directTestFailed", testFile, errorString or L("unknown")))
-                end
-            end)
-        else
-            LocalPlayer():ChatPrint(L("noSoundFilesForTesting"))
-        end
-    end)
-
-    concommand.Add("test_saved_commands", function()
-        local baseDir = "lilia/websounds/"
-        local files = file.Find(baseDir .. "**", "DATA")
-        local soundFiles = {}
-        if files then
-            for _, fileName in ipairs(files) do
-                if string.EndsWith(fileName, ".mp3") or string.EndsWith(fileName, ".wav") or string.EndsWith(fileName, ".ogg") or string.EndsWith(fileName, ".dat") then table.insert(soundFiles, fileName) end
-            end
-        end
-
-        for i, fileName in ipairs(soundFiles) do
-            LocalPlayer():ChatPrint(L("indexedFileEntry", i, fileName))
-        end
-
-        local baseDir2 = "lilia/webimages/"
-        local files2 = file.Find(baseDir2 .. "**", "DATA")
-        local imageFiles = {}
-        if files2 then
-            for _, fileName in ipairs(files2) do
-                if string.EndsWith(fileName, ".png") or string.EndsWith(fileName, ".jpg") or string.EndsWith(fileName, ".jpeg") then table.insert(imageFiles, fileName) end
-            end
-        end
-
-        for i, fileName in ipairs(imageFiles) do
-            LocalPlayer():ChatPrint(L("indexedFileEntry", i, fileName))
-        end
-    end)
-
     concommand.Add("printpos", function(client)
         if not IsValid(client) then
             MsgC(Color(255, 0, 0), "[Lilia] " .. L("errorPrefix") .. L("commandCanOnlyBeUsedByPlayers") .. "\n")
@@ -2134,7 +1836,7 @@ lia.command.add("charkill", {
             client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
             lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
         else
-            local reasonKey = L("discordWarningSystemReason")
+            local reasonKey = L("reason")
             local evidenceKey = L("evidence")
             client:requestArguments(L("pkReasonMenu"), {
                 [reasonKey] = "string",
@@ -3239,7 +2941,7 @@ lia.command.add("flaggive", {
                 client:notifyInfoLocalized("noAvailableFlags")
                 return
             end
-            return client:requestString(L("give") .. " " .. L("adminStickSubCategoryFlags"), "@flagGiveDesc", function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
+            return client:requestString(L("give") .. " " .. L("flags"), "@flagGiveDesc", function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
         target:giveFlags(flags)
@@ -3327,7 +3029,7 @@ lia.command.add("flagtake", {
         local flags = arguments[2]
         if not flags then
             local currentFlags = target:getFlags()
-            return client:requestString(L("take") .. " " .. L("adminStickSubCategoryFlags"), "@flagTakeDesc", function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
+            return client:requestString(L("take") .. " " .. L("flags"), "@flagTakeDesc", function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
         target:takeFlags(flags)
@@ -3402,7 +3104,7 @@ lia.command.add("cleanitems", {
             SafeRemoveEntity(v)
         end
 
-        client:notifySuccessLocalized("cleaningFinished", L("adminStickCategoryItems"), count)
+        client:notifySuccessLocalized("cleaningFinished", L("items"), count)
     end
 })
 
@@ -5877,7 +5579,7 @@ lia.command.add("doorinfo", {
                     value = tostring(disabled)
                 },
                 {
-                    property = L("PrintName"),
+                    property = L("name"),
                     value = tostring(doorData.name or L("doorTitle"))
                 },
                 {
@@ -5889,11 +5591,11 @@ lia.command.add("doorinfo", {
                     value = tostring(noSell)
                 },
                 {
-                    property = L("adminStickSubCategoryFactions"),
+                    property = L("factions"),
                     value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
                 },
                 {
-                    property = L("adminStickSubCategoryClasses"),
+                    property = L("classes"),
                     value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
                 },
                 {
@@ -5906,7 +5608,7 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.sendTableUI(client, L("door") .. " " .. L("adminStickSubCategoryInformation"), {
+            lia.util.sendTableUI(client, L("door") .. " " .. L("logInformation"), {
                 {
                     name = "doorInfoProperty",
                     field = "property"

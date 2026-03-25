@@ -331,8 +331,8 @@ net.Receive("liaKickCharacterToBase", function(_, client)
                 faction = defaultFaction.uniqueID
             }, nil, "characters", "id = " .. characterID)
 
-            client:notifySuccessLocalized("transferSuccess", L("categoryCharacter"), defaultFaction.name)
-            lia.log.add(client, "kickToBaseFaction", L("categoryCharacter"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
+            client:notifySuccessLocalized("transferSuccess", L("character"), defaultFaction.name)
+            lia.log.add(client, "kickToBaseFaction", L("character"), currentFactionData and currentFactionData.name or tostring(currentFaction), defaultFaction.name)
         end)
     end
 end)

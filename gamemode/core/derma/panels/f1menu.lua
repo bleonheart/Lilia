@@ -841,7 +841,7 @@ function PANEL:addClassDetails(parent, cl)
         end
     end
 
-    add(L("PrintName") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
+    add(L("name") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
     add(L("desc") .. ": " .. (cl.desc and L(cl.desc) or L("noDesc")))
     local facName = team.GetName(cl.faction)
     add(L("faction") .. ": " .. (facName and L(facName) or L("none")))
@@ -882,7 +882,7 @@ function PANEL:addClassDetails(parent, cl)
         weaponNames[#weaponNames + 1] = printName and tostring(printName) ~= "" and tostring(printName) or tostring(className)
     end
 
-    add(L("weaponDefaultCategory") .. ": " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or L("none")))
+    add(L("weapons") .. ": " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or L("none")))
     add(L("modelScale") .. ": " .. tostring(cl.scale or 1))
     local rs = cl.runSpeedMultiplier and math.Round(run * cl.runSpeed) or cl.runSpeed or run
     add(L("runSpeed") .. ": " .. tostring(rs))
@@ -961,7 +961,7 @@ end
 vgui.Register("liaClasses", PANEL, "EditablePanel")
 hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
     hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
-    hook.Run("AddTextField", L("generalInfo"), "name", L("PrintName"), function()
+    hook.Run("AddTextField", L("generalInfo"), "name", L("name"), function()
         local client = LocalPlayer()
         local char = client:getChar()
         return char and char:getName() or L("unknown")
@@ -1195,7 +1195,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local frame = settingsPanel:Add("liaFrame")
         frame:Dock(FILL)
         frame:DockMargin(10, 10, 10, 10)
-        frame:SetTitle(L("adminStickSubCategorySettings"))
+        frame:SetTitle(L("settings"))
         frame:LiteMode()
         frame:DisableCloseBtn()
         local pages = {}
@@ -1356,7 +1356,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         local staffTable = panel:Add("liaTable")
                         staffTable:Dock(FILL)
                         panel.staffTable = staffTable
-                        staffTable:AddColumn(L("PrintName"), nil, TEXT_ALIGN_LEFT, true)
+                        staffTable:AddColumn(L("name"), nil, TEXT_ALIGN_LEFT, true)
                         staffTable:AddColumn(L("usergroup"), nil, TEXT_ALIGN_LEFT, true)
                         staffTable:AddColumn(L("staffOnDuty", ""), 100, TEXT_ALIGN_CENTER, true)
                         function updateStaffTable(dataToShow)

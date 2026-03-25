@@ -44,7 +44,7 @@ lia.class.list = lia.class.list or {}
         ```
 ]]
 function lia.class.register(uniqueID, data)
-    assert(isstring(uniqueID), L("classUniqueIDString"))
+    assert(isstring(uniqueID), L("itemUniqueIDString"))
     assert(istable(data), L("classDataTable"))
     local index = #lia.class.list + 1
     local existing

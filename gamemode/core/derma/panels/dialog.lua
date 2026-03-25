@@ -407,8 +407,8 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         local bIsAdmin = labelB:find("^%[admin%]") or labelB:find("^%[admin%]:")
         if aIsAdmin and not bIsAdmin then return true end
         if bIsAdmin and not aIsAdmin then return false end
-        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", L("back"), "return", L("return"))
-        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", L("back"), "return", L("return"))
+        local aIsBack = a.info.isAutoBack and labelMatches(a.label, "back", L("back"), "return", L("returnText"))
+        local bIsBack = b.info.isAutoBack and labelMatches(b.label, "back", L("back"), "return", L("returnText"))
         if aIsBack and not bIsBack then return true end
         if bIsBack and not aIsBack then return false end
         local aIsGoodbye = a.info.closeDialog or labelMatches(a.label, "goodbye", "bye", "farewell", "close", L("close"))
@@ -429,7 +429,7 @@ function PANEL:AddDialogOptions(options, npc, skipBackButton)
         choiceBtn:SetFont("LiliaFont.32")
         choiceBtn.DoClick = function()
             local isGoodbye = info.closeDialog or labelMatches(label, "goodbye", "bye", "farewell", "close", L("close"))
-            local isBack = labelMatches(label, "back", L("back"), "return", L("return"))
+            local isBack = labelMatches(label, "back", L("back"), "return", L("returnText"))
             if isBack and info.isAutoBack then
                 self:AppendDialogLine(label, true)
                 if #self.conversationStack > 0 then

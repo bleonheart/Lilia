@@ -258,7 +258,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #existingClasses > 0 then
         table.insert(removeClassItems, {
-            name = L("remove") .. " " .. L("all") .. " " .. L("adminStickSubCategoryClasses"),
+            name = L("remove") .. " " .. L("all") .. " " .. L("classes"),
             icon = "icon16/delete.png",
             callback = function() LocalPlayer():ConCommand("say /doorremoveclass ''") end
         })
@@ -297,7 +297,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         }
 
         local doorLabels = {
-            name = L("PrintName"),
+            name = L("name"),
             price = L("price"),
             locked = L("locked"),
             disabled = L("disabled"),
@@ -376,6 +376,6 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         if target.liaAccess then table.insert(information, L("doorAccessDataLabel", util.TableToJSON(target.liaAccess))) end
         if target.liaPartner and IsValid(target.liaPartner) then table.insert(information, L("doorPartnerDoorLabel", tostring(target.liaPartner))) end
         table.insert(information, L("doorIsLockedLabel", target:isLocked() and L("yes") or L("no")))
-        table.insert(information, L("doorIDLabel", tostring(target:MapCreationID())))
+        table.insert(information, L("idPrefix", tostring(target:MapCreationID())))
     end
 end

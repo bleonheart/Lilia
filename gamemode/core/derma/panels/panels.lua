@@ -387,7 +387,7 @@ function QuickPanel:populateOptions()
     for _, info in ipairs(allOptions) do
         local opt = info.opt
         if not opt.visible or (isfunction(opt.visible) and opt.visible()) then
-            local categoryName = (opt.data and opt.data.category) or L("categoryUnsorted")
+            local categoryName = (opt.data and opt.data.category) or L("unsorted")
             if not categories[categoryName] then categories[categoryName] = {} end
             table.insert(categories[categoryName], info)
         end
@@ -399,8 +399,8 @@ function QuickPanel:populateOptions()
     end
 
     table.sort(sortedCategories, function(a, b)
-        if a == L("categoryUnsorted") then return false end
-        if b == L("categoryUnsorted") then return true end
+        if a == L("unsorted") then return false end
+        if b == L("unsorted") then return true end
         return a < b
     end)
 

@@ -681,7 +681,7 @@ end
         ```
 ]]
 function lia.warning(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logWarning") .. "] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("warning") .. "] ")
     MsgC(Color(255, 255, 0), tostring(msg), "\n")
 end
 
@@ -706,7 +706,7 @@ end
         ```
 ]]
 function lia.information(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("adminStickSubCategoryInformation") .. "] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 
@@ -769,7 +769,7 @@ end
 function lia.relaydiscordMessage(embed)
     if not lia.discordWebhook or not istable(embed) then return end
     local ForceHTTPMode = not util.IsBinaryModuleInstalled("chttp")
-    embed.title = embed.title or L("discordRelayLilia")
+    embed.title = embed.title or L("liliaRadial")
     embed.color = tonumber(embed.color) or 7506394
     embed.timestamp = embed.timestamp or os.date("!%Y-%m-%dT%H:%M:%SZ")
     embed.footer = embed.footer or {

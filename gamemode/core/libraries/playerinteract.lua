@@ -174,7 +174,7 @@ function lia.playerinteract.getCategorizedOptions(options)
     local categorized = {}
     local categories = {}
     for _, entry in pairs(options) do
-        local category = entry.opt and entry.opt.category or L("categoryUnsorted")
+        local category = entry.opt and entry.opt.category or L("unsorted")
         if not categories[category] then categories[category] = {} end
         table.insert(categories[category], entry)
     end
@@ -185,8 +185,8 @@ function lia.playerinteract.getCategorizedOptions(options)
     end
 
     table.sort(sortedCategories, function(a, b)
-        if a == L("categoryUnsorted") then return false end
-        if b == L("categoryUnsorted") then return true end
+        if a == L("unsorted") then return false end
+        if b == L("unsorted") then return true end
         return a < b
     end)
 
@@ -245,7 +245,7 @@ if SERVER then
     function lia.playerinteract.addInteraction(name, data)
         data.type = "interaction"
         data.range = data.range or 100
-        data.category = isstring(data.category) and lia.lang.resolveToken(data.category) or data.category or lia.lang.resolveToken("@categoryUnsorted")
+        data.category = isstring(data.category) and lia.lang.resolveToken(data.category) or data.category or lia.lang.resolveToken("@unsorted")
         data.target = data.target or "player"
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
@@ -299,7 +299,7 @@ if SERVER then
     function lia.playerinteract.addAction(name, data)
         data.type = "action"
         data.range = data.range or 100
-        data.category = isstring(data.category) and lia.lang.resolveToken(data.category) or data.category or lia.lang.resolveToken("@categoryUnsorted")
+        data.category = isstring(data.category) and lia.lang.resolveToken(data.category) or data.category or lia.lang.resolveToken("@unsorted")
         data.timeToComplete = data.timeToComplete or nil
         data.actionText = data.actionText or nil
         data.targetActionText = data.targetActionText or nil
@@ -350,7 +350,7 @@ if SERVER then
                 serverOnly = data.serverOnly and true or false,
                 name = name,
                 range = data.range,
-                category = data.category or lia.lang.resolveToken("@categoryUnsorted"),
+                category = data.category or lia.lang.resolveToken("@unsorted"),
                 target = data.target,
                 timeToComplete = data.timeToComplete,
                 actionText = data.actionText,
@@ -552,7 +552,7 @@ else
             merged.type = incoming.type or localEntry.type
             merged.serverOnly = incoming.serverOnly and true or false
             merged.name = name
-            merged.category = incoming.category or localEntry.category or lia.lang.resolveToken("@categoryUnsorted")
+            merged.category = incoming.category or localEntry.category or lia.lang.resolveToken("@unsorted")
             if incoming.range ~= nil then merged.range = incoming.range end
             merged.target = incoming.target or localEntry.target or "player"
             if incoming.timeToComplete ~= nil then merged.timeToComplete = incoming.timeToComplete end

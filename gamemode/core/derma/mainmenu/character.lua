@@ -266,7 +266,7 @@ function PANEL:createWelcomeScreen()
         contentY = contentY + logoSize + 25
     end
 
-    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
+    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
     local welcomeLabel = container:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
@@ -283,7 +283,7 @@ function PANEL:createWelcomeScreen()
         local minutes = math.floor((playtime % 3600) / 60)
         local playtimeStr = L("youHavePlayedFor")
         if days > 0 then
-            playtimeStr = playtimeStr .. L("playtimeDaysHoursMinutes", days, hours, minutes)
+            playtimeStr = playtimeStr .. L("daysHoursMinutes", days, hours, minutes)
         elseif hours > 0 then
             playtimeStr = playtimeStr .. L("playtimeHoursMinutes", hours, minutes)
         else
@@ -340,7 +340,7 @@ function PANEL:createWelcomeScreen()
     container:MoveTo(finalX, newFinalY, 0.4, 0, 0.3)
     local function updateWelcomeText()
         if not IsValid(welcomeLabel) then return end
-        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
+        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
         if isFirstJoin then
             welcomeLabel:SetText(L("welcomePlayer", currentSteamName))
         else
@@ -352,8 +352,8 @@ function PANEL:createWelcomeScreen()
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
-            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
-            if currentSteamName ~= lastSteamName and currentSteamName ~= L("discordAntiCheatPlayer") then
+            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
+            if currentSteamName ~= lastSteamName and currentSteamName ~= L("player") then
                 lastSteamName = currentSteamName
                 updateWelcomeText()
             end
@@ -865,7 +865,7 @@ function PANEL:createStartButton()
         if not tooltip or tooltip == "" then tooltip = L("viewWorkshopCollection") end
         table.insert(buttonsData, {
             id = "workshop",
-            text = L("categoryWorkshop"),
+            text = L("workshop"),
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -1190,7 +1190,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {L("PrintName") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
+    local info = {L("name") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
         if cls and cls.name then table.insert(info, L("class") .. ": " .. cls.name) end
@@ -1298,7 +1298,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local bw, bh = fw * 0.85, 40
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
-    local selectText = L("select") .. " " .. L("categoryCharacter")
+    local selectText = L("select") .. " " .. L("character")
     if character:isBanned() then selectText = L("permaKilledCharacter") end
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
@@ -1327,7 +1327,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
     self.deleteBtn:SetShowLine(true)
-    self.deleteBtn:SetText(L("delete") .. " " .. L("categoryCharacter"))
+    self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
     self.deleteBtn:Stop()
     self.deleteBtn:SetAlpha(255)
     do

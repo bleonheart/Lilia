@@ -454,7 +454,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 for _, k in ipairs(keys) do
                     local opt = lia.option.stored[k]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
-                        local cat = opt.data and opt.data.category or L("adminStickCategoryMiscellaneous")
+                        local cat = opt.data and opt.data.category or L("misc")
                         categories[cat] = categories[cat] or {}
                         table.insert(categories[cat], {
                             key = k,

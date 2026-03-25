@@ -33,7 +33,7 @@ local function getWeaponItemDefaults(className)
     return {
         name = hook.Run("GetWeaponName", wep) or className,
         desc = L("weaponsDesc"),
-        category = isGrenade and L("itemCatGrenades") or L("weaponDefaultCategory"),
+        category = isGrenade and L("itemCatGrenades") or L("weapons"),
         model = wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
         class = className,
         width = size.width,
@@ -1157,7 +1157,7 @@ local function setupNPCType(client, npc)
         end
 
         if npcData.Skin then npc:SetSkin(npcData.Skin) end
-        npc.NPCName = npcData.PrintName or L("defaultNPCName")
+        npc.NPCName = npcData.PrintName or L("npc")
         npc:setNetVar("uniqueID", npcType)
         npc:setNetVar("NPCName", npc.NPCName)
         npc:SetMoveType(MOVETYPE_VPHYSICS)

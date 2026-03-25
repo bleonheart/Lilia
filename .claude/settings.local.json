@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"dir /b \"\"d:\\\\GMOD\\\\Server\\\\garrysmod\\\\gamemodes\\\\Lilia\\\\function_comparison_report.py\"\" 2>&1\")"
+    ]
+  }
+}

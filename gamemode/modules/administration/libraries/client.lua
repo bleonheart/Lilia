@@ -6,7 +6,7 @@ AdminStickMenuPositionCache = nil
 AdminStickMenuOpenTime = 0
 MODULE.adminStickCategories = MODULE.adminStickCategories or {}
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {}
-local playerInfoLabel = L("discordAntiCheatPlayer") .. " " .. L("adminStickSubCategoryInformation")
+local playerInfoLabel = L("player") .. " " .. L("logInformation")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
     warnings = "icon16/error.png",
@@ -66,7 +66,7 @@ function MODULE:ShowPlayerOptions(target, options)
         name = L("nameCopyFormat", target:Name()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("PrintName"))
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
             SetClipboardText(target:Name())
         end
     })
@@ -166,7 +166,7 @@ function MODULE:ShowPlayerOptions(target, options)
     })
 
     table.insert(orderedOptions, {
-        name = L("returnButton"),
+        name = L("returnText"),
         image = "icon16/arrow_redo.png",
         func = function() lia.admin.execCommand("return", target) end
     })
@@ -255,7 +255,7 @@ local function OpenFlagsPanel(panel, data)
     panel:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("PrintName"),
+            name = L("name"),
             field = "name"
         },
         {
@@ -263,7 +263,7 @@ local function OpenFlagsPanel(panel, data)
             field = "steamID"
         },
         {
-            name = L("adminStickSubCategoryCharacterFlags"),
+            name = L("charFlagsTitle"),
             field = "flags"
         },
     }
@@ -337,7 +337,7 @@ local function OpenFlagsPanel(panel, data)
 
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
-    list:AddMenuOption(L("adminStickNoOptions"), function() end)
+    list:AddMenuOption(L("noOptionsAvailable"), function() end)
 end
 
 function MODULE:PopulateAdminTabs(pages)
@@ -401,7 +401,7 @@ function MODULE:PopulateAdminTabs(pages)
                     local columns = {
                         {
                             name = "name",
-                            field = L("PrintName")
+                            field = L("name")
                         },
                         {
                             name = "description",
@@ -748,8 +748,8 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     end
 
     for category, itemList in SortedPairs(categorized) do
-        if category ~= L("categoryUnsorted") or #itemList > 0 then
-            local node = tree:AddNode(category == L("categoryUnsorted") and L("categoryUnsorted") or category, "icon16/picture.png")
+        if category ~= L("unsorted") or #itemList > 0 then
+            local node = tree:AddNode(category == L("unsorted") and L("unsorted") or category, "icon16/picture.png")
             node.DoPopulate = function(btn)
                 if btn.PropPanel then return end
                 btn.PropPanel = vgui.Create("ContentContainer", pnlContent)
@@ -905,15 +905,15 @@ local function GetIconForCategory(name)
 
     local localizedExactMatches = {
         [L("adminStickCategoryModeration"):lower()] = "icon16/shield.png",
-        [L("adminStickCategoryCharacterManagement"):lower()] = "icon16/user_gray.png",
-        [L("adminStickCategoryDoorManagement"):lower()] = "icon16/door.png",
-        [L("adminStickCategoryPlayerInformation"):lower()] = "icon16/information.png",
+        [L("characterManagement"):lower()] = "icon16/user_gray.png",
+        [L("doorManagement"):lower()] = "icon16/door.png",
+        [L("playerinformation"):lower()] = "icon16/information.png",
         [L("adminStickCategoryTeleportation"):lower()] = "icon16/arrow_right.png",
         [L("adminStickCategoryUtility"):lower()] = "icon16/application_view_tile.png",
-        [L("adminStickCategoryMiscellaneous"):lower()] = "icon16/application_view_tile.png",
-        [L("adminStickCategoryItems"):lower()] = "icon16/box.png",
+        [L("misc"):lower()] = "icon16/application_view_tile.png",
+        [L("items"):lower()] = "icon16/box.png",
         [L("adminStickCategoryOutOfCharacter"):lower()] = "icon16/comment.png",
-        [L("adminStickCategoryWarnings"):lower()] = "icon16/error.png",
+        [L("warnsModuleName"):lower()] = "icon16/error.png",
     }
 
     if localizedExactMatches[nameLower] then return localizedExactMatches[nameLower] end
@@ -1042,10 +1042,10 @@ local function GetSubMenuIcon(name)
     setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1")
     if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     if name:find(L("adminStickSetFaction"), 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
-    if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == L("adminStickCategoryMiscellaneous"):lower() then return "icon16/application_view_tile.png" end
-    if name:lower() == "items" or name:lower() == L("adminStickCategoryItems"):lower() then return "icon16/box.png" end
+    if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == L("misc"):lower() then return "icon16/application_view_tile.png" end
+    if name:lower() == "items" or name:lower() == L("items"):lower() then return "icon16/box.png" end
     if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == L("adminStickCategoryOutOfCharacter"):lower() then return "icon16/comment.png" end
-    if name:lower() == "warnings" or name:lower() == L("adminStickCategoryWarnings"):lower() then return "icon16/error.png" end
+    if name:lower() == "warnings" or name:lower() == L("warnsModuleName"):lower() then return "icon16/error.png" end
     if name:lower() == "commands" then return "icon16/page.png" end
     return "icon16/page.png"
 end
@@ -1392,8 +1392,8 @@ local function OpenReasonUI(tgt, cmd)
     AdminStickIsOpen = true
     local argTypes = {}
     local defaults = {}
-    argTypes[L("discordWarningSystemReason")] = "string"
-    defaults[L("discordWarningSystemReason")] = ""
+    argTypes[L("reason")] = "string"
+    defaults[L("reason")] = ""
     if cmd == "banid" then
         argTypes[L("lengthInDays")] = "number"
         defaults[L("lengthInDays")] = 0
@@ -1406,7 +1406,7 @@ local function OpenReasonUI(tgt, cmd)
             return
         end
 
-        local txt = data[L("discordWarningSystemReason")] or ""
+        local txt = data[L("reason")] or ""
         local id = GetIdentifier(tgt)
         if cmd == "banid" then
             if id ~= "" then
@@ -1607,7 +1607,7 @@ local function IncludeTeleportation(tgt, menu, stores)
             icon = "icon16/arrow_right.png"
         },
         {
-            name = L("returnButton"),
+            name = L("returnText"),
             cmd = "return",
             icon = "icon16/arrow_redo.png"
         },
@@ -1743,7 +1743,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
                 flagList = string.Trim(flagList)
             end
 
-            Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("adminStickSubCategoryCharacterFlags"), L("ok"))
+            Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("charFlagsTitle"), L("ok"))
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/information.png")
     end
@@ -1782,7 +1782,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                 }
             }
 
-            local reasonKey = L("discordWarningSystemReason") or "reason"
+            local reasonKey = L("reason") or "reason"
             local function openReason(selectedSeverity)
                 lia.derma.requestArguments(name .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
                     if not success or not argData then
@@ -2625,7 +2625,7 @@ local function UpdateLogsUI(panel, logsData)
             field = "timestamp"
         },
         {
-            name = L("discordTicketSystemMessage"),
+            name = L("message"),
             field = "message"
         },
         {
@@ -2896,7 +2896,7 @@ net.Receive("liaAllPks", function()
             field = "timestamp"
         },
         {
-            name = L("categoryCharacter"),
+            name = L("character"),
             field = "character"
         },
         {
@@ -3011,7 +3011,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("discordAntiCheatPlayer"),
+            name = L("player"),
             field = "player"
         },
         {
@@ -3023,7 +3023,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
             field = "usergroup"
         },
         {
-            name = L("discordWarningSystemWarningCount"),
+            name = L("warningCount"),
             field = "warnings"
         },
         {
@@ -3164,7 +3164,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             field = "characters"
         },
         {
-            name = L("adminStickCategoryWarnings"),
+            name = L("warnsModuleName"),
             field = "warnings"
         }
     }
@@ -3345,7 +3345,7 @@ function MODULE:HUDPaint()
             label = subLabel
             baseColor = lia.option.get("espPlayersColor")
         elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
-            kind = L("adminStickCategoryItems")
+            kind = L("items")
             local item = ent:getItemTable()
             label = item and item:getName() or L("unknown")
             baseColor = lia.option.get("espItemsColor")
@@ -3416,7 +3416,7 @@ net.Receive("liaDisplayCharList", function()
     local columns = {
         {
             name = "name",
-            field = L("PrintName")
+            field = L("name")
         },
         {
             name = "description",
@@ -3653,7 +3653,7 @@ net.Receive("liaActiveTickets", function()
             field = "timestamp"
         },
         {
-            name = L("discordTicketSystemRequester"),
+            name = L("requester"),
             field = "requesterDisplay"
         },
         {
@@ -3661,7 +3661,7 @@ net.Receive("liaActiveTickets", function()
             field = "adminDisplay"
         },
         {
-            name = L("discordTicketSystemMessage"),
+            name = L("message"),
             field = "message"
         }
     }
@@ -3722,7 +3722,7 @@ net.Receive("liaActiveTickets", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption(L("adminStickNoOptions"), function() end)
+    list:AddMenuOption(L("noOptionsAvailable"), function() end)
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)

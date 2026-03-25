@@ -833,7 +833,7 @@ function GM:SaveData()
 
     if #data > 0 then
         lia.data.savePersistence(data)
-        lia.information(L("dataSaved"))
+        lia.information(L("saved"))
     end
 end
 
@@ -1146,7 +1146,7 @@ function GM:CreateSalaryTimers()
                                     local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                     if isnumber(finalPay) then pay = finalPay end
                                     char:giveMoney(pay)
-                                    client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("categorySalary"))
+                                    client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
                                 end
                             end
                         end

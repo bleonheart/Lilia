@@ -228,16 +228,16 @@ local logTypeData = {
 }
 
 local logTypeCategories = {
-    character = L("categoryCharacter"),
+    character = L("character"),
     combat = L("categoryCombat"),
     world = L("categoryWorld"),
-    tools = L("categoryTools"),
+    tools = L("tools"),
     chat = L("categoryChat"),
     money = L("money"),
-    items = L("adminStickCategoryItems"),
-    permissions = L("adminStickCategoryPermissions"),
+    items = L("items"),
+    permissions = L("userGroups"),
     admin = L("admin"),
-    factions = L("adminStickSubCategoryFactions"),
+    factions = L("factions"),
     inventory = L("inv"),
     connections = L("categoryConnections"),
     cheating = L("categoryCheating"),

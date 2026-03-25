@@ -314,7 +314,7 @@ end
     Example Usage:
         ```lua
             local title = lia.lang.resolveToken("@currencyPlural")
-            local welcome = lia.lang.resolveToken("@welcomeUser", client:Name())
+            local welcome = lia.lang.resolveToken("@welcomeUser", client:Name(), os.date())
         ```
 ]]
 function lia.lang.resolveToken(value, ...)
