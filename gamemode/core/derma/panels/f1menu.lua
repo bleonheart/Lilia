@@ -978,7 +978,7 @@ hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
         return client and lia.currency.get(client:getChar():getMoney()) or lia.currency.get(0)
     end)
 
-    hook.Run("AddTextField", L("generalInfo"), "playTime", L("playTime"), function()
+    hook.Run("AddTextField", L("generalInfo"), "playTime", L("playtime"), function()
         local client = LocalPlayer()
         return client and lia.time.formatDHM(client:getPlayTime()) or L("loading")
     end)

@@ -25,10 +25,10 @@ lia.doors.presets = lia.doors.presets or {}
 lia.doors.stored = lia.doors.stored or {}
 DOOR_OWNER, DOOR_TENANT, DOOR_GUEST, DOOR_NONE = 3, 2, 1, 0
 lia.doors.AccessLabels = {
-    [DOOR_NONE] = "doorAccessNone",
-    [DOOR_GUEST] = "doorAccessGuest",
-    [DOOR_TENANT] = "doorAccessTenant",
-    [DOOR_OWNER] = "doorAccessOwner"
+    [DOOR_NONE] = "none",
+    [DOOR_GUEST] = "guest",
+    [DOOR_TENANT] = "tenant",
+    [DOOR_OWNER] = "owner"
 }
 
 lia.doors.defaultValues = {

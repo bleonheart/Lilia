@@ -2062,7 +2062,7 @@ function PANEL:showPresetDetails(presetName, presetData)
             local modeText = L("unknown")
             local modeColor = Color(255, 255, 0)
             if mode == VENDOR_SELLANDBUY then
-                modeText = L("vendorPresetBuySell")
+                modeText = L("buyOnlynSell")
                 modeColor = Color(100, 255, 100)
             elseif mode == VENDOR_SELLONLY then
                 modeText = L("sellOnly")
