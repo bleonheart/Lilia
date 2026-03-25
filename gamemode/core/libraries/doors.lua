@@ -226,14 +226,7 @@ if SERVER then
 ]]
     function lia.doors.syncAllDoorsToClient(client)
         if not IsValid(client) then return end
-        net.Start("liaDoorDataBulk")
-        net.WriteUInt(table.Count(lia.doors.stored), 16)
-        for doorID, data in pairs(lia.doors.stored) do
-            net.WriteUInt(doorID, 16)
-            net.WriteTable(data)
-        end
-
-        net.Send(client)
+        lia.net.writeBigTable(client, "liaDoorDataBulk", lia.doors.stored, 2048)
     end
 
     --[[

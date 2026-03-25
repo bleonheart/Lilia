@@ -1043,7 +1043,9 @@ net.Receive("liaCharacterData", function()
     end
 end)
 
-net.Receive("liaDialogSync", function() lia.dialog.stored = net.ReadTable() end)
+lia.net.readBigTable("liaDialogSync", function(data)
+    if istable(data) then lia.dialog.stored = data end
+end)
 net.Receive("liaOpenNpcDialog", function()
     local npc = net.ReadEntity()
     local canCustomize = net.ReadBool()
@@ -1342,12 +1344,10 @@ net.Receive("liaDoorDataUpdate", function()
     lia.doors.updateCachedData(doorID, data)
 end)
 
-net.Receive("liaDoorDataBulk", function()
-    local count = net.ReadUInt(16)
-    for _ = 1, count do
-        local doorID = net.ReadUInt(16)
-        local data = net.ReadTable()
-        lia.doors.updateCachedData(doorID, data)
+lia.net.readBigTable("liaDoorDataBulk", function(data)
+    if not istable(data) then return end
+    for doorID, doorData in pairs(data) do
+        lia.doors.updateCachedData(tonumber(doorID) or doorID, doorData)
     end
 end)
 

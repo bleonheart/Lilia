@@ -949,6 +949,10 @@ net.Receive("liaCommandData", function(_, client)
 end)
 
 local chunkTime = 0.05
+local function getChunkInterval()
+    return (lia.reloadInProgress and chunkTime * 2) or chunkTime
+end
+
 local function sendChunk(ply, s, sid, idx)
     if not IsValid(ply) then
         if lia.net.sendq[ply] then lia.net.sendq[ply][sid] = nil end
@@ -986,7 +990,7 @@ net.Receive("liaBigTableAck", function(_, ply)
         return
     end
 
-    timer.Simple(chunkTime, function()
+    timer.Simple(getChunkInterval(), function()
         if not IsValid(ply) then return end
         local qq = lia.net.sendq[ply]
         if not qq then return end

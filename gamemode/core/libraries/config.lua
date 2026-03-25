@@ -441,8 +441,8 @@ if CLIENT then
         end
     end
 
-    net.Receive("liaCfgList", function()
-        local data = net.ReadTable() or {}
+    lia.net.readBigTable("liaCfgList", function(data)
+        data = data or {}
         for k, v in pairs(data) do
             local stored = lia.config.stored[k]
             if stored then
@@ -582,9 +582,7 @@ if SERVER then
             end
         end
 
-        net.Start("liaCfgList")
-        net.WriteTable(data)
-        net.Send(targets)
+        lia.net.writeBigTable(targets, "liaCfgList", data)
     end
 
     --[[

@@ -33,7 +33,7 @@
 
     if factions and #factions > 0 then
         table.insert(doorInfo, {
-            text = L("doorAllowedFactions") .. ":"
+            text = L("allowedFactions") .. ":"
         })
 
         for _, id in ipairs(factions) do
@@ -57,7 +57,7 @@
 
         if #classData > 0 then
             table.insert(doorInfo, {
-                text = L("doorAllowedClasses") .. ":"
+                text = L("allowedClasses") .. ":"
             })
 
             for _, data in ipairs(classData) do
@@ -304,8 +304,8 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             hidden = L("hidden"),
             noSell = L("doorCanBeSold"),
             ownable = L("doorCanBeOwned"),
-            factions = L("doorAllowedFactions"),
-            classes = L("doorAllowedClasses")
+            factions = L("allowedFactions"),
+            classes = L("allowedClasses")
         }
 
         for key, defaultValue in pairs(defaultDoorData) do
@@ -349,7 +349,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             end
 
             if #factionNames > 0 then
-                table.insert(information, L("doorAllowedFactions") .. ":")
+                table.insert(information, L("allowedFactions") .. ":")
                 for _, factionName in ipairs(factionNames) do
                     table.insert(information, "- " .. factionName)
                 end
@@ -366,7 +366,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
             end
 
             if #classNames > 0 then
-                table.insert(information, L("doorAllowedClasses") .. ":")
+                table.insert(information, L("allowedClasses") .. ":")
                 for _, className in ipairs(classNames) do
                     table.insert(information, "- " .. className)
                 end

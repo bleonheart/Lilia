@@ -6019,7 +6019,7 @@ lia.command.add("listdoorids", {
         for _, data in ipairs(doorData) do
             table.insert(doorList, {
                 property = L("doorID") .. data.id,
-                value = L("positionLabel") .. data.position .. L("modelLabel") .. data.model
+                value = L("position") .. ": " .. data.position .. L("modelLabel") .. data.model
             })
         end
 

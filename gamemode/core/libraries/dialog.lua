@@ -399,9 +399,7 @@ if SERVER then
             local lastHash = lia.dialog.clientHashes[clientID]
             if dataHash ~= lastHash then
                 lia.dialog.clientHashes[clientID] = dataHash
-                net.Start("liaDialogSync")
-                net.WriteTable(filteredData)
-                net.Send(ply)
+                lia.net.writeBigTable(ply, "liaDialogSync", filteredData)
             end
         end
     end
@@ -933,7 +931,7 @@ else
         if hasBodygroups then
             local bodygroupLabel = vgui.Create("DLabel", scroll)
             bodygroupLabel:Dock(TOP)
-            bodygroupLabel:SetText(L("bodygroupsLabel"))
+            bodygroupLabel:SetText(L("bodygroups") .. ":")
             bodygroupLabel:SetTall(20)
             bodygroupLabel:DockMargin(0, 5, 0, 5)
             local bodygroupPanel = vgui.Create("DPanel", scroll)
@@ -952,7 +950,7 @@ else
         if hasSkin then
             local skinLabel = vgui.Create("DLabel", scroll)
             skinLabel:Dock(TOP)
-            skinLabel:SetText(L("skinLabel"))
+            skinLabel:SetText(L("skin") .. ":")
             skinLabel:SetTall(20)
             skinLabel:DockMargin(0, 5, 0, 5)
             skinSlider = vgui.Create("DNumSlider", scroll)
@@ -999,7 +997,7 @@ else
         if hasAnimations then
             local animationLabel = vgui.Create("DLabel", scroll)
             animationLabel:Dock(TOP)
-            animationLabel:SetText(L("animationLabel"))
+            animationLabel:SetText(L("animation") .. ":")
             animationLabel:SetTall(20)
             animationLabel:DockMargin(0, 5, 0, 5)
             animationCombo = vgui.Create("liaComboBox", scroll)
