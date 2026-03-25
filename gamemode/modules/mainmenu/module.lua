@@ -1,7 +1,7 @@
-MODULE.name = "@mainMenu"
+MODULE.name = "mainMenuModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
-MODULE.desc = "@mainMenuDescription"
+MODULE.desc = "mainMenuDescription"
 if SERVER then
     function MODULE:SyncCharList(client)
         if not client.liaCharList then return end
@@ -14,18 +14,6 @@ if SERVER then
         net.Send(client)
     end
 else
-    local function openCharacterMenu(callback, options)
-        local client = LocalPlayer()
-        options = options or {}
-        if not lia.config.initialized then lia.config.load() end
-        lia.config.onInitialized(function()
-            if not IsValid(client) then return end
-            if client:getChar() and not options.allowActiveCharacter then return end
-            local panel = IsValid(lia.gui.character) and lia.gui.character or vgui.Create("liaCharacter")
-            if isfunction(callback) then callback(panel) end
-        end)
-    end
-
     function MODULE:PlayerButtonDown(_, button)
         if button == KEY_ESCAPE and IsValid(lia.gui.menu) and LocalPlayer():getChar() then
             lia.gui.menu:Remove()
@@ -38,7 +26,12 @@ else
         local client = LocalPlayer()
         if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters and #charPanel.availableCharacters > 0 then return end
         if IsValid(charPanel) then charPanel:Remove() end
-        if IsValid(client) and not client:getChar() then openCharacterMenu() end
+        if IsValid(client) and not client:getChar() then
+            lia.config.onInitialized(function()
+                if not IsValid(client) or client:getChar() then return end
+                vgui.Create("liaCharacter")
+            end)
+        end
     end
 
     function MODULE:ChooseCharacter(id)
@@ -140,7 +133,7 @@ else
     end
 
     function MODULE:LiliaLoaded()
-        openCharacterMenu()
+        lia.config.onInitialized(function() vgui.Create("liaCharacter") end)
     end
 
     function MODULE:CharListLoaded()
@@ -151,15 +144,18 @@ else
         timer.Simple(0.1, function()
             local client = LocalPlayer()
             if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then
-                openCharacterMenu()
+                lia.config.onInitialized(function()
+                    if not IsValid(client) or client:getChar() or IsValid(lia.gui.character) then return end
+                    vgui.Create("liaCharacter")
+                end)
             end
         end)
     end
 
     function MODULE:KickedFromChar(characterID, isCurrentChar)
         if isCurrentChar then
-            openCharacterMenu(function(charPanel)
-                if not IsValid(charPanel) then return end
+            lia.config.onInitialized(function()
+                local charPanel = vgui.Create("liaCharacter")
                 charPanel.isKickedFromChar = true
             end)
         end
@@ -179,9 +175,7 @@ else
             end
 
             if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-            openCharacterMenu(nil, {
-                allowActiveCharacter = true
-            })
+            lia.config.onInitialized(function() vgui.Create("liaCharacter") end)
         end
     end
 
@@ -198,14 +192,14 @@ else
     end)
 
     net.Receive("liaStaffDiscordPrompt", function()
-        lia.derma.requestString("@staffCharacterSetup", "@discordUsernamePrompt", function(discord)
+        lia.derma.requestString(L("staffCharacterSetup"), L("discordUsernamePrompt"), function(discord)
             if discord and discord:Trim() ~= "" then
                 net.Start("liaStaffDiscordResponse")
                 net.WriteString(discord:Trim())
                 net.SendToServer()
             elseif discord == false then
                 net.Start("liaStaffDiscordResponse")
-                net.WriteString(L("notProvided"))
+                net.WriteString("not provided")
                 net.SendToServer()
             else
                 LocalPlayer():notifyErrorLocalized("discordUsernameEmpty")

@@ -42,6 +42,7 @@ local function getSelectableConfigOptionLabel(options, selectedValue)
     end
     return selectedValue
 end
+
 --[[
     Purpose:
         Register a callback to be executed when the configuration system is initialized.
@@ -419,58 +420,6 @@ function lia.config.load()
     end
 end
 
-if CLIENT then
-    lia.config._uiBindings = lia.config._uiBindings or {}
-    function lia.config._bindUI(key, panel, updater)
-        if not isstring(key) or key == "" then return end
-        if not IsValid(panel) or not isfunction(updater) then return end
-        lia.config._uiBindings[key] = lia.config._uiBindings[key] or {}
-        lia.config._uiBindings[key][panel] = updater
-    end
-
-    function lia.config._refreshBoundUI(key, value)
-        local bindings = lia.config._uiBindings and lia.config._uiBindings[key]
-        if not bindings then return end
-        for pnl, updater in pairs(bindings) do
-            if IsValid(pnl) then
-                local ok = pcall(updater, value)
-                if not ok then bindings[pnl] = nil end
-            else
-                bindings[pnl] = nil
-            end
-        end
-    end
-
-    lia.net.readBigTable("liaCfgList", function(data)
-        data = data or {}
-        for k, v in pairs(data) do
-            local stored = lia.config.stored[k]
-            if stored then
-                stored.value = cfgCoerceValue(k, v)
-            else
-                lia.config.stored[k] = lia.config.stored[k] or {}
-                lia.config.stored[k].value = cfgCoerceValue(k, v)
-            end
-        end
-
-        lia.config.initialized = true
-        hook.Run("InitializedConfig")
-    end)
-
-    net.Receive("liaCfgSet", function()
-        local key = net.ReadString()
-        local _ = net.ReadString()
-        local value = net.ReadType()
-        local stored = lia.config.stored[key]
-        local oldValue = stored and stored.value
-        lia.config.stored[key] = lia.config.stored[key] or {}
-        lia.config.stored[key].value = cfgCoerceValue(key, value)
-        hook.Run("OnConfigUpdated", key, oldValue, lia.config.stored[key].value)
-    end)
-
-    hook.Add("OnConfigUpdated", "liaConfigRefreshUIBindings", function(key, _, value) lia.config._refreshBoundUI(key, value) end)
-end
-
 if SERVER then
     --[[
     Purpose:
@@ -654,6 +603,33 @@ if SERVER then
             hook.Run("ConfigChanged", key, value, oldValue, client)
             client:notifySuccessLocalized("cfgSet", client:Name(), name or config.name or key, tostring(value))
         end
+    end)
+else
+    lia.net.readBigTable("liaCfgList", function(data)
+        data = data or {}
+        for k, v in pairs(data) do
+            local stored = lia.config.stored[k]
+            if stored then
+                stored.value = cfgCoerceValue(k, v)
+            else
+                lia.config.stored[k] = lia.config.stored[k] or {}
+                lia.config.stored[k].value = cfgCoerceValue(k, v)
+            end
+        end
+
+        lia.config.initialized = true
+        hook.Run("InitializedConfig")
+    end)
+
+    net.Receive("liaCfgSet", function()
+        local key = net.ReadString()
+        local _ = net.ReadString()
+        local value = net.ReadType()
+        local stored = lia.config.stored[key]
+        local oldValue = stored and stored.value
+        lia.config.stored[key] = lia.config.stored[key] or {}
+        lia.config.stored[key].value = cfgCoerceValue(key, value)
+        hook.Run("OnConfigUpdated", key, oldValue, lia.config.stored[key].value)
     end)
 end
 
@@ -1663,8 +1639,6 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 net.WriteType(val)
                 net.SendToServer()
             end
-
-            if CLIENT then lia.config._bindUI(key, checkbox, function(v) checkbox:SetChecked(tobool(v)) end) end
         elseif configType == "Number" or configType == "Int" or configType == "Float" or configType == "Generic" then
             local entry = p:Add("liaEntry")
             entry:Dock(RIGHT)
@@ -1692,8 +1666,6 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                     entry:SetValue(tostring(lia.config.get(key, config.value)))
                 end
             end
-
-            if CLIENT then lia.config._bindUI(key, entry, function(v) entry:SetValue(tostring(v)) end) end
         elseif configType == "Color" then
             local button = p:Add("liaButton")
             button:Dock(RIGHT)
@@ -1744,12 +1716,6 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 net.WriteString(name)
                 net.WriteType(v)
                 net.SendToServer()
-            end
-
-            if CLIENT then
-                lia.config._bindUI(key, combo, function(v)
-                    combo:SetValue(tostring(getSelectableConfigOptionLabel(options, v)))
-                end)
             end
         end
     end

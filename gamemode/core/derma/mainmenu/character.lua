@@ -266,7 +266,7 @@ function PANEL:createWelcomeScreen()
         contentY = contentY + logoSize + 25
     end
 
-    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
+    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
     local welcomeLabel = container:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
@@ -281,13 +281,13 @@ function PANEL:createWelcomeScreen()
         local days = math.floor(playtime / 86400)
         local hours = math.floor((playtime % 86400) / 3600)
         local minutes = math.floor((playtime % 3600) / 60)
-        local playtimeStr = L("youHavePlayedFor")
+        local playtimeStr = "You have played for "
         if days > 0 then
-            playtimeStr = playtimeStr .. L("daysHoursMinutes", days, hours, minutes)
+            playtimeStr = playtimeStr .. days .. "d " .. hours .. "h " .. minutes .. "m"
         elseif hours > 0 then
-            playtimeStr = playtimeStr .. L("playtimeHoursMinutes", hours, minutes)
+            playtimeStr = playtimeStr .. hours .. "h " .. minutes .. "m"
         else
-            playtimeStr = playtimeStr .. L("playtimeMinutes", minutes)
+            playtimeStr = playtimeStr .. minutes .. "m"
         end
 
         local playtimeContainer = container:Add("DPanel")
@@ -322,7 +322,7 @@ function PANEL:createWelcomeScreen()
     local pressEnterLabel = container:Add("DLabel")
     pressEnterLabel:SetFont("LiliaFont.22")
     pressEnterLabel:SetTextColor(Color(200, 200, 200))
-    pressEnterLabel:SetText(L("pressSpaceToContinue"))
+    pressEnterLabel:SetText("Press [SPACE] to continue")
     pressEnterLabel:SetContentAlignment(5)
     pressEnterLabel:SetWide(containerW - padding * 2)
     pressEnterLabel:SetTall(40)
@@ -340,11 +340,11 @@ function PANEL:createWelcomeScreen()
     container:MoveTo(finalX, newFinalY, 0.4, 0, 0.3)
     local function updateWelcomeText()
         if not IsValid(welcomeLabel) then return end
-        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
+        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
         if isFirstJoin then
-            welcomeLabel:SetText(L("welcomePlayer", currentSteamName))
+            welcomeLabel:SetText("Welcome, " .. currentSteamName .. "!")
         else
-            welcomeLabel:SetText(L("ui_welcome_back", currentSteamName))
+            welcomeLabel:SetText("Welcome back, " .. currentSteamName .. "!")
         end
     end
 
@@ -352,8 +352,8 @@ function PANEL:createWelcomeScreen()
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
-            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("player")
-            if currentSteamName ~= lastSteamName and currentSteamName ~= L("player") then
+            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or "Player"
+            if currentSteamName ~= lastSteamName and currentSteamName ~= "Player" then
                 lastSteamName = currentSteamName
                 updateWelcomeText()
             end
@@ -408,7 +408,7 @@ function PANEL:createChangelogDisplay()
     local titleLabel = self.changelogPanel:Add("DLabel")
     titleLabel:SetFont("LiliaFont.30")
     titleLabel:SetTextColor(Color(255, 255, 255))
-    titleLabel:SetText(L("changelog"))
+    titleLabel:SetText("Changelog")
     titleLabel:SetContentAlignment(5)
     titleLabel:SetWide(self.changelogPanel:GetWide() - padding * 2)
     titleLabel:SetPos(padding, contentY)
@@ -453,7 +453,7 @@ function PANEL:createChangelogDisplay()
                     local versionLabel = scroll:Add("DLabel")
                     versionLabel:SetFont("LiliaFont.22")
                     versionLabel:SetTextColor(accentColor)
-                    versionLabel:SetText(L("versionNumber", version))
+                    versionLabel:SetText("Version " .. version)
                     versionLabel:SetContentAlignment(5)
                     versionLabel:SetWide(scroll:GetWide() - padding * 2)
                     versionLabel:SetTall(30)
@@ -483,7 +483,7 @@ function PANEL:createChangelogDisplay()
                 local versionLabel = scroll:Add("DLabel")
                 versionLabel:SetFont("LiliaFont.22")
                 versionLabel:SetTextColor(accentColor)
-                versionLabel:SetText(entry.version or L("versionNumber", i))
+                versionLabel:SetText(entry.version or ("Version " .. i))
                 versionLabel:SetContentAlignment(5)
                 versionLabel:SetWide(scroll:GetWide() - padding * 2)
                 versionLabel:SetTall(30)
@@ -753,9 +753,9 @@ function PANEL:createStartButton()
         local tooltip = hook.Run("GetCharacterCreateButtonTooltip", client, currentChars, maxChars)
         if not tooltip or tooltip == "" then
             if remainingChars > 0 then
-                tooltip = L("createCharacterTooltipAvailable", currentChars, maxChars, remainingChars)
+                tooltip = string.format("Create a new character (%d/%d slots used, %d remaining)", currentChars, maxChars, remainingChars)
             else
-                tooltip = L("maximumCharactersReached", currentChars, maxChars)
+                tooltip = string.format("Maximum characters reached (%d/%d)", currentChars, maxChars)
             end
         end
 
@@ -778,10 +778,10 @@ function PANEL:createStartButton()
 
     if hasNonStaffChar then
         local tooltip = hook.Run("GetCharacterLoadButtonTooltip", client)
-        if not tooltip or tooltip == "" then tooltip = L("loadExistingCharacter") end
+        if not tooltip or tooltip == "" then tooltip = "Load an existing character" end
         table.insert(buttonsData, {
             id = "load",
-            text = L("loadThing", L("character")),
+            text = L("loadCharacter"),
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
@@ -806,10 +806,10 @@ function PANEL:createStartButton()
     local mainCharID = IsValid(client) and client:getMainCharacter() or nil
     if mainCharID and lia.characters and #lia.characters > 0 and table.HasValue(lia.characters, mainCharID) and (not clientChar or clientChar:getID() ~= mainCharID) then
         local tooltip = hook.Run("GetCharacterLoadMainButtonTooltip", client)
-        if not tooltip or tooltip == "" then tooltip = L("loadThing", L("mainCharacter")) end
+        if not tooltip or tooltip == "" then tooltip = "Load your main character" end
         table.insert(buttonsData, {
             id = "loadmain",
-            text = L("loadThing", L("mainCharacter")),
+            text = L("loadMainCharacter"),
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -820,10 +820,10 @@ function PANEL:createStartButton()
 
     if client:hasPrivilege("createStaffCharacter") and not client:isStaffOnDuty() then
         local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
-        if not tooltip or tooltip == "" then tooltip = hasStaffChar and L("loadThing", L("staffCharacterLabel")) or L("createStaffCharacter") end
+        if not tooltip or tooltip == "" then tooltip = hasStaffChar and "Load your staff character" or "Create a staff character" end
         table.insert(buttonsData, {
             id = "staff",
-            text = hasStaffChar and L("loadThing", L("staffCharacterLabel")) or L("createStaffCharacter"),
+            text = hasStaffChar and L("loadStaffCharacter") or L("createStaffCharacter"),
             tooltip = tooltip,
             doClick = function()
                 for _, b in pairs(self.buttons) do
@@ -848,7 +848,7 @@ function PANEL:createStartButton()
 
     if discordURL ~= "" then
         local tooltip = hook.Run("GetCharacterDiscordButtonTooltip", client, discordURL)
-        if not tooltip or tooltip == "" then tooltip = L("joinDiscordServer") end
+        if not tooltip or tooltip == "" then tooltip = "Join our Discord server" end
         table.insert(buttonsData, {
             id = "discord",
             text = L("discord"),
@@ -862,7 +862,7 @@ function PANEL:createStartButton()
 
     if workshopURL ~= "" then
         local tooltip = hook.Run("GetCharacterWorkshopButtonTooltip", client, workshopURL)
-        if not tooltip or tooltip == "" then tooltip = L("viewWorkshopCollection") end
+        if not tooltip or tooltip == "" then tooltip = "View our Workshop collection" end
         table.insert(buttonsData, {
             id = "workshop",
             text = L("workshop"),
@@ -879,15 +879,15 @@ function PANEL:createStartButton()
         local tooltip = hook.Run("GetCharacterMountButtonTooltip", client)
         if not tooltip or tooltip == "" then
             if needsDownload then
-                tooltip = L("mountRequiredWorkshopContent")
+                tooltip = "Mount required Workshop content"
             else
-                tooltip = L("remountWorkshopAddons")
+                tooltip = "Remount Workshop addons"
             end
         end
 
         table.insert(buttonsData, {
             id = "mount",
-            text = needsDownload and L("mountContent") or L("remountWorkshopAddons"),
+            text = needsDownload and L("mountContent") or "Remount Workshop Addons",
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -903,6 +903,18 @@ function PANEL:createStartButton()
         })
     end
 
+    local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
+    if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = "Disconnect from the server" end
+    table.insert(buttonsData, {
+        id = "disconnect",
+        text = L("disconnect"),
+        tooltip = disconnectTooltip,
+        doClick = function()
+            self:clickSound()
+            RunConsoleCommand("disconnect")
+        end
+    })
+
     if clientChar and not self.isKickedFromChar then
         local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
         if not returnTooltip or returnTooltip == "" then returnTooltip = L("returnToCharacter") end
@@ -913,18 +925,6 @@ function PANEL:createStartButton()
             doClick = function() self:Remove() end
         })
     end
-
-    local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
-    if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = L("disconnectFromServer") end
-    table.insert(buttonsData, {
-        id = "disconnect",
-        text = L("disconnect"),
-        tooltip = disconnectTooltip,
-        doClick = function()
-            self:clickSound()
-            RunConsoleCommand("disconnect")
-        end
-    })
 
     self.buttons = {}
     for i, data in ipairs(buttonsData) do
@@ -1190,7 +1190,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {L("name") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
+    local info = {L("name") .. ": " .. (character:getName() or ""), L("description") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
         if cls and cls.name then table.insert(info, L("class") .. ": " .. cls.name) end
@@ -1316,7 +1316,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.selectBtn.DoClick = function()
         if character:isBanned() then
             local characterName = character:getName()
-            LocalPlayer():requestString("@permaKillTitle", L("pkDialogMessage", characterName), function() end)
+            LocalPlayer():requestString(L("permaKillTitle"), L("pkDialogMessage", characterName), function() end)
             return
         end
 
@@ -1597,12 +1597,7 @@ end
 function PANEL:Update()
     if IsValid(self) then
         self:Remove()
-        if not lia.config.initialized then lia.config.load() end
-        lia.config.onInitialized(function()
-            local client = LocalPlayer()
-            if not IsValid(client) or client:getChar() or IsValid(lia.gui.character) then return end
-            vgui.Create("liaCharacter")
-        end)
+        vgui.Create("liaCharacter")
     end
 end
 
