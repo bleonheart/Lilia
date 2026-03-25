@@ -2033,7 +2033,7 @@ lia.command.add("plykick", {
         },
     },
     AdminStick = {
-        Name = "@adminStickKickPlayerName",
+        Name = "@adminStickKickName",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/user_delete.png"
@@ -5085,7 +5085,7 @@ lia.command.add("banooc", {
         },
     },
     AdminStick = {
-        Name = "@banOOCStickName",
+        Name = "@banOOC",
         Category = "moderation",
         SubCategory = "moderationTools",
         Icon = "icon16/sound_mute.png"
@@ -5491,7 +5491,7 @@ lia.command.add("doorsettitle", {
     },
     adminOnly = true,
     AdminStick = {
-        Name = "@adminStickSetDoorTitleName",
+        Name = "@doorsettitle",
         Category = "doorManagement",
         SubCategory = "settings",
         TargetClass = "door",
@@ -7381,7 +7381,7 @@ lia.command.add("npcchangetype", {
     adminOnly = true,
     desc = "@npcchangetypeDesc",
     AdminStick = {
-        Name = "@adminStickChangeNPCType",
+        Name = "@npcChangeTypeTitle",
         Category = "moderation",
         SubCategory = "moderationTools",
         TargetClass = "lia_npc",

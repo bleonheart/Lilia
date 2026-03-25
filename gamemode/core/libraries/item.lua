@@ -1558,7 +1558,7 @@ else
         local defWidth = 2
         local defHeight = 1
         AddField(L("name"), "name", weaponTable.PrintName or className, false)
-        AddField(L("desc"), "desc", L("weaponDefaultDescription"), false)
+        AddField(L("desc"), "desc", L("weaponsDesc"), false)
         AddField(L("model"), "model", weaponTable.WorldModel or "models/props_c17/BriefCase001a.mdl", false)
         AddField(L("weaponItemWidth"), "width", defWidth, true)
         AddField(L("weaponItemHeight"), "height", defHeight, true)

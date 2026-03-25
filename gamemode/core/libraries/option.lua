@@ -508,7 +508,7 @@ lia.option.add("invertWeaponScroll", "@invertWeaponScroll", "@invertWeaponScroll
 })
 
 lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -518,7 +518,7 @@ lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
 })
 
 lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -528,7 +528,7 @@ lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
 })
 
 lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -538,7 +538,7 @@ lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
 })
 
 lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -548,7 +548,7 @@ lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
 })
 
 lia.option.add("espUnconfiguredDoors", "@espUnconfiguredDoors", "@espUnconfiguredDoorsDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -563,7 +563,7 @@ lia.option.add("espItemsColor", "@espItemsColor", "@espItemsColorDesc", {
     b = 0,
     a = 255
 }, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -577,7 +577,7 @@ lia.option.add("espEntitiesColor", "@espEntitiesColor", "@espEntitiesColorDesc",
     b = 0,
     a = 255
 }, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -591,7 +591,7 @@ lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espU
     b = 255,
     a = 255
 }, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -600,7 +600,7 @@ lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espU
 })
 
 lia.option.add("espConfiguredDoors", "@espConfiguredDoors", "@espConfiguredDoorsDesc", false, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     isQuick = true,
     visible = function()
         local ply = LocalPlayer()
@@ -615,7 +615,7 @@ lia.option.add("espConfiguredDoorsColor", "@espConfiguredDoorsColor", "@espConfi
     b = 0,
     a = 255
 }, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end
@@ -629,7 +629,7 @@ lia.option.add("espPlayersColor", "@espPlayersColor", "@espPlayersColorDesc", {
     b = 255,
     a = 255
 }, nil, {
-    category = "@ESP",
+    category = "@categoryESP",
     visible = function()
         local ply = LocalPlayer()
         if not IsValid(ply) then return false end

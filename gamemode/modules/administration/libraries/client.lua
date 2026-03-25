@@ -1920,7 +1920,7 @@ function MODULE:OpenAdminStickUI(tgt)
     hook.Run("PopulateAdminStick", tempMenu, tgt, tempStores)
     tempMenu:Remove()
     if not hasOptions then
-        cl:notifyInfoLocalized("adminStickNoOptions")
+        cl:notifyInfoLocalized("noOptionsAvailable")
         return
     end
 
@@ -1961,7 +1961,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("copySteamNameFormat", steamName),
                 cmd = function()
                     if steamName ~= "BOT" and steamName ~= "" then
-                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        cl:notifySuccessLocalized("copied")
                         SetClipboardText(steamName)
                     end
 
@@ -1974,7 +1974,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("copySteamProfileFormat", steamProfileLink ~= "" and steamProfileLink or L("na")),
                 cmd = function()
                     if steamProfileLink ~= "" then
-                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        cl:notifySuccessLocalized("copied")
                         SetClipboardText(steamProfileLink)
                     end
 
@@ -1987,7 +1987,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("steamIDCopyFormat", steamID),
                 cmd = function()
                     if steamID ~= "BOT" and steamID ~= "" then
-                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        cl:notifySuccessLocalized("copied")
                         SetClipboardText(steamID)
                     end
 
@@ -2000,7 +2000,7 @@ function MODULE:OpenAdminStickUI(tgt)
                 name = L("copySteamID64Format", steamID64),
                 cmd = function()
                     if steamID64 ~= "BOT" and steamID64 ~= "" then
-                        cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                        cl:notifySuccessLocalized("copied")
                         SetClipboardText(steamID64)
                     end
 
@@ -2012,7 +2012,7 @@ function MODULE:OpenAdminStickUI(tgt)
             {
                 name = L("nameCopyFormat", charName),
                 cmd = function()
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    cl:notifySuccessLocalized("copied")
                     SetClipboardText(charName)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
@@ -2035,7 +2035,7 @@ function MODULE:OpenAdminStickUI(tgt)
             {
                 name = L("copyModelFormat", model),
                 cmd = function()
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    cl:notifySuccessLocalized("copied")
                     SetClipboardText(model)
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
@@ -2061,7 +2061,7 @@ function MODULE:OpenAdminStickUI(tgt)
                     local posStr = string.format("Vector = (%.2f, %.2f, %.2f), Angle = (%.2f, %.2f, %.2f)", currentPos.x, currentPos.y, currentPos.z, currentAng.x, currentAng.y, currentAng.z)
                     chat.AddText(Color(255, 255, 255), posStr)
                     SetClipboardText(posStr)
-                    cl:notifySuccessLocalized("adminStickCopiedToClipboard")
+                    cl:notifySuccessLocalized("copied")
                     menu:Remove()
                     timer.Simple(0.1, function() AdminStickIsOpen = false end)
                 end,
@@ -2228,7 +2228,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         name = "@factions",
                         category = "characterManagement",
                         subcategory = "transfers",
-                        subSubcategory = "@adminStickSubCategoryFactions",
+                        subSubcategory = "@factions",
                         items = facOptions
                     })
                 end
@@ -2255,7 +2255,7 @@ function MODULE:OpenAdminStickUI(tgt)
                             name = "@classes",
                             category = "characterManagement",
                             subcategory = "transfers",
-                            subSubcategory = "@adminStickSubCategoryClasses",
+                            subSubcategory = "@classes",
                             items = cls
                         })
                     end
@@ -2293,7 +2293,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         name = "@factions",
                         category = "characterManagement",
                         subcategory = "whitelists",
-                        subSubcategory = "@adminStickSubCategoryFactions",
+                        subSubcategory = "@factions",
                         subSubSubcategory = "@adminStickFactionAddWhitelist",
                         items = facAdd
                     })
@@ -2304,7 +2304,7 @@ function MODULE:OpenAdminStickUI(tgt)
                         name = "@factions",
                         category = "characterManagement",
                         subcategory = "whitelists",
-                        subSubcategory = "@adminStickSubCategoryFactions",
+                        subSubcategory = "@factions",
                         subSubSubcategory = "@adminStickFactionRemoveWhitelist",
                         items = facRemove
                     })
@@ -2352,7 +2352,7 @@ function MODULE:OpenAdminStickUI(tgt)
                             name = factionData.name,
                             category = "characterManagement",
                             subcategory = "whitelists",
-                            subSubcategory = "@adminStickSubCategoryClasses",
+                            subSubcategory = "@classes",
                             subSubSubcategory = "@adminStickClassAddWhitelist",
                             subSubSubSubcategory = factionID,
                             items = factionData.addItems
@@ -2364,7 +2364,7 @@ function MODULE:OpenAdminStickUI(tgt)
                             name = factionData.name,
                             category = "characterManagement",
                             subcategory = "whitelists",
-                            subSubcategory = "@adminStickSubCategoryClasses",
+                            subSubcategory = "@classes",
                             subSubSubcategory = "@adminStickClassRemoveWhitelist",
                             subSubSubSubcategory = factionID,
                             items = factionData.removeItems

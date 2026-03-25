@@ -57,28 +57,28 @@ local function doRange(ply, lvl)
 end
 
 lia.playerinteract.addAction("recognizeInWhisperRange", {
-    category = "@categoryRecognition",
+    category = "@recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 1) end,
     onRun = function(ply) doRange(ply, 1) end,
     serverOnly = true
 })
 
 lia.playerinteract.addAction("recognizeInTalkRange", {
-    category = "@categoryRecognition",
+    category = "@recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 3) end,
     onRun = function(ply) doRange(ply, 3) end,
     serverOnly = true
 })
 
 lia.playerinteract.addAction("recognizeInYellRange", {
-    category = "@categoryRecognition",
+    category = "@recognition",
     shouldShow = function(ply) return hasPlayersInRange(ply, 4) end,
     onRun = function(ply) doRange(ply, 4) end,
     serverOnly = true
 })
 
 lia.playerinteract.addInteraction("giveRecognitionToPerson", {
-    category = "@categoryRecognition",
+    category = "@recognition",
     serverOnly = true,
     shouldShow = function(ply, tgt)
         if not canRecog(ply) then return false end

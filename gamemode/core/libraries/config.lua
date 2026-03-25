@@ -1233,8 +1233,8 @@ lia.config.add("Workshop", "@mainMenuWorkshopURL", "", nil, {
     type = "Generic"
 })
 
-lia.config.add("CharMenuBGInputDisabled", "@mainMenuCharBGInputDisabled", true, nil, {
-    desc = "@mainMenuCharBGInputDisabledDesc",
+lia.config.add("CharMenuBGInputDisabled", "@charMenuBGInputDisabled", true, nil, {
+    desc = "@charMenuBGInputDisabledDesc",
     category = "@Core",
     type = "Boolean"
 })
@@ -1335,7 +1335,7 @@ lia.config.add("MouthMoveAnimation", "@mouthMoveAnimation", true, function(_, ne
     end
 end, {
     desc = "@mouthMoveAnimationDesc",
-    category = "@Performance",
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
@@ -1347,13 +1347,13 @@ lia.config.add("GrabEarAnimation", "@grabEarAnimation", false, function(_, newVa
     end
 end, {
     desc = "@grabEarAnimationDesc",
-    category = "@Performance",
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 
 lia.config.add("VoiceIcons", "@voiceIcons", false, function(_, newValue) if SERVER then RunConsoleCommand("mp_show_voice_icons", newValue and 1 or 0) end end, {
     desc = "@voiceIconsDesc",
-    category = "@Performance",
+    category = "@categoryPerformance",
     type = "Boolean"
 })
 

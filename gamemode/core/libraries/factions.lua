@@ -47,7 +47,7 @@ local DefaultModels = {"models/player/group01/male_01.mdl", "models/player/group
 ]]
 function lia.faction.register(uniqueID, data)
     assert(isstring(uniqueID), L("factionUniqueIDString"))
-    assert(istable(data), L("factionDataTable"))
+    assert(istable(data), L("dataMustBeTable"))
     local existing = lia.faction.teams[uniqueID]
     local constantName = "FACTION_" .. string.upper(uniqueID)
     local providedIndex = tonumber(data.index)

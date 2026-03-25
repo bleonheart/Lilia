@@ -769,7 +769,7 @@ end
 function lia.relaydiscordMessage(embed)
     if not lia.discordWebhook or not istable(embed) then return end
     local ForceHTTPMode = not util.IsBinaryModuleInstalled("chttp")
-    embed.title = embed.title or L("liliaRadial")
+    embed.title = embed.title or L("Lilia")
     embed.color = tonumber(embed.color) or 7506394
     embed.timestamp = embed.timestamp or os.date("!%Y-%m-%dT%H:%M:%SZ")
     embed.footer = embed.footer or {

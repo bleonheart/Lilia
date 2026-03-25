@@ -1,4 +1,4 @@
-MODULE.name = "@administrationModuleName"
+MODULE.name = "@categoryAdministration"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@administrationToolsDescription"
@@ -416,7 +416,7 @@ MODULE.Privileges = {
     ["canManageNPCs"] = {
         Name = "@canManageNPCs",
         MinAccess = "admin",
-        Category = "@NPCs",
+        Category = "@npcs",
     },
     ["canManageProperties"] = {
         Name = "@canManageProperties",

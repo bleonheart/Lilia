@@ -1,4 +1,4 @@
-MODULE.name = "@inventoryModuleName"
+MODULE.name = "@inv"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@inventorySystemDescription"

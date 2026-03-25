@@ -6,11 +6,11 @@ MODULE.Privileges = {
     ["canManageFactions"] = {
         Name = "@canManageFactions",
         MinAccess = "admin",
-        Category = "@categoryFactionManagement",
+        Category = "@factionManagement",
     },
     ["manageWhitelists"] = {
         Name = "@manageWhitelists",
         MinAccess = "admin",
-        Category = "@categoryFactionManagement",
+        Category = "@factionManagement",
     },
 }
