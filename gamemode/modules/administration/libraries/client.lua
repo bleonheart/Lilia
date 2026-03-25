@@ -912,7 +912,7 @@ local function GetIconForCategory(name)
         [L("adminStickCategoryUtility"):lower()] = "icon16/application_view_tile.png",
         [L("misc"):lower()] = "icon16/application_view_tile.png",
         [L("items"):lower()] = "icon16/box.png",
-        [L("adminStickCategoryOutOfCharacter"):lower()] = "icon16/comment.png",
+        [L("outOfCharacter"):lower()] = "icon16/comment.png",
         [L("warnsModuleName"):lower()] = "icon16/error.png",
     }
 
@@ -1044,7 +1044,7 @@ local function GetSubMenuIcon(name)
     if name:find(L("adminStickSetFaction"), 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
     if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == L("misc"):lower() then return "icon16/application_view_tile.png" end
     if name:lower() == "items" or name:lower() == L("items"):lower() then return "icon16/box.png" end
-    if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == L("adminStickCategoryOutOfCharacter"):lower() then return "icon16/comment.png" end
+    if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == L("outOfCharacter"):lower() then return "icon16/comment.png" end
     if name:lower() == "warnings" or name:lower() == L("warnsModuleName"):lower() then return "icon16/error.png" end
     if name:lower() == "commands" then return "icon16/page.png" end
     return "icon16/page.png"

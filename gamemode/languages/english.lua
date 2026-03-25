@@ -2958,7 +2958,6 @@ LANGUAGE = {
     recognizeFactionMembers = "s names and can automatically recognize members of the same faction.",
     recognitionSystemDescription = "Introduces a recognition system where characters must learn each other's names and can automatically recognize members of the same faction.",
     misc = "Miscellaneous",
-    adminStickCategoryOutOfCharacter = "Out of Character",
     categoryServer = "Server",
     warnsModuleName = "Warnings",
     adminStickSetFaction = "Set Faction",
