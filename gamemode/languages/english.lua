@@ -3736,4 +3736,12 @@ LANGUAGE = {
     dialogTutorialResponseReadyExplore = "Great! Remember: stay in character, respect others, and have fun. The character menu (F1) and inventory (F2) are your best friends!",
     dialogTutorialOptionGoodbye = "Goodbye",
     dialogTutorialResponseGoodbye = "Good luck out there! Feel free to come back if you have any more questions.",
+    americanTimeStamps = "American Timestamps",
+    americanTimeStampsDesc = "Display timestamps in 12-hour AM/PM format instead of 24-hour format.",
+    color = "Accent Color",
+    colorDesc = "The primary accent color used throughout the UI.",
+    staffHasGodMode = "Staff Has God Mode",
+    staffHasGodModeDesc = "Grants god mode to staff members while they are on duty.",
+    maxAttributes = "Max Attributes",
+    maxAttributesDesc = "The maximum total number of attribute points a character can have.",
 }

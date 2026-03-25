@@ -382,7 +382,7 @@ function lia.config.set(key, value)
             lia.config.save()
         end
 
-        if CLIENT and oldValue ~= value then LocalPlayer():notifySuccess("Config '" .. tostring(lia.config.getDisplayName(key) or key) .. "' updated successfully") end
+        if CLIENT and oldValue ~= value and IsValid(LocalPlayer()) then LocalPlayer():notifySuccess("Config '" .. tostring(lia.config.getDisplayName(key) or key) .. "' updated successfully") end
     end
 end
 
@@ -768,6 +768,7 @@ else
                         entry:SetValue(tostring(lia.config.get(key, config.value)))
                     end
                 end
+
                 entry.textEntry.OnEnter = submitEntry
                 entry.textEntry.OnLoseFocus = submitEntry
             elseif configType == "Color" then
@@ -1857,4 +1858,38 @@ lia.config.add("MainMenuUseLastPos", "mainMenuUseLastPos", true, nil, {
     desc = "mainMenuUseLastPosDesc",
     category = "Core",
     type = "Boolean"
+})
+
+lia.config.add("AmericanTimeStamps", "americanTimeStamps", false, nil, {
+    desc = "americanTimeStampsDesc",
+    category = "Core",
+    type = "Boolean"
+})
+
+lia.config.add("Color", "color", Color(0, 150, 255), nil, {
+    desc = "colorDesc",
+    category = "Core",
+    type = "Color"
+})
+
+lia.config.add("StaffHasGodMode", "staffHasGodMode", true, nil, {
+    desc = "staffHasGodModeDesc",
+    category = "Core",
+    type = "Boolean"
+})
+
+lia.config.add("descriptionWidth", "descriptionWidth", 0.5, nil, {
+    desc = "descriptionWidthDesc",
+    category = "Core",
+    type = "Number",
+    min = 0.1,
+    max = 1.0
+})
+
+lia.config.add("maxAttributes", "maxAttributes", 100, nil, {
+    desc = "maxAttributesDesc",
+    category = "Core",
+    type = "Int",
+    min = 1,
+    max = 1000
 })

@@ -1336,12 +1336,13 @@ class FunctionComparisonReportGenerator:
         print("Analyzing fonts...")
         fonts_registered, fonts_used, fonts_unregistered, fonts_default_gmod, fonts_variable, fonts_getfont_count, fonts_file_usages = self._run_font_analysis()
 
-        # 8. Config + inferred localization analysis (only when module docs are enabled)
-        config_undefined_get_calls = []
+        # 8. Config undefined get calls — always runs (framework analysis)
+        print("Detecting undefined lia.config.get calls...")
+        config_undefined_get_calls = self._detect_undefined_config_get_calls()
+
+        # 9. Undefined inferred localization keys — gated (scans external modules too)
         undefined_inferred_loc_keys = []
         if self.generate_module_docs:
-            print("Detecting undefined lia.config.get calls...")
-            config_undefined_get_calls = self._detect_undefined_config_get_calls()
             print("Detecting undefined inferred localization keys...")
             undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
 
@@ -2305,10 +2306,11 @@ class FunctionComparisonReportGenerator:
         # Language Comparison Section
         report_lines.extend(self._generate_language_comparison_section(data))
 
-        # Config Undefined Get Calls Section + Modules Section
-        # Both are gated behind the "generate module docs" flag.
+        # Config Undefined Get Calls — always shown (framework analysis)
+        report_lines.extend(self._generate_config_undefined_section(data))
+
+        # Modules Section — gated behind the "generate module docs" flag
         if self.generate_module_docs:
-            report_lines.extend(self._generate_config_undefined_section(data))
             try:
                 report_lines.extend(self._generate_modules_section(data.modules_scan))
             except Exception as e:
@@ -3008,15 +3010,15 @@ class FunctionComparisonReportGenerator:
             "",
         ])
 
+        config_undefined_count = len(getattr(data, 'config_undefined_get_calls', []) or [])
+        lines.extend([
+            "### Config Analysis",
+            f"- **Undefined lia.config.get Keys:** {config_undefined_count}",
+        ])
         if self.generate_module_docs:
-            config_undefined_count = len(getattr(data, 'config_undefined_get_calls', []) or [])
             inferred_undef_count = len(getattr(data, 'undefined_inferred_loc_keys', []) or [])
-            lines.extend([
-                "### Config / Inferred Localization Analysis",
-                f"- **Undefined lia.config.get Keys:** {config_undefined_count}",
-                f"- **Undefined Inferred Localization Keys:** {inferred_undef_count}",
-                "",
-            ])
+            lines.append(f"- **Undefined Inferred Localization Keys:** {inferred_undef_count}")
+        lines.extend(["", ])
 
         lines.extend(["---", ""])
 

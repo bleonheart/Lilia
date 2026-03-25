@@ -235,15 +235,15 @@ hook.Add("InitializedModules", "liaPerformanceInitializedModules", function()
         smoothingTime = "cl_smoothtime"
     }
 
-    local voiceIconsValue = lia.config.get("voiceIcons", false)
+    local voiceIconsValue = lia.config.get("VoiceIcons", false)
     RunConsoleCommand("mp_show_voice_icons", voiceIconsValue and 1 or 0)
-    if lia.config.get("mouthMoveAnimation", true) then
+    if lia.config.get("MouthMoveAnimation", true) then
         hook.Add("MouthMoveAnimation", "Optimization", function() return nil end)
     else
         hook.Remove("MouthMoveAnimation", "Optimization")
     end
 
-    if lia.config.get("grabEarAnimation", true) then
+    if lia.config.get("GrabEarAnimation", true) then
         hook.Add("GrabEarAnimation", "Optimization", function() return nil end)
     else
         hook.Remove("GrabEarAnimation", "Optimization")
