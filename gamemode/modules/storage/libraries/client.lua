@@ -101,7 +101,7 @@ function MODULE:OnCreateStoragePanel(localInvPanel, storageInvPanel, storage)
     local buttonWidth = (panelWidth - 40) / 3
     local buttonY = 40
     local lockBtn = vgui.Create("liaButton", lockPanelRef)
-    lockBtn:SetTxt(L("lockStorage"))
+    lockBtn:SetTxt(L("lock"))
     lockBtn:SetSize(buttonWidth, 22)
     lockBtn:SetPos(10, buttonY)
     lockBtn:PaintButton(lia.color.theme and lia.color.theme.button or Color(50, 80, 50), lia.color.theme and lia.color.theme.button_hovered or Color(60, 100, 60))

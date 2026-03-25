@@ -266,7 +266,7 @@ function PANEL:createWelcomeScreen()
         contentY = contentY + logoSize + 25
     end
 
-    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
+    local steamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
     local welcomeLabel = container:Add("DLabel")
     welcomeLabel:SetFont("LiliaFont.40")
     welcomeLabel:SetTextColor(Color(255, 255, 255))
@@ -340,7 +340,7 @@ function PANEL:createWelcomeScreen()
     container:MoveTo(finalX, newFinalY, 0.4, 0, 0.3)
     local function updateWelcomeText()
         if not IsValid(welcomeLabel) then return end
-        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
+        local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
         if isFirstJoin then
             welcomeLabel:SetText(L("welcomePlayer", currentSteamName))
         else
@@ -352,8 +352,8 @@ function PANEL:createWelcomeScreen()
     local lastSteamName = steamName
     self.welcomeScreen.Think = function(pnl)
         if IsValid(client) then
-            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("genericPlayer")
-            if currentSteamName ~= lastSteamName and currentSteamName ~= L("genericPlayer") then
+            local currentSteamName = client.steamName and client:steamName() or client:SteamName() or client:Nick() or L("discordAntiCheatPlayer")
+            if currentSteamName ~= lastSteamName and currentSteamName ~= L("discordAntiCheatPlayer") then
                 lastSteamName = currentSteamName
                 updateWelcomeText()
             end
@@ -865,7 +865,7 @@ function PANEL:createStartButton()
         if not tooltip or tooltip == "" then tooltip = L("viewWorkshopCollection") end
         table.insert(buttonsData, {
             id = "workshop",
-            text = L("workshop"),
+            text = L("categoryWorkshop"),
             tooltip = tooltip,
             doClick = function()
                 self:clickSound()
@@ -903,6 +903,17 @@ function PANEL:createStartButton()
         })
     end
 
+    if clientChar and not self.isKickedFromChar then
+        local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
+        if not returnTooltip or returnTooltip == "" then returnTooltip = L("returnToCharacter") end
+        table.insert(buttonsData, {
+            id = "return",
+            text = L("returnToCharacter"),
+            tooltip = returnTooltip,
+            doClick = function() self:Remove() end
+        })
+    end
+
     local disconnectTooltip = hook.Run("GetCharacterDisconnectButtonTooltip", client)
     if not disconnectTooltip or disconnectTooltip == "" then disconnectTooltip = L("disconnectFromServer") end
     table.insert(buttonsData, {
@@ -914,17 +925,6 @@ function PANEL:createStartButton()
             RunConsoleCommand("disconnect")
         end
     })
-
-    if clientChar and not self.isKickedFromChar then
-        local returnTooltip = hook.Run("GetCharacterReturnButtonTooltip", client)
-        if not returnTooltip or returnTooltip == "" then returnTooltip = L("returnToCharacter") end
-        table.insert(buttonsData, {
-            id = "return",
-            text = L("returnToCharacter"),
-            tooltip = returnTooltip,
-            doClick = function() self:Remove() end
-        })
-    end
 
     self.buttons = {}
     for i, data in ipairs(buttonsData) do
@@ -1190,7 +1190,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
         end
     end
 
-    local info = {L("name") .. ": " .. (character:getName() or ""), L("description") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
+    local info = {L("PrintName") .. ": " .. (character:getName() or ""), L("desc") .. ":", character:getDesc() or "", L("faction") .. ": " .. (team.GetName(character:getFaction()) or "")}
     if character:getClass() then
         local cls = lia.class.list[character:getClass()]
         if cls and cls.name then table.insert(info, L("class") .. ": " .. cls.name) end
@@ -1298,7 +1298,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     local bw, bh = fw * 0.85, 40
     local pad = 10
     local cx = fx + (fw - bw) * 0.5
-    local selectText = L("select") .. " " .. L("character")
+    local selectText = L("select") .. " " .. L("categoryCharacter")
     if character:isBanned() then selectText = L("permaKilledCharacter") end
     self.selectBtn = self:Add("liaSmallButton")
     self.selectBtn:SetSize(bw, bh)
@@ -1327,7 +1327,7 @@ function PANEL:createSelectedCharacterInfoPanel(character)
     self.deleteBtn:SetSize(bw, bh)
     self.deleteBtn:SetPos(cx, fy + fh + pad + bh + pad)
     self.deleteBtn:SetShowLine(true)
-    self.deleteBtn:SetText(L("delete") .. " " .. L("character"))
+    self.deleteBtn:SetText(L("delete") .. " " .. L("categoryCharacter"))
     self.deleteBtn:Stop()
     self.deleteBtn:SetAlpha(255)
     do
@@ -1597,7 +1597,12 @@ end
 function PANEL:Update()
     if IsValid(self) then
         self:Remove()
-        vgui.Create("liaCharacter")
+        if not lia.config.initialized then lia.config.load() end
+        lia.config.onInitialized(function()
+            local client = LocalPlayer()
+            if not IsValid(client) or client:getChar() or IsValid(lia.gui.character) then return end
+            vgui.Create("liaCharacter")
+        end)
     end
 end
 

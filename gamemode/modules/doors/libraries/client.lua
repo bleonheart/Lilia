@@ -258,7 +258,7 @@ function MODULE:GetAdminStickLists(tgt, lists)
 
     if #existingClasses > 0 then
         table.insert(removeClassItems, {
-            name = L("remove") .. " " .. L("all") .. " " .. L("classes"),
+            name = L("remove") .. " " .. L("all") .. " " .. L("adminStickSubCategoryClasses"),
             icon = "icon16/delete.png",
             callback = function() LocalPlayer():ConCommand("say /doorremoveclass ''") end
         })
@@ -297,7 +297,7 @@ function MODULE:AddToAdminStickHUD(client, target, information)
         }
 
         local doorLabels = {
-            name = L("name"),
+            name = L("PrintName"),
             price = L("price"),
             locked = L("locked"),
             disabled = L("disabled"),

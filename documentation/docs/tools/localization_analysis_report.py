@@ -10,6 +10,29 @@ from typing import Dict, List, Tuple, Set
 from collections import defaultdict
 
 
+LOCALIZATION_CALL_PATTERNS = [
+    (re.compile(r'\bL\s*\(\s*(["\'])([^"\']+)\1'), 'L'),
+    (re.compile(r'\blia\.lang\.getLocalizedString\s*\(\s*(["\'])([^"\']+)\1'), 'lia.lang.getLocalizedString'),
+    (re.compile(r'\blia\.lang\.resolveToken\s*\(\s*(["\'])([^"\']+)\1'), 'lia.lang.resolveToken'),
+    (re.compile(r':notifyLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyLocalized'),
+    (re.compile(r':notifyErrorLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyErrorLocalized'),
+    (re.compile(r':notifyWarningLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyWarningLocalized'),
+    (re.compile(r':notifyInfoLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyInfoLocalized'),
+    (re.compile(r':notifySuccessLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifySuccessLocalized'),
+    (re.compile(r':notifyMoneyLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyMoneyLocalized'),
+    (re.compile(r':notifyAdminLocalized\s*\(\s*(["\'])([^"\']+)\1'), ':notifyAdminLocalized'),
+]
+GENERIC_AT_TOKEN_PATTERN = re.compile(r'(["\'])(@[A-Za-z_][A-Za-z0-9_\.:-]*)\1')
+AT_VALUE_PATTERN = re.compile(r'@[A-Za-z_][A-Za-z0-9_\.:-]*')
+
+
+def _normalize_localization_key(key: str) -> str:
+    """Normalize localization references so @token and token map to the same language key."""
+    if not isinstance(key, str):
+        return key
+    return key[1:] if key.startswith('@') else key
+
+
 def analyze_data(language_file: str, gamemode_path: str) -> Dict:
     """
     Analyze localization data from language file and gamemode usage.
@@ -118,31 +141,6 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
     usage_data = defaultdict(list)
     gamemode_path = Path(gamemode_path)
 
-    # Patterns for localization calls - comprehensive coverage of all localization methods
-    # Updated patterns to handle both single and double quotes, and be more robust
-    patterns = [
-        # L("xxxxx",...) or L('xxxxx',...)
-        (r'\bL\s*\(\s*["\']([^"\']+)["\']', 'L'),
-        # lia.lang.getLocalizedString("xxxxx",...)
-        (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']([^"\']+)["\']', 'lia.lang.getLocalizedString'),
-        # :notifyLocalized("xxxx", ...)
-        (r':notifyLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyLocalized'),
-        # :notifyErrorLocalized("xxxx", ...)
-        (r':notifyErrorLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyErrorLocalized'),
-        # :notifyWarningLocalized("xxxx", ...)
-        (r':notifyWarningLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyWarningLocalized'),
-        # :notifyInfoLocalized("xxxx", ...)
-        (r':notifyInfoLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyInfoLocalized'),
-        # :notifySuccessLocalized("xxxx", ...)
-        (r':notifySuccessLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifySuccessLocalized'),
-        # :notifyMoneyLocalized("xxxx", ...)
-        (r':notifyMoneyLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyMoneyLocalized'),
-        # :notifyAdminLocalized("xxxx", ...)
-        (r':notifyAdminLocalized\s*\(\s*["\']([^"\']+)["\']', ':notifyAdminLocalized'),
-        # "@xxxx"
-        (r'@"([^"]+)"', '@'),
-    ]
-
     # Scan all Lua files
     for root, dirs, files in os.walk(gamemode_path):
         # Skip certain directories
@@ -172,10 +170,26 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
                 lines = content.split('\n')
 
                 for line_num, line in enumerate(lines, 1):
-                    for pattern, func_type in patterns:
-                        for match in re.finditer(pattern, line):
-                            key = match.group(1)
-                            usage_data[key].append((relative_path, line_num, line.strip(), func_type))
+                    seen_entries = set()
+
+                    for pattern, func_type in LOCALIZATION_CALL_PATTERNS:
+                        for match in pattern.finditer(line):
+                            key = match.group(2)
+                            normalized_key = _normalize_localization_key(key)
+                            entry_key = (normalized_key, match.span())
+                            if not normalized_key or entry_key in seen_entries:
+                                continue
+                            seen_entries.add(entry_key)
+                            usage_data[normalized_key].append((relative_path, line_num, line.strip(), func_type))
+
+                    for match in GENERIC_AT_TOKEN_PATTERN.finditer(line):
+                        raw_key = match.group(2)
+                        normalized_key = _normalize_localization_key(raw_key)
+                        entry_key = (normalized_key, match.span())
+                        if not normalized_key or entry_key in seen_entries:
+                            continue
+                        seen_entries.add(entry_key)
+                        usage_data[normalized_key].append((relative_path, line_num, line.strip(), '@token'))
 
     return usage_data
 
@@ -231,7 +245,7 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
     for key, usages in usage_data.items():
         if key in keys and key not in at_pattern_keys_seen:
             value = keys[key]
-            if '@' in value:
+            if AT_VALUE_PATTERN.search(value):
                 at_pattern_keys_seen.add(key)
                 # Use the first usage as representative
                 usage = usages[0]

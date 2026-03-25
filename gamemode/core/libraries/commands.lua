@@ -554,7 +554,7 @@ else
                 local ctrl
                 if fieldType == "player" then
                     ctrl = vgui.Create("liaComboBox", panel)
-                    ctrl:SetValue(L("select") .. " " .. L("player"))
+                    ctrl:SetValue(L("select") .. " " .. L("discordAntiCheatPlayer"))
                     local players = {}
                     for _, plyObj in player.Iterator() do
                         if IsValid(plyObj) then players[#players + 1] = plyObj end
@@ -792,7 +792,7 @@ hook.Add("CreateInformationButtons", "liaInformationCommandsUnified", function(p
                 end
 
                 sheet:AddListViewRow({
-                    columns = {L("command"), L("description"), L("privilege")},
+                    columns = {L("command"), L("desc"), L("privilege")},
                     data = data,
                     height = 300
                 })
@@ -2134,7 +2134,7 @@ lia.command.add("charkill", {
             client:notifySuccessLocalized("charUnkill", client:Name(), ply:Nick())
             lia.log.add(client, "charUnkill", ply:Nick(), char:getID())
         else
-            local reasonKey = L("reason")
+            local reasonKey = L("discordWarningSystemReason")
             local evidenceKey = L("evidence")
             client:requestArguments(L("pkReasonMenu"), {
                 [reasonKey] = "string",
@@ -3239,7 +3239,7 @@ lia.command.add("flaggive", {
                 client:notifyInfoLocalized("noAvailableFlags")
                 return
             end
-            return client:requestString(L("give") .. " " .. L("flags"), "@flagGiveDesc", function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
+            return client:requestString(L("give") .. " " .. L("adminStickSubCategoryFlags"), "@flagGiveDesc", function(text) lia.command.run(client, "flaggive", {target:Name(), text}) end, available)
         end
 
         target:giveFlags(flags)
@@ -3327,7 +3327,7 @@ lia.command.add("flagtake", {
         local flags = arguments[2]
         if not flags then
             local currentFlags = target:getFlags()
-            return client:requestString(L("take") .. " " .. L("flags"), "@flagTakeDesc", function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
+            return client:requestString(L("take") .. " " .. L("adminStickSubCategoryFlags"), "@flagTakeDesc", function(text) lia.command.run(client, "flagtake", {target:Name(), text}) end, table.concat(currentFlags, ", "))
         end
 
         target:takeFlags(flags)
@@ -3402,7 +3402,7 @@ lia.command.add("cleanitems", {
             SafeRemoveEntity(v)
         end
 
-        client:notifySuccessLocalized("cleaningFinished", L("items"), count)
+        client:notifySuccessLocalized("cleaningFinished", L("adminStickCategoryItems"), count)
     end
 })
 
@@ -4786,7 +4786,7 @@ lia.command.add("exportprivileges", {
 
         if wrote then
             client:notifySuccessLocalized("privilegesExportedSuccessfully", filename)
-            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+            MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
             MsgC(Color(255, 153, 0), L("privilegesExportedBy", client:Nick(), filename), "\n")
             lia.log.add(client, "privilegesExported", filename)
         else
@@ -5873,11 +5873,11 @@ lia.command.add("doorinfo", {
             local locked = doorData.locked or false
             local infoData = {
                 {
-                    property = L("doorInfoDisabled"),
+                    property = L("disabled"),
                     value = tostring(disabled)
                 },
                 {
-                    property = L("name"),
+                    property = L("PrintName"),
                     value = tostring(doorData.name or L("doorTitle"))
                 },
                 {
@@ -5889,11 +5889,11 @@ lia.command.add("doorinfo", {
                     value = tostring(noSell)
                 },
                 {
-                    property = L("factions"),
+                    property = L("adminStickSubCategoryFactions"),
                     value = tostring(not table.IsEmpty(factionNames) and table.concat(factionNames, ", ") or L("none"))
                 },
                 {
-                    property = L("classes"),
+                    property = L("adminStickSubCategoryClasses"),
                     value = tostring(not table.IsEmpty(classNames) and table.concat(classNames, ", ") or L("none"))
                 },
                 {
@@ -5906,7 +5906,7 @@ lia.command.add("doorinfo", {
                 }
             }
 
-            lia.util.sendTableUI(client, L("door") .. " " .. L("information"), {
+            lia.util.sendTableUI(client, L("door") .. " " .. L("adminStickSubCategoryInformation"), {
                 {
                     name = "doorInfoProperty",
                     field = "property"
@@ -6316,14 +6316,14 @@ lia.command.add("listdoorids", {
         local doorList = {}
         for _, data in ipairs(doorData) do
             table.insert(doorList, {
-                property = L("doorIDProperty") .. data.id,
+                property = L("doorID") .. data.id,
                 value = L("positionLabel") .. data.position .. L("modelLabel") .. data.model
             })
         end
 
         lia.util.sendTableUI(client, L("doorIDsOnMap", game.GetMap()), {
             {
-                name = L("doorIDColumn"),
+                name = L("doorID"),
                 field = "property"
             },
             {

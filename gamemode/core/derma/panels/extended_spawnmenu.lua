@@ -1,7 +1,7 @@
 ﻿local function getGameList()
     local games = engine.GetGames()
     table.insert(games, {
-        title = L("spawnmenuAll"),
+        title = L("all"),
         folder = "GAME",
         icon = "all",
         mounted = true
@@ -36,7 +36,7 @@ end
 local function showMaterialWarning()
     if materialWarningShown then return end
     materialWarningShown = true
-    Derma_Message(L("materialWarning"), L("warning"), L("ok"))
+    Derma_Message(L("materialWarning"), L("logWarning"), L("ok"))
 end
 
 local function registerContentType(typeName, setupIcon, onClick, menuEntries)

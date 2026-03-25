@@ -11,6 +11,14 @@ from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
 
+HOOKS_REPORT_IGNORE = {
+    "CalcStaminaChange",
+    "IsValid",
+    "getData",
+    "setData",
+    "PopulateInventoryItems",
+}
+
 # Dynamic paths based on file location
 def _get_paths_from_file_location():
     """Determine paths based on the current file's location"""
@@ -341,12 +349,11 @@ class CombinedReportData:
     hooks_standard: List[str]  # New field for hooks called via hook.Add/hook.Run/etc.
     localization_data: Dict
     argument_mismatches: List[Dict]  # New field for argument mismatches
+    inferred_localization: Dict[str, List[Dict]]  # New field for inferred localization sites (resolved at source)
     modules_data: List
     module_localization_conflicts: Dict[str, List[Dict[str, str]]]  # Conflicting localization keys across modules
     modules_scan: List[Dict]
     language_comparison: Dict[str, Dict[str, List[str]]]  # New field for language key mismatches
-    panels_found: List[str]  # New field for panels found in code
-    panels_documented: List[str]  # New field for documented panels
     # Categorized missing documentation
     missing_library_functions: List[FunctionInfo]
     missing_hook_functions: List[FunctionInfo]
@@ -424,6 +431,151 @@ class FunctionComparisonReportGenerator:
                 continue
 
         return mismatches
+
+    def _detect_inferred_localization(self) -> Dict[str, List[Dict]]:
+        inferred: Dict[str, List[Dict]] = defaultdict(list)
+
+        def should_skip_path(p: Path) -> bool:
+            lowered = [part.lower() for part in p.parts]
+            return any(
+                skip in lowered
+                for skip in [
+                    "documentation",
+                    "docs",
+                    "languages",
+                    "thirdparty",
+                ]
+            )
+
+        scan_roots: List[Tuple[Path, str]] = []
+        gamemode_root = Path(self.base_path)
+        for rel in ["core/libraries", "core/meta", "entities", "items", "modules"]:
+            root = gamemode_root / rel
+            if root.exists():
+                scan_roots.append((root, str(gamemode_root)))
+
+        for modules_base in (Path(p) for p in (self.modules_paths or [])):
+            if modules_base.exists():
+                scan_roots.append((modules_base, str(modules_base)))
+
+            if modules_base.name.lower() == "modules":
+                sibling = modules_base.parent / "devmodules"
+                if sibling.exists():
+                    scan_roots.append((sibling, str(sibling)))
+
+        field_assign_l = re.compile(r'^\s*([A-Za-z_][\w\.\[\]:]*)\s*=\s*L\s*\(\s*')
+        field_assign_resolve = re.compile(
+            r'^\s*([A-Za-z_][\w\.\[\]:]*)\s*=\s*(?:isstring\([^)]+\)\s*and\s*)?lia\.lang\.resolveToken\s*\(\s*(.+)$'
+        )
+        call_resolve = re.compile(r'\blia\.lang\.resolveToken\s*\(\s*(.+)$')
+        generic_l_call = re.compile(r'\bL\s*\(\s*')
+        attr_at_token = re.compile(r'@([A-Za-z_][A-Za-z0-9_\.:-]*)')
+
+        for root, rel_base in scan_roots:
+            for lua_file in root.rglob("*.lua"):
+                if should_skip_path(lua_file):
+                    continue
+                try:
+                    content = lua_file.read_text(encoding="utf-8", errors="ignore")
+                except Exception:
+                    continue
+
+                rel_path = None
+                try:
+                    rel_path = str(lua_file.relative_to(Path(rel_base)))
+                except Exception:
+                    rel_path = str(lua_file)
+
+                in_long_comment = False
+                for idx, raw_line in enumerate(content.splitlines(), start=1):
+                    line = raw_line.rstrip("\n")
+                    stripped = line.strip()
+
+                    if stripped.startswith("--[["):
+                        if "]]" not in stripped:
+                            in_long_comment = True
+                        continue
+
+                    if in_long_comment:
+                        if "]]" in stripped:
+                            in_long_comment = False
+                        continue
+
+                    if stripped.startswith("--") or stripped == "":
+                        continue
+
+                    m = field_assign_l.match(line)
+                    if m:
+                        lhs = m.group(1)
+                        inferred[rel_path].append(
+                            {
+                                "line": idx,
+                                "kind": "field=L(...)",
+                                "lhs": lhs,
+                                "context": stripped[:240],
+                            }
+                        )
+
+                    m = field_assign_resolve.match(line)
+                    if m:
+                        lhs = m.group(1)
+                        after = m.group(2).lstrip()
+                        kind = "field=resolveToken(dynamic)"
+                        if after.startswith(("'", '"', "[[")):
+                            kind = "field=resolveToken(const)"
+                        inferred[rel_path].append(
+                            {
+                                "line": idx,
+                                "kind": kind,
+                                "lhs": lhs,
+                                "context": stripped[:240],
+                            }
+                        )
+
+                    if "lia.lang.resolveToken" in line:
+                        m = call_resolve.search(line)
+                        if m:
+                            after = m.group(1).lstrip()
+                            kind = "resolveToken(dynamic)"
+                            if after.startswith(("'", '"', "[[")):
+                                kind = "resolveToken(const)"
+                            inferred[rel_path].append(
+                                {
+                                    "line": idx,
+                                    "kind": kind,
+                                    "lhs": None,
+                                    "context": stripped[:240],
+                                }
+                            )
+
+                    if generic_l_call.search(line):
+                        inferred[rel_path].append(
+                            {
+                                "line": idx,
+                                "kind": "call=L(...)",
+                                "lhs": None,
+                                "context": stripped[:240],
+                            }
+                        )
+
+                    for at_match in attr_at_token.finditer(line):
+                        inferred[rel_path].append(
+                            {
+                                "line": idx,
+                                "kind": "@token",
+                                "lhs": None,
+                                "context": stripped[:240],
+                            }
+                        )
+
+        for k in list(inferred.keys()):
+            uniq = {}
+            for entry in inferred[k]:
+                key = (entry.get("line"), entry.get("kind"), entry.get("lhs"), entry.get("context"))
+                uniq[key] = entry
+            inferred[k] = sorted(uniq.values(), key=lambda e: int(e.get("line", 0)))
+
+        return dict(sorted(inferred.items(), key=lambda kv: kv[0].lower()))
 
     def _scan_all_language_files(self) -> Dict[str, Set[str]]:
         """Scan all language files and extract their keys"""
@@ -635,6 +787,12 @@ class FunctionComparisonReportGenerator:
         matches = re.findall(pattern, text)
         return len(matches)
 
+    def _normalize_localization_key(self, key: Optional[str]) -> Optional[str]:
+        """Normalize localization references so @token and token share the same lookup key."""
+        if not key:
+            return key
+        return key[1:] if key.startswith('@') else key
+
     def _count_function_arguments(self, arg_str: str) -> int:
         """Count function arguments properly, handling nested parentheses and strings"""
         if not arg_str or arg_str == ',':
@@ -771,6 +929,12 @@ class FunctionComparisonReportGenerator:
             # lia.lang.getLocalizedString("key", args...)
             (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']', 'lia.lang.getLocalizedString'),
             (r'\blia\.lang\.getLocalizedString\s*\(\s*\[\[', 'lia.lang.getLocalizedString'),
+            # lia.lang.resolveToken("@key", args...)
+            (r'\blia\.lang\.resolveToken\s*\(\s*["\']', 'lia.lang.resolveToken'),
+            (r'\blia\.lang\.resolveToken\s*\(\s*\[\[', 'lia.lang.resolveToken'),
+            # Any :*Localized("key", args...) style method calls
+            (r':[A-Za-z_]+Localized\s*\(\s*["\']', 'methodLocalized'),
+            (r':[A-Za-z_]+Localized\s*\(\s*\[\[', 'methodLocalized'),
             # :notifyLocalized("key", args...)
             (r':notifyLocalized\s*\(\s*["\']', ':notifyLocalized'),
             (r':notifyLocalized\s*\(\s*\[\[', ':notifyLocalized'),
@@ -801,6 +965,10 @@ class FunctionComparisonReportGenerator:
                 key, end_pos = self._parse_lua_string_simple(content, start_pos)
 
                 if not key:
+                    continue
+
+                normalized_key = self._normalize_localization_key(key)
+                if not normalized_key:
                     continue
 
                 # Find the opening parenthesis of the function call (should be before the quote)
@@ -836,15 +1004,15 @@ class FunctionComparisonReportGenerator:
                     arg_count = 0
 
                 # Check if key exists and if argument count matches
-                if key in lang_keys:
-                    expected = lang_keys[key]
+                if normalized_key in lang_keys:
+                    expected = lang_keys[normalized_key]
                     if arg_count != expected:
                         line_num = content[:match.start()].count('\n') + 1
                         mismatches.append({
                             'file': filename,
                             'line': line_num,
                             'function': func_name,
-                            'key': key,
+                            'key': normalized_key,
                             'expected': expected,
                             'provided': arg_count,
                             'context': lines[line_num - 1].strip() if line_num <= len(lines) else ''
@@ -907,6 +1075,10 @@ class FunctionComparisonReportGenerator:
         print("Detecting argument mismatches...")
         argument_mismatches = self._detect_argument_mismatches()
 
+        # 4.5. Inferred Localization (resolved at source)
+        print("Detecting inferred localization (resolved at source)...")
+        inferred_localization = self._detect_inferred_localization()
+
         # 5. Module undocumented items scan (hooks and lia.* functions)
         modules_scan = []
         if self.generate_module_docs:
@@ -917,11 +1089,7 @@ class FunctionComparisonReportGenerator:
         print("Comparing language files...")
         language_comparison = self._compare_language_files()
 
-        # 7. Panel Documentation Analysis
-        print("Analyzing panel documentation...")
-        panels_found, panels_documented = self._run_panels_analysis()
-
-        # 8. Font Analysis
+        # 7. Font Analysis
         print("Analyzing fonts...")
         fonts_registered, fonts_used, fonts_unregistered, fonts_default_gmod, fonts_variable, fonts_getfont_count, fonts_file_usages = self._run_font_analysis()
 
@@ -938,12 +1106,11 @@ class FunctionComparisonReportGenerator:
             hooks_standard=hooks_standard,
             localization_data=localization_data,
             argument_mismatches=argument_mismatches,
+            inferred_localization=inferred_localization,
             modules_data=modules_data,
             module_localization_conflicts=module_localization_conflicts,
             modules_scan=modules_scan,
             language_comparison=language_comparison,
-            panels_found=panels_found,
-            panels_documented=panels_documented,
             missing_library_functions=missing_library_functions,
             missing_hook_functions=missing_hook_functions,
             missing_meta_functions=missing_meta_functions,
@@ -1099,6 +1266,13 @@ class FunctionComparisonReportGenerator:
         """Run hooks documentation analysis"""
         try:
             hooks_registered, hooks_signatures, method_hooks, standard_hooks = self._scan_hook_registrations_with_signatures()
+            hooks_registered = [h for h in hooks_registered if h not in HOOKS_REPORT_IGNORE]
+            method_hooks = {h for h in method_hooks if h not in HOOKS_REPORT_IGNORE}
+            standard_hooks = {h for h in standard_hooks if h not in HOOKS_REPORT_IGNORE}
+            if hooks_signatures:
+                for h in HOOKS_REPORT_IGNORE:
+                    hooks_signatures.pop(h, None)
+
             self.hooks_signatures = hooks_signatures
             hooks_documented = self._read_all_documented_hooks()
             hooks_missing = [h for h in hooks_registered if h not in hooks_documented]
@@ -1484,101 +1658,6 @@ class FunctionComparisonReportGenerator:
             return False
         return all(re.match(r'^arg\d+$', n) for n in names)
 
-    def _run_panels_analysis(self) -> Tuple[List[str], List[str]]:
-        """Run panel documentation analysis"""
-        try:
-            panels_found = self._scan_panels_in_code()
-            panels_documented = self._read_documented_panels()
-            return sorted(panels_found), sorted(list(panels_documented))
-        except Exception as e:
-            print(f"Error in panels analysis: {e}")
-            return [], []
-
-    def _scan_panels_in_code(self) -> List[str]:
-        """Scan Lua files for vgui.Register() calls to find panels"""
-        panels = set()
-
-        # Scan gamemode files
-        lua_files = list(self.base_path.rglob("*.lua"))
-
-        for lua_file in lua_files:
-            # Skip certain directories
-            if 'docs' in lua_file.parts or 'documentation' in lua_file.parts or 'languages' in lua_file.parts:
-                continue
-
-            try:
-                with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
-
-                # Remove comments from content before processing
-                content = self._remove_lua_comments(content)
-
-                # Find vgui.Register() calls
-                # Pattern: vgui.Register("PanelName", panelData) or vgui.Register('PanelName', panelData)
-                pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
-                matches = re.findall(pattern, content, re.IGNORECASE)
-
-                for panel_name in matches:
-                    if panel_name and panel_name.strip():
-                        panels.add(panel_name.strip())
-
-                # Also find RegisterButton() calls (Lilia-specific panel registration)
-                # Pattern: RegisterButton("PanelName", ...)
-                button_pattern = r'RegisterButton\s*\(\s*["\']([^"\']+)["\']'
-                button_matches = re.findall(button_pattern, content, re.IGNORECASE)
-
-                for panel_name in button_matches:
-                    if panel_name and panel_name.strip():
-                        panels.add(panel_name.strip())
-
-            except Exception as e:
-                print(f"Warning: Error scanning {lua_file}: {e}")
-                continue
-
-        return list(panels)
-
-    def _read_documented_panels(self) -> Set[str]:
-        """Read documented panels from panels documentation files"""
-        documented_panels = set()
-
-        # Check panels documentation file in definitions directory
-        panels_doc_file = self.docs_path / "docs" / "definitions" / "panels.md"
-        if not panels_doc_file.exists():
-            print(f"Warning: Panels documentation file not found: {panels_doc_file}")
-            return documented_panels
-
-        try:
-            with open(panels_doc_file, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-
-            # Look for panel names in headers or content
-            # Pattern matches: ### PanelName or # PanelName or mentions in content
-            lines = content.split('\n')
-            for line in lines:
-                line = line.strip()
-                # Check for headers like ### liaMenu or # liaMenu
-                # Only consider headers that start with exactly ### (panel headers)
-                # Ignore #### headers (section headers within panels)
-                if line.startswith('### ') and not line.startswith('#### ') and len(line) > 4:
-                    # Extract panel name from header (remove ### and get first word)
-                    header_content = line[4:].strip()  # Remove '### '
-                    panel_name = header_content.split()[0] if header_content else ""
-                    # Only add if it looks like a panel name (starts with letter, contains valid chars)
-                    if panel_name and re.match(r'^[a-zA-Z][a-zA-Z0-9_]*', panel_name):
-                        documented_panels.add(panel_name)
-
-                # Also check for vgui.Register mentions in content
-                register_pattern = r'vgui\.Register\s*\(\s*["\']([^"\']+)["\']'
-                matches = re.findall(register_pattern, line, re.IGNORECASE)
-                for panel_name in matches:
-                    if panel_name and panel_name.strip():
-                        documented_panels.add(panel_name.strip())
-
-        except Exception as e:
-            print(f"Warning: Could not read panels from {panels_doc_file}: {e}")
-
-        return documented_panels
-
     def _run_localization_analysis(self) -> Tuple[Dict, List, Dict[str, List[Dict[str, str]]]]:
         """Run localization analysis and detect conflicting module localization keys"""
         try:
@@ -1877,12 +1956,6 @@ class FunctionComparisonReportGenerator:
 
         # Hooks Documentation Section
         report_lines.extend(self._generate_hooks_section(data))
-
-        # Panels Documentation Section
-        report_lines.extend(self._generate_panels_section(data))
-
-        # Font Analysis Section
-        report_lines.extend(self._generate_fonts_section(data))
 
         # Localization Section
         report_lines.extend(self._generate_localization_section(data))
@@ -2517,10 +2590,7 @@ class FunctionComparisonReportGenerator:
         # Hooks stats
         hooks_missing_count = len(data.hooks_missing)
         # Calculate unused hooks with whitelist filtering
-        unused_hooks_count = len([h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST])
-
-        # Panels stats
-        panels_missing_count = len(data.panels_found) - len(data.panels_documented) if data.panels_found else 0
+        unused_hooks_count = len([h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST and h not in HOOKS_REPORT_IGNORE])
 
         # Localization stats
         undefined_calls = data.localization_data.get('undefined_count', len(data.localization_data.get('undefined_rows', []))) if data.localization_data else 0
@@ -2542,17 +2612,6 @@ class FunctionComparisonReportGenerator:
             f"- **Unused Hooks:** {unused_hooks_count} (documented but unused)",
             f"- **Total Documented Hooks:** {len(data.hooks_documented)}",
             f"- **Total Registered Hooks:** {len(data.hooks_registered)}",
-            f"- **Method-Style Hooks:** {len(data.hooks_method)} (XXXX:Hook calls)",
-            f"- **Standard Hooks:** {len(data.hooks_standard)} (hook.Add/hook.Run calls)",
-            "",
-            "### Panels Documentation",
-            f"- **Panels Found:** {len(data.panels_found)}",
-            f"- **Documented Panels:** {len(data.panels_documented)}",
-            f"- **Missing Panels:** {panels_missing_count}",
-            "",
-            "### Font Analysis",
-            f"- **Registered Fonts:** {len(data.fonts_registered)}",
-            f"- **Unregistered Fonts:** {len(data.fonts_unregistered)} (used but not registered)",
             "",
             "### Localization Analysis",
             f"- **Undefined Calls:** {undefined_calls} unique",
@@ -2575,20 +2634,14 @@ class FunctionComparisonReportGenerator:
             lines.append("")
             return lines
 
-        # Summary stats
+        # Summary stats (slimmed down to avoid repeating executive summary details)
         total_files = len(data.function_comparison)
-        total_functions = sum(r.get('total_functions', 0) for r in data.function_comparison.values())
-        total_documented = sum(r.get('documented_functions', 0) for r in data.function_comparison.values())
         total_missing = sum(len(r.get('missing_functions', [])) for r in data.function_comparison.values())
-        total_missing_unique = sum(r.get('missing_functions_count', len(r.get('missing_functions', []))) for r in data.function_comparison.values())
 
         lines.extend([
-            "### Summary Statistics",
+            "### Summary",
             f"- **Files Analyzed:** {total_files}",
-            f"- **Total Functions:** {total_functions}",
-            f"- **Documented Functions:** {total_documented}",
-            f"- **Missing Documentation:** {total_missing} unique ({total_missing_unique} total occurrences)",
-            f"- **Coverage:** {(total_documented/total_functions*100):.1f}%" if total_functions > 0 else "- **Coverage:** N/A",
+            f"- **Missing Documentation:** {total_missing} unique functions",
             "",
         ])
 
@@ -2704,46 +2757,16 @@ class FunctionComparisonReportGenerator:
             return lines
 
         # Find unused hooks (documented but not registered)
-        unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST]
+        unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST and h not in HOOKS_REPORT_IGNORE]
 
         lines.extend([
             f"### Summary",
             f"- **Missing Hooks:** {len(data.hooks_missing)} (used in code but not documented)",
             f"- **Documented Hooks:** {len(data.hooks_documented)}",
             f"- **Registered Hooks:** {len(data.hooks_registered)}",
-            f"- **Method-Style Hooks:** {len(data.hooks_method)} (defined as XXXX:Hook())",
-            f"- **Standard Hooks:** {len(data.hooks_standard)} (used with hook.Add/hook.Run/etc.)",
             f"- **Unused Hooks:** {len(unused_hooks)} (documented but not registered)",
             "",
         ])
-
-        # Hook Categories
-        lines.append("### Hook Categories")
-        lines.append("")
-
-        if data.hooks_method:
-            lines.append("#### Method-Style Hooks (XXXX:Hook)")
-            lines.append("Hooks defined as methods on tables (GM, MODULE, SCHEMA) but not called with hook.Add/hook.Run/hook.Call:")
-            for hook in sorted(data.hooks_method):
-                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
-                if params:
-                    param_str = ', '.join(params)
-                    lines.append(f"- `{hook}({param_str})`")
-                else:
-                    lines.append(f"- `{hook}()`")
-            lines.append("")
-
-        if data.hooks_standard:
-            lines.append("#### Standard Hooks (hook.Add/hook.Run)")
-            lines.append("Hooks used with hook.Add, hook.Run, or hook.Call:")
-            for hook in sorted(data.hooks_standard):
-                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
-                if params:
-                    param_str = ', '.join(params)
-                    lines.append(f"- `{hook}({param_str})`")
-                else:
-                    lines.append(f"- `{hook}()`")
-            lines.append("")
 
         if data.hooks_missing:
             lines.append("### Missing Hook Documentation:")
@@ -2767,60 +2790,6 @@ class FunctionComparisonReportGenerator:
 
         return lines
 
-    def _generate_panels_section(self, data: CombinedReportData) -> List[str]:
-        """Generate panels documentation section"""
-        lines = ["## Panels Documentation Analysis", ""]
-
-        if not data.panels_found and not data.panels_documented:
-            lines.append("_No panels analysis data available._")
-            lines.append("")
-            return lines
-
-        # Categorize panels
-        panels_found_set = set(data.panels_found)
-        panels_documented_set = set(data.panels_documented)
-
-        # Panels registered in code but not documented
-        panels_missing_docs = [p for p in data.panels_found if p not in panels_documented_set]
-
-        # Panels documented but not registered in code (potentially obsolete)
-        panels_obsolete_docs = [p for p in data.panels_documented if p not in panels_found_set]
-
-        # Panels that are both registered and documented (properly documented)
-        panels_properly_documented = [p for p in data.panels_found if p in panels_documented_set]
-
-        lines.extend([
-            "### Summary",
-            f"- **Panels Registered in Code:** {len(data.panels_found)}",
-            f"- **Panels in Documentation:** {len(data.panels_documented)}",
-            f"- **Missing Documentation:** {len(panels_missing_docs)}",
-            f"- **Obsolete Documentation:** {len(panels_obsolete_docs)}",
-            f"- **Properly Documented:** {len(panels_properly_documented)}",
-            "",
-        ])
-
-        if panels_missing_docs:
-            lines.append("### Panels Missing Documentation:")
-            lines.append("These panels are registered in code but not documented:")
-            for panel in sorted(panels_missing_docs):
-                lines.append(f"- `{panel}()`")
-            lines.append("")
-
-        if panels_obsolete_docs:
-            lines.append("### Obsolete Panel Documentation:")
-            lines.append("These panels are documented but not registered in code:")
-            for panel in sorted(panels_obsolete_docs):
-                lines.append(f"- `{panel}()`")
-            lines.append("")
-
-        if panels_properly_documented:
-            lines.append("### Properly Documented Panels:")
-            lines.append("These panels are both registered in code and documented:")
-            for panel in sorted(panels_properly_documented):
-                lines.append(f"- `{panel}()`")
-            lines.append("")
-
-        return lines
 
     def _generate_fonts_section(self, data: CombinedReportData) -> List[str]:
         """Generate font analysis section"""
@@ -2856,97 +2825,65 @@ class FunctionComparisonReportGenerator:
         return lines
 
     def _generate_localization_section(self, data: CombinedReportData) -> List[str]:
-        """Generate localization analysis section"""
+        """Generate localized report section as requested by user."""
         lines = ["## Localization Analysis", ""]
 
-        if not data.localization_data and not data.argument_mismatches:
-            lines.append("_No localization data available._")
+        loc_data = data.localization_data or {}
+        inferred = getattr(data, "inferred_localization", {}) or {}
+
+        unique_keys = len(loc_data.get('keys', {}))
+        undefined_calls = loc_data.get('undefined_count', len(loc_data.get('undefined_rows', [])))
+        arg_mismatch_count = len(data.argument_mismatches or [])
+
+        lines.append(f"- **Unique Keys:** {unique_keys}")
+        lines.append(f"- **Undefined Calls:** {undefined_calls}")
+        lines.append(f"- **Argument Mismatch:** {arg_mismatch_count}")
+        lines.append("")
+
+        # Argument mismatch detail block
+        lines.append("### Argument Mismatches")
+        lines.append("")
+        lines.append(f"- **Total Mismatches:** {arg_mismatch_count}")
+
+        if arg_mismatch_count > 0:
             lines.append("")
-            return lines
-
-        loc_data = data.localization_data
-        module_conflicts = getattr(data, 'module_localization_conflicts', {}) or {}
-
-        # Framework summary
-        if data.localization_data:
-            lines.extend([
-                "### Framework Localization",
-                f"- **Language Keys:** {len(loc_data.get('keys', []))}",
-                f"- **Total Usages:** {loc_data.get('total_hits', 0)}",
-                f"- **Undefined Calls:** {loc_data.get('undefined_count', len(loc_data.get('undefined_rows', [])))}",
-                f"- **@xxxxx Patterns:** {loc_data.get('at_pattern_count', len(loc_data.get('at_pattern_rows', [])))}",
-                "",
-            ])
-
-        # Argument mismatches summary
-        if data.argument_mismatches:
-            lines.extend([
-                "### Argument Mismatches",
-                f"- **Total Mismatches:** {len(data.argument_mismatches)}",
-                "",
-            ])
-
-            # Group mismatches by file for better organization
             file_mismatches = defaultdict(list)
             for mismatch in data.argument_mismatches:
                 file_mismatches[mismatch['file']].append(mismatch)
 
-            for filename, mismatches in sorted(file_mismatches.items()):
+            for filename in sorted(file_mismatches.keys(), key=str.lower):
+                lines.append("")
                 lines.append(f"#### {filename}")
-                for mismatch in sorted(mismatches, key=lambda x: x['line']):
-                    lines.append(f"- **Line {mismatch['line']}:** `{mismatch['key']}(args)`")
+                for mismatch in sorted(file_mismatches[filename], key=lambda x: x['line']):
+                    # The function call shape, as requested in example
+                    lines.append(f"- **Line {mismatch['line']}:** {mismatch['key']}({mismatch.get('provided')})")
                     lines.append(f"  - Expected: {mismatch['expected']} args, Provided: {mismatch['provided']} args")
-                    lines.append(f"  - Context: `{mismatch['context'][:80]}{'...' if len(mismatch['context']) > 80 else ''}`")
-                lines.append("")
+                    context_text = mismatch.get('context', '')
+                    lines.append(f"  - Context: {context_text}")
 
-        # Module localization conflicts
-        if module_conflicts:
-            lines.extend([
-                "### Module Localization Conflicts",
-                f"- **Conflicting Keys:** {len(module_conflicts)}",
-                "",
-            ])
+        lines.append("")
 
-            for key in sorted(module_conflicts.keys(), key=str.lower):
-                entries = module_conflicts[key]
-                lines.append(f"- `{key}` appears in {len(entries)} modules:")
-                for entry in sorted(entries, key=lambda e: (e.get('module_name') or "").lower()):
-                    module_label = entry.get('module_name') or entry.get('module_path') or "Unknown module"
-                    module_path = entry.get('module_path')
-                    display_label = f"{module_label} ({module_path})" if module_path else module_label
+        # Missing keys report (undefined keys in localization usage)
+        lines.append("### Missing Keys")
 
-                    value_preview = entry.get('value')
-                    if value_preview is not None:
-                        preview = re.sub(r'\s+', ' ', str(value_preview)).strip()
-                        if len(preview) > 80:
-                            preview = preview[:77] + "..."
-                        lines.append(f"  - {display_label}: \"{preview}\"")
-                    else:
-                        lines.append(f"  - {display_label}")
-                lines.append("")
+        undefined_rows = loc_data.get('undefined_rows', [])
+        if undefined_rows:
+            for row in undefined_rows:
+                # row is (relative_path, line_num, line_content, func_type, key)
+                rel_file = row[0]
+                line_num = row[1]
+                line_content = row[2]
+                key = row[4] if len(row) > 4 else None
+                lines.append(f"- **{key}** in {rel_file}:{line_num}")
+                lines.append(f"  - Context: {line_content}")
+        else:
+            lines.append("- None")
 
-        # Issues summary (for backward compatibility)
-        issues = []
-        if data.localization_data and loc_data.get('undefined_rows'):
-            issues.append(f"- {len(loc_data['undefined_rows'])} undefined calls")
-        if data.localization_data and loc_data.get('at_pattern_rows'):
-            issues.append(f"- {len(loc_data['at_pattern_rows'])} @xxxxx patterns")
-        if data.argument_mismatches:
-            issues.append(f"- {len(data.argument_mismatches)} argument mismatches")
-        if module_conflicts:
-            issues.append(f"- {len(module_conflicts)} module key conflicts")
+        lines.append("")
 
-        if issues:
-            lines.append("### Key Issues:")
-            lines.extend(issues)
-            lines.append("")
-
-        # All issues (complete list) - only undefined calls for backward compatibility
-        if data.localization_data and loc_data.get('undefined_rows'):
-            lines.append("### Undefined Localization Calls:")
-            for row in loc_data['undefined_rows']:
-                lines.append(f"- `{row[4]}(args)` in {row[0]}:{row[1]}:{row[2]} ({row[3]})")
-            lines.append("")
+        # Inferred keys are detected for internal review but not shown in this report section.
+        # (The details were previously shown under "### Inferred Localization (Source-level)")
+        # If needed, use `data.inferred_localization` directly.
 
         return lines
 

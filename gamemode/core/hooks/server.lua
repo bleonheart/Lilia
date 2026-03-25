@@ -1146,7 +1146,7 @@ function GM:CreateSalaryTimers()
                                     local finalPay = hook.Run("OnSalaryGiven", client, char, pay, charFaction, class)
                                     if isnumber(finalPay) then pay = finalPay end
                                     char:giveMoney(pay)
-                                    client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("salaryWord"))
+                                    client:notifyMoneyLocalized("salary", lia.currency.get(pay), L("categorySalary"))
                                 end
                             end
                         end
@@ -1266,7 +1266,7 @@ end
 gameevent.Listen("server_addban")
 gameevent.Listen("server_removeban")
 hook.Add("server_addban", "LiliaLogServerBan", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
     MsgC(Color(255, 153, 0), L("banLogFormat", data.name, data.networkid, data.ban_length, data.ban_reason), "\n")
     lia.db.insertTable({
         player = data.name or "",
@@ -1280,7 +1280,7 @@ hook.Add("server_addban", "LiliaLogServerBan", function(data)
 end)
 
 hook.Add("server_removeban", "LiliaLogServerUnban", function(data)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
     MsgC(Color(255, 153, 0), L("unbanLogFormat", data.networkid), "\n")
     lia.db.query("DELETE FROM lia_bans WHERE playerSteamID = " .. lia.db.convertDataType(data.networkid))
 end)

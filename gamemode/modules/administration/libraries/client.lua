@@ -6,7 +6,7 @@ AdminStickMenuPositionCache = nil
 AdminStickMenuOpenTime = 0
 MODULE.adminStickCategories = MODULE.adminStickCategories or {}
 MODULE.adminStickCategoryOrder = MODULE.adminStickCategoryOrder or {}
-local playerInfoLabel = L("player") .. " " .. L("information")
+local playerInfoLabel = L("discordAntiCheatPlayer") .. " " .. L("adminStickSubCategoryInformation")
 local subMenuIcons = {
     moderationTools = "icon16/wrench.png",
     warnings = "icon16/error.png",
@@ -66,7 +66,7 @@ function MODULE:ShowPlayerOptions(target, options)
         name = L("nameCopyFormat", target:Name()),
         image = "icon16/page_copy.png",
         func = function()
-            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("name"))
+            client:notifySuccessLocalized("copiedToClipboard", target:Name(), L("PrintName"))
             SetClipboardText(target:Name())
         end
     })
@@ -166,7 +166,7 @@ function MODULE:ShowPlayerOptions(target, options)
     })
 
     table.insert(orderedOptions, {
-        name = L("returnText"),
+        name = L("returnButton"),
         image = "icon16/arrow_redo.png",
         func = function() lia.admin.execCommand("return", target) end
     })
@@ -255,7 +255,7 @@ local function OpenFlagsPanel(panel, data)
     panel:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("name"),
+            name = L("PrintName"),
             field = "name"
         },
         {
@@ -263,7 +263,7 @@ local function OpenFlagsPanel(panel, data)
             field = "steamID"
         },
         {
-            name = L("charFlagsTitle"),
+            name = L("adminStickSubCategoryCharacterFlags"),
             field = "flags"
         },
     }
@@ -337,7 +337,7 @@ local function OpenFlagsPanel(panel, data)
 
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
-    list:AddMenuOption(L("noOptionsAvailable"), function() end)
+    list:AddMenuOption(L("adminStickNoOptions"), function() end)
 end
 
 function MODULE:PopulateAdminTabs(pages)
@@ -401,7 +401,7 @@ function MODULE:PopulateAdminTabs(pages)
                     local columns = {
                         {
                             name = "name",
-                            field = L("name")
+                            field = L("PrintName")
                         },
                         {
                             name = "description",
@@ -748,8 +748,8 @@ function MODULE:PopulateInventoryItems(pnlContent, tree)
     end
 
     for category, itemList in SortedPairs(categorized) do
-        if category ~= L("unsorted") or #itemList > 0 then
-            local node = tree:AddNode(category == L("unsorted") and L("unsorted") or category, "icon16/picture.png")
+        if category ~= L("categoryUnsorted") or #itemList > 0 then
+            local node = tree:AddNode(category == L("categoryUnsorted") and L("categoryUnsorted") or category, "icon16/picture.png")
             node.DoPopulate = function(btn)
                 if btn.PropPanel then return end
                 btn.PropPanel = vgui.Create("ContentContainer", pnlContent)
@@ -934,30 +934,89 @@ local function GetIconForCategory(name)
     end
 end
 
+local function formatAdminStickWords(key)
+    local text = tostring(key or ""):gsub("_", " "):gsub("-", " ")
+    text = text:gsub("(%l)(%u)", "%1 %2")
+    text = text:gsub("%s+", " ")
+    return string.Trim(text)
+end
+
+local function formatAdminStickPascal(key)
+    local words = formatAdminStickWords(key)
+    return (words:gsub("(%a)([%w']*)", function(first, rest) return string.upper(first) .. string.lower(rest) end):gsub("%s+", ""))
+end
+
+local function resolveAdminStickToken(candidates)
+    for _, token in ipairs(candidates) do
+        local resolved = lia.lang.resolveToken(token)
+        if resolved and resolved ~= "" and resolved ~= token and resolved ~= token:sub(2) then return resolved end
+    end
+end
+
+local function humanizeAdminStickKey(key)
+    local words = formatAdminStickWords(key)
+    return words:gsub("(%a)([%w']*)", function(first, rest) return string.upper(first) .. string.lower(rest) end)
+end
+
+local function getCategoryDisplayName(categoryKey)
+    local pascalKey = formatAdminStickPascal(categoryKey)
+    return resolveAdminStickToken({
+        "@adminStickCategory" .. pascalKey,
+        "@" .. tostring(categoryKey or "")
+    }) or humanizeAdminStickKey(categoryKey)
+end
+
+local function getSubcategoryDisplayName(_, subcategoryKey)
+    local pascalKey = formatAdminStickPascal(subcategoryKey)
+    return resolveAdminStickToken({
+        "@adminStickSubCategory" .. pascalKey,
+        "@adminStickCategory" .. pascalKey,
+        "@" .. tostring(subcategoryKey or "")
+    }) or humanizeAdminStickKey(subcategoryKey)
+end
+
+local function findCategoryKeyByName(categories, displayName)
+    for categoryKey, categoryData in pairs(categories or {}) do
+        if categoryData and categoryData.name == displayName then return categoryKey end
+    end
+end
+
+local function findSubcategoryKeyByName(categoryData, displayName)
+    for subcategoryKey, subcategoryData in pairs(categoryData and categoryData.subcategories or {}) do
+        if subcategoryData and subcategoryData.name == displayName then return subcategoryKey end
+    end
+end
+
+local function ensureDynamicCategory(categories, orderedCategories, categoryKey)
+    local displayName = getCategoryDisplayName(categoryKey)
+    local existingKey = findCategoryKeyByName(categories, displayName)
+    if existingKey then return existingKey, categories[existingKey] end
+    categories[categoryKey] = {
+        name = displayName,
+        icon = GetIconForCategory(categoryKey),
+        subcategories = {}
+    }
+
+    if orderedCategories then orderedCategories[#orderedCategories + 1] = categoryKey end
+    return categoryKey, categories[categoryKey]
+end
+
 local function GenerateDynamicCategories()
     local categories = {}
-    local categoryNames = {}
-    local adminStickCount = 0
+    local orderedCategories = {}
     for _, cmdData in pairs(lia.command.list) do
         if cmdData and istable(cmdData) and cmdData.AdminStick and istable(cmdData.AdminStick) then
-            adminStickCount = adminStickCount + 1
             local category = cmdData.AdminStick.Category
             local subcategory = cmdData.AdminStick.SubCategory
             if category then
-                if not categories[category] then
-                    categories[category] = {
-                        name = category,
-                        icon = GetIconForCategory(category),
-                        subcategories = {}
-                    }
-
-                    table.insert(categoryNames, category)
-                end
+                local canonicalCategoryKey, categoryData = ensureDynamicCategory(categories, orderedCategories, category)
 
                 if subcategory then
-                    if not categories[category].subcategories[subcategory] then
-                        categories[category].subcategories[subcategory] = {
-                            name = subcategory,
+                    local displayName = getSubcategoryDisplayName(canonicalCategoryKey, subcategory)
+                    local existingSubcategoryKey = findSubcategoryKeyByName(categoryData, displayName)
+                    if not existingSubcategoryKey then
+                        categoryData.subcategories[subcategory] = {
+                            name = displayName,
                             icon = GetIconForCategory(subcategory)
                         }
                     end
@@ -965,145 +1024,7 @@ local function GenerateDynamicCategories()
             end
         end
     end
-
-    local mergedCategories = {}
-    local mergedCategoryNames = {}
-    for _, categoryKey in ipairs(categoryNames) do
-        local category = categories[categoryKey]
-        if category then
-            local displayName = category.name
-            local existingKey = nil
-            for existingKeyCheck, existingCategory in pairs(mergedCategories) do
-                if existingCategory.name == displayName then
-                    existingKey = existingKeyCheck
-                    break
-                end
-            end
-
-            if existingKey then
-                for subKey, subCategory in pairs(category.subcategories) do
-                    if not mergedCategories[existingKey].subcategories[subKey] then mergedCategories[existingKey].subcategories[subKey] = subCategory end
-                end
-            else
-                mergedCategories[categoryKey] = category
-                table.insert(mergedCategoryNames, categoryKey)
-            end
-        end
-    end
-
-    local preferredOrder = {"moderation", "characterManagement", "doorManagement", "storageManagement"}
-    local orderedCategories = {}
-    for _, preferredCategory in ipairs(preferredOrder) do
-        if mergedCategories[preferredCategory] then table.insert(orderedCategories, preferredCategory) end
-    end
-
-    for _, categoryName in ipairs(mergedCategoryNames) do
-        if not table.HasValue(orderedCategories, categoryName) then table.insert(orderedCategories, categoryName) end
-    end
-
-    local hardcodedCategories = {
-        moderation = {
-            name = lia.lang.resolveToken("@adminStickCategoryModeration") or "Moderation",
-            icon = "icon16/shield.png",
-            subcategories = {
-                moderationTools = {
-                    name = lia.lang.resolveToken("@moderationTools"),
-                    icon = "icon16/shield.png"
-                },
-                teleportation = {
-                    name = lia.lang.resolveToken("@adminStickCategoryTeleportation") or "Teleportation",
-                    icon = "icon16/world.png"
-                }
-            }
-        },
-        characterManagement = {
-            name = lia.lang.resolveToken("@adminStickCategoryCharacterManagement"),
-            icon = "icon16/user_gray.png",
-            subcategories = {
-                information = {
-                    name = lia.lang.resolveToken("@information"),
-                    icon = "icon16/information.png"
-                },
-                transfers = {
-                    name = lia.lang.resolveToken("@adminStickSubCategoryTransfers"),
-                    icon = "icon16/arrow_right.png",
-                    subcategories = {
-                        adminStickSubCategoryFactions = {
-                            name = lia.lang.resolveToken("@adminStickSubCategoryFactions"),
-                            icon = "icon16/group.png"
-                        },
-                        adminStickSubCategoryClasses = {
-                            name = lia.lang.resolveToken("@adminStickSubCategoryClasses"),
-                            icon = "icon16/user.png"
-                        }
-                    }
-                },
-                whitelists = {
-                    name = lia.lang.resolveToken("@adminStickSubCategoryWhitelists"),
-                    icon = "icon16/group_key.png",
-                    subcategories = {
-                        adminStickSubCategoryFactions = {
-                            name = lia.lang.resolveToken("@adminStickSubCategoryFactions"),
-                            icon = "icon16/group.png"
-                        },
-                        adminStickSubCategoryClasses = {
-                            name = lia.lang.resolveToken("@adminStickSubCategoryClasses"),
-                            icon = "icon16/user.png"
-                        }
-                    }
-                },
-                properties = {
-                    name = lia.lang.resolveToken("@properties"),
-                    icon = "icon16/application_view_tile.png"
-                },
-                items = {
-                    name = lia.lang.resolveToken("@items"),
-                    icon = "icon16/box.png"
-                }
-            }
-        },
-        doorManagement = {
-            name = L("adminStickCategoryDoorManagement"),
-            icon = "icon16/door.png",
-            subcategories = {
-                actions = {
-                    name = L("actions"),
-                    icon = "icon16/lightning.png"
-                },
-                settings = {
-                    name = L("settings"),
-                    icon = "icon16/cog.png"
-                },
-                access = {
-                    name = L("access"),
-                    icon = "icon16/group.png"
-                }
-            }
-        },
-        storageManagement = {
-            name = L("storageManagement"),
-            icon = "icon16/package.png"
-        }
-    }
-
-    for key, data in pairs(hardcodedCategories) do
-        if not mergedCategories[key] then
-            mergedCategories[key] = data
-        else
-            if not mergedCategories[key].subcategories then mergedCategories[key].subcategories = {} end
-            for subKey, subData in pairs(data.subcategories or {}) do
-                if not mergedCategories[key].subcategories[subKey] then mergedCategories[key].subcategories[subKey] = subData end
-            end
-        end
-
-        if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
-    end
-
-    hook.Run("RegisterAdminStickSubcategories", mergedCategories)
-    for key, _ in pairs(mergedCategories) do
-        if not table.HasValue(orderedCategories, key) then table.insert(orderedCategories, key) end
-    end
-    return mergedCategories, orderedCategories
+    return categories, orderedCategories
 end
 
 function MODULE:InitializedModules()
@@ -1153,45 +1074,57 @@ end
 
 local function GetOrCreateCategoryMenu(parent, categoryKey, store)
     if not parent or not IsValid(parent) then return end
-    local category = MODULE.adminStickCategories[categoryKey]
+    MODULE.adminStickCategories = MODULE.adminStickCategories or {}
+    local displayName = getCategoryDisplayName(categoryKey)
+    local canonicalCategoryKey = findCategoryKeyByName(MODULE.adminStickCategories, displayName) or categoryKey
+    local category = MODULE.adminStickCategories[canonicalCategoryKey]
     if not category then
-        MODULE.adminStickCategories[categoryKey] = {
-            name = categoryKey == "characterManagement" and L("adminStickCategoryCharacterManagement") or (L(categoryKey) ~= categoryKey and L(categoryKey) or categoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " ")),
+        MODULE.adminStickCategories[canonicalCategoryKey] = {
+            name = displayName,
             icon = GetIconForCategory(categoryKey),
             subcategories = {}
         }
 
-        category = MODULE.adminStickCategories[categoryKey]
-        if MODULE.adminStickCategoryOrder and not table.HasValue(MODULE.adminStickCategoryOrder, categoryKey) then table.insert(MODULE.adminStickCategoryOrder, categoryKey) end
+        category = MODULE.adminStickCategories[canonicalCategoryKey]
+        if MODULE.adminStickCategoryOrder and not table.HasValue(MODULE.adminStickCategoryOrder, canonicalCategoryKey) then table.insert(MODULE.adminStickCategoryOrder, canonicalCategoryKey) end
     end
 
-    if not store[categoryKey] then
+    if not store[canonicalCategoryKey] then
         local menu, option = parent:AddSubMenu(category.name, function() end)
         if category.icon and option then option:SetIcon(category.icon) end
         if IsValid(menu) then
-            store[categoryKey] = menu
+            store[canonicalCategoryKey] = menu
         else
             return parent
         end
     end
-    return store[categoryKey] or parent
+    return store[canonicalCategoryKey] or parent
 end
 
 local function GetOrCreateSubCategoryMenu(parent, categoryKey, subcategoryKey, store)
     if not parent or not IsValid(parent) then return end
-    local category = MODULE.adminStickCategories[categoryKey]
-    if not category then category = GetOrCreateCategoryMenu(parent, categoryKey, store) and MODULE.adminStickCategories[categoryKey] end
+    MODULE.adminStickCategories = MODULE.adminStickCategories or {}
+    local canonicalCategoryKey = findCategoryKeyByName(MODULE.adminStickCategories, getCategoryDisplayName(categoryKey)) or categoryKey
+    local category = MODULE.adminStickCategories[canonicalCategoryKey]
+    if not category then
+        GetOrCreateCategoryMenu(parent, categoryKey, store)
+        canonicalCategoryKey = findCategoryKeyByName(MODULE.adminStickCategories, getCategoryDisplayName(categoryKey)) or categoryKey
+        category = MODULE.adminStickCategories[canonicalCategoryKey]
+    end
+
     if not category then return parent end
     category.subcategories = category.subcategories or {}
-    if not category.subcategories[subcategoryKey] then
-        category.subcategories[subcategoryKey] = {
-            name = L(subcategoryKey) ~= subcategoryKey and L(subcategoryKey) or subcategoryKey:gsub("(%l)(%w*)", function(a, b) return string.upper(a) .. b end):gsub("_", " "),
+    local displayName = getSubcategoryDisplayName(canonicalCategoryKey, subcategoryKey)
+    local canonicalSubcategoryKey = findSubcategoryKeyByName(category, displayName) or subcategoryKey
+    if not category.subcategories[canonicalSubcategoryKey] then
+        category.subcategories[canonicalSubcategoryKey] = {
+            name = displayName,
             icon = GetIconForCategory(subcategoryKey)
         }
     end
 
-    local subcategory = category.subcategories[subcategoryKey]
-    local fullKey = categoryKey .. "_" .. subcategoryKey
+    local subcategory = category.subcategories[canonicalSubcategoryKey]
+    local fullKey = canonicalCategoryKey .. "_" .. canonicalSubcategoryKey
     if not store[fullKey] then
         local menu, option = parent:AddSubMenu(subcategory.name, function() end)
         if subcategory.icon and option then option:SetIcon(subcategory.icon) end
@@ -1459,8 +1392,8 @@ local function OpenReasonUI(tgt, cmd)
     AdminStickIsOpen = true
     local argTypes = {}
     local defaults = {}
-    argTypes[L("reason")] = "string"
-    defaults[L("reason")] = ""
+    argTypes[L("discordWarningSystemReason")] = "string"
+    defaults[L("discordWarningSystemReason")] = ""
     if cmd == "banid" then
         argTypes[L("lengthInDays")] = "number"
         defaults[L("lengthInDays")] = 0
@@ -1473,7 +1406,7 @@ local function OpenReasonUI(tgt, cmd)
             return
         end
 
-        local txt = data[L("reason")] or ""
+        local txt = data[L("discordWarningSystemReason")] or ""
         local id = GetIdentifier(tgt)
         if cmd == "banid" then
             if id ~= "" then
@@ -1674,7 +1607,7 @@ local function IncludeTeleportation(tgt, menu, stores)
             icon = "icon16/arrow_right.png"
         },
         {
-            name = L("returnText"),
+            name = L("returnButton"),
             cmd = "return",
             icon = "icon16/arrow_redo.png"
         },
@@ -1810,7 +1743,7 @@ local function IncludeFlagManagement(tgt, menu, stores)
                 flagList = string.Trim(flagList)
             end
 
-            Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("charFlagsTitle"), L("ok"))
+            Derma_Message(L("currentCharFlags") .. ": " .. (flagList ~= "" and flagList or L("none")), L("adminStickSubCategoryCharacterFlags"), L("ok"))
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/information.png")
     end
@@ -1823,69 +1756,8 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
     local cat = data.AdminStick.Category
     local sub = data.AdminStick.SubCategory
     local m = menu
-    local categoryKey = nil
-    local subcategoryKey = nil
-    if MODULE.adminStickCategories and MODULE.adminStickCategories[cat] then
-        categoryKey = cat
-        if sub and MODULE.adminStickCategories[cat].subcategories and MODULE.adminStickCategories[cat].subcategories[sub] then subcategoryKey = sub end
-    elseif cat == "characterManagement" then
-        categoryKey = "characterManagement"
-        if sub == "information" or sub == "adminStickSubCategorySetInfos" or sub == "adminStickSubCategoryGetInfos" then
-            subcategoryKey = "information"
-        elseif sub == "factions" then
-            subcategoryKey = "transfers"
-        elseif sub == "classes" then
-            subcategoryKey = "transfers"
-        elseif sub == "whitelists" then
-            subcategoryKey = "whitelists"
-        elseif sub == "properties" or sub == "flags" or sub == "attributes" or sub == "miscellaneous" then
-            subcategoryKey = "properties"
-        elseif sub == "items" then
-            subcategoryKey = "items"
-        end
-    elseif cat == "doorManagement" then
-        categoryKey = "doorManagement"
-        if sub == "actions" or sub == "doorActions" or sub == "doorMaintenance" then
-            subcategoryKey = "actions"
-        elseif sub == "settings" or sub == "doorSettings" or sub == "doorInformation" then
-            subcategoryKey = "settings"
-        elseif sub == "access" or sub == "factions" or sub == "classes" then
-            subcategoryKey = "access"
-        end
-    elseif cat == "storageManagement" then
-        categoryKey = "storageManagement"
-    elseif cat == "moderation" then
-        categoryKey = "moderation"
-        if sub == "moderationTools" or sub == "adminStickSubCategoryBans" or sub == "warnings" or sub == "misc" then
-            subcategoryKey = "moderationTools"
-        elseif sub == "teleportation" then
-            subcategoryKey = "teleportation"
-        end
-    elseif cat == "utility" then
-        categoryKey = "utility"
-        if sub == "commands" then
-            subcategoryKey = "commands"
-        elseif sub == "items" then
-            subcategoryKey = "items"
-        elseif sub == "ooc" then
-            subcategoryKey = "ooc"
-        end
-    elseif cat == "administration" then
-        categoryKey = "administration"
-        if sub == "server" then
-            subcategoryKey = "server"
-        elseif sub == "permissions" then
-            subcategoryKey = "permissions"
-        end
-    end
-
-    if categoryKey then
-        m = GetOrCreateCategoryMenu(menu, categoryKey, stores)
-        if subcategoryKey then m = GetOrCreateSubCategoryMenu(m, categoryKey, subcategoryKey, stores) end
-    else
-        if cat then m = GetOrCreateSubMenu(menu, cat, stores) end
-        if sub then m = GetOrCreateSubMenu(m, sub, stores) end
-    end
+    if cat then m = GetOrCreateCategoryMenu(menu, cat, stores) end
+    if cat and sub then m = GetOrCreateSubCategoryMenu(m, cat, sub, stores) end
 
     if IsValid(m) then
         local ic = data.AdminStick.Icon or "icon16/page.png"
@@ -1910,7 +1782,7 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
                 }
             }
 
-            local reasonKey = L("reason") or "reason"
+            local reasonKey = L("discordWarningSystemReason") or "reason"
             local function openReason(selectedSeverity)
                 lia.derma.requestArguments(name .. " - " .. selectedSeverity, {{reasonKey, "string"}}, function(success, argData)
                     if not success or not argData then
@@ -2255,89 +2127,6 @@ function MODULE:OpenAdminStickUI(tgt)
             end):SetIcon(ic)
         end
     end
-
-    hook.Add("RegisterAdminStickSubcategories", "liaDefaultSubcategories", function(categories)
-        if categories.moderation then
-            categories.moderation.subcategories = categories.moderation.subcategories or {}
-            categories.moderation.subcategories.moderationTools = {
-                name = lia.lang.resolveToken("@moderationTools"),
-                icon = "icon16/shield.png"
-            }
-
-            categories.moderation.subcategories.teleportation = {
-                name = lia.lang.resolveToken("@adminStickCategoryTeleportation") or "Teleportation",
-                icon = "icon16/world.png"
-            }
-        end
-
-        if categories.characterManagement then
-            categories.characterManagement.subcategories = categories.characterManagement.subcategories or {}
-            categories.characterManagement.subcategories.information = {
-                name = lia.lang.resolveToken("@information"),
-                icon = "icon16/information.png"
-            }
-
-            categories.characterManagement.subcategories.transfers = {
-                name = lia.lang.resolveToken("@adminStickSubCategoryTransfers"),
-                icon = "icon16/arrow_right.png",
-                subcategories = {
-                    adminStickSubCategoryFactions = {
-                        name = lia.lang.resolveToken("@factions"),
-                        icon = "icon16/group.png"
-                    },
-                    adminStickSubCategoryClasses = {
-                        name = lia.lang.resolveToken("@classes"),
-                        icon = "icon16/user.png"
-                    }
-                }
-            }
-
-            categories.characterManagement.subcategories.whitelists = {
-                name = lia.lang.resolveToken("@adminStickSubCategoryWhitelists"),
-                icon = "icon16/group_key.png",
-                subcategories = {
-                    adminStickSubCategoryClasses = {
-                        name = lia.lang.resolveToken("@classes"),
-                        icon = "icon16/user.png",
-                        subcategories = {
-                            adminStickClassAddWhitelist = {
-                                name = lia.lang.resolveToken("@addWhitelist"),
-                                icon = "icon16/user_add.png"
-                            },
-                            adminStickClassRemoveWhitelist = {
-                                name = lia.lang.resolveToken("@removeWhitelist"),
-                                icon = "icon16/user_delete.png"
-                            }
-                        }
-                    },
-                    adminStickSubCategoryFactions = {
-                        name = lia.lang.resolveToken("@faction"),
-                        icon = "icon16/group.png",
-                        subcategories = {
-                            adminStickFactionAddWhitelist = {
-                                name = lia.lang.resolveToken("@addWhitelist"),
-                                icon = "icon16/group_add.png"
-                            },
-                            adminStickFactionRemoveWhitelist = {
-                                name = lia.lang.resolveToken("@removeWhitelist"),
-                                icon = "icon16/group_delete.png"
-                            }
-                        }
-                    }
-                }
-            }
-
-            categories.characterManagement.subcategories.properties = {
-                name = lia.lang.resolveToken("@properties"),
-                icon = "icon16/application_view_tile.png"
-            }
-
-            categories.characterManagement.subcategories.items = {
-                name = lia.lang.resolveToken("@items"),
-                icon = "icon16/box.png"
-            }
-        end
-    end)
 
     hook.Add("GetAdminStickLists", "liaDefaultAdminStickLists", function(target, lists)
         local client = LocalPlayer()
@@ -2825,7 +2614,7 @@ local function UpdateLogsUI(panel, logsData)
     local nextButton = paginationContainer:Add("liaButton")
     nextButton:Dock(RIGHT)
     nextButton:SetWide(80)
-    nextButton:SetText(L("nextPage"))
+    nextButton:SetText(L("next"))
     nextButton:DockMargin(5, 5, 5, 5)
     local list = pagePanel:Add("liaTable")
     list:Dock(FILL)
@@ -2836,7 +2625,7 @@ local function UpdateLogsUI(panel, logsData)
             field = "timestamp"
         },
         {
-            name = L("message"),
+            name = L("discordTicketSystemMessage"),
             field = "message"
         },
         {
@@ -3107,7 +2896,7 @@ net.Receive("liaAllPks", function()
             field = "timestamp"
         },
         {
-            name = L("character"),
+            name = L("categoryCharacter"),
             field = "character"
         },
         {
@@ -3222,7 +3011,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
     panelRef:SizeToChildren(false, true)
     local columns = {
         {
-            name = L("player"),
+            name = L("discordAntiCheatPlayer"),
             field = "player"
         },
         {
@@ -3234,7 +3023,7 @@ lia.net.readBigTable("liaStaffSummary", function(data)
             field = "usergroup"
         },
         {
-            name = L("warningCount"),
+            name = L("discordWarningSystemWarningCount"),
             field = "warnings"
         },
         {
@@ -3375,7 +3164,7 @@ lia.net.readBigTable("liaAllPlayers", function(players)
             field = "characters"
         },
         {
-            name = L("warnings"),
+            name = L("adminStickCategoryWarnings"),
             field = "warnings"
         }
     }
@@ -3556,7 +3345,7 @@ function MODULE:HUDPaint()
             label = subLabel
             baseColor = lia.option.get("espPlayersColor")
         elseif ent.isItem and ent:isItem() and lia.option.get("espItems", false) then
-            kind = L("items")
+            kind = L("adminStickCategoryItems")
             local item = ent:getItemTable()
             label = item and item:getName() or L("unknown")
             baseColor = lia.option.get("espItemsColor")
@@ -3627,7 +3416,7 @@ net.Receive("liaDisplayCharList", function()
     local columns = {
         {
             name = "name",
-            field = L("name")
+            field = L("PrintName")
         },
         {
             name = "description",
@@ -3864,7 +3653,7 @@ net.Receive("liaActiveTickets", function()
             field = "timestamp"
         },
         {
-            name = L("requester"),
+            name = L("discordTicketSystemRequester"),
             field = "requesterDisplay"
         },
         {
@@ -3872,7 +3661,7 @@ net.Receive("liaActiveTickets", function()
             field = "adminDisplay"
         },
         {
-            name = L("message"),
+            name = L("discordTicketSystemMessage"),
             field = "message"
         }
     }
@@ -3933,7 +3722,7 @@ net.Receive("liaActiveTickets", function()
         if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
     end
 
-    list:AddMenuOption(L("noOptionsAvailable"), function() end)
+    list:AddMenuOption(L("adminStickNoOptions"), function() end)
     search.OnTextChanged = function(_, value) populate(value or "") end
     populate("")
 end)

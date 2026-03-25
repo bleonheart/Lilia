@@ -1,12 +1,12 @@
 ﻿local PANEL = {}
 function PANEL:Init()
     self:SetSize(700, 600)
-    self:SetTitle(L("door") .. " " .. L("settings"))
+    self:SetTitle(L("door") .. " " .. L("adminStickSubCategorySettings"))
     self:Center()
     self:MakePopup()
     self.access = self:Add("liaTable")
     self.access:Dock(FILL)
-    self.access:AddColumn(L("name"), 400)
+    self.access:AddColumn(L("PrintName"), 400)
     self.access:AddColumn(L("doorAccess"), 250, TEXT_ALIGN_RIGHT)
     self.access.OnAction = function(rowData)
         local ply = rowData._player

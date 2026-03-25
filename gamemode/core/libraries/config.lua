@@ -14,8 +14,34 @@
 lia.config = lia.config or {}
 lia.config.stored = lia.config.stored or {}
 lia.config._lastSyncedValues = lia.config._lastSyncedValues or {}
-lia.config._initialized = lia.config._initialized or false
+lia.config.initialized = lia.config.initialized or false
 lia.config._trace = false
+local function normalizeSelectableConfigOption(optionEntry, resolveToken)
+    if istable(optionEntry) then
+        local label = optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
+        if isstring(label) then label = resolveToken(label) end
+        return {
+            label = label,
+            value = optionEntry.value ~= nil and optionEntry.value or label
+        }
+    elseif isstring(optionEntry) then
+        local label = resolveToken(optionEntry)
+        return {
+            label = label,
+            value = optionEntry
+        }
+    end
+end
+
+local function getSelectableConfigOptionLabel(options, selectedValue)
+    for _, optionEntry in pairs(options or {}) do
+        if istable(optionEntry) then
+            if optionEntry.value == selectedValue then return optionEntry.label end
+            if isstring(optionEntry.value) and isstring(selectedValue) and optionEntry.value:lower() == selectedValue:lower() then return optionEntry.label end
+        end
+    end
+    return selectedValue
+end
 --[[
     Purpose:
         Register a callback to be executed when the configuration system is initialized.
@@ -39,7 +65,7 @@ lia.config._trace = false
 ]]
 function lia.config.onInitialized(callback)
     if not isfunction(callback) then return end
-    if lia.config._initialized == true then
+    if lia.config.initialized == true then
         callback()
         return
     end
@@ -129,7 +155,8 @@ function lia.config.add(key, name, value, callback, data)
     local savedValue = oldConfig and oldConfig.value or value
     if istable(data.options) then
         for k, v in pairs(data.options) do
-            if isstring(v) then data.options[k] = resolveToken(v) end
+            local normalized = normalizeSelectableConfigOption(v, resolveToken)
+            if normalized then data.options[k] = normalized end
         end
     elseif isfunction(data.options) then
         data.optionsFunc = data.options
@@ -180,7 +207,8 @@ function lia.config.getOptions(key)
         local success, result = pcall(config.data.optionsFunc)
         if success and istable(result) then
             for k, v in pairs(result) do
-                if isstring(v) then result[k] = L(v) end
+                local normalized = normalizeSelectableConfigOption(v, lia.lang.resolveToken)
+                if normalized then result[k] = normalized end
             end
             return result
         else
@@ -383,7 +411,7 @@ function lia.config.load()
             end
         end
 
-        lia.config._initialized = true
+        lia.config.initialized = true
         hook.Run("InitializedConfig")
     else
         net.Start("liaCfgList")
@@ -425,7 +453,7 @@ if CLIENT then
             end
         end
 
-        lia.config._initialized = true
+        lia.config.initialized = true
         hook.Run("InitializedConfig")
     end)
 
@@ -1447,7 +1475,20 @@ lia.config.add("sbDock", "@sbDock", "center", refreshScoreboard, {
     desc = "@sbDockDesc",
     category = "@Core",
     type = "Table",
-    options = {"left", "center", "right"}
+    options = {
+        {
+            label = "@left",
+            value = "left"
+        },
+        {
+            label = "@center",
+            value = "center"
+        },
+        {
+            label = "@right",
+            value = "right"
+        }
+    }
 })
 
 lia.config.add("ClassHeaders", "@classHeaders", true, nil, {
@@ -1545,6 +1586,13 @@ lia.config.add("MainMenuUseLastPos", "@mainMenuUseLastPos", true, nil, {
 })
 
 hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
+    local function localizeMenuLabel(value, ...)
+        if not isstring(value) then return value end
+        local resolved = lia.lang.resolveToken(value, ...)
+        if resolved ~= value then return resolved end
+        return L(value, ...)
+    end
+
     local function SetStyledTooltip(panel, text)
         if not text or text == "" then return end
         panel:SetTooltip(text)
@@ -1578,7 +1626,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
 
         local label = header:Add("DLabel")
         label:Dock(LEFT)
-        label:SetText(L(text))
+        label:SetText(localizeMenuLabel(text))
         label:SetFont("LiliaFont.22")
         label:SetTextColor(lia.color.theme.text or color_white)
         label:SizeToContents()
@@ -1683,12 +1731,13 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             combo:Dock(RIGHT)
             combo:SetWidth(200)
             combo:DockMargin(0, 8, 15, 8)
-            combo:SetValue(tostring(lia.config.get(key, config.value)))
             combo:SetFont("LiliaFont.18")
             SetStyledTooltip(combo, description)
             local options = lia.config.getOptions(key)
-            for _, text in pairs(options) do
-                combo:AddChoice(text, text)
+            local selectedValue = lia.config.get(key, config.value)
+            combo:SetValue(tostring(getSelectableConfigOptionLabel(options, selectedValue)))
+            for _, optionEntry in pairs(options) do
+                combo:AddChoice(optionEntry.label, optionEntry.value)
             end
 
             combo.OnSelect = function(_, _, v)
@@ -1699,7 +1748,11 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                 net.SendToServer()
             end
 
-            if CLIENT then lia.config._bindUI(key, combo, function(v) combo:SetValue(tostring(v)) end) end
+            if CLIENT then
+                lia.config._bindUI(key, combo, function(v)
+                    combo:SetValue(tostring(getSelectableConfigOptionLabel(options, v)))
+                end)
+            end
         end
     end
 
@@ -1724,7 +1777,7 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
             if not categoryPages[category] then
                 categoryPages[category] = {
                     configs = {},
-                    name = lia.lang.resolveToken(category)
+                    name = localizeMenuLabel(category)
                 }
             end
 
@@ -1785,14 +1838,15 @@ hook.Add("PopulateConfigurationButtons", "liaConfigPopulate", function(pages)
                     table.sort(sortedCategories)
                     for _, cat in ipairs(sortedCategories) do
                         local items = categories[cat]
+                        local localizedCategory = tostring(localizeMenuLabel(cat))
                         table.sort(items, function(a, b) return (a.name or "") < (b.name or "") end)
                         local visibleItems = {}
                         for _, item in ipairs(items) do
-                            if not filter or item.name:lower():find(filter, 1, true) or cat:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
+                            if not filter or item.name:lower():find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
                         end
 
                         if #visibleItems > 0 then
-                            AddHeader(scroll, cat)
+                            AddHeader(scroll, localizedCategory)
                             for _, item in ipairs(visibleItems) do
                                 AddField(scroll, item.key, item.name, item.config)
                             end

@@ -322,7 +322,7 @@ else
                                             end
 
                                             local linkButton = vgui.Create("liaSmallButton", buttonContainer)
-                                            linkButton:SetText(L("workshop"))
+                                            linkButton:SetText(L("categoryWorkshop"))
                                             linkButton:SetTall(40)
                                             linkButton:Dock(TOP)
                                             linkButton.DoClick = function()
@@ -380,7 +380,7 @@ else
                                             end
 
                                             local linkButton = vgui.Create("liaSmallButton", buttonContainer)
-                                            linkButton:SetText(L("workshop"))
+                                            linkButton:SetText(L("categoryWorkshop"))
                                             linkButton:SetTall(40)
                                             linkButton:Dock(TOP)
                                             linkButton.DoClick = function()

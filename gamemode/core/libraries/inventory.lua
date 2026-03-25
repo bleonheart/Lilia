@@ -443,11 +443,11 @@ if SERVER then
         ```
 ]]
     function lia.inventory.registerStorage(model, data)
-        assert(isstring(model), L("storageModelMustBeString"))
-        assert(istable(data), L("storageDataMustBeTable"))
+        assert(isstring(model), L("modelMustBeString"))
+        assert(istable(data), L("dataMustBeTable"))
         assert(isstring(data.name), L("storageNameRequired"))
-        assert(isstring(data.invType), L("storageInvTypeRequired"))
-        assert(istable(data.invData), L("storageInvDataRequired"))
+        assert(isstring(data.invType), L("inventoryTypeRequired"))
+        assert(istable(data.invData), L("inventoryDataRequired"))
         data.name = lia.lang.resolveToken(data.name)
         if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
         lia.inventory.storage[model:lower()] = data
@@ -518,8 +518,8 @@ if SERVER then
         assert(isstring(vehicleClass), L("vehicleClassMustBeString"))
         assert(istable(data), "Data must be a table")
         assert(isstring(data.name), L("trunkNameRequired"))
-        assert(isstring(data.invType), L("storageInvTypeRequired"))
-        assert(istable(data.invData), L("storageInvDataRequired"))
+        assert(isstring(data.invType), L("inventoryTypeRequired"))
+        assert(istable(data.invData), L("inventoryDataRequired"))
         data.name = lia.lang.resolveToken(data.name)
         if isstring(data.desc) then data.desc = lia.lang.resolveToken(data.desc) end
         if not data.invData.w then data.invData.w = lia.config.get("trunkInvW", 10) end

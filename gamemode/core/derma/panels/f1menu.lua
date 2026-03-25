@@ -1,4 +1,11 @@
 ﻿local PANEL = {}
+local function localizeMenuLabel(value, ...)
+    if not isstring(value) then return value end
+    local resolved = lia.lang.resolveToken(value, ...)
+    if resolved ~= value then return resolved end
+    return L(value, ...)
+end
+
 function PANEL:Init()
     if IsValid(lia.gui.info) then lia.gui.info:Remove() end
     lia.gui.info = self
@@ -834,8 +841,8 @@ function PANEL:addClassDetails(parent, cl)
         end
     end
 
-    add(L("name") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
-    add(L("description") .. ": " .. (cl.desc and L(cl.desc) or L("noDesc")))
+    add(L("PrintName") .. ": " .. (cl.name and L(cl.name) or L("unnamed")))
+    add(L("desc") .. ": " .. (cl.desc and L(cl.desc) or L("noDesc")))
     local facName = team.GetName(cl.faction)
     add(L("faction") .. ": " .. (facName and L(facName) or L("none")))
     add(L("isDefault") .. ": " .. (cl.isDefault and L("yes") or L("no")))
@@ -875,7 +882,7 @@ function PANEL:addClassDetails(parent, cl)
         weaponNames[#weaponNames + 1] = printName and tostring(printName) ~= "" and tostring(printName) or tostring(className)
     end
 
-    add(L("weapons") .. ": " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or L("none")))
+    add(L("weaponDefaultCategory") .. ": " .. (#weaponNames > 0 and table.concat(weaponNames, ", ") or L("none")))
     add(L("modelScale") .. ": " .. tostring(cl.scale or 1))
     local rs = cl.runSpeedMultiplier and math.Round(run * cl.runSpeed) or cl.runSpeed or run
     add(L("runSpeed") .. ": " .. tostring(rs))
@@ -954,13 +961,13 @@ end
 vgui.Register("liaClasses", PANEL, "EditablePanel")
 hook.Add("LoadCharInformation", "liaF1MenuGeneralInfo", function()
     hook.Run("AddSection", L("generalInfo"), Color(0, 0, 0), 1, 1)
-    hook.Run("AddTextField", L("generalInfo"), "name", L("name"), function()
+    hook.Run("AddTextField", L("generalInfo"), "name", L("PrintName"), function()
         local client = LocalPlayer()
         local char = client:getChar()
         return char and char:getName() or L("unknown")
     end)
 
-    hook.Run("AddTextField", L("generalInfo"), "desc", L("description"), function()
+    hook.Run("AddTextField", L("generalInfo"), "desc", L("desc"), function()
         local client = LocalPlayer()
         local char = client:getChar()
         return char and char:getDesc() or ""
@@ -1088,8 +1095,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         hook.Run("CreateInformationButtons", pages)
         if not pages then return end
         table.sort(pages, function(a, b)
-            local an = tostring(a.name):lower()
-            local bn = tostring(b.name):lower()
+            local an = tostring(localizeMenuLabel(a.name)):lower()
+            local bn = tostring(localizeMenuLabel(b.name)):lower()
             return an < bn
         end)
 
@@ -1107,7 +1114,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local baseMargin = 8
         for i, page in ipairs(pages) do
             surface.SetFont("LiliaFont.18")
-            local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
+            local textWidth = surface.GetTextSize(localizeMenuLabel(page.name))
             local iconWidth = 0
             local padding = 20
             local minWidth = 80
@@ -1120,7 +1127,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabButton:Dock(LEFT)
             tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
             tabButton:SetTall(36)
-            tabButton:SetText(lia.lang.resolveToken(page.name))
+            tabButton:SetText(localizeMenuLabel(page.name))
             tabButton:SetActive(i == 1)
             tabButton:SetWide(baseTabWidths[i] or 80)
             tabButton:SetDoClick(function()
@@ -1188,15 +1195,15 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local frame = settingsPanel:Add("liaFrame")
         frame:Dock(FILL)
         frame:DockMargin(10, 10, 10, 10)
-        frame:SetTitle(L("settings"))
+        frame:SetTitle(L("adminStickSubCategorySettings"))
         frame:LiteMode()
         frame:DisableCloseBtn()
         local pages = {}
         hook.Run("PopulateConfigurationButtons", pages)
         if not pages then return end
         table.sort(pages, function(a, b)
-            local an = tostring(a.name):lower()
-            local bn = tostring(b.name):lower()
+            local an = tostring(localizeMenuLabel(a.name)):lower()
+            local bn = tostring(localizeMenuLabel(b.name)):lower()
             return an < bn
         end)
 
@@ -1213,7 +1220,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         local baseMargin = 8
         for i, page in ipairs(pages) do
             surface.SetFont("LiliaFont.18")
-            local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
+            local textWidth = surface.GetTextSize(localizeMenuLabel(page.name))
             local iconWidth = 0
             local padding = 20
             local minWidth = 80
@@ -1226,7 +1233,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             tabButton:Dock(LEFT)
             tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
             tabButton:SetTall(36)
-            tabButton:SetText(lia.lang.resolveToken(page.name))
+            tabButton:SetText(localizeMenuLabel(page.name))
             tabButton:SetActive(i == 1)
             tabButton:SetWide(baseTabWidths[i] or 80)
             tabButton:SetDoClick(function()
@@ -1304,8 +1311,8 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             hook.Run("PopulateAdminTabs", pages)
             if table.IsEmpty(pages) then return end
             table.sort(pages, function(a, b)
-                local an = tostring(a.name):lower()
-                local bn = tostring(b.name):lower()
+                local an = tostring(localizeMenuLabel(a.name)):lower()
+                local bn = tostring(localizeMenuLabel(b.name)):lower()
                 return an < bn
             end)
 
@@ -1349,7 +1356,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                         local staffTable = panel:Add("liaTable")
                         staffTable:Dock(FILL)
                         panel.staffTable = staffTable
-                        staffTable:AddColumn(L("name"), nil, TEXT_ALIGN_LEFT, true)
+                        staffTable:AddColumn(L("PrintName"), nil, TEXT_ALIGN_LEFT, true)
                         staffTable:AddColumn(L("usergroup"), nil, TEXT_ALIGN_LEFT, true)
                         staffTable:AddColumn(L("staffOnDuty", ""), 100, TEXT_ALIGN_CENTER, true)
                         function updateStaffTable(dataToShow)
@@ -1437,7 +1444,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
             local baseMargin = 8
             for i, page in ipairs(pages) do
                 surface.SetFont("LiliaFont.18")
-        local textWidth = surface.GetTextSize(lia.lang.resolveToken(page.name))
+                local textWidth = surface.GetTextSize(localizeMenuLabel(page.name))
                 local iconWidth = 0
                 local padding = 20
                 local minWidth = 80
@@ -1450,7 +1457,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
                 tabButton:Dock(LEFT)
                 tabButton:DockMargin(i == 1 and 0 or baseMargin, 0, 0, 0)
                 tabButton:SetTall(36)
-        tabButton:SetText(lia.lang.resolveToken(page.name))
+                tabButton:SetText(localizeMenuLabel(page.name))
                 tabButton:SetActive(i == 1)
                 tabButton:SetWide(baseTabWidths[i] or 80)
                 tabButton:SetDoClick(function()

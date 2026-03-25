@@ -13,6 +13,39 @@
 ]]
 lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
+local function localizeMenuLabel(value, ...)
+    if not isstring(value) then return value end
+    local resolved = lia.lang.resolveToken(value, ...)
+    if resolved ~= value then return resolved end
+    return L(value, ...)
+end
+
+local function normalizeSelectableOption(optionEntry, resolveToken)
+    if istable(optionEntry) then
+        local label = optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
+        if isstring(label) then label = resolveToken(label) end
+        return {
+            label = label,
+            value = optionEntry.value ~= nil and optionEntry.value or label
+        }
+    elseif isstring(optionEntry) then
+        local label = resolveToken(optionEntry)
+        return {
+            label = label,
+            value = optionEntry
+        }
+    end
+end
+
+local function getSelectableOptionLabel(options, selectedValue)
+    for _, optionEntry in pairs(options or {}) do
+        if istable(optionEntry) then
+            if optionEntry.value == selectedValue then return optionEntry.label end
+            if isstring(optionEntry.value) and isstring(selectedValue) and optionEntry.value:lower() == selectedValue:lower() then return optionEntry.label end
+        end
+    end
+    return selectedValue
+end
 --[[
     Purpose:
         Register a configurable option with defaults, callbacks, and metadata.
@@ -66,7 +99,8 @@ function lia.option.add(key, name, desc, default, callback, data)
     local value = old and old.value or default
     if istable(data.options) then
         for k, v in pairs(data.options) do
-            if isstring(v) then data.options[k] = resolveToken(v) end
+            local normalized = normalizeSelectableOption(v, resolveToken)
+            if normalized then data.options[k] = normalized end
         end
     elseif isfunction(data.options) then
         data.optionsFunc = data.options
@@ -120,7 +154,8 @@ function lia.option.getOptions(key)
         local success, result = pcall(option.data.optionsFunc)
         if success and istable(result) then
             for k, v in pairs(result) do
-                if isstring(v) then result[k] = L(v) end
+                local normalized = normalizeSelectableOption(v, lia.lang.resolveToken)
+                if normalized then result[k] = normalized end
             end
             return result
         else
@@ -298,7 +333,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
 
         local label = header:Add("DLabel")
         label:Dock(LEFT)
-        label:SetText(L(text))
+        label:SetText(localizeMenuLabel(text))
         label:SetFont("LiliaFont.22")
         label:SetTextColor(lia.color.theme.text or color_white)
         label:SizeToContents()
@@ -380,12 +415,13 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
             combo:Dock(RIGHT)
             combo:SetWidth(200)
             combo:DockMargin(0, 8, 15, 8)
-            combo:SetValue(tostring(lia.option.get(key, option.value)))
             combo:SetFont("LiliaFont.18")
             SetStyledTooltip(combo, description)
             local options = lia.option.getOptions(key)
-            for _, text in pairs(options) do
-                combo:AddChoice(text, text)
+            local selectedValue = lia.option.get(key, option.value)
+            combo:SetValue(tostring(getSelectableOptionLabel(options, selectedValue)))
+            for _, optionEntry in pairs(options) do
+                combo:AddChoice(optionEntry.label, optionEntry.value)
             end
 
             combo.OnSelect = function(_, _, v) lia.option.set(key, v) end
@@ -418,7 +454,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                 for _, k in ipairs(keys) do
                     local opt = lia.option.stored[k]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
-                        local cat = opt.data and opt.data.category or L("misc")
+                        local cat = opt.data and opt.data.category or L("adminStickCategoryMiscellaneous")
                         categories[cat] = categories[cat] or {}
                         table.insert(categories[cat], {
                             key = k,
@@ -438,12 +474,13 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     local items = categories[cat]
                     table.sort(items, function(a, b) return a.name < b.name end)
                     local visibleItems = {}
+                    local localizedCategory = tostring(localizeMenuLabel(cat))
                     for _, item in ipairs(items) do
-                        if not filter or item.name:lower():find(filter, 1, true) or cat:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
+                        if not filter or item.name:lower():find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
                     end
 
                     if #visibleItems > 0 then
-                        AddHeader(scroll, cat)
+                        AddHeader(scroll, localizedCategory)
                         for _, item in ipairs(visibleItems) do
                             AddField(scroll, item.key, item.name, item.option)
                         end
@@ -758,8 +795,21 @@ lia.option.add("voiceRange", "@voiceRange", "@voiceRangeDesc", false, nil, {
     type = "Boolean"
 })
 
-lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "Left", nil, {
+lia.option.add("weaponSelectorPosition", "@weaponSelectorPosition", "@weaponSelectorPositionDesc", "left", nil, {
     category = "@Core",
     type = "Table",
-    options = {"Left", "Right", "Center"}
+    options = {
+        {
+            label = "@left",
+            value = "left"
+        },
+        {
+            label = "@right",
+            value = "right"
+        },
+        {
+            label = "@center",
+            value = "center"
+        }
+    }
 })

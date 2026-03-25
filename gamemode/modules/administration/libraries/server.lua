@@ -954,7 +954,7 @@ end
 function GM:PlayerSpawnNPC(client)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnNPCs") or client:hasFlags("n")
     if not canSpawn then
-        lia.log.add(client, "spawnDenied", L("npc"))
+        lia.log.add(client, "spawnDenied", L("defaultNPCName"))
         client:notifyErrorLocalized("noSpawnNPCs")
     end
     return canSpawn

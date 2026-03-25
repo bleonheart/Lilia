@@ -32,7 +32,7 @@ function PANEL:Init()
     self.create:Dock(BOTTOM)
     self.create:DockMargin(0, 12, 0, 0)
     self.create:SetTall(44)
-    self.create:SetText((L("create") .. " " .. L("character")):upper())
+    self.create:SetText((L("create") .. " " .. L("categoryCharacter")):upper())
     self.create.DoClick = function()
         local createPanel = lia.gui and lia.gui.charCreate
         if IsValid(createPanel) and isfunction(createPanel.onFinish) then createPanel:onFinish() end
@@ -57,12 +57,12 @@ function PANEL:buildDefaultSummary(context)
     local name = context.name or context.charName
     local desc = context.desc or context.description
     summary[#summary + 1] = {
-        title = L("name"),
+        title = L("PrintName"),
         value = tostring(name or "")
     }
 
     summary[#summary + 1] = {
-        title = L("description"),
+        title = L("desc"),
         value = tostring(desc or "")
     }
 
@@ -98,7 +98,7 @@ function PANEL:buildDefaultSummary(context)
 
     if #attribLines > 0 then
         summary[#summary + 1] = {
-            title = L("attributes"),
+            title = L("adminStickSubCategoryAttributes"),
             value = table.concat(attribLines, "\n")
         }
     end

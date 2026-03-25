@@ -706,7 +706,7 @@ end
         ```
 ]]
 function lia.information(msg)
-    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logInformation") .. "] ")
+    MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("adminStickSubCategoryInformation") .. "] ")
     MsgC(Color(83, 143, 239), tostring(msg), "\n")
 end
 

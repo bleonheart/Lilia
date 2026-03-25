@@ -33,7 +33,7 @@ local function getWeaponItemDefaults(className)
     return {
         name = hook.Run("GetWeaponName", wep) or className,
         desc = L("weaponsDesc"),
-        category = isGrenade and L("itemCatGrenades") or L("weapons"),
+        category = isGrenade and L("itemCatGrenades") or L("weaponDefaultCategory"),
         model = wep.WorldModel or wep.WM or "models/props_c17/suitcase_passenger_physics.mdl",
         class = className,
         width = size.width,

@@ -14,6 +14,16 @@ if SERVER then
         net.Send(client)
     end
 else
+    local function openCharacterMenu(callback)
+        local client = LocalPlayer()
+        if not lia.config.initialized then lia.config.load() end
+        lia.config.onInitialized(function()
+            if not IsValid(client) or client:getChar() then return end
+            local panel = IsValid(lia.gui.character) and lia.gui.character or vgui.Create("liaCharacter")
+            if isfunction(callback) then callback(panel) end
+        end)
+    end
+
     function MODULE:PlayerButtonDown(_, button)
         if button == KEY_ESCAPE and IsValid(lia.gui.menu) and LocalPlayer():getChar() then
             lia.gui.menu:Remove()
@@ -26,12 +36,7 @@ else
         local client = LocalPlayer()
         if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters and #charPanel.availableCharacters > 0 then return end
         if IsValid(charPanel) then charPanel:Remove() end
-        if IsValid(client) and not client:getChar() then
-            lia.config.onInitialized(function()
-                if not IsValid(client) or client:getChar() then return end
-                vgui.Create("liaCharacter")
-            end)
-        end
+        if IsValid(client) and not client:getChar() then openCharacterMenu() end
     end
 
     function MODULE:ChooseCharacter(id)
@@ -133,7 +138,7 @@ else
     end
 
     function MODULE:LiliaLoaded()
-        lia.config.onInitialized(function() vgui.Create("liaCharacter") end)
+        openCharacterMenu()
     end
 
     function MODULE:CharListLoaded()
@@ -144,18 +149,15 @@ else
         timer.Simple(0.1, function()
             local client = LocalPlayer()
             if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then
-                lia.config.onInitialized(function()
-                    if not IsValid(client) or client:getChar() or IsValid(lia.gui.character) then return end
-                    vgui.Create("liaCharacter")
-                end)
+                openCharacterMenu()
             end
         end)
     end
 
     function MODULE:KickedFromChar(characterID, isCurrentChar)
         if isCurrentChar then
-            lia.config.onInitialized(function()
-                local charPanel = vgui.Create("liaCharacter")
+            openCharacterMenu(function(charPanel)
+                if not IsValid(charPanel) then return end
                 charPanel.isKickedFromChar = true
             end)
         end
@@ -175,7 +177,7 @@ else
             end
 
             if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-            lia.config.onInitialized(function() vgui.Create("liaCharacter") end)
+            openCharacterMenu()
         end
     end
 

@@ -700,7 +700,7 @@ function lia.admin.load()
             camiBootstrapFromExisting()
         end
 
-        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("logAdmin") .. "] ")
+        MsgC(Color(83, 143, 239), "[Lilia] ", "[" .. L("admin") .. "] ")
         MsgC(Color(255, 153, 0), L("adminSystemLoaded"), "\n")
         clearGroupLevelCache()
         hook.Run("OnAdminSystemLoaded", lia.admin.groups or {}, lia.admin.privileges or {})

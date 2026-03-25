@@ -2711,6 +2711,47 @@ end
 
 --[[
     Purpose:
+        Override whether a faction allows skin and bodygroup customization.
+
+    When Called:
+        When faction model customization permissions are resolved for a player, such as during character creation or model editing.
+
+    Parameters:
+        client (Player)
+            Player whose customization permissions are being checked.
+        faction (number|string|table)
+            Faction identifier or resolved faction table.
+        context (any)
+            Optional caller-specific context describing where the check originated.
+        skinAllowed (boolean)
+            Current skin customization permission after faction defaults are applied.
+        bodygroupsAllowed (boolean)
+            Current bodygroup customization permission after faction defaults are applied.
+
+    Returns:
+        table|boolean|nil, boolean|nil
+            Return a table with `skinAllowed` and/or `bodygroupsAllowed` keys, or return booleans directly as first/second values.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        hook.Add("OverrideFactionModelCustomization", "RestrictRecruitModels", function(client, faction, context, skinAllowed, bodygroupsAllowed)
+            if faction.uniqueID == "combine_recruit" then
+                return {
+                    skinAllowed = false,
+                    bodygroupsAllowed = context == "character_creation" and false or bodygroupsAllowed
+                }
+            end
+        end)
+        ```
+]]
+function OverrideFactionModelCustomization(client, faction, context, skinAllowed, bodygroupsAllowed)
+end
+
+--[[
+    Purpose:
         Override the display name for a faction.
 
     When Called:

@@ -228,16 +228,16 @@ local logTypeData = {
 }
 
 local logTypeCategories = {
-    character = L("character"),
+    character = L("categoryCharacter"),
     combat = L("categoryCombat"),
     world = L("categoryWorld"),
     tools = L("categoryTools"),
     chat = L("categoryChat"),
     money = L("money"),
-    items = L("items"),
-    permissions = L("modulePermissionsName"),
+    items = L("adminStickCategoryItems"),
+    permissions = L("adminStickCategoryPermissions"),
     admin = L("admin"),
-    factions = L("factions"),
+    factions = L("adminStickSubCategoryFactions"),
     inventory = L("inv"),
     connections = L("categoryConnections"),
     cheating = L("categoryCheating"),
@@ -346,7 +346,7 @@ function lia.log.add(client, logType, ...)
     if not isstring(logString) then return end
     hook.Run("OnServerLog", client, logType, logString, category)
     MsgC(Color(83, 143, 239), "[LOG] ")
-    MsgC(Color(0, 255, 0), "[" .. L("logCategory") .. ": " .. tostring(category) .. "] ")
+    MsgC(Color(0, 255, 0), "[" .. L("Category") .. ": " .. tostring(category) .. "] ")
     MsgC(Color(255, 255, 255), tostring(logString) .. "\n")
     local timestamp = os.date("%Y-%m-%d %H:%M:%S")
     local charID
