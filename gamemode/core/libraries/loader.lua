@@ -20,10 +20,7 @@ lia = lia or {
 lia.reloadInProgress = false
 lia.isReloading = false
 local FilesToLoad = {
-    {
-        path = "lilia/gamemode/core/libraries/net.lua",
-        realm = "shared"
-    },
+
     {
         path = "lilia/gamemode/core/libraries/keybind.lua",
         realm = "shared"
@@ -628,12 +625,12 @@ function lia.loader.checkForUpdates()
 end
 
 lia.loader.includeDir("lilia/gamemode/core/libraries/thirdparty", true, true)
+lia.loader.include("lilia/gamemode/core/libraries/net.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/color.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/derma.lua", "client")
 lia.loader.includeDir("lilia/gamemode/core/derma", true, true, "client")
 lia.loader.include("lilia/gamemode/core/libraries/database.lua", "server")
-lia.loader.include("lilia/gamemode/core/libraries/config.lua", "shared")
 lia.loader.include("lilia/gamemode/core/libraries/data.lua", "shared")
 --[[
     Purpose:
