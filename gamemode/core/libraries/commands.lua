@@ -1058,16 +1058,6 @@ if SERVER then
         end)
     end)
 
-    concommand.Add("lia_resetconfig", function(client)
-        if IsValid(client) then
-            client:notifyErrorLocalized("commandConsoleOnly")
-            return
-        end
-
-        lia.config.load(true)
-        lia.information(L("configReloaded"))
-    end)
-
     concommand.Add("lia_wipecharacters", function(client)
         if IsValid(client) then
             client:notifyErrorLocalized("commandConsoleOnly")
@@ -4737,9 +4727,9 @@ lia.command.add("charsetattrib", {
         local character = target:getChar()
         if character then
             for k, v in pairs(lia.attribs.list) do
-            if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
+                if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
                     character:setAttrib(k, math.abs(attribNumber))
-                client:notifySuccessLocalized("attribSet", target:Name(), v.name, math.abs(attribNumber))
+                    client:notifySuccessLocalized("attribSet", target:Name(), v.name, math.abs(attribNumber))
                     lia.log.add(client, "attribSet", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -5064,9 +5054,9 @@ lia.command.add("charaddattrib", {
         local character = target:getChar()
         if character then
             for k, v in pairs(lia.attribs.list) do
-            if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
+                if lia.util.stringMatches(v.name, attribName) or lia.util.stringMatches(k, attribName) then
                     character:updateAttrib(k, math.abs(attribNumber))
-                client:notifySuccessLocalized("attribUpdate", target:Name(), v.name, math.abs(attribNumber))
+                    client:notifySuccessLocalized("attribUpdate", target:Name(), v.name, math.abs(attribNumber))
                     lia.log.add(client, "attribAdd", target:Name(), k, math.abs(attribNumber))
                     return
                 end
@@ -6180,7 +6170,7 @@ lia.command.add("plywhitelist", {
             whitelists[SCHEMA.folder][data.uniqueID] = true
             target:setLiliaData("whitelists", whitelists)
             for _, v in player.Iterator() do
-                    v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), faction.name)
+                v:notifyInfoLocalized("whitelist", client:Name(), target:Name(), faction.name)
             end
 
             lia.log.add(client, "plyWhitelist", target:Name(), faction.name)

@@ -177,7 +177,6 @@ function lia.db.loadTables()
     local function done()
         lia.db.addDatabaseFields()
         lia.db.tablesLoaded = true
-        hook.Run("LiliaTablesLoaded")
         hook.Run("OnDatabaseLoaded")
         timer.Simple(0, function() lia.config.load() end)
         timer.Simple(0.1, function()
@@ -375,7 +374,7 @@ function lia.db.waitForTablesToLoad()
     if lia.db.tablesLoaded then
         d:resolve()
     else
-        hook.Add("LiliaTablesLoaded", tostring(TABLE_WAIT_ID), function() d:resolve() end)
+        hook.Add("OnDatabaseLoaded", tostring(TABLE_WAIT_ID), function() d:resolve() end)
     end
 
     TABLE_WAIT_ID = TABLE_WAIT_ID + 1
