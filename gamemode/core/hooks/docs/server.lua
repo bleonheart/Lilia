@@ -1894,28 +1894,6 @@ end
 
 --[[
     Purpose:
-        Indicates that all Lilia database tables have been created/loaded.
-
-    When Called:
-        After tables are created during startup.
-
-    Parameters:
-        None.
-    Realm:
-        Server
-
-    Example Usage:
-        ```lua
-            hook.Add("LiliaTablesLoaded", "SeedDefaults", function()
-                lia.seed.run()
-            end)
-        ```
-]]
-function LiliaTablesLoaded()
-end
-
---[[
-    Purpose:
         Allows modules to inject data when the gamemode performs a data load.
 
     When Called:

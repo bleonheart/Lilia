@@ -1,5 +1,3 @@
-
-#!/usr/bin/env python3
 import os
 import sys
 import json
@@ -19,7 +17,6 @@ HOOKS_REPORT_IGNORE = {
     "PopulateInventoryItems",
 }
 
-# Dynamic paths based on file location
 def _get_paths_from_file_location():
     """Determine paths based on the current file's location"""
     current_file = Path(__file__).resolve()
@@ -366,6 +363,10 @@ class CombinedReportData:
     fonts_variable: Set[str]
     fonts_getfont_count: int
     fonts_file_usages: Dict[str, Set[str]]  # file -> set of fonts used
+    # Config analysis data
+    config_undefined_get_calls: List[Dict]  # lia.config.get calls with undefined keys
+    # Inferred localization undefined keys
+    undefined_inferred_loc_keys: List[Dict]  # convention-field assignments with no matching lang key
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -394,8 +395,10 @@ class FunctionComparisonReportGenerator:
                 self.language_file = str(lang_file_path)
         self.generate_module_docs = generate_module_docs
 
-        # Handle modules_paths - convert to list of strings if provided
-        if modules_paths:
+        # Handle modules_paths - convert to list of strings if provided.
+        # Use `is not None` so that an explicitly empty list [] (user declined module docs)
+        # is respected instead of silently falling back to the defaults.
+        if modules_paths is not None:
             self.modules_paths = [str(p) for p in modules_paths]
         else:
             self.modules_paths = [str(p) for p in DEFAULT_MODULES_PATHS]
@@ -422,6 +425,10 @@ class FunctionComparisonReportGenerator:
             try:
                 with open(lua_file, 'r', encoding='utf-8', errors='ignore') as f:
                     content = f.read()
+
+                # Strip Lua comments so that examples in --[[ ]] docstrings or
+                # commented-out calls don't produce false-positive mismatches.
+                content = self._remove_lua_comments(content)
 
                 # Find localization function calls and check arguments
                 mismatches.extend(self._check_file_for_arg_mismatches(content, str(lua_file.relative_to(self.base_path)), lang_keys))
@@ -470,6 +477,25 @@ class FunctionComparisonReportGenerator:
         call_resolve = re.compile(r'\blia\.lang\.resolveToken\s*\(\s*(.+)$')
         generic_l_call = re.compile(r'\bL\s*\(\s*')
         attr_at_token = re.compile(r'@([A-Za-z_][A-Za-z0-9_\.:-]*)')
+
+        # Raw field assignments: ITEM/MODULE/FACTION/CLASS .name/.desc = "camelKey" or "@token"
+        # These fields are always localization keys by Lilia convention.
+        raw_loc_field = re.compile(
+            r'^\s*(?:ITEM|MODULE|FACTION|CLASS)\s*\.\s*(name|desc)\s*=\s*["\']([^"\']+)["\']'
+        )
+        # lia.config.add("configKey", "nameLocKey", ...)  — 2nd positional arg is the display name
+        config_add_name = re.compile(
+            r'\blia\.config\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'
+        )
+        # desc = "camelKey" inside data tables (config.add / option.add)
+        data_desc_field = re.compile(r'\bdesc\s*=\s*["\']([a-z][a-zA-Z0-9_]+)["\']')
+        # lia.option.add("key", "nameLocKey", "descLocKey", ...)  — 2nd and 3rd args
+        option_add_name = re.compile(
+            r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'
+        )
+        option_add_desc = re.compile(
+            r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'][^"\']*["\']\s*,\s*["\']([^"\']+)["\']'
+        )
 
         for root, rel_base in scan_roots:
             for lua_file in root.rglob("*.lua"):
@@ -568,6 +594,50 @@ class FunctionComparisonReportGenerator:
                             }
                         )
 
+                    # Raw field: ITEM/MODULE/FACTION/CLASS .name/.desc = "key"
+                    m = raw_loc_field.match(line)
+                    if m:
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": f"raw_field:{m.group(1)}",
+                            "lhs": m.group(1),
+                            "context": stripped[:240],
+                        })
+
+                    # lia.config.add name arg
+                    for cm in config_add_name.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "config_add:name",
+                            "lhs": "lia.config.add:name",
+                            "context": stripped[:240],
+                        })
+
+                    # desc = "key" data table field
+                    for dm in data_desc_field.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "data_table:desc",
+                            "lhs": "desc",
+                            "context": stripped[:240],
+                        })
+
+                    # lia.option.add name / desc args
+                    for om in option_add_name.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "option_add:name",
+                            "lhs": "lia.option.add:name",
+                            "context": stripped[:240],
+                        })
+                    for om in option_add_desc.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "option_add:desc",
+                            "lhs": "lia.option.add:desc",
+                            "context": stripped[:240],
+                        })
+
         for k in list(inferred.keys()):
             uniq = {}
             for entry in inferred[k]:
@@ -576,6 +646,126 @@ class FunctionComparisonReportGenerator:
             inferred[k] = sorted(uniq.values(), key=lambda e: int(e.get("line", 0)))
 
         return dict(sorted(inferred.items(), key=lambda kv: kv[0].lower()))
+
+    def _detect_undefined_inferred_loc_keys(self) -> List[Dict]:
+        """Scan for string literals stored in localization-by-convention fields that have
+        no matching entry in the language file.
+
+        Checked patterns:
+        - ITEM.name / ITEM.desc / MODULE.name / MODULE.desc / FACTION.name / FACTION.desc /
+          CLASS.name / CLASS.desc                                      (raw field assignment)
+        - lia.config.add("key", "nameLocKey", ...)                    (2nd positional arg)
+        - lia.config.add(..., {desc = "descLocKey"})                  (data.desc field)
+        - lia.option.add("key", "nameLocKey", "descLocKey", ...)      (2nd and 3rd args)
+        - MODULE.Privileges[x] = {Name = "@token", Category = "@token"} (via @token scanner)
+
+        Returns list of dicts: {file, line, field, key, context}
+        """
+        defined_keys: Set[str] = self._extract_language_keys(str(self.language_file))
+
+        # A string value is a potential loc key if it's a camelCase identifier or @token.
+        _loc_key_re = re.compile(r'^@?[a-z][a-zA-Z0-9_]*$')
+
+        def is_loc_key(v: str) -> bool:
+            return bool(_loc_key_re.match(v))
+
+        def normalize(v: str) -> str:
+            return v[1:] if v.startswith('@') else v
+
+        # (pattern, key_group, field_label_fn)
+        PATTERNS: List[Tuple] = [
+            # ITEM / MODULE / FACTION / CLASS  .name / .desc
+            (
+                re.compile(r'\b(ITEM|MODULE|FACTION|CLASS)\s*\.\s*(name|desc)\s*=\s*["\']([^"\']+)["\']'),
+                3,
+                lambda m: f"{m.group(1)}.{m.group(2)}",
+            ),
+            # lia.config.add 2nd arg (display name)
+            (
+                re.compile(r'\blia\.config\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'),
+                1,
+                lambda m: "lia.config.add:name",
+            ),
+            # data table desc = "key"  (config.add / option.add data tables)
+            (
+                re.compile(r'\bdesc\s*=\s*["\']([a-z][a-zA-Z0-9_]+)["\']'),
+                1,
+                lambda m: "data.desc",
+            ),
+            # lia.option.add 2nd arg (name)
+            (
+                re.compile(r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'),
+                1,
+                lambda m: "lia.option.add:name",
+            ),
+            # lia.option.add 3rd arg (desc)
+            (
+                re.compile(r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'][^"\']*["\']\s*,\s*["\']([^"\']+)["\']'),
+                1,
+                lambda m: "lia.option.add:desc",
+            ),
+            # Privilege Name / Category with @token
+            (
+                re.compile(r'\bName\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
+                1,
+                lambda m: "Privilege.Name",
+            ),
+            (
+                re.compile(r'\bCategory\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
+                1,
+                lambda m: "Privilege.Category",
+            ),
+        ]
+
+        scan_roots: List[Path] = [self.base_path]
+        for mp in (self.modules_paths or []):
+            p = Path(mp)
+            if p.exists():
+                scan_roots.append(p)
+
+        undefined: List[Dict] = []
+        seen: set = set()
+
+        for root in scan_roots:
+            for lua_file in root.rglob("*.lua"):
+                lowered = [part.lower() for part in lua_file.parts]
+                if any(s in lowered for s in ("documentation", "docs", "languages", "thirdparty")):
+                    continue
+                try:
+                    content = lua_file.read_text(encoding="utf-8", errors="ignore")
+                    content_clean = self._remove_lua_comments(content)
+                except Exception:
+                    continue
+
+                split_lines = content_clean.splitlines()
+                try:
+                    rel_path = str(lua_file.relative_to(self.base_path))
+                except ValueError:
+                    rel_path = str(lua_file)
+
+                for pattern, key_group, field_label_fn in PATTERNS:
+                    for m in pattern.finditer(content_clean):
+                        raw_key = m.group(key_group)
+                        if not is_loc_key(raw_key):
+                            continue
+                        norm = normalize(raw_key)
+                        if norm in defined_keys:
+                            continue
+                        line_num = content_clean[: m.start()].count("\n") + 1
+                        context = split_lines[line_num - 1].strip() if line_num <= len(split_lines) else ""
+                        sig = (rel_path, line_num, norm)
+                        if sig in seen:
+                            continue
+                        seen.add(sig)
+                        undefined.append({
+                            "file": rel_path,
+                            "line": line_num,
+                            "field": field_label_fn(m),
+                            "key": norm,
+                            "context": context[:240],
+                        })
+
+        return sorted(undefined, key=lambda e: (e["field"], e["file"], e["line"]))
 
     def _scan_all_language_files(self) -> Dict[str, Set[str]]:
         """Scan all language files and extract their keys"""
@@ -793,8 +983,28 @@ class FunctionComparisonReportGenerator:
             return key
         return key[1:] if key.startswith('@') else key
 
+    @staticmethod
+    def _lua_long_string_close(s: str, i: int) -> int:
+        """If s[i] starts a Lua long string ([[ or [=*[), return the index just after its
+        closing bracket.  Returns -1 if s[i] is not the start of a long string."""
+        if i >= len(s) or s[i] != '[':
+            return -1
+        j = i + 1
+        level = 0
+        while j < len(s) and s[j] == '=':
+            level += 1
+            j += 1
+        if j >= len(s) or s[j] != '[':
+            return -1
+        close = ']' + '=' * level + ']'
+        end = s.find(close, j + 1)
+        if end == -1:
+            return -1
+        return end + len(close)
+
     def _count_function_arguments(self, arg_str: str) -> int:
-        """Count function arguments properly, handling nested parentheses and strings"""
+        """Count function arguments properly, handling nested parentheses and strings
+        (including Lua [[...]] / [=[...]=] long strings)."""
         if not arg_str or arg_str == ',':
             return 0
 
@@ -827,6 +1037,13 @@ class FunctionComparisonReportGenerator:
                 continue
 
             if not in_string:
+                # Lua long string: [[ ... ]] or [=[ ... ]=] etc.
+                if char == '[':
+                    end = self._lua_long_string_close(arg_str, i)
+                    if end != -1:
+                        current_arg.extend(list(arg_str[i:end]))
+                        i = end
+                        continue
                 if char in ('"', "'"):
                     in_string = True
                     string_char = char
@@ -858,7 +1075,8 @@ class FunctionComparisonReportGenerator:
         return len(args)
 
     def _split_top_level_args(self, arg_str: str) -> List[str]:
-        """Split a Lua argument list into top-level arguments, respecting strings and nested parens."""
+        """Split a Lua argument list into top-level arguments, respecting strings
+        (including [[...]] long strings) and nested parentheses."""
         if not arg_str:
             return []
 
@@ -892,6 +1110,14 @@ class FunctionComparisonReportGenerator:
                 i += 1
                 continue
 
+            # Lua long string: [[ ... ]] or [=[ ... ]=] etc.
+            if char == '[':
+                end = self._lua_long_string_close(arg_str, i)
+                if end != -1:
+                    current_arg.extend(list(arg_str[i:end]))
+                    i = end
+                    continue
+
             if char in ('"', "'"):
                 in_string = True
                 string_char = char
@@ -916,94 +1142,111 @@ class FunctionComparisonReportGenerator:
         # Drop empty entries
         return [a for a in args if a]
 
+    def _find_matching_close_paren(self, content: str, open_paren_pos: int) -> int:
+        """Return the index of the ')' that closes the '(' at open_paren_pos.
+        Correctly skips over quoted strings ("", '') and Lua long strings ([[...]], [=[...]=]).
+        Returns -1 if no matching ')' is found."""
+        paren_depth = 0
+        i = open_paren_pos
+        in_string = False
+        string_char = None
+
+        while i < len(content):
+            char = content[i]
+
+            if in_string:
+                if char == '\\':
+                    i += 2  # skip escaped char
+                    continue
+                if char == string_char:
+                    in_string = False
+                    string_char = None
+                i += 1
+                continue
+
+            # Lua long string
+            if char == '[':
+                end = self._lua_long_string_close(content, i)
+                if end != -1:
+                    i = end
+                    continue
+
+            if char in ('"', "'"):
+                in_string = True
+                string_char = char
+            elif char == '(':
+                paren_depth += 1
+            elif char == ')':
+                paren_depth -= 1
+                if paren_depth == 0:
+                    return i
+
+            i += 1
+
+        return -1
+
     def _check_file_for_arg_mismatches(self, content: str, filename: str, lang_keys: Dict[str, int]) -> List[Dict]:
-        """Check a single file for argument mismatches"""
+        """Check a single file for argument mismatches.
+
+        ``content`` must already have Lua comments stripped so that examples
+        in documentation block comments do not produce false positives.
+        """
         mismatches = []
         lines = content.split('\n')
 
-        # Define all localization patterns to check
+        # Each entry: (regex_pattern, func_label, resolve_token_only_at)
+        # resolve_token_only_at=True means skip when the key literal does not start with '@'
+        # (lia.lang.resolveToken only performs localization for @-prefixed values).
+        #
+        # NOTE: The generic :[A-Za-z_]+Localized pattern already covers all specific
+        # :notify*Localized variants; listing them separately would produce duplicates.
         patterns = [
-            # L("key", args...)
-            (r'\bL\s*\(\s*["\']', 'L'),  # L with single/double quoted strings
-            (r'\bL\s*\(\s*\[\[', 'L'),   # L with multiline strings
-            # lia.lang.getLocalizedString("key", args...)
-            (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']', 'lia.lang.getLocalizedString'),
-            (r'\blia\.lang\.getLocalizedString\s*\(\s*\[\[', 'lia.lang.getLocalizedString'),
-            # lia.lang.resolveToken("@key", args...)
-            (r'\blia\.lang\.resolveToken\s*\(\s*["\']', 'lia.lang.resolveToken'),
-            (r'\blia\.lang\.resolveToken\s*\(\s*\[\[', 'lia.lang.resolveToken'),
-            # Any :*Localized("key", args...) style method calls
-            (r':[A-Za-z_]+Localized\s*\(\s*["\']', 'methodLocalized'),
-            (r':[A-Za-z_]+Localized\s*\(\s*\[\[', 'methodLocalized'),
-            # :notifyLocalized("key", args...)
-            (r':notifyLocalized\s*\(\s*["\']', ':notifyLocalized'),
-            (r':notifyLocalized\s*\(\s*\[\[', ':notifyLocalized'),
-            # :notifyErrorLocalized("key", args...)
-            (r':notifyErrorLocalized\s*\(\s*["\']', ':notifyErrorLocalized'),
-            (r':notifyErrorLocalized\s*\(\s*\[\[', ':notifyErrorLocalized'),
-            # :notifyWarningLocalized("key", args...)
-            (r':notifyWarningLocalized\s*\(\s*["\']', ':notifyWarningLocalized'),
-            (r':notifyWarningLocalized\s*\(\s*\[\[', ':notifyWarningLocalized'),
-            # :notifyInfoLocalized("key", args...)
-            (r':notifyInfoLocalized\s*\(\s*["\']', ':notifyInfoLocalized'),
-            (r':notifyInfoLocalized\s*\(\s*\[\[', ':notifyInfoLocalized'),
-            # :notifySuccessLocalized("key", args...)
-            (r':notifySuccessLocalized\s*\(\s*["\']', ':notifySuccessLocalized'),
-            (r':notifySuccessLocalized\s*\(\s*\[\[', ':notifySuccessLocalized'),
-            # :notifyMoneyLocalized("key", args...)
-            (r':notifyMoneyLocalized\s*\(\s*["\']', ':notifyMoneyLocalized'),
-            (r':notifyMoneyLocalized\s*\(\s*\[\[', ':notifyMoneyLocalized'),
-            # :notifyAdminLocalized("key", args...)
-            (r':notifyAdminLocalized\s*\(\s*["\']', ':notifyAdminLocalized'),
-            (r':notifyAdminLocalized\s*\(\s*\[\[', ':notifyAdminLocalized'),
+            # Global L("key", ...)  /  L([["key"]], ...)
+            (r'\bL\s*\(\s*["\']',                                   'L',                            False),
+            (r'\bL\s*\(\s*\[\[',                                    'L',                            False),
+            # lia.lang.getLocalizedString("key", ...)
+            (r'\blia\.lang\.getLocalizedString\s*\(\s*["\']',       'lia.lang.getLocalizedString',  False),
+            (r'\blia\.lang\.getLocalizedString\s*\(\s*\[\[',        'lia.lang.getLocalizedString',  False),
+            # lia.lang.resolveToken("@key", ...) — only check @-prefixed first args
+            (r'\blia\.lang\.resolveToken\s*\(\s*["\']',             'lia.lang.resolveToken',        True),
+            (r'\blia\.lang\.resolveToken\s*\(\s*\[\[',              'lia.lang.resolveToken',        True),
+            # :someXxxLocalized("key", ...) — covers notifyLocalized, notifyErrorLocalized, etc.
+            (r':[A-Za-z_]+Localized\s*\(\s*["\']',                  'methodLocalized',              False),
+            (r':[A-Za-z_]+Localized\s*\(\s*\[\[',                   'methodLocalized',              False),
         ]
 
-        for pattern, func_name in patterns:
+        for pattern, func_name, at_only in patterns:
             for match in re.finditer(pattern, content):
-                # Extract the key from the match - start from the quote character
+                # The last character of the match is the opening quote (or first '[' of '[[').
                 start_pos = match.end() - 1
-                key, end_pos = self._parse_lua_string_simple(content, start_pos)
+                key, _end_pos = self._parse_lua_string_simple(content, start_pos)
 
                 if not key:
+                    continue
+
+                # resolveToken: skip non-@-prefixed first args (they are pass-throughs, not l10n lookups)
+                if at_only and not key.startswith('@'):
                     continue
 
                 normalized_key = self._normalize_localization_key(key)
                 if not normalized_key:
                     continue
 
-                # Find the opening parenthesis of the function call (should be before the quote)
-                func_start = match.start()
-                open_paren_pos = content.find('(', func_start)
+                # Locate the opening '(' of this call
+                open_paren_pos = content.find('(', match.start())
                 if open_paren_pos == -1:
                     continue
 
-                # Find the matching closing parenthesis
-                paren_depth = 0
-                current_pos = open_paren_pos
-                arg_end = open_paren_pos
+                # Find its matching ')' correctly skipping strings and nested parens
+                arg_end = self._find_matching_close_paren(content, open_paren_pos)
+                if arg_end == -1:
+                    continue
 
-                while current_pos < len(content):
-                    char = content[current_pos]
-                    if char == '(':
-                        paren_depth += 1
-                    elif char == ')':
-                        paren_depth -= 1
-                        if paren_depth == 0:
-                            arg_end = current_pos
-                            break
-                    current_pos += 1
+                arg_content = content[open_paren_pos + 1:arg_end]
+                raw_arg_count = self._count_function_arguments(arg_content.strip())
+                # Subtract 1 for the key argument itself
+                arg_count = max(0, raw_arg_count - 1)
 
-                # Extract arguments (content between opening and closing paren, excluding the parens themselves)
-                if arg_end > open_paren_pos:
-                    arg_content = content[open_paren_pos + 1:arg_end]
-                    raw_arg_count = self._count_function_arguments(arg_content.strip())
-
-                    # For localization functions, subtract 1 because the key itself is the first argument
-                    arg_count = max(0, raw_arg_count - 1)
-                else:
-                    arg_count = 0
-
-                # Check if key exists and if argument count matches
                 if normalized_key in lang_keys:
                     expected = lang_keys[normalized_key]
                     if arg_count != expected:
@@ -1093,6 +1336,15 @@ class FunctionComparisonReportGenerator:
         print("Analyzing fonts...")
         fonts_registered, fonts_used, fonts_unregistered, fonts_default_gmod, fonts_variable, fonts_getfont_count, fonts_file_usages = self._run_font_analysis()
 
+        # 8. Config + inferred localization analysis (only when module docs are enabled)
+        config_undefined_get_calls = []
+        undefined_inferred_loc_keys = []
+        if self.generate_module_docs:
+            print("Detecting undefined lia.config.get calls...")
+            config_undefined_get_calls = self._detect_undefined_config_get_calls()
+            print("Detecting undefined inferred localization keys...")
+            undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
+
         # Categorize missing functions by type
         missing_library_functions, missing_hook_functions, missing_meta_functions = self._categorize_missing_functions(function_results)
 
@@ -1121,6 +1373,8 @@ class FunctionComparisonReportGenerator:
             fonts_variable=fonts_variable,
             fonts_getfont_count=fonts_getfont_count,
             fonts_file_usages=fonts_file_usages,
+            config_undefined_get_calls=config_undefined_get_calls,
+            undefined_inferred_loc_keys=undefined_inferred_loc_keys,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -1943,6 +2197,94 @@ class FunctionComparisonReportGenerator:
         
         return string_fonts, variable_fonts, getfont_count
 
+    def _detect_undefined_config_get_calls(self) -> List[Dict]:
+        """Find lia.config.get("key") calls where the key was never registered with lia.config.add.
+
+        Returns a list of dicts:
+            {
+                'file': str,      # relative path from base_path
+                'line': int,
+                'key': str,       # config key used in the get call
+                'context': str,   # trimmed source line
+            }
+        """
+        # ---- 1. Collect all defined config keys ----
+        defined_keys: Set[str] = set()
+        add_pattern = re.compile(
+            r'\blia\.config\.add\s*\(\s*(["\'])([^"\']+)\1',
+            re.IGNORECASE,
+        )
+
+        scan_roots = [self.base_path]
+        for mp in (self.modules_paths or []):
+            mp_path = Path(mp)
+            if mp_path.exists():
+                scan_roots.append(mp_path)
+
+        all_lua_files: List[Path] = []
+        for root in scan_roots:
+            all_lua_files.extend(root.rglob("*.lua"))
+
+        for lua_file in all_lua_files:
+            # Skip documentation / language files
+            lowered_parts = [p.lower() for p in lua_file.parts]
+            if any(skip in lowered_parts for skip in ("documentation", "docs", "languages")):
+                continue
+            try:
+                content = lua_file.read_text(encoding="utf-8", errors="ignore")
+                content_no_comments = self._remove_lua_comments(content)
+            except Exception:
+                continue
+            for m in add_pattern.finditer(content_no_comments):
+                defined_keys.add(m.group(2))
+
+        # ---- 2. Scan for lia.config.get("key") calls ----
+        get_pattern = re.compile(
+            r'\blia\.config\.get\s*\(\s*(["\'])([^"\']+)\1',
+            re.IGNORECASE,
+        )
+
+        undefined_calls: List[Dict] = []
+
+        for lua_file in all_lua_files:
+            lowered_parts = [p.lower() for p in lua_file.parts]
+            if any(skip in lowered_parts for skip in ("documentation", "docs", "languages")):
+                continue
+            try:
+                content = lua_file.read_text(encoding="utf-8", errors="ignore")
+                content_no_comments = self._remove_lua_comments(content)
+            except Exception:
+                continue
+
+            lines = content_no_comments.splitlines()
+            for m in get_pattern.finditer(content_no_comments):
+                key = m.group(2)
+                if key in defined_keys:
+                    continue
+                line_num = content_no_comments[: m.start()].count("\n") + 1
+                context = lines[line_num - 1].strip() if line_num <= len(lines) else ""
+                try:
+                    rel_path = str(lua_file.relative_to(self.base_path))
+                except ValueError:
+                    rel_path = str(lua_file)
+                undefined_calls.append({
+                    "file": rel_path,
+                    "line": line_num,
+                    "key": key,
+                    "context": context[:240],
+                })
+
+        # Deduplicate by (file, line, key) – same call may appear from multiple scan roots
+        seen: set = set()
+        deduped: List[Dict] = []
+        for entry in undefined_calls:
+            sig = (entry["file"], entry["line"], entry["key"])
+            if sig not in seen:
+                seen.add(sig)
+                deduped.append(entry)
+
+        return sorted(deduped, key=lambda e: (e["file"], e["line"]))
+
     def generate_markdown_report(self, data: CombinedReportData) -> str:
         """Generate comprehensive markdown report"""
         report_lines = []
@@ -1963,14 +2305,59 @@ class FunctionComparisonReportGenerator:
         # Language Comparison Section
         report_lines.extend(self._generate_language_comparison_section(data))
 
-        # Modules Section (in-report; do not create per-module files)
+        # Config Undefined Get Calls Section + Modules Section
+        # Both are gated behind the "generate module docs" flag.
         if self.generate_module_docs:
+            report_lines.extend(self._generate_config_undefined_section(data))
             try:
                 report_lines.extend(self._generate_modules_section(data.modules_scan))
             except Exception as e:
                 print(f"Error generating modules section: {e}")
 
         return "\n".join(report_lines)
+
+    def _generate_config_undefined_section(self, data: CombinedReportData) -> List[str]:
+        """Generate the config undefined get-calls section of the report."""
+        lines: List[str] = ["## Config: Undefined lia.config.get Keys", ""]
+        calls = getattr(data, "config_undefined_get_calls", []) or []
+
+        if not calls:
+            lines.append("_No undefined `lia.config.get` calls detected._")
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+            return lines
+
+        lines.extend([
+            f"Total: **{len(calls)}** call(s) reference a config key that has no matching `lia.config.add`.",
+            "",
+        ])
+
+        # Group by key for a clean overview
+        by_key: Dict[str, List[Dict]] = defaultdict(list)
+        for entry in calls:
+            by_key[entry["key"]].append(entry)
+
+        lines.append("### By Key")
+        lines.append("")
+        lines.append("| Config Key | Occurrences |")
+        lines.append("|---|---:|")
+        for key in sorted(by_key.keys()):
+            lines.append(f"| `{key}` | {len(by_key[key])} |")
+        lines.append("")
+
+        lines.append("### Details")
+        lines.append("")
+        for key in sorted(by_key.keys()):
+            lines.append(f"#### `{key}`")
+            lines.append("")
+            for entry in by_key[key]:
+                lines.append(f"- **{entry['file']}** line {entry['line']}: `{entry['context']}`")
+            lines.append("")
+
+        lines.append("---")
+        lines.append("")
+        return lines
 
     def _scan_modules_for_undocumented(self) -> List[Dict]:
         """Scan external modules for undocumented hooks and lia.* functions.
@@ -2619,9 +3006,19 @@ class FunctionComparisonReportGenerator:
             f"- **Module Key Conflicts:** {module_conflicts} keys",
             f"- **Argument Mismatches:** {arg_mismatches}",
             "",
-            "---",
-            ""
         ])
+
+        if self.generate_module_docs:
+            config_undefined_count = len(getattr(data, 'config_undefined_get_calls', []) or [])
+            inferred_undef_count = len(getattr(data, 'undefined_inferred_loc_keys', []) or [])
+            lines.extend([
+                "### Config / Inferred Localization Analysis",
+                f"- **Undefined lia.config.get Keys:** {config_undefined_count}",
+                f"- **Undefined Inferred Localization Keys:** {inferred_undef_count}",
+                "",
+            ])
+
+        lines.extend(["---", ""])
 
         return lines
 
@@ -2840,6 +3237,25 @@ class FunctionComparisonReportGenerator:
         lines.append(f"- **Argument Mismatch:** {arg_mismatch_count}")
         lines.append("")
 
+        # Undefined calls (keys used in code but not defined in language file)
+        lines.append("### Undefined Calls")
+        lines.append("")
+
+        undefined_rows = loc_data.get('undefined_rows', [])
+        if undefined_rows:
+            for row in undefined_rows:
+                # row is (relative_path, line_num, line_content, func_type, key)
+                rel_file = row[0]
+                line_num = row[1]
+                line_content = row[2]
+                key = row[4] if len(row) > 4 else None
+                lines.append(f"- **{key}** in {rel_file}:{line_num}")
+                lines.append(f"  - Context: {line_content}")
+        else:
+            lines.append("- None")
+
+        lines.append("")
+
         # Argument mismatch detail block
         lines.append("### Argument Mismatches")
         lines.append("")
@@ -2863,27 +3279,31 @@ class FunctionComparisonReportGenerator:
 
         lines.append("")
 
-        # Missing keys report (undefined keys in localization usage)
-        lines.append("### Missing Keys")
+        # Undefined inferred localization keys (gated — only present when module docs enabled)
+        inferred_undef = getattr(data, "undefined_inferred_loc_keys", []) or []
+        if inferred_undef:
+            lines.append("### Undefined Inferred Localization Keys")
+            lines.append("")
+            lines.append(
+                "These string literals are stored in localization-by-convention fields "
+                "(e.g. `ITEM.name`, `lia.config.add` name arg, `lia.option.add` name/desc) "
+                "but have no matching entry in the language file."
+            )
+            lines.append("")
 
-        undefined_rows = loc_data.get('undefined_rows', [])
-        if undefined_rows:
-            for row in undefined_rows:
-                # row is (relative_path, line_num, line_content, func_type, key)
-                rel_file = row[0]
-                line_num = row[1]
-                line_content = row[2]
-                key = row[4] if len(row) > 4 else None
-                lines.append(f"- **{key}** in {rel_file}:{line_num}")
-                lines.append(f"  - Context: {line_content}")
-        else:
-            lines.append("- None")
+            # Group by field type for readability
+            by_field: Dict[str, List[Dict]] = defaultdict(list)
+            for entry in inferred_undef:
+                by_field[entry["field"]].append(entry)
 
-        lines.append("")
-
-        # Inferred keys are detected for internal review but not shown in this report section.
-        # (The details were previously shown under "### Inferred Localization (Source-level)")
-        # If needed, use `data.inferred_localization` directly.
+            lines.append("| Field | Key | File | Line |")
+            lines.append("|---|---|---|---:|")
+            for field in sorted(by_field.keys()):
+                for entry in by_field[field]:
+                    lines.append(
+                        f"| `{entry['field']}` | `{entry['key']}` | {entry['file']} | {entry['line']} |"
+                    )
+            lines.append("")
 
         return lines
 

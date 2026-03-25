@@ -1108,6 +1108,56 @@ if SERVER then
         lia.information(L("configWiped"))
     end)
 
+    concommand.Add("lia_randomconfig", function(client)
+        if IsValid(client) then
+            client:notifyErrorLocalized("commandConsoleOnly")
+            return
+        end
+
+        local randomValues = {
+            Boolean = function() return math.random(0, 1) == 1 end,
+            Number = function(cfg) return math.Round(math.Rand(cfg.data.min or 0, cfg.data.max or 100), 2) end,
+            Int = function(cfg) return math.random(cfg.data.min or 0, cfg.data.max or 100) end,
+            Float = function(cfg) return math.Round(math.Rand(cfg.data.min or 0, cfg.data.max or 100), cfg.data.decimals or 2) end,
+            Color = function() return Color(math.random(0, 255), math.random(0, 255), math.random(0, 255), 255) end,
+            Generic = function() return "random_" .. tostring(math.random(1000, 9999)) end,
+            Table = function(cfg)
+                local opts = lia.config.getOptions and lia.config.getOptions(cfg.key)
+                if opts and next(opts) then
+                    local keys = {}
+                    for k in pairs(opts) do keys[#keys + 1] = k end
+                    local pick = opts[keys[math.random(#keys)]]
+                    return pick and pick.value or nil
+                end
+            end,
+        }
+
+        local byType = {}
+        for key, cfg in pairs(lia.config.stored) do
+            local t = (cfg.data and cfg.data.type) or cfg.type or "Generic"
+            if not byType[t] then
+                byType[t] = {key = key, cfg = cfg}
+            end
+        end
+
+        local results = {}
+        for typeName, info in SortedPairs(byType) do
+            local gen = randomValues[typeName]
+            if not gen then continue end
+            info.cfg.key = info.key
+            local newVal = gen(info.cfg)
+            if newVal == nil then
+                results[#results + 1] = string.format("  [%s] %s -> skipped (no options)", typeName, info.key)
+                continue
+            end
+            lia.config.set(info.key, newVal)
+            results[#results + 1] = string.format("  [%s] %s = %s", typeName, info.key, tostring(newVal))
+        end
+
+        print("[lia_randomconfig] Set one random config per type:")
+        for _, line in ipairs(results) do print(line) end
+    end)
+
     concommand.Add("list_entities", function(client)
         local entityCount = {}
         local totalEntities = 0

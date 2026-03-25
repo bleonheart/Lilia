@@ -232,6 +232,9 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
         # Skip keys that start with [[ (special format keys)
         if key.startswith('[['):
             continue
+        # Skip keys that only appear as @token patterns (dynamic prefix builders, not literal keys)
+        if all(u[3] == '@token' for u in usages):
+            continue
         # Check if key is in the keys dict (case-sensitive exact match)
         if key not in keys and key not in undefined_keys_seen:
             undefined_keys_seen.add(key)

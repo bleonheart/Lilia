@@ -388,7 +388,7 @@ function GM:CanPlayerHoldObject(client, entity)
 end
 
 function GM:EntityTakeDamage(entity, dmgInfo)
-    if lia.config.get("PainSoundEnabled") and entity:IsPlayer() and entity:Health() > 0 then
+    if lia.config.get("PainSoundEnabled", true) and entity:IsPlayer() and entity:Health() > 0 then
         local painSound = hook.Run("GetPlayerPainSound", entity, "hurt", entity:isFemale())
         if entity:WaterLevel() >= 3 then painSound = hook.Run("GetPlayerPainSound", entity, "drown", entity:isFemale()) end
         if painSound and hook.Run("ShouldPlayPainSound", entity, painSound) ~= false then
@@ -1062,7 +1062,7 @@ function GM:EntityRemoved(ent)
     end
 end
 
-function GM:LiliaTablesLoaded()
+function GM:OnDatabaseLoaded()
     lia.db.addDatabaseFields()
     lia.data.loadTables()
     lia.data.loadPersistence()

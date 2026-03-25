@@ -163,7 +163,7 @@ else
             end
 
             if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-            runWhenConfigInitialized(function() vgui.Create("liaCharacter") end)
+            vgui.Create("liaCharacter")
         end
     end
 

@@ -19,22 +19,33 @@ local function localizeMenuLabel(value, ...)
     if resolved ~= value then return resolved end
     return L(value, ...)
 end
+lia.option.localizeValue = localizeMenuLabel
 
-local function normalizeSelectableOption(optionEntry, resolveToken)
+local function normalizeSelectableOption(optionEntry)
     if istable(optionEntry) then
-        local label = optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
-        if isstring(label) then label = resolveToken(label) end
+        local rawLabel = optionEntry.rawLabel or optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
         return {
-            label = label,
-            value = optionEntry.value ~= nil and optionEntry.value or label
+            rawLabel = rawLabel,
+            label = rawLabel,
+            value = optionEntry.value ~= nil and optionEntry.value or rawLabel
         }
     elseif isstring(optionEntry) then
-        local label = resolveToken(optionEntry)
         return {
-            label = label,
+            rawLabel = optionEntry,
+            label = optionEntry,
             value = optionEntry
         }
     end
+end
+
+local function localizeSelectableOption(optionEntry)
+    if not istable(optionEntry) then return optionEntry end
+    local rawLabel = optionEntry.rawLabel or optionEntry.label
+    return {
+        rawLabel = rawLabel,
+        label = isstring(rawLabel) and localizeMenuLabel(rawLabel) or rawLabel,
+        value = optionEntry.value
+    }
 end
 
 local function getSelectableOptionLabel(options, selectedValue)
@@ -86,7 +97,6 @@ function lia.option.add(key, name, desc, default, callback, data)
     assert(isstring(key), L("optionKeyString", type(key)))
     assert(isstring(name), L("optionNameString", type(name)))
     assert(istable(data), L("optionDataTable", type(data)))
-    local resolveToken = lia.lang.resolveToken
     local t = type(default)
     local optionType = t == "boolean" and "Boolean" or t == "number" and (math.floor(default) == default and "Int" or "Float") or t == "table" and default.r and default.g and default.b and "Color" or "Generic"
     if optionType == "Int" or optionType == "Float" then
@@ -99,7 +109,7 @@ function lia.option.add(key, name, desc, default, callback, data)
     local value = old and old.value or default
     if istable(data.options) then
         for k, v in pairs(data.options) do
-            local normalized = normalizeSelectableOption(v, resolveToken)
+            local normalized = normalizeSelectableOption(v)
             if normalized then data.options[k] = normalized end
         end
     elseif isfunction(data.options) then
@@ -107,10 +117,13 @@ function lia.option.add(key, name, desc, default, callback, data)
         data.options = nil
     end
 
-    data.category = isstring(data.category) and resolveToken(data.category) or data.category
+    data.rawCategory = data.rawCategory or data.category
+    data.category = isstring(data.category) and localizeMenuLabel(data.category) or data.category
     lia.option.stored[key] = {
-        name = isstring(name) and resolveToken(name) or name,
-        desc = isstring(desc) and resolveToken(desc) or desc,
+        rawName = name,
+        name = isstring(name) and localizeMenuLabel(name) or name,
+        rawDesc = desc,
+        desc = isstring(desc) and localizeMenuLabel(desc) or desc,
         data = data,
         value = value,
         default = default,
@@ -122,6 +135,100 @@ function lia.option.add(key, name, desc, default, callback, data)
     }
 
     hook.Run("OptionAdded", key, lia.option.stored[key])
+end
+
+--[[
+    Purpose:
+        Retrieve the localized display name of an option entry.
+
+    When Called:
+        When rendering option entries in the config UI or sorting them by name.
+
+    Parameters:
+        key (string)
+            The option key to look up.
+
+    Returns:
+        string
+            Localized display name, or the raw key if the entry does not exist.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            local name = lia.option.getDisplayName("BarsAlwaysVisible")
+            print("Option name:", name)
+        ```
+]]
+function lia.option.getDisplayName(key)
+    local option = lia.option.stored[key]
+    if not option then return key end
+    local value = option.rawName or option.name or key
+    return isstring(value) and localizeMenuLabel(value) or value
+end
+
+--[[
+    Purpose:
+        Retrieve the localized description of an option entry.
+
+    When Called:
+        When populating tooltips or description labels in the options UI.
+
+    Parameters:
+        key (string)
+            The option key to look up.
+
+    Returns:
+        string
+            Localized description string, or an empty string if none exists.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            local desc = lia.option.getDisplayDesc("BarsAlwaysVisible")
+            print("Option description:", desc)
+        ```
+]]
+function lia.option.getDisplayDesc(key)
+    local option = lia.option.stored[key]
+    if not option then return "" end
+    local value = option.rawDesc or option.desc or ""
+    return isstring(value) and localizeMenuLabel(value) or value
+end
+
+--[[
+    Purpose:
+        Retrieve the localized category of an option entry for grouping in the UI.
+
+    When Called:
+        When building the options UI to sort entries into category sections.
+
+    Parameters:
+        key (string)
+            The option key to look up.
+
+    Returns:
+        string
+            Localized category name, or "misc" as the default fallback.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+            local cat = lia.option.getDisplayCategory("BarsAlwaysVisible")
+            print("Option category:", cat)
+        ```
+]]
+function lia.option.getDisplayCategory(key)
+    local option = lia.option.stored[key]
+    if not option then return localizeMenuLabel("misc") end
+    local data = option.data or {}
+    local value = data.rawCategory or data.category or "misc"
+    return isstring(value) and localizeMenuLabel(value) or value
 end
 
 --[[
@@ -153,16 +260,22 @@ function lia.option.getOptions(key)
     if option.data.optionsFunc then
         local success, result = pcall(option.data.optionsFunc)
         if success and istable(result) then
+            local normalizedOptions = {}
             for k, v in pairs(result) do
-                local normalized = normalizeSelectableOption(v, lia.lang.resolveToken)
-                if normalized then result[k] = normalized end
+                local normalized = normalizeSelectableOption(v)
+                if normalized then normalizedOptions[k] = localizeSelectableOption(normalized) end
             end
-            return result
+            return normalizedOptions
         else
             return {}
         end
     elseif istable(option.data.options) then
-        return option.data.options
+        local normalizedOptions = {}
+        for k, v in pairs(option.data.options) do
+            local normalized = normalizeSelectableOption(v)
+            if normalized then normalizedOptions[k] = localizeSelectableOption(normalized) end
+        end
+        return normalizedOptions
     end
     return {}
 end
@@ -346,7 +459,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
         p:SetTall(45)
         p:DockMargin(0, 0, 0, 5)
         p.Paint = function(s, w, h) lia.derma.rect(0, 0, w, h):Rad(6):Color(Color(35, 38, 45, 180)):Shape(lia.derma.SHAPE_IOS):Draw() end
-        local description = option.desc or ""
+        local description = lia.option.getDisplayDesc(key)
         SetStyledTooltip(p, description)
         local l = p:Add("DLabel")
         l:Dock(LEFT)
@@ -450,15 +563,21 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     keys[#keys + 1] = k
                 end
 
-                table.sort(keys, function(a, b) return lia.option.stored[a].name < lia.option.stored[b].name end)
+                table.sort(keys, function(a, b)
+                    local aName = tostring(lia.option.getDisplayName(a) or a):lower()
+                    local bName = tostring(lia.option.getDisplayName(b) or b):lower()
+                    return aName < bName
+                end)
                 for _, k in ipairs(keys) do
                     local opt = lia.option.stored[k]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
-                        local cat = opt.data and opt.data.category or L("misc")
+                        local data = opt.data or {}
+                        local cat = data.rawCategory or data.category or "misc"
                         categories[cat] = categories[cat] or {}
                         table.insert(categories[cat], {
                             key = k,
-                            name = opt.name,
+                            name = lia.option.getDisplayName(k),
+                            desc = lia.option.getDisplayDesc(k),
                             option = opt
                         })
                     end
@@ -469,14 +588,24 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     table.insert(sortedCategories, cat)
                 end
 
-                table.sort(sortedCategories)
+                table.sort(sortedCategories, function(a, b)
+                    local aName = tostring(localizeMenuLabel(a)):lower()
+                    local bName = tostring(localizeMenuLabel(b)):lower()
+                    return aName < bName
+                end)
                 for _, cat in ipairs(sortedCategories) do
                     local items = categories[cat]
-                    table.sort(items, function(a, b) return a.name < b.name end)
+                    table.sort(items, function(a, b)
+                        return tostring(a.name or ""):lower() < tostring(b.name or ""):lower()
+                    end)
                     local visibleItems = {}
                     local localizedCategory = tostring(localizeMenuLabel(cat))
                     for _, item in ipairs(items) do
-                        if not filter or item.name:lower():find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
+                        local localizedName = tostring(item.name or ""):lower()
+                        local localizedDesc = tostring(item.desc or ""):lower()
+                        if not filter or localizedName:find(filter, 1, true) or localizedDesc:find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then
+                            table.insert(visibleItems, item)
+                        end
                     end
 
                     if #visibleItems > 0 then

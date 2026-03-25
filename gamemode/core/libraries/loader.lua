@@ -979,7 +979,7 @@ function lia.loader.initializeGamemode(isReload)
     if SERVER and isReload then
         local adminHasChanges = lia.admin.hasChanges()
         local playerInteractHasChanges = lia.playerinteract.hasChanges()
-        local configHasChanges = lia.config.hasChanges()
+        local configHasChanges = table.Count(lia.config.getChangedValues()) > 0
         timer.Create("liaReloadConfigSync", 0.5, 1, function() if configHasChanges then lia.config.send() end end)
         timer.Create("liaReloadAdminSync", 2.0, 1, function() if adminHasChanges then lia.admin.sync() end end)
         timer.Create("liaReloadPlayerInteractSync", 3.5, 1, function() if playerInteractHasChanges then lia.playerinteract.sync() end end)
