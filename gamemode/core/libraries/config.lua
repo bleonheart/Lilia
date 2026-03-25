@@ -16,6 +16,7 @@ lia.config.stored = lia.config.stored or {}
 lia.config._lastSyncedValues = lia.config._lastSyncedValues or {}
 lia.config.initialized = lia.config.initialized or false
 lia.config._trace = false
+local CONFIG_FULL_SYNC_KEY = "__liaConfigFullSync"
 local function normalizeSelectableConfigOption(optionEntry, resolveToken)
     if istable(optionEntry) then
         local label = optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
@@ -41,37 +42,6 @@ local function getSelectableConfigOptionLabel(options, selectedValue)
         end
     end
     return selectedValue
-end
-
---[[
-    Purpose:
-        Register a callback to be executed when the configuration system is initialized.
-
-    When Called:
-        During module initialization to ensure config is ready before accessing values.
-
-    Parameters:
-        callback (function)
-            Function to execute when config is initialized.
-
-    Realm:
-        Shared
-
-    Example Usage:
-        ```lua
-        lia.config.onInitialized(function()
-            print("Config is ready!")
-        end)
-        ```
-]]
-function lia.config.onInitialized(callback)
-    if not isfunction(callback) then return end
-    if lia.config.initialized == true then
-        callback()
-        return
-    end
-
-    hook.Add("InitializedConfig", tostring(callback), function() callback() end)
 end
 
 local function cfgNormalizeValue(v)
@@ -421,6 +391,14 @@ function lia.config.load()
 end
 
 if SERVER then
+    local function getAllValues()
+        local data = {}
+        for k, v in pairs(lia.config.stored) do
+            data[k] = cfgNormalizeValue(v.value ~= nil and v.value or v.default)
+        end
+        return data
+    end
+
     --[[
     Purpose:
         Get all configuration values that have been changed from their defaults.
@@ -509,7 +487,8 @@ if SERVER then
     function lia.config.send(client)
         local data
         if client then
-            data = lia.data.get("config", {})
+            data = getAllValues()
+            data[CONFIG_FULL_SYNC_KEY] = true
         else
             data = lia.config.getChangedValues()
             if table.Count(data) == 0 then return end
@@ -524,6 +503,7 @@ if SERVER then
 
         if not istable(targets) or #targets == 0 then return end
         for key, value in pairs(data) do
+            if key == CONFIG_FULL_SYNC_KEY then continue end
             if istable(value) then
                 lia.config._lastSyncedValues[key] = util.TableToJSON(value) and util.JSONToTable(util.TableToJSON(value)) or value
             else
@@ -607,6 +587,8 @@ if SERVER then
 else
     lia.net.readBigTable("liaCfgList", function(data)
         data = data or {}
+        local isFullSync = data[CONFIG_FULL_SYNC_KEY] == true
+        data[CONFIG_FULL_SYNC_KEY] = nil
         for k, v in pairs(data) do
             local stored = lia.config.stored[k]
             if stored then
@@ -617,8 +599,10 @@ else
             end
         end
 
-        lia.config.initialized = true
-        hook.Run("InitializedConfig")
+        if isFullSync and not lia.config.initialized then
+            lia.config.initialized = true
+            hook.Run("InitializedConfig")
+        end
     end)
 
     net.Receive("liaCfgSet", function()
