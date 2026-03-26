@@ -1,9 +1,6 @@
 ﻿local PANEL = {}
 local PADDING = 2
-local HEADER_HEIGHT = 22
 local WEIGHT_PANEL_HEIGHT = 32
-local BORDER_FIX_W = 8
-local BORDER_FIX_H = 14
 local SHADOW_COLOR = Color(0, 0, 0, 100)
 function PANEL:Init()
     self:SetPaintBackground(false)
@@ -118,7 +115,6 @@ function PANEL:updateWeight()
 end
 
 function PANEL:Center()
-    local parent = self:GetParent()
     local centerX, centerY = ScrW() * 0.5, ScrH() * 0.5
     self:SetPos(centerX - (self:GetWide() * 0.5), centerY - (self:GetTall() * 0.5))
 end
