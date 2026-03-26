@@ -1,11 +1,9 @@
-﻿local MODULE = MODULE
-local PANEL = {}
+﻿local PANEL = {}
 local PADDING = 2
 local HEADER_HEIGHT = 22
 local WEIGHT_PANEL_HEIGHT = 32
 local BORDER_FIX_W = 8
 local BORDER_FIX_H = 14
-local SHADOW_COLOR = Color(0, 0, 0, 100)
 function PANEL:Init()
     self.gridW = lia.config.get("invW")
     self.gridH = lia.config.get("invH")
