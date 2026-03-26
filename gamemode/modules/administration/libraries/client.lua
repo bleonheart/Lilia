@@ -1025,44 +1025,7 @@ function MODULE:InitializedModules()
     self.adminStickCategoryOrder = categoryOrder
 end
 
-local function GetSubMenuIcon(name)
-    if subMenuIcons[name] then return subMenuIcons[name] end
-    local baseKey = name:match("^([^%(]+)") or name
-    baseKey = baseKey:gsub("^%s*(.-)%s*$", "%1")
-    if subMenuIcons[baseKey] then return subMenuIcons[baseKey] end
-    local setFactionLocalized = L("setFactionTitle", ""):match("^([^%(]+)") or L("setFactionTitle", "")
-    setFactionLocalized = setFactionLocalized:gsub("^%s*(.-)%s*$", "%1")
-    if name:find(setFactionLocalized, 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
-    if name:find(L("adminStickSetFaction"), 1, true) == 1 then return subMenuIcons["setFactionTitle"] end
-    if name:lower() == "misc" or name:lower() == "miscellaneous" or name:lower() == L("misc"):lower() then return "icon16/application_view_tile.png" end
-    if name:lower() == "items" or name:lower() == L("items"):lower() then return "icon16/box.png" end
-    if name:lower() == "ooc" or name:lower():find("out of character") or name:lower() == L("outOfCharacter"):lower() then return "icon16/comment.png" end
-    if name:lower() == "warnings" or name:lower() == L("warnsModuleName"):lower() then return "icon16/error.png" end
-    if name:lower() == "commands" then return "icon16/page.png" end
-    return "icon16/page.png"
-end
 
-local function GetOrCreateSubMenu(parent, name, store, category, subcategory)
-    if not parent or not IsValid(parent) then return end
-    local fullName = name
-    if category and subcategory then
-        fullName = category .. "_" .. subcategory .. "_" .. name
-    elseif category then
-        fullName = category .. "_" .. name
-    end
-
-    if not store[fullName] then
-        local menu, panel = parent:AddSubMenu(name)
-        local icon = GetSubMenuIcon(name)
-        if icon and panel then panel:SetIcon(icon) end
-        if IsValid(menu) then
-            store[fullName] = menu
-        else
-            return parent
-        end
-    end
-    return store[fullName] or parent
-end
 
 local function GetOrCreateCategoryMenu(parent, categoryKey, store)
     if not parent or not IsValid(parent) then return end
