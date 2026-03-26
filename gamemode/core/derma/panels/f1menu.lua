@@ -332,7 +332,7 @@ function PANEL:Init()
     end
 
     table.sort(tabKeys, function(a, b)
-        local aName, bName = tostring(L(a)):lower(), tostring(L(b)):lower()
+        local aName, bName = tostring(localizeMenuLabel(a)):lower(), tostring(localizeMenuLabel(b)):lower()
         return aName < bName
     end)
 
@@ -432,7 +432,7 @@ function PANEL:addTab(name, callback)
     contentPanel:Dock(FILL)
     contentPanel.Paint = function() end
     local wrappedCallback = function() self:SwitchTabContent(name, callback) end
-    self.tabs:AddTab(L(name), contentPanel, nil, wrappedCallback)
+    self.tabs:AddTab(localizeMenuLabel(name), contentPanel, nil, wrappedCallback)
     local tabData = {
         name = name,
         panel = contentPanel,
@@ -1077,7 +1077,7 @@ hook.Add("PlayerBindPress", "liaF1MenuPlayerBindPress", function(client, bind, p
 end)
 
 hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
-    tabs["you"] = function(statusPanel)
+    tabs["@you"] = function(statusPanel)
         statusPanel.info = vgui.Create("liaCharInfo", statusPanel)
         statusPanel.info:Dock(FILL)
         statusPanel.info:setup()
@@ -1085,7 +1085,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         statusPanel.info:AlphaTo(255, 0.5)
     end
 
-    tabs["information"] = function(infoTabPanel)
+    tabs["@information"] = function(infoTabPanel)
         local frame = infoTabPanel:Add("liaFrame")
         frame:Dock(FILL)
         frame:DockPadding(10, 10, 10, 10)
@@ -1191,7 +1191,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
         if pages[1] and pages[1].drawFunc and IsValid(tabPanels[1]) then pages[1].drawFunc(tabPanels[1]) end
     end
 
-    tabs["settings"] = function(settingsPanel)
+    tabs["@settings"] = function(settingsPanel)
         local frame = settingsPanel:Add("liaFrame")
         frame:Dock(FILL)
         frame:DockMargin(10, 10, 10, 10)
@@ -1300,7 +1300,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     local adminPages = {}
     hook.Run("PopulateAdminTabs", adminPages)
     if not table.IsEmpty(adminPages) then
-        tabs["admin"] = function(adminPanel)
+        tabs["@admin"] = function(adminPanel)
             local frame = adminPanel:Add("liaFrame")
             frame:Dock(FILL)
             frame:DockMargin(10, 10, 10, 10)
@@ -1524,7 +1524,7 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
 
     local hasThemesPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
     if hasThemesPrivilege then
-        tabs["themes"] = function(themesPanel)
+        tabs["@themes"] = function(themesPanel)
             local frame = themesPanel:Add("liaFrame")
             frame:Dock(FILL)
             frame:DockMargin(10, 10, 10, 10)

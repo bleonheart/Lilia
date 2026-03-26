@@ -1777,7 +1777,6 @@ local function serializeRequestText(value)
         end
         return ""
     end
-
     return value or ""
 end
 

@@ -247,7 +247,18 @@ if SERVER then
 ]]
     function lia.inventory.instance(typeID, initialData)
         local invType = lia.inventory.types[typeID]
-        assert(istable(invType), L("invalidInventoryType", tostring(typeID)))
+        if not istable(invType) then
+            local available = {}
+            for k in pairs(lia.inventory.types) do
+                available[#available + 1] = k
+            end
+
+            ErrorNoHalt("[Lilia] Inventory type mismatch: '" .. tostring(typeID) .. "' does not match any registered type. This may be a leftover reference to an old inventory type. Available types: " .. table.concat(available, ", ") .. "\n")
+            local d = deferred.new()
+            d:reject(L("invalidInventoryType", tostring(typeID)))
+            return d
+        end
+
         assert(initialData == nil or istable(initialData), L("initialDataMustBeTable"))
         initialData = initialData or {}
         return invType:initializeStorage(initialData):next(function(id)

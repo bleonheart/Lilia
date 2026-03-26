@@ -523,4 +523,3 @@ function SKIN:PaintPropertySheet(panel, w, h)
 end
 
 derma.DefineSkin(L("liliaSkin"), L("liliaSkinDesc"), SKIN)
-

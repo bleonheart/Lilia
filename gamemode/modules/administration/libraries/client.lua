@@ -943,7 +943,7 @@ end
 
 local function formatAdminStickPascal(key)
     local words = formatAdminStickWords(key)
-    return (words:gsub("(%a)([%w']*)", function(first, rest) return string.upper(first) .. string.lower(rest) end):gsub("%s+", ""))
+    return words:gsub("(%a)([%w']*)", function(first, rest) return string.upper(first) .. string.lower(rest) end):gsub("%s+", "")
 end
 
 local function resolveAdminStickToken(candidates)
@@ -960,19 +960,12 @@ end
 
 local function getCategoryDisplayName(categoryKey)
     local pascalKey = formatAdminStickPascal(categoryKey)
-    return resolveAdminStickToken({
-        "@adminStickCategory" .. pascalKey,
-        "@" .. tostring(categoryKey or "")
-    }) or humanizeAdminStickKey(categoryKey)
+    return resolveAdminStickToken({"@adminStickCategory" .. pascalKey, "@" .. tostring(categoryKey or "")}) or humanizeAdminStickKey(categoryKey)
 end
 
 local function getSubcategoryDisplayName(_, subcategoryKey)
     local pascalKey = formatAdminStickPascal(subcategoryKey)
-    return resolveAdminStickToken({
-        "@adminStickSubCategory" .. pascalKey,
-        "@adminStickCategory" .. pascalKey,
-        "@" .. tostring(subcategoryKey or "")
-    }) or humanizeAdminStickKey(subcategoryKey)
+    return resolveAdminStickToken({"@adminStickSubCategory" .. pascalKey, "@adminStickCategory" .. pascalKey, "@" .. tostring(subcategoryKey or "")}) or humanizeAdminStickKey(subcategoryKey)
 end
 
 local function findCategoryKeyByName(categories, displayName)
@@ -1010,7 +1003,6 @@ local function GenerateDynamicCategories()
             local subcategory = cmdData.AdminStick.SubCategory
             if category then
                 local canonicalCategoryKey, categoryData = ensureDynamicCategory(categories, orderedCategories, category)
-
                 if subcategory then
                     local displayName = getSubcategoryDisplayName(canonicalCategoryKey, subcategory)
                     local existingSubcategoryKey = findSubcategoryKeyByName(categoryData, displayName)
@@ -1758,7 +1750,6 @@ local function AddCommandToMenu(menu, data, key, tgt, name, stores)
     local m = menu
     if cat then m = GetOrCreateCategoryMenu(menu, cat, stores) end
     if cat and sub then m = GetOrCreateSubCategoryMenu(m, cat, sub, stores) end
-
     if IsValid(m) then
         local ic = data.AdminStick.Icon or "icon16/page.png"
         local id = GetIdentifier(tgt)

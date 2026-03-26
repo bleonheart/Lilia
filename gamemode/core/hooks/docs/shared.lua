@@ -1139,6 +1139,37 @@ end
 
 --[[
     Purpose:
+        Override the maximum carry weight of a weight-based inventory.
+
+    When Called:
+        Inside `SimpleInv:getMaxWeight()` after the base max weight is computed from config and negative-weight items.
+
+    Parameters:
+        inventory (Inventory)
+            The inventory whose max weight is being evaluated.
+        maxWeight (number)
+            Calculated max weight before this hook runs.
+
+    Returns:
+        number|nil
+            New maximum weight to use; nil keeps the computed value.
+
+    Realm:
+        Shared
+
+    Example Usage:
+        ```lua
+        hook.Add("GetInventoryMaxWeight", "VIPCarryBonus", function(inventory, maxWeight)
+            local char = lia.char.loaded[inventory:getData("char")]
+            if char and char:getPlayer():IsUserGroup("vip") then return maxWeight + 10 end
+        end)
+        ```
+]]
+function GetInventoryMaxWeight(inventory, maxWeight)
+end
+
+--[[
+    Purpose:
         Override the model used when an item spawns as a world entity.
 
     When Called:

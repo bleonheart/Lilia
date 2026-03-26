@@ -1,4 +1,4 @@
-MODULE.name = "@categoryAdministration"
+﻿MODULE.name = "@categoryAdministration"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@administrationToolsDescription"

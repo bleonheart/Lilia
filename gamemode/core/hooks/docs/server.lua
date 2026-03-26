@@ -895,7 +895,7 @@ end
     Example Usage:
         ```lua
             hook.Add("DatabaseConnected", "InitPlugins", function()
-                lia.plugin.loadAll()
+                lia.module.loadAll()
             end)
         ```
 ]]

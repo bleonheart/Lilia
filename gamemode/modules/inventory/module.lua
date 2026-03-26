@@ -1,8 +1,7 @@
-MODULE.name = "@inv"
+﻿MODULE.name = "@inv"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@inventorySystemDescription"
-MODULE.IsWeightBased = true
 MODULE.Privileges = {
     ["noItemCooldown"] = {
         Name = "@noItemCooldown",
@@ -11,18 +10,5 @@ MODULE.Privileges = {
     }
 }
 
---[[
-if MODULE.IsWeightBased then
-    lia.loader.include(MODULE.folder .. "/gridinv.lua", "shared")
-    lia.loader.includeDir(MODULE.folder .. "/gridinv")
-
-else
-    lia.loader.include(MODULE.folder .. "/gridinv.lua", "shared")
-    lia.loader.includeDir(MODULE.folder .. "/gridinv")
-end]]
-MODULE.Dependencies = {
-    {
-        File = "gridinv.lua",
-        Realm = "shared"
-    },
-}
+local invType = string.lower(hook.Run("GetDefaultInventoryType") or "gridinv")
+lia.module.load(invType, MODULE.folder .. "/types/" .. invType)

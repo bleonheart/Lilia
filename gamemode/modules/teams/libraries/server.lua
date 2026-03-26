@@ -1,4 +1,4 @@
-function MODULE:OnPlayerJoinClass(client, class, oldClass)
+﻿function MODULE:OnPlayerJoinClass(client, class, oldClass)
     local info = lia.class.list[class]
     local info2 = lia.class.list[oldClass]
     if info then
@@ -32,6 +32,7 @@ end
 
 function MODULE:OnCharCreated(_, character)
     local faction = lia.faction.get(character:getFaction())
+    if not faction then return end
     local items = faction.items or {}
     for _, item in pairs(items) do
         character:getInv():add(item, 1)

@@ -63,7 +63,7 @@ function PANEL:makeFactionComboBox()
         local factionID = nil
         if data and isstring(data) then
             for id, fac in pairs(lia.faction.teams) do
-        if fac.name == data then
+                if fac.name == data then
                     factionID = id
                     break
                 end

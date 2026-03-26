@@ -20,7 +20,6 @@ lia = lia or {
 lia.reloadInProgress = false
 lia.isReloading = false
 local FilesToLoad = {
-
     {
         path = "lilia/gamemode/core/libraries/keybind.lua",
         realm = "shared"
@@ -353,7 +352,7 @@ end
         Include every Lua file in a directory; optionally recurse subfolders.
 
     When Called:
-        To load plugin folders or schema-specific directories.
+        To load module folders or schema-specific directories.
 
     Parameters:
         dir (string)
@@ -1041,5 +1040,5 @@ for _, compatFile in ipairs(ConditionalFiles) do
     end
 end
 
-if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), #loadedCompatibility == 1 and L("compatibilityLoadedSingle", loadedCompatibility[1]) or L("compatibilityLoadedMultiple", table.concat(loadedCompatibility, ", "))) end
+if #loadedCompatibility > 0 then lia.bootstrap(L("compatibility"), L("compatibilityLoadedSingle", table.concat(loadedCompatibility, ", "))) end
 if game.IsDedicated() then concommand.Remove("gm_save") end

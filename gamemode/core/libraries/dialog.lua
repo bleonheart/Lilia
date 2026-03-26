@@ -483,130 +483,6 @@ if SERVER then
         return true
     end
 
-    lia.dialog.registerNPC("tutorial_guide", {
-        PrintName = "@dialogTutorialGuideName",
-        Greeting = "@dialogTutorialGuideGreeting",
-        Conversation = {
-            ["@dialogTutorialOptionNewHere"] = {
-                options = {
-                    ["@dialogTutorialOptionTellFactions"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseTellFactions",
-                        options = {
-                            ["@dialogTutorialOptionWhatFactionsAvailable"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseWhatFactionsAvailable",
-                                options = {
-                                    ["@dialogTutorialOptionJoinFaction"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseJoinFaction",
-                                    },
-                                    ["@dialogTutorialOptionFactionLimits"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseFactionLimits",
-                                    }
-                                }
-                            },
-                            ["@dialogTutorialOptionFactionVsClass"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseFactionVsClass",
-                                options = {
-                                    ["@dialogTutorialOptionMoreClasses"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseMoreClasses",
-                                    },
-                                    ["@dialogTutorialOptionMultipleClasses"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseMultipleClasses",
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    ["@dialogTutorialOptionGetStartedItems"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseGetStartedItems",
-                        options = {
-                            ["@dialogTutorialOptionOpenInventory"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseOpenInventory",
-                            },
-                            ["@dialogTutorialOptionBuyItems"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseBuyItems",
-                                options = {
-                                    ["@dialogTutorialOptionMoneyWork"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseMoneyWork",
-                                    },
-                                    ["@dialogTutorialOptionTradeItems"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseTradeItems",
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    ["@dialogTutorialOptionRoleplaying"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseRoleplaying",
-                        options = {
-                            ["@dialogTutorialOptionTalkInCharacter"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseTalkInCharacter",
-                            },
-                            ["@dialogTutorialOptionBasicRules"] = {
-                                ShouldShow = function() return true end,
-                                Response = "@dialogTutorialResponseBasicRules",
-                                options = {
-                                    ["@dialogTutorialOptionMetagaming"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseMetagaming",
-                                    },
-                                    ["@dialogTutorialOptionReportRuleBreakers"] = {
-                                        ShouldShow = function() return true end,
-                                        Response = "@dialogTutorialResponseReportRuleBreakers",
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            ["@dialogTutorialOptionSpecificHelp"] = {
-                options = {
-                    ["@dialogTutorialOptionStuckBugged"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseStuckBugged",
-                    },
-                    ["@dialogTutorialOptionChangeCharacter"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseChangeCharacter",
-                    },
-                    ["@dialogTutorialOptionLostItems"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseLostItems",
-                    },
-                    ["@dialogTutorialOptionAdminHelp"] = {
-                        ShouldShow = function() return true end,
-                        Response = "@dialogTutorialResponseAdminHelp",
-                    }
-                }
-            },
-            ["@dialogTutorialOptionReadyExplore"] = {
-                ShouldShow = function() return true end,
-                Response = "@dialogTutorialResponseReadyExplore",
-                serverOnly = false
-            },
-            ["@dialogTutorialOptionGoodbye"] = {
-                Response = "@dialogTutorialResponseGoodbye",
-                closeDialog = true,
-                Callback = function() if IsValid(lia.dialog.vgui) then lia.dialog.vgui:Remove() end end,
-                serverOnly = false
-            }
-        }
-    })
-
     --[[
     Purpose:
         Opens an NPC dialog for a player, filtering conversation options based on player permissions.
@@ -1091,7 +967,7 @@ else
         dialogTypeCombo:DockMargin(0, 0, 0, 10)
         dialogTypeCombo:AddChoice(L("noneNoDialog"), "none", currentType == "none" or currentType == nil)
         for uniqueID, data in pairs(lia.dialog.stored) do
-                    local displayName = lia.lang.resolveToken(data.PrintName or uniqueID)
+            local displayName = lia.lang.resolveToken(data.PrintName or uniqueID)
             dialogTypeCombo:AddChoice(displayName, uniqueID, uniqueID == currentType)
         end
 

@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: command.md
 ]]
@@ -1125,7 +1125,10 @@ if SERVER then
                 local opts = lia.config.getOptions and lia.config.getOptions(cfg.key)
                 if opts and next(opts) then
                     local keys = {}
-                    for k in pairs(opts) do keys[#keys + 1] = k end
+                    for k in pairs(opts) do
+                        keys[#keys + 1] = k
+                    end
+
                     local pick = opts[keys[math.random(#keys)]]
                     return pick and pick.value or nil
                 end
@@ -1136,7 +1139,10 @@ if SERVER then
         for key, cfg in pairs(lia.config.stored) do
             local t = (cfg.data and cfg.data.type) or cfg.type or "Generic"
             if not byType[t] then
-                byType[t] = {key = key, cfg = cfg}
+                byType[t] = {
+                    key = key,
+                    cfg = cfg
+                }
             end
         end
 
@@ -1150,12 +1156,15 @@ if SERVER then
                 results[#results + 1] = string.format("  [%s] %s -> skipped (no options)", typeName, info.key)
                 continue
             end
+
             lia.config.set(info.key, newVal)
             results[#results + 1] = string.format("  [%s] %s = %s", typeName, info.key, tostring(newVal))
         end
 
         print("[lia_randomconfig] Set one random config per type:")
-        for _, line in ipairs(results) do print(line) end
+        for _, line in ipairs(results) do
+            print(line)
+        end
     end)
 
     concommand.Add("list_entities", function(client)

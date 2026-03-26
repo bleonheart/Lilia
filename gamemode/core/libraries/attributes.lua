@@ -29,7 +29,6 @@ lia.attribs.list = lia.attribs.list or {}
     Example Usage:
         ```lua
             -- Load default and custom attributes.
-            lia.attribs.loadFromDir(lia.plugin.getDir() .. "/attribs")
             lia.attribs.loadFromDir("schema/attribs")
         ```
 ]]

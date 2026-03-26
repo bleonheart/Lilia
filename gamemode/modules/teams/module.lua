@@ -1,4 +1,4 @@
-MODULE.name = "@teamsModuleName"
+﻿MODULE.name = "@teamsModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@teamsSystemDescription"

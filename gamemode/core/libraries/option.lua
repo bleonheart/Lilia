@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: option.md
 ]]
@@ -19,8 +19,8 @@ local function localizeMenuLabel(value, ...)
     if resolved ~= value then return resolved end
     return L(value, ...)
 end
-lia.option.localizeValue = localizeMenuLabel
 
+lia.option.localizeValue = localizeMenuLabel
 local function normalizeSelectableOption(optionEntry)
     if istable(optionEntry) then
         local rawLabel = optionEntry.rawLabel or optionEntry.label or optionEntry.name or optionEntry.text or optionEntry.value
@@ -57,6 +57,7 @@ local function getSelectableOptionLabel(options, selectedValue)
     end
     return selectedValue
 end
+
 --[[
     Purpose:
         Register a configurable option with defaults, callbacks, and metadata.
@@ -568,6 +569,7 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     local bName = tostring(lia.option.getDisplayName(b) or b):lower()
                     return aName < bName
                 end)
+
                 for _, k in ipairs(keys) do
                     local opt = lia.option.stored[k]
                     if not opt.visible or isfunction(opt.visible) and opt.visible() then
@@ -593,19 +595,16 @@ hook.Add("PopulateConfigurationButtons", "liaOptionsPopulate", function(pages)
                     local bName = tostring(localizeMenuLabel(b)):lower()
                     return aName < bName
                 end)
+
                 for _, cat in ipairs(sortedCategories) do
                     local items = categories[cat]
-                    table.sort(items, function(a, b)
-                        return tostring(a.name or ""):lower() < tostring(b.name or ""):lower()
-                    end)
+                    table.sort(items, function(a, b) return tostring(a.name or ""):lower() < tostring(b.name or ""):lower() end)
                     local visibleItems = {}
                     local localizedCategory = tostring(localizeMenuLabel(cat))
                     for _, item in ipairs(items) do
                         local localizedName = tostring(item.name or ""):lower()
                         local localizedDesc = tostring(item.desc or ""):lower()
-                        if not filter or localizedName:find(filter, 1, true) or localizedDesc:find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then
-                            table.insert(visibleItems, item)
-                        end
+                        if not filter or localizedName:find(filter, 1, true) or localizedDesc:find(filter, 1, true) or localizedCategory:lower():find(filter, 1, true) then table.insert(visibleItems, item) end
                     end
 
                     if #visibleItems > 0 then

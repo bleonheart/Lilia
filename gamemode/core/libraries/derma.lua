@@ -3708,7 +3708,6 @@ local function resolveRequestOptionText(option)
         if localized[1] ~= nil then localized[1] = resolveRequestText(localized[1], localized[1]) end
         return localized
     end
-
     return resolveRequestText(option, option)
 end
 
@@ -3969,7 +3968,6 @@ function lia.derma.requestOptions(title, subTitle, options, callback, onCancel)
             end
 
             optionName = resolveRequestText(optionName, optionName)
-
             local panel = vgui.Create("DPanel", scrollPanel)
             panel:Dock(TOP)
             panel:DockMargin(0, 0, 0, 10)
@@ -4212,7 +4210,6 @@ function lia.derma.requestButtons(title, buttons, callback, description)
         end
 
         buttonText = resolveRequestText(buttonText, buttonText)
-
         local buttonPanel = vgui.Create("Panel", buttonContainer)
         buttonPanel:Dock(TOP)
         buttonPanel:DockMargin(0, 5, 0, 5)
@@ -4312,7 +4309,6 @@ function lia.derma.requestPopupQuestion(question, buttons)
         end
 
         buttonText = resolveRequestText(buttonText, buttonText)
-
         local buttonPanel = vgui.Create("Panel", buttonContainer)
         buttonPanel:Dock(TOP)
         buttonPanel:DockMargin(0, 5, 0, 5)

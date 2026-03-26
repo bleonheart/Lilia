@@ -124,14 +124,15 @@ local KeybindKeys = {
     ["scrolllocktoggle"] = KEY_SCROLLLOCKTOGGLE,
     ["last"] = KEY_LAST
 }
+
 local function localizeKeybindLabel(value, ...)
     if not isstring(value) then return value end
     local resolved = lia.lang.resolveToken(value, ...)
     if resolved ~= value then return resolved end
     return L(value, ...)
 end
-lia.keybind.localizeValue = localizeKeybindLabel
 
+lia.keybind.localizeValue = localizeKeybindLabel
 --[[
     Purpose:
         Register a keybind action with callbacks and optional metadata.
@@ -781,6 +782,7 @@ if CLIENT then
                         local bName = tostring(localizeKeybindLabel(b)):lower()
                         return aName < bName
                     end)
+
                     for _, cat in ipairs(sortedCategories) do
                         local items = categories[cat]
                         table.sort(items, function(a, b) return tostring(a.key) < tostring(b.key) end)

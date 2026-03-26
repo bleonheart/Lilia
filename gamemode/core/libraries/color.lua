@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Libraries
     File: color.md
 ]]
@@ -222,10 +222,10 @@ else
         ```
     ]]
     function lia.color.applyTheme(themeName, useTransition)
-        themeName = themeName or lia.color.getCurrentTheme()
+        themeName = (themeName or lia.color.getCurrentTheme()):lower()
         local themeData = lia.color.themes[themeName]
         if not themeData then
-            themeName = "Teal"
+            themeName = "teal"
             themeData = lia.color.themes[themeName]
             if not themeData then
                 lia.color.theme = {

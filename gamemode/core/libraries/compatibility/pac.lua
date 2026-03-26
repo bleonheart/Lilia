@@ -1,4 +1,4 @@
---[[
+﻿--[[
     Folder: Meta
     File:  player.md
     Append: True
