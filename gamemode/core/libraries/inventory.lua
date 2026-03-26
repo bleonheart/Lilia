@@ -101,7 +101,7 @@ end
 ]]
 function lia.inventory.new(typeID)
     local class = lia.inventory.types[typeID]
-    assert(class ~= nil, L("badInventoryType", typeID))
+    assert(class ~= nil, L("invalidInventoryType", typeID))
     return setmetatable({
         items = {},
         config = table.Copy(class.config)

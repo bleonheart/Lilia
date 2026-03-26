@@ -2599,7 +2599,7 @@ lia.command.add("playglobalsound", {
     onRun = function(client, arguments)
         local sound = arguments[1]
         if not sound or sound == "" then
-            client:notifyErrorLocalized("mustSpecifySound")
+            client:notifyErrorLocalized("noSound")
             return
         end
 
@@ -6806,7 +6806,7 @@ lia.command.add("viewtickets", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("mustSpecifyPlayer")
+            client:notifyErrorLocalized("specifyPlayer")
             return
         end
 
@@ -6873,7 +6873,7 @@ lia.command.add("plyviewclaims", {
     onRun = function(client, arguments)
         local targetName = arguments[1]
         if not targetName then
-            client:notifyErrorLocalized("mustSpecifyPlayer")
+            client:notifyErrorLocalized("specifyPlayer")
             return
         end
 
