@@ -20,7 +20,6 @@ function PANEL:setInventory(inventory)
 end
 
 function PANEL:Center()
-    local parent = self:GetParent()
     local centerX, centerY = ScrW() * 0.5, ScrH() * 0.5
     self:SetPos(centerX - (self:GetWide() * 0.5), centerY - (self:GetTall() * 0.5))
 end
