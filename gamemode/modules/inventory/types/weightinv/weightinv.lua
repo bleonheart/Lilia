@@ -1,4 +1,4 @@
-﻿local SimpleInv = lia.Inventory:extend("SimpleInv")
+﻿local WeightInv = lia.Inventory:extend("WeightInv")
 local function getItemWeight(item)
     return item.weight or (item:getWidth() * item:getHeight())
 end
@@ -18,36 +18,36 @@ local function CanAddItemIfNotWeightRestricted(inventory, action, context)
     return true
 end
 
-function SimpleInv:configure()
+function WeightInv:configure()
     if SERVER then
         self:addAccessRule(CanAddItemIfNotWeightRestricted)
         self:addAccessRule(CanAccessInventoryIfCharacterIsOwner)
     end
 end
 
-function SimpleInv:canAdd(item)
+function WeightInv:canAdd(item)
     if isstring(item) then item = lia.item.list[item] end
     assert(istable(item), L("itemMustBeTable"))
     return self:getWeight() + getItemWeight(item) <= self:getMaxWeight()
 end
 
-function SimpleInv:doesFitInventory(item)
+function WeightInv:doesFitInventory(item)
     if isstring(item) then item = lia.item.list[item] end
     return self:getWeight() + getItemWeight(item) <= self:getMaxWeight()
 end
 
-function SimpleInv:getItems(noRecurse)
+function WeightInv:getItems(noRecurse)
     return self.items
 end
 
 if SERVER then
-    function SimpleInv:wipeItems()
+    function WeightInv:wipeItems()
         for _, item in pairs(self:getItems()) do
             item:remove()
         end
     end
 
-    function SimpleInv:setOwner(owner, fullUpdate)
+    function WeightInv:setOwner(owner, fullUpdate)
         if IsValid(owner) and owner:IsPlayer() and owner:getChar() then
             owner = owner:getChar():getID()
         elseif not isnumber(owner) then
@@ -67,7 +67,7 @@ if SERVER then
         self.owner = owner
     end
 
-    function SimpleInv:add(itemTypeOrItem, quantity, forced)
+    function WeightInv:add(itemTypeOrItem, quantity, forced)
         quantity = quantity or 1
         assert(isnumber(quantity), "quantity must be a number")
         local d = deferred.new()
@@ -112,7 +112,7 @@ if SERVER then
         return d
     end
 
-    function SimpleInv:remove(itemTypeOrID, quantity)
+    function WeightInv:remove(itemTypeOrID, quantity)
         quantity = quantity or 1
         assert(isnumber(quantity), "quantity must be a number")
         local d = deferred.new()
@@ -131,7 +131,7 @@ if SERVER then
     end
 end
 
-function SimpleInv:getItemsOfType(itemType)
+function WeightInv:getItemsOfType(itemType)
     local items = {}
     for _, item in pairs(self.items) do
         if item.uniqueID == itemType then items[#items + 1] = item end
@@ -139,7 +139,7 @@ function SimpleInv:getItemsOfType(itemType)
     return items
 end
 
-function SimpleInv:getWeight()
+function WeightInv:getWeight()
     local weight = 0
     for _, item in pairs(self.items) do
         weight = weight + math.max(getItemWeight(item), 0)
@@ -147,7 +147,7 @@ function SimpleInv:getWeight()
     return weight
 end
 
-function SimpleInv:getMaxWeight()
+function WeightInv:getMaxWeight()
     local maxWeight = self:getData("maxWeight", lia.config.get("invMaxWeight", 10))
     for _, item in pairs(self.items) do
         if item.weight and item.weight < 0 then maxWeight = maxWeight - item.weight end
@@ -156,7 +156,7 @@ function SimpleInv:getMaxWeight()
 end
 
 if CLIENT then
-    function SimpleInv:requestTransfer(itemID, destinationID)
+    function WeightInv:requestTransfer(itemID, destinationID)
         net.Start("liaTransferItem")
         net.WriteUInt(itemID, 32)
         net.WriteUInt(0, 32)
@@ -166,4 +166,4 @@ if CLIENT then
     end
 end
 
-SimpleInv:register("WeightInv")
+WeightInv:register("WeightInv")
