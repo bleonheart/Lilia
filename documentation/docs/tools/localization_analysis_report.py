@@ -175,6 +175,9 @@ def _scan_localization_usage(gamemode_path: str) -> Dict[str, List[Tuple[str, in
                     for pattern, func_type in LOCALIZATION_CALL_PATTERNS:
                         for match in pattern.finditer(line):
                             key = match.group(2)
+                            # lia.lang.resolveToken only performs localization lookup for @-prefixed args
+                            if func_type == 'lia.lang.resolveToken' and not key.startswith('@'):
+                                continue
                             normalized_key = _normalize_localization_key(key)
                             entry_key = (normalized_key, match.span())
                             if not normalized_key or entry_key in seen_entries:
@@ -232,9 +235,6 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
         # Skip keys that start with [[ (special format keys)
         if key.startswith('[['):
             continue
-        # Skip keys that only appear as @token patterns (dynamic prefix builders, not literal keys)
-        if all(u[3] == '@token' for u in usages):
-            continue
         # Check if key is in the keys dict (case-sensitive exact match)
         if key not in keys and key not in undefined_keys_seen:
             undefined_keys_seen.add(key)
@@ -270,6 +270,7 @@ def _analyze_localization_data(keys: Dict[str, str], key_lines: Dict[str, int],
                 patterns = {
                     'L': r'\bL\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
                     'lia.lang.getLocalizedString': r'\blia\.lang\.getLocalizedString\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
+                    'lia.lang.resolveToken': r'\blia\.lang\.resolveToken\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
                     ':notifyLocalized': r':notifyLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
                     ':notifyErrorLocalized': r':notifyErrorLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',
                     ':notifyWarningLocalized': r':notifyWarningLocalized\s*\(\s*["\'][^\'"]+["\']\s*,\s*(.+)\)',

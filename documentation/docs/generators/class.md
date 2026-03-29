@@ -50,20 +50,20 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
           <label>
             <input type="checkbox" id="is-whitelisted"> Whitelist Required
           </label>
-          <small>Players need to be whitelisted to join this class</small>
+          <small>Joining requires an admin to grant access via /classwhitelist. Has no effect if Is Default is also set.</small>
         </div>
 
         <div class="input-group">
           <label>
             <input type="checkbox" id="is-default"> Is Default Class
           </label>
-          <small>This is the default class for the faction</small>
+          <small>Automatically assigned to new characters in this faction. Only one class per faction should have this set.</small>
         </div>
 
         <div class="input-group">
           <label for="class-limit">Player Limit:</label>
           <input type="number" id="class-limit" placeholder="0" min="0">
-          <small>0 = unlimited, decimals = percentage of faction (e.g., 0.5 = 50%)</small>
+          <small>Max concurrent players in this class. 0 = unlimited.</small>
         </div>
       </div>
     </div>
@@ -73,34 +73,51 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
         <label>Model:</label>
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-        <small>Player model path(s) (leave empty to inherit from faction)</small>
+        <small>Model path(s). A single entry defaults to that model automatically; multiple entries let players choose one in the classes menu.</small>
       </div>
 
       <div class="form-grid-2">
         <div class="input-group">
-          <label for="class-color">Color (R,G,B):</label>
-          <input type="text" id="class-color" placeholder="e.g., 0, 100, 255" pattern="\d{1,3},\s*\d{1,3},\s*\d{1,3}">
-          <small>Comma-separated RGB values (0-255), leave empty to inherit from faction</small>
+          <label for="class-color-picker">Color (R,G,B):</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="color" id="class-color-picker" value="#000000" style="width:40px; height:32px; padding:2px; cursor:pointer; border:1px solid var(--border-color,#ccc); border-radius:4px; background:none;">
+            <input type="text" id="class-color" placeholder="e.g., 0, 100, 255" pattern="\d{1,3},\s*\d{1,3},\s*\d{1,3}" style="flex:1;">
+          </div>
+          <small>Comma-separated RGB values (0-255). Leave empty to use faction color.</small>
         </div>
 
         <div class="input-group">
           <label for="class-skin">Skin:</label>
           <input type="number" id="class-skin" placeholder="0" min="0">
-          <small>Model skin index (leave empty to inherit from faction)</small>
+          <small>Skin index applied to the class model preview. Default is 0.</small>
         </div>
+      </div>
+
+      <div class="input-group">
+        <label>Default Bodygroups:</label>
+        <div id="bodygroups-list" class="dynamic-list"></div>
+        <button onclick="addBodygroupRow()" class="add-btn">+ Add Bodygroup</button>
+        <small>Bodygroup values forcibly applied to a character each time they spawn in this class. Each entry is a bodygroup ID and the value to set it to.</small>
+      </div>
+
+      <div class="input-group">
+        <label>Default Sub-Materials:</label>
+        <div id="submaterials-list" class="dynamic-list"></div>
+        <button onclick="addSubMaterialRow()" class="add-btn">+ Add Sub-Material</button>
+        <small>Sub-material overrides forcibly applied to a character each time they spawn in this class. Each entry is a slot (1-indexed) and the material path to assign.</small>
       </div>
 
       <div class="form-grid-2">
         <div class="input-group">
           <label for="class-logo">Logo:</label>
           <input type="text" id="class-logo" placeholder="materials/ui/class/police_logo.png">
-          <small>Logo material path or URL for scoreboard (leave empty for no logo)</small>
+          <small>Material path for the class logo displayed in the scoreboard.</small>
         </div>
 
         <div class="input-group">
           <label for="class-scale">Model Scale:</label>
           <input type="number" id="class-scale" placeholder="1.0" step="0.1" min="0.1">
-          <small>Model scale multiplier (1.0 = normal size)</small>
+          <small>Model scale multiplier. Also adjusts view offset proportionally. Default is 1.</small>
         </div>
       </div>
     </div>
@@ -110,19 +127,33 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
         <div class="input-group">
           <label for="class-health">Health:</label>
           <input type="number" id="class-health" placeholder="" min="1">
-          <small>Leave empty to inherit from faction</small>
+          <small>Base health. Overrides faction value when set.</small>
         </div>
 
         <div class="input-group">
           <label for="class-armor">Armor:</label>
           <input type="number" id="class-armor" placeholder="" min="0">
-          <small>Leave empty to inherit from faction</small>
+          <small>Base armor. Overrides faction value when set.</small>
         </div>
 
         <div class="input-group">
           <label for="class-pay">Pay/Salary:</label>
           <input type="number" id="class-pay" placeholder="" min="0">
-          <small>Currency amount per paycheck (leave empty to inherit from faction)</small>
+          <small>Salary amount per paycheck. Overrides faction pay when set.</small>
+        </div>
+
+        <div class="input-group">
+          <label for="class-bloodcolor">Blood Color:</label>
+          <select id="class-bloodcolor">
+            <option value="">Default (BLOOD_COLOR_RED)</option>
+            <option value="BLOOD_COLOR_RED">BLOOD_COLOR_RED</option>
+            <option value="BLOOD_COLOR_YELLOW">BLOOD_COLOR_YELLOW</option>
+            <option value="BLOOD_COLOR_GREEN">BLOOD_COLOR_GREEN</option>
+            <option value="BLOOD_COLOR_MECH">BLOOD_COLOR_MECH</option>
+            <option value="BLOOD_COLOR_ANTLION">BLOOD_COLOR_ANTLION</option>
+            <option value="BLOOD_COLOR_ZOMBIE">BLOOD_COLOR_ZOMBIE</option>
+          </select>
+          <small>Blood color constant applied on spawn. Leave default unless the class is non-human.</small>
         </div>
       </div>
 
@@ -131,21 +162,21 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
           <label for="class-run-speed">Run Speed:</label>
           <input type="number" id="class-run-speed" placeholder="" min="1">
           <label><input type="checkbox" id="class-run-speed-multiplier"> Use as multiplier</label>
-          <small>Leave empty to inherit from faction</small>
+          <small>Overrides faction value. When multiplier is checked, multiplies against the config default.</small>
         </div>
 
         <div class="input-group">
           <label for="class-walk-speed">Walk Speed:</label>
           <input type="number" id="class-walk-speed" placeholder="" min="1">
           <label><input type="checkbox" id="class-walk-speed-multiplier"> Use as multiplier</label>
-          <small>Leave empty to inherit from faction</small>
+          <small>Overrides faction value. When multiplier is checked, multiplies against the config default.</small>
         </div>
 
         <div class="input-group">
           <label for="class-jump-power">Jump Power:</label>
           <input type="number" id="class-jump-power" placeholder="" min="1">
           <label><input type="checkbox" id="class-jump-power-multiplier"> Use as multiplier</label>
-          <small>Leave empty to inherit from faction</small>
+          <small>Overrides faction value. When multiplier is checked, multiplies against the player's current jump power.</small>
         </div>
       </div>
     </div>
@@ -155,24 +186,16 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
         <label>Weapons:</label>
         <div id="weapons-list" class="dynamic-list"></div>
         <button onclick="addWeaponRow()" class="add-btn">+ Add Weapon</button>
-        <small>Leave empty to inherit from faction</small>
+        <small>Weapons given on spawn. Additive with faction weapons — both sets are given, this does not replace them.</small>
       </div>
     </div>
 
     <div class="generator-section">
-      <div class="form-grid-2">
-        <div class="input-group">
-          <label>
-            <input type="checkbox" id="class-scoreboard-hidden"> Hidden from Scoreboard
-          </label>
-          <small>Class won't appear in scoreboard categories</small>
-        </div>
-
-        <div class="input-group">
-          <label for="class-scoreboard-priority">Scoreboard Priority:</label>
-          <input type="number" id="class-scoreboard-priority" placeholder="999" min="1">
-          <small>Lower numbers appear first in scoreboard (default: 999)</small>
-        </div>
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="class-scoreboard-hidden"> Hidden from Scoreboard
+        </label>
+        <small>If true, this class is not shown as a row in the scoreboard.</small>
       </div>
 
       <div class="form-grid-2">
@@ -180,30 +203,31 @@ Create sub-roles and specialized classes for your factions, such as 'Medic' or '
           <label>
             <input type="checkbox" id="class-can-invite-faction"> Can Invite to Faction
           </label>
-          <small>Allows this class to invite players into the faction</small>
+          <small>Players in this class can use the faction invite system without needing the Z privilege flag.</small>
         </div>
 
         <div class="input-group">
           <label>
             <input type="checkbox" id="class-can-invite-class"> Can Invite to Class
           </label>
-          <small>Allows this class to invite players into the same class</small>
+          <small>Players in this class can use the class invite system without needing the X privilege flag.</small>
         </div>
       </div>
     </div>
 
     <div class="generator-section">
       <div class="input-group">
-        <label for="class-team">Team:</label>
-        <input type="text" id="class-team" placeholder="e.g., law, medical">
-        <small>Groups related classes for door access (leave empty for no team)</small>
+        <label>NPC Relations:</label>
+        <div id="npc-relations-list" class="dynamic-list"></div>
+        <button onclick="addNPCRelationRow()" class="add-btn">+ Add NPC Relation</button>
+        <small>When set, replaces all faction NPC relations entirely. Absent = all NPCs are hostile (D_HT) by default.</small>
       </div>
 
       <div class="input-group">
         <label>Commands:</label>
         <div id="commands-list" class="dynamic-list"></div>
         <button onclick="addCommandRow()" class="add-btn">+ Add Command</button>
-        <small>Command permissions</small>
+        <small>Command names (registered via lia.command.add) that members of this class can execute, bypassing normal privilege checks.</small>
       </div>
     </div>
 
@@ -239,6 +263,80 @@ function addCommandRow(val='') { addTextRow('commands-list', 'kick', val); }
 
 function addWeaponRow(val='') { addTextRow('weapons-list', 'weapon_class', val); }
 function addModelRow(val='') { addTextRow('models-list', 'models/player/...', val); }
+
+function addBodygroupRow(id='', value='') {
+  const container = document.getElementById('bodygroups-list');
+  const div = document.createElement('div');
+  div.className = 'dynamic-row';
+  div.innerHTML = `
+  <input type="number" placeholder="ID" value="${id}" min="0" class="bg-id small-input">
+  <input type="number" placeholder="Value" value="${value}" min="0" class="bg-value small-input">
+  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  `;
+  container.appendChild(div);
+}
+
+function addSubMaterialRow(slot='', mat='') {
+  const container = document.getElementById('submaterials-list');
+  const div = document.createElement('div');
+  div.className = 'dynamic-row';
+  div.innerHTML = `
+  <input type="number" placeholder="Slot (1-indexed)" value="${slot}" min="1" class="sm-slot small-input">
+  <input type="text" placeholder="materials/..." value="${mat}" class="sm-mat">
+  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  `;
+  container.appendChild(div);
+}
+
+function addNPCRelationRow(npc='', disposition='D_HT') {
+  const container = document.getElementById('npc-relations-list');
+  const div = document.createElement('div');
+  div.className = 'dynamic-row';
+  div.innerHTML = `
+  <input type="text" placeholder="npc_combine_s" value="${npc}" class="npc-class" style="flex:1; min-width:0;">
+  <select class="npc-disp" style="width:auto; flex-shrink:0;">
+    <option value="D_HT"${disposition==='D_HT'?' selected':''}>D_HT (Hostile)</option>
+    <option value="D_LI"${disposition==='D_LI'?' selected':''}>D_LI (Like)</option>
+    <option value="D_FR"${disposition==='D_FR'?' selected':''}>D_FR (Fear)</option>
+    <option value="D_NU"${disposition==='D_NU'?' selected':''}>D_NU (Neutral)</option>
+  </select>
+  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  `;
+  container.appendChild(div);
+}
+
+function getBodygroupValues() {
+  const rows = document.querySelectorAll('#bodygroups-list .dynamic-row');
+  const groups = [];
+  rows.forEach(row => {
+    const id = row.querySelector('.bg-id').value.trim();
+    const value = row.querySelector('.bg-value').value.trim();
+    if (id !== '') groups.push({ id, value: value !== '' ? value : '0' });
+  });
+  return groups;
+}
+
+function getSubMaterialValues() {
+  const rows = document.querySelectorAll('#submaterials-list .dynamic-row');
+  const mats = [];
+  rows.forEach(row => {
+    const slot = row.querySelector('.sm-slot').value.trim();
+    const mat = row.querySelector('.sm-mat').value.trim();
+    if (slot && mat) mats.push({ slot: parseInt(slot, 10), mat });
+  });
+  return mats;
+}
+
+function getNPCRelationValues() {
+  const rows = document.querySelectorAll('#npc-relations-list .dynamic-row');
+  const relations = [];
+  rows.forEach(row => {
+    const npc = row.querySelector('.npc-class').value.trim();
+    const disp = row.querySelector('.npc-disp').value;
+    if (npc) relations.push({ npc, disp });
+  });
+  return relations;
+}
 
 function getListValues(containerId) {
   return Array.from(document.querySelectorAll(`#${containerId} .list-input`))
@@ -276,16 +374,18 @@ function generateClass() {
   const jumpPowerMultiplier = document.getElementById('class-jump-power-multiplier').checked;
   const scale = document.getElementById('class-scale').value.trim();
   const logo = document.getElementById('class-logo').value.trim();
+  const bloodcolor = document.getElementById('class-bloodcolor').value;
   const scoreboardHidden = document.getElementById('class-scoreboard-hidden').checked;
-  const scoreboardPriority = document.getElementById('class-scoreboard-priority').value.trim();
   const canInviteFaction = document.getElementById('class-can-invite-faction').checked;
   const canInviteClass = document.getElementById('class-can-invite-class').checked;
-  const team = document.getElementById('class-team').value.trim();
 
   // Harvest dynamic lists
   const models = getListValues('models-list');
   const weapons = getListValues('weapons-list');
   const commands = getCommandValues();
+  const bodyGroups = getBodygroupValues();
+  const subMaterials = getSubMaterialValues();
+  const npcRelations = getNPCRelationValues();
 
   const lines = [
   '-- Copy and paste this code into your class file',
@@ -303,7 +403,7 @@ function generateClass() {
   if (limit !== '0') lines.push(`CLASS.limit = ${limit}`);
   }
 
-  if (models.length > 0 || colorInput || skin || logo || scale) {
+  if (models.length > 0 || colorInput || skin || logo || scale || bodyGroups.length > 0 || subMaterials.length > 0) {
   lines.push('', '-- Visual Properties');
   if (models.length === 1) {
   lines.push(`CLASS.model = ${JSON.stringify(models[0])}`);
@@ -313,16 +413,29 @@ function generateClass() {
   lines.push('}');
   }
   if (colorInput) {
-  const color = colorInput ? `Color(${colorInput})` : null;
-  if (color) lines.push(`CLASS.color = ${color}`);
-  if (color) lines.push(`CLASS.Color = ${color}`);
+  lines.push(`CLASS.color = Color(${colorInput})`);
   }
   if (skin) lines.push(`CLASS.skin = ${skin}`);
   if (logo) lines.push(`CLASS.logo = ${JSON.stringify(logo)}`);
   if (scale) lines.push(`CLASS.scale = ${scale}`);
+  if (bodyGroups.length > 0) {
+  lines.push('CLASS.bodyGroups = {');
+  bodyGroups.forEach(bg => lines.push(` {id = ${bg.id}, value = ${bg.value}},`));
+  lines.push('}');
+  }
+  if (subMaterials.length > 0) {
+  // Build a sparse array keyed by slot index (1-indexed)
+  const maxSlot = Math.max(...subMaterials.map(s => s.slot));
+  lines.push('CLASS.subMaterials = {');
+  for (let i = 1; i <= maxSlot; i++) {
+    const entry = subMaterials.find(s => s.slot === i);
+    lines.push(` ${entry ? JSON.stringify(entry.mat) : 'nil'},`);
+  }
+  lines.push('}');
+  }
   }
 
-  if (health || armor || pay || runSpeed || walkSpeed || jumpPower) {
+  if (health || armor || pay || runSpeed || walkSpeed || jumpPower || bloodcolor) {
   lines.push('', '-- Gameplay Properties');
   if (health) lines.push(`CLASS.health = ${health}`);
   if (armor) lines.push(`CLASS.armor = ${armor}`);
@@ -339,6 +452,7 @@ function generateClass() {
   lines.push(`CLASS.jumpPower = ${jumpPower}`);
   if (jumpPowerMultiplier) lines.push('CLASS.jumpPowerMultiplier = true');
   }
+  if (bloodcolor) lines.push(`CLASS.bloodcolor = ${bloodcolor}`);
   }
 
   if (weapons.length > 0) {
@@ -349,14 +463,19 @@ function generateClass() {
   lines.push('}');
   }
 
-  if (scoreboardHidden || scoreboardPriority !== '999' || canInviteFaction || canInviteClass || team || commands.length > 0) {
+  if (npcRelations.length > 0) {
+  lines.push('', '-- NPC Relations', 'CLASS.NPCRelations = {');
+  npcRelations.forEach(r => {
+  lines.push(` [${JSON.stringify(r.npc)}] = ${r.disp},`);
+  });
+  lines.push('}');
+  }
+
+  if (scoreboardHidden || canInviteFaction || canInviteClass || commands.length > 0) {
   lines.push('', '-- UI & Advanced');
   if (scoreboardHidden) lines.push('CLASS.scoreboardHidden = true');
-  if (scoreboardPriority && scoreboardPriority !== '999') lines.push(`CLASS.scoreboardPriority = ${scoreboardPriority}`);
   if (canInviteFaction) lines.push('CLASS.canInviteToFaction = true');
   if (canInviteClass) lines.push('CLASS.canInviteToClass = true');
-  if (team) lines.push(`CLASS.team = ${JSON.stringify(team)}`);
-
   if (commands.length > 0) {
   lines.push('CLASS.commands = {');
   commands.forEach(cmd => {
@@ -388,6 +507,9 @@ function fillExampleClass() {
   // Clear lists
   document.getElementById('models-list').innerHTML = '';
   document.getElementById('weapons-list').innerHTML = '';
+  document.getElementById('bodygroups-list').innerHTML = '';
+  document.getElementById('submaterials-list').innerHTML = '';
+  document.getElementById('npc-relations-list').innerHTML = '';
   document.getElementById('commands-list').innerHTML = '';
 
   addModelRow('models/player/police.mdl');
@@ -396,6 +518,7 @@ function fillExampleClass() {
   addCommandRow('kick');
 
   document.getElementById('class-color').value = '40, 100, 200';
+  document.getElementById('class-color-picker').value = rgbTextToHex('40, 100, 200');
   document.getElementById('class-skin').value = '1';
   document.getElementById('class-logo').value = 'materials/ui/class/mp_logo.png';
   document.getElementById('class-scale').value = '1.0';
@@ -409,20 +532,47 @@ function fillExampleClass() {
   document.getElementById('class-jump-power').value = '200';
   document.getElementById('class-jump-power-multiplier').checked = false;
   document.getElementById('class-scoreboard-hidden').checked = false;
-  document.getElementById('class-scoreboard-priority').value = '10';
   document.getElementById('class-can-invite-faction').checked = true;
   document.getElementById('class-can-invite-class').checked = true;
-  document.getElementById('class-team').value = 'security';
 
   generateClass();
 }
 
+function rgbTextToHex(text) {
+  const parts = text.split(',').map(s => parseInt(s.trim(), 10));
+  if (parts.length !== 3 || parts.some(isNaN)) return null;
+  return '#' + parts.map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+}
+
+function hexToRgbText(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
 // Initialize default rows
 document.addEventListener('DOMContentLoaded', () => {
+  const picker = document.getElementById('class-color-picker');
+  const text = document.getElementById('class-color');
+
+  picker.addEventListener('input', () => {
+    text.value = hexToRgbText(picker.value);
+    generateClass();
+  });
+
+  text.addEventListener('input', () => {
+    const hex = rgbTextToHex(text.value);
+    if (hex) picker.value = hex;
+    generateClass();
+  });
+
   addWeaponRow('weapon_pistol');
   addCommandRow('kick');
   generateClass();
 });
+
+
 </script>
 
 ---

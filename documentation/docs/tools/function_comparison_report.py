@@ -483,12 +483,18 @@ class FunctionComparisonReportGenerator:
         raw_loc_field = re.compile(
             r'^\s*(?:ITEM|MODULE|FACTION|CLASS)\s*\.\s*(name|desc)\s*=\s*["\']([^"\']+)["\']'
         )
+        # Extended raw field: MODULE.discord, ENT.Contact, SWEP.Contact
+        raw_contact_field = re.compile(
+            r'^\s*(?:MODULE|ENT|SWEP)\s*\.\s*(discord|Contact)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'
+        )
         # lia.config.add("configKey", "nameLocKey", ...)  — 2nd positional arg is the display name
         config_add_name = re.compile(
             r'\blia\.config\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'
         )
-        # desc = "camelKey" inside data tables (config.add / option.add)
-        data_desc_field = re.compile(r'\bdesc\s*=\s*["\']([a-z][a-zA-Z0-9_]+)["\']')
+        # desc = "camelKey" or desc = "@atKey" inside data tables (config.add / option.add / keybind.add)
+        data_desc_field = re.compile(r'\bdesc\s*=\s*["\'](@?[a-z][a-zA-Z0-9_]+)["\']')
+        # category = "@token" inside data tables
+        data_category_field = re.compile(r'\bcategory\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']')
         # lia.option.add("key", "nameLocKey", "descLocKey", ...)  — 2nd and 3rd args
         option_add_name = re.compile(
             r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'
@@ -496,6 +502,14 @@ class FunctionComparisonReportGenerator:
         option_add_desc = re.compile(
             r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'][^"\']*["\']\s*,\s*["\']([^"\']+)["\']'
         )
+        # lia.flag.add("X", "@descKey", ...) — 2nd positional arg
+        flag_add_desc = re.compile(
+            r'\blia\.flag\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'](@?[a-z][A-Za-z0-9_]*)["\']'
+        )
+        # privilege = "@token" in command/interaction data tables
+        data_privilege_field = re.compile(r'\bprivilege\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']')
+        # actionText / targetActionText = "@token"
+        action_text_field = re.compile(r'\b(?:actionText|targetActionText)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']')
 
         for root, rel_base in scan_roots:
             for lua_file in root.rglob("*.lua"):
@@ -638,6 +652,52 @@ class FunctionComparisonReportGenerator:
                             "context": stripped[:240],
                         })
 
+                    # MODULE.discord / ENT.Contact / SWEP.Contact = "@token"
+                    m = raw_contact_field.match(line)
+                    if m:
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": f"raw_field:{m.group(1)}",
+                            "lhs": m.group(1),
+                            "context": stripped[:240],
+                        })
+
+                    # category = "@token"
+                    for fm in data_category_field.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "data_table:category",
+                            "lhs": "category",
+                            "context": stripped[:240],
+                        })
+
+                    # lia.flag.add desc arg
+                    for fm in flag_add_desc.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "flag_add:desc",
+                            "lhs": "lia.flag.add:desc",
+                            "context": stripped[:240],
+                        })
+
+                    # privilege = "@token"
+                    for pm in data_privilege_field.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": "data_table:privilege",
+                            "lhs": "privilege",
+                            "context": stripped[:240],
+                        })
+
+                    # actionText / targetActionText = "@token"
+                    for am in action_text_field.finditer(line):
+                        inferred[rel_path].append({
+                            "line": idx,
+                            "kind": f"data_table:{am.group(0).split('=')[0].strip()}",
+                            "lhs": am.group(0).split('=')[0].strip(),
+                            "context": stripped[:240],
+                        })
+
         for k in list(inferred.keys()):
             uniq = {}
             for entry in inferred[k]:
@@ -657,7 +717,12 @@ class FunctionComparisonReportGenerator:
         - lia.config.add("key", "nameLocKey", ...)                    (2nd positional arg)
         - lia.config.add(..., {desc = "descLocKey"})                  (data.desc field)
         - lia.option.add("key", "nameLocKey", "descLocKey", ...)      (2nd and 3rd args)
+        - lia.flag.add("X", "@descKey", ...)                          (2nd positional arg)
         - MODULE.Privileges[x] = {Name = "@token", Category = "@token"} (via @token scanner)
+        - category = "@token"                                         (data table field)
+        - privilege = "@token"                                        (command data table field)
+        - MODULE.discord / ENT.Contact / SWEP.Contact = "@token"      (entity contact fields)
+        - actionText / targetActionText = "@token"                    (interaction fields)
 
         Returns list of dicts: {file, line, field, key, context}
         """
@@ -686,9 +751,9 @@ class FunctionComparisonReportGenerator:
                 1,
                 lambda m: "lia.config.add:name",
             ),
-            # data table desc = "key"  (config.add / option.add data tables)
+            # data table desc = "key" or desc = "@atKey"  (config.add / option.add data tables)
             (
-                re.compile(r'\bdesc\s*=\s*["\']([a-z][a-zA-Z0-9_]+)["\']'),
+                re.compile(r'\bdesc\s*=\s*["\'](@?[a-z][a-zA-Z0-9_]+)["\']'),
                 1,
                 lambda m: "data.desc",
             ),
@@ -704,16 +769,47 @@ class FunctionComparisonReportGenerator:
                 1,
                 lambda m: "lia.option.add:desc",
             ),
-            # Privilege Name / Category with @token
+            # Privilege / AdminStick Name with @token
             (
                 re.compile(r'\bName\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
                 1,
                 lambda m: "Privilege.Name",
             ),
+            # Privilege / AdminStick Category with @token
             (
                 re.compile(r'\bCategory\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
                 1,
                 lambda m: "Privilege.Category",
+            ),
+            # category = "@token" in config/option/keybind data tables
+            (
+                re.compile(r'\bcategory\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                1,
+                lambda m: "data.category",
+            ),
+            # lia.flag.add("X", "@descKey", ...) — 2nd positional arg
+            (
+                re.compile(r'\blia\.flag\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'](@?[a-z][A-Za-z0-9_]*)["\']'),
+                1,
+                lambda m: "lia.flag.add:desc",
+            ),
+            # privilege = "@token" in command data tables
+            (
+                re.compile(r'\bprivilege\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                1,
+                lambda m: "data.privilege",
+            ),
+            # MODULE.discord / ENT.Contact / SWEP.Contact = "@token"
+            (
+                re.compile(r'\b(?:MODULE|ENT|SWEP)\s*\.\s*(?:discord|Contact)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                1,
+                lambda m: "entity.contact",
+            ),
+            # actionText / targetActionText = "@token"
+            (
+                re.compile(r'\b(?:actionText|targetActionText)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                1,
+                lambda m: "interaction.actionText",
             ),
         ]
 
