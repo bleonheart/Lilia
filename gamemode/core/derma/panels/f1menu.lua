@@ -327,8 +327,14 @@ function PANEL:Init()
     local btnDefs = {}
     hook.Run("CreateMenuButtons", btnDefs)
     for k, v in pairs(btnDefs) do
-        if isfunction(v) then btnDefs[k] = {name = k, func = v} end
+        if isfunction(v) then
+            btnDefs[k] = {
+                name = k,
+                func = v
+            }
+        end
     end
+
     local tabKeys = {}
     for k in pairs(btnDefs) do
         tabKeys[#tabKeys + 1] = k
@@ -372,10 +378,6 @@ function PANEL:Init()
 
     self:MakePopup()
     local defaultTab = lia.config.get("DefaultMenuTab", "@you")
-    for k in pairs(self.tabList) do
-        print("  ->", k)
-    end
-
     if not self.tabList[defaultTab] then
         if self.tabList["@you"] then
             defaultTab = "@you"
