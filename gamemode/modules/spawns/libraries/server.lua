@@ -170,76 +170,45 @@ local function RemovedDropOnDeathItems(client)
     if lostCount > 0 then client:notifyWarningLocalized("itemsLostOnDeath", lostCount) end
 end
 
+local function resolveFromEntity(ent)
+    if not IsValid(ent) then return nil end
+    if ent:IsPlayer() then return ent end
+    if ent:IsVehicle() and ent.GetDriver then
+        local driver = ent:GetDriver()
+        if IsValid(driver) and driver:IsPlayer() then return driver end
+    end
+
+    if ent.GetOwner then
+        local owner = ent:GetOwner()
+        if IsValid(owner) and owner:IsPlayer() then return owner end
+    end
+
+    if ent.GetCreator then
+        local creator = ent:GetCreator()
+        if IsValid(creator) and creator:IsPlayer() then return creator end
+    end
+
+    if ent.CPPIGetOwner then
+        local owner = ent:CPPIGetOwner()
+        if IsValid(owner) and owner:IsPlayer() then return owner end
+    end
+    return nil
+end
+
 local function ResolveDeathAttacker(victim, inflictor, attacker)
-    local function entDesc(ent)
-        if not IsValid(ent) then return "<invalid>" end
-        local class = ent.GetClass and ent:GetClass() or "<no class>"
-        if ent:IsPlayer() then
-            return string.format("%s[%s]", ent:Name(), ent:SteamID64() or "?")
-        end
-        return string.format("%s[%s]", tostring(ent), class)
-    end
-
-    local function resolveFromEntity(ent)
-        if not IsValid(ent) then return nil end
-        if ent:IsPlayer() then return ent end
-        if ent:IsVehicle() and ent.GetDriver then
-            local driver = ent:GetDriver()
-            if IsValid(driver) and driver:IsPlayer() then return driver end
-        end
-
-        if ent.GetOwner then
-            local owner = ent:GetOwner()
-            if IsValid(owner) and owner:IsPlayer() then return owner end
-        end
-
-        if ent.GetCreator then
-            local creator = ent:GetCreator()
-            if IsValid(creator) and creator:IsPlayer() then return creator end
-        end
-
-        if ent.CPPIGetOwner then
-            local owner = ent:CPPIGetOwner()
-            if IsValid(owner) and owner:IsPlayer() then return owner end
-        end
-        return nil
-    end
-
-    if lia.config.get("DeathDebug", false) then
-        MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "ResolveDeathAttacker victim=", entDesc(victim), " inflictor=", entDesc(inflictor), " attacker=", entDesc(attacker), "\n")
-    end
-
     if IsValid(attacker) then
         if attacker == victim or attacker:IsWorld() or attacker:GetClass() == "worldspawn" then
             local resolved = resolveFromEntity(inflictor) or resolveFromEntity(attacker)
-            if IsValid(resolved) then
-                if lia.config.get("DeathDebug", false) then
-                    MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "resolved(from world/self) -> ", entDesc(resolved), "\n")
-                end
-                return resolved
-            end
+            if IsValid(resolved) then return resolved end
         else
             local resolved = resolveFromEntity(attacker) or resolveFromEntity(inflictor)
-            if IsValid(resolved) then
-                if lia.config.get("DeathDebug", false) then
-                    MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "resolved(from attacker/inflictor) -> ", entDesc(resolved), "\n")
-                end
-                return resolved
-            end
+            if IsValid(resolved) then return resolved end
         end
     end
 
     local resolved = resolveFromEntity(inflictor)
-    if IsValid(resolved) then
-        if lia.config.get("DeathDebug", false) then
-            MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "resolved(from inflictor only) -> ", entDesc(resolved), "\n")
-        end
-        return resolved
-    end
-
-    if lia.config.get("DeathDebug", false) then
-        MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "resolved -> <none>, returning attacker=", entDesc(attacker), "\n")
-    end
+    if IsValid(resolved) then return resolved end
+    lia.log.add(client, "playerDeath", attackerName)
     return attacker
 end
 
@@ -262,7 +231,6 @@ end
 function MODULE:PlayerDeath(client, inflictor, attacker)
     local char = client:getChar()
     if not char then return end
-
     if not client:IsBot() then
         local deathTime = os.time()
         client:setLocalVar("lastDeathTime", deathTime)
@@ -283,11 +251,11 @@ function MODULE:PlayerDeath(client, inflictor, attacker)
 
             MsgC(Color(255, 200, 0), "[Lilia DeathDebug] ", color_white, "PlayerDeath victim=", client:Name(), " attacker=", entShort(attacker), " inflictor=", entShort(inflictor), " resolved=", entShort(resolvedAttacker), "\n")
         end
+
         local dateStr = os.date("%d/%m/%Y", os.time())
         local timeStr = os.date("%H:%M:%S", os.time())
         local attackerName = L("na")
         local attackerChar = nil
-
         if IsValid(resolvedAttacker) then
             if resolvedAttacker == client or resolvedAttacker:IsWorld() or resolvedAttacker:GetClass() == "worldspawn" then
                 attackerName = L("theEnvironment")
