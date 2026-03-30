@@ -648,7 +648,7 @@ if SERVER then
 
     Example Usage:
         ```lua
-        lia.data.loadPersistence():next(function() print("Persistence columns ready") end)
+        lia.data.loadPersistence():next(function() lia.debug("Persistence columns ready") end)
         ```
     ]]
     function lia.data.loadPersistence()
