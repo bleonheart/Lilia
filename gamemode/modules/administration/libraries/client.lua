@@ -2127,7 +2127,7 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         table.insert(lists, {
-            name = "Copy",
+            name = "@copy",
             category = "moderation",
             subcategory = "moderationTools",
             items = copyItems

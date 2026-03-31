@@ -518,6 +518,7 @@ lia.char.registerVar("bodygroups", {
     end,
     onSet = function(character, value)
         local oldVar = character:getBodygroups()
+        lia.debug("[BODYGROUP] setBodygroups charID=" .. tostring(character:getID()) .. " old=" .. tostring(table.ToString(oldVar, "old", true)) .. " new=" .. tostring(table.ToString(value or {}, "new", true)))
         character.vars.bodygroups = value
         local client = character:getPlayer()
         if IsValid(client) and client:getChar() == character then
