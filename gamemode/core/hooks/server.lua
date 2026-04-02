@@ -521,6 +521,7 @@ function GM:PostPlayerLoadout(client)
         local value = tonumber(v) or 0
         if index then
             lia.debug("[BODYGROUP] PostPlayerLoadout applying index=" .. tostring(index) .. " value=" .. tostring(value))
+            lia.debug("[BODYGROUP] hooks/server.lua PostPlayerLoadout applying for " .. client:Name() .. " | index=" .. tostring(index) .. " value=" .. tostring(value))
             client:SetBodygroup(index, value)
         end
     end
@@ -558,9 +559,7 @@ end
 
 function GM:PlayerSpawn(client)
     local _dbgChar = client:getChar()
-    if _dbgChar then
-        lia.debug("[BODYGROUP] PlayerSpawn for " .. client:Name() .. " | char bodygroups at spawn: " .. tostring(table.ToString(_dbgChar:getBodygroups(), "bodygroups", true)))
-    end
+    if _dbgChar then lia.debug("[BODYGROUP] PlayerSpawn for " .. client:Name() .. " | char bodygroups at spawn: " .. tostring(table.ToString(_dbgChar:getBodygroups(), "bodygroups", true))) end
     client:stopAction()
     client:SetDSP(1, false)
     if not client.diedInRagdoll then

@@ -524,7 +524,10 @@ lia.char.registerVar("bodygroups", {
         if IsValid(client) and client:getChar() == character then
             for k, v in pairs(value or {}) do
                 local index = tonumber(k)
-                if index then client:SetBodygroup(index, v or 0) end
+                if index then
+                    lia.debug("[BODYGROUP] character.lua onSet applying for " .. client:Name() .. " | index=" .. tostring(index) .. " value=" .. tostring(v or 0))
+                    client:SetBodygroup(index, v or 0)
+                end
             end
         end
 
@@ -1326,7 +1329,10 @@ if SERVER then
                         if IsValid(client) and client:getChar() == character then
                             for k, v in pairs(value or {}) do
                                 local index = tonumber(k)
-                                if index then client:SetBodygroup(index, v or 0) end
+                                if index then
+                                    lia.debug("[BODYGROUP] character.lua DB load applying for " .. client:Name() .. " | index=" .. tostring(index) .. " value=" .. tostring(v or 0))
+                                    client:SetBodygroup(index, v or 0)
+                                end
                             end
                         end
                     elseif field == "faction" then
