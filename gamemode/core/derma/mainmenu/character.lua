@@ -1,5 +1,13 @@
 ﻿local PANEL = {}
 function PANEL:Init()
+    if hook.Run("IsCharacterCreationOverridden") == true then
+        self:SetVisible(false)
+        timer.Simple(0, function()
+            if IsValid(self) then self:Remove() end
+        end)
+        return
+    end
+
     local client = LocalPlayer()
     local clientChar = client.getChar and client:getChar()
     self.disableClientModel = false

@@ -14,6 +14,15 @@ if SERVER then
         net.Send(client)
     end
 else
+    local function isCharacterCreationOverridden()
+        return hook.Run("IsCharacterCreationOverridden") == true
+    end
+
+    local function openCharacterMenu()
+        if isCharacterCreationOverridden() then return end
+        return vgui.Create("liaCharacter")
+    end
+
     function MODULE:PlayerButtonDown(_, button)
         if button == KEY_ESCAPE and IsValid(lia.gui.menu) and LocalPlayer():getChar() then
             lia.gui.menu:Remove()
@@ -26,7 +35,7 @@ else
         local client = LocalPlayer()
         if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters and #charPanel.availableCharacters > 0 then return end
         if IsValid(charPanel) then charPanel:Remove() end
-        if IsValid(client) and not client:getChar() then vgui.Create("liaCharacter") end
+        if IsValid(client) and not client:getChar() then openCharacterMenu() end
     end
 
     function MODULE:ChooseCharacter(id)
@@ -128,7 +137,7 @@ else
     end
 
     function MODULE:LiliaLoaded()
-        vgui.Create("liaCharacter")
+        openCharacterMenu()
     end
 
     function MODULE:CharListLoaded()
@@ -138,14 +147,14 @@ else
     function MODULE:OnReloaded()
         timer.Simple(0.1, function()
             local client = LocalPlayer()
-            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then vgui.Create("liaCharacter") end
+            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then openCharacterMenu() end
         end)
     end
 
     function MODULE:KickedFromChar(characterID, isCurrentChar)
         if isCurrentChar then
-            local charPanel = vgui.Create("liaCharacter")
-            charPanel.isKickedFromChar = true
+            local charPanel = openCharacterMenu()
+            if IsValid(charPanel) then charPanel.isKickedFromChar = true end
         end
     end
 
@@ -165,7 +174,7 @@ else
                 end
 
                 if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-                vgui.Create("liaCharacter")
+                openCharacterMenu()
             end
         }
     end
