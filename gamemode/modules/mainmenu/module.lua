@@ -18,7 +18,9 @@ else
         return hook.Run("IsCharacterCreationOverridden") == true
     end
 
-    local function openCharacterMenu()
+    function MODULE:OpenCharacterMenu()
+        local panel = hook.Run("OpenCharacterMenuOverride")
+        if panel ~= nil then return panel end
         if isCharacterCreationOverridden() then return end
         return vgui.Create("liaCharacter")
     end
@@ -35,7 +37,7 @@ else
         local client = LocalPlayer()
         if IsValid(charPanel) and charPanel.isLoadMode and charPanel.availableCharacters and #charPanel.availableCharacters > 0 then return end
         if IsValid(charPanel) then charPanel:Remove() end
-        if IsValid(client) and not client:getChar() then openCharacterMenu() end
+        if IsValid(client) and not client:getChar() then self:OpenCharacterMenu() end
     end
 
     function MODULE:ChooseCharacter(id)
@@ -137,7 +139,7 @@ else
     end
 
     function MODULE:LiliaLoaded()
-        openCharacterMenu()
+        self:OpenCharacterMenu()
     end
 
     function MODULE:CharListLoaded()
@@ -147,13 +149,13 @@ else
     function MODULE:OnReloaded()
         timer.Simple(0.1, function()
             local client = LocalPlayer()
-            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then openCharacterMenu() end
+            if IsValid(client) and not client:getChar() and not IsValid(lia.gui.character) then self:OpenCharacterMenu() end
         end)
     end
 
     function MODULE:KickedFromChar(characterID, isCurrentChar)
         if isCurrentChar then
-            local charPanel = openCharacterMenu()
+            local charPanel = self:OpenCharacterMenu()
             if IsValid(charPanel) then charPanel.isKickedFromChar = true end
         end
     end
@@ -174,7 +176,7 @@ else
                 end
 
                 if IsValid(lia.gui.menu) then lia.gui.menu:Remove() end
-                openCharacterMenu()
+                lia.module.get("mainmenu"):OpenCharacterMenu()
             end
         }
     end

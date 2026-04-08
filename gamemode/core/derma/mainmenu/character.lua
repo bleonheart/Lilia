@@ -1616,7 +1616,12 @@ end
 function PANEL:Update()
     if IsValid(self) then
         self:Remove()
-        vgui.Create("liaCharacter")
+        local mainMenuModule = lia.module.get("mainmenu")
+        if mainMenuModule and isfunction(mainMenuModule.OpenCharacterMenu) then
+            MODULE:OpenCharacterMenu()
+        else
+            vgui.Create("liaCharacter")
+        end
     end
 end
 
