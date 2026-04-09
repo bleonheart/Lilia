@@ -263,7 +263,6 @@ ITEM.functions.Equip = {
                     local index = item.player:FindBodygroupByName(k)
                     if index > -1 then
                         local currentVal = item.player:GetBodygroup(index)
-                        
                         oldGroups[index] = currentVal
                         groups[index] = value
                     end

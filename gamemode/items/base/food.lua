@@ -1,4 +1,4 @@
-ITEM.name = "foodName"
+﻿ITEM.name = "foodName"
 ITEM.desc = "foodDesc"
 ITEM.model = "models/props_junk/garbage_metalcan001a.mdl"
 ITEM.width = 1
@@ -13,7 +13,6 @@ ITEM.useSound = "npc/barnacle/barnacle_crunch2.wav"
 ITEM.trash = nil
 ITEM.pack = nil
 ITEM.isDrink = false
-
 local function GiveItemOrSpawn(client, uniqueID, amount)
     if not uniqueID or amount <= 0 then return end
     local character = client:getChar()

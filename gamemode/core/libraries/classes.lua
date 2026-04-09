@@ -13,7 +13,6 @@
 ]]
 lia.class = lia.class or {}
 lia.class.list = lia.class.list or {}
-
 local function normalizeBodygroups(bodygroups)
     local normalized = {}
     if not istable(bodygroups) then return normalized end
@@ -56,6 +55,7 @@ function lia.class.getMergedBodygroups(character)
     end
     return merged
 end
+
 --[[
     Purpose:
         Registers or updates a class definition within the global class list.

@@ -598,7 +598,6 @@ else
 
     hook.Add("OnReloaded", "liaCleanupReloadPanels", function() timer.Simple(0.05, cleanupReloadPanels) end)
     timer.Simple(0.05, cleanupReloadPanels)
-
     if lia.playerinteract.stored then table.Empty(lia.playerinteract.stored) end
     if lia.playerinteract.categories then table.Empty(lia.playerinteract.categories) end
 end
