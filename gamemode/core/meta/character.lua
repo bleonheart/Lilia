@@ -992,7 +992,7 @@ if SERVER then
                 local index = tonumber(k)
                 local value = tonumber(v) or 0
                 if index then
-                    lia.debug("[BODYGROUP] meta/character load applying for " .. client:Name() .. " | index=" .. tostring(index) .. " value=" .. tostring(value))
+                    
                     client:SetBodygroup(index, value)
                 end
             end
