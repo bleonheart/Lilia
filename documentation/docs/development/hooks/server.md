@@ -2299,7 +2299,7 @@ Server-side hooks in the Lilia framework handle server-side logic, data persiste
 ---
 
 <details class="realm-server" id="function-liliatablesloaded">
-<summary><a id="LiliaTablesLoaded"></a>LiliaTablesLoaded()</summary>
+<summary><a id="OnDatabaseLoaded"></a>OnDatabaseLoaded()</summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="liliatablesloaded"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
@@ -2313,7 +2313,7 @@ Server-side hooks in the Lilia framework handle server-side logic, data persiste
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Example Usage</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<pre><code class="language-lua">  hook.Add("LiliaTablesLoaded", "SeedDefaults", function()
+<pre><code class="language-lua">  hook.Add("OnDatabaseLoaded", "SeedDefaults", function()
       lia.seed.run()
   end)
 </code></pre>

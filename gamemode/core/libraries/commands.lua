@@ -447,13 +447,11 @@ if SERVER then
                     local tokens = combineBracketArgs(arguments)
                     local missing = {}
                     local prefix = {}
-                    local firstMissingIndex
                     for i, field in ipairs(fields) do
                         local arg = tokens[i]
                         local isMissing = not arg or isPlaceholder(arg)
                         if isMissing then
-                            if not firstMissingIndex then firstMissingIndex = i end
-                            if (not field.optional) or (i >= firstMissingIndex) then missing[#missing + 1] = field.name end
+                            if not field.optional then missing[#missing + 1] = field.name end
                         else
                             prefix[#prefix + 1] = arg
                         end
@@ -6325,11 +6323,12 @@ lia.command.add("beclass", {
             client:notifyErrorLocalized("invalidClass")
             return
         end
+        local classModels = classData.model or classData.models
 
         local currentClass = character:getClass()
         local isSameClass = currentClass == classID
         local function applyRequestedClassModel()
-            if not istable(classData.model) then
+            if not istable(classModels) then
                 character:setData("classModel", nil)
                 return false
             end
@@ -6346,7 +6345,7 @@ lia.command.add("beclass", {
             end
 
             local validModels = {}
-            gatherModels(classData.model, validModels)
+            gatherModels(classModels, validModels)
             local ok = false
             for _, v in ipairs(validModels) do
                 if v == requestedModel then
@@ -6368,7 +6367,7 @@ lia.command.add("beclass", {
 
         if lia.class.canBe(client, classID) then
             if character:joinClass(classID) then
-                if not istable(classData.model) then character:setData("classModel", nil) end
+                if not istable(classModels) then character:setData("classModel", nil) end
                 applyRequestedClassModel()
                 client:notifySuccessLocalized("becomeClass", classData.name)
                 lia.log.add(client, "beClass", classData.name)
@@ -7463,7 +7462,6 @@ lia.command.add("npcchangetype", {
                                 local currentAng = npc:GetAngles()
                                 npc:SetModel("models/Barney.mdl")
                                 if npcData.BodyGroups and istable(npcData.BodyGroups) then lia.util.applyBodygroups(npc, npcData.BodyGroups) end
-
                                 if npcData.Skin then npc:SetSkin(npcData.Skin) end
                                 npc.NPCName = npcData.PrintName or "NPC"
                                 npc:setNetVar("uniqueID", npcType)
@@ -7486,7 +7484,6 @@ lia.command.add("npcchangetype", {
                                     if existingCustomData.model and existingCustomData.model ~= "" then npc:SetModel(existingCustomData.model) end
                                     if existingCustomData.skin then npc:SetSkin(tonumber(existingCustomData.skin) or 0) end
                                     if existingCustomData.bodygroups and istable(existingCustomData.bodygroups) then lia.util.applyBodygroups(npc, existingCustomData.bodygroups) end
-
                                     if existingCustomData.animation and existingCustomData.animation ~= "auto" then
                                         local sequenceIndex = npc:LookupSequence(existingCustomData.animation)
                                         if sequenceIndex >= 0 then
