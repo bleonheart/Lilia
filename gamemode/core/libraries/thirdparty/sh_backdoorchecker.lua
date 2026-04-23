@@ -64,6 +64,13 @@ local function ScanAddon(addon)
             if s[#s] == "lua" then
                 table.insert(Files, f .. v)
                 luafiles = luafiles + 1
+                if string.lower(v) == "sh_cami.lua" then
+                    line = "CAMI file detected: " .. f .. v
+                    MsgC(Color(0, 255, 255), line .. "\n")
+                    LogBuffer = LogBuffer .. line .. "\n"
+                    found = found + 1
+                end
+
                 local luafile = file.Read(f .. v, "GAME")
                 if not luafile then
                     line = "Unable to read Lua file: " .. f .. v
