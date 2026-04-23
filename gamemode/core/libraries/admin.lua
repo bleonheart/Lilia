@@ -82,7 +82,7 @@ local function findCamiConflictFiles()
         if addon and addon.title and addon.title:lower() ~= "lilia" then scanTarget(addon.baseDir or "", addon.title) end
     end
 
-    local files, directories = file.Find("lua/*", "GAME")
+    local files, _ = file.Find("lua/*", "GAME")
     for _, fileName in ipairs(files or {}) do
         local normalizedName = string.lower(fileName)
         if normalizedName == "sh_cami.lua" or normalizedName == "cami.lua" then addMatch("lua/" .. fileName) end
