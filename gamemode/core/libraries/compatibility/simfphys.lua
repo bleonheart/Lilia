@@ -46,10 +46,27 @@
         end
 
         entity.IsBeingEntered = true
+        local timerID = "liaSimfphysEntryCheck_" .. client:SteamID64()
+        timer.Create(timerID, 0.1, 0, function()
+            if not IsValid(client) or not IsValid(entity) then
+                timer.Remove(timerID)
+                if IsValid(entity) then entity.IsBeingEntered = false end
+                return
+            end
+
+            if client:GetPos():DistToSqr(entity:GetPos()) > 250 * 250 then
+                timer.Remove(timerID)
+                entity.IsBeingEntered = false
+                client:setAction()
+                client:notifyWarningLocalized("tooFarAway")
+            end
+        end)
+
         client:setAction(L("enteringVehicle"), delay, function()
+            timer.Remove(timerID)
             if IsValid(entity) then entity.IsBeingEntered = false end
             if not IsValid(entity) or not IsValid(client) then return end
-            if client:GetPos():Distance(entity:GetPos()) <= 150 then
+            if client:GetPos():DistToSqr(entity:GetPos()) <= 250 * 250 then
                 entity:SetPassenger(client)
             else
                 client:notifyWarningLocalized("tooFarAway")
