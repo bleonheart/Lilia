@@ -133,11 +133,6 @@ function MODULE:LoadData()
                 hasData = true
             end
 
-            if tonumber(row.locked) == 1 then
-                doorData.locked = true
-                hasData = true
-            end
-
             if tonumber(row.disabled) == 1 then
                 doorData.disabled = true
                 hasData = true
@@ -333,7 +328,7 @@ function MODULE:SaveData()
                 ownable = isUnownable and 0 or 1,
                 name = name,
                 price = price,
-                locked = doorData.locked and 1 or 0
+                locked = 0
             }
 
             for fieldName, info in pairs(extraFields) do
