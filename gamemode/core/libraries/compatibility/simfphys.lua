@@ -34,7 +34,7 @@
     hook.Add("simfphysUse", "liaSimfphys", function(entity, client)
         if not lia.config.get("CarEntryDelayEnabled", true) then return end
         if not entity:isSimfphysCar() then return end
-        if entity:GetIsVehicleLocked() or entity:HasPassengerEnemyTeam(client) then
+        if entity:isLocked() then
             entity:EmitSound("doors/default_locked.wav")
             return true
         end
@@ -59,6 +59,14 @@
                 return
             end
 
+            if entity:isLocked() then
+                timer.Remove(timerID)
+                entity.IsBeingEntered = false
+                client:setAction()
+                entity:EmitSound("doors/default_locked.wav")
+                return
+            end
+
             if client:GetPos():DistToSqr(entity:GetPos()) > 250 * 250 then
                 timer.Remove(timerID)
                 entity.IsBeingEntered = false
@@ -71,16 +79,17 @@
             timer.Remove(timerID)
             if IsValid(entity) then entity.IsBeingEntered = false end
             if not IsValid(entity) or not IsValid(client) then return end
-            if client:GetPos():DistToSqr(entity:GetPos()) <= 250 * 250 then
-                if entity:GetIsVehicleLocked() or entity:HasPassengerEnemyTeam(client) then
-                    entity:EmitSound("doors/default_locked.wav")
-                    return
-                end
-
-                entity:SetPassenger(client)
-            else
-                client:notifyWarningLocalized("tooFarAway")
+            if entity:isLocked() then
+                entity:EmitSound("doors/default_locked.wav")
+                return
             end
+
+            if client:GetPos():DistToSqr(entity:GetPos()) > 250 * 250 then
+                client:notifyWarningLocalized("tooFarAway")
+                return
+            end
+
+            entity:SetPassenger(client)
         end)
         return true
     end)
