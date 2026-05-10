@@ -774,14 +774,12 @@ if CLIENT then
                     })
                 end
 
-                local keyMap = {}
                 for _, c in ipairs(choices) do
                     combo:AddChoice(c.txt, c.keycode)
-                    keyMap[c.txt] = c.keycode
                 end
 
-                combo.OnSelect = function(_, index, text, data)
-                    local newKey = data
+                combo.OnSelect = function(_, index, text, keyCode)
+                    local newKey = keyCode
                     if newKey == nil then return end
                     if isstring(newKey) then
                         local code = KeybindKeys[string.lower(newKey)]
