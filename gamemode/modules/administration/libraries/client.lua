@@ -83,6 +83,7 @@ local function finishAdminStickMenuBatch(state)
     if not state or not state.menus then return end
     for _, panel in ipairs(state.menus) do
         if IsValid(panel) and panel._liaAdminStickOriginalUpdateSize then panel.UpdateSize = panel._liaAdminStickOriginalUpdateSize end
+    end
 
     for i = #state.menus, 1, -1 do
         local panel = state.menus[i]
