@@ -53,10 +53,12 @@ end
 local function beginAdminStickMenuBatch(menu)
     if not IsValid(menu) then return end
     local state = {
-        menus = {}
+        menus = {},
+        closed = false
     }
 
     local function attach(panel)
+        if state.closed then return end
         if not IsValid(panel) or panel._liaAdminStickBatchState == state then return end
         panel._liaAdminStickBatchState = state
         panel._liaAdminStickOriginalUpdateSize = panel._liaAdminStickOriginalUpdateSize or panel.UpdateSize
@@ -75,6 +77,7 @@ end
 
 local function finishAdminStickMenuBatch(state)
     if not state or not state.menus then return end
+    state.closed = true
     for _, panel in ipairs(state.menus) do
         if IsValid(panel) and panel._liaAdminStickOriginalUpdateSize then panel.UpdateSize = panel._liaAdminStickOriginalUpdateSize end
     end
@@ -2442,6 +2445,7 @@ function MODULE:OpenAdminStickUI(tgt)
 
     hook.Run("PopulateAdminStick", menu, tgt, stores)
     finishAdminStickMenuBatch(batchState)
+    stores.__batchState = nil
     function menu:OnRemove()
         if AdminStickMenu == self then
             cl.AdminStickTarget = nil

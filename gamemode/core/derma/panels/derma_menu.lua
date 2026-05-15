@@ -16,17 +16,20 @@ function PANEL:Init()
     self._scrollPanel = nil
     self._usingScroll = false
     if RegisterDermaMenuForClose then RegisterDermaMenuForClose(self) end
+    local function isMenuTreeHovered(menu)
+        if not IsValid(menu) then return false end
+        if menu:IsHovered() or menu:IsChildHovered() then return true end
+        for _, item in ipairs(menu.Items or {}) do
+            local submenu = IsValid(item) and item._submenu
+            if IsValid(submenu) and item._submenu_open and isMenuTreeHovered(submenu) then return true end
+        end
+        return false
+    end
+
     self.Think = function()
         if CurTime() - self._openTime < 0.1 then return end
         if (input.IsMouseDown(MOUSE_LEFT) or input.IsMouseDown(MOUSE_RIGHT)) and not self:IsChildHovered() then
-            local anySubmenuHovered = false
-            for _, item in ipairs(self.Items or {}) do
-                if IsValid(item) and item._submenu and item._submenu_open and IsValid(item._submenu) and item._submenu:IsHovered() then
-                    anySubmenuHovered = true
-                    break
-                end
-            end
-
+            local anySubmenuHovered = isMenuTreeHovered(self)
             if not anySubmenuHovered then
                 if self.deleteSelf ~= false then
                     self:Remove()
@@ -118,9 +121,7 @@ function PANEL:AddOption(text, func, icon, optData)
     option._cachedIconMat = nil
     local function syncOptionImage(newIcon)
         if not newIcon then
-            if IsValid(option.m_Image) then
-                option.m_Image:Remove()
-            end
+            if IsValid(option.m_Image) then option.m_Image:Remove() end
             option.m_Image = nil
             return
         end
@@ -261,7 +262,6 @@ function PANEL:AddOption(text, func, icon, optData)
             end
 
             if submenu.RunDeferredBuild then submenu:RunDeferredBuild() end
-
             local parentX, parentY = self:LocalToScreen(self:GetWide(), 0)
             local submenuWidth, submenuHeight = submenu:GetSize()
             local screenWidth, screenHeight = ScrW(), ScrH()
@@ -345,9 +345,7 @@ function PANEL:AddOption(text, func, icon, optData)
         if not IsValid(self.m_Image) then return end
         h = h or self:GetTall()
         local textPadding = 14
-        if self._isCheckable then
-            textPadding = textPadding + 16 + 8
-        end
+        if self._isCheckable then textPadding = textPadding + 16 + 8 end
         local iconSize = 16
         self.m_Image:SetSize(iconSize, iconSize)
         self.m_Image:SetPos(textPadding, math.floor((h - iconSize) * 0.5))
@@ -487,6 +485,7 @@ function PANEL:RunDeferredBuild()
     for _, builder in ipairs(builders) do
         builder(self)
     end
+
     self:UpdateSize()
 end
 
