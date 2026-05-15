@@ -846,6 +846,19 @@ local function IsEntityNearby(pos, class)
     return false
 end
 
+local function restorePersistentEntityTransform(ent, pos, ang)
+    if not IsValid(ent) or not isvector(pos) then return end
+    ent:SetPos(pos)
+    if isangle(ang) then ent:SetAngles(ang) end
+    local physObj = ent:GetPhysicsObject()
+    if IsValid(physObj) then
+        physObj:SetPos(pos)
+        if isangle(ang) then physObj:SetAngles(ang) end
+        physObj:Wake()
+        physObj:Sleep()
+    end
+end
+
 function GM:LoadData()
     lia.data.loadPersistenceData(function(entities)
         for _, ent in ipairs(entities) do
@@ -911,6 +924,7 @@ function GM:LoadData()
                 if ent.skin then createdEnt:SetSkin(tonumber(ent.skin) or 0) end
                 if istable(ent.bodygroups) then lia.util.applyBodygroups(createdEnt, ent.bodygroups) end
                 createdEnt:Activate()
+                restorePersistentEntityTransform(createdEnt, decodedPos, decodedAng)
                 local loadData = table.Copy(ent)
                 if cls == "lia_npc" and ent.data and istable(ent.data) then
                     if ent.data.uniqueID then loadData.uniqueID = ent.data.uniqueID end
@@ -925,6 +939,7 @@ function GM:LoadData()
                 end
 
                 hook.Run("OnEntityLoaded", createdEnt, loadData)
+                timer.Simple(0, function() restorePersistentEntityTransform(createdEnt, decodedPos, decodedAng) end)
             until true
         end
     end)
