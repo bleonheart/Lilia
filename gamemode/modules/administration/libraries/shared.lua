@@ -1,18 +1,25 @@
 ﻿function MODULE:CanPlayerModifyConfig(client)
-    return client:hasPrivilege("accessEditConfigurationMenu")
+    local hasPrivilege = client:hasPrivilege("accessEditConfigurationMenu")
+    lia.debug("[perm]", "Permission Check for function MODULE:CanPlayerModifyConfig", "hasPrivilege(accessEditConfigurationMenu)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
+    return hasPrivilege
 end
 
 properties.Add("TogglePropBlacklist", {
     MenuLabel = L("togglePropBlacklist"),
     Order = 900,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and ent:GetClass() == "prop_physics" and ply:hasPrivilege("managePropBlacklist") end,
+    Filter = function(_, ent, ply)
+        local permission = IsValid(ent) and ent:GetClass() == "prop_physics" and ply:hasPrivilege("managePropBlacklist")
+        lia.debug("[perm]", "Permission Check for property TogglePropBlacklist Filter", "entityValid=", tostring(IsValid(ent)), "entityIsPropPhysics=", tostring(IsValid(ent) and ent:GetClass() == "prop_physics" or false), "hasPrivilege(managePropBlacklist)=", tostring(ply:hasPrivilege("managePropBlacklist")), "finalResult=", tostring(permission))
+        return permission
+    end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetModel())
         self:MsgEnd()
     end,
     Receive = function(_, _, ply)
+        lia.debug("[perm]", "Permission Check for property TogglePropBlacklist Receive", "hasPrivilege(managePropBlacklist)=", tostring(ply:hasPrivilege("managePropBlacklist")), "finalResult=", tostring(ply:hasPrivilege("managePropBlacklist")))
         if not ply:hasPrivilege("managePropBlacklist") then return end
         local model = net.ReadString()
         local list = lia.data.get("prop_blacklist", {})
@@ -61,13 +68,18 @@ properties.Add("ToggleCarBlacklist", {
     MenuLabel = L("toggleCarBlacklist"),
     Order = 901,
     MenuIcon = "icon16/link.png",
-    Filter = function(_, ent, ply) return IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("manageVehicleBlacklist") end,
+    Filter = function(_, ent, ply)
+        local permission = IsValid(ent) and (ent:IsVehicle() or ent:isSimfphysCar()) and ply:hasPrivilege("manageVehicleBlacklist")
+        lia.debug("[perm]", "Permission Check for property ToggleCarBlacklist Filter", "entityValid=", tostring(IsValid(ent)), "entityIsVehicle=", tostring(IsValid(ent) and ent:IsVehicle() or false), "entityIsSimfphysCar=", tostring(IsValid(ent) and ent.isSimfphysCar and ent:isSimfphysCar() or false), "hasPrivilege(manageVehicleBlacklist)=", tostring(ply:hasPrivilege("manageVehicleBlacklist")), "finalResult=", tostring(permission))
+        return permission
+    end,
     Action = function(self, ent)
         self:MsgStart()
         net.WriteString(ent:GetModel())
         self:MsgEnd()
     end,
     Receive = function(_, _, ply)
+        lia.debug("[perm]", "Permission Check for property ToggleCarBlacklist Receive", "hasPrivilege(manageVehicleBlacklist)=", tostring(ply:hasPrivilege("manageVehicleBlacklist")), "finalResult=", tostring(ply:hasPrivilege("manageVehicleBlacklist")))
         if not ply:hasPrivilege("manageVehicleBlacklist") then return end
         local model = net.ReadString()
         local list = lia.data.get("carBlacklist", {})

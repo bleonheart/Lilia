@@ -1672,6 +1672,13 @@ lia.config.add("DeleteDroppedItemsOnLeave", "@deleteDroppedItemsOnLeave", false,
     type = "Boolean"
 })
 
+lia.config.add("HUDFont", "@hudFont", "Montserrat Medium", function() if not CLIENT then return end end, {
+    desc = "@hudFontDesc",
+    category = "fonts",
+    type = "Table",
+    options = CLIENT and lia.font.getAvailableFonts() or {"Montserrat Medium"}
+})
+
 lia.config.add("BodyGrouperModel", "@bodyGrouperModel", "models/props_c17/FurnitureDresser001a.mdl", nil, {
     desc = "@bodyGrouperModelDesc",
     category = "@gameplay",

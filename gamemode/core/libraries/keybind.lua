@@ -302,6 +302,7 @@ lia.keybind.add("adminMode", {
         if not IsValid(client) then return end
         local steamID = client:SteamID()
         client:ChatPrint(L("adminModeToggle"))
+        lia.debug("[perm]", "Permission Check for keybind admin mode toggle state", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "finalResult=", tostring(client:isStaffOnDuty()))
         if client:isStaffOnDuty() then
             local oldCharID = client.oldCharID or 0
             if oldCharID > 0 then
@@ -348,7 +349,9 @@ lia.keybind.add("adminMode", {
                     end
                 end
 
-                if client:hasPrivilege("createStaffCharacter") then
+                local canCreateStaffCharacter = client:hasPrivilege("createStaffCharacter")
+                lia.debug("[perm]", "Permission Check for keybind admin mode create staff character", "hasPrivilege(createStaffCharacter)=", tostring(canCreateStaffCharacter), "finalResult=", tostring(canCreateStaffCharacter))
+                if canCreateStaffCharacter then
                     local staffCharData = {
                         steamID = steamID,
                         name = client:steamName(),

@@ -54,6 +54,7 @@ local function getWeaponItemDefaults(className)
 end
 
 net.Receive("liaWeaponOverrideUpdate", function(len, ply)
+    lia.debug("[perm]", "Permission Check for net.Receive liaWeaponOverrideUpdate", "hasPrivilege(ManageWeaponOverrides)=", tostring(ply:hasPrivilege("ManageWeaponOverrides")), "finalResult=", tostring(ply:hasPrivilege("ManageWeaponOverrides")))
     if not ply:hasPrivilege("ManageWeaponOverrides") then return end
     local className = net.ReadString()
     local key = net.ReadString()
@@ -114,6 +115,7 @@ local function refreshWeaponHolders(className)
 end
 
 net.Receive("liaWeaponRuntimeOverrideUpdate", function(_, ply)
+    lia.debug("[perm]", "Permission Check for net.Receive liaWeaponRuntimeOverrideUpdate", "hasPrivilege(ManageWeaponOverrides)=", tostring(ply:hasPrivilege("ManageWeaponOverrides")), "finalResult=", tostring(ply:hasPrivilege("ManageWeaponOverrides")))
     if not ply:hasPrivilege("ManageWeaponOverrides") then return end
     local className = net.ReadString()
     local dotPath = sanitizeRuntimePath(net.ReadString())
@@ -138,6 +140,7 @@ net.Receive("liaWeaponRuntimeOverrideUpdate", function(_, ply)
 end)
 
 net.Receive("liaWeaponRuntimeOverrideReset", function(_, ply)
+    lia.debug("[perm]", "Permission Check for net.Receive liaWeaponRuntimeOverrideReset", "hasPrivilege(ManageWeaponOverrides)=", tostring(ply:hasPrivilege("ManageWeaponOverrides")), "finalResult=", tostring(ply:hasPrivilege("ManageWeaponOverrides")))
     if not ply:hasPrivilege("ManageWeaponOverrides") then return end
     local className = net.ReadString()
     local wep = weapons.GetStored(className)
@@ -164,7 +167,11 @@ net.Receive("liaInsertKeyPressed", function(_, client)
     local char = client:getChar()
     if not char then return end
     local message = client:Name() .. " (" .. client:SteamID() .. ") pressed INSERT (common cheat-menu key)."
-    StaffAddTextShadowed(Color(255, 0, 0), "ALERT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("seeInsertNotifications") end)
+    StaffAddTextShadowed(Color(255, 0, 0), "ALERT", Color(255, 255, 255), message, function(staff)
+        local permission = staff:hasPrivilege("seeInsertNotifications")
+        lia.debug("[perm]", "Permission Check for net.Receive liaInsertKeyPressed staff recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(seeInsertNotifications)=", tostring(permission), "finalResult=", tostring(permission))
+        return permission
+    end)
 end)
 
 net.Receive("liaStringRequest", function(_, client)
@@ -191,7 +198,9 @@ net.Receive("liaKickCharacter", function(_, client)
     local char = client:getChar()
     local canManageAny = client:hasPrivilege("canManageFactions")
     local canKick = char and char:hasFlags("K")
-    if not canKick and not canManageAny then return end
+    local permission = canKick or canManageAny
+    lia.debug("[perm]", "Permission Check for net.Receive liaKickCharacter", "hasPrivilege(canManageFactions)=", tostring(canManageAny), "charExists=", tostring(char ~= nil), "char:hasFlags(K)=", tostring(canKick), "finalResult=", tostring(permission))
+    if not permission then return end
     local defaultFaction
     for _, fac in pairs(lia.faction.teams) do
         if fac.isDefault and fac.uniqueID ~= "staff" then
@@ -267,7 +276,11 @@ net.Receive("liaCheckHack", function(_, client)
         lia.log.add(client, "cheaterDetected", client:Name(), client:SteamID())
         client:notifyErrorLocalized("caughtCheating")
         for _, p in player.Iterator() do
-            if p:isStaffOnDuty() or p:hasPrivilege("receiveCheaterNotifications") then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
+            local isStaffOnDuty = p:isStaffOnDuty()
+            local hasReceiveCheaterNotifications = p:hasPrivilege("receiveCheaterNotifications")
+            local permission = isStaffOnDuty or hasReceiveCheaterNotifications
+            lia.debug("[perm]", "Permission Check for net.Receive liaCheckHack cheater recipient", "targetPlayer=", tostring(p:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(receiveCheaterNotifications)=", tostring(hasReceiveCheaterNotifications), "finalResult=", tostring(permission))
+            if permission then p:notifyWarningLocalized("cheaterDetectedStaff", client:Name(), client:SteamID()) end
         end
 
         if client:getChar() then
@@ -276,7 +289,11 @@ net.Receive("liaCheckHack", function(_, client)
             hook.Run("AddWarning", client:getChar():getID(), client:Nick(), client:SteamID(), timestamp, L("cheaterWarningReason"), "System", "SYSTEM", severity)
             local charID = client:getChar():getID()
             local message = L("staffLogCheaterFlagged", client:Name(), charID, client:SteamID64(), severity)
-            StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff) return staff:hasPrivilege("receiveCheaterNotifications") end)
+            StaffAddTextShadowed(Color(255, 0, 0), "CHEAT", Color(255, 255, 255), message, function(staff)
+                local permission = staff:hasPrivilege("receiveCheaterNotifications")
+                lia.debug("[perm]", "Permission Check for net.Receive liaCheckHack StaffAddTextShadowed recipient", "targetPlayer=", tostring(staff:Name()), "hasPrivilege(receiveCheaterNotifications)=", tostring(permission), "finalResult=", tostring(permission))
+                return permission
+            end)
         end
     end
 
@@ -326,6 +343,7 @@ local function getEntityDisplayName(ent)
 end
 
 net.Receive("liaTeleportToEntity", function(_, client)
+    lia.debug("[perm]", "Permission Check for net.Receive liaTeleportToEntity", "hasPrivilege(teleportToEntity)=", tostring(client:hasPrivilege("teleportToEntity")), "finalResult=", tostring(client:hasPrivilege("teleportToEntity")))
     if not client:hasPrivilege("teleportToEntity") then
         client:notifyErrorLocalized("noPrivilege")
         return
@@ -373,6 +391,7 @@ net.Receive("liaCharChoose", function(_, client)
         if not table.HasValue(client.liaCharList or {}, id) then
             lia.db.selectOne("faction", "characters", "id = " .. id):next(function(result)
                 local allowStaffChar = result and result.faction == FACTION_STAFF and client:hasPrivilege("createStaffCharacter")
+                lia.debug("[perm]", "Permission Check for net.Receive liaCharacterChoose staff fallback", "dbResultExists=", tostring(result ~= nil), "targetFactionIsStaff=", tostring(result and result.faction == FACTION_STAFF), "hasPrivilege(createStaffCharacter)=", tostring(client:hasPrivilege("createStaffCharacter")), "finalResult=", tostring(allowStaffChar))
                 if not allowStaffChar then return response(false, "invalidChar") end
                 lia.char.loadSingleCharacter(id, client, function(character)
                     if not character then return response(false, "invalidChar") end
@@ -622,6 +641,7 @@ net.Receive("liaNPCWeaponChange", function(_, ply)
     local ent = net.ReadEntity()
     local wep = net.ReadString()
     if not IsValid(ent) or not ent:IsNPC() then return end
+    lia.debug("[perm]", "Permission Check for net.Receive liaNPCWeaponChange", "isValidPlayer=", tostring(IsValid(ply)), "hasPrivilege(canSpawnSWEPs)=", tostring(IsValid(ply) and ply:hasPrivilege("canSpawnSWEPs") or false), "finalResult=", tostring(IsValid(ply) and ply:hasPrivilege("canSpawnSWEPs") or false))
     if not IsValid(ply) or not ply:hasPrivilege("canSpawnSWEPs") then return end
     if IsValid(ent:GetActiveWeapon()) then ent:GetActiveWeapon():Remove() end
     ent:Give(wep)
@@ -1082,6 +1102,7 @@ net.Receive("liaBigTableAck", function(_, ply)
 end)
 
 net.Receive("liaAdminSetCharProperty", function(_, client)
+    lia.debug("[perm]", "Permission Check for net.Receive liaAdminSetCharProperty", "hasPrivilege(listCharacters)=", tostring(client:hasPrivilege("listCharacters")), "finalResult=", tostring(client:hasPrivilege("listCharacters")))
     if not client:hasPrivilege("listCharacters") then return end
     local charID = net.ReadInt(32)
     local property = net.ReadString()
@@ -1340,6 +1361,7 @@ net.Receive("liaNpcCustomize", function(_, ply)
     local payload = net.ReadTable() or {}
     if not isstring(configID) or configID == "" then return end
     if not IsValid(ply) or not IsValid(npc) then return end
+    lia.debug("[perm]", "Permission Check for net.Receive liaNpcCustomize", "hasPrivilegeMethodExists=", tostring(ply.hasPrivilege ~= nil), "hasPrivilege(canManageNPCs)=", tostring(ply.hasPrivilege and ply:hasPrivilege("canManageNPCs") or false), "finalResult=", tostring(ply.hasPrivilege and ply:hasPrivilege("canManageNPCs") or false))
     if not ply.hasPrivilege or not ply:hasPrivilege("canManageNPCs") then return end
     local config = lia.dialog.getConfiguration(configID)
     if not config or not isfunction(config.onApply) then return end
@@ -1379,7 +1401,9 @@ local function CanAccessBodygrouper(client)
     for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
         if v:GetPos():Distance(client:GetPos()) <= 128 then return true end
     end
-    return client:hasPrivilege("manageBodygroups")
+    local hasPrivilege = client:hasPrivilege("manageBodygroups")
+    lia.debug("[perm]", "Permission Check for function CanAccessBodygrouper", "hasNearbyBodygrouper=", tostring(false), "hasPrivilege(manageBodygroups)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
+    return hasPrivilege
 end
 
 net.Receive("BodygrouperMenu", function(_, client)
@@ -1389,12 +1413,18 @@ net.Receive("BodygrouperMenu", function(_, client)
     local closetuser = false
     if not IsValid(target) then return end
     if target ~= client then
-        if not (client:hasPrivilege("manageBodygroups") or client:hasPrivilege("changeBodygroups")) then
+        local hasManageBodygroups = client:hasPrivilege("manageBodygroups")
+        local hasChangeBodygroups = client:hasPrivilege("changeBodygroups")
+        local permission = hasManageBodygroups or hasChangeBodygroups
+        lia.debug("[perm]", "Permission Check for net.Receive BodygrouperMenu target-other", "hasPrivilege(manageBodygroups)=", tostring(hasManageBodygroups), "hasPrivilege(changeBodygroups)=", tostring(hasChangeBodygroups), "finalResult=", tostring(permission))
+        if not permission then
             client:notifyLocalized("noAccess")
             return
         end
     else
-        if not CanAccessBodygrouper(client) then
+        local canAccessBodygrouper = CanAccessBodygrouper(client)
+        lia.debug("[perm]", "Permission Check for net.Receive BodygrouperMenu self-target", "CanAccessBodygrouper=", tostring(canAccessBodygrouper), "finalResult=", tostring(canAccessBodygrouper))
+        if not canAccessBodygrouper then
             client:notifyLocalized("noAccess")
             return
         end
@@ -1453,6 +1483,7 @@ local function broadcastGroups()
 end
 
 net.Receive("liaGroupsRequest", function(_, p)
+    lia.debug("[perm]", "Permission Check for net.Receive liaGroupsRequest", "isValidPlayer=", tostring(IsValid(p)), "hasPrivilege(manageUsergroups)=", tostring(IsValid(p) and p:hasPrivilege("manageUsergroups") or false), "finalResult=", tostring(IsValid(p) and p:hasPrivilege("manageUsergroups") or false))
     if not IsValid(p) or not p:hasPrivilege("manageUsergroups") then return end
     lia.net.ready = lia.net.ready or setmetatable({}, {
         __mode = "k"
@@ -1463,6 +1494,7 @@ net.Receive("liaGroupsRequest", function(_, p)
 end)
 
 net.Receive("liaGroupsAdd", function(_, p)
+    lia.debug("[perm]", "Permission Check for net.Receive liaGroupsAdd", "hasPrivilege(manageUsergroups)=", tostring(p:hasPrivilege("manageUsergroups")), "finalResult=", tostring(p:hasPrivilege("manageUsergroups")))
     if not p:hasPrivilege("manageUsergroups") then return end
     local data = net.ReadTable()
     local n = string.Trim(tostring(data.name or ""))
@@ -1483,6 +1515,7 @@ net.Receive("liaGroupsAdd", function(_, p)
 end)
 
 net.Receive("liaGroupsRemove", function(_, p)
+    lia.debug("[perm]", "Permission Check for net.Receive liaGroupsRemove", "hasPrivilege(manageUsergroups)=", tostring(p:hasPrivilege("manageUsergroups")), "finalResult=", tostring(p:hasPrivilege("manageUsergroups")))
     if not p:hasPrivilege("manageUsergroups") then return end
     local n = net.ReadString()
     if n == "" or lia.admin.DefaultGroups and lia.admin.DefaultGroups[n] then return end
@@ -1494,6 +1527,7 @@ net.Receive("liaGroupsRemove", function(_, p)
 end)
 
 net.Receive("liaGroupsRename", function(_, p)
+    lia.debug("[perm]", "Permission Check for net.Receive liaGroupsRename", "hasPrivilege(manageUsergroups)=", tostring(p:hasPrivilege("manageUsergroups")), "finalResult=", tostring(p:hasPrivilege("manageUsergroups")))
     if not p:hasPrivilege("manageUsergroups") then return end
     local old = string.Trim(net.ReadString() or "")
     local new = string.Trim(net.ReadString() or "")
@@ -1508,6 +1542,7 @@ net.Receive("liaGroupsRename", function(_, p)
 end)
 
 net.Receive("liaGroupsSetPerm", function(_, p)
+    lia.debug("[perm]", "Permission Check for net.Receive liaGroupsSetPerm", "hasPrivilege(manageUsergroups)=", tostring(p:hasPrivilege("manageUsergroups")), "finalResult=", tostring(p:hasPrivilege("manageUsergroups")))
     if not p:hasPrivilege("manageUsergroups") then return end
     local group = net.ReadString()
     local privilege = net.ReadString()

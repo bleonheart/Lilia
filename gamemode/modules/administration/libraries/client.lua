@@ -121,7 +121,12 @@ function MODULE:ShowPlayerOptions(target, options)
     if not IsValid(client) or not IsValid(target) then return end
     local userGroup = client:GetUserGroup()
     local isAdmin = userGroup == "admin" or userGroup == "superadmin" or userGroup == "owner" or userGroup == "moderator"
-    if not (isAdmin or client:hasPrivilege("canAccessScoreboardInfoOutOfStaff") or (client:hasPrivilege("canAccessScoreboardAdminOptions") and client:isStaffOnDuty())) then return end
+    local canAccessScoreboardInfoOutOfStaff = client:hasPrivilege("canAccessScoreboardInfoOutOfStaff")
+    local canAccessScoreboardAdminOptions = client:hasPrivilege("canAccessScoreboardAdminOptions")
+    local isStaffOnDuty = client:isStaffOnDuty()
+    local permission = isAdmin or canAccessScoreboardInfoOutOfStaff or (canAccessScoreboardAdminOptions and isStaffOnDuty)
+    lia.debug("[perm]", "Permission Check for function MODULE:ShowPlayerOptions", "isAdminUsergroup=", tostring(isAdmin), "hasPrivilege(canAccessScoreboardInfoOutOfStaff)=", tostring(canAccessScoreboardInfoOutOfStaff), "hasPrivilege(canAccessScoreboardAdminOptions)=", tostring(canAccessScoreboardAdminOptions), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
     local orderedOptions = {}
     table.insert(orderedOptions, {
         name = L("nameCopyFormat", target:Name()),
@@ -404,7 +409,9 @@ end
 function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    if client:hasPrivilege("viewStaffManagement") then
+    local canViewStaffManagement = client:hasPrivilege("viewStaffManagement")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs viewStaffManagement", "hasPrivilege(viewStaffManagement)=", tostring(canViewStaffManagement), "finalResult=", tostring(canViewStaffManagement))
+    if canViewStaffManagement then
         table.insert(pages, {
             name = "@moduleStaffManagementName",
             icon = "icon16/shield.png",
@@ -416,7 +423,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("canAccessPlayerList") then
+    local canAccessPlayerList = client:hasPrivilege("canAccessPlayerList")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs canAccessPlayerList", "hasPrivilege(canAccessPlayerList)=", tostring(canAccessPlayerList), "finalResult=", tostring(canAccessPlayerList))
+    if canAccessPlayerList then
         table.insert(pages, {
             name = "@players",
             icon = "icon16/user.png",
@@ -428,7 +437,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("listCharacters") then
+    local canListCharacters = client:hasPrivilege("listCharacters")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs listCharacters", "hasPrivilege(listCharacters)=", tostring(canListCharacters), "finalResult=", tostring(canListCharacters))
+    if canListCharacters then
         table.insert(pages, {
             name = "@characterList",
             icon = "icon16/book.png",
@@ -649,7 +660,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("manageFlags") then
+    local canManageFlags = client:hasPrivilege("manageFlags")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs manageFlags", "hasPrivilege(manageFlags)=", tostring(canManageFlags), "finalResult=", tostring(canManageFlags))
+    if canManageFlags then
         table.insert(pages, {
             name = L("flagsManagement"),
             icon = "icon16/flag_red.png",
@@ -669,7 +682,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("canSeeLogs") then
+    local canSeeLogs = client:hasPrivilege("canSeeLogs")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs canSeeLogs", "hasPrivilege(canSeeLogs)=", tostring(canSeeLogs), "finalResult=", tostring(canSeeLogs))
+    if canSeeLogs then
         table.insert(pages, {
             name = "logs",
             icon = "icon16/book_open.png",
@@ -687,7 +702,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("manageCharacters") then
+    local canManageCharacters = client:hasPrivilege("manageCharacters")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs manageCharacters", "hasPrivilege(manageCharacters)=", tostring(canManageCharacters), "finalResult=", tostring(canManageCharacters))
+    if canManageCharacters then
         table.insert(pages, {
             name = "pkManager",
             icon = "icon16/lightning.png",
@@ -699,7 +716,11 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("alwaysSeeTickets") or client:isStaffOnDuty() then
+    local canAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
+    local isStaffOnDuty = client:isStaffOnDuty()
+    local canSeeTickets = canAlwaysSeeTickets or isStaffOnDuty
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs tickets", "hasPrivilege(alwaysSeeTickets)=", tostring(canAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(canSeeTickets))
+    if canSeeTickets then
         table.insert(pages, {
             name = "tickets",
             icon = "icon16/report.png",
@@ -711,7 +732,9 @@ function MODULE:PopulateAdminTabs(pages)
         })
     end
 
-    if client:hasPrivilege("viewPlayerWarnings") then
+    local canViewPlayerWarnings = client:hasPrivilege("viewPlayerWarnings")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs viewPlayerWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(canViewPlayerWarnings), "finalResult=", tostring(canViewPlayerWarnings))
+    if canViewPlayerWarnings then
         table.insert(pages, {
             name = "warnings",
             icon = "icon16/error.png",
@@ -726,7 +749,9 @@ end
 
 spawnmenu.AddContentType("inventoryitem", function(container, data)
     local client = LocalPlayer()
-    if not client:hasPrivilege("canUseItemSpawner") then return end
+    local canUseItemSpawner = client:hasPrivilege("canUseItemSpawner")
+    lia.debug("[perm]", "Permission Check for spawnmenu.AddContentType inventoryitem", "hasPrivilege(canUseItemSpawner)=", tostring(canUseItemSpawner), "finalResult=", tostring(canUseItemSpawner))
+    if not canUseItemSpawner then return end
     local icon = vgui.Create("liaItemIcon", container)
     icon:SetSize(168, 168)
     icon:DockMargin(10, 10, 10, 10)
@@ -872,7 +897,9 @@ end, "inventoryitems")
 
 spawnmenu.AddCreationTab(L("inventoryItems"), function()
     local client = LocalPlayer()
-    if not IsValid(client) or not client.hasPrivilege or not client:hasPrivilege("canUseItemSpawner") then
+    local canUseItemSpawner = IsValid(client) and client.hasPrivilege and client:hasPrivilege("canUseItemSpawner") or false
+    lia.debug("[perm]", "Permission Check for spawnmenu.AddCreationTab inventoryItems", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilegeMethodExists=", tostring(IsValid(client) and client.hasPrivilege ~= nil or false), "hasPrivilege(canUseItemSpawner)=", tostring(canUseItemSpawner), "finalResult=", tostring(canUseItemSpawner))
+    if not IsValid(client) or not client.hasPrivilege or not canUseItemSpawner then
         local pnl = vgui.Create("DPanel")
         pnl:Dock(FILL)
         pnl.Paint = function(_, w, h) draw.SimpleText(L("noItemSpawnerPermission"), "DermaDefault", w / 2, h / 2, Color(255, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER) end
@@ -1164,11 +1191,15 @@ local function CreateOrganizedAdminStickMenu(tgt, stores, existingMenu)
         local category = categories[categoryKey]
         if category then
             local hasContent
-            if categoryKey == "moderation" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
+            local isStaffOnDuty = cl:isStaffOnDuty()
+            if categoryKey == "moderation" and tgt:IsPlayer() and (hasAlwaysSpawnAdminStick or isStaffOnDuty) then
+                lia.debug("[perm]", "Permission Check for admin stick category moderation", "targetIsPlayer=", tostring(tgt:IsPlayer()), "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(true))
                 hasContent = true
             elseif categoryKey == "characterManagement" and tgt:IsPlayer() then
                 hasContent = true
-            elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then
+            elseif categoryKey == "flagManagement" and tgt:IsPlayer() and (hasAlwaysSpawnAdminStick or isStaffOnDuty) then
+                lia.debug("[perm]", "Permission Check for admin stick category flagManagement", "targetIsPlayer=", tostring(tgt:IsPlayer()), "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(true))
                 hasContent = true
             elseif categoryKey == "doorManagement" and tgt:isDoor() then
                 hasContent = true
@@ -1456,7 +1487,11 @@ end
 
 local function IncludeAdminMenu(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
+    local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
+    local isStaffOnDuty = cl:isStaffOnDuty()
+    local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
+    lia.debug("[perm]", "Permission Check for function IncludeAdminMenu", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
     local modCategory = GetOrCreateCategoryMenu(menu, "moderation", stores)
     if not modCategory then return end
     local modSubCategory = GetOrCreateSubCategoryMenu(modCategory, "moderation", "moderationTools", stores)
@@ -1601,7 +1636,11 @@ end
 
 local function IncludeTeleportation(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
+    local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
+    local isStaffOnDuty = cl:isStaffOnDuty()
+    local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
+    lia.debug("[perm]", "Permission Check for function IncludeTeleportation", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
     local moderationCategory = GetOrCreateCategoryMenu(menu, "moderation", stores)
     if not moderationCategory then return end
     local tpCategory = GetOrCreateSubCategoryMenu(moderationCategory, "moderation", "teleportation", stores)
@@ -1646,14 +1685,18 @@ local function IncludeCharacterManagement(tgt, menu, stores)
     local cl = LocalPlayer()
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
     if not charCategory then return end
-    if cl:hasPrivilege("manageCharacterInformation") then
+    local canManageCharacterInformation = cl:hasPrivilege("manageCharacterInformation")
+    lia.debug("[perm]", "Permission Check for function IncludeCharacterManagement manageCharacterInformation", "hasPrivilege(manageCharacterInformation)=", tostring(canManageCharacterInformation), "finalResult=", tostring(canManageCharacterInformation))
+    if canManageCharacterInformation then
         charCategory:AddOption(L("changePlayerModel"), function()
             OpenPlayerModelUI(tgt)
             timer.Simple(0.1, function() AdminStickIsOpen = false end)
         end):SetIcon("icon16/user_suit.png")
     end
 
-    if cl:hasPrivilege("changeBodygroups") then
+    local canChangeBodygroups = cl:hasPrivilege("changeBodygroups")
+    lia.debug("[perm]", "Permission Check for function IncludeCharacterManagement changeBodygroups", "hasPrivilege(changeBodygroups)=", tostring(canChangeBodygroups), "finalResult=", tostring(canChangeBodygroups))
+    if canChangeBodygroups then
         charCategory:AddOption(L("adminStickEditCharBodygroupsName"), function()
             local id = GetIdentifier(tgt)
             if id ~= "" then RunConsoleCommand("say", "/chareditbodygroups " .. QuoteArgs(id)) end
@@ -1664,7 +1707,9 @@ end
 
 local function IncludeFlagManagement(tgt, menu, stores)
     local cl = LocalPlayer()
-    if not cl:hasPrivilege("manageFlags") then return end
+    local canManageFlags = cl:hasPrivilege("manageFlags")
+    lia.debug("[perm]", "Permission Check for function IncludeFlagManagement", "hasPrivilege(manageFlags)=", tostring(canManageFlags), "finalResult=", tostring(canManageFlags))
+    if not canManageFlags then return end
     local charCategory = GetOrCreateCategoryMenu(menu, "characterManagement", stores)
     if not charCategory then return end
     local cf = GetOrCreateSubCategoryMenu(charCategory, "characterManagement", "flags", stores)
@@ -1873,7 +1918,11 @@ end
 function MODULE:OpenAdminStickUI(tgt)
     local cl = LocalPlayer()
     if not IsValid(tgt) or not tgt:isDoor() and not tgt:IsPlayer() and not tgt.isStorageEntity and not hasAdminStickTargetClass(tgt:GetClass()) then return end
-    if not (cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty()) then return end
+    local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
+    local isStaffOnDuty = cl:isStaffOnDuty()
+    local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
+    lia.debug("[perm]", "Permission Check for function MODULE:OpenAdminStickUI", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
     if IsValid(AdminStickMenu) then AdminStickMenu:Remove() end
     local stores = {}
     MODULE.adminStickCategories = {}
@@ -1900,7 +1949,10 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         if #info > 0 then hasOptions = true end
-        if cl:hasPrivilege("alwaysSpawnAdminStick") or cl:isStaffOnDuty() then hasOptions = true end
+        local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
+        local isStaffOnDuty = cl:isStaffOnDuty()
+        lia.debug("[perm]", "Permission Check for function MODULE:OpenAdminStickUI player options", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(hasAlwaysSpawnAdminStick or isStaffOnDuty))
+        if hasAlwaysSpawnAdminStick or isStaffOnDuty then hasOptions = true end
     end
 
     local tgtClass = tgt:GetClass()
@@ -2147,6 +2199,7 @@ function MODULE:OpenAdminStickUI(tgt)
         local canFaction = client:hasPrivilege("manageTransfers")
         local canClass = client:hasPrivilege("manageClasses")
         local canWhitelist = client:hasPrivilege("manageWhitelists")
+        lia.debug("[perm]", "Permission Check for hook GetAdminStickLists transfer controls", "hasPrivilege(manageTransfers)=", tostring(canFaction), "hasPrivilege(manageClasses)=", tostring(canClass), "hasPrivilege(manageWhitelists)=", tostring(canWhitelist), "finalResult=", tostring(canFaction or canClass or canWhitelist))
         if not target or not IsValid(target) then return end
         local pos = target:GetPos()
         local ang = target:GetAngles()
@@ -3337,7 +3390,10 @@ end
 function MODULE:HUDPaint()
     local client = LocalPlayer()
     if not IsValid(client) then return end
+    local hudFontLarge = "HUDFont.24"
+    local hudFontSmall = "HUDFont.16"
     local wep = client:GetActiveWeapon()
+    if IsValid(wep) and wep:GetClass() == "gmod_tool" then return end
     if IsValid(wep) and wep:GetClass() == "lia_mapconfigurer" and wep.CanUseTool and wep:CanUseTool() then
         local typeInfo = wep.GetPositionToolMode and wep:GetPositionToolMode()
         local cacheType = wep.GetCacheType and wep:GetCacheType()
@@ -3359,7 +3415,7 @@ function MODULE:HUDPaint()
                             label = L("sitRoomLabelFormat", label)
                         end
 
-                        lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, "LiliaFont.24", 1)
+                        lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, col, hudFontLarge, 1)
                     end
                 end
             end
@@ -3368,7 +3424,11 @@ function MODULE:HUDPaint()
 
     if not client:IsPlayer() or not client:getChar() then return end
     if client:GetMoveType() ~= MOVETYPE_NOCLIP then return end
-    if not (client:hasPrivilege("noClipESPOffsetStaff") or client:isStaffOnDuty()) then return end
+    local hasNoClipESPOffsetStaff = client:hasPrivilege("noClipESPOffsetStaff")
+    local isStaffOnDuty = client:isStaffOnDuty()
+    local permission = hasNoClipESPOffsetStaff or isStaffOnDuty
+    lia.debug("[perm]", "Permission Check for hook GM:CalcView noClip ESP offset", "hasPrivilege(noClipESPOffsetStaff)=", tostring(hasNoClipESPOffsetStaff), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    if not permission then return end
     if not lia.option.get("espEnabled", false) then return end
     for _, ent in ents.Iterator() do
         if not IsValid(ent) or ent == client or ent:IsWeapon() then continue end
@@ -3425,12 +3485,12 @@ function MODULE:HUDPaint()
         if customRender then
             customRender(ent, screenPos, kind, label, subLabel, baseColor)
         else
-            surface.SetFont("LiliaFont.24")
+            surface.SetFont(hudFontLarge)
             local _, th = surface.GetTextSize(label)
             local bh = th + 16
-            lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, baseColor, "LiliaFont.24")
+            lia.util.drawESPStyledText(label, screenPos.x, screenPos.y, baseColor, hudFontLarge)
             if subLabel and subLabel ~= label then
-                local font = (kind == "npcs") and "LiliaFont.16" or "LiliaFont.24"
+                local font = (kind == "npcs") and hudFontSmall or hudFontLarge
                 surface.SetFont(font)
                 surface.GetTextSize(subLabel)
                 local spacing = 8
@@ -3787,7 +3847,10 @@ net.Receive("liaTicketSystem", function()
     local pl = net.ReadEntity()
     local msg = net.ReadString()
     local claimed = net.ReadEntity()
-    if IsValid(LocalPlayer()) and (LocalPlayer():isStaffOnDuty() or LocalPlayer():hasPrivilege("alwaysSeeTickets")) then CreateTicketFrame(pl, msg, claimed) end
+    local client = LocalPlayer()
+    local permission = IsValid(client) and (client:isStaffOnDuty() or client:hasPrivilege("alwaysSeeTickets")) or false
+    lia.debug("[perm]", "Permission Check for net.Receive liaTicketSystem", "isValidPlayer=", tostring(IsValid(client)), "isStaffOnDuty=", tostring(IsValid(client) and client:isStaffOnDuty() or false), "hasPrivilege(alwaysSeeTickets)=", tostring(IsValid(client) and client:hasPrivilege("alwaysSeeTickets") or false), "finalResult=", tostring(permission))
+    if permission then CreateTicketFrame(pl, msg, claimed) end
 end)
 
 net.Receive("liaTicketSystemClaim", function()
@@ -4057,7 +4120,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
             end
         end
 
-        surface.SetFont("LiliaFont.20")
+        surface.SetFont("HUDFont.20")
         local minTextWidth = 0
         for _, line in ipairs(infoLines) do
             local w = select(1, surface.GetTextSize(line))
@@ -4099,7 +4162,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
         local bgColor = Color(25, 28, 35, 250)
         local hudInfo = {
             text = infoLines,
-            font = "LiliaFont.20",
+            font = "HUDFont.20",
             color = Color(180, 180, 180),
             position = {
                 x = hudX,
@@ -4138,7 +4201,7 @@ local function DisplayAdminStickHUD(client, hudInfos, weapon)
     local instructions = {L("adminStickInstructionSelectTarget"), L("adminStickInstructionFreezePlayer"), L("adminStickInstructionSelectSelf"), L("adminStickInstructionClearSelection")}
     table.insert(hudInfos, {
         text = instructions,
-        font = "LiliaFont.18",
+        font = "HUDFont.18",
         color = Color(180, 180, 180),
         position = {
             x = ScrW() - 20,
@@ -4176,7 +4239,7 @@ local function DisplayPositionToolHUD(client, hudInfos, weapon)
     if typeInfo and typeInfo.name then table.insert(instructions, 1, L("positionToolCurrentMode", typeInfo.name)) end
     table.insert(hudInfos, {
         text = instructions,
-        font = "LiliaFont.18",
+        font = "HUDFont.18",
         color = Color(180, 180, 180),
         position = {
             x = ScrW() - 20,
@@ -4212,7 +4275,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     local instructions = {L("distanceToolSetPoint"), L("distanceToolClearPoints"), L("distanceToolMeasureCurrent")}
     table.insert(hudInfos, {
         text = instructions,
-        font = "LiliaFont.18",
+        font = "HUDFont.18",
         color = Color(180, 180, 180),
         position = {
             x = ScrW() - 20,
@@ -4249,7 +4312,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
         local distanceText = string.format("Distance: %.1f units", distance)
         table.insert(hudInfos, {
             text = distanceText,
-            font = "LiliaFont.20",
+            font = "HUDFont.20",
             color = Color(255, 255, 255),
             position = {
                 x = ScrW() * 0.5,
@@ -4282,7 +4345,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
     else
         table.insert(hudInfos, {
             text = L("distanceMeasureClickToSetStart"),
-            font = "LiliaFont.16",
+            font = "HUDFont.16",
             color = Color(180, 180, 180),
             position = {
                 x = ScrW() * 0.5,
@@ -4316,7 +4379,7 @@ local function DisplayDistanceToolHUD(client, hudInfos, weapon)
 
     table.insert(hudInfos, {
         text = distanceLines,
-        font = "LiliaFont.20",
+        font = "HUDFont.20",
         position = {
             x = 20,
             y = IsValid(lia.gui and lia.gui.actionCircle) and (ScrH() - 140) or (ScrH() - 30)

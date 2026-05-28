@@ -282,7 +282,9 @@ end
 function MODULE:PopulateAdminTabs(pages)
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    if client:hasPrivilege("listCharacters") then
+    local canListCharacters = client:hasPrivilege("listCharacters")
+    lia.debug("[perm]", "Permission Check for function MODULE:PopulateAdminTabs faction management", "hasPrivilege(listCharacters)=", tostring(canListCharacters), "finalResult=", tostring(canListCharacters))
+    if canListCharacters then
         table.insert(pages, {
             name = "@factionManagement",
             icon = "icon16/group.png",
