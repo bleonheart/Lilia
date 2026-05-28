@@ -1930,8 +1930,6 @@ function MODULE:OpenAdminStickUI(tgt)
         }
 
         if #info > 0 then hasOptions = true end
-        local hasAlwaysSpawnAdminStick = cl:hasPrivilege("alwaysSpawnAdminStick")
-        local isStaffOnDuty = cl:isStaffOnDuty()
         if hasAlwaysSpawnAdminStick or isStaffOnDuty then hasOptions = true end
     end
 
