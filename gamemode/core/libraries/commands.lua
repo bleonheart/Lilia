@@ -255,7 +255,7 @@ function lia.command.hasAccess(client, command, data)
         end
 
         hasAccess = client:hasPrivilege(privilegeID)
-        lia.debug("[perm]", "Permission Check for function lia.command.hasAccess", "command=", tostring(command), "privilegeID=", tostring(privilegeID), "accessLevels=", tostring(accessLevels), "hasPrivilege=", tostring(hasAccess))
+        lia.debug("[Permissions]", "Permission Check for function lia.command.hasAccess", "command=", tostring(command), "privilegeID=", tostring(privilegeID), "accessLevels=", tostring(accessLevels), "hasPrivilege=", tostring(hasAccess))
     end
 
     local hookResult = hook.Run("CanPlayerUseCommand", client, command)
@@ -267,7 +267,7 @@ function lia.command.hasAccess(client, command, data)
         local classData = lia.class.list[char:getClass()]
         if classData and classData.commands and table.HasValue(classData.commands, command) then return true, privilegeName end
     end
-    lia.debug("[perm]", "Permission Check for function lia.command.hasAccess final", "command=", tostring(command), "privilegeID=", tostring(privilegeID), "finalResult=", tostring(hasAccess))
+    lia.debug("[Permissions]", "Permission Check for function lia.command.hasAccess final", "command=", tostring(command), "privilegeID=", tostring(privilegeID), "finalResult=", tostring(hasAccess))
     return hasAccess, privilegeName
 end
 
@@ -942,7 +942,7 @@ if SERVER then
     end
 
     concommand.Add("lia_givepermaflags", function(client, _, args)
-        lia.debug("[perm]", "Permission Check for concommand lia_givepermaflags", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
+        lia.debug("[Permissions]", "Permission Check for concommand lia_givepermaflags", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
         if IsValid(client) and not client:IsSuperAdmin() then return end
         appendPermanentFlags(args[1], args[2])
     end)
@@ -955,7 +955,7 @@ if SERVER then
     end)
 
     concommand.Add("lia_check_updates", function(client)
-        lia.debug("[perm]", "Permission Check for concommand lia_check_updates", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
+        lia.debug("[Permissions]", "Permission Check for concommand lia_check_updates", "isValidPlayer=", tostring(IsValid(client)), "isSuperAdmin=", tostring(IsValid(client) and client:IsSuperAdmin() or true), "finalResult=", tostring(not IsValid(client) or client:IsSuperAdmin()))
         if IsValid(client) and not client:IsSuperAdmin() then
             client:notifyErrorLocalized("staffPermissionDenied")
             return
@@ -969,7 +969,7 @@ if SERVER then
         local steamID = string.Trim(args[1] or "")
         local usergroup = string.Trim(args[2] or "")
         local canUse = not IsValid(ply) or not game.IsDedicated() or ply:hasPrivilege("setUserGroup")
-        lia.debug("[perm]", "Permission Check for function handleSetUserGroup", "isValidPlayer=", tostring(IsValid(ply)), "isDedicatedServer=", tostring(game.IsDedicated()), "hasPrivilege(setUserGroup)=", tostring(IsValid(ply) and ply:hasPrivilege("setUserGroup") or false), "finalResult=", tostring(canUse))
+        lia.debug("[Permissions]", "Permission Check for function handleSetUserGroup", "isValidPlayer=", tostring(IsValid(ply)), "isDedicatedServer=", tostring(game.IsDedicated()), "hasPrivilege(setUserGroup)=", tostring(IsValid(ply) and ply:hasPrivilege("setUserGroup") or false), "finalResult=", tostring(canUse))
         if not canUse then
             ply:notifyErrorLocalized("noPerm")
             return
@@ -1025,7 +1025,7 @@ if SERVER then
     concommand.Add("plysetusergroup", handleSetUserGroup)
     concommand.Add("stopsoundall", function(client)
         local permission = client:hasPrivilege("stopSoundForEveryone")
-        lia.debug("[perm]", "Permission Check for concommand stopsoundall", "hasPrivilege(stopSoundForEveryone)=", tostring(permission), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for concommand stopsoundall", "hasPrivilege(stopSoundForEveryone)=", tostring(permission), "finalResult=", tostring(permission))
         if permission then
             for _, v in player.Iterator() do
                 v:ConCommand("stopsound")
@@ -1740,7 +1740,7 @@ lia.command.add("managesitrooms", {
     superAdminOnly = true,
     desc = "@manageSitroomsDesc",
     onRun = function(client)
-        lia.debug("[perm]", "Permission Check for command manageSitRooms", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
+        lia.debug("[Permissions]", "Permission Check for command manageSitRooms", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
         if not client:hasPrivilege("manageSitRooms") then return end
         local rooms = lia.data.get("sitrooms", {})
         net.Start("liaManagesitrooms")
@@ -2315,7 +2315,7 @@ lia.command.add("blindfadeall", {
         local isWhite = colorName == "white"
         for _, ply in player.Iterator() do
             local isStaffOnDuty = ply:isStaffOnDuty()
-            lia.debug("[perm]", "Permission Check for command blindfadeall player recipient", "targetPlayer=", tostring(ply:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(not isStaffOnDuty))
+            lia.debug("[Permissions]", "Permission Check for command blindfadeall player recipient", "targetPlayer=", tostring(ply:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(not isStaffOnDuty))
             if not isStaffOnDuty then
                 net.Start("liaBlindFade")
                 net.WriteBool(isWhite)
@@ -2682,7 +2682,7 @@ if SERVER then
         local isWhite = colorName == "white"
         for _, ply in player.Iterator() do
             local isStaffOnDuty = ply:isStaffOnDuty()
-            lia.debug("[perm]", "Permission Check for admin console blindfadeall recipient", "targetPlayer=", tostring(ply:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(not isStaffOnDuty))
+            lia.debug("[Permissions]", "Permission Check for admin console blindfadeall recipient", "targetPlayer=", tostring(ply:Name()), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(not isStaffOnDuty))
             if not isStaffOnDuty then
                 net.Start("liaBlindFade")
                 net.WriteBool(isWhite)
@@ -5253,7 +5253,7 @@ lia.command.add("deletevendorpreset", {
         },
     },
     onRun = function(client, arguments)
-        lia.debug("[perm]", "Permission Check for command savevendorpreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
+        lia.debug("[Permissions]", "Permission Check for command savevendorpreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
         if not client:hasPrivilege("canCreateVendorPresets") then
             client:notifyErrorLocalized("noPermission")
             return
@@ -5288,7 +5288,7 @@ lia.command.add("listvendorpresets", {
     adminOnly = true,
     desc = "@listVendorPresetsDesc",
     onRun = function(client)
-        lia.debug("[perm]", "Permission Check for command listvendorpresets", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
+        lia.debug("[Permissions]", "Permission Check for command listvendorpresets", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
         if not client:hasPrivilege("canCreateVendorPresets") then
             client:notifyErrorLocalized("noPermission")
             return
@@ -7674,7 +7674,7 @@ lia.command.add("npcchangetype", {
     },
     onRun = function(client)
         local permission = client:hasPrivilege("Can Manage NPCs")
-        lia.debug("[perm]", "Permission Check for command npcchangetype", "hasPrivilege(Can Manage NPCs)=", tostring(permission), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for command npcchangetype", "hasPrivilege(Can Manage NPCs)=", tostring(permission), "finalResult=", tostring(permission))
         if not permission then return client:notifyErrorLocalized("noManageNPCPermission") end
         local ent = client:getTracedEntity()
         if not ent or not IsValid(ent) then return client:notifyErrorLocalized("mustLookAtValidEntity") end

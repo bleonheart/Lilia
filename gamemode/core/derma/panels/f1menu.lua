@@ -1564,7 +1564,6 @@ hook.Add("CreateMenuButtons", "liaF1MenuCreateMenuButtons", function(tabs)
     end
 
     local hasThemesPrivilege = IsValid(LocalPlayer()) and LocalPlayer():hasPrivilege("accessEditConfigurationMenu") or false
-    lia.debug("[perm]", "Permission Check for F1 themes tab", "isValidPlayer=", tostring(IsValid(LocalPlayer())), "hasPrivilege(accessEditConfigurationMenu)=", tostring(hasThemesPrivilege), "finalResult=", tostring(hasThemesPrivilege))
     if hasThemesPrivilege then
         tabs["@themes"] = {
             name = "@themes",

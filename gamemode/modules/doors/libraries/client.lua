@@ -171,7 +171,6 @@ function MODULE:GetAdminStickLists(tgt, lists)
     local hasManageDoors = client:hasPrivilege("manageDoors")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasManageDoors or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for function MODULE:GetAdminStickLists", "hasPrivilege(manageDoors)=", tostring(hasManageDoors), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     local doorData = lia.doors.getData(tgt)
     local factionsAssigned = doorData.factions or {}

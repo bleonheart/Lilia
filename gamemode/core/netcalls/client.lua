@@ -647,7 +647,6 @@ end)
 net.Receive("liaOpenInvMenu", function()
     local client = LocalPlayer()
     local permission = IsValid(client) and client:hasPrivilege("checkInventories") or false
-    lia.debug("[perm]", "Permission Check for net.Receive liaOpenInvMenu", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(checkInventories)=", tostring(permission), "finalResult=", tostring(permission))
     if not permission then return end
     local target = net.ReadEntity()
     local index = net.ReadType()

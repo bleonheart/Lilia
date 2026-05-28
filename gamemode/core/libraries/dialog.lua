@@ -606,7 +606,7 @@ if SERVER then
         net.Start("liaOpenNpcDialog")
         net.WriteEntity(npc)
         local canManageProperties = client:hasPrivilege("canManageProperties")
-        lia.debug("[perm]", "Permission Check for dialog liaOpenNpcDialog payload", "hasPrivilege(canManageProperties)=", tostring(canManageProperties), "finalResult=", tostring(canManageProperties))
+        lia.debug("[Permissions]", "Permission Check for dialog liaOpenNpcDialog payload", "hasPrivilege(canManageProperties)=", tostring(canManageProperties), "finalResult=", tostring(canManageProperties))
         net.WriteBool(canManageProperties)
         net.WriteTable(filteredData)
         net.Send(client)

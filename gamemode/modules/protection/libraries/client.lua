@@ -3155,7 +3155,6 @@ function MODULE:PopulateAdminTabs(pages)
     end
 
     local canViewEntityTab = client:hasPrivilege("viewEntityTab")
-    lia.debug("[perm]", "Permission Check for protection client entity tab", "entitiesByCreatorNotEmpty=", tostring(not table.IsEmpty(entitiesByCreator)), "hasPrivilege(viewEntityTab)=", tostring(canViewEntityTab), "finalResult=", tostring(not table.IsEmpty(entitiesByCreator) and canViewEntityTab))
     if not table.IsEmpty(entitiesByCreator) and canViewEntityTab then
         pages[#pages + 1] = {
             name = "@playerEntities",
@@ -3217,7 +3216,6 @@ function MODULE:PopulateAdminTabs(pages)
                         end)
 
                         local canTeleportToEntity = client:hasPrivilege("teleportToEntity")
-                        lia.debug("[perm]", "Permission Check for protection client teleport button", "hasPrivilege(teleportToEntity)=", tostring(canTeleportToEntity), "finalResult=", tostring(canTeleportToEntity))
                         if canTeleportToEntity then
                             makeBtn("teleport", function()
                                 if IsValid(lia.gui.menu) then lia.gui.menu:remove() end

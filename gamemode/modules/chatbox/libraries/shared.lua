@@ -286,7 +286,7 @@ lia.chat.register("eventlocal", {
     desc = "@eventlocalDesc",
     onCanSay = function(speaker)
         local canSay = speaker:hasPrivilege("localEventChat")
-        lia.debug("[perm]", "Permission Check for chat eventlocal onCanSay", "hasPrivilege(localEventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
+        lia.debug("[Permissions]", "Permission Check for chat eventlocal onCanSay", "hasPrivilege(localEventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
         return canSay
     end,
     onCanHear = function(speaker, listener)
@@ -308,7 +308,7 @@ lia.chat.register("event", {
     desc = "@eventDesc",
     onCanSay = function(speaker)
         local canSay = speaker:hasPrivilege("eventChat")
-        lia.debug("[perm]", "Permission Check for chat event onCanSay", "hasPrivilege(eventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
+        lia.debug("[Permissions]", "Permission Check for chat event onCanSay", "hasPrivilege(eventChat)=", tostring(canSay), "finalResult=", tostring(canSay))
         return canSay
     end,
     onCanHear = function() return true end,
@@ -327,7 +327,7 @@ lia.chat.register("ooc", {
     onCanSay = function(speaker, text)
         local oocBlocked = lia.config.get("OOCBlocked", false)
         local canBypassOOCBlock = speaker:hasPrivilege("bypassOOCBlock")
-        lia.debug("[perm]", "Permission Check for chat ooc onCanSay OOC block", "OOCBlocked=", tostring(oocBlocked), "hasPrivilege(bypassOOCBlock)=", tostring(canBypassOOCBlock), "finalResult=", tostring(not oocBlocked or canBypassOOCBlock))
+        lia.debug("[Permissions]", "Permission Check for chat ooc onCanSay OOC block", "OOCBlocked=", tostring(oocBlocked), "hasPrivilege(bypassOOCBlock)=", tostring(canBypassOOCBlock), "finalResult=", tostring(not oocBlocked or canBypassOOCBlock))
         if oocBlocked and not canBypassOOCBlock then
             speaker:notifyErrorLocalized("oocBlocked")
             return false
@@ -346,7 +346,7 @@ lia.chat.register("ooc", {
         local customDelay = hook.Run("GetOOCDelay", speaker)
         local oocDelay = customDelay or lia.config.get("OOCDelay", 10)
         local hasNoOOCCooldown = speaker:hasPrivilege("noOOCCooldown")
-        lia.debug("[perm]", "Permission Check for chat ooc onCanSay cooldown bypass", "hasPrivilege(noOOCCooldown)=", tostring(hasNoOOCCooldown), "oocDelayPositive=", tostring(oocDelay > 0), "hasLastOOC=", tostring(speaker.liaLastOOC ~= nil), "finalResult=", tostring(hasNoOOCCooldown or not (oocDelay > 0 and speaker.liaLastOOC ~= nil)))
+        lia.debug("[Permissions]", "Permission Check for chat ooc onCanSay cooldown bypass", "hasPrivilege(noOOCCooldown)=", tostring(hasNoOOCCooldown), "oocDelayPositive=", tostring(oocDelay > 0), "hasLastOOC=", tostring(speaker.liaLastOOC ~= nil), "finalResult=", tostring(hasNoOOCCooldown or not (oocDelay > 0 and speaker.liaLastOOC ~= nil)))
         if not hasNoOOCCooldown and oocDelay > 0 and speaker.liaLastOOC then
             local lastOOC = CurTime() - speaker.liaLastOOC
             if lastOOC <= oocDelay then
@@ -418,7 +418,7 @@ lia.chat.register("help", {
         local isSpeaker = listener == speaker
         local hasPrivilege = listener:hasPrivilege("accessHelpChat")
         local canHear = isStaffOnDuty or isSpeaker or hasPrivilege
-        lia.debug("[perm]", "Permission Check for chat help onCanHear", "isStaffOnDuty=", tostring(isStaffOnDuty), "listenerIsSpeaker=", tostring(isSpeaker), "hasPrivilege(accessHelpChat)=", tostring(hasPrivilege), "finalResult=", tostring(canHear))
+        lia.debug("[Permissions]", "Permission Check for chat help onCanHear", "isStaffOnDuty=", tostring(isStaffOnDuty), "listenerIsSpeaker=", tostring(isSpeaker), "hasPrivilege(accessHelpChat)=", tostring(hasPrivilege), "finalResult=", tostring(canHear))
         if canHear then return true end
         return false
     end,

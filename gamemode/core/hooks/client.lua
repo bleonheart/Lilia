@@ -86,7 +86,6 @@ local function drawDevelopmentOverlay(client)
     if not lia.option.get("drawDevelopmentHUD", true) then return end
     local canDrawDevHUD = client:hasPrivilege("developmentHUD")
     local canDrawStaffHUD = client:hasPrivilege("staffHUD")
-    lia.debug("[perm]", "Permission Check for function drawDevelopmentOverlay", "hasPrivilege(developmentHUD)=", tostring(canDrawDevHUD), "hasPrivilege(staffHUD)=", tostring(canDrawStaffHUD), "finalResult=", tostring(canDrawDevHUD or canDrawStaffHUD))
     if not canDrawDevHUD and not canDrawStaffHUD then return end
     local lines = {}
     if canDrawDevHUD then
@@ -837,7 +836,6 @@ function GM:SpawnMenuOpen()
     local hasFlag = client:hasFlags("pet")
     local isStaff = client:isStaffOnDuty()
     local hasPrivilege = client:hasPrivilege("canSpawnProps")
-    lia.debug("[perm]", "Permission Check for hook GM:SpawnMenuOpen", "SpawnMenuLimit=", tostring(limitEnabled), "hasFlags(pet)=", tostring(hasFlag), "isStaffOnDuty=", tostring(isStaff), "hasPrivilege(canSpawnProps)=", tostring(hasPrivilege), "finalResult=", tostring(not limitEnabled or hasFlag or isStaff or hasPrivilege))
     if limitEnabled and not (hasFlag or isStaff or hasPrivilege) then return end
     return true
 end

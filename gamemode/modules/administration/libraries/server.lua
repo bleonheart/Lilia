@@ -32,7 +32,7 @@ local function SendPopup(client, message)
         local hasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
         local isStaffOnDuty = v:isStaffOnDuty()
         local permission = hasAlwaysSeeTickets or isStaffOnDuty
-        lia.debug("[perm]", "Permission Check for function SendPopup ticket recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for function SendPopup ticket recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
         if permission then
             net.Start("liaTicketSystem")
             net.WriteEntity(client)
@@ -86,18 +86,18 @@ function MODULE:PostPlayerLoadout(client)
     local hasAlwaysSpawnAdminStick = client:hasPrivilege("alwaysSpawnAdminStick")
     local isStaffOnDuty = client:isStaffOnDuty()
     local shouldGiveAdminStick = hasAlwaysSpawnAdminStick or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for function MODULE:PostPlayerLoadout admin stick", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(shouldGiveAdminStick))
+    lia.debug("[Permissions]", "Permission Check for function MODULE:PostPlayerLoadout admin stick", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(shouldGiveAdminStick))
     if shouldGiveAdminStick then client:Give("lia_adminstick") end
     local hasUsePositionTool = client:hasPrivilege("usePositionTool")
     local shouldGiveMapConfigurer = hasUsePositionTool or hasAlwaysSpawnAdminStick or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for function MODULE:PostPlayerLoadout map configurer", "hasPrivilege(usePositionTool)=", tostring(hasUsePositionTool), "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(shouldGiveMapConfigurer))
+    lia.debug("[Permissions]", "Permission Check for function MODULE:PostPlayerLoadout map configurer", "hasPrivilege(usePositionTool)=", tostring(hasUsePositionTool), "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(shouldGiveMapConfigurer))
     if shouldGiveMapConfigurer then client:Give("lia_mapconfigurer") end
 end
 
 local spawnCooldowns = {}
 net.Receive("liaSpawnMenuSpawnItem", function(_, client)
     local id = net.ReadString()
-    lia.debug("[perm]", "Permission Check for net.Receive liaSpawnMenuSpawnItem", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(canUseItemSpawner)=", tostring(IsValid(client) and client:hasPrivilege("canUseItemSpawner") or false), "finalResult=", tostring(IsValid(client) and id and client:hasPrivilege("canUseItemSpawner") or false))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaSpawnMenuSpawnItem", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(canUseItemSpawner)=", tostring(IsValid(client) and client:hasPrivilege("canUseItemSpawner") or false), "finalResult=", tostring(IsValid(client) and id and client:hasPrivilege("canUseItemSpawner") or false))
     if not IsValid(client) or not id or not client:hasPrivilege("canUseItemSpawner") then return end
     local currentTime = CurTime()
     local lastSpawnTime = spawnCooldowns[client] or 0
@@ -136,7 +136,7 @@ net.Receive("liaSpawnMenuGiveItem", function(_, client)
     local id, targetID = net.ReadString(), net.ReadString()
     if not IsValid(client) then return end
     if not id then return end
-    lia.debug("[perm]", "Permission Check for net.Receive liaSpawnMenuGiveItem", "hasPrivilege(canUseItemSpawner)=", tostring(client:hasPrivilege("canUseItemSpawner")), "finalResult=", tostring(client:hasPrivilege("canUseItemSpawner")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaSpawnMenuGiveItem", "hasPrivilege(canUseItemSpawner)=", tostring(client:hasPrivilege("canUseItemSpawner")), "finalResult=", tostring(client:hasPrivilege("canUseItemSpawner")))
     if not client:hasPrivilege("canUseItemSpawner") then return end
     local targetChar = lia.char.getBySteamID(targetID)
     if not targetChar then return end
@@ -149,7 +149,7 @@ local function CanPlayerSeeLog(client)
     local adminConsoleNetworkLogs = lia.config.get("AdminConsoleNetworkLogs", true)
     local canSeeLogs = client:hasPrivilege("canSeeLogs")
     local permission = adminConsoleNetworkLogs and canSeeLogs
-    lia.debug("[perm]", "Permission Check for function CanPlayerSeeLog", "AdminConsoleNetworkLogs=", tostring(adminConsoleNetworkLogs), "hasPrivilege(canSeeLogs)=", tostring(canSeeLogs), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for function CanPlayerSeeLog", "AdminConsoleNetworkLogs=", tostring(adminConsoleNetworkLogs), "hasPrivilege(canSeeLogs)=", tostring(canSeeLogs), "finalResult=", tostring(permission))
     return permission
 end
 
@@ -393,7 +393,7 @@ function MODULE:ItemDraggedOutOfInventory(client, item)
 end
 
 net.Receive("liaManagesitroomsAction", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaManagesitroomsAction", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaManagesitroomsAction", "hasPrivilege(manageSitRooms)=", tostring(client:hasPrivilege("manageSitRooms")), "finalResult=", tostring(client:hasPrivilege("manageSitRooms")))
     if not client:hasPrivilege("manageSitRooms") then return end
     local action = net.ReadUInt(2)
     local name = net.ReadString()
@@ -431,7 +431,7 @@ net.Receive("liaFeaturePositionsRequest", function(_, client)
     local hasAlwaysSpawnAdminStick = client:hasPrivilege("alwaysSpawnAdminStick")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for net.Receive liaFeaturePositionsRequest", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaFeaturePositionsRequest", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     local typeId = net.ReadString()
     local callback = lia.util.positionCallbacks and lia.util.positionCallbacks[typeId]
@@ -459,7 +459,7 @@ net.Receive("liaSetFeaturePosition", function(_, client)
     local hasAlwaysSpawnAdminStick = client:hasPrivilege("alwaysSpawnAdminStick")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for net.Receive liaSetFeaturePosition", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaSetFeaturePosition", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     local typeId = net.ReadString()
     local pos = net.ReadVector()
@@ -490,7 +490,7 @@ net.Receive("liaRemoveFeaturePosition", function(_, client)
     local hasAlwaysSpawnAdminStick = client:hasPrivilege("alwaysSpawnAdminStick")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasAlwaysSpawnAdminStick or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for net.Receive liaRemoveFeaturePosition", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRemoveFeaturePosition", "hasPrivilege(alwaysSpawnAdminStick)=", tostring(hasAlwaysSpawnAdminStick), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     local typeId = net.ReadString()
     local pos = net.ReadVector()
@@ -518,7 +518,7 @@ net.Receive("liaRemoveFeaturePosition", function(_, client)
 end)
 
 net.Receive("liaRequestAllPks", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestAllPks", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllPks", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
     if not client:hasPrivilege("manageCharacters") then return end
     lia.db.query("SELECT * FROM lia_permakills", function(data)
         net.Start("liaAllPks")
@@ -528,7 +528,7 @@ net.Receive("liaRequestAllPks", function(_, client)
 end)
 
 net.Receive("liaRequestPksCount", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestPksCount", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPksCount", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
     if not client:hasPrivilege("manageCharacters") then return end
     lia.db.count("permakills"):next(function(count)
         net.Start("liaPksCount")
@@ -544,7 +544,7 @@ function MODULE:PlayerShouldPermaKill(client)
 end
 
 net.Receive("liaRequestFullCharList", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestFullCharList", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestFullCharList", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(listCharacters)=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false), "finalResult=", tostring(IsValid(client) and client:hasPrivilege("listCharacters") or false))
     if not IsValid(client) or not client:hasPrivilege("listCharacters") then return end
     lia.db.query([[SELECT c.id, c.name, c.`desc`, c.faction, c.steamID, c.lastJoinTime, c.banned, c.playtime, c.money, d.value AS charBanInfo
 FROM lia_characters AS c
@@ -604,7 +604,7 @@ LEFT JOIN lia_chardata AS d ON d.charID = c.id AND d.key = 'charBanInfo']], func
 end)
 
 net.Receive("liaRequestAllFlags", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestAllFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
     if not client:hasPrivilege("manageFlags") then return end
     lia.db.fieldExists("lia_characters", "charflags"):next(function(exists)
         if not exists then lia.db.query("ALTER TABLE lia_characters ADD COLUMN charflags VARCHAR(255) DEFAULT ''") end
@@ -645,7 +645,7 @@ WHERE d.key = 'flags']], function(chardata)
 end)
 
 net.Receive("liaModifyFlags", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaModifyFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaModifyFlags", "hasPrivilege(manageFlags)=", tostring(client:hasPrivilege("manageFlags")), "finalResult=", tostring(client:hasPrivilege("manageFlags")))
     if not client:hasPrivilege("manageFlags") then return end
     local steamID = net.ReadString()
     local flags = net.ReadString()
@@ -770,13 +770,13 @@ local function buildSummary()
 end
 
 net.Receive("liaRequestStaffSummary", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestStaffSummary", "hasPrivilege(viewStaffManagement)=", tostring(client:hasPrivilege("viewStaffManagement")), "finalResult=", tostring(client:hasPrivilege("viewStaffManagement")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestStaffSummary", "hasPrivilege(viewStaffManagement)=", tostring(client:hasPrivilege("viewStaffManagement")), "finalResult=", tostring(client:hasPrivilege("viewStaffManagement")))
     if not client:hasPrivilege("viewStaffManagement") then return end
     buildSummary():next(function(data) lia.net.writeBigTable(client, "liaStaffSummary", data) end)
 end)
 
 net.Receive("liaRequestPlayers", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestPlayers", "hasPrivilege(canAccessPlayerList)=", tostring(client:hasPrivilege("canAccessPlayerList")), "finalResult=", tostring(client:hasPrivilege("canAccessPlayerList")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPlayers", "hasPrivilege(canAccessPlayerList)=", tostring(client:hasPrivilege("canAccessPlayerList")), "finalResult=", tostring(client:hasPrivilege("canAccessPlayerList")))
     if not client:hasPrivilege("canAccessPlayerList") then return end
     local gamemode = SCHEMA and SCHEMA.folder or engine.ActiveGamemode()
     local query = [[
@@ -800,7 +800,7 @@ FROM lia_players
 end)
 
 net.Receive("liaRequestMapEntities", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestMapEntities", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestMapEntities", "hasPrivilege(manageCharacters)=", tostring(client:hasPrivilege("manageCharacters")), "finalResult=", tostring(client:hasPrivilege("manageCharacters")))
     if not client:hasPrivilege("manageCharacters") then return end
     local entities = {}
     for _, entity in ents.Iterator() do
@@ -901,7 +901,7 @@ function GM:PlayerSpawnProp(client, model)
     local list = lia.data.get("prop_blacklist", {})
     local modelBlacklisted = table.HasValue(list, model)
     local canSpawnBlacklistedProps = client:hasPrivilege("canSpawnBlacklistedProps")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnProp blacklisted prop", "modelBlacklisted=", tostring(modelBlacklisted), "hasPrivilege(canSpawnBlacklistedProps)=", tostring(canSpawnBlacklistedProps), "finalResult=", tostring(not modelBlacklisted or canSpawnBlacklistedProps))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnProp blacklisted prop", "modelBlacklisted=", tostring(modelBlacklisted), "hasPrivilege(canSpawnBlacklistedProps)=", tostring(canSpawnBlacklistedProps), "finalResult=", tostring(not modelBlacklisted or canSpawnBlacklistedProps))
     if modelBlacklisted and not canSpawnBlacklistedProps then
         lia.log.add(client, "spawnDenied", L("prop"), model)
         client:notifyErrorLocalized("blacklistedProp")
@@ -909,7 +909,7 @@ function GM:PlayerSpawnProp(client, model)
     end
 
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnProps") or client:hasFlags("e")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnProp", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnProps)=", tostring(client:hasPrivilege("canSpawnProps")), "hasFlags(e)=", tostring(client:hasFlags("e")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnProp", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnProps)=", tostring(client:hasPrivilege("canSpawnProps")), "hasFlags(e)=", tostring(client:hasFlags("e")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("prop"), model)
         client:notifyErrorLocalized("noSpawnPropsPerm", model)
@@ -949,7 +949,7 @@ function GM:CanProperty(client, property, entity)
 
     if IsValid(entity) and entity:IsWorld() then
         local canPropertyWorldEntities = client:hasPrivilege("canPropertyWorldEntities")
-        lia.debug("[perm]", "Permission Check for hook GM:CanProperty world entity", "property=", tostring(property), "hasPrivilege(canPropertyWorldEntities)=", tostring(canPropertyWorldEntities), "finalResult=", tostring(canPropertyWorldEntities))
+        lia.debug("[Permissions]", "Permission Check for hook GM:CanProperty world entity", "property=", tostring(property), "hasPrivilege(canPropertyWorldEntities)=", tostring(canPropertyWorldEntities), "finalResult=", tostring(canPropertyWorldEntities))
         if canPropertyWorldEntities then return true end
         lia.log.add(client, "permissionDenied", L("modifyWorldProperty", property))
         client:notifyErrorLocalized("noModifyWorldEntities")
@@ -960,7 +960,7 @@ function GM:CanProperty(client, property, entity)
     local hasPropertyPrivilege = client:hasPrivilege(privilegeName)
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasPropertyPrivilege or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for hook GM:CanProperty", "property=", tostring(property), "privilegeName=", tostring(privilegeName), "hasPrivilege(dynamicPropertyPrivilege)=", tostring(hasPropertyPrivilege), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for hook GM:CanProperty", "property=", tostring(property), "privilegeName=", tostring(privilegeName), "hasPrivilege(dynamicPropertyPrivilege)=", tostring(hasPropertyPrivilege), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if permission then return true end
     lia.log.add(client, "permissionDenied", L("modifyProperty", property))
     client:notifyErrorLocalized("noModifyProperty")
@@ -972,12 +972,12 @@ function GM:DrawPhysgunBeam(client)
 end
 
 function GM:PlayerSpawnVehicle(client, model)
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnVehicle noCarSpawnDelay", "hasPrivilege(noCarSpawnDelay)=", tostring(client:hasPrivilege("noCarSpawnDelay")), "finalResult=", tostring(client:hasPrivilege("noCarSpawnDelay")))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnVehicle noCarSpawnDelay", "hasPrivilege(noCarSpawnDelay)=", tostring(client:hasPrivilege("noCarSpawnDelay")), "finalResult=", tostring(client:hasPrivilege("noCarSpawnDelay")))
     if not client:hasPrivilege("noCarSpawnDelay") then client.NextVehicleSpawn = SysTime() + lia.config.get("PlayerSpawnVehicleDelay", 30) end
     local list = lia.data.get("carBlacklist", {})
     local isBlacklistedModel = model and table.HasValue(list, model) or false
     local canSpawnBlacklistedCars = client:hasPrivilege("canSpawnBlacklistedCars")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnVehicle blacklisted car", "modelBlacklisted=", tostring(isBlacklistedModel), "hasPrivilege(canSpawnBlacklistedCars)=", tostring(canSpawnBlacklistedCars), "finalResult=", tostring(not isBlacklistedModel or canSpawnBlacklistedCars))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnVehicle blacklisted car", "modelBlacklisted=", tostring(isBlacklistedModel), "hasPrivilege(canSpawnBlacklistedCars)=", tostring(canSpawnBlacklistedCars), "finalResult=", tostring(not isBlacklistedModel or canSpawnBlacklistedCars))
     if model and isBlacklistedModel and not canSpawnBlacklistedCars then
         lia.log.add(client, "spawnDenied", L("vehicle"), model)
         client:notifyErrorLocalized("blacklistedVehicle")
@@ -985,7 +985,7 @@ function GM:PlayerSpawnVehicle(client, model)
     end
 
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnCars") or client:hasFlags("C")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnVehicle", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnCars)=", tostring(client:hasPrivilege("canSpawnCars")), "hasFlags(C)=", tostring(client:hasFlags("C")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnVehicle", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnCars)=", tostring(client:hasPrivilege("canSpawnCars")), "hasFlags(C)=", tostring(client:hasFlags("C")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("vehicle"), model)
         client:notifyErrorLocalized("noSpawnVehicles", model)
@@ -995,7 +995,7 @@ end
 
 function GM:PlayerSpawnEffect(client)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnEffects") or client:hasFlags("L")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnEffect", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnEffects)=", tostring(client:hasPrivilege("canSpawnEffects")), "hasFlags(L)=", tostring(client:hasFlags("L")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnEffect", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnEffects)=", tostring(client:hasPrivilege("canSpawnEffects")), "hasFlags(L)=", tostring(client:hasFlags("L")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("effect"))
         client:notifyErrorLocalized("noSpawnEffects")
@@ -1005,7 +1005,7 @@ end
 
 function GM:PlayerSpawnNPC(client)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnNPCs") or client:hasFlags("n")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnNPC", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnNPCs)=", tostring(client:hasPrivilege("canSpawnNPCs")), "hasFlags(n)=", tostring(client:hasFlags("n")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnNPC", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnNPCs)=", tostring(client:hasPrivilege("canSpawnNPCs")), "hasFlags(n)=", tostring(client:hasFlags("n")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("npc"))
         client:notifyErrorLocalized("noSpawnNPCs")
@@ -1015,7 +1015,7 @@ end
 
 function GM:PlayerSpawnRagdoll(client)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnRagdolls") or client:hasFlags("r")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnRagdoll", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnRagdolls)=", tostring(client:hasPrivilege("canSpawnRagdolls")), "hasFlags(r)=", tostring(client:hasFlags("r")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnRagdoll", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnRagdolls)=", tostring(client:hasPrivilege("canSpawnRagdolls")), "hasFlags(r)=", tostring(client:hasFlags("r")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("ragdoll"))
         client:notifyErrorLocalized("noSpawnRagdolls")
@@ -1025,7 +1025,7 @@ end
 
 function GM:PlayerSpawnSENT(client, class)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnSENTs") or client:hasFlags("E")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnSENT", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSENTs)=", tostring(client:hasPrivilege("canSpawnSENTs")), "hasFlags(E)=", tostring(client:hasFlags("E")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnSENT", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSENTs)=", tostring(client:hasPrivilege("canSpawnSENTs")), "hasFlags(E)=", tostring(client:hasFlags("E")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("sent"), tostring(class))
         client:notifyErrorLocalized("noSpawnSents", tostring(class))
@@ -1035,7 +1035,7 @@ end
 
 function GM:PlayerSpawnSWEP(client, weapon)
     local canSpawn = client:isStaffOnDuty() or client:hasPrivilege("canSpawnSWEPs") or client:hasFlags("z")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerSpawnSWEP", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSWEPs)=", tostring(client:hasPrivilege("canSpawnSWEPs")), "hasFlags(z)=", tostring(client:hasFlags("z")), "finalResult=", tostring(canSpawn))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerSpawnSWEP", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSWEPs)=", tostring(client:hasPrivilege("canSpawnSWEPs")), "hasFlags(z)=", tostring(client:hasFlags("z")), "finalResult=", tostring(canSpawn))
     if not canSpawn then
         lia.log.add(client, "spawnDenied", L("swep"), tostring(weapon))
         client:notifyErrorLocalized("noSpawnSweps", tostring(weapon))
@@ -1045,7 +1045,7 @@ end
 
 function GM:PlayerGiveSWEP(client)
     local canGive = client:isStaffOnDuty() or client:hasPrivilege("canSpawnSWEPs") or client:hasFlags("W")
-    lia.debug("[perm]", "Permission Check for hook GM:PlayerGiveSWEP", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSWEPs)=", tostring(client:hasPrivilege("canSpawnSWEPs")), "hasFlags(W)=", tostring(client:hasFlags("W")), "finalResult=", tostring(canGive))
+    lia.debug("[Permissions]", "Permission Check for hook GM:PlayerGiveSWEP", "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasPrivilege(canSpawnSWEPs)=", tostring(client:hasPrivilege("canSpawnSWEPs")), "hasFlags(W)=", tostring(client:hasFlags("W")), "finalResult=", tostring(canGive))
     if not canGive then
         lia.log.add(client, "permissionDenied", L("giveSwep"))
         client:notifyErrorLocalized("noGiveSweps")
@@ -1055,7 +1055,7 @@ end
 
 function GM:OnPhysgunReload(_, client)
     local canReload = client:hasPrivilege("canPhysgunReload")
-    lia.debug("[perm]", "Permission Check for hook GM:OnPhysgunReload", "hasPrivilege(canPhysgunReload)=", tostring(canReload), "finalResult=", tostring(canReload))
+    lia.debug("[Permissions]", "Permission Check for hook GM:OnPhysgunReload", "hasPrivilege(canPhysgunReload)=", tostring(canReload), "finalResult=", tostring(canReload))
     if not canReload then
         lia.log.add(client, "permissionDenied", L("physgunReload"))
         client:notifyErrorLocalized("noPhysgunReload")
@@ -1094,7 +1094,7 @@ end
 function GM:CanPlayerUseChar(client)
     local isLocked = GetGlobalBool("characterSwapLock", false)
     local canBypass = client:hasPrivilege("canBypassCharacterLock")
-    lia.debug("[perm]", "Permission Check for hook GM:CanPlayerUseChar", "characterSwapLock=", tostring(isLocked), "hasPrivilege(canBypassCharacterLock)=", tostring(canBypass), "finalResult=", tostring(not isLocked or canBypass))
+    lia.debug("[Permissions]", "Permission Check for hook GM:CanPlayerUseChar", "characterSwapLock=", tostring(isLocked), "hasPrivilege(canBypassCharacterLock)=", tostring(canBypass), "finalResult=", tostring(not isLocked or canBypass))
     if isLocked and not canBypass then return false, L("serverEventCharLock") end
 end
 
@@ -1149,7 +1149,7 @@ function MODULE:PlayerDisconnected(client)
         local hasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
         local isStaffOnDuty = v:isStaffOnDuty()
         local permission = hasAlwaysSeeTickets or isStaffOnDuty
-        lia.debug("[perm]", "Permission Check for function MODULE:PlayerDisconnected ticket close recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for function MODULE:PlayerDisconnected ticket close recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
         if permission then
             net.Start("liaTicketSystemClose")
             net.WriteEntity(client)
@@ -1180,13 +1180,13 @@ net.Receive("liaTicketSystemClaim", function(_, client)
     local hasAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = (hasAlwaysSeeTickets or isStaffOnDuty) and not requester.CaseClaimed
-    lia.debug("[perm]", "Permission Check for net.Receive liaTicketSystemClaim", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "requesterAlreadyClaimed=", tostring(requester.CaseClaimed ~= nil), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaTicketSystemClaim", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "requesterAlreadyClaimed=", tostring(requester.CaseClaimed ~= nil), "finalResult=", tostring(permission))
     if permission then
         for _, v in player.Iterator() do
             local targetHasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
             local targetIsStaffOnDuty = v:isStaffOnDuty()
             local targetPermission = targetHasAlwaysSeeTickets or targetIsStaffOnDuty
-            lia.debug("[perm]", "Permission Check for net.Receive liaTicketSystemClaim broadcast recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(targetHasAlwaysSeeTickets), "isStaffOnDuty=", tostring(targetIsStaffOnDuty), "finalResult=", tostring(targetPermission))
+            lia.debug("[Permissions]", "Permission Check for net.Receive liaTicketSystemClaim broadcast recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(targetHasAlwaysSeeTickets), "isStaffOnDuty=", tostring(targetIsStaffOnDuty), "finalResult=", tostring(targetPermission))
             if targetPermission then
                 net.Start("liaTicketSystemClaim")
                 net.WriteEntity(client)
@@ -1221,7 +1221,7 @@ net.Receive("liaTicketSystemClose", function(_, client)
         local hasAlwaysSeeTickets = v:hasPrivilege("alwaysSeeTickets")
         local isStaffOnDuty = v:isStaffOnDuty()
         local permission = hasAlwaysSeeTickets or isStaffOnDuty
-        lia.debug("[perm]", "Permission Check for net.Receive liaTicketSystemClose broadcast recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for net.Receive liaTicketSystemClose broadcast recipient", "targetPlayer=", tostring(v:Name()), "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
         if permission then
             net.Start("liaTicketSystemClose")
             net.WriteEntity(requester)
@@ -1242,7 +1242,7 @@ net.Receive("liaRequestActiveTickets", function(_, client)
     local hasAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasAlwaysSeeTickets or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestActiveTickets", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestActiveTickets", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     lia.db.select({"timestamp", "requesterSteamID", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
         local tickets = {}
@@ -1265,7 +1265,7 @@ net.Receive("liaRequestTicketsCount", function(_, client)
     local hasAlwaysSeeTickets = client:hasPrivilege("alwaysSeeTickets")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasAlwaysSeeTickets or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestTicketsCount", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestTicketsCount", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
     lia.db.count("ticketclaims"):next(function(count)
         net.Start("liaTicketsCount")
@@ -1305,7 +1305,7 @@ function MODULE:RemoveWarning(charID, index)
 end
 
 net.Receive("liaRequestRemoveWarning", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestRemoveWarning", "hasPrivilege(canRemoveWarns)=", tostring(client:hasPrivilege("canRemoveWarns")), "finalResult=", tostring(client:hasPrivilege("canRemoveWarns")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestRemoveWarning", "hasPrivilege(canRemoveWarns)=", tostring(client:hasPrivilege("canRemoveWarns")), "finalResult=", tostring(client:hasPrivilege("canRemoveWarns")))
     if not client:hasPrivilege("canRemoveWarns") then return end
     local charID = net.ReadInt(32)
     local rowData = net.ReadTable()
@@ -1346,7 +1346,7 @@ net.Receive("liaRequestRemoveWarning", function(_, client)
 end)
 
 net.Receive("liaRequestAllWarnings", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestAllWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestAllWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
     if not client:hasPrivilege("viewPlayerWarnings") then return end
     lia.db.select({"timestamp", "warned", "warnedSteamID", "warner", "warnerSteamID", "message", "severity"}, "warnings"):next(function(res)
         net.Start("liaAllWarnings")
@@ -1356,7 +1356,7 @@ net.Receive("liaRequestAllWarnings", function(_, client)
 end)
 
 net.Receive("liaRequestWarningsCount", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestWarningsCount", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestWarningsCount", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
     if not client:hasPrivilege("viewPlayerWarnings") then return end
     lia.db.count("warnings"):next(function(count)
         net.Start("liaWarningsCount")
@@ -1366,7 +1366,7 @@ net.Receive("liaRequestWarningsCount", function(_, client)
 end)
 
 net.Receive("liaRequestPlayerWarnings", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaRequestPlayerWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestPlayerWarnings", "hasPrivilege(viewPlayerWarnings)=", tostring(client:hasPrivilege("viewPlayerWarnings")), "finalResult=", tostring(client:hasPrivilege("viewPlayerWarnings")))
     if not client:hasPrivilege("viewPlayerWarnings") then return end
     local charID = net.ReadString()
     if not charID or charID == "" then return end
@@ -1386,10 +1386,10 @@ hook.Add("PhysgunPickup", "Lilia.PhysgunPickup", function(client, entity)
 
     local hasPhysgunPickup = client:hasPrivilege("physgunPickup")
     local isStaffOnDuty = client:isStaffOnDuty()
-    lia.debug("[perm]", "Permission Check for hook PhysgunPickup restricted entity gate", "hasPrivilege(physgunPickup)=", tostring(hasPhysgunPickup), "isStaffOnDuty=", tostring(isStaffOnDuty), "entityNoPhysgun=", tostring(entity.NoPhysgun == true), "finalResult=", tostring((hasPhysgunPickup or isStaffOnDuty) and entity.NoPhysgun ~= nil))
+    lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup restricted entity gate", "hasPrivilege(physgunPickup)=", tostring(hasPhysgunPickup), "isStaffOnDuty=", tostring(isStaffOnDuty), "entityNoPhysgun=", tostring(entity.NoPhysgun == true), "finalResult=", tostring((hasPhysgunPickup or isStaffOnDuty) and entity.NoPhysgun ~= nil))
     if (hasPhysgunPickup or isStaffOnDuty) and entity.NoPhysgun then
         local hasRestrictedEntitiesPrivilege = client:hasPrivilege("physgunPickupRestrictedEntities")
-        lia.debug("[perm]", "Permission Check for hook PhysgunPickup restricted entity override", "hasPrivilege(physgunPickupRestrictedEntities)=", tostring(hasRestrictedEntitiesPrivilege), "finalResult=", tostring(hasRestrictedEntitiesPrivilege))
+        lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup restricted entity override", "hasPrivilege(physgunPickupRestrictedEntities)=", tostring(hasRestrictedEntitiesPrivilege), "finalResult=", tostring(hasRestrictedEntitiesPrivilege))
         if not hasRestrictedEntitiesPrivilege then
             lia.log.add(client, "permissionDenied", L("physgunRestrictedEntity"))
             client:notifyErrorLocalized("noPickupRestricted")
@@ -1399,11 +1399,11 @@ hook.Add("PhysgunPickup", "Lilia.PhysgunPickup", function(client, entity)
     end
 
     if entity:GetCreator() == client and (entity:isProp() or entity:isItem()) then return true end
-    lia.debug("[perm]", "Permission Check for hook PhysgunPickup base gate", "hasPrivilege(physgunPickup)=", tostring(hasPhysgunPickup), "finalResult=", tostring(hasPhysgunPickup))
+    lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup base gate", "hasPrivilege(physgunPickup)=", tostring(hasPhysgunPickup), "finalResult=", tostring(hasPhysgunPickup))
     if hasPhysgunPickup then
         if entity:IsVehicle() then
             local hasVehiclePrivilege = client:hasPrivilege("physgunPickupVehicles")
-            lia.debug("[perm]", "Permission Check for hook PhysgunPickup vehicle", "hasPrivilege(physgunPickupVehicles)=", tostring(hasVehiclePrivilege), "finalResult=", tostring(hasVehiclePrivilege))
+            lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup vehicle", "hasPrivilege(physgunPickupVehicles)=", tostring(hasVehiclePrivilege), "finalResult=", tostring(hasVehiclePrivilege))
             if not hasVehiclePrivilege then
                 lia.log.add(client, "permissionDenied", L("physgunVehicle"))
                 client:notifyErrorLocalized("noPickupVehicles")
@@ -1413,7 +1413,7 @@ hook.Add("PhysgunPickup", "Lilia.PhysgunPickup", function(client, entity)
         elseif entity:IsPlayer() then
             local targetProtected = entity:hasPrivilege("cantBeGrabbedPhysgun")
             local canGrabPlayers = client:hasPrivilege("canGrabPlayers")
-            lia.debug("[perm]", "Permission Check for hook PhysgunPickup player", "targetHasPrivilege(cantBeGrabbedPhysgun)=", tostring(targetProtected), "hasPrivilege(canGrabPlayers)=", tostring(canGrabPlayers), "finalResult=", tostring(not targetProtected and canGrabPlayers))
+            lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup player", "targetHasPrivilege(cantBeGrabbedPhysgun)=", tostring(targetProtected), "hasPrivilege(canGrabPlayers)=", tostring(canGrabPlayers), "finalResult=", tostring(not targetProtected and canGrabPlayers))
             if targetProtected or not canGrabPlayers then
                 lia.log.add(client, "permissionDenied", L("physgunPlayer"))
                 client:notifyErrorLocalized("noPickupPlayer")
@@ -1422,7 +1422,7 @@ hook.Add("PhysgunPickup", "Lilia.PhysgunPickup", function(client, entity)
             return true
         elseif entity:IsWorld() or entity:CreatedByMap() then
             local canGrabWorldProps = client:hasPrivilege("canGrabWorldProps")
-            lia.debug("[perm]", "Permission Check for hook PhysgunPickup world", "hasPrivilege(canGrabWorldProps)=", tostring(canGrabWorldProps), "finalResult=", tostring(canGrabWorldProps))
+            lia.debug("[Permissions]", "Permission Check for hook PhysgunPickup world", "hasPrivilege(canGrabWorldProps)=", tostring(canGrabWorldProps), "finalResult=", tostring(canGrabWorldProps))
             if not canGrabWorldProps then
                 lia.log.add(client, "permissionDenied", L("physgunWorldProp"))
                 client:notifyErrorLocalized("noPickupWorld")
@@ -1469,7 +1469,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
     end
 
     local hasUseDisallowedTools = client:hasPrivilege("useDisallowedTools")
-    lia.debug("[perm]", "Permission Check for hook CanTool disallowed tools", "tool=", tostring(tool), "toolIsDisallowed=", tostring(DisallowedTools[tool] == true), "hasPrivilege(useDisallowedTools)=", tostring(hasUseDisallowedTools), "finalResult=", tostring(not DisallowedTools[tool] or hasUseDisallowedTools))
+    lia.debug("[Permissions]", "Permission Check for hook CanTool disallowed tools", "tool=", tostring(tool), "toolIsDisallowed=", tostring(DisallowedTools[tool] == true), "hasPrivilege(useDisallowedTools)=", tostring(hasUseDisallowedTools), "finalResult=", tostring(not DisallowedTools[tool] or hasUseDisallowedTools))
     if DisallowedTools[tool] and not hasUseDisallowedTools then
         lia.log.add(client, "toolDenied", tool)
         client:notifyErrorLocalized("toolNotAllowed", tool)
@@ -1479,7 +1479,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
     local formattedTool = tool:gsub("^%l", string.upper)
     local isStaffOrFlagged = client:isStaffOnDuty() or client:hasFlags("t")
     local hasPriv = client:hasPrivilege("tool_" .. tool)
-    lia.debug("[perm]", "Permission Check for hook CanTool tool privilege", "tool=", tostring(tool), "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasFlags(t)=", tostring(client:hasFlags("t")), "hasPrivilege(tool_" .. tool .. ")=", tostring(hasPriv), "finalResult=", tostring(isStaffOrFlagged and hasPriv))
+    lia.debug("[Permissions]", "Permission Check for hook CanTool tool privilege", "tool=", tostring(tool), "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "hasFlags(t)=", tostring(client:hasFlags("t")), "hasPrivilege(tool_" .. tool .. ")=", tostring(hasPriv), "finalResult=", tostring(isStaffOrFlagged and hasPriv))
     if not (isStaffOrFlagged and hasPriv) then
         local reasons = {}
         if not isStaffOrFlagged then table.insert(reasons, L("onDutyStaffOrFlagT")) end
@@ -1495,7 +1495,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
         if tool == "remover" then
             if entity.NoRemover then
                 local canRemoveBlockedEntities = client:hasPrivilege("canRemoveBlockedEntities")
-                lia.debug("[perm]", "Permission Check for hook CanTool remover blocked entity", "hasPrivilege(canRemoveBlockedEntities)=", tostring(canRemoveBlockedEntities), "finalResult=", tostring(canRemoveBlockedEntities))
+                lia.debug("[Permissions]", "Permission Check for hook CanTool remover blocked entity", "hasPrivilege(canRemoveBlockedEntities)=", tostring(canRemoveBlockedEntities), "finalResult=", tostring(canRemoveBlockedEntities))
                 if not canRemoveBlockedEntities then
                     lia.log.add(client, "permissionDenied", L("removeBlockedEntity"))
                     client:notifyErrorLocalized("noRemoveBlockedEntities")
@@ -1504,7 +1504,7 @@ hook.Add("CanTool", "Lilia.CanTool", function(client, trace, tool)
                 return true
             elseif entity:IsWorld() then
                 local canRemoveWorldEntities = client:hasPrivilege("canRemoveWorldEntities")
-                lia.debug("[perm]", "Permission Check for hook CanTool remover world entity", "hasPrivilege(canRemoveWorldEntities)=", tostring(canRemoveWorldEntities), "finalResult=", tostring(canRemoveWorldEntities))
+                lia.debug("[Permissions]", "Permission Check for hook CanTool remover world entity", "hasPrivilege(canRemoveWorldEntities)=", tostring(canRemoveWorldEntities), "finalResult=", tostring(canRemoveWorldEntities))
                 if not canRemoveWorldEntities then
                     lia.log.add(client, "permissionDenied", L("removeWorldEntity"))
                     client:notifyErrorLocalized("noRemoveWorldEntities")
@@ -1549,7 +1549,7 @@ hook.Add("PlayerNoClip", "Lilia.PlayerNoClip", function(ply, enabled)
     local isStaffOnDuty = ply:isStaffOnDuty()
     local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
     local permission = isStaffOnDuty or hasNoClipOutsideStaff
-    lia.debug("[perm]", "Permission Check for hook PlayerNoClip", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for hook PlayerNoClip", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
     if not permission then
         lia.log.add(ply, "permissionDenied", L("noclip"))
         ply:notifyErrorLocalized("noNoclip")

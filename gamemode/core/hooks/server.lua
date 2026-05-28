@@ -221,7 +221,7 @@ end
 function GM:CanPlayerInteractItem(client, action, item)
     action = string.lower(action)
     local hasNoItemCooldown = client:hasPrivilege("noItemCooldown")
-    lia.debug("[perm]", "Permission Check for hook GM:CanPlayerInteractItem", "action=", tostring(action), "hasPrivilege(noItemCooldown)=", tostring(hasNoItemCooldown), "finalResult=", tostring(hasNoItemCooldown))
+    lia.debug("[Permissions]", "Permission Check for hook GM:CanPlayerInteractItem", "action=", tostring(action), "hasPrivilege(noItemCooldown)=", tostring(hasNoItemCooldown), "finalResult=", tostring(hasNoItemCooldown))
     if hasNoItemCooldown then return true end
     if not client:Alive() then return false, L("forbiddenActionStorage") end
     if IsValid(client:GetRagdollEntity()) then return false, L("forbiddenActionStorage") end
@@ -437,7 +437,7 @@ function GM:EntityTakeDamage(entity, dmgInfo)
     if not entity:IsPlayer() then return end
     local isStaffOnDuty = entity:isStaffOnDuty()
     local staffHasGodMode = lia.config.get("StaffHasGodMode", true)
-    lia.debug("[perm]", "Permission Check for hook GM:EntityTakeDamage staff godmode", "isStaffOnDuty=", tostring(isStaffOnDuty), "StaffHasGodMode=", tostring(staffHasGodMode), "finalResult=", tostring(isStaffOnDuty and staffHasGodMode))
+    lia.debug("[Permissions]", "Permission Check for hook GM:EntityTakeDamage staff godmode", "isStaffOnDuty=", tostring(isStaffOnDuty), "StaffHasGodMode=", tostring(staffHasGodMode), "finalResult=", tostring(isStaffOnDuty and staffHasGodMode))
     if isStaffOnDuty and staffHasGodMode then return true end
     if entity:GetMoveType() == MOVETYPE_NOCLIP then return true end
     if dmgInfo:IsDamageType(DMG_CRUSH) then
@@ -1118,7 +1118,7 @@ function StaffAddTextShadowed(tagColor, tagText, messageColor, message, predicat
     local timestamp = os.date("%Y-%m-%d %H:%M:%S", os.time())
     for _, staff in player.Iterator() do
         local isStaff = staff:isStaffOnDuty() or staff:hasPrivilege("canSeeLogs")
-        lia.debug("[perm]", "Permission Check for function StaffAddTextShadowed", "targetStaff=", tostring(IsValid(staff) and staff:Name() or "unknown"), "isStaffOnDuty=", tostring(staff:isStaffOnDuty()), "hasPrivilege(canSeeLogs)=", tostring(staff:hasPrivilege("canSeeLogs")), "predicatePassed=", tostring(predicate and predicate(staff) or false), "finalResult=", tostring((predicate and predicate(staff)) or isStaff))
+        lia.debug("[Permissions]", "Permission Check for function StaffAddTextShadowed", "targetStaff=", tostring(IsValid(staff) and staff:Name() or "unknown"), "isStaffOnDuty=", tostring(staff:isStaffOnDuty()), "hasPrivilege(canSeeLogs)=", tostring(staff:hasPrivilege("canSeeLogs")), "predicatePassed=", tostring(predicate and predicate(staff) or false), "finalResult=", tostring((predicate and predicate(staff)) or isStaff))
         if (predicate and predicate(staff)) or isStaff then ClientAddTextShadowed(staff, tagColor or Color(255, 255, 255), tagText or "", messageColor or Color(255, 255, 255), " | " .. timestamp .. " | " .. message) end
     end
 end

@@ -448,7 +448,7 @@ lia.char.registerVar("model", {
         if faction then
             if not data.model or not faction.models[data.model] then
                 local canCreateStaffCharacter = data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") or false
-                lia.debug("[perm]", "Permission Check for char var model onValidate staff model bypass", "targetFactionIsStaff=", tostring(data.faction == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(client and client:hasPrivilege("createStaffCharacter") or false), "finalResult=", tostring(canCreateStaffCharacter))
+                lia.debug("[Permissions]", "Permission Check for char var model onValidate staff model bypass", "targetFactionIsStaff=", tostring(data.faction == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(client and client:hasPrivilege("createStaffCharacter") or false), "finalResult=", tostring(canCreateStaffCharacter))
                 if canCreateStaffCharacter then return true end
                 return false, "needModel"
             end
@@ -606,7 +606,7 @@ lia.char.registerVar("faction", {
         if not lia.faction.indices[value] then return false, "invalid", "faction" end
         if value == FACTION_STAFF then
             local canCreateStaffCharacter = client and client:hasPrivilege("createStaffCharacter") or false
-            lia.debug("[perm]", "Permission Check for char var faction onValidate", "targetFactionIsStaff=", tostring(value == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(canCreateStaffCharacter), "finalResult=", tostring(canCreateStaffCharacter))
+            lia.debug("[Permissions]", "Permission Check for char var faction onValidate", "targetFactionIsStaff=", tostring(value == FACTION_STAFF), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(canCreateStaffCharacter), "finalResult=", tostring(canCreateStaffCharacter))
             if not client or not canCreateStaffCharacter then return false, "staffFactionRestricted" end
             return true
         end
@@ -719,7 +719,7 @@ lia.char.registerVar("attribs", {
     index = 4,
     onValidate = function(value, data, client)
         local canCreateStaffCharacter = data and data.faction == FACTION_STAFF and client and client:hasPrivilege("createStaffCharacter") or false
-        lia.debug("[perm]", "Permission Check for char var attribs onValidate staff bypass", "dataExists=", tostring(data ~= nil), "targetFactionIsStaff=", tostring(data and data.faction == FACTION_STAFF or false), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(client and client:hasPrivilege("createStaffCharacter") or false), "finalResult=", tostring(canCreateStaffCharacter))
+        lia.debug("[Permissions]", "Permission Check for char var attribs onValidate staff bypass", "dataExists=", tostring(data ~= nil), "targetFactionIsStaff=", tostring(data and data.faction == FACTION_STAFF or false), "clientExists=", tostring(client ~= nil), "hasPrivilege(createStaffCharacter)=", tostring(client and client:hasPrivilege("createStaffCharacter") or false), "finalResult=", tostring(canCreateStaffCharacter))
         if canCreateStaffCharacter then return true end
         if value ~= nil then
             if istable(value) then
@@ -1518,7 +1518,7 @@ if SERVER then
         if client and not table.HasValue(client.liaCharList or {}, charID) then
             lia.db.selectOne("faction", "characters", "id = " .. charID):next(function(result)
                 local canLoadStaffCharacter = result and result.faction == FACTION_STAFF and client:hasPrivilege("createStaffCharacter")
-                lia.debug("[perm]", "Permission Check for lia.char.getCharacter staff fallback", "dbResultExists=", tostring(result ~= nil), "targetFactionIsStaff=", tostring(result and result.faction == FACTION_STAFF), "hasPrivilege(createStaffCharacter)=", tostring(client:hasPrivilege("createStaffCharacter")), "finalResult=", tostring(canLoadStaffCharacter))
+                lia.debug("[Permissions]", "Permission Check for lia.char.getCharacter staff fallback", "dbResultExists=", tostring(result ~= nil), "targetFactionIsStaff=", tostring(result and result.faction == FACTION_STAFF), "hasPrivilege(createStaffCharacter)=", tostring(client:hasPrivilege("createStaffCharacter")), "finalResult=", tostring(canLoadStaffCharacter))
                 if not canLoadStaffCharacter then
                     if callback then callback(nil) end
                     return

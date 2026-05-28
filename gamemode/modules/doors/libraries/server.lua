@@ -455,7 +455,7 @@ local function ToggleLock(client, door, state)
 
         door:setLocked(state)
     elseif (door:GetCreator() == client or client:hasPrivilege("manageDoors") or client:isStaffOnDuty()) and (door:IsVehicle() or door:isSimfphysCar()) then
-        lia.debug("[perm]", "Permission Check for function ToggleLock vehicle branch", "doorCreatorMatch=", tostring(door:GetCreator() == client), "hasPrivilege(manageDoors)=", tostring(client:hasPrivilege("manageDoors")), "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "isVehicle=", tostring(door:IsVehicle()), "isSimfphysCar=", tostring(door:isSimfphysCar()), "finalResult=", tostring((door:GetCreator() == client or client:hasPrivilege("manageDoors") or client:isStaffOnDuty()) and (door:IsVehicle() or door:isSimfphysCar())))
+        lia.debug("[Permissions]", "Permission Check for function ToggleLock vehicle branch", "doorCreatorMatch=", tostring(door:GetCreator() == client), "hasPrivilege(manageDoors)=", tostring(client:hasPrivilege("manageDoors")), "isStaffOnDuty=", tostring(client:isStaffOnDuty()), "isVehicle=", tostring(door:IsVehicle()), "isSimfphysCar=", tostring(door:isSimfphysCar()), "finalResult=", tostring((door:GetCreator() == client or client:hasPrivilege("manageDoors") or client:isStaffOnDuty()) and (door:IsVehicle() or door:isSimfphysCar())))
         if state then
             door:Fire("lock")
             client:EmitSound("doors/door_latch3.wav")
@@ -489,7 +489,7 @@ function MODULE:KeyLock(client, door, time)
     local isCreator = door:GetCreator() == client
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = isProperEntity and not door:isLocked() and distance <= 256 and (hasDoorAccess or isCreator or isStaffOnDuty)
-    lia.debug("[perm]", "Permission Check for function MODULE:KeyLock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(door:isLocked()), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for function MODULE:KeyLock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(door:isLocked()), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if permission then
         client:stopAction()
         client:setAction(L("locking"), time, function() end)
@@ -511,7 +511,7 @@ function MODULE:KeyUnlock(client, door, time)
     local isCreator = door:GetCreator() == client
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = isProperEntity and door:isLocked() and distance <= 256 and (hasDoorAccess or isCreator or isStaffOnDuty)
-    lia.debug("[perm]", "Permission Check for function MODULE:KeyUnlock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(door:isLocked()), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for function MODULE:KeyUnlock", "isProperEntity=", tostring(isProperEntity), "doorIsLocked=", tostring(door:isLocked()), "distanceWithin256=", tostring(distance <= 256), "door:checkDoorAccess=", tostring(hasDoorAccess), "doorCreatorMatch=", tostring(isCreator), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if permission then
         client:stopAction()
         client:setAction(L("unlocking"), time, function() end)

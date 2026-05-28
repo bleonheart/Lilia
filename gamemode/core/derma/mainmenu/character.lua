@@ -832,7 +832,6 @@ function PANEL:createStartButton()
 
     local canCreateStaffCharacter = client:hasPrivilege("createStaffCharacter")
     local isStaffOnDuty = client:isStaffOnDuty()
-    lia.debug("[perm]", "Permission Check for character menu staff button", "hasPrivilege(createStaffCharacter)=", tostring(canCreateStaffCharacter), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(canCreateStaffCharacter and not isStaffOnDuty))
     if canCreateStaffCharacter and not isStaffOnDuty then
         local tooltip = hook.Run("GetCharacterStaffButtonTooltip", client, hasStaffChar)
         if not tooltip or tooltip == "" then tooltip = hasStaffChar and L("loadStaffCharacterTooltip") or L("createStaffCharacterTooltip") end

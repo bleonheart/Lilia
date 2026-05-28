@@ -416,7 +416,7 @@ net.Receive("liaVendorLoadPreset", function(_, client)
 end)
 
 net.Receive("liaVendorDeletePreset", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaVendorDeletePreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaVendorDeletePreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
     if not client:hasPrivilege("canCreateVendorPresets") then
         client:notifyErrorLocalized("noPermission")
         return
@@ -444,7 +444,7 @@ net.Receive("liaVendorDeletePreset", function(_, client)
 end)
 
 net.Receive("liaVendorSavePreset", function(_, client)
-    lia.debug("[perm]", "Permission Check for net.Receive liaVendorSavePreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
+    lia.debug("[Permissions]", "Permission Check for net.Receive liaVendorSavePreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
     if not client:hasPrivilege("canCreateVendorPresets") then
         client:notifyErrorLocalized("noPermission")
         return

@@ -16,7 +16,7 @@
         if not target:IsVehicle() or target:GetClass() ~= "gmod_sent_vehicle_fphysics_base" then return end
         local client = target:GetDriver()
         local permission = IsValid(client) and isfunction(client.isStaffOnDuty) and client:isStaffOnDuty() or false
-        lia.debug("[perm]", "Permission Check for hook liaSimfphys staff vehicle damage immunity", "driverValid=", tostring(IsValid(client)), "hasIsStaffOnDutyMethod=", tostring(IsValid(client) and isfunction(client.isStaffOnDuty) or false), "isStaffOnDuty=", tostring(permission), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for hook liaSimfphys staff vehicle damage immunity", "driverValid=", tostring(IsValid(client)), "hasIsStaffOnDutyMethod=", tostring(IsValid(client) and isfunction(client.isStaffOnDuty) or false), "isStaffOnDuty=", tostring(permission), "finalResult=", tostring(permission))
         if permission then
             dmgInfo:SetDamage(0)
             return
@@ -117,7 +117,7 @@ hook.Add("IsSuitableForTrunk", "SIMFPHYS_IsSuitableForTrunk", function(vehicle) 
 hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent)
     if property == "editentity" and IsValid(ent) and ent:isSimfphysCar() then
         local canEditSimfphysCars = client:hasPrivilege("canEditSimfphysCars")
-        lia.debug("[perm]", "Permission Check for hook SIMFPHYS_CanProperty", "property=", tostring(property), "entityIsSimfphysCar=", tostring(ent:isSimfphysCar()), "hasPrivilege(canEditSimfphysCars)=", tostring(canEditSimfphysCars), "finalResult=", tostring(canEditSimfphysCars))
+        lia.debug("[Permissions]", "Permission Check for hook SIMFPHYS_CanProperty", "property=", tostring(property), "entityIsSimfphysCar=", tostring(ent:isSimfphysCar()), "hasPrivilege(canEditSimfphysCars)=", tostring(canEditSimfphysCars), "finalResult=", tostring(canEditSimfphysCars))
         return canEditSimfphysCars
     end
 end)

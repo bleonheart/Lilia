@@ -655,7 +655,6 @@ lia.option.add("drawDevelopmentHUD", "@drawDevelopmentHUD", "@drawDevelopmentHUD
         local hasDevelopmentHUD = ply:hasPrivilege("developmentHUD")
         local hasStaffHUD = ply:hasPrivilege("staffHUD")
         local permission = hasDevelopmentHUD or hasStaffHUD
-        lia.debug("[perm]", "Permission Check for option drawDevelopmentHUD visible", "hasPrivilege(developmentHUD)=", tostring(hasDevelopmentHUD), "hasPrivilege(staffHUD)=", tostring(hasStaffHUD), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -674,7 +673,6 @@ lia.option.add("espEnabled", "@espEnabled", "@espEnabledDesc", false, nil, {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espEnabled visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -688,7 +686,6 @@ lia.option.add("espPlayers", "@espPlayers", "@espPlayersDesc", false, nil, {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espPlayers visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -702,7 +699,6 @@ lia.option.add("espItems", "@espItems", "@espItemsDesc", false, nil, {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espItems visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -716,7 +712,6 @@ lia.option.add("espEntities", "@espEntities", "@espEntitiesDesc", false, nil, {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espEntities visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -730,7 +725,6 @@ lia.option.add("espUnconfiguredDoors", "@espUnconfiguredDoors", "@espUnconfigure
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espUnconfiguredDoors visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -748,7 +742,6 @@ lia.option.add("espItemsColor", "@espItemsColor", "@espItemsColorDesc", {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espItemsColor visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -766,7 +759,6 @@ lia.option.add("espEntitiesColor", "@espEntitiesColor", "@espEntitiesColorDesc",
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espEntitiesColor visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -784,7 +776,6 @@ lia.option.add("espUnconfiguredDoorsColor", "@espUnconfiguredDoorsColor", "@espU
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espUnconfiguredDoorsColor visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -798,7 +789,6 @@ lia.option.add("espConfiguredDoors", "@espConfiguredDoors", "@espConfiguredDoors
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espConfiguredDoors visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -816,7 +806,6 @@ lia.option.add("espConfiguredDoorsColor", "@espConfiguredDoorsColor", "@espConfi
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espConfiguredDoorsColor visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })
@@ -834,7 +823,6 @@ lia.option.add("espPlayersColor", "@espPlayersColor", "@espPlayersColorDesc", {
         local isStaffOnDuty = ply:isStaffOnDuty()
         local hasNoClipOutsideStaff = ply:hasPrivilege("noClipOutsideStaff")
         local permission = isStaffOnDuty or hasNoClipOutsideStaff
-        lia.debug("[perm]", "Permission Check for option espPlayersColor visible", "isStaffOnDuty=", tostring(isStaffOnDuty), "hasPrivilege(noClipOutsideStaff)=", tostring(hasNoClipOutsideStaff), "finalResult=", tostring(permission))
         return permission
     end
 })

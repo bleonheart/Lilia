@@ -183,7 +183,7 @@ function lia.admin.isProtectedStaffTarget(cmd, target)
     local targetIsPlayer = validTarget and target:IsPlayer() or false
     local targetIsStaffOnDuty = targetIsPlayer and target:isStaffOnDuty() or false
     local permission = protectedCommand and validTarget and targetIsPlayer and targetIsStaffOnDuty or false
-    lia.debug("[perm]", "Permission Check for function lia.admin.isProtectedStaffTarget", "commandProtected=", tostring(protectedCommand), "targetValid=", tostring(validTarget), "targetIsPlayer=", tostring(targetIsPlayer), "targetIsStaffOnDuty=", tostring(targetIsStaffOnDuty), "finalResult=", tostring(permission))
+    lia.debug("[Permissions]", "Permission Check for function lia.admin.isProtectedStaffTarget", "commandProtected=", tostring(protectedCommand), "targetValid=", tostring(validTarget), "targetIsPlayer=", tostring(targetIsPlayer), "targetIsStaffOnDuty=", tostring(targetIsStaffOnDuty), "finalResult=", tostring(permission))
     return permission
 end
 
@@ -1023,7 +1023,6 @@ if SERVER then
     function lia.admin.notifyAdmin(notification)
         for _, client in player.Iterator() do
             local permission = IsValid(client) and client:hasPrivilege("canSeeAltingNotifications") or false
-            lia.debug("[perm]", "Permission Check for function lia.admin.notifyAdmin", "targetPlayer=", tostring(IsValid(client) and client:Name() or "invalid"), "hasPrivilege(canSeeAltingNotifications)=", tostring(permission), "finalResult=", tostring(permission))
             if permission then client:notifyAdminLocalized(notification) end
         end
     end
@@ -2101,7 +2100,6 @@ else
     hook.Add("PopulateAdminTabs", "liaAdmin", function(pages)
         local client = LocalPlayer()
         local permission = IsValid(client) and client:hasPrivilege("manageUsergroups") or false
-        lia.debug("[perm]", "Permission Check for hook PopulateAdminTabs liaAdmin", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(manageUsergroups)=", tostring(permission), "finalResult=", tostring(permission))
         if not permission then return end
         pages[#pages + 1] = {
             name = "userGroups",

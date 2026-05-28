@@ -45,7 +45,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
     if type(client) ~= "Player" then return true end
     if lia.config.get("SAMEnforceStaff", false) then
         local hasSamPermission = cmd.permission and client:HasPermission(cmd.permission) or true
-        lia.debug("[perm]", "Permission Check for hook SAM.CanRunCommand SAM permission", "commandPermission=", tostring(cmd.permission), "HasPermission=", tostring(hasSamPermission), "finalResult=", tostring(hasSamPermission))
+        lia.debug("[Permissions]", "Permission Check for hook SAM.CanRunCommand SAM permission", "commandPermission=", tostring(cmd.permission), "HasPermission=", tostring(hasSamPermission), "finalResult=", tostring(hasSamPermission))
         if cmd.permission and not hasSamPermission then
             client:notifyErrorLocalized("staffPermissionDenied")
             return false
@@ -54,7 +54,7 @@ hook.Add("SAM.CanRunCommand", "liaSAM", function(client, _, _, cmd)
         local canBypassSAMFactionWhitelist = client:hasPrivilege("canBypassSAMFactionWhitelist")
         local isStaffOnDuty = client:isStaffOnDuty()
         local permission = canBypassSAMFactionWhitelist or isStaffOnDuty
-        lia.debug("[perm]", "Permission Check for hook SAM.CanRunCommand staff whitelist", "hasPrivilege(canBypassSAMFactionWhitelist)=", tostring(canBypassSAMFactionWhitelist), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
+        lia.debug("[Permissions]", "Permission Check for hook SAM.CanRunCommand staff whitelist", "hasPrivilege(canBypassSAMFactionWhitelist)=", tostring(canBypassSAMFactionWhitelist), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
         if permission then
             return true
         else
@@ -106,7 +106,6 @@ local function CanReadNotifications(client)
     local hasPrivilege = client:hasPrivilege("canSeeSAMNotificationsOutsideStaff")
     local isStaffOnDuty = client:isStaffOnDuty()
     local permission = hasPrivilege or isStaffOnDuty
-    lia.debug("[perm]", "Permission Check for function CanReadNotifications", "AdminOnlyNotification=", tostring(lia.config.get("AdminOnlyNotification", true)), "hasPrivilege(canSeeSAMNotificationsOutsideStaff)=", tostring(hasPrivilege), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     return permission
 end
 

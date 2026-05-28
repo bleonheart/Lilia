@@ -49,7 +49,7 @@ end
 function MODULE:CanPlayerSpawnStorage(client, entity, info)
     if not client then return true end
     local canSpawnStorage = client:hasPrivilege("canSpawnStorage")
-    lia.debug("[perm]", "Permission Check for function MODULE:CanPlayerSpawnStorage", "hasPrivilege(canSpawnStorage)=", tostring(canSpawnStorage), "hasValidInventoryType=", tostring(info.invType and lia.inventory.types[info.invType] ~= nil), "finalResult=", tostring(canSpawnStorage and info.invType and lia.inventory.types[info.invType] ~= nil))
+    lia.debug("[Permissions]", "Permission Check for function MODULE:CanPlayerSpawnStorage", "hasPrivilege(canSpawnStorage)=", tostring(canSpawnStorage), "hasValidInventoryType=", tostring(info.invType and lia.inventory.types[info.invType] ~= nil), "finalResult=", tostring(canSpawnStorage and info.invType and lia.inventory.types[info.invType] ~= nil))
     if not canSpawnStorage then return false end
     if not info.invType or not lia.inventory.types[info.invType] then return false end
 end
