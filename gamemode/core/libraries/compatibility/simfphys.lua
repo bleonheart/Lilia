@@ -121,6 +121,7 @@ hook.Add("CanProperty", "SIMFPHYS_CanProperty", function(client, property, ent)
         return canEditSimfphysCars
     end
 end)
+
 lia.config.add("DamageInCars", "@takeDamageInCars", true, nil, {
     desc = "@takeDamageInCarsDesc",
     category = "@core",

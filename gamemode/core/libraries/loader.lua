@@ -769,6 +769,7 @@ function lia.debug(...)
         ["true"] = Color(110, 255, 140),
         ["false"] = Color(255, 120, 120)
     }
+
     local function writeValue(value)
         local text = tostring(value)
         MsgC(boolColors[text] or textColor, text)

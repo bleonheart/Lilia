@@ -541,10 +541,8 @@ function lia.admin.hasAccess(ply, privilege)
     end
 
     if groupLevel >= superadminLevel then return true end
-
     local g = lia.admin.groups and lia.admin.groups[grp] or nil
     if g and g[privilege] == true then return true end
-
     local min = lia.admin.privileges[privilege]
     return shouldGrant(grp, min)
 end

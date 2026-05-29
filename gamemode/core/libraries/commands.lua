@@ -267,6 +267,7 @@ function lia.command.hasAccess(client, command, data)
         local classData = lia.class.list[char:getClass()]
         if classData and classData.commands and table.HasValue(classData.commands, command) then return true, privilegeName end
     end
+
     lia.debug("[Permissions]", "Permission Check for function lia.command.hasAccess final", "command=", tostring(command), "privilegeID=", tostring(privilegeID), "finalResult=", tostring(hasAccess))
     return hasAccess, privilegeName
 end

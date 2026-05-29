@@ -858,7 +858,6 @@ if not _liaDermaMenuOverride then
                 return vgui.Create("DMenu", parent)
             end
         end
-
         return menu
     end
 end

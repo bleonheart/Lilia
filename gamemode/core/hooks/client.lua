@@ -100,9 +100,7 @@ local function drawDevelopmentOverlay(client)
         lines[#lines + 1] = string.format("Pos: %s | Ang: %s", formatDevHUDVector(client:GetPos()), formatDevHUDVector(client:EyeAngles()))
         lines[#lines + 1] = string.format("Trace Pos: %s | Trace Dist: %.2f", formatDevHUDVector(hitPos), client:GetPos():Distance(hitPos))
         lines[#lines + 1] = string.format("Health: %d | Ping: %d | FPS: %d | FrameTime: %.4f", client:Health(), client:Ping(), math.Round(1 / FrameTime(), 0), FrameTime())
-        if IsValid(ent) then
-            lines[#lines + 1] = string.format("Trace Ent: %s | Model: %s", ent:GetClass(), ent.GetModel and ent:GetModel() or "N/A")
-        end
+        if IsValid(ent) then lines[#lines + 1] = string.format("Trace Ent: %s | Model: %s", ent:GetClass(), ent.GetModel and ent:GetModel() or "N/A") end
     end
 
     if #lines == 0 then return end

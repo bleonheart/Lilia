@@ -299,7 +299,6 @@ function playerMeta:hasPrivilege(privilegeName)
         lia.error(L("hasPrivilegeExpectedString", tostring(privilegeName)))
         return false
     end
-
     return lia.admin.hasAccess(self, privilegeName)
 end
 
@@ -1615,7 +1614,6 @@ function playerMeta:hasFlags(flags)
         local flag = flags:sub(i, i)
         if self:getFlags():find(flag, 1, true) then return true end
     end
-
     return hook.Run("CharHasFlags", self, flags) or false
 end
 

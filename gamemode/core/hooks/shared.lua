@@ -1,4 +1,4 @@
-local GM = GM or GAMEMODE
+﻿local GM = GM or GAMEMODE
 function GM:OnCharVarChanged(character, varName, oldVar, newVar)
     local client = character:getPlayer()
     if varName == "model" then hook.Run("PlayerModelChanged", client, newVar) end

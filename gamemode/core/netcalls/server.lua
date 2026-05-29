@@ -1400,6 +1400,7 @@ local function CanAccessBodygrouper(client)
     for _, v in pairs(ents.FindByClass("lia_bodygrouper")) do
         if v:GetPos():Distance(client:GetPos()) <= 128 then return true end
     end
+
     local hasPrivilege = client:hasPrivilege("manageBodygroups")
     lia.debug("[Permissions]", "Permission Check for function CanAccessBodygrouper", "hasNearbyBodygrouper=", tostring(false), "hasPrivilege(manageBodygroups)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
     return hasPrivilege
