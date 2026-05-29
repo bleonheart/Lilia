@@ -1127,7 +1127,11 @@ function GM:PlayerCanHearPlayersVoice(listener, speaker)
     if not IsValid(listener) or not IsValid(speaker) or listener == speaker then return false, false end
     if not lia.config.get("IsVoiceEnabled", true) then return false, false end
     local bCanHear = listener.liaVoiceHear and listener.liaVoiceHear[speaker]
-    return bCanHear, bCanHear
+    if not bCanHear then return false, false end
+    local voiceType = speaker:getLocalVar("VoiceType", VOICE_TALKING)
+    -- Yelling uses a wider radius, so keep it non-spatialized to avoid sounding too quiet at the edge of that range.
+    local is3D = voiceType ~= VOICE_YELLING
+    return true, is3D
 end
 
 function GM:OnVoiceTypeChanged(client)

@@ -3615,8 +3615,6 @@ local function CreateTicketFrame(requester, message, claimed)
             local txt = v:GetChildren()[5]
             txt:AppendText("\n" .. message)
             txt:GotoTextEnd()
-            timer.Remove("ticketsystem-" .. requester:SteamID())
-            timer.Create("ticketsystem-" .. requester:SteamID(), 60, 1, function() if IsValid(v) then v:Remove() end end)
             lia.websound.playButtonSound("ui/hint.wav")
             return
         end
@@ -3703,12 +3701,9 @@ local function CreateTicketFrame(requester, message, claimed)
                 v:MoveTo(xpos, ypos + 180 * (k - 1), 0.1, 0, 1)
             end
         end
-
-        if IsValid(requester) and timer.Exists("ticketsystem-" .. requester:SteamID()) then timer.Remove("ticketsystem-" .. requester:SteamID()) end
     end
 
     table.insert(TicketFrames, frm)
-    timer.Create("ticketsystem-" .. requester:SteamID(), 60, 1, function() if IsValid(frm) then frm:Remove() end end)
 end
 
 net.Receive("liaActiveTickets", function()
@@ -3855,8 +3850,6 @@ net.Receive("liaTicketSystemClose", function()
     for _, v in pairs(TicketFrames) do
         if v.idiot == requester then v:Remove() end
     end
-
-    if timer.Exists("ticketsystem-" .. requester:SteamID()) then timer.Remove("ticketsystem-" .. requester:SteamID()) end
 end)
 
 net.Receive("liaClearAllTicketFrames", function()
@@ -3865,9 +3858,6 @@ net.Receive("liaClearAllTicketFrames", function()
     end
 
     TicketFrames = {}
-    for _, ply in player.Iterator() do
-        if timer.Exists("ticketsystem-" .. ply:SteamID()) then timer.Remove("ticketsystem-" .. ply:SteamID()) end
-    end
 end)
 
 net.Receive("liaAllWarnings", function()

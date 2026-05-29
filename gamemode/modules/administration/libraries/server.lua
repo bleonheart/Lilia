@@ -52,11 +52,6 @@ local function SendPopup(client, message)
         }
 
         hook.Run("OnTicketCreated", client, message)
-        timer.Remove("ticketsystem-" .. requesterSteamID)
-        timer.Create("ticketsystem-" .. requesterSteamID, 60, 1, function()
-            if IsValid(client) and client:IsPlayer() then client.CaseClaimed = nil end
-            ActiveTickets[requesterSteamID] = nil
-        end)
     end
 end
 
@@ -1244,21 +1239,20 @@ net.Receive("liaRequestActiveTickets", function(_, client)
     local permission = hasAlwaysSeeTickets or isStaffOnDuty
     lia.debug("[Permissions]", "Permission Check for net.Receive liaRequestActiveTickets", "hasPrivilege(alwaysSeeTickets)=", tostring(hasAlwaysSeeTickets), "isStaffOnDuty=", tostring(isStaffOnDuty), "finalResult=", tostring(permission))
     if not permission then return end
-    lia.db.select({"timestamp", "requesterSteamID", "adminSteamID", "message"}, "ticketclaims"):next(function(res)
-        local tickets = {}
-        for _, row in ipairs(res.results or {}) do
-            tickets[#tickets + 1] = {
-                requester = row.requesterSteamID,
-                timestamp = isnumber(row.timestamp) and row.timestamp or os.time(lia.time.toNumber(row.timestamp)),
-                admin = row.adminSteamID,
-                message = row.message,
-            }
-        end
+    local tickets = {}
+    for steamID, ticket in pairs(ActiveTickets) do
+        tickets[#tickets + 1] = {
+            requester = steamID,
+            timestamp = ticket.timestamp or os.time(),
+            admin = ticket.admin,
+            message = ticket.message,
+        }
+    end
 
-        net.Start("liaActiveTickets")
-        net.WriteTable(tickets)
-        net.Send(client)
-    end)
+    table.sort(tickets, function(a, b) return (a.timestamp or 0) > (b.timestamp or 0) end)
+    net.Start("liaActiveTickets")
+    net.WriteTable(tickets)
+    net.Send(client)
 end)
 
 net.Receive("liaRequestTicketsCount", function(_, client)
