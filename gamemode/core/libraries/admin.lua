@@ -314,6 +314,41 @@ local function shouldGrant(group, min)
     return getGroupLevel(group) >= (levels[m] or 1)
 end
 
+local targetedCommandPrivilegeMap = {
+    kick = "command_plykick",
+    ban = "command_plyban",
+    unban = "command_plyunban",
+    kill = "command_plykill",
+    freeze = "command_plyfreeze",
+    unfreeze = "command_plyunfreeze",
+    slay = "command_plyslay",
+    respawn = "command_plyrespawn",
+    blind = "command_plyblind",
+    unblind = "command_plyunblind",
+    gag = "command_plygag",
+    ungag = "command_plyungag",
+    mute = "command_plymute",
+    unmute = "command_plyunmute",
+    bring = "command_plybring",
+    ["goto"] = "command_plygoto",
+    ["return"] = "command_plyreturn",
+    jail = "command_plyjail",
+    unjail = "command_plyunjail",
+    cloak = "command_plycloak",
+    uncloak = "command_plyuncloak",
+    god = "command_plygod",
+    ungod = "command_plyungod",
+    ignite = "command_plyignite",
+    extinguish = "command_plyextinguish",
+    strip = "command_plystrip"
+}
+
+function lia.admin.getCommandPrivilegeID(cmd)
+    cmd = string.lower(tostring(cmd or ""))
+    if cmd == "" then return nil end
+    return targetedCommandPrivilegeMap[cmd] or "command_" .. cmd
+end
+
 local function rebuildPrivileges()
     lia.admin.privileges = lia.admin.privileges or {}
     local rebuildCache = {}
@@ -537,12 +572,16 @@ function lia.admin.hasAccess(ply, privilege)
             local playerInfo = IsValid(ply) and ply:Nick() .. " (" .. ply:SteamID() .. ")" or "Unknown"
             lia.log.add(ply, "missingPrivilege", privilege, playerInfo, grp)
         end
+
         return groupLevel >= adminLevel
     end
 
     if groupLevel >= superadminLevel then return true end
+
     local g = lia.admin.groups and lia.admin.groups[grp] or nil
     if g and g[privilege] == true then return true end
+    if g and g[privilege] == false then return false end
+
     local min = lia.admin.privileges[privilege]
     return shouldGrant(grp, min)
 end
@@ -770,7 +809,7 @@ function lia.admin.applyInheritance(groupName)
     local defaultGroups = lia.admin.DefaultGroups or {}
     for priv, min in pairs(lia.admin.privileges or {}) do
         local m = tostring(min or "user"):lower()
-        if groupLevel >= (defaultGroups[m] or 1) then g[priv] = true end
+        if g[priv] == nil and groupLevel >= (defaultGroups[m] or 1) then g[priv] = true end
     end
 
     clearGroupLevelCache()
@@ -1106,7 +1145,7 @@ if SERVER then
         end
 
         if lia.admin.DefaultGroups[groupName] then return end
-        lia.admin.groups[groupName][permission] = nil
+        lia.admin.groups[groupName][permission] = false
         lia.admin.save(silent and true or false)
         hook.Run("OnUsergroupPermissionsChanged", groupName, lia.admin.groups[groupName])
     end
@@ -1346,7 +1385,7 @@ if SERVER then
             end
         end
 
-        local privilegeID = string.lower("command_" .. cmd)
+        local privilegeID = lia.admin.getCommandPrivilegeID(cmd)
         if not isConsoleAdmin and not lia.admin.hasAccess(admin, privilegeID) then
             notifyAdmin("error", "noPerm")
             lia.log.add(admin, "unauthorizedCommand", cmd)

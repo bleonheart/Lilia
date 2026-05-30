@@ -728,88 +728,82 @@ class FunctionComparisonReportGenerator:
         """
         defined_keys: Set[str] = self._extract_language_keys(str(self.language_file))
 
-        # A string value is a potential loc key if it's a camelCase identifier or @token.
-        _loc_key_re = re.compile(r'^@?[a-z][a-zA-Z0-9_]*$')
-
-        def is_loc_key(v: str) -> bool:
-            return bool(_loc_key_re.match(v))
-
         def normalize(v: str) -> str:
             return v[1:] if v.startswith('@') else v
 
-        # (pattern, key_group, field_label_fn)
+        # (pattern, value_group, field_label_fn, allow_plain_literal)
         PATTERNS: List[Tuple] = [
-            # ITEM / MODULE / FACTION / CLASS  .name / .desc
             (
                 re.compile(r'\b(ITEM|MODULE|FACTION|CLASS)\s*\.\s*(name|desc)\s*=\s*["\']([^"\']+)["\']'),
                 3,
                 lambda m: f"{m.group(1)}.{m.group(2)}",
+                True,
             ),
-            # lia.config.add 2nd arg (display name)
             (
                 re.compile(r'\blia\.config\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "lia.config.add:name",
+                True,
             ),
-            # data table desc = "key" or desc = "@atKey"  (config.add / option.add data tables)
             (
-                re.compile(r'\bdesc\s*=\s*["\'](@?[a-z][a-zA-Z0-9_]+)["\']'),
+                re.compile(r'\bdesc\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "data.desc",
+                True,
             ),
-            # lia.option.add 2nd arg (name)
             (
                 re.compile(r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "lia.option.add:name",
+                True,
             ),
-            # lia.option.add 3rd arg (desc)
             (
                 re.compile(r'\blia\.option\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'][^"\']*["\']\s*,\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "lia.option.add:desc",
+                True,
             ),
-            # Privilege / AdminStick Name with @token
             (
-                re.compile(r'\bName\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
+                re.compile(r'\bName\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "Privilege.Name",
+                True,
             ),
-            # Privilege / AdminStick Category with @token
             (
-                re.compile(r'\bCategory\s*=\s*["\'](@[a-z][a-zA-Z0-9_]*)["\']'),
+                re.compile(r'\bCategory\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "Privilege.Category",
+                True,
             ),
-            # category = "@token" in config/option/keybind data tables
             (
-                re.compile(r'\bcategory\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                re.compile(r'\bcategory\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "data.category",
+                True,
             ),
-            # lia.flag.add("X", "@descKey", ...) — 2nd positional arg
             (
-                re.compile(r'\blia\.flag\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\'](@?[a-z][A-Za-z0-9_]*)["\']'),
+                re.compile(r'\blia\.flag\.add\s*\(\s*["\'][^"\']+["\']\s*,\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "lia.flag.add:desc",
+                True,
             ),
-            # privilege = "@token" in command data tables
             (
-                re.compile(r'\bprivilege\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                re.compile(r'\bprivilege\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "data.privilege",
+                False,
             ),
-            # MODULE.discord / ENT.Contact / SWEP.Contact = "@token"
             (
-                re.compile(r'\b(?:MODULE|ENT|SWEP)\s*\.\s*(?:discord|Contact)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                re.compile(r'\b(?:MODULE|ENT|SWEP)\s*\.\s*(?:discord|Contact)\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "entity.contact",
+                False,
             ),
-            # actionText / targetActionText = "@token"
             (
-                re.compile(r'\b(?:actionText|targetActionText)\s*=\s*["\'](@[A-Za-z_][A-Za-z0-9_]*)["\']'),
+                re.compile(r'\b(?:actionText|targetActionText)\s*=\s*["\']([^"\']+)["\']'),
                 1,
                 lambda m: "interaction.actionText",
+                True,
             ),
         ]
 
@@ -839,17 +833,27 @@ class FunctionComparisonReportGenerator:
                 except ValueError:
                     rel_path = str(lua_file)
 
-                for pattern, key_group, field_label_fn in PATTERNS:
+                for pattern, value_group, field_label_fn, allow_plain_literal in PATTERNS:
                     for m in pattern.finditer(content_clean):
-                        raw_key = m.group(key_group)
-                        if not is_loc_key(raw_key):
+                        raw_value = m.group(value_group).strip()
+                        issue = None
+                        value = None
+
+                        if self._looks_like_localization_key(raw_value):
+                            norm = normalize(raw_value)
+                            if norm in defined_keys:
+                                continue
+                            issue = "missing_key"
+                            value = norm
+                        elif allow_plain_literal and self._is_probably_unlocalized_literal(raw_value):
+                            issue = "unlocalized_literal"
+                            value = raw_value
+                        else:
                             continue
-                        norm = normalize(raw_key)
-                        if norm in defined_keys:
-                            continue
+
                         line_num = content_clean[: m.start()].count("\n") + 1
                         context = split_lines[line_num - 1].strip() if line_num <= len(split_lines) else ""
-                        sig = (rel_path, line_num, norm)
+                        sig = (rel_path, line_num, field_label_fn(m), issue, value)
                         if sig in seen:
                             continue
                         seen.add(sig)
@@ -857,7 +861,8 @@ class FunctionComparisonReportGenerator:
                             "file": rel_path,
                             "line": line_num,
                             "field": field_label_fn(m),
-                            "key": norm,
+                            "issue": issue,
+                            "key": value,
                             "context": context[:240],
                         })
 
@@ -1078,6 +1083,23 @@ class FunctionComparisonReportGenerator:
         if not key:
             return key
         return key[1:] if key.startswith('@') else key
+
+    @staticmethod
+    def _looks_like_localization_key(value: Optional[str]) -> bool:
+        """Return True when a string literal resembles a localization key/token."""
+        if not value:
+            return False
+        return bool(re.match(r'^@?[A-Za-z_][A-Za-z0-9_\.:-]*$', value.strip()))
+
+    @staticmethod
+    def _is_probably_unlocalized_literal(value: Optional[str]) -> bool:
+        """Heuristic for plain user-facing text that should likely be localized."""
+        if not value:
+            return False
+        stripped = value.strip()
+        if not stripped or stripped.startswith('@'):
+            return False
+        return not bool(re.match(r'^[A-Za-z_][A-Za-z0-9_\.:-]*$', stripped))
 
     @staticmethod
     def _lua_long_string_close(s: str, i: int) -> int:
@@ -1438,9 +1460,8 @@ class FunctionComparisonReportGenerator:
 
         # 9. Undefined inferred localization keys — gated (scans external modules too)
         undefined_inferred_loc_keys = []
-        if self.generate_module_docs:
-            print("Detecting undefined inferred localization keys...")
-            undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
+        print("Detecting undefined inferred localization keys...")
+        undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
 
         # Categorize missing functions by type
         missing_library_functions, missing_hook_functions, missing_meta_functions = self._categorize_missing_functions(function_results)
@@ -3380,12 +3401,12 @@ class FunctionComparisonReportGenerator:
         # Undefined inferred localization keys (gated — only present when module docs enabled)
         inferred_undef = getattr(data, "undefined_inferred_loc_keys", []) or []
         if inferred_undef:
-            lines.append("### Undefined Inferred Localization Keys")
+            lines.append("### Undefined or Unlocalized Inferred Localization Values")
             lines.append("")
             lines.append(
                 "These string literals are stored in localization-by-convention fields "
                 "(e.g. `ITEM.name`, `lia.config.add` name arg, `lia.option.add` name/desc) "
-                "but have no matching entry in the language file."
+                "and either reference a missing language key or use plain unlocalized text."
             )
             lines.append("")
 
@@ -3394,12 +3415,13 @@ class FunctionComparisonReportGenerator:
             for entry in inferred_undef:
                 by_field[entry["field"]].append(entry)
 
-            lines.append("| Field | Key | File | Line |")
-            lines.append("|---|---|---|---:|")
+            lines.append("| Field | Issue | Value | File | Line |")
+            lines.append("|---|---|---|---|---:|")
             for field in sorted(by_field.keys()):
                 for entry in by_field[field]:
+                    issue_label = "Missing key" if entry.get("issue") == "missing_key" else "Unlocalized string"
                     lines.append(
-                        f"| `{entry['field']}` | `{entry['key']}` | {entry['file']} | {entry['line']} |"
+                        f"| `{entry['field']}` | {issue_label} | `{entry['key']}` | {entry['file']} | {entry['line']} |"
                     )
             lines.append("")
 
