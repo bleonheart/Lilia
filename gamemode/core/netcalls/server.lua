@@ -1595,6 +1595,7 @@ net.Receive("liaGroupsSetPerm", function(_, p)
     if group == "" or privilege == "" then return end
     if lia.admin.DefaultGroups and lia.admin.DefaultGroups[group] then return end
     if not lia.admin.groups or not lia.admin.groups[group] then return end
+    lia.debug("[Permissions UI]", "Received permission edit request", "editor=", tostring(IsValid(p) and p:Nick() .. " (" .. p:SteamID() .. ")" or "unknown"), "group=", tostring(group), "privilege=", tostring(privilege), "requestedValue=", tostring(value), "previousExplicitValue=", tostring(lia.admin.groups[group][privilege]), "previousEffectiveValue=", tostring(lia.admin.hasAccess(group, privilege)))
     if SERVER then
         if value then
             lia.admin.addPermission(group, privilege, true)
@@ -1602,6 +1603,8 @@ net.Receive("liaGroupsSetPerm", function(_, p)
             lia.admin.removePermission(group, privilege, true)
         end
     end
+
+    lia.debug("[Permissions UI]", "Applied permission edit request", "group=", tostring(group), "privilege=", tostring(privilege), "newExplicitValue=", tostring(lia.admin.groups[group] and lia.admin.groups[group][privilege]), "newEffectiveValue=", tostring(lia.admin.hasAccess(group, privilege)))
 
     local overrides = getGroupPermissionOverrides(group)
     local lines = {"Usergroup " .. string.upper(tostring(group))}
