@@ -377,6 +377,15 @@ class CombinedReportData:
     net_messages_unused_defined: List[str]
     net_messages_used_but_undefined: List[str]
     net_message_analysis_notes: List[str]
+    module_net_messages_misregistered: List[Dict[str, Any]]
+    module_net_messages_undefined: List[Dict[str, Any]]
+    module_net_messages_notes: List[str]
+    net_messages_direction_issues: List[Dict[str, Any]]
+    derma_panels_defined: List[Dict[str, Any]]
+    derma_panels_used: Set[str]
+    derma_panels_unused: List[Dict[str, Any]]
+    module_derma_panels_outside_folder: List[Dict[str, Any]]
+    module_file_placement_issues: List[Dict[str, Any]]
     generated_at: str
 
 @dataclass(frozen=True)
@@ -1432,9 +1441,112 @@ class FunctionComparisonReportGenerator:
         print(f"Compared {len(language_keys)} language files, found {len(all_keys)} total unique keys")
         return missing_keys
 
+    def _iter_workspace_roots(self) -> List[Path]:
+        """Return repository and configured module roots that exist on disk."""
+        roots: List[Path] = []
+        for root in [self.base_path, *[Path(p) for p in (self.modules_paths or [])]]:
+            try:
+                resolved = root.resolve()
+            except Exception:
+                resolved = root
+            if root.exists() and resolved not in roots:
+                roots.append(resolved)
+        return roots
+
     def _scan_lua_files_for_net_analysis(self) -> List[Path]:
-        """Return Lua files that should be included in the net-message analysis."""
-        return sorted(self.base_path.rglob("*.lua"))
+        """Return Lua files that should be included in code placement analyses."""
+        lua_files: Dict[str, Path] = {}
+        for root in self._iter_workspace_roots():
+            for lua_file in root.rglob("*.lua"):
+                path_text = str(lua_file).lower()
+                if any(part in path_text for part in ("\\documentation\\", "/documentation/", "\\docs\\", "/docs/")):
+                    continue
+                if "_disabled" in path_text:
+                    continue
+                lua_files[str(lua_file.resolve()).lower()] = lua_file.resolve()
+        return sorted(lua_files.values(), key=lambda path: str(path).lower())
+
+    def _path_ref_for_report(self, file_path: Path) -> str:
+        """Return a stable path reference for markdown reports."""
+        try:
+            return str(file_path.resolve().relative_to(self.base_path.resolve())).replace("\\", "/")
+        except Exception:
+            return str(file_path.resolve()).replace("\\", "/")
+
+    def _resolve_report_path(self, file_ref: str) -> Optional[Path]:
+        """Resolve a stored report path, accepting both absolute and base-relative refs."""
+        if not file_ref:
+            return None
+        try:
+            candidate = Path(file_ref)
+            if candidate.is_absolute():
+                return candidate.resolve()
+            return (self.base_path / candidate).resolve()
+        except Exception:
+            return None
+
+    def _discover_module_roots(self) -> List[Dict[str, Any]]:
+        """Discover built-in, external, and nested module roots."""
+        roots_by_path: Dict[str, Dict[str, Any]] = {}
+
+        def add_module(path: Path, source: str):
+            try:
+                resolved = path.resolve()
+            except Exception:
+                return
+            if not resolved.is_dir() or "_disabled" in str(resolved).lower():
+                return
+            roots_by_path[str(resolved).lower()] = {
+                "name": resolved.name,
+                "path": resolved,
+                "source": source,
+            }
+
+        built_in_base = self.base_path / "modules"
+        if built_in_base.exists():
+            for child in built_in_base.iterdir():
+                if child.is_dir():
+                    add_module(child, "framework")
+                    for module_lua in child.rglob("module.lua"):
+                        add_module(module_lua.parent, "framework")
+
+        for modules_base in (Path(p) for p in (self.modules_paths or [])):
+            if not modules_base.exists():
+                continue
+            for child in modules_base.iterdir():
+                if child.is_dir():
+                    add_module(child, "external")
+                    for module_lua in child.rglob("module.lua"):
+                        add_module(module_lua.parent, "external")
+
+        return sorted(roots_by_path.values(), key=lambda info: len(str(info["path"])), reverse=True)
+
+    def _module_owner_for_path(self, file_ref_or_path: Any, module_roots: Optional[List[Dict[str, Any]]] = None) -> Optional[Dict[str, Any]]:
+        """Return the most specific owning module for a file reference."""
+        candidate = file_ref_or_path if isinstance(file_ref_or_path, Path) else self._resolve_report_path(str(file_ref_or_path or ""))
+        if candidate is None:
+            return None
+        try:
+            resolved = candidate.resolve()
+        except Exception:
+            return None
+        for module in module_roots or self._discover_module_roots():
+            try:
+                if resolved.is_relative_to(module["path"].resolve()):
+                    return module
+            except Exception:
+                continue
+        return None
+
+    def _path_is_under_named_child(self, file_ref_or_path: Any, module_path: Path, child_name: str) -> bool:
+        """Return True when a file lives under a named module child folder."""
+        candidate = file_ref_or_path if isinstance(file_ref_or_path, Path) else self._resolve_report_path(str(file_ref_or_path or ""))
+        if candidate is None:
+            return False
+        try:
+            return candidate.resolve().is_relative_to((module_path / child_name).resolve())
+        except Exception:
+            return False
 
     def _extract_lua_string_literals(self, text: str) -> List[str]:
         """Extract simple quoted or long-bracket Lua string literals from text."""
@@ -1494,6 +1606,8 @@ class FunctionComparisonReportGenerator:
         """Extract base GMod net-message definitions from one file."""
         named_tables = self._extract_named_string_tables(content, file_path)
 
+        rel_file = self._path_ref_for_report(file_path)
+
         for match in re.finditer(r'util\.AddNetworkString\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])\s*\)', content):
             message_name = match.group(2) or match.group(3) or match.group(4)
             if not message_name:
@@ -1502,7 +1616,7 @@ class FunctionComparisonReportGenerator:
                 defined,
                 message_name,
                 {
-                    "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                    "file": rel_file,
                     "line": content[:match.start()].count("\n") + 1,
                     "type": "direct util.AddNetworkString",
                     "detail": "literal util.AddNetworkString(...)",
@@ -1528,7 +1642,7 @@ class FunctionComparisonReportGenerator:
                     defined,
                     message_name,
                     {
-                        "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                        "file": rel_file,
                         "line": named_tables[table_name]["line"],
                         "type": source_type,
                         "detail": detail,
@@ -1544,7 +1658,7 @@ class FunctionComparisonReportGenerator:
                     defined,
                     message_name,
                     {
-                        "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                        "file": rel_file,
                         "line": table_info["line"],
                         "type": table_name,
                         "detail": f"literal strings in `{table_name}` registered by modularity loader",
@@ -1559,7 +1673,7 @@ class FunctionComparisonReportGenerator:
             (r'lia\.net\.readBigTable\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "lia.net.readBigTable", "Lilia helper receive usage"),
             (r'lia\.net\.writeBigTable\s*\(\s*[^,\n\)]+?\s*,\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "lia.net.writeBigTable", "Lilia helper send usage"),
         ]
-        rel_file = str(file_path.relative_to(self.base_path)).replace("\\", "/")
+        rel_file = self._path_ref_for_report(file_path)
 
         for pattern, site_type, detail in usage_patterns:
             for match in re.finditer(pattern, content, re.DOTALL):
@@ -1610,6 +1724,236 @@ class FunctionComparisonReportGenerator:
         used_but_undefined = sorted(used_names - defined_names, key=str.lower)
         return defined, used, unused_defined, used_but_undefined, notes
 
+    def _run_module_net_registration_analysis(
+        self,
+        defined: Dict[str, List[Dict[str, Any]]],
+        used: Dict[str, List[Dict[str, Any]]],
+    ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[str]]:
+        """Find module-local net messages whose registrations are missing or outside the module."""
+        module_roots = self._discover_module_roots()
+        misregistered: List[Dict[str, Any]] = []
+        undefined: List[Dict[str, Any]] = []
+        notes = [
+            "A message is treated as module-specific when all detected literal usage sites belong to one module.",
+            "Valid in-module registrations include literal `MODULE.NetworkStrings`, `SCHEMA.NetworkStrings`, and `util.AddNetworkString(...)` sites inside that module root.",
+        ]
+
+        for message_name, usage_sites in sorted((used or {}).items(), key=lambda item: item[0].lower()):
+            usage_modules = [self._module_owner_for_path(site.get("file"), module_roots) for site in usage_sites]
+            if not usage_sites or any(module is None for module in usage_modules):
+                continue
+            module_paths = {str(module["path"].resolve()).lower() for module in usage_modules if module}
+            if len(module_paths) != 1:
+                continue
+
+            module = usage_modules[0]
+            definition_sites = defined.get(message_name, []) or []
+            in_module_defs = [
+                site for site in definition_sites
+                if self._module_owner_for_path(site.get("file"), module_roots)
+                and self._module_owner_for_path(site.get("file"), module_roots)["path"].resolve() == module["path"].resolve()
+            ]
+
+            base_entry = {
+                "message": message_name,
+                "module_name": module["name"],
+                "module_path": str(module["path"]),
+                "usage_sites": usage_sites,
+                "definition_sites": definition_sites,
+            }
+            if not definition_sites:
+                undefined.append({
+                    **base_entry,
+                    "reason": f'Used only by module "{module["name"]}" and not defined anywhere',
+                })
+            elif not in_module_defs:
+                misregistered.append({
+                    **base_entry,
+                    "reason": f'Used only by module "{module["name"]}" but defined outside that module',
+                })
+
+        return misregistered, undefined, notes
+
+    def _infer_lua_site_side(self, site: Dict[str, Any]) -> str:
+        """Infer the likely Lua execution side from path naming conventions."""
+        file_ref = (site.get("file") or "").replace("\\", "/").lower()
+        name = Path(file_ref).name
+        if name.startswith("cl_") or name == "client.lua" or "/client/" in file_ref or "/derma/" in file_ref:
+            return "client"
+        if name.startswith("sv_") or name in {"server.lua", "init.lua"} or "/server/" in file_ref:
+            return "server"
+        if name.startswith("sh_") or name == "shared.lua":
+            return "shared"
+        return "unknown"
+
+    def _run_net_direction_analysis(self, used: Dict[str, List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+        """Find suspicious one-sided or same-side net-message flow patterns."""
+        issues: List[Dict[str, Any]] = []
+        sender_types = {"net.Start", "lia.net.writeBigTable"}
+        receiver_types = {"net.Receive", "lia.net.readBigTable"}
+
+        for message_name, sites in sorted((used or {}).items(), key=lambda item: item[0].lower()):
+            senders = [site for site in sites if site.get("type") in sender_types]
+            receivers = [site for site in sites if site.get("type") in receiver_types]
+            if not senders and not receivers:
+                continue
+
+            send_sides = sorted({self._infer_lua_site_side(site) for site in senders})
+            receive_sides = sorted({self._infer_lua_site_side(site) for site in receivers})
+            reason = None
+            if receivers and not senders:
+                reason = "Message has receivers but no detected senders"
+            elif senders and not receivers:
+                reason = "Message has senders but no detected receivers"
+            elif set(send_sides) == {"client"} and set(receive_sides) == {"client"}:
+                reason = "Message appears to send and receive only on the client side"
+            elif set(send_sides) == {"server"} and set(receive_sides) == {"server"}:
+                reason = "Message appears to send and receive only on the server side"
+
+            if reason:
+                issues.append({
+                    "message": message_name,
+                    "sender_sites": senders,
+                    "receiver_sites": receivers,
+                    "send_sides": send_sides,
+                    "receive_sides": receive_sides,
+                    "reason": reason,
+                })
+
+        return issues
+
+    def _scan_derma_panel_analysis(self) -> Tuple[List[Dict[str, Any]], Set[str], List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]]]:
+        """Scan Derma panel definitions, use sites, and module placement issues."""
+        module_roots = self._discover_module_roots()
+        panels_defined: List[Dict[str, Any]] = []
+        panels_used: Set[str] = set()
+        module_panels_outside_folder: List[Dict[str, Any]] = []
+        file_placement_issues: List[Dict[str, Any]] = []
+        ui_create_counts: Dict[str, Dict[str, Any]] = {}
+
+        lua_string = r'("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])'
+        register_pattern = re.compile(
+            rf'vgui\.Register\s*\(\s*{lua_string}\s*,\s*[^,\n\)]+(?:\s*,\s*{lua_string})?',
+        )
+        create_pattern = re.compile(r'vgui\.Create\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', re.DOTALL)
+
+        for lua_file in self._scan_lua_files_for_net_analysis():
+            try:
+                content = lua_file.read_text(encoding='utf-8', errors='ignore')
+            except Exception as e:
+                print(f"Warning: Error reading {lua_file} during Derma analysis: {e}")
+                continue
+
+            content_clean = self._remove_lua_comments(content)
+            rel_file = self._path_ref_for_report(lua_file)
+            module = self._module_owner_for_path(lua_file, module_roots)
+
+            create_matches = list(create_pattern.finditer(content_clean))
+            if create_matches:
+                for match in create_matches:
+                    panel_name = match.group(2) or match.group(3) or match.group(4)
+                    if panel_name:
+                        panels_used.add(panel_name)
+                ui_create_counts[rel_file] = {
+                    "count": len(create_matches),
+                    "line": content_clean[:create_matches[0].start()].count("\n") + 1,
+                    "module": module,
+                    "path": lua_file,
+                }
+
+            for match in register_pattern.finditer(content_clean):
+                panel_name = match.group(2) or match.group(3) or match.group(4)
+                base_panel = match.group(6) or match.group(7) or match.group(8)
+                if not panel_name:
+                    continue
+                if base_panel:
+                    panels_used.add(base_panel)
+                line = content_clean[:match.start()].count("\n") + 1
+                panel_entry = {
+                    "panel": panel_name,
+                    "base_panel": base_panel,
+                    "file": rel_file,
+                    "line": line,
+                    "module_name": module["name"] if module else None,
+                    "module_path": str(module["path"]) if module else None,
+                }
+                panels_defined.append(panel_entry)
+
+                if module and not self._path_is_under_named_child(lua_file, module["path"], "derma"):
+                    issue = {
+                        **panel_entry,
+                        "expected_folder": str(module["path"] / "derma"),
+                        "reason": f'Panel belongs to module "{module["name"]}" but is defined outside its derma folder',
+                    }
+                    module_panels_outside_folder.append(issue)
+                    file_placement_issues.append({
+                        "type": "UI / Derma Code Outside derma",
+                        "module_name": module["name"],
+                        "module_path": str(module["path"]),
+                        "file": rel_file,
+                        "line": line,
+                        "reason": "Module Derma code is outside the derma folder",
+                        "expected_folder": str(module["path"] / "derma"),
+                    })
+
+        for rel_file, info in ui_create_counts.items():
+            module = info.get("module")
+            if not module or info.get("count", 0) < 3:
+                continue
+            if self._path_is_under_named_child(info["path"], module["path"], "derma"):
+                continue
+            file_placement_issues.append({
+                "type": "UI / Derma Code Outside derma",
+                "module_name": module["name"],
+                "module_path": str(module["path"]),
+                "file": rel_file,
+                "line": info["line"],
+                "reason": "Module UI-heavy code is outside the derma folder",
+                "expected_folder": str(module["path"] / "derma"),
+            })
+
+        defined_names = {entry["panel"] for entry in panels_defined}
+        unused_panels = [
+            entry for entry in panels_defined
+            if entry["panel"] not in panels_used and entry["panel"] in defined_names
+        ]
+        unused_panels.sort(key=lambda entry: ((entry.get("module_name") or ""), entry["panel"].lower(), entry["file"], entry["line"]))
+        module_panels_outside_folder.sort(key=lambda entry: ((entry.get("module_name") or ""), entry["file"], entry["line"]))
+        file_placement_issues.sort(key=lambda entry: (entry["type"], entry["module_name"], entry["file"], entry["line"]))
+        return panels_defined, panels_used, unused_panels, module_panels_outside_folder, file_placement_issues
+
+    def _run_module_file_placement_analysis(self, used: Dict[str, List[Dict[str, Any]]], existing_issues: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Find module-owned net handlers outside the conventional netcalls folder."""
+        module_roots = self._discover_module_roots()
+        issues = list(existing_issues or [])
+        seen = {
+            (issue.get("type"), issue.get("file"), issue.get("line"), issue.get("module_name"))
+            for issue in issues
+        }
+
+        for sites in (used or {}).values():
+            for site in sites:
+                if site.get("type") != "net.Receive":
+                    continue
+                module = self._module_owner_for_path(site.get("file"), module_roots)
+                if not module or self._path_is_under_named_child(site.get("file"), module["path"], "netcalls"):
+                    continue
+                issue = {
+                    "type": "Net Handlers Outside netcalls",
+                    "module_name": module["name"],
+                    "module_path": str(module["path"]),
+                    "file": site.get("file"),
+                    "line": site.get("line"),
+                    "reason": "Module net handler is outside the netcalls folder",
+                    "expected_folder": str(module["path"] / "netcalls"),
+                }
+                key = (issue["type"], issue["file"], issue["line"], issue["module_name"])
+                if key not in seen:
+                    seen.add(key)
+                    issues.append(issue)
+
+        return sorted(issues, key=lambda entry: (entry["type"], entry["module_name"], entry["file"], entry["line"]))
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -1657,6 +2001,14 @@ class FunctionComparisonReportGenerator:
         # 9. Net-message analysis
         print("Analyzing net messages...")
         net_messages_defined, net_messages_used, net_messages_unused_defined, net_messages_used_but_undefined, net_message_analysis_notes = self._run_net_message_analysis()
+        module_net_messages_misregistered, module_net_messages_undefined, module_net_messages_notes = self._run_module_net_registration_analysis(
+            net_messages_defined,
+            net_messages_used,
+        )
+        net_messages_direction_issues = self._run_net_direction_analysis(net_messages_used)
+        print("Analyzing Derma panels and module file placement...")
+        derma_panels_defined, derma_panels_used, derma_panels_unused, module_derma_panels_outside_folder, derma_file_placement_issues = self._scan_derma_panel_analysis()
+        module_file_placement_issues = self._run_module_file_placement_analysis(net_messages_used, derma_file_placement_issues)
 
         # 10. Undefined inferred localization keys — gated (scans external modules too)
         undefined_inferred_loc_keys = []
@@ -1698,6 +2050,15 @@ class FunctionComparisonReportGenerator:
             net_messages_unused_defined=net_messages_unused_defined,
             net_messages_used_but_undefined=net_messages_used_but_undefined,
             net_message_analysis_notes=net_message_analysis_notes,
+            module_net_messages_misregistered=module_net_messages_misregistered,
+            module_net_messages_undefined=module_net_messages_undefined,
+            module_net_messages_notes=module_net_messages_notes,
+            net_messages_direction_issues=net_messages_direction_issues,
+            derma_panels_defined=derma_panels_defined,
+            derma_panels_used=derma_panels_used,
+            derma_panels_unused=derma_panels_unused,
+            module_derma_panels_outside_folder=module_derma_panels_outside_folder,
+            module_file_placement_issues=module_file_placement_issues,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -2631,6 +2992,12 @@ class FunctionComparisonReportGenerator:
         # Net Message Section
         report_lines.extend(self._generate_net_message_section(data))
 
+        # Derma Panel Section
+        report_lines.extend(self._generate_derma_panel_section(data))
+
+        # Module File Placement Section
+        report_lines.extend(self._generate_module_file_placement_section(data))
+
         # Config Undefined Get Calls — always shown (framework analysis)
         report_lines.extend(self._generate_config_undefined_section(data))
 
@@ -2693,8 +3060,8 @@ class FunctionComparisonReportGenerator:
             return False
 
         try:
-            candidate = Path(file_ref)
-            if not candidate.is_absolute():
+            candidate = self._resolve_report_path(file_ref)
+            if candidate is None:
                 return False
             return candidate.resolve().is_relative_to(module_path.resolve())
         except Exception:
@@ -2710,6 +3077,32 @@ class FunctionComparisonReportGenerator:
             ]
             if matching_sites:
                 filtered[message_name] = matching_sites
+        return filtered
+
+    def _filter_entries_for_module(self, entries: List[Dict[str, Any]], module_path: Path) -> List[Dict[str, Any]]:
+        """Filter finding dictionaries to entries owned by or referencing one module."""
+        filtered: List[Dict[str, Any]] = []
+        target_path = str(module_path.resolve()).lower()
+        for entry in entries or []:
+            entry_module_path = entry.get("module_path")
+            if entry_module_path:
+                try:
+                    if str(Path(entry_module_path).resolve()).lower() == target_path:
+                        filtered.append(entry)
+                        continue
+                except Exception:
+                    pass
+            if self._path_is_within_module(entry.get("file"), module_path):
+                filtered.append(entry)
+                continue
+            site_lists = [
+                entry.get("usage_sites", []),
+                entry.get("definition_sites", []),
+                entry.get("sender_sites", []),
+                entry.get("receiver_sites", []),
+            ]
+            if any(self._path_is_within_module(site.get("file"), module_path) for sites in site_lists for site in (sites or [])):
+                filtered.append(entry)
         return filtered
 
     def _build_module_function_comparison(self, module_entry: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
@@ -2762,6 +3155,13 @@ class FunctionComparisonReportGenerator:
         filtered_used = self._filter_net_message_sites_for_module(getattr(data, "net_messages_used", {}) or {}, module_path)
         filtered_defined_names = set(filtered_defined.keys())
         filtered_used_names = set(filtered_used.keys())
+        scoped_module_net_misregistered = self._filter_entries_for_module(getattr(data, "module_net_messages_misregistered", []) or [], module_path)
+        scoped_module_net_undefined = self._filter_entries_for_module(getattr(data, "module_net_messages_undefined", []) or [], module_path)
+        scoped_direction_issues = self._filter_entries_for_module(getattr(data, "net_messages_direction_issues", []) or [], module_path)
+        scoped_derma_defined = self._filter_entries_for_module(getattr(data, "derma_panels_defined", []) or [], module_path)
+        scoped_derma_unused = self._filter_entries_for_module(getattr(data, "derma_panels_unused", []) or [], module_path)
+        scoped_derma_outside = self._filter_entries_for_module(getattr(data, "module_derma_panels_outside_folder", []) or [], module_path)
+        scoped_file_placement = self._filter_entries_for_module(getattr(data, "module_file_placement_issues", []) or [], module_path)
         module_conflicts = {
             key: occurrences
             for key, occurrences in (getattr(data, "module_localization_conflicts", {}) or {}).items()
@@ -2806,6 +3206,15 @@ class FunctionComparisonReportGenerator:
             net_messages_unused_defined=sorted(filtered_defined_names - filtered_used_names, key=str.lower),
             net_messages_used_but_undefined=sorted(filtered_used_names - filtered_defined_names, key=str.lower),
             net_message_analysis_notes=list(getattr(data, "net_message_analysis_notes", []) or []),
+            module_net_messages_misregistered=scoped_module_net_misregistered,
+            module_net_messages_undefined=scoped_module_net_undefined,
+            module_net_messages_notes=list(getattr(data, "module_net_messages_notes", []) or []),
+            net_messages_direction_issues=scoped_direction_issues,
+            derma_panels_defined=scoped_derma_defined,
+            derma_panels_used=set(getattr(data, "derma_panels_used", set()) or set()),
+            derma_panels_unused=scoped_derma_unused,
+            module_derma_panels_outside_folder=scoped_derma_outside,
+            module_file_placement_issues=scoped_file_placement,
             generated_at=data.generated_at,
         )
 
@@ -2893,6 +3302,148 @@ class FunctionComparisonReportGenerator:
             lines.append("None")
             lines.append("")
 
+        misregistered = getattr(data, "module_net_messages_misregistered", []) or []
+        module_undefined = getattr(data, "module_net_messages_undefined", []) or []
+        direction_issues = getattr(data, "net_messages_direction_issues", []) or []
+
+        lines.append("### Module-Specific Registration Issues")
+        lines.append("")
+        lines.extend([
+            f"- **Module-Specific But Registered Outside Module:** {len(misregistered)}",
+            f"- **Module-Specific Used But Undefined:** {len(module_undefined)}",
+            "",
+        ])
+        for note in getattr(data, "module_net_messages_notes", []) or []:
+            lines.append(f"- Note: {note}")
+        if getattr(data, "module_net_messages_notes", []) or []:
+            lines.append("")
+
+        lines.append("#### Module-Specific But Registered Outside Module")
+        lines.append("")
+        if misregistered:
+            for entry in misregistered:
+                lines.append(f"- `{entry['message']}` in module `{entry['module_name']}`")
+                lines.append(f"  - Reason: {entry['reason']}")
+                usage_summary = "; ".join(f"{site['type']} at {site['file']}:{site['line']}" for site in entry.get("usage_sites", [])[:5])
+                definition_summary = "; ".join(f"{site['type']} at {site['file']}:{site['line']}" for site in entry.get("definition_sites", [])[:5])
+                lines.append(f"  - Usage sites: {usage_summary or 'None'}")
+                lines.append(f"  - Definition sites: {definition_summary or 'None'}")
+        else:
+            lines.append("None")
+        lines.append("")
+
+        lines.append("#### Module-Specific Used But Undefined")
+        lines.append("")
+        if module_undefined:
+            for entry in module_undefined:
+                lines.append(f"- `{entry['message']}` in module `{entry['module_name']}`")
+                lines.append(f"  - Reason: {entry['reason']}")
+                usage_summary = "; ".join(f"{site['type']} at {site['file']}:{site['line']}" for site in entry.get("usage_sites", [])[:5])
+                lines.append(f"  - Usage sites: {usage_summary or 'None'}")
+        else:
+            lines.append("None")
+        lines.append("")
+
+        lines.append("### Direction / Flow Issues")
+        lines.append("")
+        lines.append(f"Total suspicious patterns: **{len(direction_issues)}**")
+        lines.append("")
+        if direction_issues:
+            for entry in direction_issues:
+                sender_summary = "; ".join(f"{site['file']}:{site['line']}" for site in entry.get("sender_sites", [])[:5])
+                receiver_summary = "; ".join(f"{site['file']}:{site['line']}" for site in entry.get("receiver_sites", [])[:5])
+                lines.append(f"- `{entry['message']}`")
+                lines.append(f"  - Reason: {entry['reason']}")
+                lines.append(f"  - Send sides: {', '.join(entry.get('send_sides', [])) or 'none'}")
+                lines.append(f"  - Receive sides: {', '.join(entry.get('receive_sides', [])) or 'none'}")
+                lines.append(f"  - Sender sites: {sender_summary or 'None'}")
+                lines.append(f"  - Receiver sites: {receiver_summary or 'None'}")
+        else:
+            lines.append("None")
+        lines.append("")
+
+        lines.append("---")
+        lines.append("")
+        return lines
+
+    def _generate_derma_panel_section(self, data: CombinedReportData) -> List[str]:
+        """Generate Derma panel placement and usage analysis."""
+        lines: List[str] = ["## Derma Panel Analysis", ""]
+        panels_defined = getattr(data, "derma_panels_defined", []) or []
+        panels_used = getattr(data, "derma_panels_used", set()) or set()
+        panels_unused = getattr(data, "derma_panels_unused", []) or []
+        outside_folder = getattr(data, "module_derma_panels_outside_folder", []) or []
+
+        lines.extend([
+            "### Summary",
+            f"- **Registered Panels:** {len(panels_defined)}",
+            f"- **Referenced Panels:** {len(panels_used)}",
+            f"- **Module Panels Outside derma:** {len(outside_folder)}",
+            f"- **Registered But Unused:** {len(panels_unused)}",
+            "",
+        ])
+
+        lines.append("### Module Panels Outside derma")
+        lines.append("")
+        if outside_folder:
+            lines.append("| Panel | Module | Location | Expected Folder |")
+            lines.append("|---|---|---|---|")
+            for entry in outside_folder:
+                lines.append(f"| `{entry['panel']}` | `{entry['module_name']}` | `{entry['file']}:{entry['line']}` | `{entry['expected_folder']}` |")
+            lines.append("")
+        else:
+            lines.append("None")
+            lines.append("")
+
+        lines.append("### Registered But Unused Panels")
+        lines.append("")
+        if panels_unused:
+            lines.append("| Panel | Module | Location |")
+            lines.append("|---|---|---|")
+            for entry in panels_unused:
+                module_name = entry.get("module_name") or "framework"
+                lines.append(f"| `{entry['panel']}` | `{module_name}` | `{entry['file']}:{entry['line']}` |")
+            lines.append("")
+        else:
+            lines.append("None")
+            lines.append("")
+
+        lines.append("---")
+        lines.append("")
+        return lines
+
+    def _generate_module_file_placement_section(self, data: CombinedReportData) -> List[str]:
+        """Generate module file placement convention findings."""
+        lines: List[str] = ["## Module File Placement Analysis", ""]
+        issues = getattr(data, "module_file_placement_issues", []) or []
+        net_issues = [issue for issue in issues if issue.get("type") == "Net Handlers Outside netcalls"]
+        ui_issues = [issue for issue in issues if issue.get("type") == "UI / Derma Code Outside derma"]
+
+        lines.extend([
+            "### Summary",
+            f"- **Net Handlers Outside netcalls:** {len(net_issues)}",
+            f"- **UI / Derma Code Outside derma:** {len(ui_issues)}",
+            "",
+        ])
+
+        for heading, bucket in (
+            ("### Net Handlers Outside netcalls", net_issues),
+            ("### UI / Derma Code Outside derma", ui_issues),
+        ):
+            lines.append(heading)
+            lines.append("")
+            if bucket:
+                lines.append("| Module | Location | Expected Folder | Reason |")
+                lines.append("|---|---|---|---|")
+                for issue in bucket:
+                    lines.append(f"| `{issue['module_name']}` | `{issue['file']}:{issue['line']}` | `{issue['expected_folder']}` | {issue['reason']} |")
+                lines.append("")
+            else:
+                lines.append("None")
+                lines.append("")
+
+        lines.append("---")
+        lines.append("")
         return lines
 
     def _scan_modules_for_undocumented(self) -> List[Dict]:
