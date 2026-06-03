@@ -5,7 +5,7 @@ import re
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Any, Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass
 from collections import defaultdict
 
@@ -15,6 +15,10 @@ HOOKS_REPORT_IGNORE = {
     "getData",
     "setData",
     "PopulateInventoryItems",
+}
+
+NET_MESSAGE_REPORT_IGNORE = {
+    "wire_expression2_upload",
 }
 
 def _get_paths_from_file_location():
@@ -367,6 +371,12 @@ class CombinedReportData:
     config_undefined_get_calls: List[Dict]  # lia.config.get calls with undefined keys
     # Inferred localization undefined keys
     undefined_inferred_loc_keys: List[Dict]  # convention-field assignments with no matching lang key
+    # Net message analysis data
+    net_messages_defined: Dict[str, List[Dict[str, Any]]]
+    net_messages_used: Dict[str, List[Dict[str, Any]]]
+    net_messages_unused_defined: List[str]
+    net_messages_used_but_undefined: List[str]
+    net_message_analysis_notes: List[str]
     generated_at: str
 
 class FunctionComparisonReportGenerator:
@@ -1414,6 +1424,184 @@ class FunctionComparisonReportGenerator:
         print(f"Compared {len(language_keys)} language files, found {len(all_keys)} total unique keys")
         return missing_keys
 
+    def _scan_lua_files_for_net_analysis(self) -> List[Path]:
+        """Return Lua files that should be included in the net-message analysis."""
+        return sorted(self.base_path.rglob("*.lua"))
+
+    def _extract_lua_string_literals(self, text: str) -> List[str]:
+        """Extract simple quoted or long-bracket Lua string literals from text."""
+        values: List[str] = []
+        for match in re.finditer(r'"((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\]', text, re.DOTALL):
+            if match.group(1) is not None:
+                values.append(match.group(1))
+            elif match.group(2) is not None:
+                values.append(match.group(2))
+            elif match.group(3) is not None:
+                values.append(match.group(3))
+        return [value for value in values if value]
+
+    def _extract_named_string_tables(self, content: str, file_path: Path) -> Dict[str, Dict[str, Any]]:
+        """Extract simple literal string tables like local x = {...} and MODULE.NetworkStrings = {...}."""
+        tables: Dict[str, Dict[str, Any]] = {}
+        assignment_pattern = re.compile(
+            r'(?P<name>(?:local\s+)?[A-Za-z_][\w\.]*)\s*=\s*\{',
+            re.MULTILINE
+        )
+
+        for match in assignment_pattern.finditer(content):
+            raw_name = match.group("name").strip()
+            table_name = raw_name.replace("local ", "", 1).strip()
+            brace_start = match.end() - 1
+            brace_depth = 0
+            index = brace_start
+            while index < len(content):
+                char = content[index]
+                if char == "{":
+                    brace_depth += 1
+                elif char == "}":
+                    brace_depth -= 1
+                    if brace_depth == 0:
+                        table_body = content[brace_start + 1:index]
+                        tables[table_name] = {
+                            "strings": self._extract_lua_string_literals(table_body),
+                            "line": content[:match.start()].count("\n") + 1,
+                            "raw_name": raw_name,
+                        }
+                        break
+                index += 1
+        return tables
+
+    def _record_net_message_site(self, bucket: Dict[str, List[Dict[str, Any]]], message_name: str, site: Dict[str, Any]):
+        """Record a net-message site while deduplicating identical entries."""
+        existing_sites = bucket.setdefault(message_name, [])
+        site_key = (site["file"], site["line"], site["type"], site["detail"])
+        existing_keys = {
+            (entry["file"], entry["line"], entry["type"], entry["detail"])
+            for entry in existing_sites
+        }
+        if site_key not in existing_keys:
+            existing_sites.append(site)
+
+    def _scan_net_message_definitions_in_file(self, file_path: Path, content: str, defined: Dict[str, List[Dict[str, Any]]]):
+        """Extract base GMod net-message definitions from one file."""
+        named_tables = self._extract_named_string_tables(content, file_path)
+
+        for match in re.finditer(r'util\.AddNetworkString\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])\s*\)', content):
+            message_name = match.group(2) or match.group(3) or match.group(4)
+            if not message_name:
+                continue
+            self._record_net_message_site(
+                defined,
+                message_name,
+                {
+                    "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                    "line": content[:match.start()].count("\n") + 1,
+                    "type": "direct util.AddNetworkString",
+                    "detail": "literal util.AddNetworkString(...)",
+                }
+            )
+
+        for loop_match in re.finditer(
+            r'for\s+[^,\n]+,\s*(?P<item>[A-Za-z_]\w*)\s+in\s+ipairs\s*\(\s*(?P<table>[A-Za-z_][\w\.]*)\s*\)\s*do(?P<body>.*?)\bend\b',
+            content,
+            re.DOTALL
+        ):
+            loop_var = loop_match.group("item")
+            table_name = loop_match.group("table")
+            if table_name not in named_tables:
+                continue
+            body = loop_match.group("body")
+            if not re.search(rf'util\.AddNetworkString\s*\(\s*{re.escape(loop_var)}\s*\)', body):
+                continue
+            source_type = "init.lua networkStrings" if file_path.name == "init.lua" and table_name == "networkStrings" else f"table via util.AddNetworkString loop ({table_name})"
+            detail = f"strings from `{table_name}` passed to util.AddNetworkString({loop_var})"
+            for message_name in named_tables[table_name]["strings"]:
+                self._record_net_message_site(
+                    defined,
+                    message_name,
+                    {
+                        "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                        "line": named_tables[table_name]["line"],
+                        "type": source_type,
+                        "detail": detail,
+                    }
+                )
+
+        for table_name in ("MODULE.NetworkStrings", "SCHEMA.NetworkStrings"):
+            table_info = named_tables.get(table_name)
+            if not table_info:
+                continue
+            for message_name in table_info["strings"]:
+                self._record_net_message_site(
+                    defined,
+                    message_name,
+                    {
+                        "file": str(file_path.relative_to(self.base_path)).replace("\\", "/"),
+                        "line": table_info["line"],
+                        "type": table_name,
+                        "detail": f"literal strings in `{table_name}` registered by modularity loader",
+                    }
+                )
+
+    def _scan_net_message_usages_in_file(self, file_path: Path, content: str, used: Dict[str, List[Dict[str, Any]]]):
+        """Extract base GMod net-message usage sites from one file."""
+        usage_patterns = [
+            (r'net\.Start\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "net.Start", "send-side usage"),
+            (r'net\.Receive\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "net.Receive", "receive-side usage"),
+            (r'lia\.net\.readBigTable\s*\(\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "lia.net.readBigTable", "Lilia helper receive usage"),
+            (r'lia\.net\.writeBigTable\s*\(\s*[^,\n\)]+?\s*,\s*("((?:\\.|[^"\\])*)"|\'((?:\\.|[^\'\\])*)\'|\[\[(.*?)\]\])', "lia.net.writeBigTable", "Lilia helper send usage"),
+        ]
+        rel_file = str(file_path.relative_to(self.base_path)).replace("\\", "/")
+
+        for pattern, site_type, detail in usage_patterns:
+            for match in re.finditer(pattern, content, re.DOTALL):
+                message_name = match.group(2) or match.group(3) or match.group(4)
+                if not message_name:
+                    continue
+                self._record_net_message_site(
+                    used,
+                    message_name,
+                    {
+                        "file": rel_file,
+                        "line": content[:match.start()].count("\n") + 1,
+                        "type": site_type,
+                        "detail": detail,
+                    }
+                )
+
+    def _run_net_message_analysis(self) -> Tuple[Dict[str, List[Dict[str, Any]]], Dict[str, List[Dict[str, Any]]], List[str], List[str], List[str]]:
+        """Analyze base GMod net-message definitions and usage sites."""
+        defined: Dict[str, List[Dict[str, Any]]] = {}
+        used: Dict[str, List[Dict[str, Any]]] = {}
+        notes = [
+            "Checked for `lia.net.register` and did not find an implementation in this repository; analysis is based on the real patterns present here.",
+            "Definition detection includes literal `util.AddNetworkString(...)`, the `networkStrings` table flow in `gamemode/init.lua`, and literal `MODULE.NetworkStrings` / `SCHEMA.NetworkStrings` tables registered by `gamemode/core/libraries/modularity.lua`.",
+            "Usage detection includes literal `net.Start(...)`, `net.Receive(...)`, `lia.net.readBigTable(...)`, and `lia.net.writeBigTable(...)`.",
+            "Logical `netstream.Hook(...)` names are intentionally excluded from base net-message results; only the underlying `liaNetStreamData` message participates here.",
+        ]
+
+        for lua_file in self._scan_lua_files_for_net_analysis():
+            try:
+                content = lua_file.read_text(encoding='utf-8', errors='ignore')
+            except Exception as e:
+                print(f"Warning: Error reading {lua_file} during net-message analysis: {e}")
+                continue
+
+            content_clean = self._remove_lua_comments(content)
+            self._scan_net_message_definitions_in_file(lua_file, content_clean, defined)
+            self._scan_net_message_usages_in_file(lua_file, content_clean, used)
+
+        defined_names = set(defined.keys())
+        used_names = set(used.keys())
+        for ignored_name in NET_MESSAGE_REPORT_IGNORE:
+            defined.pop(ignored_name, None)
+            used.pop(ignored_name, None)
+            defined_names.discard(ignored_name)
+            used_names.discard(ignored_name)
+        unused_defined = sorted(defined_names - used_names, key=str.lower)
+        used_but_undefined = sorted(used_names - defined_names, key=str.lower)
+        return defined, used, unused_defined, used_but_undefined, notes
+
     def run_all_analyses(self) -> CombinedReportData:
         """Run all three analyses and combine results"""
 
@@ -1458,7 +1646,11 @@ class FunctionComparisonReportGenerator:
         print("Detecting undefined lia.config.get calls...")
         config_undefined_get_calls = self._detect_undefined_config_get_calls()
 
-        # 9. Undefined inferred localization keys — gated (scans external modules too)
+        # 9. Net-message analysis
+        print("Analyzing net messages...")
+        net_messages_defined, net_messages_used, net_messages_unused_defined, net_messages_used_but_undefined, net_message_analysis_notes = self._run_net_message_analysis()
+
+        # 10. Undefined inferred localization keys — gated (scans external modules too)
         undefined_inferred_loc_keys = []
         print("Detecting undefined inferred localization keys...")
         undefined_inferred_loc_keys = self._detect_undefined_inferred_loc_keys()
@@ -1493,6 +1685,11 @@ class FunctionComparisonReportGenerator:
             fonts_file_usages=fonts_file_usages,
             config_undefined_get_calls=config_undefined_get_calls,
             undefined_inferred_loc_keys=undefined_inferred_loc_keys,
+            net_messages_defined=net_messages_defined,
+            net_messages_used=net_messages_used,
+            net_messages_unused_defined=net_messages_unused_defined,
+            net_messages_used_but_undefined=net_messages_used_but_undefined,
+            net_message_analysis_notes=net_message_analysis_notes,
             generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
@@ -2423,6 +2620,9 @@ class FunctionComparisonReportGenerator:
         # Language Comparison Section
         report_lines.extend(self._generate_language_comparison_section(data))
 
+        # Net Message Section
+        report_lines.extend(self._generate_net_message_section(data))
+
         # Config Undefined Get Calls — always shown (framework analysis)
         report_lines.extend(self._generate_config_undefined_section(data))
 
@@ -2476,6 +2676,49 @@ class FunctionComparisonReportGenerator:
 
         lines.append("---")
         lines.append("")
+        return lines
+
+    def _generate_net_message_section(self, data: CombinedReportData) -> List[str]:
+        """Generate the base GMod net-message analysis section."""
+        lines: List[str] = ["## Net Message Analysis", ""]
+
+        defined = getattr(data, "net_messages_defined", {}) or {}
+        used = getattr(data, "net_messages_used", {}) or {}
+        unused_defined = getattr(data, "net_messages_unused_defined", []) or []
+        used_but_undefined = getattr(data, "net_messages_used_but_undefined", []) or []
+        if not defined and not used:
+            lines.append("_No net-message analysis data available._")
+            lines.append("")
+            return lines
+
+        lines.extend([
+            "### Summary",
+            f"- **Defined Net Messages:** {len(defined)}",
+            f"- **Used Net Messages:** {len(used)}",
+            f"- **Defined But Unused:** {len(unused_defined)}",
+            f"- **Used But Undefined:** {len(used_but_undefined)}",
+            "",
+        ])
+
+        lines.append("### Used But Undefined")
+        lines.append("")
+        if used_but_undefined:
+            for name in used_but_undefined:
+                usage_sites = used.get(name, [])
+                if usage_sites:
+                    summary = "; ".join(
+                        f"{site['type']} at {site['file']}:{site['line']}"
+                        for site in usage_sites[:3]
+                    )
+                    lines.append(f"- `{name}`")
+                    lines.append(f"  - Used at: {summary}")
+                else:
+                    lines.append(f"- `{name}`")
+            lines.append("")
+        else:
+            lines.append("None")
+            lines.append("")
+
         return lines
 
     def _scan_modules_for_undocumented(self) -> List[Dict]:
@@ -3103,6 +3346,10 @@ class FunctionComparisonReportGenerator:
         at_patterns = data.localization_data.get('at_pattern_count', len(data.localization_data.get('at_pattern_rows', []))) if data.localization_data else 0
         arg_mismatches = len(data.argument_mismatches)
         module_conflicts = len(getattr(data, 'module_localization_conflicts', {}) or {})
+        net_defined_count = len(getattr(data, 'net_messages_defined', {}) or {})
+        net_used_count = len(getattr(data, 'net_messages_used', {}) or {})
+        net_unused_count = len(getattr(data, 'net_messages_unused_defined', []) or [])
+        net_undefined_count = len(getattr(data, 'net_messages_used_but_undefined', []) or [])
 
         lines.extend([
             "### Function Documentation",
@@ -3124,6 +3371,12 @@ class FunctionComparisonReportGenerator:
             f"- **@xxxxx Patterns:** {at_patterns} unique",
             f"- **Module Key Conflicts:** {module_conflicts} keys",
             f"- **Argument Mismatches:** {arg_mismatches}",
+            "",
+            "### Net Message Analysis",
+            f"- **Defined Net Messages:** {net_defined_count}",
+            f"- **Used Net Messages:** {net_used_count}",
+            f"- **Defined But Unused:** {net_unused_count}",
+            f"- **Used But Undefined:** {net_undefined_count}",
             "",
         ])
 
