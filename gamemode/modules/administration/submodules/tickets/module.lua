@@ -1,0 +1,11 @@
+MODULE.Name = "@tickets"
+MODULE.author = "Samael"
+MODULE.discord = "@liliaplayer"
+MODULE.desc = "@ticketDesc"
+MODULE.Privileges = {
+    ["alwaysSeeTickets"] = {
+        Name = "@alwaysSeeTickets",
+        MinAccess = "superadmin",
+        Category = "@tickets",
+    },
+}
