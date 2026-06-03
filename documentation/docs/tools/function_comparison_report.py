@@ -379,6 +379,14 @@ class CombinedReportData:
     net_message_analysis_notes: List[str]
     generated_at: str
 
+@dataclass(frozen=True)
+class ReportTarget:
+    """Represents one markdown report target."""
+    report_name: str
+    display_name: str
+    module_path: Optional[Path] = None
+    module_scan_entry: Optional[Dict[str, Any]] = None
+
 class FunctionComparisonReportGenerator:
     """Main class for generating comprehensive function comparison reports"""
 
@@ -2635,6 +2643,172 @@ class FunctionComparisonReportGenerator:
 
         return "\n".join(report_lines)
 
+    def _get_reports_dir(self) -> Path:
+        """Return the centralized reports directory."""
+        return self.docs_path / "reports"
+
+    def _sanitize_report_filename(self, name: str) -> str:
+        """Create a safe and predictable markdown filename stem."""
+        sanitized = re.sub(r'[<>:"/\\|?*]+', "_", (name or "").strip().lower())
+        sanitized = re.sub(r"\s+", "_", sanitized)
+        sanitized = re.sub(r"_+", "_", sanitized).strip("._")
+        return sanitized or "report"
+
+    def _module_display_name(self, module_entry: Dict[str, Any]) -> str:
+        """Return the display name for a module report."""
+        module_name = (module_entry or {}).get("module_name")
+        if module_name:
+            return module_name
+        module_path = (module_entry or {}).get("module_path")
+        return Path(module_path).name if module_path else "module"
+
+    def _build_report_targets(self, data: CombinedReportData) -> List[ReportTarget]:
+        """Build the framework target plus one target per detected module."""
+        targets = [ReportTarget(report_name="lilia", display_name="Lilia")]
+        used_names = {"lilia"}
+
+        for module_entry in getattr(data, "modules_scan", []) or []:
+            module_path = Path(module_entry["module_path"]).resolve()
+            base_name = self._sanitize_report_filename(self._module_display_name(module_entry))
+            candidate = base_name
+            suffix = 2
+            while candidate in used_names:
+                candidate = f"{base_name}_{suffix}"
+                suffix += 1
+            used_names.add(candidate)
+            targets.append(
+                ReportTarget(
+                    report_name=candidate,
+                    display_name=self._module_display_name(module_entry),
+                    module_path=module_path,
+                    module_scan_entry=module_entry,
+                )
+            )
+
+        return targets
+
+    def _path_is_within_module(self, file_ref: str, module_path: Path) -> bool:
+        """Return True when a file reference belongs to the given module path."""
+        if not file_ref:
+            return False
+
+        try:
+            candidate = Path(file_ref)
+            if not candidate.is_absolute():
+                return False
+            return candidate.resolve().is_relative_to(module_path.resolve())
+        except Exception:
+            return False
+
+    def _filter_net_message_sites_for_module(self, message_map: Dict[str, List[Dict[str, Any]]], module_path: Path) -> Dict[str, List[Dict[str, Any]]]:
+        """Filter net-message definitions/usages down to one module."""
+        filtered: Dict[str, List[Dict[str, Any]]] = {}
+        for message_name, sites in (message_map or {}).items():
+            matching_sites = [
+                site for site in sites
+                if self._path_is_within_module(site.get("file"), module_path)
+            ]
+            if matching_sites:
+                filtered[message_name] = matching_sites
+        return filtered
+
+    def _build_module_function_comparison(self, module_entry: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+        """Create lightweight function-comparison data for a module from the scan results."""
+        module_path = Path(module_entry["module_path"])
+        documented_hooks, documented_functions = self._read_module_docs(module_path)
+        undoc_functions = sorted(module_entry.get("undoc_functions", []), key=str.lower)
+        all_functions = sorted(set(documented_functions) | set(undoc_functions), key=str.lower)
+
+        return {
+            str(module_path): {
+                "functions": {
+                    function_name: {"parameters": []}
+                    for function_name in all_functions
+                },
+                "missing_functions": undoc_functions,
+                "missing_functions_count": len(undoc_functions),
+                "total_functions": len(all_functions),
+                "documented_functions": len(all_functions) - len(undoc_functions),
+            }
+        }
+
+    def _build_scoped_report_data(self, data: CombinedReportData, target: ReportTarget) -> CombinedReportData:
+        """Return report data scoped to the framework or a specific module."""
+        if target.module_path is None or target.module_scan_entry is None:
+            return data
+
+        module_path = target.module_path
+        module_entry = target.module_scan_entry
+        documented_module_hooks, documented_module_functions = self._read_module_docs(module_path)
+        localization_data = {}
+        for entry in getattr(data, "modules_data", []) or []:
+            if Path(entry.get("module_path", "")).resolve() == module_path:
+                localization_data = entry
+                break
+
+        argument_mismatches = [
+            mismatch for mismatch in (data.argument_mismatches or [])
+            if self._path_is_within_module(mismatch.get("file"), module_path)
+        ]
+        config_undefined = [
+            entry for entry in (getattr(data, "config_undefined_get_calls", []) or [])
+            if self._path_is_within_module(entry.get("file"), module_path)
+        ]
+        undefined_inferred = [
+            entry for entry in (getattr(data, "undefined_inferred_loc_keys", []) or [])
+            if self._path_is_within_module(entry.get("file"), module_path)
+        ]
+        filtered_defined = self._filter_net_message_sites_for_module(getattr(data, "net_messages_defined", {}) or {}, module_path)
+        filtered_used = self._filter_net_message_sites_for_module(getattr(data, "net_messages_used", {}) or {}, module_path)
+        filtered_defined_names = set(filtered_defined.keys())
+        filtered_used_names = set(filtered_used.keys())
+        module_conflicts = {
+            key: occurrences
+            for key, occurrences in (getattr(data, "module_localization_conflicts", {}) or {}).items()
+            if any(Path(item.get("module_path", "")).resolve() == module_path for item in occurrences)
+        }
+
+        scoped_function_comparison = self._build_module_function_comparison(module_entry)
+        missing_library_functions = [
+            FunctionInfo(name=function_name, parameters=[])
+            for function_name in module_entry.get("undoc_functions", [])
+        ]
+
+        return CombinedReportData(
+            function_comparison=scoped_function_comparison,
+            hooks_missing=sorted(module_entry.get("undoc_hooks", []), key=str.lower),
+            hooks_documented=sorted(documented_module_hooks),
+            hooks_registered=sorted(set(documented_module_hooks) | set(module_entry.get("undoc_hooks", [])), key=str.lower),
+            hooks_signatures={hook: [] for hook in module_entry.get("undoc_hooks", [])},
+            hooks_method=[],
+            hooks_standard=sorted(module_entry.get("undoc_hooks", []), key=str.lower),
+            localization_data=localization_data,
+            argument_mismatches=argument_mismatches,
+            inferred_localization={},
+            modules_data=[localization_data] if localization_data else [],
+            module_localization_conflicts=module_conflicts,
+            modules_scan=[module_entry],
+            language_comparison={},
+            missing_library_functions=missing_library_functions,
+            missing_hook_functions=[],
+            missing_meta_functions=[],
+            fonts_registered=set(),
+            fonts_used=set(),
+            fonts_unregistered=set(),
+            fonts_default_gmod=set(),
+            fonts_variable=set(),
+            fonts_getfont_count=0,
+            fonts_file_usages={},
+            config_undefined_get_calls=config_undefined,
+            undefined_inferred_loc_keys=undefined_inferred,
+            net_messages_defined=filtered_defined,
+            net_messages_used=filtered_used,
+            net_messages_unused_defined=sorted(filtered_defined_names - filtered_used_names, key=str.lower),
+            net_messages_used_but_undefined=sorted(filtered_used_names - filtered_defined_names, key=str.lower),
+            net_message_analysis_notes=list(getattr(data, "net_message_analysis_notes", []) or []),
+            generated_at=data.generated_at,
+        )
+
     def _generate_config_undefined_section(self, data: CombinedReportData) -> List[str]:
         """Generate the config undefined get-calls section of the report."""
         lines: List[str] = ["## Config: Undefined lia.config.get Keys", ""]
@@ -3733,15 +3907,15 @@ class FunctionComparisonReportGenerator:
 
     def save_report(self, data: CombinedReportData, output_file: str = None):
         """Generate and save the comprehensive report"""
-        # Ensure output directory exists (use the dynamic docs_path)
-        self.docs_path.mkdir(parents=True, exist_ok=True)
+        reports_dir = self._get_reports_dir()
+        reports_dir.mkdir(parents=True, exist_ok=True)
 
         if output_file is None:
-            output_file = str(self.docs_path / "report.md")
+            output_file = str(reports_dir / "lilia.md")
         else:
-            # If user provided a relative path, make it relative to self.docs_path
+            # If user provided a relative path, make it relative to the centralized reports directory
             if not Path(output_file).is_absolute():
-                output_file = str(self.docs_path / output_file)
+                output_file = str(reports_dir / output_file)
 
         report = self.generate_markdown_report(data)
 
@@ -3749,6 +3923,25 @@ class FunctionComparisonReportGenerator:
             f.write(report)
 
         return output_file
+
+    def save_reports(self, data: CombinedReportData, output_file: str = None) -> List[str]:
+        """Generate the centralized framework report plus one report per detected module."""
+        report_files = [self.save_report(data, output_file)]
+        reports_dir = self._get_reports_dir()
+        reports_dir.mkdir(parents=True, exist_ok=True)
+
+        for target in self._build_report_targets(data):
+            if target.module_path is None:
+                continue
+
+            scoped_data = self._build_scoped_report_data(data, target)
+            output_path = reports_dir / f"{target.report_name}.md"
+            report = self.generate_markdown_report(scoped_data)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(report)
+            report_files.append(str(output_path))
+
+        return report_files
 
 def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: str,
                            modules_paths: List[str], output_dir: Path, quiet: bool = False) -> Tuple[bool, List[str]]:
@@ -3771,14 +3964,14 @@ def confirm_analysis_actions(base_path: Path, docs_path: Path, language_file: st
 
     print("\nOUTPUT LOCATION:")
     print(f"   - Documentation directory: {output_dir}")
-    print("   - The report.md file will be created/updated here")
+    print("   - Reports will be written to the centralized reports folder here")
 
     print("\n" + "=" * 60)
 
     # Ask about module documentation generation
     print("\nMODULE DOCUMENTATION:")
     print("   - Module documentation includes scanning external modules for undocumented items")
-    print("   - This can create 'docs' folders in module directories")
+    print("   - This now creates centralized markdown reports instead of module-local docs folders")
     print("   - Main analysis will always run regardless of this choice")
     
     while True:
@@ -3901,12 +4094,17 @@ Examples:
     try:
         data = generator.run_all_analyses()
 
-        # Generate and save report
-        report_file = generator.save_report(data, args.output)
+        # Generate and save centralized reports
+        report_files = generator.save_reports(data, args.output)
+        report_file = report_files[0] if report_files else None
 
         if not args.quiet:
             print("\nAnalysis complete!")
             print(f"Report saved: {report_file}")
+            if len(report_files) > 1:
+                print(f"Module reports saved: {len(report_files) - 1}")
+                for module_report in report_files[1:]:
+                    print(f"   - {module_report}")
 
             # Print quick summary
             total_functions = sum(r.get('total_functions', 0) for r in data.function_comparison.values())
