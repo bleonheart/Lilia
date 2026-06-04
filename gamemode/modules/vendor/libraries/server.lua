@@ -21,6 +21,7 @@ end
 function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
     local item = lia.item.list[itemType]
     if not item then return false, L("vendorInvalidItem") end
+    local stockEnabled = lia.vendor.getVendorProperty(vendor, "stockEnabled")
     local SteamIDWhitelist = item.SteamIDWhitelist
     local FactionWhitelist = item.FactionWhitelist
     local UserGroupWhitelist = item.UsergroupWhitelist
@@ -31,7 +32,7 @@ function MODULE:CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVe
     if not isSellingToVendor and state == VENDOR_BUYONLY then return false, L("buyOnly") end
     if isSellingToVendor then
         if not client:getChar():getInv():hasItem(itemType) then return false, L("vendorPlayerDoesNotHaveItem") end
-    else
+    elseif stockEnabled then
         local stock = vendor:getStock(itemType)
         if stock and stock <= 0 then return false, L("vendorNoStock") end
     end
@@ -104,6 +105,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
     client.vendorTransaction = true
     client.vendorTimeout = RealTime() + 0.1
     local character = client:getChar()
+    local stockEnabled = lia.vendor.getVendorProperty(vendor, "stockEnabled")
     local price = vendor:getPrice(itemType, isSellingToVendor, client)
     if isSellingToVendor then
         local inventory = character:getInv()
@@ -132,7 +134,7 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
 
             character:giveMoney(price)
             item:remove():next(function() client.vendorTransaction = nil end):catch(function() client.vendorTransaction = nil end)
-            vendor:addStock(itemType)
+            if stockEnabled then vendor:addStock(itemType) end
             client:notifyMoneyLocalized("vendorYouSoldItem", item:getName(), lia.currency.get(price))
             hook.Run("OnCharTradeVendor", client, vendor, item, isSellingToVendor, character)
         end
@@ -145,7 +147,6 @@ function MODULE:VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
         end
 
         character:takeMoney(price)
-        vendor:takeStock(itemType)
         character:getInv():add(itemType):next(function(item)
             client:notifyMoneyLocalized("vendorYouBoughtItem", item:getName(), lia.currency.get(price))
             local itemData = lia.item.list[itemType]
@@ -436,73 +437,6 @@ net.Receive("liaVendorDeletePreset", function(_, client)
     end
 
     presetName = presetName:Trim():lower()
-    if not lia.vendor.presets[presetName] then
-        client:notifyErrorLocalized("vendorPresetNotFound", presetName)
-        return
-    end
-
-    lia.vendor.presets[presetName] = nil
-    lia.data.set("vendor_presets", lia.vendor.presets)
-    client:notifySuccessLocalized("vendorPresetDeleted", presetName)
-    lia.log.add(client, "vendorPresetDelete", presetName)
-    net.Start("liaVendorSyncPresets")
-    net.WriteTable(lia.vendor.presets)
-    net.Broadcast()
-end)
-
-net.Receive("liaVendorSavePreset", function(_, client)
-    lia.debug("[Permissions]", "Permission Check for net.Receive liaVendorSavePreset", "hasPrivilege(canCreateVendorPresets)=", tostring(client:hasPrivilege("canCreateVendorPresets")), "finalResult=", tostring(client:hasPrivilege("canCreateVendorPresets")))
-    if not client:hasPrivilege("canCreateVendorPresets") then
-        client:notifyErrorLocalized("noPermission")
-        return
-    end
-
-    local presetName = net.ReadString()
-    local itemsData = net.ReadTable()
-    if not presetName or presetName:Trim() == "" then
-        client:notifyErrorLocalized("vendorPresetNameRequired")
-        return
-    end
-
-    presetName = presetName:Trim():lower()
-    local validItems = {}
-    for itemType, itemData in pairs(itemsData) do
-        if lia.item.list[itemType] then validItems[itemType] = itemData end
-    end
-
-    lia.vendor.presets[presetName] = validItems
-    lia.data.set("vendor_presets", lia.vendor.presets)
-    client:notifyInfoLocalized("vendorPresetSaved", presetName)
-    lia.log.add(client, "vendorPresetSave", presetName)
-    net.Start("liaVendorSyncPresets")
-    net.WriteTable(lia.vendor.presets)
-    net.Broadcast()
-end)
-
-net.Receive("liaVendorRequestData", function(_, client)
-    local vendor = net.ReadEntity()
-    if not IsValid(vendor) or vendor:GetClass() ~= "lia_vendor" then return end
-    local name = lia.vendor.getVendorProperty(vendor, "name")
-    local animation = lia.vendor.getVendorProperty(vendor, "animation")
-    if name then
-        net.Start("liaVendorPropertySync")
-        net.WriteEntity(vendor)
-        net.WriteString("name")
-        net.WriteBool(false)
-        net.WriteTable({name})
-        net.Send(client)
-    end
-
-    if animation then
-        net.Start("liaVendorPropertySync")
-        net.WriteEntity(vendor)
-        net.WriteString("animation")
-        net.WriteBool(false)
-        net.WriteTable({animation})
-        net.Send(client)
-    end
-end)
-
 function MODULE:DatabaseConnected()
     lia.vendor.presets = lia.data.get("vendor_presets") or {}
 end

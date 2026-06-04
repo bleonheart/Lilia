@@ -3110,7 +3110,9 @@ class FunctionComparisonReportGenerator:
         module_path = Path(module_entry["module_path"])
         documented_hooks, documented_functions = self._read_module_docs(module_path)
         undoc_functions = sorted(module_entry.get("undoc_functions", []), key=str.lower)
-        all_functions = sorted(set(documented_functions) | set(undoc_functions), key=str.lower)
+        undoc_meta_functions = sorted(module_entry.get("undoc_meta_functions", []), key=str.lower)
+        all_functions = sorted(set(documented_functions) | set(undoc_functions) | set(undoc_meta_functions), key=str.lower)
+        missing_functions = sorted(set(undoc_functions) | set(undoc_meta_functions), key=str.lower)
 
         return {
             str(module_path): {
@@ -3118,10 +3120,10 @@ class FunctionComparisonReportGenerator:
                     function_name: {"parameters": []}
                     for function_name in all_functions
                 },
-                "missing_functions": undoc_functions,
-                "missing_functions_count": len(undoc_functions),
+                "missing_functions": missing_functions,
+                "missing_functions_count": len(missing_functions),
                 "total_functions": len(all_functions),
-                "documented_functions": len(all_functions) - len(undoc_functions),
+                "documented_functions": len(all_functions) - len(missing_functions),
             }
         }
 
@@ -3173,6 +3175,10 @@ class FunctionComparisonReportGenerator:
             FunctionInfo(name=function_name, parameters=[])
             for function_name in module_entry.get("undoc_functions", [])
         ]
+        missing_meta_functions = [
+            FunctionInfo(name=function_name, parameters=[])
+            for function_name in module_entry.get("undoc_meta_functions", [])
+        ]
 
         return CombinedReportData(
             function_comparison=scoped_function_comparison,
@@ -3191,7 +3197,7 @@ class FunctionComparisonReportGenerator:
             language_comparison={},
             missing_library_functions=missing_library_functions,
             missing_hook_functions=[],
-            missing_meta_functions=[],
+            missing_meta_functions=missing_meta_functions,
             fonts_registered=set(),
             fonts_used=set(),
             fonts_unregistered=set(),
@@ -3452,7 +3458,8 @@ class FunctionComparisonReportGenerator:
         Returns a list of dicts: {
             'module_path': str,
             'undoc_hooks': List[str],
-            'undoc_functions': List[str]
+            'undoc_functions': List[str],
+            'undoc_meta_functions': List[str]
         }
         Includes entries for all modules encountered (even if counts are zero) so we can build a complete summary.
         """
@@ -3543,6 +3550,7 @@ class FunctionComparisonReportGenerator:
 
                 undoc_functions: Set[str] = set()
                 undoc_hooks: Set[str] = set()
+                undoc_meta_functions: Set[str] = set()
 
                 for root, _, files in os.walk(module_dir):
                     # Skip directories named 'addons' and any subdirectories within them
@@ -3571,6 +3579,13 @@ class FunctionComparisonReportGenerator:
                                 if name not in documented_functions and name not in documented_module_functions:
                                     undoc_functions.add(name)
 
+                        # Meta functions declared in this module; keep the meta-table qualifier
+                        # so module-scoped reports only claim methods owned by this module.
+                        for m in re.finditer(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', content, re.MULTILINE):
+                            meta_name = f"{m.group(1)}:{m.group(2)}"
+                            if meta_name not in documented_functions and meta_name not in documented_module_functions:
+                                undoc_meta_functions.add(meta_name)
+
                         # Hooks via hook.Add / hook.Run literals in module, filtered by documented core hooks and GMOD built-ins
                         for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
@@ -3589,6 +3604,7 @@ class FunctionComparisonReportGenerator:
                     'module_path': str(module_dir),
                     'undoc_hooks': sorted(undoc_hooks, key=str.lower),
                     'undoc_functions': sorted(undoc_functions, key=str.lower),
+                    'undoc_meta_functions': sorted(undoc_meta_functions, key=str.lower),
                 })
 
                 # Scan submodules separately
@@ -3596,6 +3612,7 @@ class FunctionComparisonReportGenerator:
                     submod_documented_hooks, submod_documented_functions = self._read_module_docs(submod_dir)
                     submod_undoc_functions: Set[str] = set()
                     submod_undoc_hooks: Set[str] = set()
+                    submod_undoc_meta_functions: Set[str] = set()
 
                     for root, _, files in os.walk(submod_dir):
                         # Skip directories named 'addons' and any subdirectories within them
@@ -3619,6 +3636,11 @@ class FunctionComparisonReportGenerator:
                                     if name not in documented_functions and name not in submod_documented_functions:
                                         submod_undoc_functions.add(name)
 
+                            for m in re.finditer(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', content, re.MULTILINE):
+                                meta_name = f"{m.group(1)}:{m.group(2)}"
+                                if meta_name not in documented_functions and meta_name not in submod_documented_functions:
+                                    submod_undoc_meta_functions.add(meta_name)
+
                             # Hooks via hook.Add / hook.Run literals in submodule
                             for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                                 hook_name = m.group(2)
@@ -3637,6 +3659,7 @@ class FunctionComparisonReportGenerator:
                         'module_path': str(submod_dir),
                         'undoc_hooks': sorted(submod_undoc_hooks, key=str.lower),
                         'undoc_functions': sorted(submod_undoc_functions, key=str.lower),
+                        'undoc_meta_functions': sorted(submod_undoc_meta_functions, key=str.lower),
                     })
 
         return results
@@ -3645,6 +3668,7 @@ class FunctionComparisonReportGenerator:
         """Read module-level documentation markers from module_dir/docs.
         - hooks.md: list of documented hook names (strings)
         - libraries.md: list of documented lia.* function names
+        - meta.md: list of documented meta methods
         Returns (documented_hooks, documented_functions)
         """
         documented_hooks: Set[str] = set()
@@ -3680,6 +3704,30 @@ class FunctionComparisonReportGenerator:
             except Exception:
                 pass
 
+        meta_file = docs_dir / 'meta.md'
+        if meta_file.exists():
+            try:
+                with open(meta_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                import re
+                stem = meta_file.stem
+                overrides = {
+                    'tool': 'toolGunMeta',
+                }
+                for m in re.finditer(r'^##+\s+([A-Za-z_][\w:]*)\s*$', content, re.MULTILINE):
+                    method_name = m.group(1).strip()
+                    if ':' in method_name and method_name.split(':', 1)[0].endswith('Meta'):
+                        documented_functions.add(method_name)
+                for m in re.finditer(r'`([A-Za-z_][\w\.:]*)\([^)]*\)`', content):
+                    method_name = m.group(1).strip()
+                    if ':' in method_name and method_name.split(':', 1)[0].endswith('Meta'):
+                        documented_functions.add(method_name)
+                for m in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\([^)]*\)</summary>', content):
+                    method_name = m.group(1).strip()
+                    documented_functions.add(f"{stem}Meta:{method_name}")
+            except Exception:
+                pass
+
         return documented_hooks, documented_functions
 
     def _generate_modules_section(self, modules_scan: List[Dict]) -> List[str]:
@@ -3697,7 +3745,8 @@ class FunctionComparisonReportGenerator:
         for entry in modules_scan:
             undoc_hooks = entry.get('undoc_hooks', [])
             undoc_functions = entry.get('undoc_functions', [])
-            if not undoc_hooks and not undoc_functions:
+            undoc_meta_functions = entry.get('undoc_meta_functions', [])
+            if not undoc_hooks and not undoc_functions and not undoc_meta_functions:
                 continue
             lines.append("---")
             lines.append("")
@@ -3715,6 +3764,12 @@ class FunctionComparisonReportGenerator:
                 lines.append("- **Undocumented lia.* Functions:**")
                 for f in undoc_functions:
                     lines.append(f"  - `{f}()`")
+            if undoc_meta_functions:
+                if undoc_hooks or undoc_functions:
+                    lines.append("")
+                lines.append("- **Undocumented Meta Functions:**")
+                for f in undoc_meta_functions:
+                    lines.append(f"  - `{f}()`")
             lines.append("")
 
         # Summary table
@@ -3723,10 +3778,10 @@ class FunctionComparisonReportGenerator:
             lines.append("")
             lines.append("# Module Documentation Summary")
             lines.append("")
-            lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions |")
-            lines.append("|---|---:|---:|")
+            lines.append("| Module Path | Undocumented Hooks | Undocumented lia.* Functions | Undocumented Meta Functions |")
+            lines.append("|---|---:|---:|---:|")
             for entry in modules_scan:
-                lines.append(f"| {entry['module_path']} | {len(entry.get('undoc_hooks', []))} | {len(entry.get('undoc_functions', []))} |")
+                lines.append(f"| {entry['module_path']} | {len(entry.get('undoc_hooks', []))} | {len(entry.get('undoc_functions', []))} | {len(entry.get('undoc_meta_functions', []))} |")
             lines.append("")
 
         return lines
@@ -3739,7 +3794,7 @@ class FunctionComparisonReportGenerator:
         - Create a `docs` folder in module directory when any entries exist.
         - If functions with dotted names (e.g., lia.something.doThing) exist, write libraries.md.
         - If hooks are found in module code that are NOT already documented in gamemode_hooks.md, write hooks.md.
-        - Meta/functions inside module files (if any) are also recorded in libraries.md.
+        - If meta methods are found in module code, write meta.md scoped to those module-owned methods.
         """
         # Build a quick detector for dotted function names from function_comparison
         function_map = data.function_comparison or {}
@@ -3829,8 +3884,9 @@ class FunctionComparisonReportGenerator:
                     if item.is_dir() and (item / "module.lua").exists():
                         submodules.append(item)
 
-                # Scan module lua files for dotted functions and hooks
+                # Scan module lua files for dotted functions, meta methods, and hooks
                 dotted_functions = []
+                meta_functions = []
                 hooks_found = set()
 
                 for root, _, files in os.walk(module_dir):
@@ -3862,6 +3918,11 @@ class FunctionComparisonReportGenerator:
                                 and name not in documented_functions):
                                 dotted_functions.append(name)
 
+                        for m in re.finditer(r'^\s*function\s+([A-Za-z_]*Meta):([A-Za-z_][\w]*)\s*\(([^)]*)\)', content, re.MULTILINE):
+                            name = f"{m.group(1)}:{m.group(2)}"
+                            if name not in documented_functions:
+                                meta_functions.append(name)
+
                         # Hooks via hook.Add / hook.Run literals in module
                         # Only add hooks that are NOT already documented in gamemode_hooks.md
                         for m in re.finditer(r'hook\s*\.\s*Add\s*\(\s*([\"\"])\s*([^\"\']+)\1', content):
@@ -3874,7 +3935,7 @@ class FunctionComparisonReportGenerator:
                                 hooks_found.add(hook_name)
 
                 # If any entries exist, create docs folder and write files for parent module
-                if dotted_functions or hooks_found:
+                if dotted_functions or meta_functions or hooks_found:
                     docs_dir.mkdir(parents=True, exist_ok=True)
 
                     # Write libraries.md if dotted functions found (always overwrite)
@@ -3897,6 +3958,28 @@ class FunctionComparisonReportGenerator:
                                 f.write('```lua\n')
                                 f.write(f'-- Example usage of {name}\n')
                                 f.write(f'local result = {name}()\n')
+                                f.write('```\n\n')
+                                f.write('---\n\n')
+
+                    if meta_functions:
+                        meta_md_path = docs_dir / 'meta.md'
+                        with open(meta_md_path, 'w', encoding='utf-8') as f:
+                            f.write('# Module Meta\n\n')
+                            f.write('Detected meta methods owned by this module.\n\n')
+                            for name in sorted(set(meta_functions), key=str.lower):
+                                f.write(f'## {name}\n\n')
+                                f.write('**Purpose**\n\n')
+                                f.write('Method description goes here.\n\n')
+                                f.write('**Parameters**\n\n')
+                                f.write('* `param1` (*type*): Description\n\n')
+                                f.write('**Returns**\n\n')
+                                f.write('* `return` (*type*): Description\n\n')
+                                f.write('**Realm**\n\n')
+                                f.write('Shared.\n\n')
+                                f.write('**Example Usage**\n\n')
+                                f.write('```lua\n')
+                                f.write(f'-- Example usage of {name}\n')
+                                f.write(f'object:{name.split(":", 1)[1]}()\n')
                                 f.write('```\n\n')
                                 f.write('---\n\n')
 

@@ -22,7 +22,7 @@ function MODULE:PopulateAdminTabs(pages)
 end
 
 local currentCategoryData = {}
-local function CreateLogsUI(panel, categories)
+function MODULE:CreateLogsUI(panel, categories)
     panel:Clear()
     currentCategoryData = {}
     panel:DockPadding(6, 6, 6, 6)
@@ -260,30 +260,6 @@ local function UpdateLogsUI(panel, logsData)
 end
 
 liaLogsPanel = liaLogsPanel or nil
-net.Receive("liaSendLogsCategories", function()
-    local categories = net.ReadTable()
-    if not categories or #categories == 0 then
-        chat.AddText(Color(255, 0, 0), L("failedRetrieveLogs"))
-        return
-    end
-
-    local logsPanel = liaLogsPanel
-    if not IsValid(logsPanel) then
-        for _, panel in ipairs(vgui.GetWorldPanel():GetChildren()) do
-            if IsValid(panel) and panel.liaLogsPanel then
-                logsPanel = panel.liaLogsPanel
-                liaLogsPanel = logsPanel
-                break
-            end
-        end
-    end
-
-    if IsValid(logsPanel) then
-        CreateLogsUI(logsPanel, categories)
-    else
-        chat.AddText(Color(255, 100, 100), L("logsPanelError"))
-    end
-end)
 
 lia.net.readBigTable("liaSendLogs", function(logsData)
     local logsPanel = liaLogsPanel

@@ -17,17 +17,23 @@ function MODULE:PopulateAdminTabs(pages)
     end
 end
 
-local TicketFrames = {}
+MODULE.TicketFrames = MODULE.TicketFrames or {}
 local xpos = xpos or 20
 local ypos = ypos or 20
-local function CreateTicketFrame(requester, message, claimed)
+function MODULE:CreateTicketFrame(requester, message, claimed)
+    self.TicketFrames = self.TicketFrames or {}
+    local ticketFrames = self.TicketFrames
     if not IsValid(requester) or not requester:IsPlayer() then return end
-    for _, v in pairs(TicketFrames) do
-        if v.idiot == requester then
-            local txt = v:GetChildren()[5]
-            txt:AppendText("\n" .. message)
-            txt:GotoTextEnd()
-            lia.websound.playButtonSound("ui/hint.wav")
+    local requesterSteamID = requester:SteamID()
+    for _, v in pairs(ticketFrames) do
+        if v.requesterSteamID == requesterSteamID then
+            local messageEntry = v.messageEntry
+            if IsValid(messageEntry) then
+                local existingText = messageEntry:GetValue() or ""
+                messageEntry:SetText(existingText ~= "" and existingText .. "\n" .. message or message)
+                messageEntry:GotoTextEnd()
+                lia.websound.playButtonSound("ui/hint.wav")
+            end
             return
         end
     end
@@ -37,6 +43,7 @@ local function CreateTicketFrame(requester, message, claimed)
     frm:SetSize(frameWidth, frameHeight)
     frm:SetPos(xpos, ypos)
     frm.idiot = requester
+    frm.requesterSteamID = requesterSteamID
     frm:ShowCloseButton(false)
     if claimed and IsValid(claimed) and claimed:IsPlayer() then
         frm:SetTitle(L("ticketTitleClaimed", requester:Nick(), claimed:Nick()))
@@ -46,12 +53,22 @@ local function CreateTicketFrame(requester, message, claimed)
     end
 
     local msg = vgui.Create("liaEntry", frm)
+    frm.messageEntry = msg
     msg:SetPos(10, 30)
     msg:SetSize(280, frameHeight - 35)
     msg:SetText(message)
     msg:SetMultiline(true)
-    msg:SetEditable(false)
+    msg:SetEditable(true)
+    msg:AllowInput(function() return true end)
+    msg:SetMouseInputEnabled(true)
+    msg:SetKeyboardInputEnabled(true)
     msg:SetPaintBackground(false)
+    if IsValid(msg.textEntry) then
+        msg.textEntry:SetEditable(true)
+        msg.textEntry:SetMouseInputEnabled(true)
+        msg.textEntry:SetKeyboardInputEnabled(true)
+        if msg.textEntry.SetVerticalScrollbarEnabled then msg.textEntry:SetVerticalScrollbarEnabled(true) end
+    end
     msg.Paint = function(panel, w, h)
         lia.derma.rect(0, 0, w, h):Rad(4):Color((lia.color.theme and lia.color.theme.panel and lia.color.theme.panel[1]) or Color(34, 62, 62)):Shape(lia.derma.SHAPE_IOS):Draw()
         panel:DrawTextEntryText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), (lia.color.theme and lia.color.theme.text) or Color(210, 235, 235))
@@ -104,171 +121,16 @@ local function CreateTicketFrame(requester, message, claimed)
     closeButton:SetPos(frameWidth - 18, 2)
     closeButton:SetSize(16, 16)
     closeButton.DoClick = function() frm:Remove() end
-    frm:SetPos(xpos, ypos + 180 * #TicketFrames)
-    frm:MoveTo(xpos, ypos + 180 * #TicketFrames, 0.2, 0, 1, function() surface.PlaySound("garrysmod/balloon_pop_cute.wav") end)
+    frm:SetPos(xpos, ypos + 180 * #ticketFrames)
+    frm:MoveTo(xpos, ypos + 180 * #ticketFrames, 0.2, 0, 1, function() surface.PlaySound("garrysmod/balloon_pop_cute.wav") end)
     function frm:OnRemove()
-        if TicketFrames then
-            table.RemoveByValue(TicketFrames, frm)
-            for k, v in ipairs(TicketFrames) do
+        if ticketFrames then
+            table.RemoveByValue(ticketFrames, frm)
+            for k, v in ipairs(ticketFrames) do
                 v:MoveTo(xpos, ypos + 180 * (k - 1), 0.1, 0, 1)
             end
         end
     end
 
-    table.insert(TicketFrames, frm)
+    table.insert(ticketFrames, frm)
 end
-
-net.Receive("liaActiveTickets", function()
-    local tickets = net.ReadTable() or {}
-    if not IsValid(ticketPanel) then return end
-    ticketPanel:Clear()
-    ticketPanel:DockPadding(6, 6, 6, 6)
-    ticketPanel.Paint = function() end
-    local search = ticketPanel:Add("liaEntry")
-    search:Dock(TOP)
-    search:DockMargin(0, 20, 0, 15)
-    search:SetTall(30)
-    search:SetFont("LiliaFont.17")
-    search:SetPlaceholderText(L("search"))
-    search:SetTextColor(Color(200, 200, 200))
-    local list = ticketPanel:Add("liaTable")
-    list:Dock(FILL)
-    local columns = {
-        {
-            name = L("timestamp"),
-            field = "timestamp"
-        },
-        {
-            name = L("requester"),
-            field = "requesterDisplay"
-        },
-        {
-            name = L("admin"),
-            field = "adminDisplay"
-        },
-        {
-            name = L("message"),
-            field = "message"
-        }
-    }
-
-    for _, col in ipairs(columns) do
-        list:AddColumn(col.name)
-    end
-
-    list:AddMenuOption(L("copyRow"), function(rowData)
-        local rowString = ""
-        for i, column in ipairs(columns) do
-            local header = column.name or L("columnWithNumber", i)
-            local value = tostring(rowData[i] or "")
-            rowString = rowString .. header .. " " .. value .. " | "
-        end
-
-        SetClipboardText(string.sub(rowString, 1, -4))
-    end, "icon16/page_copy.png")
-
-    local function populate(filter)
-        list:Clear()
-        filter = string.lower(filter or "")
-        for _, t in pairs(tickets) do
-            local requester = t.requester or ""
-            local requesterDisplay = ""
-            if requester ~= "" then
-                local requesterPly = lia.util.getBySteamID(requester)
-                local requesterName = IsValid(requesterPly) and requesterPly:Nick() or requester
-                requesterDisplay = string.format("%s (%s)", requesterName, requester)
-            end
-
-            local ts = os.date("%Y-%m-%d %H:%M:%S", t.timestamp or os.time())
-            local adminDisplay = L("unassigned")
-            if t.admin then
-                local adminPly = lia.util.getBySteamID(t.admin)
-                local adminName = IsValid(adminPly) and adminPly:Nick() or t.admin
-                adminDisplay = string.format("%s (%s)", adminName, t.admin)
-            end
-
-            local values = {ts, requesterDisplay, adminDisplay, t.message or ""}
-            local match = false
-            if filter == "" then
-                match = true
-            else
-                for _, value in ipairs(values) do
-                    if tostring(value):lower():find(filter, 1, true) then
-                        match = true
-                        break
-                    end
-                end
-            end
-
-            if match then list:AddLine(unpack(values)) end
-        end
-
-        list:ForceCommit()
-        list:InvalidateLayout(true)
-        if list.scrollPanel then list.scrollPanel:InvalidateLayout(true) end
-    end
-
-    list:AddMenuOption(L("noOptionsAvailable"), function() end)
-    search.OnTextChanged = function(_, value) populate(value or "") end
-    populate("")
-end)
-
-net.Receive("liaViewClaims", function()
-    local tbl = net.ReadTable()
-    local steamid = net.ReadString()
-    if steamid and steamid ~= "" and steamid ~= " " then
-        local v = tbl[steamid]
-        lia.information(L("claimRecordLast", v.name, v.claims, string.NiceTime(os.time() - v.lastclaim)))
-    else
-        for _, v in pairs(tbl) do
-            lia.information(L("claimRecord", v.name, v.claims))
-        end
-    end
-end)
-
-net.Receive("liaTicketSystem", function()
-    local pl = net.ReadEntity()
-    local msg = net.ReadString()
-    local claimed = net.ReadEntity()
-    local client = LocalPlayer()
-    local permission = IsValid(client) and (client:isStaffOnDuty() or client:hasPrivilege("alwaysSeeTickets")) or false
-    if permission then CreateTicketFrame(pl, msg, claimed) end
-end)
-
-net.Receive("liaTicketSystemClaim", function()
-    local pl = net.ReadEntity()
-    local requester = net.ReadEntity()
-    for _, v in pairs(TicketFrames) do
-        if v.idiot == requester then
-            v:SetTitle(requester:Nick() .. " - " .. L("claimedBy") .. " " .. pl:Nick())
-            local bu = v:GetChildren()[11]
-            if not bu or not IsValid(bu) then return end
-            bu.DoClick = function()
-                if LocalPlayer() == pl then
-                    net.Start("liaTicketSystemClose")
-                    net.WriteEntity(requester)
-                    net.SendToServer()
-                else
-                    v:Close()
-                end
-            end
-        end
-    end
-end)
-
-net.Receive("liaTicketSystemClose", function()
-    local requester = net.ReadEntity()
-    if not IsValid(requester) or not requester:IsPlayer() then return end
-    for _, v in pairs(TicketFrames) do
-        if v.idiot == requester then v:Remove() end
-    end
-end)
-
-net.Receive("liaClearAllTicketFrames", function()
-    for _, v in pairs(TicketFrames) do
-        if IsValid(v) then v:Remove() end
-    end
-
-    TicketFrames = {}
-end)
-

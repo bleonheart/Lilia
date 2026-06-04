@@ -1,5 +1,5 @@
 local MODULE = MODULE
-local function CanPlayerSeeLog(client)
+function MODULE:CanPlayerSeeLog(client)
     local adminConsoleNetworkLogs = lia.config.get("AdminConsoleNetworkLogs", true)
     local canSeeLogs = client:hasPrivilege("canSeeLogs")
     local permission = adminConsoleNetworkLogs and canSeeLogs
@@ -7,7 +7,7 @@ local function CanPlayerSeeLog(client)
     return permission
 end
 
-local function ReadLogEntries(category, page)
+function MODULE:ReadLogEntries(category, page)
     local d = deferred.new()
     local maxDays = lia.config.get("LogRetentionDays", 7)
     local logsPerPage = lia.config.get("logsPerPage", 50)
@@ -40,31 +40,6 @@ local function ReadLogEntries(category, page)
     end)
     return d
 end
-
-net.Receive("liaSendLogsRequest", function(_, client)
-    if not CanPlayerSeeLog(client) then return end
-    local category = net.ReadString()
-    local page = net.ReadUInt(16)
-    if hook.Run("CanPlayerSeeLogCategory", client, category) == false then return end
-    ReadLogEntries(category, page):next(function(result) lia.net.writeBigTable(client, "liaSendLogs", result) end)
-end)
-
-net.Receive("liaSendLogsCategoriesRequest", function(_, client)
-    if not CanPlayerSeeLog(client) then return end
-    local categories = {}
-    for _, v in pairs(lia.log.types) do
-        categories[v.category or L("uncategorized")] = true
-    end
-
-    local catList = {}
-    for k in pairs(categories) do
-        if hook.Run("CanPlayerSeeLogCategory", client, k) ~= false then catList[#catList + 1] = k end
-    end
-
-    net.Start("liaSendLogsCategories")
-    net.WriteTable(catList)
-    net.Send(client)
-end)
 
 function MODULE:OnCharDelete(client, id)
     lia.log.add(client, "charDelete", id)
