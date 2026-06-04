@@ -15,5 +15,4 @@ function MODULE:PopulateAdminTabs(pages)
     end
 end
 
-            name = L("timestamp"),
 AdminStickWarnings = AdminStickWarnings or {}
