@@ -450,13 +450,10 @@ function generateClass() {
   lines.push('    },');
   }
   if (subMaterials.length > 0) {
-  // Build a sparse array keyed by slot index (1-indexed)
-  const maxSlot = Math.max(...subMaterials.map(s => s.slot));
   pushTableStart('subMaterials');
-  for (let i = 1; i <= maxSlot; i++) {
-    const entry = subMaterials.find(s => s.slot === i);
-  lines.push(`        ${entry ? JSON.stringify(entry.mat) : 'nil'},`);
-  }
+  subMaterials.forEach(entry => {
+  lines.push(`        [${entry.slot}] = ${JSON.stringify(entry.mat)},`);
+  });
   lines.push('    },');
   }
   }

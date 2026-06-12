@@ -80,7 +80,18 @@ garrysmod/gamemodes/[schema folder]/schema/items/outfit/[item_id].lua
           <label for="bodygroups-value">Bodygroups:</label>
           <textarea id="bodygroups-value" placeholder='[1] = 2,\nhelmet = 0' oninput="generateOutfitItem()">[1] = 1,
 helmet = 0</textarea>
-          <small>Enter Lua table entries only. They will be wrapped in <code>bodygroups = { ... }</code>.</small>
+          <small>Enter Lua table entries only. They will be wrapped in the selected bodygroup field.</small>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="bodygroups-field">Bodygroups Field:</label>
+          <select id="bodygroups-field" oninput="generateOutfitItem()">
+            <option value="bodygroups" selected>bodygroups</option>
+            <option value="bodyGroups">bodyGroups</option>
+          </select>
+          <small>Both field names are supported by the outfit base.</small>
         </div>
       </div>
 
@@ -95,6 +106,20 @@ helmet = 0</textarea>
           <label for="outfit-category">Outfit Category:</label>
           <input type="text" id="outfit-category" placeholder="e.g., uniform" value="armor" oninput="generateOutfitItem()">
           <small>Only one equipped item per outfit category is allowed</small>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="input-group">
+          <label for="attrib-boosts">Attribute Boosts:</label>
+          <textarea id="attrib-boosts" placeholder="Optional. One per line, format: strength=2" oninput="generateOutfitItem()"></textarea>
+          <small>Optional boosts applied while equipped, such as <code>strength=2</code>.</small>
+        </div>
+
+        <div class="input-group">
+          <label for="pac-data">PAC Data:</label>
+          <textarea id="pac-data" placeholder='Optional raw Lua entries, e.g.&#10;[1] = {&#10;    children = {},&#10;    self = {ClassName = "model"}&#10;}' oninput="generateOutfitItem()"></textarea>
+          <small>Optional raw <code>pacData</code> table contents for hybrid outfit items.</small>
         </div>
       </div>
     </div>
@@ -115,6 +140,27 @@ helmet = 0</textarea>
 </div>
 
 <script>
+function parseAttributeBoosts() {
+  const raw = (document.getElementById('attrib-boosts').value || '').trim();
+  if (!raw) return [];
+
+  return raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separatorIndex = line.indexOf('=');
+      if (separatorIndex === -1) return null;
+
+      const key = line.slice(0, separatorIndex).trim();
+      const value = line.slice(separatorIndex + 1).trim();
+      if (!key || !value) return null;
+
+      return {key, value};
+    })
+    .filter(Boolean);
+}
+
 function generateOutfitItem() {
   const uniqueId = (document.getElementById('item-id').value || '').trim() || 'outfit_example';
   const name = (document.getElementById('item-name').value || '').trim() || 'Outfit Item';
@@ -126,8 +172,11 @@ function generateOutfitItem() {
   const replacementModel = (document.getElementById('replacement-model').value || '').trim() || 'models/player/group01/male_01.mdl';
   const skinValue = (document.getElementById('skin-value').value || '').trim();
   const bodygroupsValue = (document.getElementById('bodygroups-value').value || '').trim();
+  const bodygroupsField = document.getElementById('bodygroups-field').value || 'bodygroups';
   const armorValue = document.getElementById('armor-value').value || '0';
   const outfitCategory = (document.getElementById('outfit-category').value || '').trim() || 'uniform';
+  const attribBoosts = parseAttributeBoosts();
+  const pacData = (document.getElementById('pac-data').value || '').trim();
 
   const properties = [
     `    name = ${JSON.stringify(name)},`,
@@ -140,6 +189,22 @@ function generateOutfitItem() {
   if (width !== '1') properties.splice(3, 0, `    width = ${width},`);
   if (height !== '1') properties.splice(width !== '1' ? 4 : 3, 0, `    height = ${height},`);
   if (armorValue !== '0') properties.push(`    armor = ${armorValue},`);
+  if (attribBoosts.length > 0) {
+    properties.push('    attribBoosts = {');
+    attribBoosts.forEach((entry, index) => {
+      const suffix = index === attribBoosts.length - 1 ? '' : ',';
+      properties.push(`        ${entry.key} = ${entry.value}${suffix}`);
+    });
+    properties.push('    },');
+  }
+  if (pacData) {
+    properties.push('    pacData = {');
+    pacData.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed) properties.push(`        ${trimmed}`);
+    });
+    properties.push('    },');
+  }
 
   if (sourceModel) {
     properties.push('    replacements = {');
@@ -147,7 +212,7 @@ function generateOutfitItem() {
     properties.push(`            replacement = ${JSON.stringify(replacementModel)},`);
     if (skinValue !== '') properties.push(`            skin = ${skinValue},`);
     if (bodygroupsValue) {
-      properties.push('            bodygroups = {');
+      properties.push(`            ${bodygroupsField} = {`);
       bodygroupsValue.split('\n').forEach(line => {
         const trimmed = line.trim();
         if (trimmed) properties.push(`                ${trimmed}`);
@@ -160,7 +225,7 @@ function generateOutfitItem() {
     properties.push(`    replacement = ${JSON.stringify(replacementModel)},`);
     if (skinValue !== '') properties.push(`    skin = ${skinValue},`);
     if (bodygroupsValue) {
-      properties.push('    bodygroups = {');
+      properties.push(`    ${bodygroupsField} = {`);
       bodygroupsValue.split('\n').forEach(line => {
         const trimmed = line.trim();
         if (trimmed) properties.push(`        ${trimmed}`);
@@ -194,8 +259,11 @@ function fillExampleOutfit() {
   document.getElementById('replacement-model').value = 'models/player/corpse1.mdl';
   document.getElementById('skin-value').value = '2';
   document.getElementById('bodygroups-value').value = '[1] = 2,\nhelmet = 0';
+  document.getElementById('bodygroups-field').value = 'bodyGroups';
   document.getElementById('armor-value').value = '25';
   document.getElementById('outfit-category').value = 'hazmat';
+  document.getElementById('attrib-boosts').value = 'endurance=3\nstrength=1';
+  document.getElementById('pac-data').value = '';
 
   generateOutfitItem();
 }
