@@ -1146,9 +1146,9 @@ function GM:CreateSalaryTimers()
     for _, timerName in ipairs(self.salaryTimerNames) do
         if timer.Exists(timerName) then timer.Remove(timerName) end
     end
+
     self.salaryTimerNames = {}
     if timer.Exists("liaSalaryGlobal") then timer.Remove("liaSalaryGlobal") end
-
     local function getSalaryInterval(faction, class)
         local classInterval = class and class.payTimer
         if isnumber(classInterval) and classInterval > 0 then return classInterval end

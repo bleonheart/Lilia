@@ -127,6 +127,7 @@ properties.Add("CopyBodygroupsByName", {
             local value = ent:GetBodygroup(bg.id)
             lines[#lines + 1] = bg.name .. " - " .. value
         end
+
         SetClipboardText(table.concat(lines, "\n"))
         self:MsgEnd()
     end,
@@ -149,6 +150,7 @@ properties.Add("CopyBodygroupsByID", {
             local value = ent:GetBodygroup(bg.id)
             lines[#lines + 1] = tostring(bg.id) .. " - " .. value
         end
+
         SetClipboardText(table.concat(lines, "\n"))
         self:MsgEnd()
     end,

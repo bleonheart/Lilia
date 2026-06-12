@@ -7,7 +7,6 @@ ITEM.height = 1
 ITEM.outfitCategory = "model"
 ITEM.pacData = {}
 ITEM.isOutfit = true
-
 function ITEM:getOutfitSkin()
     if isnumber(self.newSkin) then return self.newSkin end
     if isnumber(self.skin) then return self.skin end
@@ -65,11 +64,8 @@ function ITEM:getReplacementData(model)
     end
 
     for _, v in ipairs(self.replacements) do
-        if istable(v) and isstring(v[1]) and isstring(v[2]) then
-            data.model = currentModel:gsub(v[1], v[2])
-        end
+        if istable(v) and isstring(v[1]) and isstring(v[2]) then data.model = currentModel:gsub(v[1], v[2]) end
     end
-
     return data
 end
 
@@ -113,8 +109,8 @@ function ITEM:removeOutfit(client)
 
         character:setData("oldGroups", oldGroups)
     end
-    self:setData("appliedBodygroups", nil)
 
+    self:setData("appliedBodygroups", nil)
     if self.pacData and client.removePart then client:removePart(self.uniqueID) end
     if self.attribBoosts then
         for k, _ in pairs(self.attribBoosts) do

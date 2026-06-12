@@ -547,7 +547,9 @@ function generateFaction() {
 
   if (models.length > 0 || colorInput || logo || hasCustomScale || skinAllowed || bodygroupsAllowed || allowedSkins.length > 0 || Object.keys(allowedBodygroups).length > 0) {
     lines.push('');
-    if (models.length > 0) {
+    if (models.length === 1) {
+      pushField('model', JSON.stringify(models[0]));
+    } else if (models.length > 1) {
       pushTableStart('models');
       models.forEach(model => lines.push(`        ${JSON.stringify(model)},`));
       lines.push('    },');

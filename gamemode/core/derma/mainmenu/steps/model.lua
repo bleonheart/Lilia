@@ -1,5 +1,4 @@
-local PANEL = {}
-
+﻿local PANEL = {}
 function PANEL:getCreationModelSource()
     local factionIndex = self:getContext("faction")
     if not factionIndex then return end

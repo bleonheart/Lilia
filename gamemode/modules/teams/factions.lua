@@ -82,7 +82,6 @@ function lia.faction.getModelData(modelKey, modelData)
         parsed.bodygroups = modelData.bodygroups or modelData.defaultBodygroups or modelData.groups or {}
         return parsed
     end
-
     return nil
 end
 
@@ -342,13 +341,16 @@ function lia.faction.getCharacterCreationModelSource(faction, class)
         if factionData.model ~= nil then return factionData.model, factionData, true end
         if factionData.models ~= nil then return factionData.models, factionData, false end
     end
-
     return DefaultModels, factionData, false
 end
 
 function lia.faction.getCharacterCreationModelChoices(faction, class)
     local source, owner, forced = lia.faction.getCharacterCreationModelSource(faction, class)
-    if forced then return {[1] = source}, owner, true end
+    if forced then
+        return {
+            [1] = source
+        }, owner, true
+    end
     return source or {}, owner, false
 end
 

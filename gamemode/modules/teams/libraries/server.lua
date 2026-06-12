@@ -116,7 +116,6 @@ local function applyAttributes(client, attr)
     end
 
     if attr.jumpPower then client:SetJumpPower(math.Round(client:GetJumpPower() * attr.jumpPower)) end
-
     client:SetBloodColor(attr.bloodcolor or BLOOD_COLOR_RED)
     if attr.health then
         client:SetMaxHealth(attr.health)

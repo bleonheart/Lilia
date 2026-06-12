@@ -8,7 +8,6 @@ ITEM.armor = 0
 ITEM.stamina = 0
 ITEM.healTime = 0
 ITEM.healInterval = 1
-
 local function applyHealthOverTime(item, target)
     local totalHealth = math.max(math.floor(tonumber(item.health) or 0), 0)
     local healTime = math.max(tonumber(item.healTime) or 0, 0)
@@ -40,9 +39,7 @@ local function applyHealthOverTime(item, target)
             remainder = remainder - 1
         end
 
-        if amount > 0 then
-            target:SetHealth(math.min(target:Health() + amount, target:GetMaxHealth()))
-        end
+        if amount > 0 then target:SetHealth(math.min(target:Health() + amount, target:GetMaxHealth())) end
     end)
 end
 
@@ -61,9 +58,7 @@ ITEM.functions.use = {
     sound = "items/medshot4.wav",
     onRun = function(item)
         local client = item.player
-        if IsValid(client) then
-            applyAidEffects(item, client, client)
-        end
+        if IsValid(client) then applyAidEffects(item, client, client) end
     end
 }
 
