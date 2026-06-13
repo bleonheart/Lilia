@@ -77,7 +77,7 @@ You can also add callback fields like `OnTransferred`, `OnSpawn`, `NameTemplate`
         <label>Models:</label>
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-        <small>Add the player models this faction can use. Each row can also define model-specific defaults and allowed skin/bodygroup rules.</small>
+        <small>Add the player models this faction can use. Each entry is split into a model row and a second row for the skin/bodygroup rules tied to that model.</small>
       </div>
 
       <div class="form-grid-2">
@@ -302,7 +302,11 @@ function addTextRow(containerId, placeholder, value = '') {
   const container = document.getElementById(containerId);
   const div = document.createElement('div');
   div.className = 'dynamic-row';
+  div.style.flexDirection = 'column';
+  div.style.alignItems = 'stretch';
+  div.style.gap = '8px';
   div.innerHTML = `
+  <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
   <input type="text" value="${value}" placeholder="${placeholder}" class="list-input">
   <button onclick="this.parentElement.remove()" class="remove-btn">&times;</button>
   `;
@@ -318,7 +322,7 @@ function addSpawnRow(map='', pos='', ang='') {
   <input type="text" placeholder="Map Name (e.g. gm_construct)" value="${map}" class="spawn-map small-input">
   <input type="text" placeholder="Vector(0,0,0)" value="${pos}" class="spawn-pos">
   <input type="text" placeholder="Angle(0,0,0)" value="${ang}" class="spawn-ang">
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  <button onclick="this.parentElement.remove()" class="remove-btn">Ãƒâ€”</button>
   `;
   container.appendChild(div);
 }
@@ -332,7 +336,7 @@ function addMainMenuRow(map='', pos='', ang='') {
   <input type="text" placeholder="Map (Blank for all)" value="${map}" class="mm-map small-input">
   <input type="text" placeholder="Vector(0,0,0)" value="${pos}" class="mm-pos">
   <input type="text" placeholder="Angle(0,0,0)" value="${ang}" class="mm-ang">
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  <button onclick="this.parentElement.remove()" class="remove-btn">Ãƒâ€”</button>
   `;
   container.appendChild(div);
 }
@@ -343,13 +347,20 @@ function addModelRow(model='', skin='', bodygroups='', allowedSkins='', allowedB
   const container = document.getElementById('models-list');
   const div = document.createElement('div');
   div.className = 'dynamic-row';
+  div.style.flexDirection = 'column';
+  div.style.alignItems = 'stretch';
+  div.style.gap = '8px';
   div.innerHTML = `
-  <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
-  <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
-  <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
-  <input type="text" placeholder="Allowed skins (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:160px;">
-  <input type="text" placeholder="Allowed bodygroups (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:220px;">
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
+    <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
+    <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
+    <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
+    <input type="text" placeholder="Allowed skins for this model (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:220px;">
+    <input type="text" placeholder="Allowed bodygroups for this model (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:260px;">
+    <button onclick="this.closest('.dynamic-row').remove()" class="remove-btn">&times;</button>
+  </div>
   `;
   container.appendChild(div);
 }
@@ -364,7 +375,7 @@ function addAllowedBodygroupRow(index='', values='') {
   div.innerHTML = `
   <input type="number" placeholder="Bodygroup index" value="${index}" min="0" class="abg-index small-input">
   <input type="text" placeholder="Allowed values (e.g. 0,1,2)" value="${values}" class="abg-values">
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  <button onclick="this.parentElement.remove()" class="remove-btn">Ãƒâ€”</button>
   `;
   container.appendChild(div);
 }
@@ -381,7 +392,7 @@ function addNPCRelationRow(npc='', disposition='D_HT') {
     <option value="D_FR"${disposition==='D_FR'?' selected':''}>D_FR (Fear)</option>
     <option value="D_NU"${disposition==='D_NU'?' selected':''}>D_NU (Neutral)</option>
   </select>
-  <button onclick="this.parentElement.remove()" class="remove-btn">×</button>
+  <button onclick="this.parentElement.remove()" class="remove-btn">Ãƒâ€”</button>
   `;
   container.appendChild(div);
 }

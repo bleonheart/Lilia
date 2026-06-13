@@ -70,7 +70,7 @@ You can also add callback fields like `OnCanBe`, `OnSet`, `OnTransferred`, `OnLe
         <label>Model:</label>
         <div id="models-list" class="dynamic-list"></div>
         <button onclick="addModelRow()" class="add-btn">+ Add Model</button>
-        <small>The model or models this class can use. Each row can also define model-specific defaults and allowed skin/bodygroup rules.</small>
+        <small>The model or models this class can use. Each entry is split into a model row and a second row for the skin/bodygroup rules tied to that model.</small>
       </div>
 
       <div class="form-grid-2">
@@ -266,13 +266,20 @@ function addModelRow(model='', skin='', bodygroups='', allowedSkins='', allowedB
   const container = document.getElementById('models-list');
   const div = document.createElement('div');
   div.className = 'dynamic-row';
+  div.style.flexDirection = 'column';
+  div.style.alignItems = 'stretch';
+  div.style.gap = '8px';
   div.innerHTML = `
-  <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
-  <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
-  <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
-  <input type="text" placeholder="Allowed skins (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:160px;">
-  <input type="text" placeholder="Allowed bodygroups (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:220px;">
-  <button onclick="this.parentElement.remove()" class="remove-btn">&times;</button>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
+    <input type="text" placeholder="models/player/..." value="${model}" class="model-path" style="flex:2; min-width:220px;">
+    <input type="number" placeholder="Skin" value="${skin}" min="0" class="model-skin small-input">
+    <input type="text" placeholder="Default bodygroups (1=0; helmet=1)" value="${bodygroups}" class="model-bodygroups" style="flex:1.25; min-width:180px;">
+    <button onclick="this.closest('.dynamic-row').remove()" class="remove-btn">&times;</button>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; width:100%;">
+    <input type="text" placeholder="Allowed skins for this model (0,1,2)" value="${allowedSkins}" class="model-allowed-skins" style="flex:1; min-width:220px;">
+    <input type="text" placeholder="Allowed bodygroups for this model (1=0|1; helmet=0|1)" value="${allowedBodygroups}" class="model-allowed-bodygroups" style="flex:1.5; min-width:260px;">
+  </div>
   `;
   container.appendChild(div);
 }

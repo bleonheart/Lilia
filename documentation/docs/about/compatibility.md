@@ -1,10 +1,10 @@
 # Addon Compatibility
 
-Lilia includes compatibility behavior for common Garry's Mod admin systems, weapon bases, vehicle addons, PAC3, duplication tools, roleplay addons, and sandbox systems. These integrations help protect Lilia's permissions, persistence, character money, HUD behavior, and anti-abuse systems.
+Lilia includes built-in support for many common Garry's Mod admin systems, weapon bases, vehicle addons, PAC3, duplication tools, roleplay addons, and sandbox systems. These integrations help keep permissions, saved data, money, HUD behavior, and anti-abuse features working as expected.
 
-Compatibility can still vary by addon version and server configuration. Test admin commands, economy purchases, vehicle damage, PAC3 outfits, weapon HUD behavior, and duplication tools before opening a live server.
+Compatibility can still change depending on addon version and server setup. Before going live, test things like admin commands, purchases, vehicle damage, PAC3 outfits, weapon HUDs, and duplication tools on your own server.
 
-Use this page as a quick launch-readiness guide: scan the addon family you rely on, confirm the built-in safeguards you expect, and then verify the matching workflow on your own server.
+Use this page as a quick guide: find the addons you rely on, see what Lilia already handles, and then test the matching workflow on your server.
 
 ## Admin And Permission Systems
 
@@ -247,15 +247,3 @@ Use the [PAC3 outfit generator](../generators/items/pacoutfit.md) to scaffold PA
 
 </div>
 </details>
-
-## Launch Checklist
-
-| Area | What to verify |
-| --- | --- |
-| Permissions | Your admin system recognizes Lilia ranks and respects hierarchy checks. |
-| Economy | Addons that charge money read and write character money correctly. |
-| Weapons | Weapon bases do not duplicate HUD elements or bypass inventory expectations. |
-| PAC3 | Outfits apply, replicate, unequip, and appear on ragdolls as expected. |
-| Vehicles | Purchase, damage, trunk, and seat behavior do not bypass roleplay rules. |
-| Duplication tools | Ordinary duplications work while large or blacklisted duplications are blocked. |
-| Logs | Server logs stay clean after testing the highest-risk addon workflows. |

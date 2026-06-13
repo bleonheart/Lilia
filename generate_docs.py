@@ -918,6 +918,29 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
                     if len(parts) > 1 and parts[1].strip():
                         subtitle = parts[1].strip()
 
+            css_block = '''<style>
+details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    padding-right: 180px;
+}
+
+details > summary .summary-main {
+    min-width: 0;
+}
+
+details > summary .source-link-button--summary {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    z-index: 2;
+}
+</style>\n\n'''
+            f.write(css_block)
             f.write(f'# {title}\n\n')
             f.write(f'{subtitle}\n\n')
             f.write('---\n\n')
@@ -1021,6 +1044,29 @@ def generate_documentation_for_hooks_file(file_path: Path, output_dir: Path, bas
 
     with open(output_path, file_mode, encoding='utf-8') as f:
         if not append:
+            css_block = '''<style>
+details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    padding-right: 180px;
+}
+
+details > summary .summary-main {
+    min-width: 0;
+}
+
+details > summary .source-link-button--summary {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    z-index: 2;
+}
+</style>\n\n'''
+            f.write(css_block)
             f.write(f'# {title}\n\n')
             f.write(subtitle + '\n\n')
             f.write('---\n\n')
@@ -1539,6 +1585,29 @@ def generate_index_file(output_dir: Path, doc_type: str) -> None:
     index_path = output_dir / 'index.md'
 
     with open(index_path, 'w', encoding='utf-8') as f:
+        css_block = '''<style>
+details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    padding-right: 180px;
+}
+
+details > summary .summary-main {
+    min-width: 0;
+}
+
+details > summary .source-link-button--summary {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    z-index: 2;
+}
+</style>\n\n'''
+        f.write(css_block)
         f.write(f'# {title}\n\n')
 
         if doc_type == 'guides':

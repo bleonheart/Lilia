@@ -30,6 +30,35 @@ function lia.admin.getDefaultUserGroup()
     return fallbackGroup
 end
 
+function lia.admin.shouldShowUsergroupIcons()
+    return lia.config and lia.config.get and lia.config.get("ShowUsergroupIcons", true) or true
+end
+
+function lia.admin.getUsergroupIcon(groupOrPlayer)
+    if not lia.admin.shouldShowUsergroupIcons() then return nil end
+    local groupName = groupOrPlayer
+    if IsValid(groupOrPlayer) and groupOrPlayer:IsPlayer() then
+        groupName = groupOrPlayer:GetUserGroup()
+    end
+
+    groupName = string.Trim(tostring(groupName or ""))
+    if groupName == "" then return "icon16/group.png" end
+    local groupData = lia.admin.groups and lia.admin.groups[groupName] or nil
+    local info = istable(groupData) and groupData._info or nil
+    return hook.Run("GetUsergroupIcon", groupName, groupData, groupOrPlayer) or info and info.icon or groupData and groupData.icon or "icon16/group.png"
+end
+
+hook.Add("GetUsergroupIcon", "liaAdminDefaultUsergroupIcon", function(groupName)
+    local normalizedGroup = string.lower(string.Trim(tostring(groupName or "")))
+    if normalizedGroup == "superadmin" then
+        return "icon16/shield.png"
+    elseif normalizedGroup == "admin" then
+        return "icon16/star.png"
+    elseif normalizedGroup == "user" then
+        return "icon16/user.png"
+    end
+end)
+
 lia.config.add("DefaultUserGroup", "Default User Group", "user", nil, {
     desc = "Usergroup assigned to players when Lilia does not already have one stored for their SteamID.",
     category = "@userGroups",
@@ -43,6 +72,12 @@ lia.config.add("DefaultUserGroup", "Default User Group", "user", nil, {
         table.sort(options, function(a, b) return tostring(a):lower() < tostring(b):lower() end)
         return options
     end
+})
+
+lia.config.add("ShowUsergroupIcons", "Show Usergroup Icons", true, nil, {
+    desc = "Displays icon16 usergroup icons in OOC/LOOC chat and usergroup tabs.",
+    category = "@userGroups",
+    type = "Boolean"
 })
 
 local defaultUserTools = {
@@ -1687,7 +1722,7 @@ else
             privContainer:DockMargin(20, 20, 20, 20)
             privContainer.Paint = function() end
             buildPrivilegeList(privContainer, groupName, groups, editable)
-            local tabData = tabs:AddTab(groupName, tabPanel)
+            local tabData = tabs:AddTab(groupName, tabPanel, lia.admin.getUsergroupIcon(groupName))
             tabData.groupName = groupName
             return tabData
         end

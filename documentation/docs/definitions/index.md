@@ -1,6 +1,6 @@
 # Definition Reference
 
-Use this section as the API-style reference for Lilia definition files. Each page follows the same pattern: overview, reference entries, callback details, and complete examples.
+Use this section when you want to know what information belongs in a Lilia definition file. Each page explains the main fields, useful options, and example setups.
 
 
 ## Core
@@ -9,37 +9,38 @@ Use this section as the API-style reference for Lilia definition files. Each pag
   <a href="attributes/" class="home-card">
     <span class="card-kicker">Characters</span>
     <h3>Attributes</h3>
-    <p>Character stats, creation limits, maximum values, and setup callbacks.</p>
+    <p>Set up player stats, their limits, and how they behave when characters are created.</p>
   </a>
   <a href="faction/" class="home-card">
     <span class="card-kicker">Groups</span>
     <h3>Factions</h3>
-    <p>Top-level playable organizations, models, loadouts, restrictions, limits, and spawn behavior.</p>
+    <p>Create the main groups players can join, along with models, loadouts, and rules.</p>
   </a>
   <a href="class/" class="home-card">
     <span class="card-kicker">Roles</span>
     <h3>Classes</h3>
-    <p>Faction sub-roles with inherited defaults, whitelist rules, loadouts, and lifecycle callbacks.</p>
+    <p>Add smaller roles inside a faction, with their own loadouts, access, and behavior.</p>
   </a>
   <a href="module/" class="home-card">
     <span class="card-kicker">Modules</span>
     <h3>Module Metadata</h3>
-    <p>Author info, dependencies, privileges, network strings, Workshop content, and module lifecycle.</p>
+    <p>See the fields used to describe a module, what it depends on, and how it should load.</p>
   </a>
 </div>
 
 ## Items
 
 <div class="home-grid">
-  <a href="items/weapons/" class="home-card"><h3>Weapons</h3><p>Weapon class binding, equip state, ammo persistence, and drop behavior.</p></a>
-  <a href="items/outfit/" class="home-card"><h3>Outfits</h3><p>Wearable item metadata, inventory sizing, outfit categories, and PAC data.</p></a>
-  <a href="items/pacoutfit/" class="home-card"><h3>PAC3 Outfits</h3><p>PAC part setup, removal, loadout behavior, and transfer checks.</p></a>
-  <a href="items/arccw_att/" class="home-card"><h3>ArcCW Attachments</h3><p>Attachment item metadata, equip state, inventory protection, and ArcCW sync behavior.</p></a>
-  <a href="items/stackable/" class="home-card"><h3>Stackables</h3><p>Quantity limits, splitting behavior, and stack metadata.</p></a>
-  <a href="items/aid/" class="home-card"><h3>Aid Items</h3><p>Medical and support item structure.</p></a>
-  <a href="items/ammo/" class="home-card"><h3>Ammo</h3><p>Ammunition item metadata and inventory presentation.</p></a>
-  <a href="items/books/" class="home-card"><h3>Books and Notes</h3><p>Readable item content, descriptions, and models.</p></a>
-  <a href="items/entities/" class="home-card"><h3>Entity Items</h3><p>World entity bindings and item entity behavior.</p></a>
-  <a href="items/grenade/" class="home-card"><h3>Grenades</h3><p>Throwable weapon item fields, class binding, and death-drop behavior.</p></a>
-  <a href="items/url/" class="home-card"><h3>URL Items</h3><p>External URL metadata for web-backed items.</p></a>
+  <a href="items/" class="home-card"><h3>Item Reference</h3><p>Browse the item section overview and the complete built-in item base field reference.</p></a>
+  <a href="items/weapons/" class="home-card"><h3>Weapons</h3><p>Define weapon items, how they equip, and what happens to their ammo and drops.</p></a>
+  <a href="items/outfit/" class="home-card"><h3>Outfits</h3><p>Create wearable items, clothing categories, and inventory changes tied to outfits.</p></a>
+  <a href="items/pacoutfit/" class="home-card"><h3>PAC3 Outfits</h3><p>Set up outfits that use PAC3 parts and control how they are applied or removed.</p></a>
+  <a href="items/arccw_att/" class="home-card"><h3>ArcCW Attachments</h3><p>Create attachment items for ArcCW weapons and control how they are protected.</p></a>
+  <a href="items/stackable/" class="home-card"><h3>Stackables</h3><p>Make items that can pile together, split apart, and track quantities.</p></a>
+  <a href="items/aid/" class="home-card"><h3>Aid Items</h3><p>Build healing and support items for your schema.</p></a>
+  <a href="items/ammo/" class="home-card"><h3>Ammo</h3><p>Create ammo items and decide how they show up in inventories.</p></a>
+  <a href="items/books/" class="home-card"><h3>Books and Notes</h3><p>Add readable items with custom text, descriptions, and models.</p></a>
+  <a href="items/entities/" class="home-card"><h3>Entity Items</h3><p>Link an item to a world entity that can be placed or spawned.</p></a>
+  <a href="items/grenade/" class="home-card"><h3>Grenades</h3><p>Define throwable weapon items and their basic drop behavior.</p></a>
+  <a href="items/url/" class="home-card"><h3>URL Items</h3><p>Create items that open a web page or outside resource.</p></a>
 </div>
