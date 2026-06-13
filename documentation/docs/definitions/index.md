@@ -1,12 +1,7 @@
 # Definition Reference
 
-Use this section as the API-style reference for Lilia definition files. Each page follows the same pattern: overview, reference entries, callback details, and complete examples where available.
+Use this section as the API-style reference for Lilia definition files. Each page follows the same pattern: overview, reference entries, callback details, and complete examples.
 
-<section class="reference-hero">
-  <p class="home-eyebrow">Lilia Reference</p>
-  <h2>Schema, item, module, and UI definitions in one browseable tree</h2>
-  <p>Start with the definition type you are editing, then use the field and callback entries as a checklist while writing Lua.</p>
-</section>
 
 ## Core
 
@@ -48,25 +43,3 @@ Use this section as the API-style reference for Lilia definition files. Each pag
   <a href="items/grenade/" class="home-card"><h3>Grenades</h3><p>Throwable weapon item fields, class binding, and death-drop behavior.</p></a>
   <a href="items/url/" class="home-card"><h3>URL Items</h3><p>External URL metadata for web-backed items.</p></a>
 </div>
-
-## Interface
-
-<div class="home-grid">
-  <a href="panels/" class="home-card">
-    <span class="card-kicker">Interface</span>
-    <h3>VGUI Panels</h3>
-    <p>Implemented Lilia panel names, purposes, and common usage contexts.</p>
-  </a>
-</div>
-
-## Authoring Pattern
-
-| Section | What it answers |
-| --- | --- |
-| Overview | What this definition controls and where it fits in the framework. |
-| Purpose | What a field or callback changes. |
-| When Called | When Lilia reads the field or invokes the callback. |
-| Realm | Whether the callback is server, client, or shared. |
-| Parameters | The values passed into callbacks. |
-| Returns | Expected callback return values. |
-| Example | Minimal Lua showing the field or callback in context. |

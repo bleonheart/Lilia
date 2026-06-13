@@ -22,8 +22,7 @@ Use `lia.item.register` from a shared Lua file when you want to register an item
 | `pacData` | `table` | Optional PAC data applied with the outfit. |
 | `isOutfit` | `boolean` | Marks the item as an outfit definition. |
 | `armor` | `number` | Optional armor added while the outfit is equipped. |
-| `newSkin` | `number` | Optional skin index applied while the outfit is equipped. |
-| `skin` | `number` | Alias of `newSkin`. Also used by inventory/world model presentation. |
+| `skin` | `number` | Optional skin index applied while the outfit is equipped. Also used by inventory/world model presentation. |
 | `bodyGroups` | `table` | Optional bodygroup values applied while the outfit is equipped. |
 | `bodygroups` | `table` | Alias of `bodyGroups`. Also used by inventory/world model presentation. |
 | `attribBoosts` | `table` | Optional attribute boosts applied while the outfit is equipped. |

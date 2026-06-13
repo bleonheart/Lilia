@@ -2,20 +2,14 @@
 
 Welcome to the Lilia docs portal. The site is organized around a fast reference tree on the left, with guides and generators kept close by for implementation work.
 
-<section class="home-hero">
-  <p class="home-eyebrow">Developer Portal</p>
-  <h1>Reference-first docs for Lilia schema and server development</h1>
-  <p>Browse definitions, generate schema files, and map framework systems without losing context. Lilia keeps the flexible roleplay foundation; these docs make the moving parts easier to reach.</p>
-  <div class="hero-actions">
-    <a href="definitions/" class="hero-action hero-action--primary">Open Reference</a>
-    <a href="generators/" class="hero-action">Use Generators</a>
-    <a href="about/installation/" class="hero-action">Install Lilia</a>
-  </div>
-</section>
-
 ## Quick Entry
 
 <div class="home-grid home-grid--paths">
+  <a href="developer/" class="home-card">
+    <span class="card-kicker">Developer</span>
+    <h3>Meta Tables and Libraries</h3>
+    <p>Browse generated Character, Player, Entity, hook, and library reference in the same visual style as the rest of the wiki.</p>
+  </a>
   <a href="definitions/" class="home-card">
     <span class="card-kicker">Reference</span>
     <h3>Definition Index</h3>
@@ -58,17 +52,6 @@ Welcome to the Lilia docs portal. The site is organized around a fast reference 
     <p>Check admin systems, PAC3, weapon bases, vehicles, duplication tools, and sandbox behavior before a live launch.</p>
   </a>
 </div>
-
-## Reference Map
-
-| Need | Start here |
-| --- | --- |
-| Find every supported definition type | [Definition Index](definitions/index.md) |
-| Define character stats | [Attribute Definitions](definitions/attributes.md) |
-| Build factions and jobs/classes | [Faction Definitions](definitions/faction.md), [Class Definitions](definitions/class.md) |
-| Create inventory content | [Items](definitions/index.md#items) |
-| Document module metadata | [Module Definitions](definitions/module.md) |
-| Generate starter Lua | [Generators](generators/index.md) |
 
 ## Project Links
 
