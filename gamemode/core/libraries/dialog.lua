@@ -332,12 +332,6 @@ if SERVER then
         return value
     end
 
-    local function parseWaypointVector(rawValue)
-        local value = trimToString(rawValue)
-        if value == "" then return nil end
-        return lia.data and lia.data.decodeVector and lia.data.decodeVector(value) or nil
-    end
-
     function lia.dialog.saveGeneratedDialogs()
         local savedDialogs = {}
         for uniqueID, data in pairs(lia.dialog.originalData or {}) do
@@ -1082,7 +1076,7 @@ else
         frame:Center()
         frame:MakePopup()
         frame:ShowCloseButton(true)
-        local frameW, frameH = frame:GetSize()
+        local frameW = frame:GetWide()
         local entryHeight = 50
         local buttonHeight = 38
         local toolbar = frame:Add("DPanel")
