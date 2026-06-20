@@ -470,3 +470,62 @@ lia.chat.register("adminchat", {
     onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("adminChat") .. "] ", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), ": " .. text) end,
     prefix = {"/adminchat", "/ac"}
 })
+MODULE.FilteredWords = MODULE.FilteredWords or {}
+local function getWordFilterModule()
+    local wordFilterModule = lia.module and lia.module.get and lia.module.get("wordfilter")
+    if wordFilterModule == MODULE then return nil end
+    return wordFilterModule
+end
+
+local function normalizeFilteredWord(word)
+    word = string.Trim(tostring(word or "")):lower()
+    if word == "" then return nil end
+    return word
+end
+
+local function buildNormalizedWordList(words)
+    local normalized = {}
+    local lookup = {}
+    for _, word in ipairs(words or {}) do
+        local cleaned = normalizeFilteredWord(word)
+        if cleaned and not lookup[cleaned] then
+            lookup[cleaned] = true
+            normalized[#normalized + 1] = cleaned
+        end
+    end
+
+    table.sort(normalized)
+    return normalized
+end
+
+local function applyWordsToWordFilterModule(words)
+    local wordFilterModule = getWordFilterModule()
+    if not wordFilterModule then return end
+    wordFilterModule.WordBlackList = buildNormalizedWordList(words)
+end
+
+function MODULE:CanManageFilteredWords(client)
+    local hasPrivilege = IsValid(client) and client:hasPrivilege("manageChatFilter") or false
+    lia.debug("[Permissions]", "Permission Check for function MODULE:CanManageFilteredWords", "isValidPlayer=", tostring(IsValid(client)), "hasPrivilege(manageChatFilter)=", tostring(hasPrivilege), "finalResult=", tostring(hasPrivilege))
+    return hasPrivilege
+end
+
+function MODULE:GetFilteredWords()
+    local wordFilterModule = getWordFilterModule()
+    if wordFilterModule and istable(wordFilterModule.WordBlackList) then
+        self.FilteredWords = buildNormalizedWordList(wordFilterModule.WordBlackList)
+        return self.FilteredWords
+    end
+    return self.FilteredWords or {}
+end
+
+function MODULE:PlayerSay(client, text)
+    if getWordFilterModule() then return end
+    local lowerText = tostring(text or ""):lower()
+    for _, filteredWord in ipairs(self.FilteredWords or {}) do
+        if lowerText:find(filteredWord, 1, true) then
+            client:notifyLocalized("usedFilteredWord")
+            return ""
+        end
+    end
+end

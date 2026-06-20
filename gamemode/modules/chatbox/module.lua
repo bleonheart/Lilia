@@ -1,7 +1,8 @@
-﻿MODULE.name = "@chatboxModuleName"
+MODULE.name = "@chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@chatSystemDescription"
+MODULE.NetworkStrings = {"liaChatboxAddFilteredWord", "liaChatboxRemoveFilteredWord", "liaChatboxRequestFilteredWords", "liaChatboxSyncFilteredWords"}
 MODULE.Privileges = {
     ["noOOCCooldown"] = {
         Name = "@noOOCCooldown",
@@ -30,6 +31,11 @@ MODULE.Privileges = {
     },
     ["bypassOOCBlock"] = {
         Name = "@bypassOOCBlockPrivilege",
+        MinAccess = "superadmin",
+        Category = "@categoryChat",
+    },
+    ["manageChatFilter"] = {
+        Name = "@manageChatFilter",
         MinAccess = "superadmin",
         Category = "@categoryChat",
     },
