@@ -1,14 +1,14 @@
-﻿MODULE.name = "Perma Remove"
+MODULE.name = "@permaRemoveModuleName"
 MODULE.versionID = "public_permaremove"
 MODULE.author = "Samael"
 MODULE.discord = "discord"
 MODULE.version = 1.0
-MODULE.desc = "Lets admins permanently remove map entities."
+MODULE.desc = "@permaRemoveModuleDesc"
 MODULE.Privileges = {
     ["removeMapEntities"] = {
-        Name = "removeMapEntities",
+        Name = "@removeMapEntities",
         MinAccess = "admin",
-        Category = "mapCleanup",
+        Category = "@mapCleanup",
     }
 }
 

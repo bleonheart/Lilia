@@ -56,8 +56,8 @@ hook.Add("GetUsergroupIcon", "liaAdminDefaultUsergroupIcon", function(groupName)
     end
 end)
 
-lia.config.add("DefaultUserGroup", "Default User Group", "user", nil, {
-    desc = "Usergroup assigned to players when Lilia does not already have one stored for their SteamID.",
+lia.config.add("DefaultUserGroup", "@defaultUserGroupConfigName", "user", nil, {
+    desc = "@defaultUserGroupConfigDesc",
     category = "@userGroups",
     type = "Generic",
     options = function()
@@ -71,8 +71,8 @@ lia.config.add("DefaultUserGroup", "Default User Group", "user", nil, {
     end
 })
 
-lia.config.add("ShowUsergroupIcons", "OOC/LOOC Icon Message", true, nil, {
-    desc = "Displays icon16 usergroup icons in OOC/LOOC messages and usergroup tabs.",
+lia.config.add("ShowUsergroupIcons", "@showUsergroupIconsConfigName", true, nil, {
+    desc = "@showUsergroupIconsConfigDesc",
     category = "@userGroups",
     type = "Boolean"
 })

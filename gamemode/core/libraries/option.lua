@@ -1,4 +1,98 @@
-﻿lia.option = lia.option or {}
+﻿--[[
+    Folder: Developer - Libraries
+    File: lia.option.md
+]]
+--[[
+    Option
+
+    Option helpers for Lilia user settings, including registration, lookup, localization, persistence, and configuration menu display.
+]]
+--[[
+    Overview:
+        The option library centralizes user-facing settings under `lia.option`. It stores registered option metadata and values, infers option types from defaults, localizes labels, descriptions, categories, and selectable values, persists option values to `data/lilia/options.json`, and builds the configuration menu page used to edit registered options.
+]]
+--[[
+    Hooks:
+        OptionAdded(string key, table option)
+
+    Purpose:
+        Runs after an option is registered with `lia.option.add`.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+        option (table)
+            The stored option data table created for the key.
+
+    Realm:
+        Shared
+]]
+--[[
+    Hooks:
+        OptionChanged(string key, any oldValue, any newValue)
+
+    Purpose:
+        Runs after `lia.option.set` changes a registered option value.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+        oldValue (any)
+            The value before the change.
+
+        newValue (any)
+            The value after the change.
+
+    Realm:
+        Shared
+]]
+--[[
+    Hooks:
+        OptionReceived(Player|nil client, string key, any value)
+
+    Purpose:
+        Runs on the server when a changed option is marked for networking.
+
+    Parameters:
+        client (Player|nil)
+            The player associated with the networked option change, or nil when triggered directly by `lia.option.set`.
+
+        key (string)
+            The unique option identifier.
+
+        value (any)
+            The networked option value.
+
+    Realm:
+        Server
+]]
+--[[
+    Hooks:
+        InitializedOptions()
+
+    Purpose:
+        Runs after saved option values are loaded, or after defaults are initialized and saved when no option file exists.
+
+    Realm:
+        Shared
+]]
+--[[
+    Hooks:
+        ThirdPersonToggled(boolean enabled)
+
+    Purpose:
+        Runs when the `thirdPersonEnabled` option changes.
+
+    Parameters:
+        enabled (boolean)
+            True when third-person view was enabled, false when it was disabled.
+
+    Realm:
+        Client
+]]
+lia.option = lia.option or {}
 lia.option.stored = lia.option.stored or {}
 local function localizeMenuLabel(value, ...)
     if not isstring(value) then return value end
@@ -7,6 +101,29 @@ local function localizeMenuLabel(value, ...)
     return L(value, ...)
 end
 
+--[[
+    Purpose:
+        Localizes an option or menu label value.
+
+    Parameters:
+        value (any)
+            The value to localize. Non-string values are returned unchanged.
+
+        ... (any)
+            Optional arguments forwarded to the language lookup.
+
+    Returns:
+        any
+            The localized string when a string token is provided, otherwise the original value.
+
+    Example Usage:
+        ```lua
+        local label = lia.option.localizeValue("@core")
+        ```
+
+    Realm:
+        Shared
+]]
 lia.option.localizeValue = localizeMenuLabel
 local function normalizeSelectableOption(optionEntry)
     if istable(optionEntry) then
@@ -45,6 +162,43 @@ local function getSelectableOptionLabel(options, selectedValue)
     return selectedValue
 end
 
+--[[
+    Purpose:
+        Registers an option and stores its display metadata, default value, callback, type information, and configuration data.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+        name (string)
+            The display name or language token for the option.
+
+        desc (string)
+            The display description or language token for the option.
+
+        default (any)
+            The default value used when no saved value exists.
+
+        callback (function|nil)
+            Optional function called with the old and new values when the option changes.
+
+        data (table)
+            Option metadata such as category, type, min, max, decimals, options, visible, shouldNetwork, and isQuick.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        lia.option.add("exampleOption", "@exampleOption", "@exampleOptionDesc", true, nil, {
+            category = "@core",
+            type = "Boolean"
+        })
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.add(key, name, desc, default, callback, data)
     assert(isstring(key), L("optionKeyString", type(key)))
     assert(isstring(name), L("optionNameString", type(name)))
@@ -89,6 +243,26 @@ function lia.option.add(key, name, desc, default, callback, data)
     hook.Run("OptionAdded", key, lia.option.stored[key])
 end
 
+--[[
+    Purpose:
+        Returns the localized display name for a registered option.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+    Returns:
+        string
+            The localized option display name, or the key when the option is not registered.
+
+    Example Usage:
+        ```lua
+        local name = lia.option.getDisplayName("descriptionWidth")
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.getDisplayName(key)
     local option = lia.option.stored[key]
     if not option then return key end
@@ -96,6 +270,26 @@ function lia.option.getDisplayName(key)
     return isstring(value) and localizeMenuLabel(value) or value
 end
 
+--[[
+    Purpose:
+        Returns the localized display description for a registered option.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+    Returns:
+        string
+            The localized option description, or an empty string when the option is not registered.
+
+    Example Usage:
+        ```lua
+        local desc = lia.option.getDisplayDesc("descriptionWidth")
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.getDisplayDesc(key)
     local option = lia.option.stored[key]
     if not option then return "" end
@@ -103,6 +297,26 @@ function lia.option.getDisplayDesc(key)
     return isstring(value) and localizeMenuLabel(value) or value
 end
 
+--[[
+    Purpose:
+        Returns the localized display category for a registered option.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+    Returns:
+        string
+            The localized option category, or the localized misc category when none is set.
+
+    Example Usage:
+        ```lua
+        local category = lia.option.getDisplayCategory("descriptionWidth")
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.getDisplayCategory(key)
     local option = lia.option.stored[key]
     if not option then return localizeMenuLabel("misc") end
@@ -111,6 +325,26 @@ function lia.option.getDisplayCategory(key)
     return isstring(value) and localizeMenuLabel(value) or value
 end
 
+--[[
+    Purpose:
+        Returns normalized and localized selectable values for a registered table option.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+    Returns:
+        table
+            A table of selectable option entries containing label, rawLabel, and value fields.
+
+    Example Usage:
+        ```lua
+        local options = lia.option.getOptions("weaponSelectorPosition")
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.getOptions(key)
     local option = lia.option.stored[key]
     if not option then return {} end
@@ -137,6 +371,28 @@ function lia.option.getOptions(key)
     return {}
 end
 
+--[[
+    Purpose:
+        Updates a registered option value, runs its callback, emits option change hooks, and saves option values.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+        value (any)
+            The new option value.
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        lia.option.set("drawItemHoverInfo", false)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.set(key, value)
     local opt = lia.option.stored[key]
     if not opt then return end
@@ -148,6 +404,29 @@ function lia.option.set(key, value)
     if opt.shouldNetwork and SERVER then hook.Run("OptionReceived", nil, key, value) end
 end
 
+--[[
+    Purpose:
+        Returns the current value for a registered option.
+
+    Parameters:
+        key (string)
+            The unique option identifier.
+
+        default (any)
+            Fallback value returned when the option is not registered and has no stored default.
+
+    Returns:
+        any
+            The current option value, the registered default value, or the provided fallback default.
+
+    Example Usage:
+        ```lua
+        local enabled = lia.option.get("drawItemHoverInfo", true)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.get(key, default)
     local opt = lia.option.stored[key]
     if opt then
@@ -157,6 +436,24 @@ function lia.option.get(key, default)
     return default
 end
 
+--[[
+    Purpose:
+        Saves all registered option values to `data/lilia/options.json`.
+
+    Parameters:
+        None
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        lia.option.save()
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.save()
     local path = "lilia/options.json"
     local out = {}
@@ -168,6 +465,24 @@ function lia.option.save()
     if json then file.Write(path, json) end
 end
 
+--[[
+    Purpose:
+        Loads saved option values from `data/lilia/options.json`, or initializes and saves defaults when no option file exists.
+
+    Parameters:
+        None
+
+    Returns:
+        nil
+
+    Example Usage:
+        ```lua
+        lia.option.load()
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.option.load()
     local path = "lilia/options.json"
     local data = file.Read(path, "DATA")

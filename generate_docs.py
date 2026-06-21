@@ -797,6 +797,285 @@ def find_comment_blocks_in_file(file_path):
     return all_comment_blocks, file_header, overview_section
 
 
+def find_top_comment_blocks_in_file(file_path: Path):
+    try:
+        with open(file_path, 'r', encoding='utf-8-sig') as f:
+            content = f.read()
+    except UnicodeDecodeError:
+        print(f"Warning: Could not read {file_path} due to encoding issues")
+        return '', []
+
+    blocks = []
+    index = 0
+    length = len(content)
+    comment_pattern = re.compile(r'--\[\[.*?\]\]', re.DOTALL)
+
+    while index < length:
+        whitespace_match = re.match(r'\s*', content[index:])
+        if whitespace_match:
+            index += whitespace_match.end()
+
+        if index >= length:
+            break
+
+        if content.startswith('--[[', index):
+            match = comment_pattern.match(content, index)
+            if not match:
+                break
+            blocks.append({
+                'text': match.group(0),
+                'line': content[:match.start()].count('\n') + 1
+            })
+            index = match.end()
+            continue
+
+        if content.startswith('--', index):
+            newline_index = content.find('\n', index)
+            if newline_index == -1:
+                break
+            index = newline_index + 1
+            continue
+
+        break
+
+    return content, blocks
+
+
+def extract_hook_name_from_block(comment_text: str) -> Optional[str]:
+    lines = comment_text.splitlines()
+    in_hooks = False
+
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line or line in {'--[[', ']]'}:
+            continue
+
+        if line.startswith('Hooks:'):
+            in_hooks = True
+            inline = line[len('Hooks:'):].strip()
+            if inline:
+                match = re.match(r'([A-Za-z_][\w]*)\s*\(', inline)
+                if match:
+                    return match.group(1)
+            continue
+
+        if in_hooks:
+            match = re.match(r'([A-Za-z_][\w]*)\s*\(', line)
+            if match:
+                return match.group(1)
+            if ':' in line:
+                break
+
+    return None
+
+
+def find_hook_docs_in_file(file_path: Path):
+    file_content, top_blocks = find_top_comment_blocks_in_file(file_path)
+    if not top_blocks:
+        return file_content, None, None, []
+
+    file_header = None
+    overview_section = None
+    hooks = []
+
+    for block in top_blocks:
+        comment_text = block['text']
+        if 'Folder:' in comment_text or 'File:' in comment_text or 'Append:' in comment_text:
+            continue
+        if 'Overview:' in comment_text or 'Improvements Done:' in comment_text:
+            if overview_section is None:
+                overview_section = comment_text
+            continue
+        if 'Hooks:' in comment_text:
+            hook_name = extract_hook_name_from_block(comment_text)
+            if hook_name:
+                hooks.append({
+                    'name': hook_name,
+                    'comment': comment_text,
+                    'line': block['line']
+                })
+            continue
+        if file_header is None:
+            file_header = comment_text
+
+    return file_content, file_header, overview_section, hooks
+
+
+def slugify_filename(name: str) -> str:
+    value = name.strip().lower()
+    value = re.sub(r'[^a-z0-9]+', '-', value)
+    value = re.sub(r'-{2,}', '-', value).strip('-')
+    return value or 'index'
+
+
+def humanize_identifier(name: str) -> str:
+    return re.sub(r'[_\-]+', ' ', name).strip().title()
+
+
+def classify_hook_group(file_path: Path, base_dir: Path) -> Dict[str, str]:
+    rel_parts = file_path.resolve().relative_to(base_dir.resolve()).parts
+
+    if len(rel_parts) == 4 and rel_parts[:3] == ('gamemode', 'core', 'libraries') and rel_parts[-1].endswith('.lua'):
+        library_name = file_path.stem
+        return {
+            'key': f'library:{library_name}',
+            'filename': f'{slugify_filename(library_name)}.md',
+            'title': humanize_identifier(library_name),
+            'subtitle': f'This page documents the hooks defined by the {humanize_identifier(library_name).lower()} library.'
+        }
+
+    if len(rel_parts) >= 4 and rel_parts[:2] == ('gamemode', 'modules'):
+        module_name = rel_parts[2]
+        if len(rel_parts) == 4 and rel_parts[3] == 'module.lua':
+            module_title = humanize_identifier(module_name)
+            return {
+                'key': f'module:{module_name}',
+                'filename': f'{slugify_filename(module_name)}.md',
+                'title': module_title,
+                'subtitle': f'This page documents the hooks defined by the {module_title.lower()} module.'
+            }
+        if len(rel_parts) >= 6 and rel_parts[3] == 'submodules' and rel_parts[5] == 'module.lua':
+            submodule_name = rel_parts[4]
+            module_title = humanize_identifier(module_name)
+            submodule_title = humanize_identifier(submodule_name)
+            return {
+                'key': f'submodule:{module_name}:{submodule_name}',
+                'filename': f'{slugify_filename(module_name)}.{slugify_filename(submodule_name)}.md',
+                'title': f'{module_title} - {submodule_title}',
+                'subtitle': f'This page documents the hooks defined by the {submodule_title.lower()} submodule in the {module_title.lower()} module.'
+            }
+
+    return {
+        'key': 'core',
+        'filename': 'core.md',
+        'title': 'Core',
+        'subtitle': 'This page documents hooks defined outside dedicated library, module, or submodule entry files.'
+    }
+
+
+def should_include_hook_file(file_path: Path, group_info: Dict[str, str], file_content: str) -> bool:
+    custom_folder, custom_filename, _ = parse_folder_directives(file_content)
+    if not custom_filename:
+        return True
+
+    if group_info['key'].startswith('library:'):
+        expected_filename = f'lia.{file_path.stem}.md'
+        return custom_filename.strip().lower() == expected_filename.lower()
+
+    return True
+
+
+def write_hook_group_page(group: Dict[str, object], output_dir: Path, base_dir: Path) -> None:
+    output_path = output_dir / group['filename']
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    title = group['title']
+    subtitle = group['subtitle']
+    file_header = group.get('file_header')
+    overview_section = group.get('overview_section')
+    if file_header:
+        parsed_header = parse_file_header(file_header)
+        if '\n\n' in parsed_header:
+            parts = parsed_header.split('\n\n', 1)
+            title = parts[0].replace('**', '').replace('*', '').strip()
+            if len(parts) > 1 and parts[1].strip():
+                subtitle = parts[1].strip()
+
+    css_block = '''<style>
+details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    padding-right: 180px;
+}
+
+details > summary .summary-main {
+    min-width: 0;
+}
+
+details > summary .source-link-button--summary {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    z-index: 2;
+}
+</style>\n\n'''
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(css_block)
+        f.write(f'# {title}\n\n')
+        f.write(f'{subtitle}\n\n')
+        f.write('---\n\n')
+
+        if overview_section:
+            f.write('<h3 style="margin-bottom: 5px;">Overview</h3>\n')
+            f.write('<div style="margin-left: 20px; margin-bottom: 20px;">\n')
+            f.write(parse_overview_section(overview_section) + '\n')
+            f.write('</div>\n\n')
+            f.write('---\n\n')
+
+        for hook in group['hooks']:
+            parsed = parse_comment_block(hook['comment'])
+            f.write(
+                generate_markdown_for_function(
+                    hook['name'],
+                    parsed,
+                    is_library=False,
+                    source_url=build_source_url(hook['file_path'], base_dir, hook['line'])
+                )
+            )
+            f.write('---\n\n')
+
+    print(f" Generated {output_path.name}")
+
+
+def generate_hook_documentation(output_dir: Path, base_dir: Path) -> None:
+    gamemode_dir = base_dir / 'gamemode'
+    grouped_hooks: Dict[str, Dict[str, object]] = {}
+
+    for file_path in gamemode_dir.rglob('*.lua'):
+        file_content, file_header, overview_section, hooks = find_hook_docs_in_file(file_path)
+        if not hooks:
+            continue
+
+        group_info = classify_hook_group(file_path, base_dir)
+        if not should_include_hook_file(file_path, group_info, file_content):
+            continue
+        group = grouped_hooks.setdefault(group_info['key'], {
+            'filename': group_info['filename'],
+            'title': group_info['title'],
+            'subtitle': group_info['subtitle'],
+            'hooks': [],
+            'file_header': None,
+            'overview_section': None,
+        })
+
+        if group['file_header'] is None and file_header:
+            group['file_header'] = file_header
+        if group['overview_section'] is None and overview_section:
+            group['overview_section'] = overview_section
+
+        for hook in hooks:
+            group['hooks'].append({
+                'name': hook['name'],
+                'comment': hook['comment'],
+                'line': hook['line'],
+                'file_path': file_path
+            })
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for md_file in output_dir.glob('*.md'):
+        if md_file.name != 'index.md':
+            md_file.unlink()
+
+    for group in sorted(grouped_hooks.values(), key=lambda item: item['title'].lower()):
+        group['hooks'].sort(key=lambda hook: hook['name'].lower())
+        write_hook_group_page(group, output_dir, base_dir)
+
+
 def generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=None, force=False, no_realm=False, no_icon=False):
     print(f"Processing {file_path}")
 
@@ -1186,6 +1465,7 @@ def main():
 
     base_dir = Path(__file__).parent
     docs_dir = base_dir / 'documentation' / 'docs'
+    should_sync_nav = True
 
     if args.command == 'meta':
         meta_dir = base_dir / 'gamemode' / 'core' / 'meta'
@@ -1208,12 +1488,10 @@ def main():
         generate_index_file(output_dir, 'library')
 
     elif args.command == 'hooks':
-        hooks_dir = base_dir / 'gamemode' / 'core' / 'hooks' / 'docs'
         output_dir = docs_dir / 'developer' / 'hooks'
-        if hooks_dir.exists():
-            for file_path in hooks_dir.rglob('*.lua'):
-                generate_documentation_for_file(file_path, output_dir, is_library=False, base_docs_dir=docs_dir, force=args.force, no_realm=False, no_icon=False)
+        generate_hook_documentation(output_dir, base_dir)
         generate_index_file(output_dir, 'hooks')
+        should_sync_nav = False
 
     elif args.command == 'compatibility':
         comp_dir = base_dir / 'gamemode' / 'core' / 'libraries' / 'compatibility'
@@ -1241,7 +1519,8 @@ def main():
     # generate_comprehensive_index(docs_dir)  # Disabled to preserve manual index.md
     generate_development_index(docs_dir / 'developer')
     generate_pages_file(docs_dir)
-    sync_mkdocs_nav(base_dir / 'documentation' / 'mkdocs.yml', docs_dir)
+    if should_sync_nav:
+        sync_mkdocs_nav(base_dir / 'documentation' / 'mkdocs.yml', docs_dir)
 
 
 def extract_title_and_summary(md_file: Path) -> Tuple[str, str]:
@@ -1807,25 +2086,31 @@ def generate_development_index(dev_dir: Path) -> None:
         return
 
     index_path = dev_dir / 'index.md'
-    
-    sections = [
-        ('Meta Tables', 'meta', 'Documentation for Lilia meta tables.'),
-        ('Libraries', 'libraries', 'Documentation for Lilia libraries.'),
-        ('Hooks', 'hooks', 'Documentation for Lilia hooks.'),
-        ('Compatibility', 'compatibility', 'Documentation for Lilia compatibility shims and integrations.')
-    ]
 
     with open(index_path, 'w', encoding='utf-8') as f:
         f.write('# Developer\n\n')
-        f.write('Reference material for extending Lilia, including meta tables, libraries, hooks, and compatibility helpers.\n\n')
-        
-        cards = []
-        for title, dirname, summary in sections:
+        f.write('This section is for people who want to change how Lilia works or build on top of it. It collects the main references in one place so you can find the right system faster.\n\n')
+        f.write('<div class="card-grid">\n')
+
+        sections = [
+            ('meta', 'Core objects', 'Meta Tables', 'Read what Character, Player, Entity, Item, Inventory, and Panel objects can do.'),
+            ('libraries', 'Helpers', 'Libraries', 'Find shared helper libraries for things like money, items, characters, and framework tools.'),
+            ('hooks', 'Events', 'Hooks', 'See the events you can listen to when you want to change or react to game behavior.'),
+            ('compatibility', 'Integrations', 'Compatibility', 'Review shims and integrations for external addons and admin systems.')
+        ]
+
+        for dirname, kicker, title, summary in sections:
             subdir = dev_dir / dirname
-            if subdir.exists() and any(subdir.iterdir()):
-                cards.append((title, f'./{dirname}/', summary))
-        
-        write_cards(f, cards)
+            if not (subdir.exists() and any(subdir.iterdir())):
+                continue
+
+            f.write(f'  <a href="./{dirname}/" class="card">\n')
+            f.write(f'    <span class="card-kicker">{kicker}</span>\n')
+            f.write(f'    <h3>{title}</h3>\n')
+            f.write(f'    <p>{summary}</p>\n')
+            f.write('  </a>\n')
+
+        f.write('</div>\n\n')
 
     print(f" Generated developer/index.md")
 

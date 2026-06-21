@@ -1,7 +1,69 @@
-﻿lia.dialog = lia.dialog or {}
+﻿--[[
+    Folder: Developer - Libraries
+    File: lia.dialog.md
+]]
+--[[
+    Dialog
+
+    Dialog helpers for Lilia NPC conversations, generated dialog trees, NPC configuration menus, and client synchronization.
+]]
+--[[
+    Overview:
+        The dialog library centralizes NPC dialog registration, generated dialog tree storage, faction-gated dialog nodes, NPC customization workflows, and clientside dialog configuration interfaces under `lia.dialog`.
+]]
+--[[
+    Hooks:
+        OnNPCTypeSet(Player client, Entity npc, string npcID, table data)
+
+    Purpose:
+        Runs after a server resolves an NPC dialog type and before the sanitized dialog payload is sent to the client.
+
+    Parameters:
+        client (Player)
+            The player opening the NPC dialog.
+
+        npc (Entity)
+            The dialog NPC being opened.
+
+        npcID (string)
+            The unique dialog type identifier assigned to the NPC.
+
+        data (table)
+            The filtered and sanitized dialog data being sent to the client.
+
+    Realm:
+        Server
+]]
+lia.dialog = lia.dialog or {}
 lia.dialog.stored = lia.dialog.stored or {}
 lia.dialog.configurations = lia.dialog.configurations or {}
 lia.dialog.clientHashes = lia.dialog.clientHashes or {}
+--[[
+    Purpose:
+        Recursively compares two tables for matching keys and values while preventing infinite loops from cyclic references.
+
+    Parameters:
+        tbl1 (table)
+            The first table to compare.
+
+        tbl2 (table)
+            The second table to compare.
+
+        checked (table|nil)
+            Internal table used to track tables that have already been compared.
+
+    Returns:
+        boolean
+            True when both tables contain equivalent values, otherwise false.
+
+    Example Usage:
+        ```lua
+        local same = lia.dialog.isTableEqual(firstTable, secondTable)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isTableEqual(tbl1, tbl2, checked)
     if tbl1 == tbl2 then return true end
     if not istable(tbl1) or not istable(tbl2) then return false end
@@ -34,6 +96,32 @@ function lia.dialog.isTableEqual(tbl1, tbl2, checked)
     return true
 end
 
+--[[
+    Purpose:
+        Registers or updates an NPC configuration entry used by the NPC configuration picker.
+
+    Parameters:
+        uniqueID (string)
+            Unique identifier for the configuration entry.
+
+        data (table)
+            Configuration metadata such as name, description, order, visibility checks, and open/apply callbacks.
+
+    Returns:
+        table|nil
+            The registered configuration table, or nil if the identifier is invalid.
+
+    Example Usage:
+        ```lua
+        lia.dialog.registerConfiguration("appearance", {
+            name = "@npcConfigAppearanceName",
+            order = 0
+        })
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.registerConfiguration(uniqueID, data)
     if not isstring(uniqueID) then return end
     if not istable(data) then data = {} end
@@ -55,10 +143,50 @@ function lia.dialog.registerConfiguration(uniqueID, data)
     return config
 end
 
+--[[
+    Purpose:
+        Returns a registered NPC configuration by unique identifier.
+
+    Parameters:
+        uniqueID (string)
+            The unique configuration identifier to fetch.
+
+    Returns:
+        table|nil
+            The configuration table when registered, otherwise nil.
+
+    Example Usage:
+        ```lua
+        local config = lia.dialog.getConfiguration("appearance")
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.getConfiguration(uniqueID)
     return lia.dialog.configurations[uniqueID]
 end
 
+--[[
+    Purpose:
+        Resolves a dialog type value to its stored unique identifier, accepting either an identifier or a localized display name.
+
+    Parameters:
+        value (string)
+            The dialog identifier, localized display name, empty value, or `none` marker to resolve.
+
+    Returns:
+        string
+            The matching stored dialog identifier when found, otherwise the original value.
+
+    Example Usage:
+        ```lua
+        local uniqueID = lia.dialog.resolveDialogTypeIdentifier(selection)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.resolveDialogTypeIdentifier(value)
     if not isstring(value) or value == "" or value == "none" then return value end
     if lia.dialog.stored and lia.dialog.stored[value] then return value end
@@ -71,11 +199,50 @@ end
 
 lia.dialog.generatedDialogSelectionID = "__lia_custom_dialog__"
 lia.dialog.generatedDialogSelectionName = "Custom Dialog"
+--[[
+    Purpose:
+        Checks whether a value represents the special custom dialog selection entry.
 
+    Parameters:
+        value (any)
+            The value to compare against the generated dialog selection identifier.
+
+    Returns:
+        boolean
+            True when the value matches the custom dialog selection identifier, otherwise false.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.isGeneratedDialogSelection(dialogType) then return end
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isGeneratedDialogSelection(value)
     return string.Trim(tostring(value or "")) == lia.dialog.generatedDialogSelectionID
 end
 
+--[[
+    Purpose:
+        Checks whether an entity or class name represents a Lilia dialog NPC entity.
+
+    Parameters:
+        npcOrClass (Entity|string)
+            The entity instance or class name to inspect.
+
+    Returns:
+        boolean
+            True when the entity or class is `lia_npc`, otherwise false.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.isDialogNPCEntity(ent) then return true end
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isDialogNPCEntity(npcOrClass)
     local className = npcOrClass
     if IsEntity(npcOrClass) then
@@ -85,6 +252,26 @@ function lia.dialog.isDialogNPCEntity(npcOrClass)
     return className == "lia_npc"
 end
 
+--[[
+    Purpose:
+        Checks whether a valid NPC is currently assigned to a generated dialog tree.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity to inspect.
+
+    Returns:
+        boolean
+            True when the NPC's dialog data contains `GeneratedDialog`, otherwise false.
+
+    Example Usage:
+        ```lua
+        local usesGenerated = lia.dialog.entityUsesGeneratedDialog(npc)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.entityUsesGeneratedDialog(npc)
     if not IsValid(npc) then return false end
     local uniqueID = npc.uniqueID or npc:getNetVar("uniqueID", "")
@@ -93,19 +280,102 @@ function lia.dialog.entityUsesGeneratedDialog(npc)
     return lia.dialog.isGeneratedDialogData(npcData)
 end
 
+--[[
+    Purpose:
+        Checks whether dialog data contains a generated node-based dialog tree.
+
+    Parameters:
+        data (table)
+            The dialog data table to inspect.
+
+    Returns:
+        boolean
+            True when the table has a `GeneratedDialog` table, otherwise false.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.isGeneratedDialogData(data) then return end
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isGeneratedDialogData(data)
     return istable(data) and istable(data.GeneratedDialog)
 end
 
+--[[
+    Purpose:
+        Checks whether dialog data contains a standard conversation table.
+
+    Parameters:
+        data (table)
+            The dialog data table to inspect.
+
+    Returns:
+        boolean
+            True when the table has a `Conversation` table, otherwise false.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.isConversationDialogData(data) then return end
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isConversationDialogData(data)
     return istable(data) and istable(data.Conversation)
 end
 
+--[[
+    Purpose:
+        Checks whether dialog data can be used by a valid dialog NPC entity.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity being configured or opened.
+
+        data (table)
+            The dialog data to validate.
+
+    Returns:
+        boolean
+            True when the entity is a dialog NPC and the data is either conversation or generated dialog data.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.isDialogCompatibleWithEntity(npc, data) then return end
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.isDialogCompatibleWithEntity(npc, data)
     if not IsValid(npc) or not lia.dialog.isDialogNPCEntity(npc) then return false end
     return lia.dialog.isGeneratedDialogData(data) or lia.dialog.isConversationDialogData(data)
 end
 
+--[[
+    Purpose:
+        Builds the list of dialog type choices available for a dialog NPC.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity to validate options against.
+
+    Returns:
+        table
+            A sorted list of `{displayName, uniqueID}` choices, followed by the custom dialog option.
+
+    Example Usage:
+        ```lua
+        local options = lia.dialog.getCompatibleDialogOptions(npc)
+        ```
+
+    Realm:
+        Shared
+]]
 function lia.dialog.getCompatibleDialogOptions(npc)
     local options = {}
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
@@ -177,9 +447,92 @@ local function factionMatchesRequirement(currentFactionIndex, requirement)
     return false
 end
 
+--[[
+    Purpose:
+        Parses a comma-separated faction requirement string into unique trimmed tokens.
+
+    Parameters:
+        requirement (string)
+            The faction requirement string to parse.
+
+    Returns:
+        table
+            A sequential table of unique faction tokens.
+
+    Example Usage:
+        ```lua
+        local tokens = lia.dialog.parseFactionRequirementTokens("citizen, police")
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.parseFactionRequirementTokens = parseFactionRequirementTokens
+--[[
+    Purpose:
+        Serializes faction requirement tokens into the comma-separated format used by generated dialog nodes.
+
+    Parameters:
+        tokens (table)
+            Sequential faction identifiers or names to serialize.
+
+    Returns:
+        string
+            The normalized comma-separated faction requirement string.
+
+    Example Usage:
+        ```lua
+        local requirement = lia.dialog.serializeFactionRequirementTokens({"citizen", "police"})
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.serializeFactionRequirementTokens = serializeFactionRequirementTokens
+--[[
+    Purpose:
+        Builds a readable label for a generated dialog node's faction requirement.
+
+    Parameters:
+        requirement (string)
+            The comma-separated faction requirement string to display.
+
+    Returns:
+        string
+            Faction names when resolved, raw tokens when unresolved, or `Any faction` when no requirement is set.
+
+    Example Usage:
+        ```lua
+        local label = lia.dialog.getFactionRequirementDisplay(node.factionRequirement)
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.getFactionRequirementDisplay = getFactionRequirementDisplay
+--[[
+    Purpose:
+        Checks whether a faction index satisfies a generated dialog node's faction requirement.
+
+    Parameters:
+        currentFactionIndex (number)
+            The player's current faction index.
+
+        requirement (string)
+            The comma-separated faction requirement string to check.
+
+    Returns:
+        boolean
+            True when the requirement is empty or includes the current faction by index, unique ID, or name.
+
+    Example Usage:
+        ```lua
+        if lia.dialog.factionMatchesRequirement(client:Team(), node.factionRequirement) then return end
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.factionMatchesRequirement = factionMatchesRequirement
 local function findGeneratedNode(generatedDialog, nodeID)
     if not istable(generatedDialog) or not istable(generatedDialog.nodes) then return nil end
@@ -218,8 +571,74 @@ local function getGeneratedChildNodes(generatedDialog, nodeID)
     return children
 end
 
+--[[
+    Purpose:
+        Finds a node inside a generated dialog tree by node identifier.
+
+    Parameters:
+        generatedDialog (table)
+            Generated dialog tree containing a `nodes` table.
+
+        nodeID (string)
+            The node identifier to find.
+
+    Returns:
+        table|nil
+            The matching generated dialog node, or nil when not found.
+
+    Example Usage:
+        ```lua
+        local node = lia.dialog.findGeneratedNode(generatedDialog, nodeID)
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.findGeneratedNode = findGeneratedNode
+--[[
+    Purpose:
+        Returns the configured start node for a generated dialog tree.
+
+    Parameters:
+        generatedDialog (table)
+            Generated dialog tree containing `entryNodeID` and `nodes`.
+
+    Returns:
+        table|nil
+            The entry node when found, otherwise the first node or nil.
+
+    Example Usage:
+        ```lua
+        local startNode = lia.dialog.getGeneratedStartNode(generatedDialog)
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.getGeneratedStartNode = getGeneratedStartNode
+--[[
+    Purpose:
+        Returns the child nodes linked from a generated dialog node.
+
+    Parameters:
+        generatedDialog (table)
+            Generated dialog tree containing the parent and child nodes.
+
+        nodeID (string)
+            The parent node identifier.
+
+    Returns:
+        table
+            A sorted list of child node tables.
+
+    Example Usage:
+        ```lua
+        local children = lia.dialog.getGeneratedChildNodes(generatedDialog, node.id)
+        ```
+
+    Realm:
+        Shared
+]]
 lia.dialog.getGeneratedChildNodes = getGeneratedChildNodes
 local function sanitizeGeneratedNode(rawNode, index)
     rawNode = istable(rawNode) and rawNode or {}
@@ -349,14 +768,76 @@ local function createDefaultGeneratedDialogPayload(dialogTypeID, printName)
     })
 end
 
-lia.dialog.getGeneratedDialogTypeID = getGeneratedDialogTypeID
+--[[
+    Purpose:
+        Resolves the generated dialog type identifier to use for an NPC.
 
+    Parameters:
+        npc (Entity)
+            The NPC entity being edited, when available.
+
+        preferredTypeID (string|nil)
+            Preferred dialog type identifier to use when it is not the custom dialog selection marker.
+
+    Returns:
+        string
+            A valid generated dialog type identifier, an existing generated type, or an entity-based custom identifier.
+
+    Example Usage:
+        ```lua
+        local dialogTypeID = lia.dialog.getGeneratedDialogTypeID(npc, preferredTypeID)
+        ```
+
+    Realm:
+        Shared
+]]
+lia.dialog.getGeneratedDialogTypeID = getGeneratedDialogTypeID
 if SERVER then
+    --[[
+    Purpose:
+        Returns the registered server-side dialog data for an NPC dialog type.
+
+    Parameters:
+        npcID (string)
+            The dialog type identifier to fetch.
+
+    Returns:
+        table|nil
+            The registered dialog data when available, otherwise nil.
+
+    Example Usage:
+        ```lua
+        local data = lia.dialog.getNPCData(npcID)
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.getNPCData(npcID)
         if lia.dialog.stored[npcID] then return lia.dialog.stored[npcID] end
         return nil
     end
 
+    --[[
+    Purpose:
+        Returns the original server-side NPC dialog data before client sanitization.
+
+    Parameters:
+        npcID (string)
+            The dialog type identifier to fetch.
+
+    Returns:
+        table|nil
+            The original registered data table when available, otherwise nil.
+
+    Example Usage:
+        ```lua
+        local originalData = lia.dialog.getOriginalNPCData(npcID)
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.getOriginalNPCData(npcID)
         if lia.dialog.originalData and lia.dialog.originalData[npcID] then return lia.dialog.originalData[npcID] end
         return nil
@@ -375,6 +856,25 @@ if SERVER then
         return value
     end
 
+    --[[
+    Purpose:
+        Persists generated dialog trees to Lilia data storage.
+
+    Parameters:
+        None.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.saveGeneratedDialogs()
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.saveGeneratedDialogs()
         local savedDialogs = {}
         for uniqueID, data in pairs(lia.dialog.originalData or {}) do
@@ -389,6 +889,25 @@ if SERVER then
         lia.data.set("generated_dialog_trees", savedDialogs)
     end
 
+    --[[
+    Purpose:
+        Loads generated dialog trees from Lilia data storage and registers them without immediately syncing.
+
+    Parameters:
+        None.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.loadGeneratedDialogs()
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.loadGeneratedDialogs()
         local storedDialogs = lia.data.get("generated_dialog_trees", {})
         if not istable(storedDialogs) then return end
@@ -530,6 +1049,26 @@ if SERVER then
         return util.CRC(json or "")
     end
 
+    --[[
+    Purpose:
+        Synchronizes sanitized dialog data to one client or all clients when their dialog data hash changes.
+
+    Parameters:
+        client (Player|nil)
+            Optional target player. When nil, all players receive updated data if needed.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.syncToClients(client)
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.syncToClients(client)
         local targetClients = client and {client} or player.GetAll()
         for _, ply in ipairs(targetClients) do
@@ -550,10 +1089,55 @@ if SERVER then
         end
     end
 
+    --[[
+    Purpose:
+        Synchronizes dialog data to all connected clients.
+
+    Parameters:
+        None.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.syncDialogs()
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.syncDialogs()
         lia.dialog.syncToClients()
     end
 
+    --[[
+    Purpose:
+        Registers an NPC dialog type with conversation data or generated dialog data.
+
+    Parameters:
+        uniqueID (string)
+            Unique dialog type identifier.
+
+        data (table)
+            Dialog data containing either `Conversation` or `GeneratedDialog`.
+
+        shouldSync (boolean|nil)
+            Set to false to skip immediate synchronization after registration.
+
+    Returns:
+        boolean
+            True when registration succeeds, otherwise false.
+
+    Example Usage:
+        ```lua
+        lia.dialog.registerNPC("example_npc", dialogData)
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.registerNPC(uniqueID, data, shouldSync)
         if not uniqueID or not data then return false end
         if not data.Conversation and not data.GeneratedDialog then return false end
@@ -585,8 +1169,59 @@ if SERVER then
         return dialogTypeID, generatedDialogData, true
     end
 
-    lia.dialog.ensureGeneratedDialogType = ensureGeneratedDialogType
+    --[[
+    Purpose:
+        Ensures an NPC has a generated dialog type registered, creating a default generated dialog tree when needed.
 
+    Parameters:
+        npc (Entity)
+            The NPC entity being configured.
+
+        preferredTypeID (string|nil)
+            Preferred generated dialog type identifier.
+
+        preferredPrintName (string|nil)
+            Optional display name for newly created generated dialog data.
+
+    Returns:
+        string|nil, table|nil, boolean|nil
+            The dialog type ID, the generated dialog data, and whether a new type was created. Returns nil if a type cannot be resolved or registered.
+
+    Example Usage:
+        ```lua
+        local dialogTypeID, data, created = lia.dialog.ensureGeneratedDialogType(npc, preferredTypeID, printName)
+        ```
+
+    Realm:
+        Server
+]]
+    lia.dialog.ensureGeneratedDialogType = ensureGeneratedDialogType
+    --[[
+    Purpose:
+        Validates, filters, sanitizes, and opens an NPC dialog for a player.
+
+    Parameters:
+        client (Player)
+            The player opening the dialog.
+
+        npc (Entity)
+            The NPC entity being opened.
+
+        npcID (string)
+            The dialog type identifier assigned to the NPC.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.openDialog(client, npc, npcID)
+        ```
+
+    Realm:
+        Server
+]]
     function lia.dialog.openDialog(client, npc, npcID)
         local npcData = lia.dialog.getOriginalNPCData(npcID)
         if not npcData then
@@ -685,11 +1320,57 @@ if SERVER then
         net.Send(client)
     end
 else
+    --[[
+    Purpose:
+        Returns the clientside synchronized dialog data for an NPC dialog type.
+
+    Parameters:
+        npcID (string)
+            The dialog type identifier to fetch.
+
+    Returns:
+        table|nil
+            The synchronized dialog data when available, otherwise nil.
+
+    Example Usage:
+        ```lua
+        local data = lia.dialog.getNPCData(npcID)
+        ```
+
+    Realm:
+        Client
+]]
     function lia.dialog.getNPCData(npcID)
         if lia.dialog.stored[npcID] then return lia.dialog.stored[npcID] end
         return nil
     end
 
+    --[[
+    Purpose:
+        Submits an NPC configuration payload from the client to the server.
+
+    Parameters:
+        configID (string)
+            The configuration identifier to apply.
+
+        npc (Entity)
+            The NPC entity being configured.
+
+        payload (table|nil)
+            Configuration data to send to the server.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.submitConfiguration("appearance", npc, customData)
+        ```
+
+    Realm:
+        Client
+]]
     function lia.dialog.submitConfiguration(configID, npc, payload)
         if not isstring(configID) or configID == "" then return end
         if not IsValid(npc) then return end
@@ -700,6 +1381,29 @@ else
         net.SendToServer()
     end
 
+    --[[
+    Purpose:
+        Opens the NPC customization interface for appearance, animation, and dialog type selection.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity to customize.
+
+        configID (string|nil)
+            Configuration identifier to submit when applying changes. Defaults to `appearance`.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.openCustomizationUI(npc, "appearance")
+        ```
+
+    Realm:
+        Client
+]]
     function lia.dialog.openCustomizationUI(npc, configID)
         configID = configID or "appearance"
         if not IsValid(npc) then return end
@@ -989,6 +1693,7 @@ else
             frame:Close()
             lia.dialog.openNodeEditor(npc)
         end
+
         local isCarDealerNPC = currentType == "cardealer" or (IsValid(npc) and npc.uniqueID == "cardealer")
         if isCarDealerNPC and lia.cardealer and isfunction(lia.cardealer.openCategoryConfigUI) then
             local categoriesBtn = vgui.Create("liaButton", scroll)
@@ -1132,6 +1837,26 @@ else
         return copy
     end
 
+    --[[
+    Purpose:
+        Opens the clientside generated dialog node editor for an NPC.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity whose generated dialog tree should be edited.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.openNodeEditor(npc)
+        ```
+
+    Realm:
+        Client
+]]
     function lia.dialog.openNodeEditor(npc)
         if not IsValid(npc) then return end
         local currentTypeID = trimToString(npc:getNetVar("uniqueID", npc.uniqueID))
@@ -1721,6 +2446,32 @@ local function isConfigurationVisible(config, ply, npc, npcID)
     return result ~= false
 end
 
+--[[
+    Purpose:
+        Returns NPC configuration entries visible to a player for the selected NPC.
+
+    Parameters:
+        ply (Player)
+            The player viewing the configuration menu.
+
+        npc (Entity)
+            The NPC entity being configured.
+
+        npcID (string|nil)
+            Optional dialog type identifier associated with the NPC.
+
+    Returns:
+        table
+            A sorted list of visible configuration tables.
+
+    Example Usage:
+        ```lua
+        local configurations = lia.dialog.getAvailableConfigurations(LocalPlayer(), npc, npcID)
+        ```
+
+    Realm:
+        Client
+]]
 function lia.dialog.getAvailableConfigurations(ply, npc, npcID)
     local options = {}
     if not IsValid(ply) then return options end
@@ -1738,6 +2489,29 @@ function lia.dialog.getAvailableConfigurations(ply, npc, npcID)
     return options
 end
 
+--[[
+    Purpose:
+        Opens the best available NPC configuration UI and queues secondary configuration buttons when needed.
+
+    Parameters:
+        npc (Entity)
+            The NPC entity being configured.
+
+        npcID (string|nil)
+            Optional dialog type identifier associated with the NPC.
+
+    Returns:
+        nil
+            This function does not return a value.
+
+    Example Usage:
+        ```lua
+        lia.dialog.openConfigurationPicker(npc)
+        ```
+
+    Realm:
+        Client
+]]
 function lia.dialog.openConfigurationPicker(npc, npcID)
     npcID = npcID or (IsValid(npc) and npc.uniqueID)
     local ply = LocalPlayer()
@@ -1802,8 +2576,10 @@ if SERVER then
                         ply:notifyError("Failed to create a custom dialog type for this NPC.")
                         return
                     end
+
                     resolvedType = generatedTypeID
                 end
+
                 local dialogType = resolvedType == "none" and "" or resolvedType
                 local npcData = dialogType ~= "" and lia.dialog.getNPCData(dialogType) or nil
                 if dialogType ~= "" and not lia.dialog.isDialogCompatibleWithEntity(npc, npcData) then

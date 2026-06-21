@@ -1,6 +1,6 @@
 ﻿lia.command.add("permaremove", {
     adminOnly = true,
-    desc = "permRemoveDesc",
+    desc = "@permRemoveDesc",
     onRun = function(client)
         local entity = client:GetEyeTraceNoCursor().Entity
         local data = lia.data.get("permaremove", {})

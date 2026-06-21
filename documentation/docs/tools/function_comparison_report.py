@@ -346,6 +346,7 @@ class CombinedReportData:
     hooks_documented: List[str]
     hooks_registered: List[str]  # New field for hooks registered in code
     hooks_signatures: Dict[str, List[str]]  # New field for hook -> parameter names
+    hooks_locations: Dict[str, List[Dict[str, str]]]  # New field for hook -> registration locations
     hooks_method: List[str]  # New field for hooks called as XXXX:Hook(Args)
     hooks_standard: List[str]  # New field for hooks called via hook.Add/hook.Run/etc.
     localization_data: Dict
@@ -2024,6 +2025,7 @@ class FunctionComparisonReportGenerator:
             hooks_documented=hooks_documented,
             hooks_registered=hooks_registered,
             hooks_signatures=getattr(self, 'hooks_signatures', {}),
+            hooks_locations=getattr(self, 'hooks_locations', {}),
             hooks_method=hooks_method,
             hooks_standard=hooks_standard,
             localization_data=localization_data,
@@ -2203,15 +2205,19 @@ class FunctionComparisonReportGenerator:
     def _run_hooks_analysis(self) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
         """Run hooks documentation analysis"""
         try:
-            hooks_registered, hooks_signatures, method_hooks, standard_hooks = self._scan_hook_registrations_with_signatures()
+            hooks_registered, hooks_signatures, hook_locations, method_hooks, standard_hooks = self._scan_hook_registrations_with_signatures()
             hooks_registered = [h for h in hooks_registered if h not in HOOKS_REPORT_IGNORE]
             method_hooks = {h for h in method_hooks if h not in HOOKS_REPORT_IGNORE}
             standard_hooks = {h for h in standard_hooks if h not in HOOKS_REPORT_IGNORE}
             if hooks_signatures:
                 for h in HOOKS_REPORT_IGNORE:
                     hooks_signatures.pop(h, None)
+            if hook_locations:
+                for h in HOOKS_REPORT_IGNORE:
+                    hook_locations.pop(h, None)
 
             self.hooks_signatures = hooks_signatures
+            self.hooks_locations = hook_locations
             hooks_documented = self._read_all_documented_hooks()
             hooks_missing = [h for h in hooks_registered if h not in hooks_documented]
             return (sorted(hooks_missing), sorted(list(hooks_documented)), hooks_registered,
@@ -2303,13 +2309,89 @@ class FunctionComparisonReportGenerator:
 
         return '\n'.join(processed_lines)
 
-    def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]], Set[str], Set[str]]:
+    def _classify_hook_location(self, file_path: Path, style: str, module_root: Optional[Path] = None,
+                                module_scope: Optional[str] = None, owner_name: Optional[str] = None) -> Dict[str, str]:
+        """Classify a hook registration location for report output."""
+        resolved_path = file_path.resolve()
+
+        if module_root is not None:
+            module_root = module_root.resolve()
+            try:
+                relative = resolved_path.relative_to(module_root)
+                path_str = str(relative).replace("\\", "/")
+            except Exception:
+                path_str = str(resolved_path)
+
+            scope = module_scope or "module"
+            owner = owner_name or module_root.name
+            kind = "submodule" if scope == "submodule" else "module"
+            return {
+                "kind": kind,
+                "scope": scope,
+                "owner": owner,
+                "path": path_str,
+                "style": style,
+            }
+
+        try:
+            relative = resolved_path.relative_to(self.base_path.resolve())
+            rel_parts = list(relative.parts)
+            path_str = str(relative).replace("\\", "/")
+        except Exception:
+            rel_parts = list(resolved_path.parts)
+            path_str = str(resolved_path)
+
+        kind = "other"
+        scope = "framework"
+        owner = "framework"
+
+        if len(rel_parts) >= 2 and rel_parts[0] == "core" and rel_parts[1] == "libraries":
+            kind = "library"
+            if len(rel_parts) >= 3:
+                owner = rel_parts[2]
+            elif len(rel_parts) >= 1:
+                owner = Path(rel_parts[-1]).stem
+        elif len(rel_parts) >= 2 and rel_parts[0] == "core" and rel_parts[1] == "meta":
+            kind = "meta"
+            owner = Path(rel_parts[-1]).stem
+        elif rel_parts and rel_parts[0] == "entities":
+            kind = "entity"
+            owner = rel_parts[1] if len(rel_parts) >= 2 else Path(rel_parts[-1]).stem
+        elif rel_parts and rel_parts[0] == "items":
+            kind = "item"
+            owner = rel_parts[1] if len(rel_parts) >= 2 else Path(rel_parts[-1]).stem
+        elif rel_parts and rel_parts[0] == "plugins":
+            kind = "plugin"
+            owner = rel_parts[1] if len(rel_parts) >= 2 else Path(rel_parts[-1]).stem
+        elif rel_parts and rel_parts[0] == "schema":
+            kind = "schema"
+            owner = rel_parts[1] if len(rel_parts) >= 2 else "schema"
+        elif rel_parts and rel_parts[0] == "core":
+            kind = "core"
+            owner = rel_parts[1] if len(rel_parts) >= 2 else "core"
+
+        return {
+            "kind": kind,
+            "scope": scope,
+            "owner": owner,
+            "path": path_str,
+            "style": style,
+        }
+
+    def _append_hook_location(self, locations: Dict[str, List[Dict[str, str]]], hook_name: str, location: Dict[str, str]) -> None:
+        """Add one hook location entry while avoiding duplicates."""
+        entries = locations.setdefault(hook_name, [])
+        if location not in entries:
+            entries.append(location)
+
+    def _scan_hook_registrations_with_signatures(self) -> Tuple[List[str], Dict[str, List[str]], Dict[str, List[Dict[str, str]]], Set[str], Set[str]]:
         """Scan Lua files for hooks and attempt to capture their parameter names.
 
-        Returns (registered_hooks_sorted, hook_signatures_map, method_hooks, standard_hooks)
+        Returns (registered_hooks_sorted, hook_signatures_map, hook_locations_map, method_hooks, standard_hooks)
         """
         registered_hooks: Set[str] = set()
         hook_signatures: Dict[str, List[str]] = {}
+        hook_locations: Dict[str, List[Dict[str, str]]] = {}
         method_hooks: Set[str] = set()  # Hooks defined as XXXX:Hook() methods
         standard_hooks: Set[str] = set()  # Hooks used with hook.Add/hook.Run/etc.
 
@@ -2347,6 +2429,20 @@ class FunctionComparisonReportGenerator:
                 registered_hooks.update(file_method_hooks)
                 registered_hooks.update(file_standard_hooks)
 
+                location_path = lua_file.resolve()
+                for hook_name in file_method_hooks:
+                    self._append_hook_location(
+                        hook_locations,
+                        hook_name,
+                        self._classify_hook_location(location_path, "method"),
+                    )
+                for hook_name in file_standard_hooks:
+                    self._append_hook_location(
+                        hook_locations,
+                        hook_name,
+                        self._classify_hook_location(location_path, "standard"),
+                    )
+
                 # Signatures
                 file_signatures = self._extract_hook_signatures_from_file_content(content)
                 for hook_name, params in file_signatures.items():
@@ -2363,7 +2459,7 @@ class FunctionComparisonReportGenerator:
         # even if it's also defined as a method
         method_hooks = method_hooks - standard_hooks
 
-        return sorted(list(registered_hooks)), hook_signatures, method_hooks, standard_hooks
+        return sorted(list(registered_hooks)), hook_signatures, hook_locations, method_hooks, standard_hooks
 
     def _extract_hooks_by_type_from_file_content(self, content: str) -> Tuple[Set[str], Set[str]]:
         """Extract hooks from file content and categorize them by type.
@@ -3186,6 +3282,7 @@ class FunctionComparisonReportGenerator:
             hooks_documented=sorted(documented_module_hooks),
             hooks_registered=sorted(set(documented_module_hooks) | set(module_entry.get("undoc_hooks", [])), key=str.lower),
             hooks_signatures={hook: [] for hook in module_entry.get("undoc_hooks", [])},
+            hooks_locations=dict(module_entry.get("hook_locations", {})),
             hooks_method=[],
             hooks_standard=sorted(module_entry.get("undoc_hooks", []), key=str.lower),
             localization_data=localization_data,
@@ -3223,6 +3320,71 @@ class FunctionComparisonReportGenerator:
             module_file_placement_issues=scoped_file_placement,
             generated_at=data.generated_at,
         )
+
+    def _format_hook_location_label(self, location: Dict[str, str]) -> str:
+        """Return a compact human-readable label for one hook location."""
+        kind = (location or {}).get("kind", "other")
+        owner = (location or {}).get("owner", "")
+        path = (location or {}).get("path", "")
+        style = (location or {}).get("style", "")
+
+        if kind == "library":
+            prefix = f"library `{owner}`"
+        elif kind == "submodule":
+            prefix = f"submodule `{owner}`"
+        elif kind == "module":
+            prefix = f"module `{owner}`"
+        elif kind == "entity":
+            prefix = f"entity `{owner}`"
+        elif kind == "item":
+            prefix = f"item `{owner}`"
+        elif kind == "plugin":
+            prefix = f"plugin `{owner}`"
+        elif kind == "meta":
+            prefix = f"meta `{owner}`"
+        elif kind == "schema":
+            prefix = f"schema `{owner}`"
+        elif kind == "core":
+            prefix = f"core `{owner}`"
+        else:
+            prefix = kind
+
+        if style:
+            prefix = f"{prefix} [{style}]"
+
+        return f"{prefix} in `{path}`" if path else prefix
+
+    def _generate_hook_locations_block(self, hook_locations: Dict[str, List[Dict[str, str]]], hook_names: List[str],
+                                       heading: str, description: str) -> List[str]:
+        """Generate a markdown block listing where hooks were found."""
+        lines: List[str] = []
+        if not hook_names:
+            return lines
+
+        lines.append(heading)
+        lines.append(description)
+        for hook_name in hook_names:
+            locations = hook_locations.get(hook_name, []) if hook_locations else []
+            if not locations:
+                continue
+            lines.append(f"- `{hook_name}`")
+            for location in locations:
+                lines.append(f"  - {self._format_hook_location_label(location)}")
+        lines.append("")
+        return lines
+
+    def _filter_hook_locations_by_kinds(self, hook_locations: Dict[str, List[Dict[str, str]]],
+                                        allowed_kinds: Set[str]) -> Dict[str, List[Dict[str, str]]]:
+        """Return hook locations limited to the specified location kinds."""
+        filtered: Dict[str, List[Dict[str, str]]] = {}
+        for hook_name, locations in (hook_locations or {}).items():
+            matching = [
+                location for location in (locations or [])
+                if location.get("kind") in allowed_kinds
+            ]
+            if matching:
+                filtered[hook_name] = matching
+        return filtered
 
     def _generate_config_undefined_section(self, data: CombinedReportData) -> List[str]:
         """Generate the config undefined get-calls section of the report."""
@@ -3551,6 +3713,7 @@ class FunctionComparisonReportGenerator:
                 undoc_functions: Set[str] = set()
                 undoc_hooks: Set[str] = set()
                 undoc_meta_functions: Set[str] = set()
+                hook_locations: Dict[str, List[Dict[str, str]]] = {}
 
                 for root, _, files in os.walk(module_dir):
                     # Skip directories named 'addons' and any subdirectories within them
@@ -3570,6 +3733,8 @@ class FunctionComparisonReportGenerator:
                                 content = f.read()
                         except Exception:
                             continue
+
+                        content = self._remove_lua_comments(content)
 
                         import re
                         # lia.* dotted functions declared in module
@@ -3593,16 +3758,40 @@ class FunctionComparisonReportGenerator:
                                 hook_name not in documented_module_hooks and
                                 hook_name not in GMOD_HOOKS_BLACKLIST):
                                 undoc_hooks.add(hook_name)
+                                self._append_hook_location(
+                                    hook_locations,
+                                    hook_name,
+                                    self._classify_hook_location(fpath, "standard", module_dir, "module", module_name),
+                                )
                         for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                             hook_name = m.group(2)
                             if (hook_name not in documented_hooks and
                                 hook_name not in documented_module_hooks and
                                 hook_name not in GMOD_HOOKS_BLACKLIST):
                                 undoc_hooks.add(hook_name)
+                                self._append_hook_location(
+                                    hook_locations,
+                                    hook_name,
+                                    self._classify_hook_location(fpath, "standard", module_dir, "module", module_name),
+                                )
+                        for m in re.finditer(r'hook\s*\.\s*Call\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                            hook_name = m.group(2)
+                            if (hook_name not in documented_hooks and
+                                hook_name not in documented_module_hooks and
+                                hook_name not in GMOD_HOOKS_BLACKLIST):
+                                undoc_hooks.add(hook_name)
+                                self._append_hook_location(
+                                    hook_locations,
+                                    hook_name,
+                                    self._classify_hook_location(fpath, "standard", module_dir, "module", module_name),
+                                )
 
                 results.append({
                     'module_path': str(module_dir),
+                    'module_name': module_name,
+                    'module_scope': 'module',
                     'undoc_hooks': sorted(undoc_hooks, key=str.lower),
+                    'hook_locations': hook_locations,
                     'undoc_functions': sorted(undoc_functions, key=str.lower),
                     'undoc_meta_functions': sorted(undoc_meta_functions, key=str.lower),
                 })
@@ -3613,6 +3802,7 @@ class FunctionComparisonReportGenerator:
                     submod_undoc_functions: Set[str] = set()
                     submod_undoc_hooks: Set[str] = set()
                     submod_undoc_meta_functions: Set[str] = set()
+                    submod_hook_locations: Dict[str, List[Dict[str, str]]] = {}
 
                     for root, _, files in os.walk(submod_dir):
                         # Skip directories named 'addons' and any subdirectories within them
@@ -3627,6 +3817,8 @@ class FunctionComparisonReportGenerator:
                                     content = f.read()
                             except Exception:
                                 continue
+
+                            content = self._remove_lua_comments(content)
 
                             import re
                             # lia.* dotted functions declared in submodule
@@ -3648,16 +3840,40 @@ class FunctionComparisonReportGenerator:
                                     hook_name not in submod_documented_hooks and
                                     hook_name not in GMOD_HOOKS_BLACKLIST):
                                     submod_undoc_hooks.add(hook_name)
+                                    self._append_hook_location(
+                                        submod_hook_locations,
+                                        hook_name,
+                                        self._classify_hook_location(fpath, "standard", submod_dir, "submodule", submod_dir.name),
+                                    )
                             for m in re.finditer(r'hook\s*\.\s*Run\s*\(\s*(["\'])\s*([^"\']+)\1', content):
                                 hook_name = m.group(2)
                                 if (hook_name not in documented_hooks and
                                     hook_name not in submod_documented_hooks and
                                     hook_name not in GMOD_HOOKS_BLACKLIST):
                                     submod_undoc_hooks.add(hook_name)
+                                    self._append_hook_location(
+                                        submod_hook_locations,
+                                        hook_name,
+                                        self._classify_hook_location(fpath, "standard", submod_dir, "submodule", submod_dir.name),
+                                    )
+                            for m in re.finditer(r'hook\s*\.\s*Call\s*\(\s*(["\'])\s*([^"\']+)\1', content):
+                                hook_name = m.group(2)
+                                if (hook_name not in documented_hooks and
+                                    hook_name not in submod_documented_hooks and
+                                    hook_name not in GMOD_HOOKS_BLACKLIST):
+                                    submod_undoc_hooks.add(hook_name)
+                                    self._append_hook_location(
+                                        submod_hook_locations,
+                                        hook_name,
+                                        self._classify_hook_location(fpath, "standard", submod_dir, "submodule", submod_dir.name),
+                                    )
 
                     results.append({
                         'module_path': str(submod_dir),
+                        'module_name': submod_dir.name,
+                        'module_scope': 'submodule',
                         'undoc_hooks': sorted(submod_undoc_hooks, key=str.lower),
+                        'hook_locations': submod_hook_locations,
                         'undoc_functions': sorted(submod_undoc_functions, key=str.lower),
                         'undoc_meta_functions': sorted(submod_undoc_meta_functions, key=str.lower),
                     })
@@ -4335,15 +4551,72 @@ class FunctionComparisonReportGenerator:
 
         # Find unused hooks (documented but not registered)
         unused_hooks = [h for h in data.hooks_documented if h not in data.hooks_registered and h not in FRAMEWORK_HOOKS_WHITELIST and h not in HOOKS_REPORT_IGNORE]
+        method_hooks = sorted(data.hooks_method) if getattr(data, "hooks_method", None) else []
+        standard_hooks = sorted(data.hooks_standard) if getattr(data, "hooks_standard", None) else []
+        hook_locations = getattr(data, "hooks_locations", {}) or {}
 
         lines.extend([
             f"### Summary",
             f"- **Missing Hooks:** {len(data.hooks_missing)} (used in code but not documented)",
             f"- **Documented Hooks:** {len(data.hooks_documented)}",
             f"- **Registered Hooks:** {len(data.hooks_registered)}",
+            f"- **Method Hooks:** {len(method_hooks)} (`function GM:HookName(...)`, `function MODULE:HookName(...)`, `function SCHEMA:HookName(...)`)",
+            f"- **Standard Hooks:** {len(standard_hooks)} (`hook.Add(...)`, `hook.Run(...)`, `hook.Call(...)`)",
             f"- **Unused Hooks:** {len(unused_hooks)} (documented but not registered)",
             "",
         ])
+
+        if method_hooks:
+            lines.append("### Method-Style Hooks:")
+            lines.append("These hooks are defined as `function GM:HookName(...)`, `function MODULE:HookName(...)`, or `function SCHEMA:HookName(...)`.")
+            for hook in method_hooks:
+                params = data.hooks_signatures.get(hook, []) if hasattr(data, 'hooks_signatures') else []
+                if params:
+                    param_str = ', '.join(params)
+                    lines.append(f"- `{hook}({param_str})`")
+                else:
+                    lines.append(f"- `{hook}()`")
+            lines.append("")
+
+        module_location_hooks: Dict[str, List[Dict[str, str]]] = {}
+        for entry in getattr(data, "modules_scan", []) or []:
+            for hook_name, locations in (entry.get("hook_locations", {}) or {}).items():
+                module_location_hooks.setdefault(hook_name, [])
+                for location in locations:
+                    if location not in module_location_hooks[hook_name]:
+                        module_location_hooks[hook_name].append(location)
+
+        library_hook_locations = self._filter_hook_locations_by_kinds(hook_locations, {"library"})
+        library_hook_names = sorted(library_hook_locations.keys(), key=str.lower)
+        if library_hook_names:
+            lines.extend(self._generate_hook_locations_block(
+                library_hook_locations,
+                library_hook_names,
+                "### Library Hook Registration Locations:",
+                "These entries show hooks registered from framework libraries.",
+            ))
+
+        module_submodule_hook_names = sorted(module_location_hooks.keys(), key=str.lower)
+        if module_submodule_hook_names:
+            lines.extend(self._generate_hook_locations_block(
+                module_location_hooks,
+                module_submodule_hook_names,
+                "### Module and Submodule Hook Registration Locations:",
+                "These hooks were found in external module scans, so you can see whether they belong to a parent module or only to a specific submodule.",
+            ))
+
+        other_hook_locations = self._filter_hook_locations_by_kinds(
+            hook_locations,
+            {"core", "meta", "entity", "item", "plugin", "schema", "other"},
+        )
+        other_hook_names = sorted(other_hook_locations.keys(), key=str.lower)
+        if other_hook_names:
+            lines.extend(self._generate_hook_locations_block(
+                other_hook_locations,
+                other_hook_names,
+                "### Other Hook Registration Locations:",
+                "These entries show hooks registered outside libraries and outside external module/submodule scans.",
+            ))
 
         if data.hooks_missing:
             lines.append("### Missing Hook Documentation:")

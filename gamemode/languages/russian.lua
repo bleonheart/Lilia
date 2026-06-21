@@ -3881,4 +3881,13 @@ LANGUAGE = {
     copyBodygroupsByName = "Копировать Бодигруппы (Имя)",
     copyBodygroupsByID = "Копировать Бодигруппы (ID)",
     copySkinClipboard = "Копировать Скин Буфер обмена",
+    defaultUserGroupConfigName = "Default User Group",
+    defaultUserGroupConfigDesc = "Usergroup assigned to players when Lilia does not already have one stored for their SteamID.",
+    showUsergroupIconsConfigName = "OOC/LOOC Icon Message",
+    showUsergroupIconsConfigDesc = "Displays icon16 usergroup icons in OOC/LOOC messages and usergroup tabs.",
+    permaRemoveModuleName = "Perma Remove",
+    permaRemoveModuleDesc = "Lets admins permanently remove map entities.",
+    removeMapEntities = "Remove Map Entities",
+    mapCleanup = "Map Cleanup",
+    permRemoveDesc = "Permanently remove the entity you're looking at.",
 }
