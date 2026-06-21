@@ -34,6 +34,10 @@ Reference pages for documented Lilia hooks.
     <h3>Administration - Logs</h3>
     <p>This page documents the hooks defined by the logs submodule in the administration module.</p>
   </a>
+  <a href="./administration/" class="card">
+    <h3>Administration</h3>
+    <p>This page documents the hooks defined by the administration module.</p>
+  </a>
   <a href="./administration.tickets/" class="card">
     <h3>Administration - Tickets</h3>
     <p>This page documents the hooks defined by the tickets submodule in the administration module.</p>
@@ -73,6 +77,10 @@ Reference pages for documented Lilia hooks.
   <a href="./uncategorized/" class="card">
     <h3>Uncategorized</h3>
     <p>This page documents hooks found in module files that are not dedicated library, module, or submodule entry files.</p>
+  </a>
+  <a href="./vendor/" class="card">
+    <h3>Vendor</h3>
+    <p>This page documents the hooks defined by the vendor module.</p>
   </a>
 </div>
 

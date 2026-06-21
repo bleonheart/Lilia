@@ -1,68 +1,3 @@
-﻿MODULE.name = "@vendor"
---[[
-    Hooks:
-        CanPlayerAccessVendor(client, vendor)
-        CanPlayerTradeWithVendor(client, vendor, itemType, isSellingToVendor)
-        GetPriceOverride(client, self, uniqueID, price, isSellingToVendor)
-        OnCharTradeVendor(client, vendor, item, isSellingToVendor, character, itemType, isFailed)
-        OnOpenVendorMenu(self, vendor)
-        OnVendorEdited(client, vendor, key)
-        PlayerAccessVendor(client, vendor)
-        VendorClassUpdated(vendor, id, allowed)
-        VendorEdited(liaVendorEnt, key)
-        VendorExited()
-        VendorFactionBuyScaleUpdated(vendor, factionID, scale)
-        VendorFactionSellScaleUpdated(vendor, factionID, scale)
-        VendorFactionUpdated(vendor, id, allowed)
-        VendorItemBuyPriceUpdated(vendor, itemType, value)
-        VendorItemMaxStockUpdated(vendor, itemType, value)
-        VendorItemModeUpdated(vendor, itemType, value)
-        VendorItemSellPriceUpdated(vendor, itemType, value)
-        VendorItemStockUpdated(vendor, itemType, value)
-        VendorMessagesUpdated(vendor)
-        VendorOpened(vendor)
-        VendorPropertyUpdated(vendor, propertyName, propertyValue)
-        VendorSynchronized(vendor)
-        VendorTradeEvent(client, vendor, itemType, isSellingToVendor)
-
-    Purpose:
-        Documents the module-specific hooks exposed only by the `modules/vendor` module path.
-
-    Returns:
-        Varies by hook.
-
-    Realm:
-        Client / Server / Shared
-]]
-MODULE.author = "Samael"
-MODULE.discord = "@liliaplayer"
-MODULE.desc = "@npcVendorDescription"
-MODULE.NetworkStrings = {"liaVendorAllowClass", "liaVendorAllowFaction", "liaVendorBuyPrice", "liaVendorDeletePreset", "liaVendorExit", "liaVendorFaction", "liaVendorFactionBuyScale", "liaVendorFactionSellScale", "liaVendorInitialSync", "liaVendorLoadPreset", "liaVendorMaxStock", "liaVendorMode", "liaVendorOpen", "liaVendorRequestData", "liaVendorSavePreset", "liaVendorSellPrice", "liaVendorStock", "liaVendorSync", "liaVendorSyncMessages", "liaVendorTrade",}
-MODULE.Privileges = {
-    ["canEditVendors"] = {
-        Name = "@canEditVendors",
-        MinAccess = "superadmin",
-        Category = "@vendors",
-    },
-    ["canCreateVendorPresets"] = {
-        Name = "@canCreateVendorPresets",
-        MinAccess = "admin",
-        Category = "@vendors",
-    },
-}
-
-VENDOR_WELCOME = 1
-VENDOR_LEAVE = 2
-VENDOR_NOTRADE = 3
-VENDOR_PRICE = 1
-VENDOR_STOCK = 2
-VENDOR_MODE = 3
-VENDOR_MAXSTOCK = 4
-VENDOR_BUYPRICE = 5
-VENDOR_SELLPRICE = 6
-VENDOR_SELLANDBUY = 1
-VENDOR_SELLONLY = 2
-VENDOR_BUYONLY = 3
 --[[
     Hooks:
         CanPlayerAccessVendor(client, vendor)
@@ -582,3 +517,33 @@ VENDOR_BUYONLY = 3
     Realm:
         Server
 ]]
+MODULE.name = "@vendor"
+MODULE.author = "Samael"
+MODULE.discord = "@liliaplayer"
+MODULE.desc = "@npcVendorDescription"
+MODULE.NetworkStrings = {"liaVendorAllowClass", "liaVendorAllowFaction", "liaVendorBuyPrice", "liaVendorDeletePreset", "liaVendorExit", "liaVendorFaction", "liaVendorFactionBuyScale", "liaVendorFactionSellScale", "liaVendorInitialSync", "liaVendorLoadPreset", "liaVendorMaxStock", "liaVendorMode", "liaVendorOpen", "liaVendorRequestData", "liaVendorSavePreset", "liaVendorSellPrice", "liaVendorStock", "liaVendorSync", "liaVendorSyncMessages", "liaVendorTrade",}
+MODULE.Privileges = {
+    ["canEditVendors"] = {
+        Name = "@canEditVendors",
+        MinAccess = "superadmin",
+        Category = "@vendors",
+    },
+    ["canCreateVendorPresets"] = {
+        Name = "@canCreateVendorPresets",
+        MinAccess = "admin",
+        Category = "@vendors",
+    },
+}
+
+VENDOR_WELCOME = 1
+VENDOR_LEAVE = 2
+VENDOR_NOTRADE = 3
+VENDOR_PRICE = 1
+VENDOR_STOCK = 2
+VENDOR_MODE = 3
+VENDOR_MAXSTOCK = 4
+VENDOR_BUYPRICE = 5
+VENDOR_SELLPRICE = 6
+VENDOR_SELLANDBUY = 1
+VENDOR_SELLONLY = 2
+VENDOR_BUYONLY = 3
