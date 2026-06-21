@@ -91,8 +91,36 @@ nav:
       - Hooks:
           - Overview: developer/hooks/index.md
           # AUTO-GENERATED: HOOKS START
-          - Administration - Logs: developer/hooks/administration.logs.md
           # AUTO-GENERATED: HOOKS END
+      - Modules:
+          - Overview: developer/modules/index.md
+          - Libraries:
+              - Overview: developer/modules/libraries/index.md
+              # AUTO-GENERATED: MODULE LIBRARIES START
+              - Attributes: developer/modules/libraries/lia.attribs.md
+              - Chat: developer/modules/libraries/lia.chat.md
+              - Class: developer/modules/libraries/lia.class.md
+              - Doors: developer/modules/libraries/lia.doors.md
+              - Faction: developer/modules/libraries/lia.faction.md
+              - Inventory: developer/modules/libraries/lia.inventory.md
+              - Log: developer/modules/libraries/lia.log.md
+              # AUTO-GENERATED: MODULE LIBRARIES END
+          - Hooks:
+              - Overview: developer/modules/hooks/index.md
+              # AUTO-GENERATED: MODULE HOOKS START
+              - Administration - Adminstick: developer/modules/hooks/administration.adminstick.md
+              - Administration - Logs: developer/modules/hooks/administration.logs.md
+              - Administration - Tickets: developer/modules/hooks/administration.tickets.md
+              - Attributes: developer/modules/hooks/attributes.md
+              - Chatbox: developer/modules/hooks/chatbox.md
+              - Doors: developer/modules/hooks/doors.md
+              - Inventory: developer/modules/hooks/inventory.md
+              - Mainmenu: developer/modules/hooks/mainmenu.md
+              - Recognition: developer/modules/hooks/recognition.md
+              - Spawns: developer/modules/hooks/spawns.md
+              - Teams: developer/modules/hooks/teams.md
+              - Uncategorized: developer/modules/hooks/uncategorized.md
+              # AUTO-GENERATED: MODULE HOOKS END
   - Reference:
       - Overview: definitions/index.md
       - Core:

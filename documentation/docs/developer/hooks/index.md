@@ -25,10 +25,5 @@ details > summary .source-link-button--summary {
 
 Reference pages for documented Lilia hooks.
 
-<div class="card-grid">
-  <a href="./administration.logs/" class="card">
-    <h3>Administration - Logs</h3>
-    <p>This page documents the hooks defined by the logs submodule in the administration module.</p>
-  </a>
-</div>
+Additional pages will appear here as Lua documentation is added and regenerated.
 

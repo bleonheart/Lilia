@@ -28,11 +28,11 @@ This page documents the hooks defined by the logs submodule in the administratio
 ---
 
 <details class="realm-shared" id="function-canplayerseelogcategory">
-<summary><span class="summary-main"><a id="CanPlayerSeeLogCategory"></a>CanPlayerSeeLogCategory()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/logs/module.lua#L45" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<summary><span class="summary-main"><a id="CanPlayerSeeLogCategory"></a>CanPlayerSeeLogCategory(client, category)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/logs/module.lua#L45" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
 <h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayerseelogcategory"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-  <p>Documents the additional module-specific hooks exposed only by the `modules/administration/submodules/logs` module path.</p>
+  <p>Determines whether a player is allowed to see a specific translated log category.</p>
 </div>
 
 <h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
@@ -40,9 +40,15 @@ This page documents the hooks defined by the logs submodule in the administratio
   <p>Client / Server</p>
 </div>
 
+<h3 style="margin-bottom: 5px; font-weight: 700;">Parameters</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p><span class="types"><a class="type" href="/developer/meta/player/">Player</a></span> <span class="parameter">client</span> The player whose category visibility should be checked.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">string</a></span> <span class="parameter">category</span> The translated log category name being evaluated.</p>
+</div>
+
 <h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
-<p>Varies by hook.</p>
+<p><span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#2.1">boolean|nil</a></span> Return false to hide the category from the player.</p>
 </div>
 
 </div>

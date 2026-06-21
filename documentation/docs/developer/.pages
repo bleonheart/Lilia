@@ -3,4 +3,5 @@ arrange:
  - meta
  - libraries
  - hooks
+ - modules
  - compatibility

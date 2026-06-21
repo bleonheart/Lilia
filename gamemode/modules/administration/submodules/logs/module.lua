@@ -47,10 +47,18 @@
         CanPlayerSeeLogCategory(client, category)
 
     Purpose:
-        Documents the additional module-specific hooks exposed only by the `modules/administration/submodules/logs` module path.
+        Determines whether a player is allowed to see a specific translated log category.
+
+    Parameters:
+        client (Player)
+            The player whose category visibility should be checked.
+
+        category (string)
+            The translated log category name being evaluated.
 
     Returns:
-        Varies by hook.
+        boolean|nil
+            Return false to hide the category from the player.
 
     Realm:
         Client / Server

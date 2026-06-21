@@ -11,23 +11,6 @@
     Overview:
         The door library centralizes shared and networked door metadata under `lia.doors`. It stores only values that differ from defaults, merges custom door fields collected by hooks, synchronizes cached door data to clients, manages map presets, and verifies or repairs persisted door database data on the server.
 ]]
---[[
-    Hooks:
-        CollectDoorDataFields(table fields)
-
-    Purpose:
-        Allows plugins or modules to register additional door data fields before default door data is built.
-
-    Parameters:
-        fields (table)
-            Mutable table that should be populated with custom field definitions. Each key should map to field information such as `default` and, when database-backed, `type`.
-
-    Returns:
-        nil
-
-    Realm:
-        Shared
-]]
 lia.doors = lia.doors or {}
 lia.doors.presets = lia.doors.presets or {}
 lia.doors.stored = lia.doors.stored or {}

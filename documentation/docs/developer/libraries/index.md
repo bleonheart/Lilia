@@ -26,6 +26,10 @@ details > summary .source-link-button--summary {
 Reference pages for documented Lilia libraries and module library helpers.
 
 <div class="card-grid">
+  <a href="./lia.attribs/" class="card">
+    <h3>Attributes</h3>
+    <p>Attribute helpers for loading, registering, and setting up character attributes.</p>
+  </a>
   <a href="./lia.bar/" class="card">
     <h3>Bar</h3>
     <p>HUD bar helpers for registering, retrieving, removing, drawing, and displaying temporary action progress bars.</p>
@@ -37,6 +41,14 @@ Reference pages for documented Lilia libraries and module library helpers.
   <a href="./lia.char/" class="card">
     <h3>Character</h3>
     <p>Character helpers for Lilia character creation, lookup, loading, caching, variable registration, persistence, and cleanup.</p>
+  </a>
+  <a href="./lia.chat/" class="card">
+    <h3>Chat</h3>
+    <p>Chat helpers for registering chat classes, parsing player messages, formatting timestamps, and sending chat messages to eligible recipients.</p>
+  </a>
+  <a href="./lia.class/" class="card">
+    <h3>Class</h3>
+    <p>Character class helpers for registering, loading, retrieving, counting, validating, and resolving playable classes.</p>
   </a>
   <a href="./lia.color/" class="card">
     <h3>Color</h3>
@@ -74,6 +86,14 @@ Reference pages for documented Lilia libraries and module library helpers.
     <h3>Dialog</h3>
     <p>Dialog helpers for Lilia NPC conversations, generated dialog trees, NPC configuration menus, and client synchronization.</p>
   </a>
+  <a href="./lia.doors/" class="card">
+    <h3>Doors</h3>
+    <p>Door data helpers for storing, syncing, validating, and extending map door configuration.</p>
+  </a>
+  <a href="./lia.faction/" class="card">
+    <h3>Faction</h3>
+    <p>Faction helpers for registering factions, loading faction definitions, resolving models, validating character customization, and querying faction membership data.</p>
+  </a>
   <a href="./lia.flag/" class="card">
     <h3>Flags</h3>
     <p>Flag helpers for registering character permission flags, storing flag metadata, reapplying flag callbacks on player spawn, and displaying available flags in the character information menu.</p>
@@ -81,6 +101,10 @@ Reference pages for documented Lilia libraries and module library helpers.
   <a href="./lia.font/" class="card">
     <h3>Font</h3>
     <p>Font registration and loading helpers for Lilia UI and HUD text.</p>
+  </a>
+  <a href="./lia.inventory/" class="card">
+    <h3>Inventory</h3>
+    <p>Inventory helpers for registering inventory types, creating and loading inventory instances, managing persistent storage definitions, and opening inventory panels.</p>
   </a>
   <a href="./lia.item/" class="card">
     <h3>Item</h3>
@@ -97,6 +121,10 @@ Reference pages for documented Lilia libraries and module library helpers.
   <a href="./lia.loader/" class="card">
     <h3>Loader</h3>
     <p>Core loading and bootstrap helpers for Lilia files, directories, entities, updates, compatibility, and hot reload flow.</p>
+  </a>
+  <a href="./lia.log/" class="card">
+    <h3>Log</h3>
+    <p>Server log helpers for registering log types, formatting log messages, dispatching log hooks, printing log output, and saving log entries to the database.</p>
   </a>
   <a href="./lia.menu/" class="card">
     <h3>Menu</h3>
