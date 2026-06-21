@@ -280,10 +280,9 @@ end
 local function buildRealisticView(client, origin, angles, fov)
     if IsValid(lia.gui.menu) then return end
     if client:GetMoveType() == MOVETYPE_NOCLIP then return end
-
     local attachmentID = client:LookupAttachment("eyes")
     local attachment = attachmentID and client:GetAttachment(attachmentID)
-    local viewOrigin = origin
+    local viewOrigin
     local viewAngles = angles
     if attachment and attachment.Pos and attachment.Ang then
         viewOrigin = attachment.Pos + attachment.Ang:Forward() * 2 + attachment.Ang:Up() * 1.5
