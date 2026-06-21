@@ -21,9 +21,9 @@ details > summary .source-link-button--summary {
 }
 </style>
 
-# Administration - Tickets
+# Administration - Submodules/Tickets
 
-This page documents the hooks defined by the tickets submodule in the administration module.
+This page documents the hooks defined by the submodules/tickets submodule in the administration module.
 
 ---
 

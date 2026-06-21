@@ -18,10 +18,5 @@ This section is for people who want to change how Lilia works or build on top of
     <h3>Hooks</h3>
     <p>See the events you can listen to when you want to change or react to game behavior.</p>
   </a>
-  <a href="./modules/" class="card">
-    <span class="card-kicker">Extensions</span>
-    <h3>Modules</h3>
-    <p>Browse module-specific libraries and hooks for bundled framework modules and submodules.</p>
-  </a>
 </div>
 

@@ -958,6 +958,7 @@ def classify_hook_group(file_path: Path, base_dir: Path, file_content: str) -> D
 
     if len(rel_parts) >= 4 and rel_parts[:2] == ('gamemode', 'modules'):
         module_name = rel_parts[2]
+        # Handle direct module entry files (gamemode/modules/<module>/module.lua)
         if len(rel_parts) == 4 and rel_parts[3] == 'module.lua':
             module_title = humanize_identifier(module_name)
             return {
@@ -967,6 +968,42 @@ def classify_hook_group(file_path: Path, base_dir: Path, file_content: str) -> D
                 'title': module_title,
                 'subtitle': f'This page documents the hooks defined by the {module_title.lower()} module.'
             }
+
+        # Handle nested module entry files like gamemode/modules/<module>/.../module.lua
+        if file_path.name == 'module.lua':
+            try:
+                modules_index = rel_parts.index('modules')
+            except ValueError:
+                modules_index = 1
+            # parts between the module name and the final module.lua form the submodule path
+            subparts = rel_parts[modules_index + 2:-1]
+            if subparts:
+                submodule_name = '-'.join(subparts)
+                module_title = humanize_identifier(module_name)
+                submodule_title = humanize_identifier('/'.join(subparts))
+                return {
+                    'section': 'module',
+                    'key': f'submodule:{module_name}:{submodule_name}',
+                    'filename': f'{slugify_filename(module_name)}.{slugify_filename(submodule_name)}.md',
+                    'title': f'{module_title} - {submodule_title}',
+                    'subtitle': f'This page documents the hooks defined by the {submodule_title.lower()} submodule in the {module_title.lower()} module.'
+                }
+        
+        # Handle top-level module files like gamemode/modules/<module>/admin.lua
+        if len(rel_parts) == 4 and rel_parts[3].endswith('.lua') and rel_parts[3] != 'module.lua':
+            submodule_basename = rel_parts[3][:-4]
+            module_title = humanize_identifier(module_name)
+            submodule_title = humanize_identifier(submodule_basename)
+            submodule_name = submodule_basename
+            return {
+                'section': 'module',
+                'key': f'submodule:{module_name}:{submodule_name}',
+                'filename': f'{slugify_filename(module_name)}.{slugify_filename(submodule_name)}.md',
+                'title': f'{module_title} - {submodule_title}',
+                'subtitle': f'This page documents the hooks defined by the {submodule_title.lower()} submodule in the {module_title.lower()} module.'
+            }
+
+        # Legacy submodules structure support
         if len(rel_parts) >= 6 and rel_parts[3] == 'submodules' and rel_parts[5] == 'module.lua':
             submodule_name = rel_parts[4]
             module_title = humanize_identifier(module_name)
@@ -979,6 +1016,7 @@ def classify_hook_group(file_path: Path, base_dir: Path, file_content: str) -> D
                 'subtitle': f'This page documents the hooks defined by the {submodule_title.lower()} submodule in the {module_title.lower()} module.'
             }
 
+        # Fallback for other module-located hook files
         return {
             'section': 'module',
             'key': 'module-uncategorized',
@@ -1150,9 +1188,10 @@ def generate_documentation_for_file(file_path, output_dir, is_library=False, bas
 
     custom_folder, custom_filename, append = parse_folder_directives(file_content)
     custom_folder = normalize_doc_folder(custom_folder)
+    # For module libraries prefer the main developer/libraries area (do not use developer/modules)
     if is_library and base_docs_dir and is_module_library_file(file_path, base_docs_dir.parent, file_content):
-        if custom_folder == 'developer/libraries':
-            custom_folder = 'developer/modules/libraries'
+        if custom_folder == 'developer/modules/libraries':
+            custom_folder = 'developer/libraries'
     comment_blocks, file_header, overview_section = find_comment_blocks_in_file(file_path)
 
     if file_header and ('Folder:' in file_header or 'File:' in file_header):
@@ -1494,7 +1533,8 @@ def generate_about_page(output_path, force=False):
         url = mod.get('url', '')
         # Construct local path instead of using external URL
         module_id = url.rstrip('/').split('/')[-2] if '/' in url else name.lower().replace(' ', '')
-        name_link = f"[{name}](./modules/{module_id}/about.md)"
+        # Link module about pages into the libraries area (no separate modules section)
+        name_link = f"[{name}](./libraries/{module_id}/about.md)"
 
         table_lines.append(f"| {name_link} | {desc} | {author} |")
 
@@ -1555,10 +1595,8 @@ def run_library_generation(base_dir: Path, docs_dir: Path, force: bool) -> None:
         for file_path in core_lib_dir.rglob('*.lua'):
             generate_documentation_for_file(file_path, core_output_dir, is_library=True, base_docs_dir=docs_dir, force=force, no_realm=False, no_icon=False)
     generate_index_file(core_output_dir, 'library')
-
-    module_output_dir = docs_dir / 'developer' / 'modules' / 'libraries'
+    # Also process module library files but write them into the main libraries directory
     module_lib_dir = base_dir / 'gamemode' / 'modules'
-    clear_generated_markdown(module_output_dir)
     if module_lib_dir.exists():
         for file_path in module_lib_dir.rglob('*.lua'):
             try:
@@ -1568,19 +1606,16 @@ def run_library_generation(base_dir: Path, docs_dir: Path, force: bool) -> None:
                 print(f"Warning: Could not read {file_path} due to encoding issues")
                 continue
             if is_module_library_file(file_path, base_dir, file_content):
-                stale_core_doc = core_output_dir / get_documented_output_filename(file_path, file_content)
-                if stale_core_doc.exists():
-                    stale_core_doc.unlink()
-                generate_documentation_for_file(file_path, module_output_dir, is_library=True, base_docs_dir=docs_dir, force=force, no_realm=False, no_icon=False)
-    generate_index_file(module_output_dir, 'library')
+                # Generate module library docs into the main libraries folder
+                generate_documentation_for_file(file_path, core_output_dir, is_library=True, base_docs_dir=docs_dir, force=force, no_realm=False, no_icon=False)
+    # Index for libraries already generated above
 
 
 def run_hooks_generation(base_dir: Path, docs_dir: Path) -> None:
     core_output_dir = docs_dir / 'developer' / 'hooks'
-    module_output_dir = docs_dir / 'developer' / 'modules' / 'hooks'
-    generate_hook_documentation(core_output_dir, module_output_dir, base_dir)
+    # Generate module hooks into the same hooks directory (no separate modules section)
+    generate_hook_documentation(core_output_dir, core_output_dir, base_dir)
     generate_index_file(core_output_dir, 'hooks')
-    generate_index_file(module_output_dir, 'hooks')
 
 
 def run_compatibility_generation(base_dir: Path, docs_dir: Path, force: bool) -> None:
@@ -1676,7 +1711,6 @@ def main():
     # Generate pages file for all commands
     # generate_comprehensive_index(docs_dir)  # Disabled to preserve manual index.md
     generate_development_index(docs_dir / 'developer')
-    generate_module_development_index(docs_dir / 'developer' / 'modules')
     generate_pages_file(docs_dir)
     if should_sync_nav:
         sync_mkdocs_nav(base_dir / 'documentation' / 'mkdocs.yml', docs_dir)
@@ -1803,22 +1837,7 @@ def sync_mkdocs_nav(mkdocs_path: Path, docs_dir: Path) -> None:
             'indent': '          ',
             'preferred_order': ['core'],
         },
-        {
-            'name': 'module libraries',
-            'start_marker': '# AUTO-GENERATED: MODULE LIBRARIES START',
-            'end_marker': '# AUTO-GENERATED: MODULE LIBRARIES END',
-            'directory': docs_dir / 'developer' / 'modules' / 'libraries',
-            'indent': '              ',
-            'preferred_order': [],
-        },
-        {
-            'name': 'module hooks',
-            'start_marker': '# AUTO-GENERATED: MODULE HOOKS START',
-            'end_marker': '# AUTO-GENERATED: MODULE HOOKS END',
-            'directory': docs_dir / 'developer' / 'modules' / 'hooks',
-            'indent': '              ',
-            'preferred_order': [],
-        },
+        # Note: module libraries/hooks are merged into the main libraries/hooks directories
         {
             'name': 'item definitions',
             'start_marker': '# AUTO-GENERATED: ITEM DEFINITIONS START',
@@ -2284,7 +2303,6 @@ def generate_development_index(dev_dir: Path) -> None:
             ('meta', 'Core objects', 'Meta Tables', 'Read what Character, Player, Entity, Item, Inventory, and Panel objects can do.'),
             ('libraries', 'Helpers', 'Libraries', 'Find shared helper libraries for things like money, items, characters, and framework tools.'),
             ('hooks', 'Events', 'Hooks', 'See the events you can listen to when you want to change or react to game behavior.'),
-            ('modules', 'Extensions', 'Modules', 'Browse module-specific libraries and hooks for bundled framework modules and submodules.'),
         ]
 
         for dirname, kicker, title, summary in sections:
@@ -2357,15 +2375,9 @@ def generate_pages_file(docs_dir: Path) -> None:
             f.write(' - meta\n')
             f.write(' - libraries\n')
             f.write(' - hooks\n')
-            f.write(' - modules\n')
             f.write(' - compatibility\n')
 
-    dev_modules_pages_path = docs_dir / 'developer' / 'modules' / '.pages'
-    if dev_modules_pages_path.parent.exists():
-        with open(dev_modules_pages_path, 'w', encoding='utf-8') as f:
-            f.write('title: Modules\narrange:\n')
-            f.write(' - libraries\n')
-            f.write(' - hooks\n')
+    # No separate developer/modules .pages file: modules are surfaced under libraries/hooks
 
  # Write root .pages file
     with open(pages_path, 'w', encoding='utf-8') as f:

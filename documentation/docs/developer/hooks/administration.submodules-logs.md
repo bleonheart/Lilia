@@ -21,9 +21,9 @@ details > summary .source-link-button--summary {
 }
 </style>
 
-# Administration - Logs
+# Administration - Submodules/Logs
 
-This page documents the hooks defined by the logs submodule in the administration module.
+This page documents the hooks defined by the submodules/logs submodule in the administration module.
 
 ---
 

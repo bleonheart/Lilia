@@ -21,9 +21,9 @@ details > summary .source-link-button--summary {
 }
 </style>
 
-# Administration - Adminstick
+# Administration - Submodules/Adminstick
 
-This page documents the hooks defined by the adminstick submodule in the administration module.
+This page documents the hooks defined by the submodules/adminstick submodule in the administration module.
 
 ---
 
