@@ -27,10 +27,33 @@ This page documents the hooks defined by the logs submodule in the administratio
 
 ---
 
-<details class="realm-server" id="function-canplayerseelog">
-<summary><span class="summary-main"><a id="CanPlayerSeeLog"></a>CanPlayerSeeLog(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/logs/module.lua#L27" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<details class="realm-shared" id="function-canplayerseelogcategory">
+<summary><span class="summary-main"><a id="CanPlayerSeeLogCategory"></a>CanPlayerSeeLogCategory()</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/logs/module.lua#L45" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
 <div class="details-content">
-<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayerseelog"></a>Purpose</h3>
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayerseelogcategory"></a>Purpose</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Documents the additional module-specific hooks exposed only by the `modules/administration/submodules/logs` module path.</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Realm</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+  <p>Client / Server</p>
+</div>
+
+<h3 style="margin-bottom: 5px; font-weight: 700;">Returns</h3>
+<div style="margin-left: 20px; margin-bottom: 20px;">
+<p>Varies by hook.</p>
+</div>
+
+</div>
+</details>
+
+---
+
+<details class="realm-server" id="function-canplayerseelogs">
+<summary><span class="summary-main"><a id="CanPlayerSeeLogs"></a>CanPlayerSeeLogs(client)</span><a class="source-link-button source-link-button--summary" href="https://github.com/LiliaFramework/Lilia/blob/main/gamemode/modules/administration/submodules/logs/module.lua#L27" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">View Source</a></summary>
+<div class="details-content">
+<h3 style="margin-bottom: 5px; font-weight: 700;"><a id="canplayerseelogs"></a>Purpose</h3>
 <div style="margin-left: 20px; margin-bottom: 20px;">
   <p>Determines whether a player is allowed to receive and view server log entries.</p>
 </div>

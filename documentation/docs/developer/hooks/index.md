@@ -30,9 +30,5 @@ Reference pages for documented Lilia hooks.
     <h3>Administration - Logs</h3>
     <p>This page documents the hooks defined by the logs submodule in the administration module.</p>
   </a>
-  <a href="./camera/" class="card">
-    <h3>Camera</h3>
-    <p>Camera helpers for Lilia third-person view, realistic first-person view, freelook input, and local-player visibility handling.</p>
-  </a>
 </div>
 

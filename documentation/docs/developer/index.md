@@ -18,10 +18,5 @@ This section is for people who want to change how Lilia works or build on top of
     <h3>Hooks</h3>
     <p>See the events you can listen to when you want to change or react to game behavior.</p>
   </a>
-  <a href="./compatibility/" class="card">
-    <span class="card-kicker">Integrations</span>
-    <h3>Compatibility</h3>
-    <p>Review shims and integrations for external addons and admin systems.</p>
-  </a>
 </div>
 

@@ -42,6 +42,19 @@
     Realm:
         Server
 ]]
+--[[
+    Hooks:
+        CanPlayerSeeLogCategory(client, category)
+
+    Purpose:
+        Documents the additional module-specific hooks exposed only by the `modules/administration/submodules/logs` module path.
+
+    Returns:
+        Varies by hook.
+
+    Realm:
+        Client / Server
+]]
 MODULE.Name = "@logs"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
