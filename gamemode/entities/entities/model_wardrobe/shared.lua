@@ -1,4 +1,4 @@
-ENT.Type = "anim"
+﻿ENT.Type = "anim"
 ENT.PrintName = "Model Wardrobe"
 ENT.Author = "@liliaplayer"
 ENT.Spawnable = true

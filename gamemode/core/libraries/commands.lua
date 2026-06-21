@@ -7603,6 +7603,9 @@ lia.command.add("npcchangetype", {
                         if uniqueID and IsValid(client.npcEntity) then
                             local npc = client.npcEntity
                             local npcType = uniqueID
+                            if lia.dialog.isGeneratedDialogSelection and lia.dialog.isGeneratedDialogSelection(npcType) then
+                                npcType = lia.dialog.ensureGeneratedDialogType and select(1, lia.dialog.ensureGeneratedDialogType(npc, nil, npc.NPCName)) or nil
+                            end
                             if not IsValid(npc) or not npcType then return end
                             local existingCustomData = npc.customData
                             npc.uniqueID = npcType

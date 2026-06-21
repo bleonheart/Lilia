@@ -1,25 +1,12 @@
-local MODULE = MODULE
-local MAP_SPAWN_CLASSES = {
-    "info_player_start",
-    "info_player_deathmatch",
-    "info_player_counterterrorist",
-    "info_player_terrorist",
-    "info_player_combine",
-    "info_player_rebel",
-    "gmod_player_start",
-    "info_player_axis",
-    "info_player_allies"
-}
-
+﻿local MODULE = MODULE
+local MAP_SPAWN_CLASSES = {"info_player_start", "info_player_deathmatch", "info_player_counterterrorist", "info_player_terrorist", "info_player_combine", "info_player_rebel", "gmod_player_start", "info_player_axis", "info_player_allies"}
 local function getMapSpawnLocation()
     local spawns = {}
     for _, className in ipairs(MAP_SPAWN_CLASSES) do
         local found = ents.FindByClass(className)
         for i = 1, #found do
             local spawn = found[i]
-            if IsValid(spawn) then
-                spawns[#spawns + 1] = spawn
-            end
+            if IsValid(spawn) then spawns[#spawns + 1] = spawn end
         end
     end
 

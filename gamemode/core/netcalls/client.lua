@@ -1685,6 +1685,7 @@ if not lia.worldPreview.begin then
                 if IsValid(ent) then ent:SetNoDraw(noDraw) end
             end
         end
+
         if istable(data.hiddenPlayerState) then
             for player, state in pairs(data.hiddenPlayerState) do
                 if IsValid(player) then
@@ -1697,6 +1698,7 @@ if not lia.worldPreview.begin then
                 end
             end
         end
+
         if lia.worldPreview.activeOwner == owner then lia.worldPreview.activeOwner = nil end
         owner._liaWorldPreview = nil
     end
@@ -1718,8 +1720,11 @@ if not lia.worldPreview.begin then
         data.hiddenEntities = {}
         data.hiddenPlayers = {}
         data.hiddenPlayerState = {}
+        local processedEntities = {}
         local hiddenTargets = istable(data.config.hideEntities) and data.config.hideEntities or {}
         for _, ent in ipairs(hiddenTargets) do
+            if processedEntities[ent] then continue end
+            processedEntities[ent] = true
             if not IsValid(ent) or ent == data.entity then continue end
             if ent:IsPlayer() then
                 data.hiddenPlayers[ent] = true
@@ -1727,6 +1732,7 @@ if not lia.worldPreview.begin then
                     noDraw = ent:GetNoDraw(),
                     hadEffect = ent:IsEffectActive(EF_NODRAW)
                 }
+
                 ent:SetNoDraw(true)
                 ent:AddEffects(EF_NODRAW)
             elseif data.hiddenEntities[ent] == nil then
@@ -1858,12 +1864,8 @@ net.Receive("SeeModelTable", function()
         end
     end
 
-    frame.OnSizeChanged = function(this)
-        positionWardrobeCloseButton(this)
-    end
-
+    frame.OnSizeChanged = function(this) positionWardrobeCloseButton(this) end
     positionWardrobeCloseButton(frame)
-
     local title = frame:Add("liaHeaderPanel")
     title:Dock(TOP)
     title:DockMargin(0, 0, 0, 12)
@@ -1877,7 +1879,6 @@ net.Receive("SeeModelTable", function()
     titleLabel:SetText(L("selectModel"):upper())
     titleLabel:SetTextColor(lia.color.theme and lia.color.theme.text or color_white)
     titleLabel:SetContentAlignment(5)
-
     local hint = frame:Add("DLabel")
     hint:Dock(TOP)
     hint:DockMargin(0, 0, 0, 10)
@@ -1886,7 +1887,6 @@ net.Receive("SeeModelTable", function()
     hint:SetTextColor(Color(220, 220, 220))
     hint:SetContentAlignment(5)
     hint:SetText(L("rotateInstruction", "A", "D"))
-
     local confirmButton = vgui.Create("DButton", frame)
     confirmButton:SetText(L("wardrobeConfirmButton"))
     confirmButton:Dock(BOTTOM)
@@ -1895,7 +1895,6 @@ net.Receive("SeeModelTable", function()
     confirmButton:SetFont("DermaDefaultBold")
     confirmButton:SetContentAlignment(5)
     confirmButton:DockMargin(0, 10, 0, 0)
-
     local modelsScroll = vgui.Create("liaScrollPanel", frame)
     modelsScroll:Dock(FILL)
     modelsScroll:DockMargin(0, 0, 0, 0)
@@ -1907,7 +1906,6 @@ net.Receive("SeeModelTable", function()
     iconLayout:SetPaintBackground(false)
     frame._iconColumns = 5
     frame._iconSpace = 8
-
     local function requestIconResize()
         if not IsValid(iconLayout) then return false end
         local w = iconLayout:GetWide() or 0
@@ -1960,6 +1958,7 @@ net.Receive("SeeModelTable", function()
         lia.worldPreview.begin(frame, {
             hideEntities = {LocalPlayer()}
         })
+
         lia.worldPreview.setModel(frame, modelPath)
     end
 
@@ -1993,12 +1992,12 @@ net.Receive("SeeModelTable", function()
             icon.PaintOver = paintIcon
             icon.DoClick = function() setSelectedModel(modelPath) end
         end
+
         requestIconResize()
     end
 
     buildModelIcons()
     setSelectedModel(models[1])
-
     frame.Think = function()
         if input.IsKeyDown(KEY_A) then
             lia.worldPreview.rotate(frame, -50 * FrameTime())
@@ -2007,10 +2006,7 @@ net.Receive("SeeModelTable", function()
         end
     end
 
-    frame.OnRemove = function()
-        lia.worldPreview.close(frame)
-    end
-
+    frame.OnRemove = function() lia.worldPreview.close(frame) end
     confirmButton.DoClick = function()
         if isstring(selectedModel) and selectedModel ~= "" then
             net.Start("WardrobeChangeModel")
@@ -2025,9 +2021,7 @@ net.Receive("SeeModelTable", function()
     timer.Simple(0, function()
         if not IsValid(frame) then return end
         requestIconResize()
-        timer.Simple(0.05, function()
-            if IsValid(frame) then requestIconResize() end
-        end)
+        timer.Simple(0.05, function() if IsValid(frame) then requestIconResize() end end)
     end)
 end)
 

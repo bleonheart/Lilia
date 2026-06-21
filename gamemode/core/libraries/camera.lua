@@ -2,10 +2,6 @@ local view, traceData, traceData2, aimOrigin, crouchFactor, ft, curAng
 local clmp = math.Clamp
 crouchFactor = 0
 local diff, fm, sm
-local firstPersonCurrentAngles = angle_zero
-local firstPersonCurrentPosition = vector_origin
-local firstPersonTargetAngles = angle_zero
-local firstPersonTargetPosition = vector_origin
 local freelooking = false
 local freelookX = 0
 local freelookY = 0
@@ -15,68 +11,37 @@ local freelookWasHolding = false
 local zeroAngle = Angle()
 local hiddenBoneScale = Vector(0.001, 0.001, 0.001)
 local visibleBoneScale = Vector(1, 1, 1)
+local hiddenBoneOffset = Vector(0, 0, 16384)
+local visibleBoneOffset = Vector(0, 0, 0)
 local canOverrideView
 lia.camera = lia.camera or {}
-hook.Remove("ShouldDisableThirdperson", "liaThirdPersonSuppressOnWeapons")
 local maxValues = {
     height = 30,
     horizontal = 30,
     distance = 100
 }
 
-local rmbViewWeapons = {
-    lia_adminstick = true,
-    lia_mapconfigurer = true,
-    gmod_tool = true,
-    weapon_physgun = true,
-    weapon_physcannon = true
-}
+local function getOption(name, fallback)
+    if not lia or not lia.option or not lia.option.get then return fallback end
+    return lia.option.get(name, fallback)
+end
 
-local realisticViewWeaponWhitelist = {
-    weapon_fists = true,
-    weapon_medkit = true,
-    gmod_camera = true,
-    gmod_tool = true,
-    lia_adminstick = true,
-    lia_hands = true,
-    lia_mapconfigurer = true,
-    weapon_physgun = true,
-    weapon_physcannon = true
-}
+local function getConfig(name, fallback)
+    if not lia or not lia.config or not lia.config.get then return fallback end
+    return lia.config.get(name, fallback)
+end
 
 local function isCharacterMenuOpen()
     return IsValid(lia.gui.loading) or IsValid(lia.gui.char) or IsValid(lia.gui.charCreate) or IsValid(lia.gui.character)
-end
-
-local function getActiveWeaponClass(client)
-    if not IsValid(client) then return end
-    local weapon = client:GetActiveWeapon()
-    if not IsValid(weapon) then return end
-    return weapon:GetClass()
 end
 
 local function isUsingThirdPersonCamera(client)
     return IsValid(client) and client:GetViewEntity() == client and canOverrideView and canOverrideView(client) or false
 end
 
-local function shouldForceRMBViewForWeapon(client)
-    local class = getActiveWeaponClass(client)
-    return class and rmbViewWeapons[class] == true or false
-end
-
-local function isUsingKeysWeapon(client)
-    return getActiveWeaponClass(client) == "lia_keys"
-end
-
-local function isRealisticViewWhitelistedWeapon(client)
-    local class = getActiveWeaponClass(client)
-    return class and realisticViewWeaponWhitelist[class] == true or false
-end
-
 local function shouldSuppressRealisticView(client)
     if not IsValid(client) then return false end
-    if isUsingKeysWeapon(client) then return shouldForceRMBViewForWeapon(client) end
-    return client:KeyDown(IN_ATTACK2) or shouldForceRMBViewForWeapon(client)
+    return client:KeyDown(IN_ATTACK2)
 end
 
 function canOverrideView(client)
@@ -85,32 +50,19 @@ function canOverrideView(client)
     if IsValid(client:GetVehicle()) then return false end
     if hook.Run("ShouldDisableThirdperson", client) == true then return false end
     local ragdoll = client:GetRagdollEntity()
-    return lia.option.get("thirdPersonEnabled", false) and lia.config.get("ThirdPersonEnabled", true) and client:getChar() and not IsValid(ragdoll)
-end
-
-local function canApplyFirstPersonEffects(client)
-    if not IsValid(client) or client ~= LocalPlayer() then return false end
-    if isCharacterMenuOpen() then return false end
-    if not client:getChar() then return false end
-    if client:GetViewEntity() ~= client then return false end
-    if isUsingThirdPersonCamera(client) then return false end
-    return lia.option.get("firstPersonEffects", false)
+    return getOption("thirdPersonEnabled", false) and getConfig("ThirdPersonEnabled", true) and client:getChar() and not IsValid(ragdoll)
 end
 
 local function canUseRealisticView(client)
     if not IsValid(client) or client ~= LocalPlayer() then return false end
     if client.IsInAdminEntityView then return false end
     if isCharacterMenuOpen() then return false end
-    if not client:getChar() or client:InVehicle() then return false end
-    if client:GetViewEntity() ~= client or isUsingThirdPersonCamera(client) then return false end
+    if not client:getChar() then return false end
+    if client:InVehicle() then return false end
+    if client:GetViewEntity() ~= client then return false end
+    if isUsingThirdPersonCamera(client) then return false end
     if shouldSuppressRealisticView(client) then return false end
-    if isRealisticViewWhitelistedWeapon(client) then return false end
-    local class = getActiveWeaponClass(client)
-    if not class then return false end
-    if isUsingKeysWeapon(client) then return true end
-    if lia.option.get("realisticViewEnabled", false) then return true end
-    if lia.option.get("alwaysRealisticView", false) then return true end
-    return false
+    return getOption("realisticViewEnabled", false)
 end
 
 local function canUseFreelook(client)
@@ -188,15 +140,121 @@ local function getFirstPersonHeadBones(client)
     return bones
 end
 
+local function getFirstPersonHeadBoneChildren(client, rootBone)
+    local children = {}
+    local boneCount = (client:GetBoneCount() or 0) - 1
+    for bone = 0, boneCount do
+        local parent = client:GetBoneParent(bone)
+        while parent and parent >= 0 do
+            if parent == rootBone then
+                children[#children + 1] = bone
+                break
+            end
+
+            parent = client:GetBoneParent(parent)
+        end
+    end
+    return children
+end
+
+local function getParentAttachmentNames(client)
+    if client.liaFirstPersonAttachmentNames then return client.liaFirstPersonAttachmentNames end
+    local attachmentNames = {}
+    for _, attachment in ipairs(client:GetAttachments() or {}) do
+        if attachment.id and attachment.name then attachmentNames[attachment.id] = attachment.name:lower() end
+    end
+
+    client.liaFirstPersonAttachmentNames = attachmentNames
+    return attachmentNames
+end
+
+local function isHeadAttachmentName(name)
+    if not name or name == "" then return false end
+    return name:find("head", 1, true) or name:find("eye", 1, true) or name:find("face", 1, true) or name:find("mouth", 1, true) or name:find("neck", 1, true)
+end
+
+local function isHeadwearModel(model)
+    if not model or model == "" then return false end
+    model = model:lower()
+    return model:find("hat", 1, true) or model:find("mask", 1, true) or model:find("helmet", 1, true) or model:find("head", 1, true) or model:find("face", 1, true)
+end
+
+local function isHeadBodygroupName(name)
+    if not name or name == "" then return false end
+    name = name:lower()
+    return name:find("head", 1, true) or name:find("face", 1, true) or name:find("mask", 1, true) or name:find("helmet", 1, true) or name:find("hat", 1, true) or name:find("gas", 1, true)
+end
+
+local function setFirstPersonHeadBodygroupsHidden(client, hidden)
+    if not IsValid(client) then return end
+    client.liaFirstPersonHiddenBodygroups = client.liaFirstPersonHiddenBodygroups or {}
+    if hidden then
+        for _, bodygroup in ipairs(client:GetBodyGroups() or {}) do
+            if bodygroup.id and isHeadBodygroupName(bodygroup.name) and client.liaFirstPersonHiddenBodygroups[bodygroup.id] == nil then
+                client.liaFirstPersonHiddenBodygroups[bodygroup.id] = client:GetBodygroup(bodygroup.id)
+                client:SetBodygroup(bodygroup.id, 0)
+            end
+        end
+        return
+    end
+
+    for bodygroupID, originalValue in pairs(client.liaFirstPersonHiddenBodygroups) do
+        client:SetBodygroup(bodygroupID, originalValue)
+        client.liaFirstPersonHiddenBodygroups[bodygroupID] = nil
+    end
+end
+
+local function shouldHideFirstPersonChildEntity(client, entity)
+    if not IsValid(client) or not IsValid(entity) or entity == client then return false end
+    if entity == client:GetActiveWeapon() or entity == client:GetViewModel() then return false end
+    local parent = entity:GetParent()
+    if not IsValid(parent) and entity.GetMoveParent then parent = entity:GetMoveParent() end
+    if parent ~= client then return false end
+    local attachmentID = entity.GetParentAttachment and entity:GetParentAttachment() or 0
+    local attachmentName = getParentAttachmentNames(client)[attachmentID]
+    if isHeadAttachmentName(attachmentName) then return true end
+    if isHeadwearModel(entity:GetModel()) then return true end
+    if entity:IsEffectActive(EF_BONEMERGE) and entity:GetPos():DistToSqr(client:EyePos()) <= 1600 then return true end
+    return false
+end
+
+local function setFirstPersonHeadwearHidden(client, hidden)
+    if not IsValid(client) then return end
+    client.liaFirstPersonHiddenChildren = client.liaFirstPersonHiddenChildren or {}
+    if hidden then
+        for _, entity in ipairs(ents.GetAll()) do
+            if shouldHideFirstPersonChildEntity(client, entity) and client.liaFirstPersonHiddenChildren[entity] == nil then
+                client.liaFirstPersonHiddenChildren[entity] = entity:GetNoDraw()
+                entity:SetNoDraw(true)
+            end
+        end
+        return
+    end
+
+    for entity, wasNoDraw in pairs(client.liaFirstPersonHiddenChildren) do
+        if IsValid(entity) then entity:SetNoDraw(wasNoDraw == true) end
+        client.liaFirstPersonHiddenChildren[entity] = nil
+    end
+end
+
 local function setFirstPersonHeadHidden(client, hidden)
     if not IsValid(client) then return end
     if client.liaFirstPersonHeadHidden == hidden then return end
     client.liaFirstPersonHeadHidden = hidden
+    local headBones = getFirstPersonHeadBones(client)
     local scale = hidden and hiddenBoneScale or visibleBoneScale
-    for _, bone in ipairs(getFirstPersonHeadBones(client)) do
+    local offset = hidden and hiddenBoneOffset or visibleBoneOffset
+    for _, bone in ipairs(headBones) do
         client:ManipulateBoneScale(bone, scale)
+        client:ManipulateBonePosition(bone, offset)
+        for _, childBone in ipairs(getFirstPersonHeadBoneChildren(client, bone)) do
+            client:ManipulateBoneScale(childBone, scale)
+            client:ManipulateBonePosition(childBone, offset)
+        end
     end
 
+    setFirstPersonHeadBodygroupsHidden(client, hidden)
+    setFirstPersonHeadwearHidden(client, hidden)
     client:InvalidateBoneCache()
 end
 
@@ -220,13 +278,22 @@ local function applyFreelookToAngles(client, angles)
 end
 
 local function buildRealisticView(client, origin, angles, fov)
-    local head = client:LookupAttachment("eyes")
-    head = client:GetAttachment(head)
-    if not head or not head.Pos or IsValid(lia.gui.menu) or client:GetMoveType() == MOVETYPE_NOCLIP then return end
-    local viewAngles = applyFreelookToAngles(client, head.Ang)
+    if IsValid(lia.gui.menu) then return end
+    if client:GetMoveType() == MOVETYPE_NOCLIP then return end
+
+    local attachmentID = client:LookupAttachment("eyes")
+    local attachment = attachmentID and client:GetAttachment(attachmentID)
+    local viewOrigin = origin
+    local viewAngles = angles
+    if attachment and attachment.Pos and attachment.Ang then
+        viewOrigin = attachment.Pos + attachment.Ang:Forward() * 2 + attachment.Ang:Up() * 1.5
+        viewAngles = attachment.Ang
+    else
+        viewOrigin = client:EyePos() + angles:Forward() * 2 + angles:Up() * 1.5
+    end
     return {
-        origin = head.Pos + head.Ang:Up(),
-        angles = viewAngles,
+        origin = viewOrigin,
+        angles = applyFreelookToAngles(client, viewAngles),
         fov = fov or 90,
         drawviewer = true
     }
@@ -234,21 +301,21 @@ end
 
 local function buildFreelookBodyView(client, pos, ang, fov)
     if not shouldDrawBodyForFreelook(client) then return end
-    setFirstPersonHeadHidden(client, true)
     local bodyView = buildRealisticView(client, pos, ang, fov)
     if bodyView then return bodyView end
     return {
         origin = pos,
         angles = applyFreelookToAngles(client, ang),
-        fov = fov
+        fov = fov,
+        drawviewer = true
     }
 end
 
 function lia.camera.calcView(client, pos, ang, fov)
     ft = FrameTime()
     local owner = LocalPlayer()
-    setFirstPersonHeadHidden(client, false)
     if isUsingThirdPersonCamera(client) then
+        setFirstPersonHeadHidden(client, false)
         if client:OnGround() and client:KeyDown(IN_DUCK) or client:Crouching() then
             crouchFactor = Lerp(ft * 5, crouchFactor, 1)
         else
@@ -310,57 +377,25 @@ function lia.camera.calcView(client, pos, ang, fov)
     end
 
     if canUseRealisticView(client) then
-        setFirstPersonHeadHidden(client, true)
         local realisticView = buildRealisticView(client, pos, ang, fov)
-        if realisticView then return realisticView end
+        if realisticView then
+            setFirstPersonHeadHidden(client, true)
+            return realisticView
+        end
     end
 
     local freelookBodyView = buildFreelookBodyView(client, pos, ang, fov)
-    if freelookBodyView then return freelookBodyView end
+    if freelookBodyView then
+        setFirstPersonHeadHidden(client, true)
+        return freelookBodyView
+    end
+
     ang = applyFreelookToAngles(client, ang)
-    if not canApplyFirstPersonEffects(client) then
-        return {
-            origin = pos,
-            angles = ang,
-            fov = fov
-        }
-    end
-
-    local realTime = RealTime()
-    local velocity = math.floor(client:GetVelocity():Length2D())
-    if client:OnGround() then
-        local walkSpeed = lia.config.get("WalkSpeed")
-        if velocity > walkSpeed + 40 and not client.isBreathing then
-            local runSpeed = lia.config.get("RunSpeed")
-            local percentage = clmp(velocity / runSpeed * 100, 0.5, 5)
-            firstPersonTargetAngles = Angle(math.abs(math.cos(realTime * runSpeed / 33) * 0.4 * percentage), math.sin(realTime * runSpeed / 29) * 0.5 * percentage, 0)
-            firstPersonTargetPosition = Vector(0, 0, math.sin(realTime * runSpeed / 30) * 0.4 * percentage)
-        else
-            local percentage = clmp((velocity / walkSpeed * 100) / 60, 0, 10)
-            firstPersonTargetAngles = Angle(math.cos(realTime * walkSpeed / 8) * 0.2 * percentage, 0, 0)
-            firstPersonTargetPosition = Vector(0, 0, math.sin(realTime * walkSpeed / 8) * 0.5 * percentage)
-        end
-    elseif client:WaterLevel() >= 2 then
-        firstPersonTargetAngles = angle_zero
-        firstPersonTargetPosition = vector_origin
-    else
-        velocity = math.abs(client:GetVelocity().z)
-        local angleVariance = 0
-        local percentage = clmp(velocity / 200, 0.1, 8)
-        if percentage > 1 then angleVariance = percentage end
-        firstPersonTargetAngles = Angle(math.cos(realTime * 15) * 2 * percentage + math.Rand(-angleVariance * 2, angleVariance * 2), math.sin(realTime * 15) * 2 * percentage + math.Rand(-angleVariance * 2, angleVariance * 2), math.Rand(-angleVariance * 5, angleVariance * 5))
-        firstPersonTargetPosition = Vector(math.cos(realTime * 15) * 0.5 * percentage, math.sin(realTime * 15) * 0.5 * percentage, 0)
-    end
-
-    firstPersonCurrentAngles = LerpAngle(ft * 10, firstPersonCurrentAngles, firstPersonTargetAngles)
-    firstPersonCurrentPosition = LerpVector(ft * 10, firstPersonCurrentPosition, firstPersonTargetPosition)
-    local shouldDrawFreelookBody = shouldDrawBodyForFreelook(client)
-    if shouldDrawFreelookBody then setFirstPersonHeadHidden(client, true) end
+    setFirstPersonHeadHidden(client, false)
     return {
-        origin = pos + firstPersonCurrentPosition,
-        angles = ang + firstPersonCurrentAngles,
-        fov = fov,
-        drawviewer = shouldDrawFreelookBody
+        origin = pos,
+        angles = ang,
+        fov = fov
     }
 end
 
@@ -406,7 +441,10 @@ end)
 
 hook.Add("ShouldDrawLocalPlayer", "liaThirdPersonShouldDrawLocalPlayer", function()
     local client = LocalPlayer()
-    if isUsingThirdPersonCamera(client) and not IsValid(client:GetVehicle()) then return true end
+    if not IsValid(client) or IsValid(client:GetVehicle()) then return end
+    if isUsingThirdPersonCamera(client) then return true end
+    if canUseRealisticView(client) then return true end
+    if shouldDrawBodyForFreelook(client) then return true end
 end)
 
 hook.Add("CalcViewModelView", "liaFreelookCalcViewModelView", function(weapon, _, _, _, _, angles)

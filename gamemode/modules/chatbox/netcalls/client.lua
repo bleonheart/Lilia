@@ -1,4 +1,4 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 net.Receive("liaRegenChat", function()
     for _, panel in ipairs(vgui.GetAll()) do
         if IsValid(panel) and panel:GetName() == "liaChatBox" then panel:Remove() end
@@ -18,7 +18,5 @@ net.Receive("liaChatboxSyncFilteredWords", function()
     end
 
     MODULE.filteredWords = words
-    if IsValid(MODULE.filteredWordAdminPanel) and MODULE.filteredWordAdminPanel.populateFilteredWords then
-        MODULE.filteredWordAdminPanel:populateFilteredWords(words)
-    end
+    if IsValid(MODULE.filteredWordAdminPanel) and MODULE.filteredWordAdminPanel.populateFilteredWords then MODULE.filteredWordAdminPanel:populateFilteredWords(words) end
 end)

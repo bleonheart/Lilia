@@ -1,8 +1,7 @@
-local PANEL = {}
+﻿local PANEL = {}
 AccessorFunc(PANEL, "m_eTarget", "Target")
 local leftrotate, rightrotate = input.LookupBinding("+moveleft"), input.LookupBinding("+moveright")
 local leftinput, rightinput = input.GetKeyCode(leftrotate), input.GetKeyCode(rightrotate)
-
 lia.worldPreview = lia.worldPreview or {}
 if not lia.worldPreview.begin then
     function lia.worldPreview.shouldHidePlayer(player)
@@ -95,6 +94,7 @@ if not lia.worldPreview.begin then
                 if IsValid(ent) then ent:SetNoDraw(noDraw) end
             end
         end
+
         if istable(data.hiddenPlayerState) then
             for player, state in pairs(data.hiddenPlayerState) do
                 if IsValid(player) then
@@ -107,6 +107,7 @@ if not lia.worldPreview.begin then
                 end
             end
         end
+
         if lia.worldPreview.activeOwner == owner then lia.worldPreview.activeOwner = nil end
         owner._liaWorldPreview = nil
     end
@@ -128,8 +129,11 @@ if not lia.worldPreview.begin then
         data.hiddenEntities = {}
         data.hiddenPlayers = {}
         data.hiddenPlayerState = {}
+        local processedEntities = {}
         local hiddenTargets = istable(data.config.hideEntities) and data.config.hideEntities or {}
         for _, ent in ipairs(hiddenTargets) do
+            if processedEntities[ent] then continue end
+            processedEntities[ent] = true
             if not IsValid(ent) or ent == data.entity then continue end
             if ent:IsPlayer() then
                 data.hiddenPlayers[ent] = true
@@ -137,6 +141,7 @@ if not lia.worldPreview.begin then
                     noDraw = ent:GetNoDraw(),
                     hadEffect = ent:IsEffectActive(EF_NODRAW)
                 }
+
                 ent:SetNoDraw(true)
                 ent:AddEffects(EF_NODRAW)
             elseif data.hiddenEntities[ent] == nil then
@@ -413,11 +418,13 @@ function PANEL:SetTarget(target)
         context = target,
         hideEntities = {target, LocalPlayer()}
     })
+
     lia.worldPreview.setModel(self, target:GetModel(), {
         skin = target:GetSkin(),
         bodygroups = lia.util.resolveBodygroups(target, {}),
         context = target
     })
+
     local entity = self:GetPreviewEntity()
     if IsValid(entity) then
         self.originalSkin = target:GetSkin()

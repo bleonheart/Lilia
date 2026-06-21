@@ -69,19 +69,28 @@ function lia.dialog.resolveDialogTypeIdentifier(value)
     return value
 end
 
+lia.dialog.generatedDialogSelectionID = "__lia_custom_dialog__"
+lia.dialog.generatedDialogSelectionName = "Custom Dialog"
+
+function lia.dialog.isGeneratedDialogSelection(value)
+    return string.Trim(tostring(value or "")) == lia.dialog.generatedDialogSelectionID
+end
+
 function lia.dialog.isDialogNPCEntity(npcOrClass)
     local className = npcOrClass
     if IsEntity(npcOrClass) then
         if not IsValid(npcOrClass) then return false end
         className = npcOrClass:GetClass()
     end
-    return className == "lia_npc" or className == "lia_dialog_npc"
+    return className == "lia_npc"
 end
 
 function lia.dialog.entityUsesGeneratedDialog(npc)
     if not IsValid(npc) then return false end
-    if npc.NodeGeneratedDialog ~= nil then return npc.NodeGeneratedDialog == true end
-    return npc:GetClass() == "lia_dialog_npc"
+    local uniqueID = npc.uniqueID or npc:getNetVar("uniqueID", "")
+    if uniqueID == "" then return false end
+    local npcData = lia.dialog.getNPCData(uniqueID)
+    return lia.dialog.isGeneratedDialogData(npcData)
 end
 
 function lia.dialog.isGeneratedDialogData(data)
@@ -93,23 +102,18 @@ function lia.dialog.isConversationDialogData(data)
 end
 
 function lia.dialog.isDialogCompatibleWithEntity(npc, data)
-    if not istable(data) then return false end
-    if lia.dialog.entityUsesGeneratedDialog(npc) then return lia.dialog.isGeneratedDialogData(data) end
-    return lia.dialog.isConversationDialogData(data)
+    if not IsValid(npc) or not lia.dialog.isDialogNPCEntity(npc) then return false end
+    return lia.dialog.isGeneratedDialogData(data) or lia.dialog.isConversationDialogData(data)
 end
 
 function lia.dialog.getCompatibleDialogOptions(npc)
     local options = {}
     for uniqueID, data in pairs(lia.dialog.stored or {}) do
-        if lia.dialog.isDialogCompatibleWithEntity(npc, data) then
-            options[#options + 1] = {
-                lia.lang.resolveToken(data.PrintName or uniqueID),
-                uniqueID
-            }
-        end
+        if lia.dialog.isConversationDialogData(data) and lia.dialog.isDialogCompatibleWithEntity(npc, data) then options[#options + 1] = {lia.lang.resolveToken(data.PrintName or uniqueID), uniqueID} end
     end
 
     table.sort(options, function(a, b) return a[1] < b[1] end)
+    options[#options + 1] = {lia.dialog.generatedDialogSelectionName, lia.dialog.generatedDialogSelectionID}
     return options
 end
 
@@ -307,6 +311,45 @@ local function sanitizeGeneratedDialogPayload(dialogTypeID, payload)
         }
     }
 end
+
+local function getGeneratedDialogTypeID(npc, preferredTypeID)
+    local explicitTypeID = trimToString(preferredTypeID)
+    if explicitTypeID ~= "" and not lia.dialog.isGeneratedDialogSelection(explicitTypeID) then return explicitTypeID end
+    if IsValid(npc) then
+        local currentTypeID = trimToString(npc:getNetVar("uniqueID", npc.uniqueID))
+        if currentTypeID ~= "" then
+            local currentData = lia.dialog.getNPCData and lia.dialog.getNPCData(currentTypeID) or nil
+            if lia.dialog.isGeneratedDialogData(currentData) then return currentTypeID end
+        end
+        return "custom_dialog_" .. tostring(npc:EntIndex())
+    end
+    return explicitTypeID
+end
+
+local function createDefaultGeneratedDialogPayload(dialogTypeID, printName)
+    return sanitizeGeneratedDialogPayload(dialogTypeID, {
+        printName = trimToString(printName) ~= "" and printName or lia.dialog.generatedDialogSelectionName,
+        generatedDialog = {
+            typeID = dialogTypeID,
+            entryNodeID = "node_1",
+            nodes = {
+                {
+                    id = "node_1",
+                    dialogID = "start",
+                    npcText = "",
+                    playerText = "",
+                    children = {},
+                    position = {
+                        x = 60,
+                        y = 60
+                    }
+                }
+            }
+        }
+    })
+end
+
+lia.dialog.getGeneratedDialogTypeID = getGeneratedDialogTypeID
 
 if SERVER then
     function lia.dialog.getNPCData(npcID)
@@ -530,6 +573,20 @@ if SERVER then
         return true
     end
 
+    local function ensureGeneratedDialogType(npc, preferredTypeID, preferredPrintName)
+        local dialogTypeID = getGeneratedDialogTypeID(npc, preferredTypeID)
+        if dialogTypeID == "" then return nil end
+        local existingData = lia.dialog.getNPCData(dialogTypeID)
+        if lia.dialog.isGeneratedDialogData(existingData) then return dialogTypeID, existingData, false end
+        local generatedDialogData = createDefaultGeneratedDialogPayload(dialogTypeID, preferredPrintName)
+        if not lia.dialog.registerNPC(dialogTypeID, generatedDialogData, false) then return nil end
+        lia.dialog.saveGeneratedDialogs()
+        lia.dialog.syncToClients()
+        return dialogTypeID, generatedDialogData, true
+    end
+
+    lia.dialog.ensureGeneratedDialogType = ensureGeneratedDialogType
+
     function lia.dialog.openDialog(client, npc, npcID)
         local npcData = lia.dialog.getOriginalNPCData(npcID)
         if not npcData then
@@ -552,16 +609,17 @@ if SERVER then
         end
 
         if not lia.dialog.isDialogCompatibleWithEntity(npc, npcData) then
-            client:notifyError(lia.dialog.entityUsesGeneratedDialog(npc) and "This NPC can only use generated dialog trees." or "This NPC can only use hardcoded conversation dialogs.")
+            client:notifyError("This entity cannot use the selected dialog type.")
             return
         end
 
         local filteredData = table.Copy(npcData)
-        if lia.dialog.entityUsesGeneratedDialog(npc) then
+        if lia.dialog.isGeneratedDialogData(filteredData) then
             filteredData.Conversation = nil
         else
             filteredData.GeneratedDialog = nil
         end
+
         if filteredData.Conversation then
             filteredData.Conversation = filterConversationOptions(filteredData.Conversation, client, npc)
             for _, entry in pairs(filteredData.Conversation) do
@@ -907,7 +965,8 @@ else
         dialogTypeLabel:SetTall(20)
         dialogTypeLabel:DockMargin(0, 15, 0, 5)
         local currentType = npc:getNetVar("uniqueID", npc.uniqueID) or "none"
-        local selectedDialogType = currentType
+        local currentUsesGeneratedDialog = lia.dialog.entityUsesGeneratedDialog(npc)
+        local selectedDialogType = currentUsesGeneratedDialog and lia.dialog.generatedDialogSelectionID or currentType
         local dialogTypeCombo = vgui.Create("liaComboBox", scroll)
         dialogTypeCombo:Dock(TOP)
         dialogTypeCombo:SetTall(30)
@@ -917,10 +976,19 @@ else
             dialogTypeCombo:AddChoice(option[1], option[2])
         end
 
-        dialogTypeCombo:ChooseOptionData(currentType or "none")
+        dialogTypeCombo:ChooseOptionData(selectedDialogType or "none")
         dialogTypeCombo:FinishAddingOptions()
         dialogTypeCombo:PostInit()
         dialogTypeCombo.OnSelect = function(_, _, value) selectedDialogType = value end
+        local customDialogBtn = vgui.Create("liaButton", scroll)
+        customDialogBtn:Dock(TOP)
+        customDialogBtn:SetTall(35)
+        customDialogBtn:SetText("Create / Edit Custom Dialog")
+        customDialogBtn:DockMargin(0, 0, 0, 10)
+        customDialogBtn.DoClick = function()
+            frame:Close()
+            lia.dialog.openNodeEditor(npc)
+        end
         local isCarDealerNPC = currentType == "cardealer" or (IsValid(npc) and npc.uniqueID == "cardealer")
         if isCarDealerNPC and lia.cardealer and isfunction(lia.cardealer.openCategoryConfigUI) then
             local categoriesBtn = vgui.Create("liaButton", scroll)
@@ -957,8 +1025,9 @@ else
 
             if hasAnimations and animationCombo then customData.animation = selectedAnimation end
             lia.dialog.submitConfiguration(configID, npc, customData)
-            local resolvedSelectedDialogType = lia.dialog.resolveDialogTypeIdentifier(selectedDialogType or dialogTypeCombo:GetValue() or "none")
-            if resolvedSelectedDialogType ~= currentType then
+            local resolvedSelectedDialogType = selectedDialogType or dialogTypeCombo:GetValue() or "none"
+            local currentSelectionType = currentUsesGeneratedDialog and lia.dialog.generatedDialogSelectionID or currentType
+            if resolvedSelectedDialogType ~= currentSelectionType then
                 lia.dialog.submitConfiguration("dialog_type", npc, {
                     dialogType = resolvedSelectedDialogType
                 })
@@ -1066,7 +1135,7 @@ else
     function lia.dialog.openNodeEditor(npc)
         if not IsValid(npc) then return end
         local currentTypeID = trimToString(npc:getNetVar("uniqueID", npc.uniqueID))
-        local fallbackTypeID = currentTypeID ~= "" and currentTypeID or ("dialog_" .. npc:EntIndex())
+        local fallbackTypeID = getGeneratedDialogTypeID(npc, currentTypeID)
         local existingData = lia.dialog.getNPCData(fallbackTypeID)
         local editorData = cloneGeneratedDialogForEditor(existingData, fallbackTypeID)
         local editorPrintName = trimToString(existingData and existingData.PrintName or fallbackTypeID)
@@ -1281,6 +1350,7 @@ else
         end
 
         refreshInspector = function()
+            if not IsValid(inspector) then return end
             inspector:Clear()
             fieldEntries = {}
             factionSummaryLabel = nil
@@ -1529,7 +1599,7 @@ else
                     factionRequirement = "",
                     soundPath = "",
                     requirementMessage = "",
-                    children = {"node_2", "node_3"},
+                    children = {"node_2", "node_3", "node_4"},
                     position = {
                         x = 72,
                         y = 90
@@ -1566,10 +1636,26 @@ else
                         x = 360,
                         y = 230
                     }
+                },
+                {
+                    id = "node_4",
+                    dialogID = "goodbye",
+                    npcText = "Move along, then.",
+                    playerText = "Never mind. Goodbye.",
+                    waypoint = "",
+                    swepClass = "",
+                    factionRequirement = "",
+                    soundPath = "",
+                    requirementMessage = "",
+                    children = {},
+                    position = {
+                        x = 360,
+                        y = 390
+                    }
                 }
             }
 
-            nodeCounter = 3
+            nodeCounter = 4
             selectedNodeID = "node_1"
             pendingConnectionID = nil
             refreshCanvas()
@@ -1708,11 +1794,20 @@ if SERVER then
             if not IsValid(npc) then return end
             customData = istable(customData) and customData or {}
             if customData.dialogType then
-                local resolvedType = lia.dialog.resolveDialogTypeIdentifier(customData.dialogType)
+                local requestedType = trimToString(customData.dialogType)
+                local resolvedType = lia.dialog.isGeneratedDialogSelection(requestedType) and requestedType or lia.dialog.resolveDialogTypeIdentifier(requestedType)
+                if lia.dialog.isGeneratedDialogSelection(resolvedType) then
+                    local generatedTypeID, generatedData = ensureGeneratedDialogType(npc, nil, npc.NPCName)
+                    if not generatedTypeID or not generatedData then
+                        ply:notifyError("Failed to create a custom dialog type for this NPC.")
+                        return
+                    end
+                    resolvedType = generatedTypeID
+                end
                 local dialogType = resolvedType == "none" and "" or resolvedType
                 local npcData = dialogType ~= "" and lia.dialog.getNPCData(dialogType) or nil
                 if dialogType ~= "" and not lia.dialog.isDialogCompatibleWithEntity(npc, npcData) then
-                    ply:notifyError(lia.dialog.entityUsesGeneratedDialog(npc) and "That dialog type requires a node dialog NPC." or "That dialog type requires a hardcoded conversation NPC.")
+                    ply:notifyError("That dialog type is not compatible with this entity.")
                     return
                 end
 
@@ -1809,13 +1904,13 @@ if SERVER then
         shouldShow = function(ply, npc) return canAccessNPCConfigurations(ply) and lia.dialog.entityUsesGeneratedDialog(npc) end,
         onApply = function(ply, npc, customData)
             if not IsValid(npc) then return end
-            if not lia.dialog.entityUsesGeneratedDialog(npc) then
-                ply:notifyError("This editor can only be used on node dialog NPCs.")
+            if not lia.dialog.isDialogNPCEntity(npc) then
+                ply:notifyError("This editor can only be used on dialog NPCs.")
                 return
             end
 
             customData = istable(customData) and customData or {}
-            local dialogTypeID = trimToString(customData.dialogTypeID)
+            local dialogTypeID = getGeneratedDialogTypeID(npc, customData.dialogTypeID)
             if dialogTypeID == "" then
                 ply:notifyError("Dialog Type ID is required.")
                 return

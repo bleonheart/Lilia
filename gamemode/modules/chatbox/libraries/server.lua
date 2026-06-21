@@ -1,6 +1,5 @@
-local MODULE = MODULE
+﻿local MODULE = MODULE
 local FILTER_DATA_KEY = "chatbox_filtered_words"
-
 local function getWordFilterModule()
     local wordFilterModule = lia.module and lia.module.get and lia.module.get("wordfilter")
     if wordFilterModule == MODULE then return nil end
@@ -46,6 +45,7 @@ function MODULE:GetFilteredWords()
         self.FilteredWords = buildNormalizedWordList(wordFilterModule.WordBlackList)
         return self.FilteredWords
     end
+
     self.FilteredWords = buildNormalizedWordList(self.FilteredWords or {})
     return self.FilteredWords
 end
@@ -113,6 +113,7 @@ function MODULE:SyncFilteredWords(targets)
     for _, filteredWord in ipairs(words) do
         net.WriteString(filteredWord)
     end
+
     net.Send(recipients)
 end
 

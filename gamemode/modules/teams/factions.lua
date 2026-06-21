@@ -400,9 +400,7 @@ local function formatModelDataEntry(name, faction, modelIndex, modelData, catego
         local groups = {}
         if istable(parsed.bodygroups) then
             local dummy
-            if CLIENT then
-                dummy = ClientsideModel(parsed.model)
-            end
+            if CLIENT then dummy = ClientsideModel(parsed.model) end
             if IsValid(dummy) then
                 local groupData = dummy:GetBodyGroups()
                 for _, group in ipairs(groupData) do
@@ -417,6 +415,7 @@ local function formatModelDataEntry(name, faction, modelIndex, modelData, catego
 
                 dummy:Remove()
             end
+
             newGroups = groups
         elseif isstring(parsed.bodygroups) then
             newGroups = string.Explode("", parsed.bodygroups)

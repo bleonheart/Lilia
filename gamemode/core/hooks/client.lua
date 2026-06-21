@@ -940,6 +940,7 @@ function GM:GetMainMenuPosition(character)
                 return pos, angles
             end
         end
+
         local client = LocalPlayer()
         if IsValid(client) and client:getChar() then
             local currentChar = client:getChar()
@@ -970,7 +971,6 @@ function GM:GetMainMenuPosition(character)
             end
         end
     end
-
     return nil, nil
 end
 

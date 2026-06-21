@@ -1,28 +1,28 @@
 ## Executive Summary
 
 ### Function Documentation
-- **Total Functions:** 648
+- **Total Functions:** 643
 - **Documented:** 0 (0.0%)
-- **Missing Functions:** 648 unique (648 total occurrences)
-  - **Library Functions:** 469
+- **Missing Functions:** 643 unique (643 total occurrences)
+  - **Library Functions:** 464
   - **Hook Functions:** 179
   - **Meta Functions:** 0
 
 ### Hooks Documentation
-- **Missing Hooks:** 447 (used but undocumented)
+- **Missing Hooks:** 445 (used but undocumented)
 - **Unused Hooks:** 0 (documented but unused)
 - **Total Documented Hooks:** 0
-- **Total Registered Hooks:** 447
+- **Total Registered Hooks:** 445
 
 ### Localization Analysis
-- **Undefined Calls:** 0 unique
+- **Undefined Calls:** 5 unique
 - **@xxxxx Patterns:** 0 unique
 - **Module Key Conflicts:** 0 keys
-- **Argument Mismatches:** 0
+- **Argument Mismatches:** 1
 
 ### Net Message Analysis
-- **Defined Net Messages:** 217
-- **Used Net Messages:** 216
+- **Defined Net Messages:** 216
+- **Used Net Messages:** 215
 - **Defined But Unused:** 1
 - **Used But Undefined:** 0
 
@@ -35,10 +35,10 @@
 
 ### Summary
 - **Files Analyzed:** 42
-- **Missing Documentation:** 648 unique functions
+- **Missing Documentation:** 643 unique functions
 
 ### Missing Library Functions
-Total: 469 functions
+Total: 464 functions
 
 #### lia
 Count: 6 functions
@@ -51,7 +51,7 @@ Count: 6 functions
 - `lia.warning(msg)`
 
 #### lia.admin
-Count: 28 functions
+Count: 26 functions
 
 - `lia.admin.addPermission(groupName, permission, silent)`
 - `lia.admin.applyInheritance(groupName)`
@@ -61,7 +61,6 @@ Count: 28 functions
 - `lia.admin.getCommandPrivilegeID(cmd)`
 - `lia.admin.getDefaultUserGroup()`
 - `lia.admin.getExternalPrivilegeName(id)`
-- `lia.admin.getUsergroupIcon(groupOrPlayer)`
 - `lia.admin.hasAccess(ply, privilege)`
 - `lia.admin.hasChanges()`
 - `lia.admin.isProtectedStaffTarget(cmd, target)`
@@ -78,7 +77,6 @@ Count: 28 functions
 - `lia.admin.serverExecCommand(cmd, victim, dur, reason, admin)`
 - `lia.admin.setPlayerUsergroup(ply, newGroup, source)`
 - `lia.admin.setSteamIDUsergroup(steamId, newGroup, source)`
-- `lia.admin.shouldShowUsergroupIcons()`
 - `lia.admin.sync(c)`
 - `lia.admin.unregisterPrivilege(id)`
 
@@ -169,7 +167,7 @@ Count: 16 functions
 - `lia.color.testThemeTransition(themeName)`
 
 #### lia.command
-Count: 8 functions
+Count: 9 functions
 
 - `lia.command.add(command, data)`
 - `lia.command.buildSyntaxFromArguments(args)`
@@ -322,22 +320,19 @@ Count: 48 functions
 - `lia.derma.wrapText(text, width, font)`
 
 #### lia.dialog
-Count: 17 functions
+Count: 14 functions
 
 - `lia.dialog.getAvailableConfigurations(ply, npc, npcID)`
 - `lia.dialog.getConfiguration(uniqueID)`
 - `lia.dialog.getNPCData(npcID)`
 - `lia.dialog.getOriginalNPCData(npcID)`
 - `lia.dialog.isTableEqual(tbl1, tbl2, checked)`
-- `lia.dialog.loadGeneratedDialogs()`
 - `lia.dialog.openConfigurationPicker(npc, npcID)`
 - `lia.dialog.openCustomizationUI(npc, configID)`
 - `lia.dialog.openDialog(client, npc, npcID)`
-- `lia.dialog.openNodeEditor(npc)`
 - `lia.dialog.registerConfiguration(uniqueID, data)`
 - `lia.dialog.registerNPC(uniqueID, data, shouldSync)`
 - `lia.dialog.resolveDialogTypeIdentifier(value)`
-- `lia.dialog.saveGeneratedDialogs()`
 - `lia.dialog.submitConfiguration(configID, npc, payload)`
 - `lia.dialog.syncDialogs()`
 - `lia.dialog.syncToClients(client)`
@@ -359,7 +354,7 @@ Count: 12 functions
 - `lia.doors.verifyDatabaseSchema()`
 
 #### lia.faction
-Count: 30 functions
+Count: 29 functions
 
 - `lia.faction.cacheModels(models)`
 - `lia.faction.formatModelData()`
@@ -386,7 +381,6 @@ Count: 30 functions
 - `lia.faction.hasWhitelist(faction)`
 - `lia.faction.isBodygroupValueAllowed(faction, modelPath, bodygroupIndex, value, bodygroupName, modelData, modelKey)`
 - `lia.faction.isFactionCategory(faction, categoryFactions)`
-- `lia.faction.isModelUsable(modelPath)`
 - `lia.faction.isSkinAllowedForFaction(faction, skin, modelData, modelKey)`
 - `lia.faction.jobGenerate(index, name, color, default, models)`
 - `lia.faction.loadFromDir(directory)`
@@ -847,9 +841,9 @@ Total: 179 functions
 ## Hooks Documentation Analysis
 
 ### Summary
-- **Missing Hooks:** 447 (used in code but not documented)
+- **Missing Hooks:** 445 (used in code but not documented)
 - **Documented Hooks:** 0
-- **Registered Hooks:** 447
+- **Registered Hooks:** 445
 - **Unused Hooks:** 0 (documented but not registered)
 
 ### Missing Hook Documentation:
@@ -1027,7 +1021,6 @@ These hooks are registered in code but missing from documentation:
 - `GetPriceOverride(client, self, uniqueID, price, isSellingToVendor)`
 - `GetRagdollTime(self, time)`
 - `GetSalaryAmount(client, charFaction, class)`
-- `GetUsergroupIcon(groupName, groupData, groupOrPlayer)`
 - `GetWarnings(charID)`
 - `GetWeaponName(wep)`
 - `HandleItemTransferRequest(client, itemID, x, y, invID)`
@@ -1257,7 +1250,6 @@ These hooks are registered in code but missing from documentation:
 - `ShouldShowPlayerOnScoreboard(ply)`
 - `ShouldShowQuickMenu()`
 - `ShouldSpawnClientRagdoll(client)`
-- `ShouldUseMapSpawns(client, character, isRespawning)`
 - `ShowPlayerOptions(target, options)`
 - `StorageCanTransferItem(client, storage, item)`
 - `StorageEntityRemoved(self, inventory)`
@@ -1304,17 +1296,32 @@ These hooks are registered in code but missing from documentation:
 
 ## Localization Analysis
 
-- **Unique Keys:** 3832
-- **Undefined Calls:** 0
-- **Argument Mismatch:** 0
+- **Unique Keys:** 3833
+- **Undefined Calls:** 5
+- **Argument Mismatch:** 1
 
 ### Undefined Calls
 
-- None
+- **salaryReceived** in core\meta\player.lua:504
+  - Context: client:notifyLocalized("salaryReceived", "money", 250)
+- **storageNearlyFull** in core\meta\player.lua:724
+  - Context: client:notifyWarningLocalized("storageNearlyFull")
+- **questUpdated** in core\meta\player.lua:753
+  - Context: client:notifyInfoLocalized("questUpdated")
+- **craftingFinished** in core\meta\player.lua:782
+  - Context: client:notifySuccessLocalized("craftingFinished")
+- **staffDutyEnabled** in core\meta\player.lua:840
+  - Context: client:notifyAdminLocalized("staffDutyEnabled")
 
 ### Argument Mismatches
 
-- **Total Mismatches:** 0
+- **Total Mismatches:** 1
+
+
+#### modules\administration\entities\weapons\lia_mapconfigurer\cl_init.lua
+- **Line 181:** removedPoint(1)
+  - Expected: 0 args, Provided: 1 args
+  - Context: LocalPlayer():notifyLocalized("removedPoint", pt.label or L("pointNumber", idx))
 
 ### Undefined or Unlocalized Inferred Localization Values
 
@@ -1322,14 +1329,9 @@ These string literals are stored in localization-by-convention fields (e.g. `ITE
 
 | Field | Issue | Value | File | Line |
 |---|---|---|---|---:|
-| `data.category` | Missing key | `Effects` | core\libraries\option.lua | 771 |
 | `data.category` | Unlocalized string | `.. lia.db.convertDataType(category),` | modules\administration\submodules\logs\libraries\server.lua | 16 |
-| `data.desc` | Unlocalized string | `Usergroup assigned to players when Lilia does not already have one stored for their SteamID.` | modules\administration\admin.lua | 63 |
-| `data.desc` | Unlocalized string | `Displays icon16 usergroup icons in OOC/LOOC messages and usergroup tabs.` | modules\administration\admin.lua | 78 |
-| `lia.config.add:name` | Unlocalized string | `Default User Group` | modules\administration\admin.lua | 62 |
-| `lia.config.add:name` | Unlocalized string | `OOC/LOOC Icon Message` | modules\administration\admin.lua | 77 |
-| `lia.option.add:desc` | Unlocalized string | `Toggle realistic first person head bobbing and motion effects` | core\libraries\option.lua | 770 |
-| `lia.option.add:name` | Unlocalized string | `First Person Effects` | core\libraries\option.lua | 770 |
+| `data.desc` | Unlocalized string | `Usergroup assigned to players when Lilia does not already have one stored for their SteamID.` | modules\administration\admin.lua | 34 |
+| `lia.config.add:name` | Unlocalized string | `Default User Group` | modules\administration\admin.lua | 33 |
 
 ## Language File Comparison
 
@@ -1340,8 +1342,8 @@ These string literals are stored in localization-by-convention fields (e.g. `ITE
 ## Net Message Analysis
 
 ### Summary
-- **Defined Net Messages:** 217
-- **Used Net Messages:** 216
+- **Defined Net Messages:** 216
+- **Used Net Messages:** 215
 - **Defined But Unused:** 1
 - **Used But Undefined:** 0
 
@@ -1361,11 +1363,11 @@ None
 
 - `liaUpdateAdminPrivileges` in module `administration`
   - Reason: Used only by module "administration" but defined outside that module
-  - Usage sites: lia.net.readBigTable at modules/administration/admin.lua:1649; lia.net.writeBigTable at modules/administration/admin.lua:938
+  - Usage sites: lia.net.readBigTable at modules/administration/admin.lua:1599; lia.net.writeBigTable at modules/administration/admin.lua:903
   - Definition sites: init.lua networkStrings at init.lua:2
 - `liaVendorEdit` in module `vendor`
   - Reason: Used only by module "vendor" but defined outside that module
-  - Usage sites: net.Start at modules/vendor/derma/client.lua:2008; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:113; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:196; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:205; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:215
+  - Usage sites: net.Start at modules/vendor/derma/client.lua:2009; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:113; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:196; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:205; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:215
   - Definition sites: init.lua networkStrings at init.lua:2
 - `liaVendorPropertySync` in module `vendor`
   - Reason: Used only by module "vendor" but defined outside that module
@@ -1397,7 +1399,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1416
+  - Receiver sites: core/netcalls/client.lua:1410
 - `liaItemData`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -1409,7 +1411,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: client
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1585
+  - Receiver sites: core/netcalls/client.lua:1579
 - `liaKickCharacter`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -1427,7 +1429,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: client, server
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1226; core/netcalls/server.lua:1104
+  - Receiver sites: core/netcalls/client.lua:1220; core/netcalls/server.lua:1104
 - `liaNPCWeaponChange`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -1584,11 +1586,11 @@ None
 | `liaUserGroupList` | `framework` | `core/derma/panels/usergroup_list.lua:113` |
 | `liaVoicePanel` | `framework` | `core/derma/panels/voice.lua:111` |
 | `liaGridInventoryPanel` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory_panel.lua:250` |
-| `liaGridInvItem` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory_item.lua:132` |
-| `liaVendorBodygroupEditor` | `vendor` | `modules/vendor/derma/client.lua:2751` |
-| `liaVendorEditorItemRow` | `vendor` | `modules/vendor/derma/client.lua:1999` |
-| `liaVendorFactionEditor` | `vendor` | `modules/vendor/derma/client.lua:2699` |
-| `liaVendorItem` | `vendor` | `modules/vendor/derma/client.lua:1079` |
+| `liaGridInvItem` | `gridinv` | `modules/inventory/types/gridinv/derma/cl_grid_inventory_item.lua:133` |
+| `liaVendorBodygroupEditor` | `vendor` | `modules/vendor/derma/client.lua:2752` |
+| `liaVendorEditorItemRow` | `vendor` | `modules/vendor/derma/client.lua:2000` |
+| `liaVendorFactionEditor` | `vendor` | `modules/vendor/derma/client.lua:2700` |
+| `liaVendorItem` | `vendor` | `modules/vendor/derma/client.lua:1080` |
 | `liaListInventory` | `weightinv` | `modules/inventory/types/weightinv/derma/cl_list_inventory.lua:27` |
 | `liaListInventoryPanel` | `weightinv` | `modules/inventory/types/weightinv/derma/cl_list_inventory_panel.lua:157` |
 
@@ -1611,7 +1613,7 @@ None
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `administration` | `modules/administration/admin.lua:1673` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
+| `administration` | `modules/administration/admin.lua:1623` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/entities/weapons/lia_mapconfigurer/cl_init.lua:146` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/libraries/client.lua:581` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/netcalls/client.lua:91` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |

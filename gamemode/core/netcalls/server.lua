@@ -1185,12 +1185,19 @@ local function dialogFactionMatches(ply, requirement)
     return lia.dialog.factionMatchesRequirement(char:getFaction(), requirement)
 end
 
+local function isGeneratedCloseNode(node)
+    if not istable(node) then return false end
+    local nodeID = string.Trim(string.lower(tostring(node.dialogID or "")))
+    return nodeID == "goodbye" or nodeID == "bye" or nodeID == "farewell" or nodeID == "close"
+end
+
 local function buildGeneratedNodeOptions(generatedDialog, nodeID)
     local options = {}
     for _, childNode in ipairs(lia.dialog.getGeneratedChildNodes(generatedDialog, nodeID) or {}) do
         options[#options + 1] = {
             label = childNode.playerText ~= "" and childNode.playerText or childNode.dialogID or childNode.id,
-            nodeID = childNode.id
+            nodeID = childNode.id,
+            closeDialog = isGeneratedCloseNode(childNode)
         }
     end
     return options
@@ -1344,6 +1351,7 @@ net.Receive("liaNpcDialogNodeSelect", function(_, ply)
         local startNode = lia.dialog.getGeneratedStartNode(generatedDialog)
         if startNode and startNode.id == selectedNodeID then allowed = true end
     end
+
     if not allowed and currentNodeID ~= "" then return end
     local success = dialogFactionMatches(ply, selectedNode.factionRequirement)
     local responseText = success and selectedNode.npcText or (selectedNode.requirementMessage ~= "" and selectedNode.requirementMessage or "You do not meet the requirement for this dialog.")
@@ -1355,8 +1363,10 @@ net.Receive("liaNpcDialogNodeSelect", function(_, ply)
         currentNodeID = currentNodeID,
         npcText = responseText,
         soundPath = success and selectedNode.soundPath or "",
+        closeDialog = success and isGeneratedCloseNode(selectedNode) or false,
         options = buildGeneratedNodeOptions(generatedDialog, success and selectedNodeID or currentNodeID)
     })
+
     net.Send(ply)
 end)
 
@@ -1389,6 +1399,13 @@ net.Receive("liaRequestNPCSelection", function(_, client)
     if IsValid(npcEntity) and IsValid(client) then
         local character = client:getChar()
         if character then
+            if lia.dialog.isGeneratedDialogSelection and lia.dialog.isGeneratedDialogSelection(uniqueID) then
+                local hasManageNPCs = client:hasPrivilege("canManageNPCs")
+                local hasManageProperties = client:hasPrivilege("canManageProperties")
+                if not hasManageNPCs and not hasManageProperties then return end
+                uniqueID = lia.dialog.ensureGeneratedDialogType and select(1, lia.dialog.ensureGeneratedDialogType(npcEntity, nil, npcEntity.NPCName)) or nil
+                if not uniqueID then return end
+            end
             npcEntity.uniqueID = uniqueID
             setupNPCType(client, npcEntity)
         end

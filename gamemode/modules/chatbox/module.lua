@@ -1,4 +1,4 @@
-MODULE.name = "@chatboxModuleName"
+﻿MODULE.name = "@chatboxModuleName"
 MODULE.author = "Samael"
 MODULE.discord = "@liliaplayer"
 MODULE.desc = "@chatSystemDescription"

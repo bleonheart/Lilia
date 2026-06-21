@@ -470,6 +470,7 @@ lia.chat.register("adminchat", {
     onChatAdd = function(speaker, text) chat.AddText((lia.color.theme and lia.color.theme.text) or Color(210, 235, 235), "[" .. L("adminChat") .. "] ", (lia.color.theme and lia.color.theme.chat) or Color(255, 239, 150), speaker:GetName(), ": " .. text) end,
     prefix = {"/adminchat", "/ac"}
 })
+
 MODULE.FilteredWords = MODULE.FilteredWords or {}
 function MODULE:PlayerSay(client, text)
     local lowerText = tostring(text or ""):lower()

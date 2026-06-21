@@ -111,7 +111,6 @@ function PANEL:setInWorldPreviewEnabled(enabled)
         self.currentCamPos = nil
         hook.Remove("CalcView", "liaMainMenuCalcView")
         hook.Remove("PrePlayerDraw", "liaMainMenuPrePlayerDraw")
-
         hook.Remove("PostDrawOpaqueRenderables", "liaMainMenuPostDrawOpaqueRenderables")
         if self.mainMenuRenderHookID then
             hook.Remove("PostDrawOpaqueRenderables", self.mainMenuRenderHookID)
