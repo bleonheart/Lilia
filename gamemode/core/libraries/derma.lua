@@ -415,7 +415,7 @@ function lia.derma.interactionTooltip(rawOptions, config)
     if mode ~= "interaction" and mode ~= "action" then mode = "custom" end
     local client = LocalPlayer()
     if not IsValid(client) then return end
-    local ent = config.entity
+    local ent = config.entity       
     if ent == nil and (mode ~= "custom" or config.resolveEntity ~= false) then
         if isfunction(client.getTracedEntity) then
             ent = client:getTracedEntity()
