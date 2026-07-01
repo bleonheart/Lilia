@@ -279,47 +279,51 @@ class DocumentationParser:
     def __init__(self, docs_path: str):
         self.docs_path = Path(docs_path)
 
+    def _existing_doc_dirs(self, *relative_paths: str) -> List[Path]:
+        """Return existing documentation directories in preferred order."""
+        return [
+            self.docs_path.joinpath(*parts.split("/"))
+            for parts in relative_paths
+            if self.docs_path.joinpath(*parts.split("/")).exists()
+        ]
+
     def extract_documented_functions(self) -> Dict[str, Dict[str, FunctionInfo]]:
         """Extract all documented functions from documentation files"""
         documented_functions = {}
 
-        # Look for library documentation files in development/libraries
-        libraries_path = self.docs_path / "docs" / "development" / "libraries"
-        if libraries_path.exists():
+        # Prefer the current docs/developer layout, then older legacy paths.
+        library_dirs = self._existing_doc_dirs(
+            "docs/developer/libraries",
+            "docs/development/libraries",
+            "docs/libraries",
+        )
+        for libraries_path in library_dirs:
+            prefix = ""
+            if libraries_path.parts[-2:] == ("docs", "libraries"):
+                prefix = "old/"
+
             for md_file in libraries_path.glob("*.md"):
                 # Skip index.md and other non-library files
                 if md_file.name == "index.md":
                     continue
                 functions = self._parse_library_file(md_file)
                 if functions:
-                    documented_functions[md_file.name] = functions
+                    documented_functions[f"{prefix}{md_file.name}"] = functions
 
-        # Also check the old docs/libraries path for backwards compatibility
-        old_libraries_path = self.docs_path / "docs" / "libraries"
-        if old_libraries_path.exists():
-            for md_file in old_libraries_path.glob("*.md"):
-                # Skip index.md and other non-library files
-                if md_file.name == "index.md":
-                    continue
-                functions = self._parse_library_file(md_file)
-                if functions:
-                    documented_functions[f"old/{md_file.name}"] = functions
+        meta_dirs = self._existing_doc_dirs(
+            "docs/developer/meta",
+            "docs/development/meta",
+            "docs/meta",
+        )
+        for meta_path in meta_dirs:
+            prefix = "meta/"
+            if meta_path.parts[-2:] == ("docs", "meta"):
+                prefix = "old/meta/"
 
-        # Look for meta documentation files in development/meta
-        meta_path = self.docs_path / "docs" / "development" / "meta"
-        if meta_path.exists():
             for md_file in meta_path.glob("*.md"):
                 functions = self._parse_meta_file(md_file)
                 if functions:
-                    documented_functions[f"meta/{md_file.name}"] = functions
-
-        # Also check the old docs/meta path for backwards compatibility
-        old_meta_path = self.docs_path / "docs" / "meta"
-        if old_meta_path.exists():
-            for md_file in old_meta_path.glob("*.md"):
-                functions = self._parse_meta_file(md_file)
-                if functions:
-                    documented_functions[f"old/meta/{md_file.name}"] = functions
+                    documented_functions[f"{prefix}{md_file.name}"] = functions
 
         return documented_functions
 
@@ -380,17 +384,17 @@ class DocumentationParser:
                     parameters=params
                 )
 
-        # Also extract function names from HTML summary tags like <summary><a id=...></a>lia.admin.addPermission(...)</summary>
-        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w\.:]+)\([^)]*\)</summary>', content):
+        # Also extract function names from HTML summary tags used by the docs site.
+        summary_pattern = re.compile(
+            r'<summary\b[^>]*>.*?<a[^>]*></a>\s*([A-Za-z_][\w\.:]*)\(([^)]*)\)',
+            re.DOTALL,
+        )
+        for match in summary_pattern.finditer(content):
             func_name = match.group(1).strip()
             # Find the line number for this match
             line_num = content[:match.start()].count('\n') + 1
-            # Extract parameters from the match
-            param_match = re.search(r'\(([^)]*)\)', match.group(0))
-            params = []
-            if param_match:
-                params_str = param_match.group(1)
-                params = [p.strip() for p in params_str.split(',') if p.strip()]
+            params_str = match.group(2)
+            params = [p.strip() for p in params_str.split(',') if p.strip()] if params_str.strip() else []
             
             # If function name already includes dots (fully qualified), use it as-is
             if '.' in func_name:
@@ -496,8 +500,12 @@ class DocumentationParser:
                         parameters=params
                     )
 
-        # Also extract method names from HTML summary tags like <summary><a id=...></a>addBoost(...)</summary>
-        for match in re.finditer(r'<summary><a[^>]*></a>([A-Za-z_][\w]+)\(([^)]*)\)</summary>', content):
+        # Also extract method names from HTML summary tags used by the docs site.
+        summary_pattern = re.compile(
+            r'<summary\b[^>]*>.*?<a[^>]*></a>\s*([A-Za-z_][\w\.:]*)\(([^)]*)\)',
+            re.DOTALL,
+        )
+        for match in summary_pattern.finditer(content):
             method_name = match.group(1).strip()
             # Find the line number for this match
             line_num = content[:match.start()].count('\n') + 1

@@ -1,11 +1,11 @@
 ## Executive Summary
 
 ### Function Documentation
-- **Total Functions:** 695
-- **Documented:** 0 (0.0%)
-- **Missing Functions:** 695 unique (695 total occurrences)
-  - **Library Functions:** 510
-  - **Hook Functions:** 179
+- **Total Functions:** 696
+- **Documented:** 644 (92.5%)
+- **Missing Functions:** 52 unique (52 total occurrences)
+  - **Library Functions:** 41
+  - **Hook Functions:** 5
   - **Meta Functions:** 0
 
 ### Hooks Documentation
@@ -15,7 +15,7 @@
 - **Total Registered Hooks:** 454
 
 ### Localization Analysis
-- **Undefined Calls:** 14 unique
+- **Undefined Calls:** 16 unique
 - **@xxxxx Patterns:** 0 unique
 - **Module Key Conflicts:** 0 keys
 - **Argument Mismatches:** 0
@@ -35,20 +35,10 @@
 
 ### Summary
 - **Files Analyzed:** 45
-- **Missing Documentation:** 695 unique functions
+- **Missing Documentation:** 52 unique functions
 
 ### Missing Library Functions
-Total: 510 functions
-
-#### lia
-Count: 6 functions
-
-- `lia.bootstrap(section, msg)`
-- `lia.debug(...)`
-- `lia.error(msg)`
-- `lia.information(msg)`
-- `lia.relaydiscordMessage(embed)`
-- `lia.warning(msg)`
+Total: 41 functions
 
 #### lia.admin
 Count: 28 functions
@@ -82,585 +72,10 @@ Count: 28 functions
 - `lia.admin.sync(c)`
 - `lia.admin.unregisterPrivilege(id)`
 
-#### lia.attribs
-Count: 3 functions
-
-- `lia.attribs.loadFromDir(directory)`
-- `lia.attribs.register(uniqueID, data)`
-- `lia.attribs.setup(client)`
-
-#### lia.bar
-Count: 6 functions
-
-- `lia.bar.add(getValue, color, priority, identifier)`
-- `lia.bar.drawAction(text, duration)`
-- `lia.bar.drawAll()`
-- `lia.bar.drawBar(x, y, w, h, pos, max, color)`
-- `lia.bar.get(identifier)`
-- `lia.bar.remove(identifier)`
-
-#### lia.camera
-Count: 26 functions
-
-- `lia.camera.applyFreelookToAngles(client, angles)`
-- `lia.camera.beginFreelook(client)`
-- `lia.camera.buildFreelookBodyView(client, pos, ang, fov)`
-- `lia.camera.buildRealisticView(client, origin, angles, fov)`
-- `lia.camera.calcView(client, pos, ang, fov)`
-- `lia.camera.canOverrideView(client)`
-- `lia.camera.canUseFreelook(client)`
-- `lia.camera.canUseRealisticView(client)`
-- `lia.camera.endFreelook()`
-- `lia.camera.getFirstPersonHeadBoneChildren(client, rootBone)`
-- `lia.camera.getFirstPersonHeadBones(client)`
-- `lia.camera.getParentAttachmentNames(client)`
-- `lia.camera.isCharacterMenuOpen()`
-- `lia.camera.isHeadAttachmentName(name)`
-- `lia.camera.isHeadBodygroupName(name)`
-- `lia.camera.isHeadwearModel(model)`
-- `lia.camera.isHoldingFreelookBind(client)`
-- `lia.camera.isInSights(client)`
-- `lia.camera.isUsingThirdPersonCamera(client)`
-- `lia.camera.resetFreelookState()`
-- `lia.camera.setFirstPersonHeadBodygroupsHidden(client, hidden)`
-- `lia.camera.setFirstPersonHeadHidden(client, hidden)`
-- `lia.camera.setFirstPersonHeadwearHidden(client, hidden)`
-- `lia.camera.shouldDrawBodyForFreelook(client)`
-- `lia.camera.shouldHideFirstPersonChildEntity(client, entity)`
-- `lia.camera.shouldSuppressRealisticView(client)`
-
-#### lia.char
-Count: 22 functions
-
-- `lia.char.addCharacter(id, character)`
-- `lia.char.cleanUpForPlayer(client)`
-- `lia.char.create(data, callback)`
-- `lia.char.delete(id, client)`
-- `lia.char.getAll()`
-- `lia.char.getBySteamID(steamID)`
-- `lia.char.getCharBanned(charID)`
-- `lia.char.getCharData(charID, key)`
-- `lia.char.getCharDataRaw(charID, key)`
-- `lia.char.getCharacter(charID, client, callback)`
-- `lia.char.getOwnerByID(ID)`
-- `lia.char.getTeamColor(client)`
-- `lia.char.hookVar(varName, hookName, func)`
-- `lia.char.isLoaded(charID)`
-- `lia.char.loadSingleCharacter(charID, client, callback)`
-- `lia.char.new(data, id, client, steamID)`
-- `lia.char.registerVar(key, data)`
-- `lia.char.removeCharacter(id)`
-- `lia.char.restore(client, callback, id)`
-- `lia.char.setCharDatabase(charID, field, value)`
-- `lia.char.unloadCharacter(charID)`
-- `lia.char.unloadUnusedCharacters(client, activeCharID)`
-
-#### lia.chat
-Count: 4 functions
-
-- `lia.chat.parse(client, message, noSend)`
-- `lia.chat.register(chatType, data)`
-- `lia.chat.send(speaker, chatType, text, anonymous, receivers)`
-- `lia.chat.timestamp(ooc)`
-
-#### lia.class
-Count: 11 functions
-
-- `lia.class.canBe(client, class)`
-- `lia.class.get(identifier)`
-- `lia.class.getBodygroups(class)`
-- `lia.class.getMergedBodygroups(character)`
-- `lia.class.getPlayerCount(class)`
-- `lia.class.getPlayers(class)`
-- `lia.class.hasWhitelist(class)`
-- `lia.class.loadFromDir(directory)`
-- `lia.class.register(uniqueID, data)`
-- `lia.class.retrieveClass(class)`
-- `lia.class.retrieveJoinable(client)`
-
-#### lia.color
-Count: 16 functions
-
-- `lia.color.adjust(color, rOffset, gOffset, bOffset, aOffset)`
-- `lia.color.applyTheme(themeName, useTransition)`
-- `lia.color.calculateNegativeColor(mainColor)`
-- `lia.color.darken(color, factor)`
-- `lia.color.getAllThemes()`
-- `lia.color.getCurrentTheme()`
-- `lia.color.getCurrentThemeName()`
-- `lia.color.getMainColor()`
-- `lia.color.isColor(v)`
-- `lia.color.isTransitionActive()`
-- `lia.color.lerp(frac, col1, col2)`
-- `lia.color.register(name, color)`
-- `lia.color.registerTheme(name, themeData)`
-- `lia.color.returnMainAdjustedColors()`
-- `lia.color.startThemeTransition(name)`
-- `lia.color.testThemeTransition(themeName)`
-
-#### lia.command
-Count: 8 functions
-
-- `lia.command.add(command, data)`
-- `lia.command.buildSyntaxFromArguments(args)`
-- `lia.command.extractArgs(text)`
-- `lia.command.hasAccess(client, command, data)`
-- `lia.command.openArgumentPrompt(cmdKey, missing, prefix, definitions)`
-- `lia.command.parse(client, text, realCommand, arguments)`
-- `lia.command.run(client, command, arguments)`
-- `lia.command.send(command, ...)`
-
-#### lia.config
-Count: 14 functions
-
-- `lia.config.add(key, name, value, callback, data)`
-- `lia.config.forceSet(key, value, noSave)`
-- `lia.config.get(key, default)`
-- `lia.config.getChangedValues(includeDefaults)`
-- `lia.config.getDisplayCategory(key)`
-- `lia.config.getDisplayDesc(key)`
-- `lia.config.getDisplayName(key)`
-- `lia.config.getOptions(key)`
-- `lia.config.load()`
-- `lia.config.reset()`
-- `lia.config.save()`
-- `lia.config.send(client)`
-- `lia.config.set(key, value)`
-- `lia.config.setDefault(key, value)`
-
-#### lia.currency
-Count: 2 functions
-
-- `lia.currency.get(amount)`
-- `lia.currency.spawn(pos, amount, angle)`
-
-#### lia.darkrp
-Count: 7 functions
-
-- `lia.darkrp.createCategory()`
-- `lia.darkrp.createEntity(name, data)`
-- `lia.darkrp.findEmptyPos(startPos, entitiesToIgnore, maxDistance, searchStep, checkArea)`
-- `lia.darkrp.formatMoney(amount)`
-- `lia.darkrp.isEmpty(position, entitiesToIgnore)`
-- `lia.darkrp.notify(client, notifyType, duration, message)`
-- `lia.darkrp.textWrap(text, fontName, maxLineWidth)`
-
-#### lia.data
-Count: 16 functions
-
-- `lia.data.addEquivalencyMap(map1, map2)`
-- `lia.data.decode(value)`
-- `lia.data.decodeAngle(raw)`
-- `lia.data.decodeVector(raw)`
-- `lia.data.delete(key, global, ignoreMap)`
-- `lia.data.deserialize(raw)`
-- `lia.data.encodetable(value)`
-- `lia.data.get(key, default)`
-- `lia.data.getEquivalencyMap(map)`
-- `lia.data.getPersistence()`
-- `lia.data.loadPersistence()`
-- `lia.data.loadPersistenceData(callback)`
-- `lia.data.loadTables()`
-- `lia.data.savePersistence(entities)`
-- `lia.data.serialize(value)`
-- `lia.data.set(key, value, global, ignoreMap)`
-
 #### lia.db
-Count: 30 functions
+Count: 1 functions
 
-- `lia.db.addDatabaseFields()`
-- `lia.db.bulkInsert(dbTable, rows)`
-- `lia.db.bulkUpsert(dbTable, rows)`
-- `lia.db.connect(callback, reconnect)`
-- `lia.db.convertDataType(value, noEscape)`
-- `lia.db.count(dbTable, condition)`
-- `lia.db.createColumn(tableName, columnName, columnType, defaultValue)`
-- `lia.db.createSnapshot(tableName)`
-- `lia.db.createTable(dbName, primaryKey, schema)`
-- `lia.db.delete(dbTable, condition)`
-- `lia.db.escapeIdentifier(id)`
-- `lia.db.exists(dbTable, condition)`
-- `lia.db.fieldExists(tbl, field)`
-- `lia.db.getCharacterTable(callback)`
-- `lia.db.getTables()`
-- `lia.db.insertOrIgnore(value, dbTable)`
-- `lia.db.insertTable(value, callback, dbTable)`
-- `lia.db.loadSnapshot(fileName)`
-- `lia.db.loadTables()`
-- `lia.db.removeColumn(tableName, columnName)`
-- `lia.db.removeTable(tableName)`
-- `lia.db.select(fields, dbTable, condition, limit)`
-- `lia.db.selectOne(fields, dbTable, condition)`
-- `lia.db.selectWithCondition(fields, dbTable, conditions, limit, orderBy)`
-- `lia.db.tableExists(tbl)`
-- `lia.db.transaction(queries)`
-- `lia.db.updateTable(value, callback, dbTable, condition)`
-- `lia.db.upsert(value, dbTable)`
-- `lia.db.waitForTablesToLoad()`
-- `lia.db.wipeTables(callback)`
-
-#### lia.derma
-Count: 48 functions
-
-- `lia.derma.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)`
-- `lia.derma.approachExp(current, target, speed, dt)`
-- `lia.derma.circle(x, y, r)`
-- `lia.derma.clampMenuPosition(panel)`
-- `lia.derma.createTableUI(title, columns, data, options, charID)`
-- `lia.derma.dermaMenu()`
-- `lia.derma.draw(radius, x, y, w, h, col, flags)`
-- `lia.derma.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-- `lia.derma.drawBlur(panel, amount, passes, alpha)`
-- `lia.derma.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-- `lia.derma.drawBoxWithText(text, x, y, options)`
-- `lia.derma.drawCircle(x, y, radius, col, flags)`
-- `lia.derma.drawCircleMaterial(x, y, radius, col, mat, flags)`
-- `lia.derma.drawCircleOutlined(x, y, radius, col, thickness, flags)`
-- `lia.derma.drawCircleTexture(x, y, radius, col, texture, flags)`
-- `lia.derma.drawEntText(ent, text, posY, alphaOverride)`
-- `lia.derma.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)`
-- `lia.derma.drawMaterial(radius, x, y, w, h, col, mat, flags)`
-- `lia.derma.drawOutlined(radius, x, y, w, h, col, thickness, flags)`
-- `lia.derma.drawShadows(radius, x, y, w, h, col, spread, intensity, flags)`
-- `lia.derma.drawShadowsEx(x, y, w, h, col, flags, tl, tr, bl, br, spread, intensity, thickness)`
-- `lia.derma.drawShadowsOutlined(radius, x, y, w, h, col, thickness, spread, intensity, flags)`
-- `lia.derma.drawSurfaceTexture(material, color, x, y, w, h)`
-- `lia.derma.drawText(text, x, y, color, alignX, alignY, font, alpha)`
-- `lia.derma.drawTextOutlined(text, font, x, y, colour, xalign, outlinewidth, outlinecolour)`
-- `lia.derma.drawTexture(radius, x, y, w, h, col, texture, flags)`
-- `lia.derma.drawTip(x, y, w, h, text, font, textCol, outlineCol)`
-- `lia.derma.easeInOutCubic(t)`
-- `lia.derma.easeOutCubic(t)`
-- `lia.derma.interactionTooltip(rawOptions, config)`
-- `lia.derma.openOptionsMenu(title, options)`
-- `lia.derma.optionsMenu(rawOptions, config)`
-- `lia.derma.radialMenu(options)`
-- `lia.derma.rect(x, y, w, h)`
-- `lia.derma.requestArguments(title, argTypes, onSubmit, defaults)`
-- `lia.derma.requestBinaryQuestion(title, question, callback, yesText, noText)`
-- `lia.derma.requestButtons(title, buttons, callback, description)`
-- `lia.derma.requestColorPicker(func, colorStandard)`
-- `lia.derma.requestDropdown(title, options, callback, defaultValue)`
-- `lia.derma.requestOptions(title, subTitle, options, callback, onCancel)`
-- `lia.derma.requestPlayerSelector(doClick)`
-- `lia.derma.requestPopupQuestion(question, buttons)`
-- `lia.derma.requestString(title, description, callback, defaultValue, maxLength)`
-- `lia.derma.setDefaultShape(shape)`
-- `lia.derma.setFlag(flags, flag, bool)`
-- `lia.derma.shadowText(text, font, x, y, colortext, colorshadow, dist, xalign, yalign)`
-- `lia.derma.skinFunc(name, panel, a, b, c, d, e, f, g)`
-- `lia.derma.wrapText(text, width, font)`
-
-#### lia.dialog
-Count: 24 functions
-
-- `lia.dialog.entityUsesGeneratedDialog(npc)`
-- `lia.dialog.getAvailableConfigurations(ply, npc, npcID)`
-- `lia.dialog.getCompatibleDialogOptions(npc)`
-- `lia.dialog.getConfiguration(uniqueID)`
-- `lia.dialog.getNPCData(npcID)`
-- `lia.dialog.getOriginalNPCData(npcID)`
-- `lia.dialog.isConversationDialogData(data)`
-- `lia.dialog.isDialogCompatibleWithEntity(npc, data)`
-- `lia.dialog.isDialogNPCEntity(npcOrClass)`
-- `lia.dialog.isGeneratedDialogData(data)`
-- `lia.dialog.isGeneratedDialogSelection(value)`
-- `lia.dialog.isTableEqual(tbl1, tbl2, checked)`
-- `lia.dialog.loadGeneratedDialogs()`
-- `lia.dialog.openConfigurationPicker(npc, npcID)`
-- `lia.dialog.openCustomizationUI(npc, configID)`
-- `lia.dialog.openDialog(client, npc, npcID)`
-- `lia.dialog.openNodeEditor(npc)`
-- `lia.dialog.registerConfiguration(uniqueID, data)`
-- `lia.dialog.registerNPC(uniqueID, data, shouldSync)`
-- `lia.dialog.resolveDialogTypeIdentifier(value)`
-- `lia.dialog.saveGeneratedDialogs()`
-- `lia.dialog.submitConfiguration(configID, npc, payload)`
-- `lia.dialog.syncDialogs()`
-- `lia.dialog.syncToClients(client)`
-
-#### lia.doors
-Count: 12 functions
-
-- `lia.doors.addPreset(mapName, presetData)`
-- `lia.doors.cleanupCorruptedData()`
-- `lia.doors.getCachedData(door)`
-- `lia.doors.getData(door)`
-- `lia.doors.getDoorDefaultValues()`
-- `lia.doors.getPreset(mapName)`
-- `lia.doors.setCachedData(door, data)`
-- `lia.doors.setData(door, data)`
-- `lia.doors.syncAllDoorsToClient(client)`
-- `lia.doors.syncDoorData(door)`
-- `lia.doors.updateCachedData(doorID, data)`
-- `lia.doors.verifyDatabaseSchema()`
-
-#### lia.faction
-Count: 31 functions
-
-- `lia.faction.cacheModels(models)`
-- `lia.faction.formatModelData()`
-- `lia.faction.get(identifier)`
-- `lia.faction.getAll()`
-- `lia.faction.getAllowedBodygroups(faction, modelData, modelKey)`
-- `lia.faction.getAllowedSkins(faction, modelData, modelKey)`
-- `lia.faction.getBodygroupNameToIndex(modelPath)`
-- `lia.faction.getBodygroupWhitelistRule(faction, modelPath, bodygroupIndex, bodygroupName, modelData, modelKey)`
-- `lia.faction.getCategories(teamName)`
-- `lia.faction.getCharacterCreationClass(faction, class)`
-- `lia.faction.getCharacterCreationModelChoices(faction, class)`
-- `lia.faction.getCharacterCreationModelInfo(faction, class, selectedModel)`
-- `lia.faction.getCharacterCreationModelSource(faction, class)`
-- `lia.faction.getClasses(faction)`
-- `lia.faction.getDefaultAllowedSkinForFaction(faction, fallback, modelData, modelKey)`
-- `lia.faction.getDefaultClass(id)`
-- `lia.faction.getIndex(uniqueID)`
-- `lia.faction.getModelCustomizationAllowed(client, faction, context)`
-- `lia.faction.getModelData(modelKey, modelData)`
-- `lia.faction.getModelsFromCategory(teamName, category)`
-- `lia.faction.getPlayerCount(faction)`
-- `lia.faction.getPlayers(faction)`
-- `lia.faction.hasWhitelist(faction)`
-- `lia.faction.isBodygroupValueAllowed(faction, modelPath, bodygroupIndex, value, bodygroupName, modelData, modelKey)`
-- `lia.faction.isFactionCategory(faction, categoryFactions)`
-- `lia.faction.isModelUsable(modelPath)`
-- `lia.faction.isSkinAllowedForFaction(faction, skin, modelData, modelKey)`
-- `lia.faction.jobGenerate(index, name, color, default, models)`
-- `lia.faction.loadFromDir(directory)`
-- `lia.faction.normalizeSkinValue(skin, fallback)`
-- `lia.faction.register(uniqueID, data)`
-
-#### lia.flag
-Count: 2 functions
-
-- `lia.flag.add(flag, desc, callback)`
-- `lia.flag.onSpawn(client)`
-
-#### lia.font
-Count: 5 functions
-
-- `lia.font.getAvailableFonts()`
-- `lia.font.getBoldFontName(fontName)`
-- `lia.font.loadFonts()`
-- `lia.font.register(fontName, fontData)`
-- `lia.font.registerFonts(fontName)`
-
-#### lia.inventory
-Count: 17 functions
-
-- `lia.inventory.checkOverflow(inv, character, oldW, oldH)`
-- `lia.inventory.cleanUpForCharacter(character)`
-- `lia.inventory.deleteByID(id)`
-- `lia.inventory.getAllStorage(includeTrunks)`
-- `lia.inventory.getAllTrunks()`
-- `lia.inventory.getStorage(model)`
-- `lia.inventory.getTrunk(vehicleClass)`
-- `lia.inventory.instance(typeID, initialData)`
-- `lia.inventory.loadAllFromCharID(charID)`
-- `lia.inventory.loadByID(id, noCache)`
-- `lia.inventory.loadFromDefaultStorage(id, noCache)`
-- `lia.inventory.new(typeID)`
-- `lia.inventory.newType(typeID, invTypeStruct)`
-- `lia.inventory.registerStorage(model, data)`
-- `lia.inventory.registerTrunk(vehicleClass, data)`
-- `lia.inventory.show(inventory, parent)`
-- `lia.inventory.showDual(inventory1, inventory2, parent)`
-
-#### lia.item
-Count: 30 functions
-
-- `lia.item.addRarities(name, color)`
-- `lia.item.addWeaponOverride(className, data)`
-- `lia.item.addWeaponToBlacklist(className)`
-- `lia.item.applyRuntimeOverridePath(wepTable, dotPath, value)`
-- `lia.item.applyWeaponOverride(uniqueID)`
-- `lia.item.createInv(w, h, id)`
-- `lia.item.deleteByID(id)`
-- `lia.item.get(identifier)`
-- `lia.item.getInstancedItemByID(itemID)`
-- `lia.item.getInv(invID)`
-- `lia.item.getItemByID(itemID)`
-- `lia.item.getItemDataByID(itemID)`
-- `lia.item.getRuntimeValue(wepTable, dotPath)`
-- `lia.item.instance(index, uniqueID, itemData, x, y, callback)`
-- `lia.item.isItem(object)`
-- `lia.item.load(path, baseID, isBaseItem)`
-- `lia.item.loadFromDir(directory)`
-- `lia.item.loadItemByID(itemIndex)`
-- `lia.item.loadWeaponOverrides()`
-- `lia.item.loadWeaponRuntimeOverrides()`
-- `lia.item.localizeDefinition(itemDef)`
-- `lia.item.new(uniqueID, id)`
-- `lia.item.newInv(owner, invType, callback)`
-- `lia.item.overrideItem(uniqueID, overrides)`
-- `lia.item.register(uniqueID, baseID, isBaseItem, path, luaGenerated)`
-- `lia.item.registerInv(invType, w, h)`
-- `lia.item.registerItem(id, base, properties)`
-- `lia.item.restoreInv(invID, w, h, callback)`
-- `lia.item.setItemDataByID(itemID, key, value, receivers, noSave, noCheckEntity)`
-- `lia.item.spawn(uniqueID, position, callback, angles, data)`
-
-#### lia.keybind
-Count: 8 functions
-
-- `lia.keybind.add(k, d, desc, cb)`
-- `lia.keybind.buildReservedKeys()`
-- `lia.keybind.get(a, df)`
-- `lia.keybind.getDisplayCategory(action)`
-- `lia.keybind.getDisplayDescription(action)`
-- `lia.keybind.isKeyReserved(keyCode)`
-- `lia.keybind.load()`
-- `lia.keybind.save()`
-
-#### lia.lang
-Count: 8 functions
-
-- `lia.lang.addTable(name, tbl)`
-- `lia.lang.cleanupCache()`
-- `lia.lang.clearCache()`
-- `lia.lang.generateCacheKey(lang, key, ...)`
-- `lia.lang.getLanguages()`
-- `lia.lang.getLocalizedString(key, ...)`
-- `lia.lang.loadFromDir(directory)`
-- `lia.lang.resolveToken(value, ...)`
-
-#### lia.loader
-Count: 6 functions
-
-- `lia.loader.checkForUpdates()`
-- `lia.loader.include(path, realm)`
-- `lia.loader.includeDir(dir, raw, deep, realm)`
-- `lia.loader.includeEntities(path)`
-- `lia.loader.includeGroupedDir(dir, raw, recursive, forceRealm)`
-- `lia.loader.initializeGamemode(isReload)`
-
-#### lia.log
-Count: 3 functions
-
-- `lia.log.add(client, logType, ...)`
-- `lia.log.addType(logType, func, category)`
-- `lia.log.getString(client, logType, ...)`
-
-#### lia.menu
-Count: 4 functions
-
-- `lia.menu.add(opts, pos, onRemove)`
-- `lia.menu.drawAll()`
-- `lia.menu.getActiveMenu()`
-- `lia.menu.onButtonPressed(id, cb)`
-
-#### lia.module
-Count: 4 functions
-
-- `lia.module.get(identifier)`
-- `lia.module.initialize()`
-- `lia.module.load(uniqueID, path, variable, skipSubmodules)`
-- `lia.module.loadFromDir(directory, group, skip)`
-
-#### lia.net
-Count: 8 functions
-
-- `lia.net.addToCache(name, args)`
-- `lia.net.checkBadType(name, object)`
-- `lia.net.getNetVar(key, default)`
-- `lia.net.isCacheHit(name, args)`
-- `lia.net.profiler.log(direction, messageName, size, sender, receiver)`
-- `lia.net.readBigTable(netStr, callback)`
-- `lia.net.setNetVar(key, value, receiver)`
-- `lia.net.writeBigTable(targets, netStr, tbl, chunkSize)`
-
-#### lia.notices
-Count: 10 functions
-
-- `lia.notices.notify(client, message, notifType)`
-- `lia.notices.notifyAdminLocalized(client, key, ...)`
-- `lia.notices.notifyErrorLocalized(client, key, ...)`
-- `lia.notices.notifyInfoLocalized(client, key, ...)`
-- `lia.notices.notifyLocalized(client, key, notifType, ...)`
-- `lia.notices.notifyMoneyLocalized(client, key, ...)`
-- `lia.notices.notifySuccessLocalized(client, key, ...)`
-- `lia.notices.notifyWarningLocalized(client, key, ...)`
-- `lia.notices.receiveNotify()`
-- `lia.notices.receiveNotifyL()`
-
-#### lia.option
-Count: 9 functions
-
-- `lia.option.add(key, name, desc, default, callback, data)`
-- `lia.option.get(key, default)`
-- `lia.option.getDisplayCategory(key)`
-- `lia.option.getDisplayDesc(key)`
-- `lia.option.getDisplayName(key)`
-- `lia.option.getOptions(key)`
-- `lia.option.load()`
-- `lia.option.save()`
-- `lia.option.set(key, value)`
-
-#### lia.playerinteract
-Count: 9 functions
-
-- `lia.playerinteract.addAction(name, data)`
-- `lia.playerinteract.addInteraction(name, data)`
-- `lia.playerinteract.getActions(client)`
-- `lia.playerinteract.getCategorizedOptions(options)`
-- `lia.playerinteract.getInteractions(client)`
-- `lia.playerinteract.hasChanges()`
-- `lia.playerinteract.isWithinRange(client, entity, customRange)`
-- `lia.playerinteract.openMenu(options, isInteraction, titleText, closeKey, netMsg, preFiltered)`
-- `lia.playerinteract.sync(client)`
-
-#### lia.time
-Count: 5 functions
-
-- `lia.time.formatDHM(seconds)`
-- `lia.time.getDate()`
-- `lia.time.getHour()`
-- `lia.time.timeSince(strTime)`
-- `lia.time.toNumber(str)`
-
-#### lia.util
-Count: 40 functions
-
-- `lia.util.animateAppearance(panel, targetWidth, targetHeight, duration, alphaDuration, callback, scaleFactor)`
-- `lia.util.applyBodygroups(target, bodygroups)`
-- `lia.util.canFit(pos, mins, maxs, filter)`
-- `lia.util.clampMenuPosition(panel)`
-- `lia.util.createTableUI(title, columns, data, options, charID)`
-- `lia.util.drawBlackBlur(panel, amount, passes, alpha, darkAlpha)`
-- `lia.util.drawBlur(panel, amount, passes, alpha)`
-- `lia.util.drawBlurAt(x, y, w, h, amount, passes, alpha)`
-- `lia.util.drawESPStyledText(text, x, y, espColor, font, fadeAlpha)`
-- `lia.util.drawEntText(ent, text, posY, alphaOverride)`
-- `lia.util.drawGradient(x, y, w, h, direction, colorShadow, radius, flags)`
-- `lia.util.drawLookText(text, posY, alphaOverride, maxDist)`
-- `lia.util.findEmptySpace(entity, filter, spacing, size, height, tolerance)`
-- `lia.util.findFaction(client, name)`
-- `lia.util.findPlayer(client, identifier)`
-- `lia.util.findPlayerBySteamID(SteamID)`
-- `lia.util.findPlayerBySteamID64(SteamID64)`
-- `lia.util.findPlayerEntities(client, class)`
-- `lia.util.findPlayerItems(client)`
-- `lia.util.findPlayerItemsByClass(client, class)`
-- `lia.util.findPlayersInBox(mins, maxs)`
-- `lia.util.findPlayersInSphere(origin, radius)`
-- `lia.util.formatStringNamed(format, ...)`
-- `lia.util.generateRandomName(firstNames, lastNames)`
-- `lia.util.getAdmins()`
-- `lia.util.getBySteamID(steamID)`
-- `lia.util.getMaterial(materialPath, materialParameters)`
-- `lia.util.normalizeBodygroupKey(key)`
-- `lia.util.normalizeBodygroups(bodygroups)`
-- `lia.util.openOptionsMenu(title, options)`
-- `lia.util.playerInRadius(pos, dist)`
-- `lia.util.removeFeaturePosition(pos, typeId)`
-- `lia.util.requestEntityInformation(client, entity, argTypes, callback)`
-- `lia.util.resolveBodygroupIndex(target, identifier)`
-- `lia.util.resolveBodygroups(target, bodygroups)`
-- `lia.util.sendTableUI(client, title, columns, data, options, characterID)`
-- `lia.util.setFeaturePosition(pos, typeId)`
-- `lia.util.setPositionCallback(name, data)`
-- `lia.util.stringMatches(a, b)`
-- `lia.util.wrapText(text, width, font)`
+- `lia.db.ensureIndexes()`
 
 #### lia.vendor
 Count: 6 functions
@@ -671,34 +86,6 @@ Count: 6 functions
 - `lia.vendor.getVendorProperty(entity, property)`
 - `lia.vendor.setVendorProperty(entity, property, value)`
 - `lia.vendor.syncVendorProperty(entity, property, value, isDefault)`
-
-#### lia.webimage
-Count: 5 functions
-
-- `lia.webimage.clearCache(skipReRegister)`
-- `lia.webimage.download(n, u, cb, flags)`
-- `lia.webimage.get(n, flags)`
-- `lia.webimage.getStats()`
-- `lia.webimage.register(n, u, cb, flags)`
-
-#### lia.websound
-Count: 6 functions
-
-- `lia.websound.clearCache(skipReRegister)`
-- `lia.websound.download(name, url, cb)`
-- `lia.websound.get(name)`
-- `lia.websound.getStats()`
-- `lia.websound.playButtonSound(customSound, callback)`
-- `lia.websound.register(name, url, cb)`
-
-#### lia.workshop
-Count: 5 functions
-
-- `lia.workshop.addWorkshop(id)`
-- `lia.workshop.gather()`
-- `lia.workshop.hasContentToDownload()`
-- `lia.workshop.mountContent()`
-- `lia.workshop.send(ply)`
 
 #### lia.worldPreview
 Count: 6 functions
@@ -711,187 +98,13 @@ Count: 6 functions
 - `lia.worldPreview.shouldHidePlayer(player)`
 
 ### Missing Hook Functions
-Total: 179 functions
+Total: 5 functions
 
-- `characterMeta:addBoost(boostID, attribID, boostAmount)`
-- `characterMeta:ban(time)`
-- `characterMeta:clearAllBoosts()`
-- `characterMeta:delete()`
-- `characterMeta:destroy()`
-- `characterMeta:doesFakeRecognize(id)`
-- `characterMeta:doesRecognize(id)`
-- `characterMeta:getAttrib(key, default)`
-- `characterMeta:getData(key, default)`
-- `characterMeta:getDisplayedName(client)`
-- `characterMeta:getID()`
-- `characterMeta:getPlayer()`
-- `characterMeta:giveFlags(flags)`
-- `characterMeta:giveMoney(amount)`
-- `characterMeta:hasFlags(flagStr)`
-- `characterMeta:hasMoney(amount)`
-- `characterMeta:isBanned()`
-- `characterMeta:isMainCharacter()`
-- `characterMeta:joinClass(class, isForced)`
-- `characterMeta:kick()`
-- `characterMeta:kickClass()`
-- `characterMeta:recognize(character, name)`
-- `characterMeta:removeBoost(boostID, attribID)`
-- `characterMeta:save(callback)`
-- `characterMeta:setAttrib(key, value)`
-- `characterMeta:setData(k, v, noReplication, receiver)`
-- `characterMeta:setFlags(flags)`
-- `characterMeta:setup(noNetworking)`
-- `characterMeta:sync(receiver)`
-- `characterMeta:takeFlags(flags)`
-- `characterMeta:takeMoney(amount)`
-- `characterMeta:updateAttrib(key, value)`
-- `entityMeta:EmitSound(soundName, soundLevel, pitchPercent, volume, channel, flags, dsp)`
-- `entityMeta:checkDoorAccess(client, access)`
-- `entityMeta:clearNetVars(receiver)`
-- `entityMeta:getDoorOwner()`
-- `entityMeta:getDoorPartner()`
-- `entityMeta:getLocalVar(key, default)`
-- `entityMeta:getNetVar(key, default)`
-- `entityMeta:isDoor()`
-- `entityMeta:isDoorLocked()`
-- `entityMeta:isFemale()`
-- `entityMeta:isItem()`
-- `entityMeta:isLocked()`
-- `entityMeta:isMoney()`
-- `entityMeta:isProp()`
-- `entityMeta:isSimfphysCar()`
-- `entityMeta:keysLock()`
-- `entityMeta:keysOwn(client)`
-- `entityMeta:keysUnLock()`
-- `entityMeta:playFollowingSound(soundPath, volume, shouldFollow, maxDistance, startDelay, minDistance, pitch, soundLevel, dsp)`
-- `entityMeta:removeDoorAccessData()`
-- `entityMeta:sendNetVar(key, receiver)`
-- `entityMeta:setKeysNonOwnable(state)`
-- `entityMeta:setLocalVar(key, value)`
-- `entityMeta:setLocked(state)`
-- `entityMeta:setNetVar(key, value, receiver)`
-- `panelMeta:AvatarMask(mask)`
-- `panelMeta:Background(col, rad, rtl, rtr, rbl, rbr)`
-- `panelMeta:BarHover(col, height, speed)`
-- `panelMeta:Blur(amount)`
-- `panelMeta:Circle(col)`
-- `panelMeta:CircleAvatar()`
-- `panelMeta:CircleCheckbox(inner, outer, speed)`
-- `panelMeta:CircleClick(col, speed, trad)`
-- `panelMeta:CircleExpandHover(col, speed)`
-- `panelMeta:CircleFadeHover(col, speed)`
-- `panelMeta:CircleHover(col, speed, trad)`
-- `panelMeta:ClearAppendOverwrite()`
-- `panelMeta:ClearPaint()`
-- `panelMeta:ClearTransitionFunc()`
-- `panelMeta:DivTall(frac, target)`
-- `panelMeta:DivWide(frac, target)`
-- `panelMeta:DualText(toptext, topfont, topcol, bottomtext, bottomfont, bottomcol, alignment, centerSpacing)`
-- `panelMeta:FadeHover(col, speed, rad)`
-- `panelMeta:FadeIn(time, alpha)`
-- `panelMeta:FillHover(col, dir, speed, mat)`
-- `panelMeta:Gradient(col, dir, frac, op)`
-- `panelMeta:HideVBar()`
-- `panelMeta:LinedCorners(col, cornerLen)`
-- `panelMeta:Material(mat, col)`
-- `panelMeta:NetMessage(name, data)`
-- `panelMeta:On(name, fn)`
-- `panelMeta:Outline(col, width)`
-- `panelMeta:ReadyTextbox()`
-- `panelMeta:SetAppendOverwrite(fn)`
-- `panelMeta:SetOpenURL(url)`
-- `panelMeta:SetRemove(target)`
-- `panelMeta:SetTransitionFunc(fn)`
-- `panelMeta:SetupTransition(name, speed, fn)`
-- `panelMeta:SideBlock(col, size, side)`
-- `panelMeta:SquareCheckbox(inner, outer, speed)`
-- `panelMeta:SquareFromHeight()`
-- `panelMeta:SquareFromWidth()`
-- `panelMeta:Stick(dock, margin, dontInvalidate)`
-- `panelMeta:Text(text, font, col, alignment, ox, oy, paint)`
-- `panelMeta:TiledMaterial(mat, tw, th, col)`
-- `panelMeta:liaDeleteInventoryHooks(id)`
-- `panelMeta:liaListenForInventoryChanges(inventory)`
-- `panelMeta:setScaledPos(x, y)`
-- `panelMeta:setScaledSize(w, h)`
-- `playerMeta:Name()`
-- `playerMeta:addMoney(amount)`
 - `playerMeta:addPart(partID)`
-- `playerMeta:banPlayer(reason, duration, banner)`
-- `playerMeta:canAfford(amount)`
-- `playerMeta:canEditVendor(vendor)`
-- `playerMeta:consumeStamina(amount)`
-- `playerMeta:createRagdoll(freeze)`
-- `playerMeta:doGesture(a, b, c)`
-- `playerMeta:doStaredAction(entity, callback, time, onCancel, distance)`
-- `playerMeta:getAllLiliaData()`
-- `playerMeta:getChar()`
-- `playerMeta:getClassData()`
-- `playerMeta:getDarkRPVar(var)`
-- `playerMeta:getFlags()`
-- `playerMeta:getItemDropPos()`
-- `playerMeta:getItemWeapon()`
-- `playerMeta:getItems()`
-- `playerMeta:getLiliaData(key, default)`
-- `playerMeta:getLocalVar(key, default)`
-- `playerMeta:getMainCharacter()`
-- `playerMeta:getMoney()`
 - `playerMeta:getParts()`
-- `playerMeta:getPlayTime()`
-- `playerMeta:getRagdoll()`
-- `playerMeta:getTracedEntity(distance)`
-- `playerMeta:giveFlags(flags)`
-- `playerMeta:hasFlags(flags)`
-- `playerMeta:hasPrivilege(privilegeName)`
-- `playerMeta:hasSkillLevel(skill, level)`
-- `playerMeta:hasWhitelist(faction)`
-- `playerMeta:isFamilySharedAccount()`
-- `playerMeta:isStaff()`
-- `playerMeta:isStaffOnDuty()`
-- `playerMeta:isStuck()`
-- `playerMeta:loadLiliaData(callback)`
-- `playerMeta:meetsRequiredSkills(requiredSkillLevels)`
-- `playerMeta:networkAnimation(active, boneData)`
-- `playerMeta:notify(message, notifType)`
-- `playerMeta:notifyAdmin(message)`
-- `playerMeta:notifyAdminLocalized(key, ...)`
-- `playerMeta:notifyError(message)`
-- `playerMeta:notifyErrorLocalized(key, ...)`
-- `playerMeta:notifyInfo(message)`
-- `playerMeta:notifyInfoLocalized(key, ...)`
-- `playerMeta:notifyLocalized(message, notifType, ...)`
-- `playerMeta:notifyMoney(message)`
-- `playerMeta:notifyMoneyLocalized(key, ...)`
-- `playerMeta:notifySuccess(message)`
-- `playerMeta:notifySuccessLocalized(key, ...)`
-- `playerMeta:notifyWarning(message)`
-- `playerMeta:notifyWarningLocalized(key, ...)`
-- `playerMeta:playTimeGreaterThan(time)`
 - `playerMeta:removePart(partID)`
-- `playerMeta:removeRagdoll()`
-- `playerMeta:requestArguments(title, argTypes, callback)`
-- `playerMeta:requestBinaryQuestion(question, option1, option2, manualDismiss, callback)`
-- `playerMeta:requestButtons(title, buttons)`
-- `playerMeta:requestDropdown(title, subTitle, options, callback)`
-- `playerMeta:requestOptions(title, subTitle, options, limit, callback, onCancel)`
-- `playerMeta:requestPopupQuestion(question, buttons)`
-- `playerMeta:requestString(title, subTitle, callback, default)`
 - `playerMeta:resetParts()`
-- `playerMeta:restoreStamina(amount)`
-- `playerMeta:saveLiliaData()`
-- `playerMeta:setAction(text, time, callback)`
-- `playerMeta:setLiliaData(key, value, noNetworking, noSave)`
-- `playerMeta:setLocalVar(key, value)`
-- `playerMeta:setMainCharacter(charID)`
-- `playerMeta:setNetVar(key, value)`
-- `playerMeta:setRagdolled(state, time, getUpGrace)`
-- `playerMeta:setWaypoint(name, vector, logo, onReach)`
-- `playerMeta:stopAction()`
 - `playerMeta:syncParts()`
-- `playerMeta:syncVars()`
-- `playerMeta:takeFlags(flags)`
-- `playerMeta:takeMoney(amount)`
-- `playerMeta:tostring()`
 
 ## Hooks Documentation Analysis
 
@@ -933,6 +146,8 @@ These entries show hooks registered from framework libraries.
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
 - `AdjustPACPartData`
   - library `compatibility` [standard] in `core/libraries/compatibility/pac.lua`
+- `AdminPrivilegesUpdated`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
 - `AdvDupe_FinishPasting`
   - library `compatibility` [standard] in `core/libraries/compatibility/advdupe2.lua`
 - `AttachPart`
@@ -941,6 +156,8 @@ These entries show hooks registered from framework libraries.
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
 - `CanPersistEntity`
   - library `compatibility` [standard] in `core/libraries/compatibility/permaprops.lua`
+- `CanPlayerJoinClass`
+  - library `classes.lua` [standard] in `core/libraries/classes.lua`
 - `CanPlayerModifyConfig`
   - library `config.lua` [standard] in `core/libraries/config.lua`
   - library `item.lua` [standard] in `core/libraries/item.lua`
@@ -954,6 +171,10 @@ These entries show hooks registered from framework libraries.
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
 - `CharRestored`
   - library `character.lua` [standard] in `core/libraries/character.lua`
+- `ChatParsed`
+  - library `chatbox.lua` [standard] in `core/libraries/chatbox.lua`
+- `CollectDoorDataFields`
+  - library `doors.lua` [standard] in `core/libraries/doors.lua`
 - `CommandAdded`
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
 - `CommandRan`
@@ -966,6 +187,8 @@ These entries show hooks registered from framework libraries.
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
   - library `flags.lua` [standard] in `core/libraries/flags.lua`
   - library `workshop.lua` [standard] in `core/libraries/workshop.lua`
+- `CreateInventoryPanel`
+  - library `inventory.lua` [standard] in `core/libraries/inventory.lua`
 - `CreateMenuButtons`
   - library `config.lua` [standard] in `core/libraries/config.lua`
 - `CreateSalaryTimers`
@@ -1009,10 +232,14 @@ These entries show hooks registered from framework libraries.
   - library `character.lua` [standard] in `core/libraries/character.lua`
 - `GetDefaultCharName`
   - library `character.lua` [standard] in `core/libraries/character.lua`
+- `GetDisplayedName`
+  - library `chatbox.lua` [standard] in `core/libraries/chatbox.lua`
 - `GetMaxStartingAttributePoints`
   - library `character.lua` [standard] in `core/libraries/character.lua`
 - `GetPlayTime`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
+- `GetUsergroupIcon`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
 - `GetWeaponName`
   - library `item.lua` [standard] in `core/libraries/item.lua`
 - `HandleItemTransferRequest`
@@ -1045,6 +272,10 @@ These entries show hooks registered from framework libraries.
   - library `derma.lua` [standard] in `core/libraries/derma.lua`
 - `InteractionMenuOpened`
   - library `derma.lua` [standard] in `core/libraries/derma.lua`
+- `InventoryClosed`
+  - library `inventory.lua` [standard] in `core/libraries/inventory.lua`
+- `InventoryOpened`
+  - library `inventory.lua` [standard] in `core/libraries/inventory.lua`
 - `IsSuitableForTrunk`
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/simfphys.lua`
@@ -1057,6 +288,7 @@ These entries show hooks registered from framework libraries.
 - `NetVarChanged`
   - library `net.lua` [standard] in `core/libraries/net.lua`
 - `OnAdminSystemLoaded`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
 - `OnCharDelete`
   - library `character.lua` [standard] in `core/libraries/character.lua`
@@ -1070,6 +302,8 @@ These entries show hooks registered from framework libraries.
   - library `currency.lua` [standard] in `core/libraries/currency.lua`
   - library `fonts.lua` [standard] in `core/libraries/fonts.lua`
   - library `languages.lua` [standard] in `core/libraries/languages.lua`
+- `OnCreateDualInventoryPanels`
+  - library `inventory.lua` [standard] in `core/libraries/inventory.lua`
 - `OnDatabaseLoaded`
   - library `database.lua` [standard] in `core/libraries/database.lua`
 - `OnDataSet`
@@ -1086,6 +320,8 @@ These entries show hooks registered from framework libraries.
   - library `languages.lua` [standard] in `core/libraries/languages.lua`
 - `OnNPCTypeSet`
   - library `dialog.lua` [standard] in `core/libraries/dialog.lua`
+- `OnOOCMessageSent`
+  - library `chatbox.lua` [standard] in `core/libraries/chatbox.lua`
 - `OnPAC3PartTransfered`
   - library `compatibility` [standard] in `core/libraries/compatibility/pac.lua`
 - `OnPlayerDroppedItem`
@@ -1101,10 +337,15 @@ These entries show hooks registered from framework libraries.
 - `OnPlayerTakeItem`
   - library `item.lua` [standard] in `core/libraries/item.lua`
 - `OnPrivilegeRegistered`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
 - `OnPrivilegeUnregistered`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
+- `OnServerLog`
+  - library `logger.lua` [standard] in `core/libraries/logger.lua`
 - `OnSetUsergroup`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sadmin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/serverguard.lua`
@@ -1113,6 +354,14 @@ These entries show hooks registered from framework libraries.
   - library `color.lua` [standard] in `core/libraries/color.lua`
 - `OnTransferred`
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
+- `OnUsergroupCreated`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `OnUsergroupPermissionsChanged`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `OnUsergroupRemoved`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `OnUsergroupRenamed`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
 - `OnVoiceTypeChanged`
   - library `playerinteract.lua` [standard] in `core/libraries/playerinteract.lua`
 - `OptionAdded`
@@ -1121,12 +370,32 @@ These entries show hooks registered from framework libraries.
   - library `option.lua` [standard] in `core/libraries/option.lua`
 - `OptionReceived`
   - library `option.lua` [standard] in `core/libraries/option.lua`
+- `OverrideFactionDesc`
+  - library `factions.lua` [standard] in `core/libraries/factions.lua`
+- `OverrideFactionModelCustomization`
+  - library `factions.lua` [standard] in `core/libraries/factions.lua`
+- `OverrideFactionModels`
+  - library `factions.lua` [standard] in `core/libraries/factions.lua`
+- `OverrideFactionName`
+  - library `factions.lua` [standard] in `core/libraries/factions.lua`
 - `OverrideSpawnTime`
   - library `commands.lua` [standard] in `core/libraries/commands.lua`
 - `PlayerBodyGroupChanged`
   - library `character.lua` [standard] in `core/libraries/character.lua`
+- `PlayerGagged`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
 - `PlayerLoadedChar`
   - library `compatibility` [standard] in `core/libraries/compatibility/prone.lua`
+- `PlayerMessageSend`
+  - library `chatbox.lua` [standard] in `core/libraries/chatbox.lua`
+- `PlayerMuted`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `PlayerUngagged`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `PlayerUnmuted`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
+- `PopulateAdminTabs`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
 - `PopulateConfigurationButtons`
   - library `config.lua` [standard] in `core/libraries/config.lua`
   - library `item.lua` [standard] in `core/libraries/item.lua`
@@ -1149,6 +418,7 @@ These entries show hooks registered from framework libraries.
 - `RemovePart`
   - library `compatibility` [standard] in `core/libraries/compatibility/pac.lua`
 - `RunAdminSystemCommand`
+  - library `admin.lua` [standard] in `core/libraries/admin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sadmin.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/sam.lua`
   - library `compatibility` [standard] in `core/libraries/compatibility/serverguard.lua`
@@ -1219,7 +489,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `AdjustStaminaOffset`
   - other [standard] in `modules/attributes/libraries/shared.lua`
 - `AdminPrivilegesUpdated`
-  - other [standard] in `modules/administration/admin.lua`
   - core `derma` [standard] in `core/derma/mainmenu/character.lua`
 - `AdminStickAddModels`
   - other [method] in `modules/administration/submodules/adminstick/libraries/client.lua`
@@ -1295,7 +564,6 @@ These entries show hooks registered outside libraries and outside external modul
   - core `hooks` [method] in `core/hooks/server.lua`
   - meta `item` [standard] in `core/meta/item.lua`
 - `CanPlayerJoinClass`
-  - other [standard] in `modules/teams/classes.lua`
   - other [method] in `modules/teams/libraries/server.lua`
 - `CanPlayerKnock`
   - entity `weapons` [standard] in `entities/weapons/lia_hands/shared.lua`
@@ -1395,15 +663,11 @@ These entries show hooks registered outside libraries and outside external modul
   - core `netcalls` [standard] in `core/netcalls/client.lua`
 - `ChatboxTextAdded`
   - other [standard] in `modules/chatbox/libraries/client.lua`
-- `ChatParsed`
-  - other [standard] in `modules/chatbox/chatbox.lua`
 - `CheckFactionLimitReached`
   - other [standard] in `modules/teams/libraries/server.lua`
   - other [method] in `modules/teams/libraries/shared.lua`
 - `ChooseCharacter`
   - other [method] in `modules/mainmenu/module.lua`
-- `CollectDoorDataFields`
-  - other [standard] in `modules/doors/doors.lua`
 - `ConfigureCharacterCreationSteps`
   - core `derma` [standard] in `core/derma/mainmenu/creation.lua`
 - `CreateCharacter`
@@ -1418,7 +682,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `CreateInformationButtons`
   - core `derma` [standard] in `core/derma/panels/f1menu.lua`
 - `CreateInventoryPanel`
-  - other [standard] in `modules/inventory/inventory.lua`
   - other [method] in `modules/inventory/types/weightinv/libraries/client.lua`
   - other [method] in `modules/inventory/types/gridinv/libraries/client.lua`
 - `CreateLogsUI`
@@ -1536,7 +799,6 @@ These entries show hooks registered outside libraries and outside external modul
   - core `hooks` [standard] in `core/hooks/client.lua`
   - core `derma` [standard] in `core/derma/panels/scoreboard.lua`
 - `GetDisplayedName`
-  - other [standard] in `modules/chatbox/chatbox.lua`
   - other [method] in `modules/recognition/libraries/client.lua`
   - other [standard] in `modules/chatbox/libraries/shared.lua`
   - core `hooks` [standard] in `core/hooks/client.lua`
@@ -1612,7 +874,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `GetSalaryAmount`
   - core `hooks` [standard] in `core/hooks/server.lua`
 - `GetUsergroupIcon`
-  - other [standard] in `modules/administration/admin.lua`
   - other [standard] in `modules/chatbox/libraries/shared.lua`
 - `GetWarnings`
   - other [method] in `modules/administration/submodules/warnings/libraries/server.lua`
@@ -1636,8 +897,6 @@ These entries show hooks registered outside libraries and outside external modul
   - core `derma` [standard] in `core/derma/panels/scoreboard.lua`
 - `InterceptClickItemIcon`
   - other [standard] in `modules/inventory/types/gridinv/derma/cl_grid_inventory_panel.lua`
-- `InventoryClosed`
-  - other [standard] in `modules/inventory/inventory.lua`
 - `InventoryDataChanged`
   - core `netcalls` [standard] in `core/netcalls/client.lua`
 - `InventoryDeleted`
@@ -1654,8 +913,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [method] in `modules/inventory/types/gridinv/libraries/client.lua`
   - meta `inventory` [standard] in `core/meta/inventory.lua`
   - core `netcalls` [standard] in `core/netcalls/client.lua`
-- `InventoryOpened`
-  - other [standard] in `modules/inventory/inventory.lua`
 - `InventoryPanelCreated`
   - other [standard] in `modules/inventory/types/gridinv/libraries/client.lua`
 - `IsCharacterCreationOverridden`
@@ -1750,8 +1007,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [method] in `modules/administration/submodules/adminstick/libraries/client.lua`
   - other [standard] in `modules/administration/submodules/adminstick/libraries/client.lua`
   - other [standard] in `modules/administration/submodules/adminstick/entities/weapons/lia_adminstick/cl_init.lua`
-- `OnAdminSystemLoaded`
-  - other [standard] in `modules/administration/admin.lua`
 - `OnAmmoBoxUsed`
   - entity `entities` [standard] in `entities/entities/lia_ammobox/init.lua`
 - `OnCharacterCreationModelIconSet`
@@ -1799,8 +1054,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `OnCheaterCaught`
   - other [standard] in `modules/protection/libraries/server.lua`
   - core `netcalls` [standard] in `core/netcalls/server.lua`
-- `OnCreateDualInventoryPanels`
-  - other [standard] in `modules/inventory/inventory.lua`
 - `OnCreateItemInteractionMenu`
   - core `derma` [standard] in `core/derma/panels/item.lua`
 - `OnCreateStoragePanel`
@@ -1836,8 +1089,6 @@ These entries show hooks registered outside libraries and outside external modul
   - core `netcalls` [standard] in `core/netcalls/client.lua`
 - `OnModelPanelSetup`
   - core `derma` [standard] in `core/derma/panels/modelpanel.lua`
-- `OnOOCMessageSent`
-  - other [standard] in `modules/chatbox/chatbox.lua`
 - `OnOpenVendorMenu`
   - other [standard] in `modules/vendor/libraries/client.lua`
 - `OnPainSoundPlayed`
@@ -1862,10 +1113,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [method] in `modules/administration/submodules/logs/libraries/server.lua`
 - `OnPlayerSwitchClass`
   - meta `character` [standard] in `core/meta/character.lua`
-- `OnPrivilegeRegistered`
-  - other [standard] in `modules/administration/admin.lua`
-- `OnPrivilegeUnregistered`
-  - other [standard] in `modules/administration/admin.lua`
 - `OnRequestItemTransfer`
   - other [standard] in `modules/inventory/types/gridinv/derma/cl_grid_inventory_panel.lua`
 - `OnRespawnKeyPressed`
@@ -1876,10 +1123,6 @@ These entries show hooks registered outside libraries and outside external modul
   - core `hooks` [standard] in `core/hooks/server.lua`
 - `OnSavedItemLoaded`
   - core `hooks` [standard] in `core/hooks/server.lua`
-- `OnServerLog`
-  - other [standard] in `modules/administration/submodules/logs/logger.lua`
-- `OnSetUsergroup`
-  - other [standard] in `modules/administration/admin.lua`
 - `OnThemeChanged`
   - core `derma` [standard] in `core/derma/panels/chatbox.lua`
   - core `derma` [standard] in `core/derma/panels/f1menu.lua`
@@ -1896,14 +1139,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [standard] in `modules/teams/libraries/server.lua`
   - other [standard] in `modules/teams/netcalls/server.lua`
   - core `netcalls` [standard] in `core/netcalls/server.lua`
-- `OnUsergroupCreated`
-  - other [standard] in `modules/administration/admin.lua`
-- `OnUsergroupPermissionsChanged`
-  - other [standard] in `modules/administration/admin.lua`
-- `OnUsergroupRemoved`
-  - other [standard] in `modules/administration/admin.lua`
-- `OnUsergroupRenamed`
-  - other [standard] in `modules/administration/admin.lua`
 - `OnVendorEdited`
   - other [standard] in `modules/vendor/netcalls/server.lua`
 - `OnVoiceTypeChanged`
@@ -1927,14 +1162,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [standard] in `modules/mainmenu/module.lua`
 - `OptionAdded`
   - core `derma` [standard] in `core/derma/panels/panels.lua`
-- `OverrideFactionDesc`
-  - other [standard] in `modules/teams/factions.lua`
-- `OverrideFactionModelCustomization`
-  - other [standard] in `modules/teams/factions.lua`
-- `OverrideFactionModels`
-  - other [standard] in `modules/teams/factions.lua`
-- `OverrideFactionName`
-  - other [standard] in `modules/teams/factions.lua`
 - `OverrideSpawnTime`
   - other [standard] in `modules/spawns/libraries/client.lua`
   - core `netcalls` [standard] in `core/netcalls/server.lua`
@@ -1952,8 +1179,6 @@ These entries show hooks registered outside libraries and outside external modul
 - `PlayerCheatDetected`
   - other [standard] in `modules/protection/libraries/server.lua`
   - core `netcalls` [standard] in `core/netcalls/server.lua`
-- `PlayerGagged`
-  - other [standard] in `modules/administration/admin.lua`
 - `PlayerLiliaDataLoaded`
   - other [method] in `modules/mainmenu/libraries/server.lua`
   - core `hooks` [standard] in `core/hooks/server.lua`
@@ -1965,12 +1190,8 @@ These entries show hooks registered outside libraries and outside external modul
   - core `hooks` [method] in `core/hooks/server.lua`
   - core `hooks` [standard] in `core/hooks/server.lua`
   - core `netcalls` [standard] in `core/netcalls/server.lua`
-- `PlayerMessageSend`
-  - other [standard] in `modules/chatbox/chatbox.lua`
 - `PlayerModelChanged`
   - core `hooks` [standard] in `core/hooks/shared.lua`
-- `PlayerMuted`
-  - other [standard] in `modules/administration/admin.lua`
 - `PlayerShouldPermaKill`
   - other [method] in `modules/administration/libraries/server.lua`
   - core `hooks` [standard] in `core/hooks/server.lua`
@@ -1986,16 +1207,11 @@ These entries show hooks registered outside libraries and outside external modul
 - `PlayerThrowPunch`
   - other [method] in `modules/attributes/libraries/server.lua`
   - entity `weapons` [standard] in `entities/weapons/lia_hands/shared.lua`
-- `PlayerUngagged`
-  - other [standard] in `modules/administration/admin.lua`
-- `PlayerUnmuted`
-  - other [standard] in `modules/administration/admin.lua`
 - `PlayerUseDoor`
   - other [standard] in `modules/doors/libraries/server.lua`
 - `PopulateAdminStick`
   - other [standard] in `modules/administration/submodules/adminstick/libraries/client.lua`
 - `PopulateAdminTabs`
-  - other [standard] in `modules/administration/admin.lua`
   - other [method] in `modules/teams/libraries/client.lua`
   - other [method] in `modules/protection/libraries/client.lua`
   - other [method] in `modules/chatbox/libraries/client.lua`
@@ -2062,8 +1278,6 @@ These entries show hooks registered outside libraries and outside external modul
   - other [method] in `modules/mainmenu/module.lua`
   - core `netcalls` [standard] in `core/netcalls/client.lua`
   - core `derma` [standard] in `core/derma/mainmenu/creation.lua`
-- `RunAdminSystemCommand`
-  - other [standard] in `modules/administration/admin.lua`
 - `SaveData`
   - other [method] in `modules/inventory/types/gridinv/submodules/storage/libraries/server.lua`
   - other [method] in `modules/doors/libraries/server.lua`
@@ -2407,7 +1621,7 @@ These hooks are registered in code but missing from documentation:
 - `GetDefaultInventorySize(client, char)`
 - `GetDefaultInventoryType(character)`
 - `GetDisplayedDescription(client, isHUD)`
-- `GetDisplayedName(speaker, chatType)`
+- `GetDisplayedName(client, chatType)`
 - `GetDoorInfo(entity, doorData, doorInfo)`
 - `GetDoorInfoForAdminStick(target, extraInfo)`
 - `GetEntitySaveData(ent)`
@@ -2658,7 +1872,7 @@ These hooks are registered in code but missing from documentation:
 - `ShouldMenuButtonShow(arg1)`
 - `ShouldOverrideSalaryTimers()`
 - `ShouldPlayDeathSound(client, deathSound)`
-- `ShouldPlayPainSound(entity, painSound)`
+- `ShouldPlayPainSound(client, paintype)`
 - `ShouldRespawnScreenAppear(ply, left, baseTime, lastDeath)`
 - `ShouldSaveItem(itemTable, self)`
 - `ShouldShowCharVarInCreation(key)`
@@ -2716,7 +1930,7 @@ These hooks are registered in code but missing from documentation:
 ## Localization Analysis
 
 - **Unique Keys:** 3890
-- **Undefined Calls:** 14
+- **Undefined Calls:** 16
 - **Argument Mismatch:** 0
 
 ### Undefined Calls
@@ -2737,6 +1951,10 @@ These hooks are registered in code but missing from documentation:
   - Context: lia.derma.requestButtons(L("choose"), {"A", "B"}, function(index, text) end, L("pickOne"))
 - **continue** in core\libraries\derma.lua:4256
   - Context: lia.derma.requestPopupQuestion(L("continue"), {{L("yes"), function() end}, L("no")})
+- **citizen** in core\libraries\factions.lua:129
+  - Context: name = "@citizen",
+- **citizenDesc** in core\libraries\factions.lua:130
+  - Context: desc = "@citizenDesc",
 - **toggleExampleDesc** in core\libraries\keybind.lua:190
   - Context: desc = "@toggleExampleDesc",
 - **exampleOption** in core\libraries\option.lua:193
@@ -2782,7 +2000,7 @@ None
 
 ### Module-Specific Registration Issues
 
-- **Module-Specific But Registered Outside Module:** 3
+- **Module-Specific But Registered Outside Module:** 0
 - **Module-Specific Used But Undefined:** 0
 
 - Note: A message is treated as module-specific when all detected literal usage sites belong to one module.
@@ -2790,18 +2008,7 @@ None
 
 #### Module-Specific But Registered Outside Module
 
-- `liaUpdateAdminPrivileges` in module `administration`
-  - Reason: Used only by module "administration" but defined outside that module
-  - Usage sites: lia.net.readBigTable at modules/administration/admin.lua:1646; lia.net.writeBigTable at modules/administration/admin.lua:935
-  - Definition sites: init.lua networkStrings at init.lua:2
-- `liaVendorEdit` in module `vendor`
-  - Reason: Used only by module "vendor" but defined outside that module
-  - Usage sites: net.Start at modules/vendor/derma/client.lua:2008; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:113; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:196; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:205; net.Start at modules/vendor/entities/entities/lia_vendor/init.lua:215
-  - Definition sites: init.lua networkStrings at init.lua:2
-- `liaVendorPropertySync` in module `vendor`
-  - Reason: Used only by module "vendor" but defined outside that module
-  - Usage sites: net.Start at modules/vendor/libraries/server.lua:177; net.Start at modules/vendor/libraries/server.lua:186; net.Receive at modules/vendor/netcalls/client.lua:191; net.Start at modules/vendor/netcalls/server.lua:107; net.Start at modules/vendor/netcalls/server.lua:116
-  - Definition sites: init.lua networkStrings at init.lua:2
+None
 
 #### Module-Specific Used But Undefined
 
@@ -2822,7 +2029,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:859
+  - Receiver sites: core/netcalls/server.lua:860
 - `liaDoorData`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -2858,13 +2065,13 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: client, server
   - Sender sites: None
-  - Receiver sites: core/netcalls/client.lua:1226; core/netcalls/server.lua:1104
+  - Receiver sites: core/netcalls/client.lua:1226; core/netcalls/server.lua:1105
 - `liaNPCWeaponChange`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:640
+  - Receiver sites: core/netcalls/server.lua:641
 - `liaPksCount`
   - Reason: Message has senders but no detected receivers
   - Send sides: server
@@ -2876,7 +2083,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:844
+  - Receiver sites: core/netcalls/server.lua:845
 - `liaProvideServerPassword`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -2918,7 +2125,7 @@ Total suspicious patterns: **27**
   - Send sides: none
   - Receive sides: server
   - Sender sites: None
-  - Receiver sites: core/netcalls/server.lua:906
+  - Receiver sites: core/netcalls/server.lua:907
 - `liaSeqSet`
   - Reason: Message has receivers but no detected senders
   - Send sides: none
@@ -3029,20 +2236,19 @@ None
 
 ### Summary
 - **Net Handlers Outside netcalls:** 2
-- **UI / Derma Code Outside derma:** 8
+- **UI / Derma Code Outside derma:** 7
 
 ### Net Handlers Outside netcalls
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `mainmenu` | `modules/mainmenu/module.lua:47` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
-| `mainmenu` | `modules/mainmenu/module.lua:90` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
+| `mainmenu` | `modules/mainmenu/module.lua:50` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
+| `mainmenu` | `modules/mainmenu/module.lua:93` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\mainmenu\netcalls` | Module net handler is outside the netcalls folder |
 
 ### UI / Derma Code Outside derma
 
 | Module | Location | Expected Folder | Reason |
 |---|---|---|---|
-| `administration` | `modules/administration/admin.lua:1670` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/entities/weapons/lia_mapconfigurer/cl_init.lua:146` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/libraries/client.lua:581` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |
 | `administration` | `modules/administration/netcalls/client.lua:91` | `D:\GMOD\Server\garrysmod\gamemodes\Lilia\gamemode\modules\administration\derma` | Module UI-heavy code is outside the derma folder |

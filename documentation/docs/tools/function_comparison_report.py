@@ -433,7 +433,15 @@ class FunctionComparisonReportGenerator:
 
         # Initialize analyzers
         self.function_comparator = FunctionComparator(str(self.base_path))
-        self.hooks_doc_dir = self.docs_path / "docs" / "development" / "hooks"
+        preferred_hooks_dir = self.docs_path / "docs" / "developer" / "hooks"
+        legacy_hooks_dir = self.docs_path / "docs" / "development" / "hooks"
+        fallback_hooks_dir = self.docs_path / "docs" / "hooks"
+        if preferred_hooks_dir.exists():
+            self.hooks_doc_dir = preferred_hooks_dir
+        elif legacy_hooks_dir.exists():
+            self.hooks_doc_dir = legacy_hooks_dir
+        else:
+            self.hooks_doc_dir = fallback_hooks_dir
 
     def _detect_argument_mismatches(self) -> List[Dict]:
         """Detect argument mismatches in localization function calls"""
