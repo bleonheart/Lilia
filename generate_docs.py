@@ -1841,7 +1841,7 @@ def sync_mkdocs_nav(mkdocs_path: Path, docs_dir: Path) -> None:
             'end_marker': '# AUTO-GENERATED: META TABLES END',
             'directory': docs_dir / 'developer' / 'meta',
             'indent': '          ',
-            'preferred_order': ['character', 'entity', 'inventory', 'item', 'panel', 'player'],
+            'preferred_order': [],
         },
         {
             'name': 'libraries',
@@ -1849,7 +1849,7 @@ def sync_mkdocs_nav(mkdocs_path: Path, docs_dir: Path) -> None:
             'end_marker': '# AUTO-GENERATED: LIBRARIES END',
             'directory': docs_dir / 'developer' / 'libraries',
             'indent': '          ',
-            'preferred_order': ['lia.currency'],
+            'preferred_order': [],
         },
         {
             'name': 'hooks',
@@ -1857,7 +1857,7 @@ def sync_mkdocs_nav(mkdocs_path: Path, docs_dir: Path) -> None:
             'end_marker': '# AUTO-GENERATED: HOOKS END',
             'directory': docs_dir / 'developer' / 'hooks',
             'indent': '          ',
-            'preferred_order': ['core'],
+            'preferred_order': [],
         },
         # Note: module libraries/hooks are merged into the main libraries/hooks directories
         {
@@ -1870,19 +1870,7 @@ def sync_mkdocs_nav(mkdocs_path: Path, docs_dir: Path) -> None:
                 '          - Overview: definitions/items/index.md',
                 '          - Item Base Field Reference: definitions/items/base-field-reference.md',
             ],
-            'preferred_order': [
-                'aid',
-                'ammo',
-                'arccw_att',
-                'books',
-                'entities',
-                'grenade',
-                'outfit',
-                'pacoutfit',
-                'stackable',
-                'url',
-                'weapons',
-            ],
+            'preferred_order': [],
         },
     ]
 
@@ -2328,9 +2316,9 @@ def generate_development_index(dev_dir: Path) -> None:
         f.write('<div class="card-grid">\n')
 
         sections = [
-            ('meta', 'Core objects', 'Meta Tables', 'Read what Character, Player, Entity, Item, Inventory, and Panel objects can do.'),
-            ('libraries', 'Helpers', 'Libraries', 'Find shared helper libraries for things like money, items, characters, and framework tools.'),
             ('hooks', 'Events', 'Hooks', 'See the events you can listen to when you want to change or react to game behavior.'),
+            ('libraries', 'Helpers', 'Libraries', 'Find shared helper libraries for things like money, items, characters, and framework tools.'),
+            ('meta', 'Core objects', 'Meta Tables', 'Read what Character, Player, Entity, Item, Inventory, and Panel objects can do.'),
         ]
 
         for dirname, kicker, title, summary in sections:
@@ -2362,8 +2350,8 @@ def generate_module_development_index(dev_modules_dir: Path) -> None:
         f.write('<div class="card-grid">\n')
 
         sections = [
-            ('libraries', 'Helpers', 'Libraries', 'Find module-owned helper libraries and library-local hooks documented on the same page.'),
             ('hooks', 'Events', 'Hooks', 'See hooks documented directly on module entry files, submodule entry files, or the uncategorized fallback page.'),
+            ('libraries', 'Helpers', 'Libraries', 'Find module-owned helper libraries and library-local hooks documented on the same page.'),
         ]
 
         for dirname, kicker, title, summary in sections:
@@ -2400,10 +2388,10 @@ def generate_pages_file(docs_dir: Path) -> None:
     if dev_pages_path.parent.exists():
         with open(dev_pages_path, 'w', encoding='utf-8') as f:
             f.write('title: Developer\narrange:\n')
-            f.write(' - meta\n')
-            f.write(' - libraries\n')
-            f.write(' - hooks\n')
             f.write(' - compatibility\n')
+            f.write(' - hooks\n')
+            f.write(' - libraries\n')
+            f.write(' - meta\n')
 
     # No separate developer/modules .pages file: modules are surfaced under libraries/hooks
 
