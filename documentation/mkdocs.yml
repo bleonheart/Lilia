@@ -48,7 +48,6 @@ nav:
       - Hooks:
           - Overview: developer/hooks/index.md
           # AUTO-GENERATED: HOOKS START
-          - Admin: developer/hooks/administration.admin.md
           - Administration: developer/hooks/administration.md
           - Administration - Submodules/Adminstick: developer/hooks/administration.submodules-adminstick.md
           - Administration - Submodules/Logs: developer/hooks/administration.submodules-logs.md
@@ -137,12 +136,12 @@ nav:
           - Books Item Definition: definitions/items/books.md
           - Entity Item Definition: definitions/items/entities.md
           - Grenade Item Definition: definitions/items/grenade.md
+          - Item Base Field Reference: definitions/items/base-field-reference.md
           - Outfit Item Definition: definitions/items/outfit.md
           - PAC Outfit Item Definition: definitions/items/pacoutfit.md
           - Stackable Item Definition: definitions/items/stackable.md
           - URL Item Definition: definitions/items/url.md
           - Weapons Item Definition: definitions/items/weapons.md
-          - Item Base Field Reference: definitions/items/base-field-reference.md
           # AUTO-GENERATED: ITEM DEFINITIONS END
   - Generators:
       - Overview: generators/index.md
