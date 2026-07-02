@@ -7,7 +7,19 @@ ITEM.functions.use = {
     icon = "icon16/book_link.png",
     onClick = function(item)
         local url = item.url
-        if isstring(url) and url ~= "" then gui.OpenURL(url) end
+        if not isstring(url) or url == "" then return end
+        local frame = vgui.Create("liaFrame")
+        frame:SetSize(math.min(ScrW() * 0.85, 1100), math.min(ScrH() * 0.85, 800))
+        frame:SetMinWidth(480)
+        frame:SetMinHeight(360)
+        frame:SetSizable(true)
+        frame:SetTitle(item.name or L("urlName"))
+        frame:Center()
+        frame:MakePopup()
+        local html = frame:Add("DHTML")
+        html:Dock(FILL)
+        html:OpenURL(url)
+        frame.html = html
     end,
     onRun = function() return false end,
 }
